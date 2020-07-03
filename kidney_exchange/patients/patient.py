@@ -7,7 +7,7 @@ class Patient:
         self._parameters = parameters
 
     def __str__(self) -> str:
-        return f"{self._id} | {str(self._parameters)}"
+        return f"{{'id': '{self._id}', 'params': {str(self._parameters)}}}"
 
     def __hash__(self):
         return hash(self._id)

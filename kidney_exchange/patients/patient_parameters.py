@@ -15,11 +15,8 @@ class PatientParameters:
         self._country_code = country_code
 
     def __str__(self) -> str:
-        acceptable_blood_groups_str = "" if self._acceptable_blood_groups is None \
-            else f"({', '.join(self._acceptable_blood_groups)})"
-
-        return f"{self._country_code} | {self._blood_group} {acceptable_blood_groups_str} | " \
-               f"antigens: {str(self._hla_antigens)} | antibodies: {str(self._hla_antibodies)}"
+        return f"{{'country': '{self._country_code}', 'blood': '{self._blood_group}', 'acceptable': {str(self._acceptable_blood_groups)}, " \
+               f"'antigens': {str(self._hla_antigens)}, 'antibodies': {str(self._hla_antibodies)}}}"
 
     @property
     def blood_group(self) -> str:

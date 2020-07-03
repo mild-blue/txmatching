@@ -49,3 +49,8 @@ lists of donors, recipients using scorer.
 4. These matchings can then be optionally filtered according to some <b>parameters</b> 
     - `Filter.keep(matching) -> bool`
     
+## Loading Excel Data
+For testing purposes the patient data can be loaded from `.xlsx` file using the utility `utils/excel_parsing/parse_excel_data.py`. This requires that you set environment variable 
+```
+PATIENT_DATA_PATH=/home/user/path/to/your/patient_data.xlsx
+``` 
