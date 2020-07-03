@@ -1,7 +1,7 @@
-from kidney_exchange.core.matching import Matching
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.scorer_base import ScorerBase
+from kidney_exchange.solvers.matching.matching import Matching
 
 
 class AdditiveScorer(ScorerBase):

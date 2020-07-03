@@ -1,9 +1,9 @@
 from typing import List, Tuple, Set, Sequence
 
-from kidney_exchange.core.cycle import Cycle
-from kidney_exchange.core.round import Round
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
+from kidney_exchange.solvers.matching.cycle import Cycle
+from kidney_exchange.solvers.matching.round import Round
 
 
 class Matching:

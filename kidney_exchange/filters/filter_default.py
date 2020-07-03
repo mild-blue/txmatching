@@ -1,8 +1,8 @@
 from typing import List
 
-from kidney_exchange.core.matching import Matching
+from kidney_exchange.filters.filter_base import FilterBase
 from kidney_exchange.patients.patient import Patient
-from kidney_exchange.solvers.filter_base import FilterBase
+from kidney_exchange.solvers.matching.matching import Matching
 
 
 class FilterDefault(FilterBase):

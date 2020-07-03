@@ -1,4 +1,4 @@
-from kidney_exchange.core.round import Round
+from kidney_exchange.solvers.matching.round import Round
 
 
 class Cycle(Round):

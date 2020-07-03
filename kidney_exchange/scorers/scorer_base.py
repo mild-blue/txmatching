@@ -1,4 +1,4 @@
-from kidney_exchange.core.matching import Matching
+from kidney_exchange.solvers.matching.matching import Matching
 
 TRANSPLANT_IMPOSSIBLE = float("-inf")
 
