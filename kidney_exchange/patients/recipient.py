@@ -2,11 +2,12 @@ from typing import List, Union
 
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.patient import Patient
+from kidney_exchange.patients.patient_parameters import PatientParameters
 
 
 class Recipient(Patient):
-    def __init__(self, id: str, related_donors: Union[Donor, List[Donor]] = None):
-        super().__init__(id)
+    def __init__(self, id: str, parameters: PatientParameters = None, related_donors: Union[Donor, List[Donor]] = None):
+        super().__init__(id=id, parameters=parameters)
 
         self._related_donors = related_donors
 
