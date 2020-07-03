@@ -6,10 +6,11 @@ from tests.patients.test_patient_parameters import donor_parameters_Joe, recipie
 
 class TestCompatibilityIndex(unittest.TestCase):
     def setUp(self):
-        self._donor_params = donor_parameters_Joe
-        self._recipient_params = recipient_parameters_Jack
+        self._donor_recipient_index = [(donor_parameters_Joe, recipient_parameters_Jack, 21.0)]
 
     def test_compatibility_index(self):
-        compatibility_index(self._donor_params, self._recipient_params)
-        # TODO: Finish - prerequisity is TODO in high_resolution_to_low_resolution
-        print(compatibility_index())
+        print("[INFO] Testing compatibility index")
+        for donor_params, recipient_params, expected_compatibility_index in self._donor_recipient_index:
+            calculated_compatibility_index = compatibility_index(donor_params, recipient_params)
+            self.assertEqual(calculated_compatibility_index, expected_compatibility_index)
+        print("    -- done\n")

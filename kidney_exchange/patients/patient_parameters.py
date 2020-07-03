@@ -1,6 +1,7 @@
 from typing import List
 
-from kidney_exchange.utils.hla_system.high_resolution_to_low_resolution import hla_high_to_low_res
+from kidney_exchange.utils.hla_system.high_resolution_to_low_resolution import hla_high_to_low_res, \
+    is_valid_low_res_code
 
 
 class PatientParameters:
@@ -27,8 +28,12 @@ class PatientParameters:
 
     @property
     def hla_antigens_low_resolution(self) -> List[str]:
-        return [hla_high_to_low_res(antigen) for antigen in self._hla_antigens]
+        low_res_codes = [hla_high_to_low_res(antigen) for antigen in self._hla_antigens]
+        low_res_codes = [code for code in low_res_codes if is_valid_low_res_code(code)]
+        return low_res_codes
 
     @property
     def hla_antibodies_low_resolution(self) -> List[str]:
-        return [hla_high_to_low_res(antibody) for antibody in self._hla_antibodiesself._hla_antibodies]
+        low_res_codes = [hla_high_to_low_res(antibody) for antibody in self._hla_antibodies]
+        low_res_codes = [code for code in low_res_codes if is_valid_low_res_code(code)]
+        return low_res_codes

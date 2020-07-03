@@ -11,9 +11,12 @@ def get_antigen_genotype(patient_allele_codes: List[str], gene_code: str = "A") 
     """
     # In the following: list(set()) is for case A30, A31, A32 > A19, A19, A19
     patient_allele_codes = list(set([code for code in patient_allele_codes if code.startswith(gene_code)]))
-    if len(patient_allele_codes) == 1:
+    if len(patient_allele_codes) == 0:
+        return dict()
+    elif len(patient_allele_codes) == 1:
         return {patient_allele_codes[0]: 2}
     elif len(patient_allele_codes) == 2:
         return {allele_code: 1 for allele_code in patient_allele_codes}
     else:
-        raise AssertionError("Invalid list of alleles - have to be 2 per one ")
+        raise AssertionError(f"Invalid list of alleles for gene {gene_code} - there have to be 2 per one gene. "
+                             f"\nList of patient_alleles: {patient_allele_codes}")
