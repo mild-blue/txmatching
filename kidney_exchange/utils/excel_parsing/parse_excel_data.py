@@ -82,10 +82,10 @@ def parse_excel_data(file_path: str) -> Tuple[List[Donor], List[Recipient]]:
 if __name__ == "__main__":
     patient_data_path = os.getenv("PATIENT_DATA_PATH")
     donors, recipients = parse_excel_data(patient_data_path)
-    print("Donors: \n" + "-" * 50 + "\n")
+    print("\nDonors: \n" + "-" * 50 + "\n")
     for donor in donors:
         print(donor)
 
-    print("Recipients: \n" + "-" * 50 + "\n")
+    print("\nRecipients: \n" + "-" * 50 + "\n")
     for recipient in recipients:
         print(recipient)
