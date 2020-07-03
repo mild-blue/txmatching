@@ -46,6 +46,6 @@ lists of donors, recipients using scorer.
     - `Cycle[Round]`
     - `Sequence[Round]`
     
-4. These matchings can then be optionally filtered using 
+4. These matchings can then be optionally filtered according to some <b>parameters</b> 
     - `Filter.keep(matching) -> bool`
     
