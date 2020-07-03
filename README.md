@@ -54,3 +54,10 @@ For testing purposes the patient data can be loaded from `.xlsx` file using the 
 ```
 PATIENT_DATA_PATH=/home/user/path/to/your/patient_data.xlsx
 ``` 
+
+## Graph Tool
+Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't 
+easily be installed via pip and you have to use for example conda to install it. For more info see the official website. 
+```
+conda install -c conda-forge graph-tool
+```

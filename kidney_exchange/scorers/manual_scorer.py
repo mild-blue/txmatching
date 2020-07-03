@@ -10,7 +10,7 @@ class ManualScorer(AdditiveScorer):
         self._additive_scorer = additive_scorer
         self._manually_defined_scores = manually_defined_scores
 
-    def _score_transplant(self, donor: Donor, recipient: Recipient) -> float:
+    def score_transplant(self, donor: Donor, recipient: Recipient) -> float:
         """
         Returns the manually defined score. If that is not available, then it uses the additive scorer
         """

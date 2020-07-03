@@ -31,7 +31,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group = require_new_donor_having_better_match_in_compatibility_index_or_blood_group
         self._use_binary_scoring = use_binary_scoring
 
-    def _score_transplant(self, donor: Donor, recipient: Recipient) -> float:
+    def score_transplant(self, donor: Donor, recipient: Recipient) -> float:
         donor_recipient_ci = compatibility_index(donor.params, recipient.params)
         related_donor_recipient_ci = compatibility_index(recipient.related_donor.params, recipient.params)
 
