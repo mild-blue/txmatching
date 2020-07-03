@@ -11,7 +11,7 @@ class Recipient(Patient):
 
         self._related_donors = related_donors
 
-        if len(related_donors) > 0:
+        if isinstance(related_donors, list) and len(related_donors) > 0:
             raise NotImplementedError("Multiple donors are not yet supported for one recipient")
 
     @property
