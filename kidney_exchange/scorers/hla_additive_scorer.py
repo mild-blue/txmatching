@@ -8,7 +8,6 @@ from kidney_exchange.utils.hla_system.compatibility_index import compatibility_i
 class HLAAdditiveScorer(AdditiveScorer):
     def __init__(self, enforce_same_blood_group: bool = True,
                  minimum_compatibility_index: float = 0.0,
-                 require_exact_match_in_blood_group: bool = True,
                  require_new_donor_having_better_match_in_compatibility_index: bool = True,
                  require_new_donor_having_better_match_in_compatibility_index_or_blood_group: bool = True,
                  use_binary_scoring: bool = False):
@@ -17,7 +16,6 @@ class HLAAdditiveScorer(AdditiveScorer):
             True: donor has to have the same blood group as recipient
             False: donor just needs to have blood group that is in recipients acceptable blood groups
         :param minimum_compatibility_index: Minimum index of compatibility that is required for a transplant
-        :param require_exact_match_in_blood_group: New donor for recipient needs to have a better
             match in blood group than (the best of) his original relative(s)
         :param require_new_donor_having_better_match_in_compatibility_index: New donor for recipient needs to have
             a better match in the compatibility index than (the best of) his original relative(s)
@@ -26,7 +24,6 @@ class HLAAdditiveScorer(AdditiveScorer):
         """
         self._enforce_same_blood = enforce_same_blood_group
         self._minimum_compatibility_index = minimum_compatibility_index
-        self._require_exact_match_in_blood_group = require_exact_match_in_blood_group
         self._require_new_donor_having_better_match_in_compatibility_index = require_new_donor_having_better_match_in_compatibility_index
         self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group = require_new_donor_having_better_match_in_compatibility_index_or_blood_group
         self._use_binary_scoring = use_binary_scoring
@@ -40,8 +37,9 @@ class HLAAdditiveScorer(AdditiveScorer):
             return TRANSPLANT_IMPOSSIBLE
 
         # Recipient can't have antibodies that donor has antigens for
-        for antibody_code in recipient.params.hla_antibodies_low_resolution:
-            if antibody_code in donor.params.hla_antigens_low_resolution:
+        # TODO: Ask imunologists what is exactly the bad combination and for what antigens?
+        for antibody_code in recipient.params._hla_antibodies + recipient.params.hla_antibodies_low_resolution:
+            if antibody_code in donor.params._hla_antigens + donor.params.hla_antigens_low_resolution:
                 return TRANSPLANT_IMPOSSIBLE
 
         # If required, donor must have either better match in blood group or better compatibility index than
