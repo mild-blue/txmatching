@@ -6,6 +6,13 @@ class Patient:
         self._id = id
         self._parameters = parameters
 
+    def __hash__(self):
+        return hash(self._id)
+
+    def __eq__(self, other):
+        return self.__class__ == other.__class__ \
+               and self._id == other._id
+
     @property
     def params(self):
         return self._parameters

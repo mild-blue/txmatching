@@ -5,11 +5,13 @@ from kidney_exchange.utils.hla_system.high_resolution_to_low_resolution import h
 
 class PatientParameters:
     def __init__(self, blood_group: str = None, acceptable_blood_groups: List[str] = None,
-                 hla_antigens: List[str] = None, hla_antibodies: List[str] = None):
+                 hla_antigens: List[str] = None, hla_antibodies: List[str] = None,
+                 country_code: str = None):
         self._blood_group = blood_group
         self._acceptable_blood_groups = acceptable_blood_groups
         self._hla_antigens = hla_antigens
         self._hla_antibodies = hla_antibodies
+        self._country_code = country_code
 
     @property
     def blood_group(self) -> str:
@@ -18,6 +20,10 @@ class PatientParameters:
     @property
     def acceptable_blood_groups(self) -> List[str]:
         return self._acceptable_blood_groups
+
+    @property
+    def country_code(self) -> str:
+        return self._country_code
 
     @property
     def hla_antigens_low_resolution(self) -> List[str]:
