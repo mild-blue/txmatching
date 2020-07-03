@@ -9,7 +9,8 @@ def get_antigen_genotype(patient_allele_codes: List[str], gene_code: str = "A") 
     :param gene_code: gene code of the antigen of interest, e.g. A or B or DR
     :return: e.g. {"A9": 1, "A10": 1} or {"A9": 2}
     """
-    patient_allele_codes = [code for code in patient_allele_codes if code.startswith(gene_code)]
+    # In the following: list(set()) is for case A30, A31, A32 > A19, A19, A19
+    patient_allele_codes = list(set([code for code in patient_allele_codes if code.startswith(gene_code)]))
     if len(patient_allele_codes) == 1:
         return {patient_allele_codes[0]: 2}
     elif len(patient_allele_codes) == 2:

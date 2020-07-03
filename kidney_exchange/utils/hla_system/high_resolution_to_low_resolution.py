@@ -8,7 +8,12 @@ from typing import List
 
 # TODO: Confirm this table with some imunologist
 # TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9)
-low_resolution_to_high_resolution = {
+# TODO: Fill HLA_A, HLA_B, HLA_DR
+HLA_A = ["A1", "A2"]
+HLA_B = ["B7", "B703"]
+HLA_DR = ["DR1", "DR2"]
+
+_low_resolution_to_high_resolution = {
     "A9": ["A23", "A24"],
     "A10": ["A25", "A26", "A34", "A66"],
     "A19": ["A29", "A30", "A31", "A32", "A33", "A74"],
@@ -36,16 +41,29 @@ low_resolution_to_high_resolution = {
     "DQ3": ["DQ7", "DQ8", "DQ9", "DQ2", "DQ4"]
 }
 
-high_resolution_to_low_resolution = dict()
+_high_resolution_to_low_resolution = dict()
 
-for low_res, high_res_list in low_resolution_to_high_resolution.items():
+for low_res, high_res_list in _low_resolution_to_high_resolution.items():
     for high_res in high_res_list:
-        high_resolution_to_low_resolution[high_res] = low_res
+        _high_resolution_to_low_resolution[high_res] = low_res
 
 
 def hla_low_to_high_res(low_resolution_code: str) -> List[str]:
-    return low_resolution_to_high_resolution.get(low_resolution_code) or low_resolution_code
+    return _low_resolution_to_high_resolution.get(low_resolution_code) or low_resolution_code
 
 
 def hla_high_to_low_res(high_resolution_code: str) -> List[str]:
-    return high_resolution_to_low_resolution.get(high_resolution_code) or high_resolution_code
+    return _high_resolution_to_low_resolution.get(high_resolution_code) or high_resolution_code
+
+
+HLA_A_low_res = map(hla_high_to_low_res, HLA_A)
+HLA_B_low_res = map(hla_high_to_low_res, HLA_B)
+HLA_DR_low_res = map(hla_high_to_low_res, HLA_DR)
+
+
+def is_valid_low_res_code(code: str) -> bool:
+    for code_list in [HLA_A_low_res, HLA_B_low_res, HLA_DR_low_res]:
+        if code in code_list:
+            return True
+
+    return False
