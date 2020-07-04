@@ -1,10 +1,11 @@
-FROM debian:buster
+FROM debian:buster-slim
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 
 RUN apt-get update --fix-missing && \
     apt-get install -y \
+     # conda dependencies
      wget bzip2 ca-certificates libglib2.0-0 \
      libxext6 libsm6 libxrender1 \
      git mercurial subversion \
@@ -13,7 +14,9 @@ RUN apt-get update --fix-missing && \
      libxrandr2 libxinerama1 libx11-6 && \
     apt-get clean
 
-ADD Miniconda3-4.8.3-Linux-x86_64.sh miniconda.sh
+# copy local installation of miniconda
+COPY Miniconda3-4.8.3-Linux-x86_64.sh miniconda.sh
+# install miniconda
 RUN mv miniconda.sh ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
