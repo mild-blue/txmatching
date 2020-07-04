@@ -12,7 +12,7 @@ _valid_blood_groups = ["A", "B", "0", "AB"]
 
 
 def _parse_blood_groups(blood_groups_str: str) -> List[str]:
-    blood_groups_str = str(blood_groups_str)
+    blood_groups_str = str(blood_groups_str).strip()
     blood_groups = re.split("[, ]+", blood_groups_str)
     checked_blood_groups = [group for group in blood_groups if group in _valid_blood_groups]
     if len(checked_blood_groups) != len(blood_groups):
@@ -26,6 +26,8 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
         return []
 
     allele_codes = re.split("[, ]+", hla_allele_str)
+    # TODO handle hi-res alleles (codes in brackets) - P-15R has 'A1 A2 B8 DR3 (DR17, DR18)',
+    #  which parses as ['A1', 'A2', 'B8', 'DR3', '(DR17', 'DR18)']
     allele_codes = [code for code in allele_codes if len(code) > 0]
     return allele_codes
 
@@ -50,7 +52,7 @@ def parse_excel_data(file_path: str) -> Tuple[List[Donor], List[Recipient]]:
     donors = list()
     recipients = list()
     for index, row in data.iterrows():
-        donor_id = row["DONOR"]
+        donor_id = row["DONOR"] # TODO nemelo by to byt spis row.DONOR?
         blood_group_donor = _parse_blood_groups(row["BLOOD GROUP donor"])[0]
         typization_donor = _parse_hla(row["TYPIZATION DONOR"])
         country_code_donor = _country_code_from_id(donor_id)
