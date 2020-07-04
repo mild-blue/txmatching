@@ -1,8 +1,8 @@
-from kidney_exchange.solvers.matching.round import Round
+from kidney_exchange.solvers.matching.transplant_round import TransplantRound
 
 
-class Cycle(Round):
+class Cycle(TransplantRound):
     """
-    Set of consequtive transplants that starts with donor of some pair X and ends with recipient of pair X
+    Set of consecutive transplants that starts with donor of some pair X and ends with recipient of pair X
     """
     pass

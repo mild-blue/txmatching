@@ -25,13 +25,13 @@ class FilterDefault(FilterBase):
         if max([sequence.length for sequence in sequences]) > self._max_sequence_length:
             return False
 
-        if max([rnd.country_count for rnd in
+        if max([transplant_round.country_count for transplant_round in
                 set.union(sequences, cycles)]) > self._max_number_of_distinct_countries_in_round:
             return False
 
         for patient in self._required_patients:
-            for rnd in set.union(sequences, cycles):
-                if rnd.contains_patient(patient):
+            for transplant_round in set.union(sequences, cycles):
+                if transplant_round.contains_patient(patient):
                     return True
 
         return False

@@ -1,12 +1,12 @@
-from kidney_exchange.solvers.matching.round import Round
+from kidney_exchange.solvers.matching.transplant_round import TransplantRound
 
 
-class Sequence(Round):
+class Sequence(TransplantRound):
     """
-    Sequence of consequtive transplants that starts either with
-    altruistic donor: just wants to give someone his kidney
+    Sequence of consecutive transplants that starts either with
+    altruistic donor (i.e. someone who just wants to donate his kidney)
     or
-    bridging donor: someone who is left from previous matching, his recipient got kidney (for example from altruist)
-        but he did not give his to anyone
+    bridging donor (i.e. someone left from previous matching, whose recipient already got a kidney (for example from
+        altruist), but who he did not give his to anyone
     """
     pass
