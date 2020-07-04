@@ -15,7 +15,8 @@ class PatientParameters:
         self._country_code = country_code
 
     def __str__(self) -> str:
-        return f"{{'country': '{self._country_code}', 'blood': '{self._blood_group}', 'acceptable': {str(self._acceptable_blood_groups)}, " \
+        return f"{{'country': '{self._country_code}', 'blood': '{self._blood_group}', " \
+               f"'acceptable blood groups': {str(self._acceptable_blood_groups)}, " \
                f"'antigens': {str(self._hla_antigens)}, 'antibodies': {str(self._hla_antibodies)}}}"
 
     @property

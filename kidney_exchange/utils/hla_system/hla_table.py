@@ -3,7 +3,7 @@
 #
 # For more info, see: https://en.wikipedia.org/wiki/History_and_naming_of_human_leukocyte_antigens
 
-# TODO: Confirm this table with some imunologist
+# TODO: Confirm this table with some immunologist
 # TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9)
 
 HLA_A = ["A1", "A2", "A203", "A210", "A3", "A11", "A23", "A24", "A2403",
