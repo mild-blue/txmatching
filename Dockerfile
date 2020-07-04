@@ -5,7 +5,7 @@ WORKDIR /app
 # install dependencies
 COPY conda.yml .
 RUN conda env create -f conda.yml
-# activate shell
+# register conda in the .bashrc
 RUN conda init bash
 
 # do all your magic from here

@@ -23,7 +23,7 @@ def configure_db():
 
     app.config['SQLALCHEMY_DATABASE_URI'] \
         = f'postgresql+psycopg2://{user}:{password}@{url}/{po_db}'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
     db.init_app(app)
 
