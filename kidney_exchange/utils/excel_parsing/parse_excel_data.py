@@ -29,6 +29,7 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
     # TODO handle hi-res alleles (codes in brackets) - P-15R has 'A1 A2 B8 DR3 (DR17, DR18)',
     #  which parses as ['A1', 'A2', 'B8', 'DR3', '(DR17', 'DR18)']
     allele_codes = [code for code in allele_codes if len(code) > 0]
+    # TODO check for code validity
     return allele_codes
 
 
@@ -75,7 +76,7 @@ def parse_excel_data(file_path: str) -> Tuple[List[Donor], List[Recipient]]:
                                                  hla_antibodies=antibodies_recipient,
                                                  acceptable_blood_groups=acceptable_blood_groups_recipient,
                                                  country_code=country_code_recipient)
-            recipient = Recipient(id=recipient_id, parameters=recipient_params, related_donors=donor)
+            recipient = Recipient(patient_id=recipient_id, parameters=recipient_params, related_donors=donor)
             recipients.append(recipient)
 
     return donors, recipients

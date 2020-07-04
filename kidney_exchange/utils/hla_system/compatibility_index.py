@@ -4,6 +4,7 @@ from kidney_exchange.utils.hla_system.get_genotype import get_antigen_genotype
 compatibility_gene_codes = ["A", "B", "DR"]
 # TODO: ask what exact antigens should I count in the matches - for example what about DR52, DR53
 _compatibility_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+# TODO: refactor with dignity
 _A_matches_count = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]
 _B_matches_count = [0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2]
 _DR_matches_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2]
@@ -26,6 +27,7 @@ def compatibility_index(patient_parameters_donor: PatientParameters,
         match_count = 0
         for allele_code in common_allele_codes:
             match_count += min(donor_genotype[allele_code], recipient_genotype[allele_code])
+            # takze tady se pricita bud 1 nebo 2, podle toho jestli maji jednoduchou nebo dvojitou?
 
         match_counts[gene_code] = match_count
 
