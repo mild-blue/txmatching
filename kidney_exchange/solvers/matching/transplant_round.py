@@ -5,12 +5,12 @@ from kidney_exchange.patients.patient import Patient
 from kidney_exchange.patients.recipient import Recipient
 
 
-class Round:
+class TransplantRound:
     """
-    A single sequence or cycle of consequtive transplantations
+    A single sequence or cycle of consecutive transplantations
     For example:
-    altruist_donor_1 > recipient_2, donor_2 > recipient_3
-    donor_1 > recipient_2, donor_1 > recipient_3, donor_3 > recipient_1
+    sequence: altruist_donor_1 -> recipient_2, donor_2 -> recipient_3
+    cycle: donor_1 -> recipient_2, donor_2 -> recipient_3, donor_3 -> recipient_1
     """
 
     def __init__(self, donor_recipient_list: List[Tuple[Donor, Recipient]]):

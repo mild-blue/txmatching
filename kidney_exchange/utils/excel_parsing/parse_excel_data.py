@@ -12,7 +12,7 @@ _valid_blood_groups = ["A", "B", "0", "AB"]
 
 
 def _parse_blood_groups(blood_groups_str: str) -> List[str]:
-    blood_groups_str = str(blood_groups_str)
+    blood_groups_str = str(blood_groups_str).strip()
     blood_groups = re.split("[, ]+", blood_groups_str)
     checked_blood_groups = [group for group in blood_groups if group in _valid_blood_groups]
     if len(checked_blood_groups) != len(blood_groups):
@@ -25,8 +25,9 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
     if "neg" in hla_allele_str.lower():
         return []
 
-    allele_codes = re.split("[, ]+", hla_allele_str)
+    allele_codes = re.split("[, ()]+", hla_allele_str)
     allele_codes = [code for code in allele_codes if len(code) > 0]
+    # TODO check for code validity
     return allele_codes
 
 
@@ -57,7 +58,7 @@ def parse_excel_data(file_path: str) -> Tuple[List[Donor], List[Recipient]]:
         donor_params = PatientParameters(blood_group=blood_group_donor,
                                          hla_antigens=typization_donor,
                                          country_code=country_code_donor)
-        donor = Donor(id=donor_id, parameters=donor_params)
+        donor = Donor(patient_id=donor_id, parameters=donor_params)
         donors.append(donor)
 
         recipient_id = row["RECIPIENT"]
@@ -73,19 +74,19 @@ def parse_excel_data(file_path: str) -> Tuple[List[Donor], List[Recipient]]:
                                                  hla_antibodies=antibodies_recipient,
                                                  acceptable_blood_groups=acceptable_blood_groups_recipient,
                                                  country_code=country_code_recipient)
-            recipient = Recipient(id=recipient_id, parameters=recipient_params, related_donors=donor)
+            recipient = Recipient(patient_id=recipient_id, parameters=recipient_params, related_donors=donor)
             recipients.append(recipient)
 
-    return (donors, recipients)
+    return donors, recipients
 
 
 if __name__ == "__main__":
     patient_data_path = os.getenv("PATIENT_DATA_PATH")
-    donors, recipients = parse_excel_data(patient_data_path)
-    print("Donors: \n" + "-" * 50 + "\n")
-    for donor in donors:
-        print(donor)
+    final_donors, final_recipients = parse_excel_data(patient_data_path)
+    print("\nDonors: \n" + "-" * 50 + "\n")
+    for final_donor in final_donors:
+        print(final_donor)
 
-    print("Recipients: \n" + "-" * 50 + "\n")
-    for recipient in recipients:
-        print(recipient)
+    print("\nRecipients: \n" + "-" * 50 + "\n")
+    for final_recipient in final_recipients:
+        print(final_recipient)

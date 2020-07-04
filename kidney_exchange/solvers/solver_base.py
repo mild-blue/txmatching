@@ -8,4 +8,4 @@ from kidney_exchange.solvers.matching.matching import Matching
 
 class SolverBase:
     def solve(self, donors: List[Donor], recipients: List[Recipient], scorer: ScorerBase) -> Iterator[Matching]:
-        raise NotImplementedError("Has to be overriden")
+        raise NotImplementedError("Has to be overridden")

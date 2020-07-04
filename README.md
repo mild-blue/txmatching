@@ -18,16 +18,16 @@ kidney_exchange
     └── solvers
         ├── solver_base.py
         └── matching
-            ├── cycle.py
+            ├── transplant_cycle.py
             ├── matching.py
-            ├── round.py
-            └── sequence.py
+            ├── transplant_round.py
+            └── transplant_sequence.py
 
 ```
 The optimal matchings are found in several steps.
 1. Define list of donors and recipients 
-    - `Donor(id: str, parameters: PatientParameters)`
-    - `Recipient(id: str, parameters: PatientParameters, related_donors: Donor)`
+    - `Donor(patient_id: str, parameters: PatientParameters)`
+    - `Recipient(patient_id: str, parameters: PatientParameters, related_donors: Donor)`
      
 2. Define scorer, that can optionally have some <b>parameters</b>
     - `scorer = ScorerBase() [HLAAdditiveScorer, ...]`
@@ -40,11 +40,11 @@ lists of donors, recipients using scorer.
     - `Matching(donor_recipient_list: List[Tuple[Donor, Recipient]])`
 
     which consist of several disjoint rounds. 
-    - `Round(donor_recipient_list: List[Tuple[Donor, Recipient]])`  
+    - `TransplantRound(donor_recipient_list: List[Tuple[Donor, Recipient]])`  
     
     These can be either a closed cycle or sequence of transplants
-    - `Cycle[Round]`
-    - `Sequence[Round]`
+    - `TransplantCycle[TransplantRound]`
+    - `TransplantSequence[TransplantRound]`
     
 4. These matchings can then be optionally filtered according to some <b>parameters</b> 
     - `Filter.keep(matching) -> bool`

@@ -10,4 +10,4 @@ class ScorerBase:
         :param matching:
         :return:
         """
-        raise NotImplementedError("Has to be overriden")
+        raise NotImplementedError("Has to be overridden")
