@@ -9,3 +9,6 @@ conda-export:
 # updates environment when some changes were applied to the file
 conda-update:
 	conda env update --file conda.yml  --prune
+
+docker-build:
+	docker build -t datavid19/kidney-exchange .
