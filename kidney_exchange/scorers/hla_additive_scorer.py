@@ -37,7 +37,7 @@ class HLAAdditiveScorer(AdditiveScorer):
             return TRANSPLANT_IMPOSSIBLE
 
         # Recipient can't have antibodies that donor has antigens for
-        # TODO: Ask imunologists what is exactly the bad combination and for what antigens?
+        # TODO: Ask immunologists what is exactly the bad combination and for what antigens?
         for antibody_code in recipient.params._hla_antibodies + recipient.params.hla_antibodies_low_resolution:
             if antibody_code in donor.params._hla_antigens + donor.params.hla_antigens_low_resolution:
                 return TRANSPLANT_IMPOSSIBLE
@@ -45,7 +45,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         # If required, donor must have either better match in blood group or better compatibility index than
         # the donor related to the recipient
         if self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group \
-                and (donor.params.blood_group != recipient.params.blood_group \
+                and (donor.params.blood_group != recipient.params.blood_group
                      and donor_recipient_ci < related_donor_recipient_ci):
             return TRANSPLANT_IMPOSSIBLE
 

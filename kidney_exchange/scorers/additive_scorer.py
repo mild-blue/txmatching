@@ -6,7 +6,7 @@ from kidney_exchange.solvers.matching.matching import Matching
 
 class AdditiveScorer(ScorerBase):
     def score_transplant(self, donor: Donor, recipient: Recipient) -> float:
-        raise NotImplementedError("Has to be overriden")
+        raise NotImplementedError("Has to be overridden")
 
     def score(self, matching: Matching) -> float:
         total_score = 0
