@@ -27,7 +27,6 @@ def compatibility_index(patient_parameters_donor: PatientParameters,
         match_count = 0
         for allele_code in common_allele_codes:
             match_count += min(donor_genotype[allele_code], recipient_genotype[allele_code])
-            # takze tady se pricita bud 1 nebo 2, podle toho jestli maji jednoduchou nebo dvojitou?
 
         match_counts[gene_code] = match_count
 

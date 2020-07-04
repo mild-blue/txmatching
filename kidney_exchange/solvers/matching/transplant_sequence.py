@@ -1,7 +1,7 @@
 from kidney_exchange.solvers.matching.transplant_round import TransplantRound
 
 
-class Sequence(TransplantRound):
+class TransplantSequence(TransplantRound):
     """
     Sequence of consecutive transplants that starts either with
     altruistic donor (i.e. someone who just wants to donate his kidney)
