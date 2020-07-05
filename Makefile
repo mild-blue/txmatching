@@ -22,7 +22,7 @@ local-redeploy:
 
 redeploy:
 	git pull; \
-	docker-compose pull datavid19/kidney-exchange:latest; \
+	docker pull datavid19/kidney-exchange:latest; \
 	docker-compose stop backend || true; \
 	docker-compose rm backend || true; \
 	docker-compose -f docker-compose.prod.yml up -d backend;
