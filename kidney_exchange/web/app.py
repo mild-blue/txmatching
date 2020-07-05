@@ -5,6 +5,7 @@ import sys
 from flask import Flask
 
 from kidney_exchange.database.db import db
+from kidney_exchange.web.version_api import version_api
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
@@ -12,6 +13,9 @@ logging.basicConfig(level=logging.DEBUG,
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+# register blueprints
+app.register_blueprint(version_api)
 
 
 def configure_db():
@@ -35,7 +39,7 @@ with app.app_context():
 @app.route('/')
 def hello():
     logger.info("Hello from the log!")
-    return "Hello World 2\n!"
+    return "Hello World!"
 
 
 if __name__ == '__main__':
