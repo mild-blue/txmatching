@@ -4,6 +4,12 @@ from kidney_exchange.patients.patient_parameters import PatientParameters
 from kidney_exchange.utils.hla_system.get_genotype import get_antigen_genotype
 
 compatibility_gene_codes = ["A", "B", "DR"]
+
+# The following is table of index of incompatibility - the higher IK the higher incompatibility.
+# You calculate it by calculating the number of differences in A, B, DR alleles and look up the corresponding
+# column in the table.
+# For our purposes, we will use the index of compatibility -- see function compatibility_index
+# which is calculated as the number of matches in A, B, DR alleles.
 IK_table = pd.DataFrame({"A":  [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
                          "B":  [0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2],
                          "DR": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],

@@ -15,10 +15,11 @@ class HLAAdditiveScorer(AdditiveScorer):
         :param enforce_same_blood_group:
             True: donor has to have the same blood group as recipient
             False: donor just needs to have blood group that is in recipients acceptable blood groups
-        :param minimum_compatibility_index: Minimum index of compatibility that is required for a transplant
-            match in blood group than (the best of) his original relative(s)
+        :param minimum_compatibility_index: Minimum index of compatibility that is required for a transplant to be possible
         :param require_new_donor_having_better_match_in_compatibility_index: New donor for recipient needs to have
             a better match in the compatibility index than (the best of) his original relative(s)
+        :param require_new_donor_having_better_match_in_compatibility_index_or_blood_group: New donor for recipient needs
+            to have a better match in compatibility index or in blood group than (the best of) his original relative(s)
         :param use_binary_scoring: If all the conditions above are satisfied, then use just 1 for possible transplant
             and -inf for impossible
         """
