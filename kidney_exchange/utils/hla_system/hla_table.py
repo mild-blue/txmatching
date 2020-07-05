@@ -21,6 +21,14 @@ HLA_B = ["B7", "B703", "B8", "B13", "B18", "B27", "B2708", "B35", "B37",
 HLA_DR = ["DR1", "DR103", "DR4", "DR7", "DR8", "DR9", "DR10", "DR11", "DR12",
           "DR13", "DR14", "DR1403", "DR1404", "DR15", "DR16", "DR17", "DR18"]
 
+HLA_DRDR = ["DR51", "DR52", "DR53"]
+
+HLA_DQ = ["DQ2", "DQ4", "DQ5", "DQ6", "DQ7", "DQ8", "DQ9"]
+
+HLA_BW = ["Bw4", "Bw6"]
+
+HLA_CW = ["Cw1", "Cw2", "Cw4", "Cw5", "Cw6", "Cw7", "Cw8", "Cw9", "Cw10"]
+
 high_resolution_to_low_resolution = {"A23": "A9",
                                      "A24": "A9",
                                      "A25": "A10",
