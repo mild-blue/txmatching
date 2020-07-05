@@ -35,7 +35,7 @@ with app.app_context():
 @app.route('/')
 def hello():
     logger.info("Hello from the log!")
-    return "Hello World!"
+    return "Hello World 2\n!"
 
 
 if __name__ == '__main__':
