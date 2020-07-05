@@ -29,3 +29,6 @@ redeploy:
 	docker-compose -f docker-compose.prod.yml stop backend || true; \
 	docker-compose -f docker-compose.prod.yml rm backend || true; \
 	docker-compose -f docker-compose.prod.yml up -d backend;
+
+logs:
+	docker-compose -f docker-compose.prod.yml logs --follow backend
