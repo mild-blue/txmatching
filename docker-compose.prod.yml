@@ -5,9 +5,7 @@ services:
     env_file:
       - .env.prod
     ports:
-      - 8080:9090
-    networks:
-      - kidney-exchange-net
+      - 9090:8080
     depends_on:
       - db
 
@@ -16,15 +14,9 @@ services:
     env_file:
       - .env.prod
     ports:
-      - 5432:9092
-    networks:
-      - kidney-exchange-net
+      - 9092:5432
     volumes:
       - kidney-exchange-postgres-prod:/var/lib/postgresql/data/
 
 volumes:
   kidney-exchange-postgres-prod:
-
-networks:
-  kidney-exchange-net:
-    driver: bridge
