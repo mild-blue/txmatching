@@ -20,6 +20,9 @@ local-redeploy:
 	docker-compose rm backend || true; \
 	docker-compose -f docker-compose.prod.yml up -d --build backend;
 
+deploy:
+	docker-compose up -d
+
 redeploy:
 	git pull; \
 	docker pull datavid19/kidney-exchange:latest; \
