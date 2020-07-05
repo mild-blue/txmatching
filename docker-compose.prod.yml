@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  backend:
+    image: datavid19/kidney-exchange
+    env_file:
+      - .env.prod
+    ports:
+      - 8080:9090
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12.2
+    env_file:
+      - .env.prod
+    ports:
+      - 5432:9092
+    volumes:
+      - kidney-exchange-postgres-prod:/var/lib/postgresql/data/
+
+volumes:
+  kidney-exchange-postgres-prod:
