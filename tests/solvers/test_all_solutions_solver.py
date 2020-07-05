@@ -10,7 +10,7 @@ from kidney_exchange.utils.get_absolute_path import get_absolute_path
 
 class TestAllSolutionsSolver(unittest.TestCase):
     def setUp(self) -> None:
-        sample_score_matrix_path = get_absolute_path("/tests/resources/sample_score_matrix.txt")
+        sample_score_matrix_path = get_absolute_path("/tests/resources/sample_score_matrix.json")
         with open(sample_score_matrix_path, "r") as sample_score_matrix_file:
             self._score_matrix = json.load(sample_score_matrix_file)
 
@@ -18,6 +18,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
         self._expected_num_solutions = 1886
 
     def test_solve(self):
+        # TODO: Add more specific test
         scorer = TabularScorer(score_matrix=self._score_matrix)
         solver = AllSolutionsSolver()
         all_solutions = list(solver._solve(score_matrix=np.array(self._score_matrix)))
