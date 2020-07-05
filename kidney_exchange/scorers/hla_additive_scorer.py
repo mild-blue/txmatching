@@ -47,7 +47,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         # the donor related to the recipient
         if self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group \
                 and (donor.params.blood_group != recipient.params.blood_group
-                     and donor_recipient_ci < related_donor_recipient_ci):
+                     and donor_recipient_ci <= related_donor_recipient_ci):
             return TRANSPLANT_IMPOSSIBLE
 
         # If required, the donor must have the same blood group as recipient
@@ -57,7 +57,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         # If required, the compatibility index between donor and recipient must be higher than
         # between recipient and the donor related to him
         if self._require_new_donor_having_better_match_in_compatibility_index \
-                and donor_recipient_ci < related_donor_recipient_ci:
+                and donor_recipient_ci <= related_donor_recipient_ci:
             return TRANSPLANT_IMPOSSIBLE
 
         # The compatibility index must be higher than the minimum required
