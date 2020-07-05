@@ -1,18 +1,15 @@
+import pandas as pd
+
 from kidney_exchange.patients.patient_parameters import PatientParameters
 from kidney_exchange.utils.hla_system.get_genotype import get_antigen_genotype
 
 compatibility_gene_codes = ["A", "B", "DR"]
-# TODO: ask what exact antigens should I count in the matches - for example what about DR52, DR53
-_compatibility_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
-# TODO: refactor with dignity
-_A_matches_count = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]
-_B_matches_count = [0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2]
-_DR_matches_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-
-_ABDR_matches_count_to_compatibility_index = {
-    (A, B, DR): CI for A, B, DR, CI in
-    zip(_A_matches_count, _B_matches_count, _DR_matches_count, _compatibility_index)
-}
+IK_table = pd.DataFrame({"A":  [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
+                         "B":  [0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2],
+                         "DR": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                         "IK": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                                24, 25, 26]})
+IK_table.set_index(keys=compatibility_gene_codes, inplace=True, verify_integrity=True)
 
 
 def compatibility_index(patient_parameters_donor: PatientParameters,
@@ -31,4 +28,4 @@ def compatibility_index(patient_parameters_donor: PatientParameters,
         match_counts[gene_code] = match_count
 
     match_counts_tuple = tuple([match_counts[gene_code] for gene_code in compatibility_gene_codes])
-    return _ABDR_matches_count_to_compatibility_index[match_counts_tuple]
+    return IK_table.loc[match_counts_tuple, "IK"]
