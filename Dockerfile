@@ -12,6 +12,11 @@ RUN conda init bash
 # copy rest of the app
 COPY kidney_exchange ./kidney_exchange
 
+# create version file
+ARG release_version=development-docker
+ENV RELEASE_FILE_PATH=./release.txt
+RUN echo $release_version > $RELEASE_FILE_PATH
+
 # start the app - one must initialize shell beforehand
 CMD . ~/.bashrc && \
     conda activate kidney-exchange && \
