@@ -7,21 +7,11 @@ import pandas as pd
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.patient_parameters import PatientParameters
 from kidney_exchange.patients.recipient import Recipient
+from kidney_exchange.utils.hla_system.hla_table import HLA_A, HLA_B, HLA_CW, HLA_DR, HLA_DQ
 
 _valid_blood_groups = ["A", "B", "0", "AB"]
 
-_valid_allele_codes = ["A1", "A2", "A203", "A210", "A3", "A11", "A23", "A24", "A2403",
-                       "A25", "A26", "A29", "A30", "A31", "A32", "A33", "A34", "A36", 
-                       "A43", "A66", "A68", "A69", "A74", "A80", "B7", "B703", "B8", 
-                       "B13", "B18", "B27", "B2708", "B35", "B37","B38", "B39", "B3901",
-                       "B3902", "B4005", "B41", "B42", "B44","B45", "B46", "B47", "B48",
-                       "B49", "B50", "B51", "B5102", "B5103","B52", "B53", "B54", "B55",
-                       "B56", "B57", "B58", "B59", "B60","B61", "B62", "B63", "B64", "B65",
-                       "B67", "B71", "B72", "B73", "B75", "B76", "B77", "B78", "B81", "B82",
-                       "Cw1", "Cw2", "Cw4", "Cw5", "Cw6", "Cw7", "Cw8", "Cw9", "Cw10",
-                       "DR1", "DR103", "DR4", "DR7", "DR8", "DR9", "DR10", "DR11", "DR12",
-                       "DR13", "DR14", "DR1403", "DR1404", "DR15", "DR16", "DR17", "DR18",
-                       "DR51", "DR52", "DR53", "DQ2", "DQ4", "DQ5", "DQ6", "DQ7", "DQ8", "DQ9"]
+_valid_allele_codes = HLA_A + HLA_B + HLA_CW + HLA_DQ + HLA_DR
 
 def _parse_blood_groups(blood_groups_str: str) -> List[str]:
     blood_groups_str = str(blood_groups_str).strip()
@@ -40,10 +30,10 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
     allele_codes = re.split("[, ()]+", hla_allele_str)
     allele_codes = [code for code in allele_codes if len(code) > 0]
     checked_allele_codes = [code for code in allele_codes if code in _valid_allele_codes]
-    allele_codes_difference = [code for code in allele_codes if code not in checked_allele_codes]
     if len(checked_allele_codes) != len(allele_codes):
+        unknown_allele_codes= [code for code in allele_codes if code not in checked_allele_codes]
         print(f"[WARN] Encoutered invalid code in allele codes string {hla_allele_str}\n")
-        print(f"Following codes are not in the anitgen codes table: \n {', '.join(allele_codes_difference)}")
+        print(f"Following codes are not in the anitgen codes table: \n {', '.join(unknown_allele_codes)}")
     return allele_codes
 
 
