@@ -12,3 +12,17 @@ conda-update:
 
 docker-build:
 	docker build -t datavid19/kidney-exchange .
+
+# Depoyment
+local-redeploy:
+	git pull; \
+	docker-compose stop backend || true; \
+	docker-compose rm backend || true; \
+	docker-compose -f docker-compose.prod.yml up -d --build backend;
+
+redeploy:
+	git pull; \
+	docker-compose pull datavid19/kidney-exchange:latest; \
+	docker-compose stop backend || true; \
+	docker-compose rm backend || true; \
+	docker-compose -f docker-compose.prod.yml up -d backend;
