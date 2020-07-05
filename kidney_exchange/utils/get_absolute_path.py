@@ -1,4 +1,5 @@
 import os
+import sys
 
 
 def get_absolute_path(project_relative_path: str) -> str:
@@ -7,6 +8,9 @@ def get_absolute_path(project_relative_path: str) -> str:
     :param project_relative_path: e.g. "/kidney_exchange/config/configuration.py"
     :return:
     """
+    if sys.platform != "linux":
+        raise AssertionError(f"Not implemented for operating system: {sys.platform}")
+
     path_parts = os.path.abspath(__file__).split("/")
     directory_index = path_parts.index("kidney-exchange")
     project_path = "/".join(path_parts[:(directory_index + 1)])
@@ -17,6 +21,6 @@ def get_absolute_path(project_relative_path: str) -> str:
 
 
 if __name__ == "__main__":
-    test_file_path = "/tests/resources/sample_score_matrix.txt"
+    test_file_path = "/tests/resources/sample_score_matrix.json"
     abs_path = get_absolute_path(test_file_path)
     print(abs_path)
