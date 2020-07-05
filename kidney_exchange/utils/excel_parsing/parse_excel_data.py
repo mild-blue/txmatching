@@ -34,6 +34,7 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
         unknown_allele_codes= [code for code in allele_codes if code not in checked_allele_codes]
         print(f"[WARN] Encountered invalid code in allele codes string {hla_allele_str}\n")
         print(f"Following codes are not in the antigen codes table: \n {', '.join(unknown_allele_codes)}")
+        
     return allele_codes
 
 
