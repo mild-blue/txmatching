@@ -8,10 +8,11 @@ from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.patient_parameters import PatientParameters
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.utils.hla_system.hla_table import HLA_A, HLA_B, HLA_BW, HLA_CW, HLA_DR, HLA_DRDR, HLA_DQ 
+from kidney_exchange.utils.hla_system.hla_table import HLA_A_LOW, HLA_B_LOW, HLA_CW_LOW, HLA_DQ_LOW, HLA_DR_LOW
 
 _valid_blood_groups = ["A", "B", "0", "AB"]
 
-_valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DRDR
+_valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DRDR + HLA_A_LOW + HLA_B_LOW + HLA_CW_LOW + HLA_DQ_LOW + HLA_DR_LOW
 
 def _parse_blood_groups(blood_groups_str: str) -> List[str]:
     blood_groups_str = str(blood_groups_str).strip()
@@ -34,7 +35,7 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
         unknown_allele_codes= [code for code in allele_codes if code not in checked_allele_codes]
         print(f"[WARN] Encountered invalid code in allele codes string {hla_allele_str}\n")
         print(f"Following codes are not in the antigen codes table: \n {', '.join(unknown_allele_codes)}")
-        
+
     return allele_codes
 
 
