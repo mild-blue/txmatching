@@ -9,7 +9,7 @@ def get_absolute_path(project_relative_path: str) -> str:
     :return:
     """
     if sys.platform != "linux":
-        raise AssertionError(f"Not implemented for operating system: {sys.platform}")
+        raise NotImplementedError(f"Not implemented for operating system: {sys.platform}")
 
     path_parts = os.path.abspath(__file__).split("/")
     directory_index = path_parts.index("kidney-exchange")
