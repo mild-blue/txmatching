@@ -40,4 +40,4 @@ jobs:
         env:
           AUTH: ${{ secrets.DEPLOYMENT_TOKEN }}
         run: |
-          curl 104.248.40.40:9091/redeploy --header "auth: $AUTH"
+          curl 46.101.71.199:9091/redeploy --header "auth: $AUTH"
