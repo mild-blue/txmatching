@@ -6,12 +6,12 @@ from kidney_exchange.solvers.matching.matching import Matching
 
 
 class FilterDefault(FilterBase):
-    def __init__(self, max_cycle_lenght: int = None,
-                 max_sequence_lenght: int = None,
+    def __init__(self, max_cycle_length: int = None,
+                 max_sequence_length: int = None,
                  max_number_of_distinct_countries_in_round: int = None,
                  required_patients: List[Patient] = None):
-        self._max_cycle_length = max_cycle_lenght
-        self._max_sequence_length = max_sequence_lenght
+        self._max_cycle_length = max_cycle_length
+        self._max_sequence_length = max_sequence_length
         self._max_number_of_distinct_countries_in_round = max_number_of_distinct_countries_in_round
         self._required_patients = required_patients
 
