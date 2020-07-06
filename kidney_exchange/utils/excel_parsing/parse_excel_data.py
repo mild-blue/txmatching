@@ -33,8 +33,10 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
     checked_allele_codes = [code for code in allele_codes if code in _valid_allele_codes]
     if len(checked_allele_codes) != len(allele_codes):
         unknown_allele_codes= [code for code in allele_codes if code not in checked_allele_codes]
-        print(f"[WARN] Encountered invalid code in allele codes string {hla_allele_str}\n")
+        print(50*"-")
+        print(f"[WARN] Encountered invalid code in allele codes string: \n {hla_allele_str}\n")
         print(f"Following codes are not in the antigen codes table: \n {', '.join(unknown_allele_codes)}")
+        print(50*"-")
 
     return allele_codes
 
@@ -90,7 +92,6 @@ def parse_excel_data(file_path: str) -> Tuple[List[Donor], List[Recipient]]:
 
 if __name__ == "__main__":
     patient_data_path = os.getenv("PATIENT_DATA_PATH")
-    final_donors, final_recipients = parse_excel_data(patient_data_path)
     print("\nDonors: \n" + "-" * 50 + "\n")
     for final_donor in final_donors:
         print(final_donor)
