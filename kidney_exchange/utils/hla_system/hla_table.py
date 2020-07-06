@@ -19,7 +19,7 @@ HLA_B = ["B7", "B703", "B8", "B13", "B18", "B27", "B2708", "B35", "B37",
          "B61", "B62", "B63", "B64", "B65", "B67", "B71", "B72", "B73",
          "B75", "B76", "B77", "B78", "B81", "B82"]
 
-HLA_B_LOW = ["B5", "B12", "B14", "B15", "B16", "B17", "B22", "B70"]
+HLA_B_LOW = ["B5", "B12", "B14", "B15", "B16", "B17", "B22", "B40", "B70"]
 
 HLA_BW = ["Bw4", "Bw6"]
 
@@ -38,6 +38,13 @@ HLA_DQ = ["DQ2", "DQ4", "DQ5", "DQ6", "DQ7", "DQ8", "DQ9"]
 
 HLA_DQ_LOW = ["DQ1", "DQ3"]
 
+#List HLA_UNKNOWN_CODES contains antigen codes which are not in previous^^ (given) table 
+# TODO: Consult these antigen codes with imunologists
+
+HLA_UNKNOWN_CODES = ['Cw18', 'Cw17', 'Cw16', 'DP3', 'DP19', 'DP28', 'DP5',
+                     'DP15', 'DP10', 'DP17', 'Cw12', 'DP9', 'DP23', 'DP13',
+                     'DP18', 'DP4', 'DP20', 'DP28;', 'DP11', 'DP14', 'DP1',
+                     'DP2', 'C12', 'Cw14', 'DP6', 'Cw15']
 
 high_resolution_to_low_resolution = {"A23": "A9",
                                      "A24": "A9",
