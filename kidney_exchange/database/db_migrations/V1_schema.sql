@@ -35,6 +35,18 @@ VALUES ('VIEWER'),
     ('EDITOR'),
     ('ADMIN');
 
+CREATE TABLE blood (
+    id         BIGSERIAL  NOT NULL,
+    blood_type BLOOD_TYPE NOT NULL,
+    CONSTRAINT pkey_blood_id PRIMARY KEY (id)
+);
+
+INSERT INTO blood (blood_type)
+VALUES ('A'),
+    ('B'),
+    ('AB'),
+    ('0');
+
 CREATE TABLE app_user (
     id        BIGSERIAL   NOT NULL,
     email     VARCHAR     NOT NULL, -- serves as username
@@ -72,6 +84,19 @@ CREATE TABLE patient (
     updated          TIMESTAMPTZ  NOT NULL,
     deleted          TIMESTAMPTZ,
     CONSTRAINT pkey_patient_id PRIMARY KEY (id)
+);
+
+CREATE TABLE patient_acceptable_blood (
+    id         BIGSERIAL   NOT NULL,
+    patient_id BIGINT      NOT NULL,
+    blood_id   BIGINT      NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    deleted_at TIMESTAMPTZ,
+    CONSTRAINT pkey_patient_acceptable_blood_id PRIMARY KEY (id),
+    CONSTRAINT uq_patient_acceptable_blood_patient_id_blood_id UNIQUE (patient_id, blood_id),
+    CONSTRAINT fkey_patient_acceptable_blood_patient_id FOREIGN KEY (patient_id) REFERENCES patient(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fkey_patient_acceptable_blood_blood_id FOREIGN KEY (blood_id) REFERENCES blood(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE patient_pair (
