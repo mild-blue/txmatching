@@ -8,10 +8,14 @@ def get_absolute_path(project_relative_path: str) -> str:
     :param project_relative_path: e.g. "/kidney_exchange/config/configuration.py"
     :return:
     """
-    if sys.platform != "linux":
+    if sys.platform == "linux":
+        separator = "/"
+    elif sys.platform == "win32":
+        separator = "\\"
+    else:
         raise NotImplementedError(f"Not implemented for operating system: {sys.platform}")
 
-    path_parts = os.path.abspath(__file__).split("/")
+    path_parts = os.path.abspath(__file__).split(separator)
     directory_index = path_parts.index("kidney-exchange")
     project_path = "/".join(path_parts[:(directory_index + 1)])
     if not project_relative_path.startswith("/"):
