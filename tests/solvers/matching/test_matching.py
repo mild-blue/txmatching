@@ -1,54 +1,81 @@
+from typing import List, Tuple, Set, Iterable, FrozenSet
 from unittest import TestCase
 
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.solvers.matching.matching import Matching
+from kidney_exchange.solvers.matching.transplant_round import TransplantRound
 
 
-def _create_recipient(id: str, donor: Donor):
-    return Recipient(id, related_donors=donor)
+def _create_recipient(patient_id: str, donor: Donor) -> Recipient:
+    return Recipient(patient_id, related_donors=donor)
+
+
+def _inner_elements_to_frozenset(iterable: Iterable) -> Set[FrozenSet]:
+    return {frozenset(item) for item in iterable}
 
 
 class TestMatching(TestCase):
-    d1 = Donor("d1")
-    d2 = Donor("d2")
-    d3 = Donor("d3")
-    d4 = Donor("d4")
-    d5 = Donor("d5")
-    d6 = Donor("d6")
-    d7 = Donor("d7")
-    d8 = Donor("d8")
+    def setUp(self) -> None:
+        self._donors = [Donor(f"D-{donor_index}") for donor_index in range(10)]
+        self._recipients = [_create_recipient(f"R-{donor_index}", donor)
+                            for donor_index, donor in enumerate(self._donors)]
 
-    r1 = _create_recipient("r1", d1)
-    r2 = _create_recipient("r2", d2)
-    r3 = _create_recipient("r3", d3)
-    r4 = _create_recipient("r4", d4)
-    r5 = _create_recipient("r5", d5)
-    r6 = _create_recipient("r6", d6)
-    r7 = _create_recipient("r7", d7)
-    r8 = _create_recipient("r8", d8)
-    drl = [
-        (d1, r2),
-        (d2, r3),
-        (d3, r4),
-        (d4, r1),
-        (d5, r6),
-        (d6, r7),
-        (d8, r8)
-    ]
-    rnd_shuffle = [4, 1, 0, 5, 6, 2, 3]
+        # transplant_indices - (donor_index, recipient_index)
+        # expected_cycles - each cycle represented by a set of (donor_index, recipient_index)
+        # expected_sequences - each sequence represented by a set of (donor_index, recipient_index)
+        self._transplant_indices_1 = [(4, 1), (2, 3), (1, 2), (5, 6), (3, 4), (6, 7)]
+        self._expected_cycles_1 = [{(1, 2), (2, 3), (3, 4), (4, 1)}]
+        self._expected_sequences_1 = [{(5, 6), (6, 7)}]
+
+        self._transplant_indices_2 = [(6, 7), (2, 3), (1, 2), (3, 4), (4, 5), (5, 6)]
+        self._expected_cycles_2 = []
+        self._expected_sequences_2 = [{(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7)}]
+
+        self._transplant_indices_3 = [(1, 4), (2, 3), (4, 1), (3, 2), (8, 9)]
+        self._expected_cycles_3 = [{(4, 1), (1, 4)}, {(2, 3), (3, 2)}]
+        self._expected_sequences_3 = [{(8, 9)}]
+
+        self._transplant_indices_4 = [(2, 3), (6, 4), (3, 1), (4, 5), (5, 6), (1, 2), (7, 8), (8, 7)]
+        self._expected_cycles_4 = [{(7, 8), (8, 7)}, {(1, 2), (2, 3), (3, 1)}, {(4, 5), (5, 6), (6, 4)}]
+        self._expected_sequences_4 = []
+
+        self._transplant_indices_5 = [(4, 1), (5, 2), (6, 3), (3, 4), (8, 9), (2, 7)]
+        self._expected_cycles_5 = []
+        self._expected_sequences_5 = [{(5, 2), (2, 7)}, {(6, 3), (3, 4), (4, 1)}, {(8, 9)}]
+
+        self._test_cases = [(self._transplant_indices_1, self._expected_cycles_1, self._expected_sequences_1),
+                            (self._transplant_indices_2, self._expected_cycles_2, self._expected_sequences_2),
+                            (self._transplant_indices_3, self._expected_cycles_3, self._expected_sequences_3),
+                            (self._transplant_indices_4, self._expected_cycles_4, self._expected_sequences_4),
+                            (self._transplant_indices_5, self._expected_cycles_5, self._expected_sequences_5)]
+
+        self._test_cases = [(transplant_indices,
+                             _inner_elements_to_frozenset(expected_cycles),
+                             _inner_elements_to_frozenset(expected_sequences))
+                            for transplant_indices, expected_cycles, expected_sequences in self._test_cases]
+
+    def _make_matching_from_donor_recipient_indices(self, donor_recipient_indices: List[Tuple[int, int]]) \
+            -> List[Tuple[Donor, Recipient]]:
+        donor_recipient_list = [(self._donors[donor_index], self._recipients[recipient_index])
+                                for donor_index, recipient_index in donor_recipient_indices]
+        return Matching(donor_recipient_list)
+
+    def _transplant_round_to_indices(self, transplant_round: TransplantRound) -> Set[Tuple[int, int]]:
+        donor_recipient_indices = {(self._donors.index(donor), self._recipients.index(recipient))
+                                   for donor, recipient in transplant_round.donor_recipient_list}
+        return frozenset(donor_recipient_indices)
 
     def test_get_cycles(self):
-        drl_shuffled = [self.drl[i] for i in self.rnd_shuffle]
-        test_matching = Matching(donor_recipient_list=drl_shuffled)
-        cycles = test_matching.get_cycles()
-        cycles_ids = {tuple((d.patient_id, r.patient_id) for d, r in cycle._donor_recipient_list) for cycle in cycles}
-        exp = {(('d8', 'r8'),), (('d2', 'r3'), ('d3', 'r4'), ('d4', 'r1'), ('d1', 'r2'))}
-        self.assertEqual(exp, cycles_ids)
+        for transplant_indices, expected_cycles, _ in self._test_cases:
+            matching = self._make_matching_from_donor_recipient_indices(transplant_indices)
+            cycles = matching.get_cycles()
+            index_cycles = {self._transplant_round_to_indices(cycle) for cycle in cycles}
+            self.assertEqual(index_cycles, expected_cycles)
 
     def test_get_sequences(self):
-        drl_shuffled = [self.drl[i] for i in self.rnd_shuffle]
-        test_matching = Matching(donor_recipient_list=drl_shuffled)
-        seqs = test_matching.get_sequences()
-        seq_ids = {tuple((d.patient_id, r.patient_id) for d, r in seq._donor_recipient_list) for seq in seqs}
-        self.assertEqual(seq_ids, {(('d5', 'r6'), ('d6', 'r7'))})
+        for transplant_indices, _, expected_sequences in self._test_cases:
+            matching = self._make_matching_from_donor_recipient_indices(transplant_indices)
+            sequences = matching.get_sequences()
+            index_sequences = {self._transplant_round_to_indices(cycle) for cycle in sequences}
+            self.assertEqual(index_sequences, expected_sequences)

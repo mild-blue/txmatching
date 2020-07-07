@@ -35,3 +35,7 @@ class TransplantRound:
                 return True
 
         return False
+
+    @property
+    def donor_recipient_list(self) -> List[Tuple[Donor, Recipient]]:
+        return self._donor_recipient_list
