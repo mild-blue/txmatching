@@ -50,15 +50,12 @@ class Matching:
 
         while len(unprocessed_vertices) > 0:
             start_vertex = unprocessed_vertices.pop()
-            next_vertex = edges.get(start_vertex)
+            next_vertex = edges.get(start_vertex, None)
             vertex_round = [start_vertex]
-            uprocessed_for_this_round = set(vertices)
             while next_vertex is not None and next_vertex != start_vertex:
                 vertex_round.append(next_vertex)
-                uprocessed_for_this_round.remove(next_vertex)
+                unprocessed_vertices.remove(next_vertex)
                 next_vertex = edges.get(next_vertex)
-                if next_vertex not in uprocessed_for_this_round:
-                    next_vertex = None
 
             if next_vertex == start_vertex:
                 vertex_cycles.add(tuple(vertex_round))
@@ -66,7 +63,7 @@ class Matching:
                 previous_vertex = reverse_edges.get(start_vertex)
                 while previous_vertex is not None:
                     vertex_round.insert(0, previous_vertex)
-                    uprocessed_for_this_round.remove(previous_vertex)
+                    unprocessed_vertices.remove(previous_vertex)
                     previous_vertex = reverse_edges.get(previous_vertex)
                 vertex_sequences.add(tuple(vertex_round))
             else:
