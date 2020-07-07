@@ -2,14 +2,6 @@ import json
 from json import JSONEncoder
 from typing import List
 
-from kidney_exchange.filters.filter_base import FilterBase
-from kidney_exchange.filters.filter_default import FilterDefault
-from kidney_exchange.patients.patient import Patient
-from kidney_exchange.scorers.hla_additive_scorer import HLAAdditiveScorer
-from kidney_exchange.scorers.scorer_base import ScorerBase
-from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
-from kidney_exchange.solvers.solver_base import SolverBase
-
 
 class ConfigEncoder(JSONEncoder):
     def default(self, o):
@@ -20,8 +12,8 @@ _config_encoder = ConfigEncoder()
 
 
 class Configuration:
-    def __init__(self, scorer_constructor_name: str = HLAAdditiveScorer.__name__,
-                 solver_constructor_name: str = AllSolutionsSolver.__name__,
+    def __init__(self, scorer_constructor_name: str = "HLAAdditiveScorer",
+                 solver_constructor_name: str = "AllSolutionsSolver",
                  enforce_same_blood_group: bool = True,
                  minimum_compatibility_index: float = 0.0,
                  require_new_donor_having_better_match_in_compatibility_index: bool = True,
@@ -43,33 +35,49 @@ class Configuration:
         self._max_number_of_distinct_countries_in_round = max_number_of_distinct_countries_in_round
         self._required_patient_ids = required_patient_ids or []
 
-    def create_scorer(self) -> ScorerBase:
-        if self._scorer_constructor_name == HLAAdditiveScorer.__name__:
-            scorer = HLAAdditiveScorer(enforce_same_blood_group=self._enforce_same_blood_group,
-                                       minimum_compatibility_index=self._minimum_compatibility_index,
-                                       require_new_donor_having_better_match_in_compatibility_index=self._require_new_donor_having_better_match_in_compatibility_index,
-                                       require_new_donor_having_better_match_in_compatibility_index_or_blood_group=self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group,
-                                       use_binary_scoring=self._use_binary_scoring)
-        else:
-            raise NotImplementedError(f"Scorer {self._scorer_constructor_name} not supported yet")
+    @property
+    def solver_constructor_name(self):
+        return self._solver_constructor_name
 
-        return scorer
+    @property
+    def scorer_constructor_name(self):
+        return self._scorer_constructor_name
 
-    def create_solver(self) -> SolverBase:
-        if self._solver_constructor_name == AllSolutionsSolver.__name__:
-            solver = AllSolutionsSolver()
-        else:
-            raise NotImplementedError(f"Solver {self._solver_constructor_name} not supported yet")
+    @property
+    def enforce_same_blood_group(self):
+        return self._enforce_same_blood_group
 
-        return solver
+    @property
+    def minimum_compatibility_index(self):
+        return self._minimum_compatibility_index
 
-    def create_filter(self) -> FilterBase:
-        transplant_filter = FilterDefault(max_cycle_lenght=self._max_cycle_length,
-                                          max_sequence_lenght=self._max_sequence_length,
-                                          max_number_of_distinct_countries_in_round=self._max_number_of_distinct_countries_in_round,
-                                          required_patients=[Patient(patient_id) for patient_id in
-                                                             self._required_patient_ids])
-        return transplant_filter
+    @property
+    def require_new_donor_having_better_match_in_compatibility_index(self):
+        return self._require_new_donor_having_better_match_in_compatibility_index
+
+    @property
+    def require_new_donor_having_better_match_in_compatibility_index_or_blood_group(self):
+        return self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group
+
+    @property
+    def use_binary_scoring(self):
+        return self._use_binary_scoring
+
+    @property
+    def max_cycle_length(self):
+        return self._max_cycle_length
+
+    @property
+    def max_sequence_length(self):
+        return self._max_sequence_length
+
+    @property
+    def max_number_of_distinct_countries_in_round(self):
+        return self._max_number_of_distinct_countries_in_round
+
+    @property
+    def required_patient_ids(self):
+        return self._required_patient_ids
 
     def serialize(self) -> str:
         serialized_config = _config_encoder.encode(self)

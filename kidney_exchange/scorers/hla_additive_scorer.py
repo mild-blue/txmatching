@@ -1,3 +1,4 @@
+from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.additive_scorer import AdditiveScorer
@@ -68,3 +69,13 @@ class HLAAdditiveScorer(AdditiveScorer):
             return 1.0
         else:
             return donor_recipient_ci
+
+    @classmethod
+    def from_config(cls, configuration: Configuration) -> "HLAAdditiveScorer":
+        hla_additive_scorer = HLAAdditiveScorer(enforce_same_blood_group=configuration.enforce_same_blood_group,
+                                                minimum_compatibility_index=configuration.minimum_compatibility_index,
+                                                require_new_donor_having_better_match_in_compatibility_index=configuration.require_new_donor_having_better_match_in_compatibility_index,
+                                                require_new_donor_having_better_match_in_compatibility_index_or_blood_group=configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group,
+                                                use_binary_scoring=configuration.use_binary_scoring)
+
+        return hla_additive_scorer

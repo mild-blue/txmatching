@@ -4,6 +4,7 @@ import numpy as np
 from graph_tool import topology
 from graph_tool.all import Graph
 
+from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.additive_scorer import AdditiveScorer
@@ -219,6 +220,10 @@ class AllSolutionsSolver(SolverBase):
             paths.extend(paths_starting_with_target)
 
         return paths
+
+    @classmethod
+    def from_config(cls, configuration: Configuration) -> "AllSolutionsSolver":
+        return AllSolutionsSolver()
 
 
 if __name__ == "__main__":
