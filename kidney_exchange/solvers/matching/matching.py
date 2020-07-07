@@ -50,7 +50,7 @@ class Matching:
 
         while len(unprocessed_vertices) > 0:
             start_vertex = unprocessed_vertices.pop()
-            next_vertex = edges.get(start_vertex, None)
+            next_vertex = edges.get(start_vertex)
             vertex_round = [start_vertex]
             while next_vertex is not None and next_vertex != start_vertex:
                 vertex_round.append(next_vertex)
