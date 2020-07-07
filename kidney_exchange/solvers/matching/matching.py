@@ -52,26 +52,27 @@ class Matching:
             start_vertex = unprocessed_vertices.pop()
             next_vertex = edges.get(start_vertex)
             vertex_round = [start_vertex]
+            uprocessed_for_this_round = set(vertices)
             while next_vertex is not None and next_vertex != start_vertex:
                 vertex_round.append(next_vertex)
-                unprocessed_vertices.remove(next_vertex)
+                uprocessed_for_this_round.remove(next_vertex)
                 next_vertex = edges.get(next_vertex)
+                if next_vertex not in uprocessed_for_this_round:
+                    next_vertex = None
 
             if next_vertex == start_vertex:
-                vertex_cycles.add(vertex_round)
+                vertex_cycles.add(tuple(vertex_round))
             elif next_vertex is None:
                 previous_vertex = reverse_edges.get(start_vertex)
                 while previous_vertex is not None:
                     vertex_round.insert(0, previous_vertex)
-                    unprocessed_vertices.remove(previous_vertex)
+                    uprocessed_for_this_round.remove(previous_vertex)
                     previous_vertex = reverse_edges.get(previous_vertex)
-                vertex_sequences.add(vertex_round)
+                vertex_sequences.add(tuple(vertex_round))
             else:
                 raise AssertionError("Next vertex is not None nor equal to start vertex")
 
-        self._cycles = [[(donors[index_donor], recipients[index_recipient])
-                         for index_donor, index_recipient in cycle]
-                        for cycle in vertex_cycles]
-        self._sequences = [[(donors[index_donor], recipients[index_recipient])
-                            for index_donor, index_recipient in sequence]
-                           for sequence in vertex_sequences]
+        self._cycles = set(TransplantCycle([self._donor_recipient_list[i] for i in cycle])
+                           for cycle in vertex_cycles)
+        self._sequences = set(TransplantSequence([self._donor_recipient_list[i] for i in seq])
+                              for seq in vertex_sequences)
