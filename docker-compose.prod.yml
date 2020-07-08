@@ -2,6 +2,9 @@ version: '3.7'
 services:
   backend:
     image: datavid19/kidney-exchange
+    deploy:
+      restart_policy:
+        condition: always
     env_file:
       - .env.prod
     ports:
@@ -11,6 +14,9 @@ services:
 
   db:
     image: postgres:12.2
+    deploy:
+      restart_policy:
+        condition: always
     env_file:
       - .env.prod
     ports:
