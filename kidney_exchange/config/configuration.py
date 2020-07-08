@@ -23,8 +23,8 @@ class Configuration:
                  max_sequence_length: int = 5,
                  max_number_of_distinct_countries_in_round: int = 2,
                  required_patient_ids: List[str] = None):
-        self._solver_constructor_name = solver_constructor_name
         self._scorer_constructor_name = scorer_constructor_name
+        self._solver_constructor_name = solver_constructor_name
         self._enforce_same_blood_group = enforce_same_blood_group
         self._minimum_compatibility_index = minimum_compatibility_index
         self._require_new_donor_having_better_match_in_compatibility_index = require_new_donor_having_better_match_in_compatibility_index

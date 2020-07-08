@@ -77,5 +77,5 @@ class TestMatching(TestCase):
         for transplant_indices, _, expected_sequences in self._test_cases:
             matching = self._make_matching_from_donor_recipient_indices(transplant_indices)
             sequences = matching.get_sequences()
-            index_sequences = {self._transplant_round_to_indices(cycle) for cycle in sequences}
+            index_sequences = {self._transplant_round_to_indices(sequence) for sequence in sequences}
             self.assertEqual(index_sequences, expected_sequences)
