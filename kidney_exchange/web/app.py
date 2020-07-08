@@ -39,10 +39,9 @@ with app.app_context():
 
 
 @app.route('/')
-def hello():
-    logger.info("Hello from the log!")
-    return "Hello World!"
+def home():
+    return render_template("page.html")
 
 
 if __name__ == '__main__':
-    app.run(port=8080)
+    app.run(debug=True)
