@@ -1,0 +1,7 @@
+{% from 'patient_macro.html' import patient_box %}
+{% extends "template_base.html" -%}
+{% block right_pane -%}
+    {% for patient in patients %}
+    {{ patient_box(patient) }}
+    {% endfor %}
+{%- endblock %}
