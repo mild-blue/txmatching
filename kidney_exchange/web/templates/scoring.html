@@ -1,0 +1,31 @@
+{% extends "template_base.html" -%}
+{% block controls -%}
+    <form action="/scoring" method="GET">
+        <input type="submit" value="Save parameters" style="margin-bottom: 20px;">
+        <div class="controls_box">
+            <input type="hidden" value="on" name="enforce_same_blood_group_hidden">
+            <input type="checkbox"
+                   value="on"
+                   name="enforce_same_blood_group" {{ "checked" if hla_parameters.enforce_same_blood_group }}>
+            Enforce same blood group
+        </div>
+        {% for group in hla_parameters.hla_system_locuses %}
+            {% set critical_concentrations = hla_parameters.get_critical_antibody_concentrations_for_group(group) %}
+            {% if critical_concentrations %}
+                <div class="controls_box">
+                    <div class="controls_box_section"><b>{{ group }} antibody concentrations</b></div>
+                    {% for antibody, concentration in critical_concentrations %}
+                        <div class="antibody_concentration">
+                            <div style="grid-area: 'l'">
+                                <span class="antibody_antigen_label">{{ antibody }}</span></div>
+                            <div style="grid-area: 'r'">
+                                <input type="text" name="{{ antibody }}" value="{{ concentration }}"
+                                       style="width: 80px;">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </form>
+{%- endblock %}

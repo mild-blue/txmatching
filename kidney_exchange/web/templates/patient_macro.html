@@ -1,0 +1,62 @@
+{% macro hla_group_table(is_recipient, antigens, antibodies, group_name) %}
+    <div class="patient_table_row">
+        <div class="patient_table_col1">{{ group_name }}</div>
+        <div class="patient_table_col2">
+            {% for antigen in antigens %}
+                <span class="antibody_antigen_label">{{ antigen }}</span>
+            {% endfor %}
+        </div>
+        {% if is_recipient %}
+            <div class="patient_table_col3">
+                {% for antibody in antibodies %}
+                    <span class="antibody_antigen_label" style="background-color: powderblue">{{ antibody }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro patient_box(patient) %}
+    {% from 'patient_macro.html' import hla_group_table %}
+    <div class="patient_box">
+        {# Header #}
+        <div class="patient_table_row" style="background-color: wheat">
+            <div class="patient_table_col1">
+                <span class="patient_label">name</span>
+                {{ patient.name }}
+            </div>
+            <div class="patient_table_col2">
+                <span class="patient_label">blood group</span>
+                {{ patient.blood_group }}
+
+            </div>
+            <div class="patient_table_col3">
+                {% if patient.is_recipient() %}
+                    <span class="patient_label">acceptable blood groups</span>
+                    {{ ", ".join(patient.acceptable_blood_groups) }}
+                {% endif %}
+            </div>
+        </div>
+        {#  End Header  #}
+
+        {#  HLA table  #}
+        <div class="patient_table_row" style="padding-top: 5px; padding-bottom: 0px; border-bottom: none;">
+            <div class="patient_table_col1"><span class="patient_label"></span></div>
+            <div class="patient_table_col2"><span class="patient_label">antigens</span></div>
+            <div class="patient_table_col3"><span class="patient_label">antibodies</span></div>
+        </div>
+        {% for group in ["A", "B", "DR"] %}
+            {% if patient.is_recipient() %}
+                {{ hla_group_table(true, patient.get_antigens_of_group(group), patient.get_antibodies_of_group(group), group) }}
+            {% else %}
+                {{ hla_group_table(false, patient.get_antigens_of_group(group), [], group) }}
+            {% endif %}
+            {% endfor %}
+        {% if patient.is_recipient() %}
+            {{ hla_group_table(true, patient.get_complementary_antigens(["A", "B", "DR"]), patient.get_complementary_antibodies(["A", "B", "DR"]), "other") }}
+        {% else %}
+            {{ hla_group_table(false, patient.get_complementary_antigens(["A", "B", "DR"]), [], "other") }}
+        {% endif %}
+        {#  End HLA Table  #}
+    </div>
+{% endmacro %}
