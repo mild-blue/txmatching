@@ -2,3 +2,4 @@ dockerbase
 Dockerfile
 README.md
 .gitignore
+local_config.py

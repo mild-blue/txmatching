@@ -1,11 +1,12 @@
 import logging
 import os
 import sys
+from importlib import util as importing
 
 from flask import Flask
 
 from kidney_exchange.database.db import db
-from kidney_exchange.web.version_api import version_api
+from kidney_exchange.web.service_api import service_api
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
@@ -15,15 +16,22 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # register blueprints
-app.register_blueprint(version_api)
+app.register_blueprint(service_api)
+
+
+def load_local_development_config():
+    config_file = 'local_config'
+    if importing.find_spec(config_file):
+        app.config.from_object(config_file)
 
 
 def configure_db():
     # TODO load configuration from file and override it with env - to discussion with team
-    user = os.environ.get("POSTGRES_USER")
-    password = os.environ.get("POSTGRES_PASSWORD")
-    url = os.environ.get("POSTGRES_URL")
-    po_db = os.environ.get("POSTGRES_DB")
+    # https://trello.com/c/OXeSTk75/96-vymyslet-a-pridat-nejaky-rozumny-zpsov-jak-nahravat-konfiguraci-connection-strings-napr-aplikace
+    user = os.environ.get("POSTGRES_USER", app.config.get("POSTGRES_USER"))
+    password = os.environ.get("POSTGRES_PASSWORD", app.config.get("POSTGRES_PASSWORD"))
+    url = os.environ.get("POSTGRES_URL", app.config.get("POSTGRES_URL"))
+    po_db = os.environ.get("POSTGRES_DB", app.config.get("POSTGRES_DB"))
 
     app.config['SQLALCHEMY_DATABASE_URI'] \
         = f'postgresql+psycopg2://{user}:{password}@{url}/{po_db}'
@@ -33,6 +41,7 @@ def configure_db():
 
 
 with app.app_context():
+    load_local_development_config()
     configure_db()
 
 
