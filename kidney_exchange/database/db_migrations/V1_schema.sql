@@ -102,7 +102,7 @@ CREATE TABLE patient (
     blood        BLOOD_TYPE   NOT NULL,
     typization   JSONB        NOT NULL, -- JSON
     luminex      JSONB        NOT NULL, -- JSON
-    active       BOOLEAN      NOT NULL, -- assume some patients fall out of the set
+    active       BOOL         NOT NULL, -- assume some patients fall out of the set
     created_at   TIMESTAMPTZ  NOT NULL,
     updated_at   TIMESTAMPTZ  NOT NULL,
     deleted_at   TIMESTAMPTZ,
@@ -153,7 +153,7 @@ CREATE TABLE pairing_result (
     patient_ids          JSONB       NOT NULL, -- list of patient_id (JSON)
     calculated_matchings JSONB       NOT NULL, -- JSON
     score_matrix         JSONB       NOT NULL, -- matrix (list of lists) of computed compatibility indexes among patients (JSON)
-    valid                BOOLEAN     NOT NULL,
+    valid                BOOL        NOT NULL,
     created_at           TIMESTAMPTZ NOT NULL,
     updated_at           TIMESTAMPTZ NOT NULL,
     deleted_at           TIMESTAMPTZ,
