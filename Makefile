@@ -25,6 +25,7 @@ deploy:
 
 redeploy:
 	git pull; \
+	docker image prune -f; \
 	docker pull datavid19/kidney-exchange:latest; \
 	docker-compose -f docker-compose.prod.yml stop backend || true; \
 	docker-compose -f docker-compose.prod.yml rm backend || true; \
