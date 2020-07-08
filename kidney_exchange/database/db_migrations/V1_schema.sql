@@ -194,5 +194,5 @@ $$
 $$
 LANGUAGE plpgsql;
 
--- TODO add indexes (probably only when actually needed)
--- TODO add (before|instead) triggers for delete
+-- TODO add indexes (probably only when actually needed) (https://trello.com/c/H1gtKSao/89-add-indexes-to-db-probably-only-when-actually-needed)
+-- TODO add (before|instead) triggers for delete (https://trello.com/c/MfPrpOp1/90-add-beforeinstead-triggers-for-delete-to-db)
