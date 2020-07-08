@@ -1,0 +1,59 @@
+.exchange_box {
+    display: block;
+    color: black;
+    text-decoration: none;
+}
+
+.chain_box {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-top: 1px dotted black;
+    line-height: 250%;
+}
+
+.chain_link {
+    padding: 3px;
+    padding-right: 5px;
+    padding-left: 5px;
+    background-color: #aaddaa;
+    border-radius: 3px;
+    margin-right: 5px;
+    font-weight: bold;
+    white-space: pre;
+}
+
+.transplant {
+    display: grid;
+    grid-template-columns: 520px 520px;
+    grid-template-areas: "patient_box patient_box";
+}
+
+.transplant_info_box {
+    padding-left: 20px;
+    margin-top: 40px;
+    margin-bottom: 0;
+}
+
+.parameter_input {
+    display: grid;
+    grid-template-areas: 'l r';
+    grid-template-columns: 2fr 1fr;
+    margin-bottom: 5px;
+}
+
+.parameter_description {
+    grid-area: 'l';
+    font-weight: bold;
+}
+
+.parameter_input input {
+    grid-area: 'r';
+}
+
+.chain_link img {
+    height: 12px;
+    width: 16px;
+    border: 1px dotted white;
+    margin-right: 6px;
+    margin-left: 6px;
+}

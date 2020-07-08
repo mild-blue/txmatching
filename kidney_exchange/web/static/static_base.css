@@ -1,0 +1,94 @@
+@media print {
+    .no_print, .no_print * {
+        display: none !important;
+    }
+}
+
+body {
+    font-family: sans-serif;
+    font-size: 14px;
+    padding: 0px;
+    margin: 0px;
+}
+
+input[type=text] {
+    border: 1px solid lightblue;
+    border-radius: 3px;
+}
+
+input[type=submit] {
+    border: 1px solid gray;
+    border-radius: 3px;
+}
+
+.envelope {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 600px 1fr;
+    grid-template-areas: "column_left column_right";
+}
+
+.column_left {
+    grid-area: "column_left";
+    background-color: silver;
+    min-height: 100vh;
+}
+
+.column_right {
+    grid-area: "column_right";
+    text-align: left;
+    padding-left: 20px;
+    padding-bottom: 100px;
+}
+
+.menu {
+    line-height: 200%;
+    width: 100% -40px;
+    padding: 20px;
+}
+
+.menu a {
+    text-decoration: none;
+    padding: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    background-color: #666666;
+    border-radius: 3px;
+    color: white;
+    margin-right: 5px;
+    white-space: nowrap;
+}
+
+.menu a:hover {
+    background-color: black;
+}
+
+.controls {
+    padding: 20px;
+    width: 100% -40px;
+}
+
+.controls_box {
+    border-radius: 5px;
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.controls_box_section {
+    border-bottom: 1px dotted gray;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.confirm_message {
+    background-color: #aaddaa;
+    border: 1px solid #009900;
+}
+
+.alert_message {
+    background-color: #ddaaaa;
+    border: 1px solid #990000;
+}

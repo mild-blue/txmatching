@@ -1,0 +1,51 @@
+.patient_box {
+    border-radius: 5px;
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    margin-top: 20px;
+    padding: 10px;
+    width: 480px;
+}
+
+.patient_table_row {
+    border-top: 1px dotted silver;
+    display: grid;
+    grid-template-areas: "col1 col2 col3";
+    grid-template-columns: 50px 180px 250px;
+    padding-bottom: 3px;
+    padding-top: 3px;
+    line-height: 150%;
+}
+
+.patient_table_col1 {
+    grid-area: col1;
+    font-weight: bold;
+    padding-left: 5px;
+}
+
+.patient_table_col2 {
+    grid-area: col2;
+}
+
+.patient_table_col3 {
+    grid-area: col3;
+}
+
+.patient_label {
+    color: #101010;
+    font-size: 12px;
+    display: block;
+    padding: 0;
+    margin: 0;
+    font-weight: bold;
+}
+
+.antibody_antigen_label {
+    background-color: pink;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 3px;
+    font-size: 12px;
+}
