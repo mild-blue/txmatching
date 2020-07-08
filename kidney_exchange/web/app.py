@@ -1,11 +1,16 @@
 import logging
 import os
 import sys
+import traceback
 
-from flask import Flask
+from flask import Flask, render_template, request
 
 from kidney_exchange.database.db import db
 from kidney_exchange.web.version_api import version_api
+from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
+from kidney_exchange.web import web_utils
+# TODO load other needed modules 
+
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
@@ -34,6 +39,15 @@ def configure_db():
 
 with app.app_context():
     configure_db()
+
+
+@app.route("/browse_donors")
+def browse_donors():
+    return render_template("browse_patients.html")
+
+@app.route("/browse_recipients")
+def browse_recipients():
+    return render_template("browse_patients.html")
 
 
 @app.route('/')
