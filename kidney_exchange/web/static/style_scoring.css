@@ -1,0 +1,6 @@
+.antibody_concentration {
+    display: grid;
+    grid-template-areas: 'l r';
+    grid-template-columns: 100px 1fr;
+    margin-bottom: 5px;
+}
