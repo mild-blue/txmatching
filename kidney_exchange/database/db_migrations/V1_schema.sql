@@ -73,8 +73,8 @@ VALUES ('A'),
 
 CREATE TABLE app_user (
     id         BIGSERIAL   NOT NULL,
-    email      VARCHAR     NOT NULL, -- serves as username
-    pass_hash  VARCHAR     NOT NULL,
+    email      TEXT        NOT NULL, -- serves as username
+    pass_hash  TEXT        NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
@@ -96,7 +96,7 @@ CREATE TABLE app_user_role (
 
 CREATE TABLE patient (
     id           BIGSERIAL    NOT NULL,
-    medical_id   VARCHAR      NOT NULL,
+    medical_id   TEXT         NOT NULL,
     country      COUNTRY      NOT NULL,
     patient_type PATIENT_TYPE NOT NULL,
     blood        BLOOD_TYPE   NOT NULL,
@@ -152,7 +152,7 @@ CREATE TABLE pairing_result (
     config_id            BIGINT      NOT NULL,
     patient_ids          JSONB       NOT NULL, -- list of patient_id (JSON)
     calculated_matchings JSONB       NOT NULL, -- JSON
-    score_matrix         VARCHAR     NOT NULL, -- matrix (list of lists) of computed compatibility indexes among patients
+    score_matrix         JSONB       NOT NULL, -- matrix (list of lists) of computed compatibility indexes among patients (JSON)
     valid                BOOLEAN     NOT NULL,
     created_at           TIMESTAMPTZ NOT NULL,
     updated_at           TIMESTAMPTZ NOT NULL,
@@ -195,4 +195,4 @@ $$
 LANGUAGE plpgsql;
 
 -- TODO add indexes (probably only when actually needed)
--- TODO add before triggers for delete
+-- TODO add (before|instead) triggers for delete
