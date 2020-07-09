@@ -3,10 +3,11 @@ import os
 import sys
 from importlib import util as importing
 
-from flask import Flask, render_template
+from flask import Flask
 
 from kidney_exchange.database.db import db
 from kidney_exchange.web.service_api import service_api
+from kidney_exchange.web.template_routes import template_routes
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
@@ -17,6 +18,7 @@ app = Flask(__name__)
 
 # register blueprints
 app.register_blueprint(service_api)
+app.register_blueprint(template_routes)
 
 
 def load_local_development_config():
@@ -44,37 +46,5 @@ with app.app_context():
     load_local_development_config()
     configure_db()
 
-
-@app.route('/')
-def home():
-    return load_patients()
-
-
-@app.route('/load_patients')
-def load_patients():
-    return render_template("load_patients.html")
-
-
-@app.route('/set_parameters')
-def set_parameters():
-    return render_template("set_parameters.html")
-
-
-@app.route('/set_individual')
-def set_individual():
-    return render_template("set_individual.html")
-
-
-@app.route('/solve')
-def solve():
-    return render_template("solve.html")
-
-
-@app.route('/browse_solutions')
-def browse_solutions():
-    return render_template("browse_solutions.html")
-
-
 if __name__ == '__main__':
-
     app.run(host='localhost', port=8080, debug=True)
