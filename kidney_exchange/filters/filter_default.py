@@ -1,11 +1,20 @@
 from typing import List
 
+from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.filters.filter_base import FilterBase
 from kidney_exchange.patients.patient import Patient
 from kidney_exchange.solvers.matching.matching import Matching
 
 
 class FilterDefault(FilterBase):
+    @classmethod
+    def from_config(cls, configuration: Configuration) -> "FilterBase":
+        return FilterDefault(max_cycle_length=configuration.max_cycle_length,
+                             max_sequence_length=configuration.max_sequence_length,
+                             max_number_of_distinct_countries_in_round=configuration.max_number_of_distinct_countries_in_round,
+                             required_patients=[Patient(patient_id) for patient_id in
+                                                configuration.required_patient_ids])
+
     def __init__(self, max_cycle_length: int = None,
                  max_sequence_length: int = None,
                  max_number_of_distinct_countries_in_round: int = None,
