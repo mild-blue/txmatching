@@ -1,0 +1,20 @@
+{% include "template_main.html" -%}
+{% block controls -%}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Upload</h1>
+                <hr>
+                <form action="/load-patients" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                    <label>Choose csv file</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="csv" id="csv">
+                    </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload csv</button>                 
+                </form>
+            </div>
+        </div>
+    </div>
+{%- endblock %}
