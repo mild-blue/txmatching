@@ -100,13 +100,12 @@ CREATE TABLE config (
     deleted_at TIMESTAMPTZ,
     CONSTRAINT pk_config_id PRIMARY KEY (id),
     CONSTRAINT uq_config_parameters UNIQUE (parameters),
-    CONSTRAINT fk_config_created_at_by_app_user_id FOREIGN KEY (created_by) REFERENCES app_user(id) -- this is also valid for pairing_result
+    CONSTRAINT fk_config_created_by_app_user_id FOREIGN KEY (created_by) REFERENCES app_user(id) -- this is also valid for pairing_result
 );
 
 CREATE TABLE pairing_result (
     id                   BIGSERIAL   NOT NULL,
     config_id            BIGINT      NOT NULL,
-    patient_ids          JSONB       NOT NULL, -- list of patient_id (JSON)
     calculated_matchings JSONB       NOT NULL, -- JSON
     score_matrix         JSONB       NOT NULL, -- matrix (list of lists) of computed compatibility indexes among patients (JSON)
     valid                BOOL        NOT NULL,
