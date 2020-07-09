@@ -117,6 +117,18 @@ CREATE TABLE pairing_result (
     CONSTRAINT fk_pairing_result_config_id_config_id FOREIGN KEY (config_id) REFERENCES config(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE pairing_result_patient (
+    id                BIGSERIAL   NOT NULL,
+    pairing_result_id BIGINT      NOT NULL,
+    patient_id        BIGINT      NOT NULL,
+    created_at        TIMESTAMPTZ NOT NULL,
+    updated_at        TIMESTAMPTZ NOT NULL,
+    deleted_at        TIMESTAMPTZ,
+    CONSTRAINT pk_pairing_result_patient_id PRIMARY KEY (id),
+    CONSTRAINT fk_pairing_result_patient_pairing_result_id FOREIGN KEY (pairing_result_id) REFERENCES pairing_result(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_pairing_result_patient_patient_id FOREIGN KEY (patient_id) REFERENCES patient(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 DO
 $$
     DECLARE
