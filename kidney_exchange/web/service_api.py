@@ -2,13 +2,26 @@ import logging
 import os
 
 from flask import jsonify, g, Blueprint, current_app as app
+from sqlalchemy.exc import OperationalError
+
+from kidney_exchange.database.db import db
 
 logger = logging.getLogger(__name__)
 
-version_api = Blueprint('service', __name__)
+service_api = Blueprint('service', __name__)
 
 
-@version_api.route("/version")
+@service_api.route("/db-health")
+def database_health_check():
+    try:
+        db.session.execute('SELECT 1')
+        return jsonify({'status': 'ok'})
+    except OperationalError as ex:
+        logger.exception(f'Connection to database is not working.')
+        return jsonify({'status': 'error', 'exception': ex.args[0]}), 503
+
+
+@service_api.route("/version")
 def version_route():
     return jsonify({'version': get_version()})
 
