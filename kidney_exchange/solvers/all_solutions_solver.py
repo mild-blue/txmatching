@@ -82,7 +82,8 @@ class AllSolutionsSolver(SolverBase):
             pairs = [pair for pair_sublist in pairs for pair in pair_sublist]
             yield pairs
 
-    def _construct_intersection_graph(self, sets: List[Tuple[int]]) -> Tuple[Graph, Dict[int, Tuple[int]]]:
+    @staticmethod
+    def _construct_intersection_graph(sets: List[Tuple[int]]) -> Tuple[Graph, Dict[int, Tuple[int]]]:
         graph = Graph(directed=False)
 
         i_to_set = {index: st for index, st in enumerate(sets)}
@@ -109,14 +110,16 @@ class AllSolutionsSolver(SolverBase):
         graph.add_edge_list(np.transpose(adjacency_matrix.nonzero()))
         return graph, i_to_set
 
-    def _find_all_circuits(self, graph: Graph) -> Iterator[List[int]]:
+    @staticmethod
+    def _find_all_circuits(graph: Graph) -> Iterator[List[int]]:
         """
         Circuits between pairs, each pair is denoted by it's pair = donor index
         """
         for circuit in topology.all_circuits(graph):
             yield list(circuit)
 
-    def _find_acceptable_recipient_indices(self, score_matrix: np.ndarray, donor_index: int) -> List[int]:
+    @staticmethod
+    def _find_acceptable_recipient_indices(score_matrix: np.ndarray, donor_index: int) -> List[int]:
         return list(np.where(np.isfinite(score_matrix[donor_index]))[0])
 
     def _graph_from_score_matrix(self, score_matrix: np.array,
@@ -171,7 +174,8 @@ class AllSolutionsSolver(SolverBase):
         paths = [tuple(path) for path in paths if len(path) > 1]
         return paths
 
-    def _get_bridge_indices(self, score_matrix: np.ndarray) -> List[int]:
+    @staticmethod
+    def _get_bridge_indices(score_matrix: np.ndarray) -> List[int]:
         bridge_indices = np.where(np.sum(np.isnan(score_matrix), axis=1) == 0)[0]
         return list(bridge_indices)
 
@@ -192,7 +196,8 @@ class AllSolutionsSolver(SolverBase):
 
         return donor_pair_index_to_recipient_pair_indices
 
-    def _construct_pair_index_to_recipient_index(self, score_matrix: np.ndarray) -> Dict[int, int]:
+    @staticmethod
+    def _construct_pair_index_to_recipient_index(score_matrix: np.ndarray) -> Dict[int, int]:
         pair_index_to_recipient_index = dict()
         n_donor, n_recipient = score_matrix.shape
         for pair_index in range(n_donor):
@@ -202,13 +207,13 @@ class AllSolutionsSolver(SolverBase):
 
         return pair_index_to_recipient_index
 
-    def _find_all_paths_starting_with(self, source: int, source_to_targets: Dict[int, int], covered_indices: Set) -> \
+    def _find_all_paths_starting_with(self, source: int, source_to_targets: Dict[int, List[int]],
+                                      covered_indices: Set) -> \
             List[List[int]]:
         targets = source_to_targets[source]
         remaining_targets = set(targets) - covered_indices
 
-        paths = []
-        paths.append([source])
+        paths = [[source]]
 
         for target in remaining_targets:
             covered_indices.add(target)
@@ -237,14 +242,14 @@ if __name__ == "__main__":
 
     print(matrix.shape)
 
-    score_matrix = np.array([[np.NAN, np.NINF, 10.2, 13.1],
-                             [0.2, np.NAN, np.NINF, 1],
-                             [0.1, 10.2, 10.3, np.NAN],
-                             [np.NINF, np.NINF, np.NAN, 10],
-                             [0.2, 0.4, np.NINF, 0.5],
-                             [0.2, np.NINF, np.NINF, 0.5]])
+    score_matrix_test = np.array([[np.NAN, np.NINF, 10.2, 13.1],
+                                  [0.2, np.NAN, np.NINF, 1],
+                                  [0.1, 10.2, 10.3, np.NAN],
+                                  [np.NINF, np.NINF, np.NAN, 10],
+                                  [0.2, 0.4, np.NINF, 0.5],
+                                  [0.2, np.NINF, np.NINF, 0.5]])
 
-    solver = AllSolutionsSolver()
-    solutions = solver._solve(score_matrix)
-    for solution in solutions:
-        print(solution)
+    test_solver = AllSolutionsSolver()
+    solutions = test_solver._solve(score_matrix_test)
+    for test_solution in solutions:
+        print(test_solution)
