@@ -170,7 +170,7 @@ $$
             SELECT table_name FROM information_schema.columns WHERE column_name = 'created_at'
             LOOP
                 EXECUTE format('CREATE TRIGGER trigger_set_created_at
-                    BEFORE UPDATE ON %I
+                    BEFORE INSERT ON %I
                     FOR EACH ROW EXECUTE PROCEDURE set_created_at()', t, t);
             END LOOP;
     END;
