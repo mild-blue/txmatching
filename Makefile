@@ -10,26 +10,52 @@ conda-export:
 conda-update:
 	conda env update --file conda.yml  --prune
 
+# builds docker image
 docker-build:
 	docker build -t datavid19/kidney-exchange .
 
-# Depoyment to prod
-local-redeploy:
+# start up the db
+db:
+	docker-compose up -d db
+
+# run app localy on bare metal with debug flask and hot reload enabled
+run:
+	export FLASK_APP=kidney_exchange.web.app:app; \
+	export FLASK_ENV=development; \
+	export FLASK_DEBUG=true; \
+	flask run --port=8080 --host=localhost
+
+# run app in the docker-compose environment
+dorun:
+	docker-compose up backend
+
+# rebuild and rerun backend in the docker
+dorerun: docker-build
+	docker-compose stop backend || true; \
+	docker-compose rm -f backend || true; \
+	docker-compose up backend;
+
+# ------- following commands should be used only on production machine -------
+# depoyment to prod with local build
+build-redeploy:
 	git pull; \
 	docker-compose -f docker-compose.prod.yml stop backend || true; \
-	docker-compose -f docker-compose.prod.yml rm backend || true; \
+	docker-compose -f docker-compose.prod.yml rm -f backend || true; \
 	docker-compose -f docker-compose.prod.yml up -d --build backend;
 
+# deploy all services
 deploy:
 	docker-compose -f docker-compose.prod.yml up -d
 
+# redeploy after image was updated, used by the pipeline
 redeploy:
 	git pull; \
 	docker image prune -f; \
 	docker pull datavid19/kidney-exchange:latest; \
 	docker-compose -f docker-compose.prod.yml stop backend || true; \
-	docker-compose -f docker-compose.prod.yml rm backend || true; \
+	docker-compose -f docker-compose.prod.yml rm -f backend || true; \
 	docker-compose -f docker-compose.prod.yml up -d backend;
 
+# get logs from the running service
 logs:
 	docker-compose -f docker-compose.prod.yml logs --follow backend
