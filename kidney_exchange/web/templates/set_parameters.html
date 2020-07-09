@@ -1,0 +1,35 @@
+  
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Kidney Exchange</title>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  
+</head>
+
+<body>
+ <div class="title">
+	<h1>Set parameters</h1>
+ </div>
+
+ <div class="buttons">
+     <button type="button" class="btn btn-primary btn-block btn-large"
+             onclick="location.href='load_patients'">Load patients</button>
+     <button type="button" class="btn btn-primary btn-block btn-large"
+             onclick="location.href='set_parameters'">Set parameters</button>
+     <button type="button" class="btn btn-primary btn-block btn-large"
+             onclick="location.href='set_individual'">Set individual</button>
+     <button type="button" class="btn btn-primary btn-block btn-large"
+             onclick="location.href='solve'">Solve current params</button>
+     <button type="button" class="btn btn-primary btn-block btn-large"
+             onclick="location.href='browse_solutions'">Browse solutions</button>
+ </div>
+
+
+</body>
+</html>

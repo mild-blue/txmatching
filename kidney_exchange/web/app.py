@@ -1,13 +1,11 @@
 import logging
 import os
 import sys
-import traceback
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 
 from kidney_exchange.database.db import db
 from kidney_exchange.web.version_api import version_api
-
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
@@ -40,7 +38,32 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return render_template("page.html")
+    return load_patients()
+
+
+@app.route('/load_patients')
+def load_patients():
+    return render_template("load_patients.html")
+
+
+@app.route('/set_parameters')
+def set_parameters():
+    return render_template("set_parameters.html")
+
+
+@app.route('/set_individual')
+def set_individual():
+    return render_template("set_individual.html")
+
+
+@app.route('/solve')
+def solve():
+    return render_template("solve.html")
+
+
+@app.route('/browse_solutions')
+def browse_solutions():
+    return render_template("browse_solutions.html")
 
 
 if __name__ == '__main__':
