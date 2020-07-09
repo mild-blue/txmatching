@@ -136,15 +136,15 @@ CREATE TABLE patient_pair (
 );
 
 CREATE TABLE config (
-    id            BIGSERIAL   NOT NULL,
-    parameters    JSONB       NOT NULL,                                                                  -- JSON
-    created_at_by BIGINT      NOT NULL,
-    created_at    TIMESTAMPTZ NOT NULL,
-    updated_at    TIMESTAMPTZ NOT NULL,
-    deleted_at    TIMESTAMPTZ,
+    id         BIGSERIAL   NOT NULL,
+    parameters JSONB       NOT NULL,                                                                -- JSON
+    created_by BIGINT      NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    deleted_at TIMESTAMPTZ,
     CONSTRAINT pk_config_id PRIMARY KEY (id),
     CONSTRAINT uq_config_parameters UNIQUE (parameters),
-    CONSTRAINT fk_config_created_at_by_app_user_id FOREIGN KEY (created_at_by) REFERENCES app_user(id) -- this is also valid for pairing_result
+    CONSTRAINT fk_config_created_at_by_app_user_id FOREIGN KEY (created_by) REFERENCES app_user(id) -- this is also valid for pairing_result
 );
 
 CREATE TABLE pairing_result (
@@ -169,7 +169,7 @@ $$
         FOR t IN
             SELECT table_name FROM information_schema.columns WHERE column_name = 'created_at'
             LOOP
-                EXECUTE format('CREATE TRIGGER trigger_set_created_at
+                EXECUTE format('CREATE TRIGGER trg_%I_set_created_at
                     BEFORE INSERT ON %I
                     FOR EACH ROW EXECUTE PROCEDURE set_created_at()', t, t);
             END LOOP;
@@ -186,7 +186,7 @@ $$
         FOR t IN
             SELECT table_name FROM information_schema.columns WHERE column_name = 'updated_at'
             LOOP
-                EXECUTE format('CREATE TRIGGER trigger_set_updated_at
+                EXECUTE format('CREATE TRIGGER trg_%I_set_updated_at
                     BEFORE UPDATE ON %I
                     FOR EACH ROW EXECUTE PROCEDURE set_updated_at()', t, t);
             END LOOP;
