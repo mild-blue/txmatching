@@ -20,7 +20,7 @@ app.register_blueprint(service_api)
 
 
 def load_local_development_config():
-    config_file = 'local_config'
+    config_file = 'kidney_exchange.web.local_config'
     if importing.find_spec(config_file):
         app.config.from_object(config_file)
 
