@@ -51,7 +51,7 @@ $BODY$
 CREATE TABLE role (
     id        BIGSERIAL NOT NULL,
     user_role USER_ROLE NOT NULL,
-    CONSTRAINT pkey_role_id PRIMARY KEY (id)
+    CONSTRAINT pk_role_id PRIMARY KEY (id)
 );
 
 INSERT INTO role (user_role)
@@ -62,7 +62,7 @@ VALUES ('VIEWER'),
 CREATE TABLE blood (
     id         BIGSERIAL  NOT NULL,
     blood_type BLOOD_TYPE NOT NULL,
-    CONSTRAINT pkey_blood_id PRIMARY KEY (id)
+    CONSTRAINT pk_blood_id PRIMARY KEY (id)
 );
 
 INSERT INTO blood (blood_type)
@@ -78,7 +78,7 @@ CREATE TABLE app_user (
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
-    CONSTRAINT pkey_app_user_id PRIMARY KEY (id),
+    CONSTRAINT pk_app_user_id PRIMARY KEY (id),
     CONSTRAINT uq_app_user_email UNIQUE (email)
 );
 
@@ -88,10 +88,10 @@ CREATE TABLE app_user_role (
     created_at  TIMESTAMPTZ NOT NULL,
     updated_at  TIMESTAMPTZ NOT NULL,
     deleted_at  TIMESTAMPTZ,
-    CONSTRAINT pkey_app_user_role PRIMARY KEY (app_user_id, role_id),
+    CONSTRAINT pk_app_user_role PRIMARY KEY (app_user_id, role_id),
     CONSTRAINT uq_app_user_role UNIQUE (app_user_id, role_id),
-    CONSTRAINT fkey_app_user_role FOREIGN KEY (role_id) REFERENCES role(id) ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT fkey_app_user_app_user FOREIGN KEY (app_user_id) REFERENCES app_user(id) ON UPDATE CASCADE ON DELETE CASCADE
+    CONSTRAINT fk_app_user_role FOREIGN KEY (role_id) REFERENCES role(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_app_user_app_user FOREIGN KEY (app_user_id) REFERENCES app_user(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE patient (
@@ -106,7 +106,7 @@ CREATE TABLE patient (
     created_at   TIMESTAMPTZ  NOT NULL,
     updated_at   TIMESTAMPTZ  NOT NULL,
     deleted_at   TIMESTAMPTZ,
-    CONSTRAINT pkey_patient_id PRIMARY KEY (id)
+    CONSTRAINT pk_patient_id PRIMARY KEY (id)
 );
 
 CREATE TABLE patient_acceptable_blood (
@@ -116,10 +116,10 @@ CREATE TABLE patient_acceptable_blood (
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
-    CONSTRAINT pkey_patient_acceptable_blood_id PRIMARY KEY (id),
+    CONSTRAINT pk_patient_acceptable_blood_id PRIMARY KEY (id),
     CONSTRAINT uq_patient_acceptable_blood_patient_id_blood_id UNIQUE (patient_id, blood_id),
-    CONSTRAINT fkey_patient_acceptable_blood_patient_id FOREIGN KEY (patient_id) REFERENCES patient(id) ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT fkey_patient_acceptable_blood_blood_id FOREIGN KEY (blood_id) REFERENCES blood(id) ON UPDATE CASCADE ON DELETE CASCADE
+    CONSTRAINT fk_patient_acceptable_blood_patient_id FOREIGN KEY (patient_id) REFERENCES patient(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_patient_acceptable_blood_blood_id FOREIGN KEY (blood_id) REFERENCES blood(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE patient_pair (
@@ -129,9 +129,9 @@ CREATE TABLE patient_pair (
     created_at   TIMESTAMPTZ NOT NULL,
     updated_at   TIMESTAMPTZ NOT NULL,
     deleted_at   TIMESTAMPTZ,
-    CONSTRAINT pkey_patient_pair_id PRIMARY KEY (id),
-    CONSTRAINT fkey_patient_pair_recipient_id_patient_id FOREIGN KEY (recipient_id) REFERENCES patient(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT fkey_patient_pair_donor_id_patient_id FOREIGN KEY (donor_id) REFERENCES patient(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT pk_patient_pair_id PRIMARY KEY (id),
+    CONSTRAINT fk_patient_pair_recipient_id_patient_id FOREIGN KEY (recipient_id) REFERENCES patient(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_patient_pair_donor_id_patient_id FOREIGN KEY (donor_id) REFERENCES patient(id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT uq_patient_pair_recipient_id_donor_id UNIQUE (recipient_id, donor_id)
 );
 
@@ -142,9 +142,9 @@ CREATE TABLE config (
     created_at    TIMESTAMPTZ NOT NULL,
     updated_at    TIMESTAMPTZ NOT NULL,
     deleted_at    TIMESTAMPTZ,
-    CONSTRAINT pkey_config_id PRIMARY KEY (id),
+    CONSTRAINT pk_config_id PRIMARY KEY (id),
     CONSTRAINT uq_config_parameters UNIQUE (parameters),
-    CONSTRAINT fkey_config_created_at_by_app_user_id FOREIGN KEY (created_at_by) REFERENCES app_user(id) -- this is also valid for pairing_result
+    CONSTRAINT fk_config_created_at_by_app_user_id FOREIGN KEY (created_at_by) REFERENCES app_user(id) -- this is also valid for pairing_result
 );
 
 CREATE TABLE pairing_result (
@@ -157,8 +157,8 @@ CREATE TABLE pairing_result (
     created_at           TIMESTAMPTZ NOT NULL,
     updated_at           TIMESTAMPTZ NOT NULL,
     deleted_at           TIMESTAMPTZ,
-    CONSTRAINT pkey_pairing_result_id PRIMARY KEY (id),
-    CONSTRAINT fkey_pairing_result_config_id_config_id FOREIGN KEY (config_id) REFERENCES config(id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT pk_pairing_result_id PRIMARY KEY (id),
+    CONSTRAINT fk_pairing_result_config_id_config_id FOREIGN KEY (config_id) REFERENCES config(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DO
