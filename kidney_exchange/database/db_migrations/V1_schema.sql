@@ -48,33 +48,11 @@ $BODY$
     LANGUAGE plpgsql;
 
 
-CREATE TABLE role (
-    id        BIGSERIAL NOT NULL,
-    user_role USER_ROLE NOT NULL,
-    CONSTRAINT pk_role_id PRIMARY KEY (id)
-);
-
-INSERT INTO role (user_role)
-VALUES ('VIEWER'),
-    ('EDITOR'),
-    ('ADMIN');
-
-CREATE TABLE blood (
-    id         BIGSERIAL  NOT NULL,
-    blood_type BLOOD_TYPE NOT NULL,
-    CONSTRAINT pk_blood_id PRIMARY KEY (id)
-);
-
-INSERT INTO blood (blood_type)
-VALUES ('A'),
-    ('B'),
-    ('AB'),
-    ('0');
-
 CREATE TABLE app_user (
     id         BIGSERIAL   NOT NULL,
     email      TEXT        NOT NULL, -- serves as username
     pass_hash  TEXT        NOT NULL,
+    role       USER_ROLE   NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
@@ -82,45 +60,23 @@ CREATE TABLE app_user (
     CONSTRAINT uq_app_user_email UNIQUE (email)
 );
 
-CREATE TABLE app_user_role (
-    app_user_id BIGINT      NOT NULL,
-    role_id     BIGINT      NOT NULL,
-    created_at  TIMESTAMPTZ NOT NULL,
-    updated_at  TIMESTAMPTZ NOT NULL,
-    deleted_at  TIMESTAMPTZ,
-    CONSTRAINT pk_app_user_role PRIMARY KEY (app_user_id, role_id),
-    CONSTRAINT uq_app_user_role UNIQUE (app_user_id, role_id),
-    CONSTRAINT fk_app_user_role FOREIGN KEY (role_id) REFERENCES role(id) ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT fk_app_user_app_user FOREIGN KEY (app_user_id) REFERENCES app_user(id) ON UPDATE CASCADE ON DELETE CASCADE
-);
 
 CREATE TABLE patient (
-    id           BIGSERIAL    NOT NULL,
-    medical_id   TEXT         NOT NULL,
-    country      COUNTRY      NOT NULL,
-    patient_type PATIENT_TYPE NOT NULL,
-    blood        BLOOD_TYPE   NOT NULL,
-    typization   JSONB        NOT NULL, -- JSON
-    luminex      JSONB        NOT NULL, -- JSON
-    active       BOOL         NOT NULL, -- assume some patients fall out of the set
-    created_at   TIMESTAMPTZ  NOT NULL,
-    updated_at   TIMESTAMPTZ  NOT NULL,
-    deleted_at   TIMESTAMPTZ,
+    id               BIGSERIAL    NOT NULL,
+    medical_id       TEXT         NOT NULL,
+    country          COUNTRY      NOT NULL,
+    patient_type     PATIENT_TYPE NOT NULL,
+    blood            BLOOD_TYPE   NOT NULL,
+    typization       JSONB        NOT NULL, -- JSON
+    luminex          JSONB        NOT NULL, -- JSON
+    acceptable_blood BLOOD_TYPE[] NOT NULL,
+    active           BOOL         NOT NULL, -- assume some patients fall out of the set
+    created_at       TIMESTAMPTZ  NOT NULL,
+    updated_at       TIMESTAMPTZ  NOT NULL,
+    deleted_at       TIMESTAMPTZ,
     CONSTRAINT pk_patient_id PRIMARY KEY (id)
 );
 
-CREATE TABLE patient_acceptable_blood (
-    id         BIGSERIAL   NOT NULL,
-    patient_id BIGINT      NOT NULL,
-    blood_id   BIGINT      NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL,
-    updated_at TIMESTAMPTZ NOT NULL,
-    deleted_at TIMESTAMPTZ,
-    CONSTRAINT pk_patient_acceptable_blood_id PRIMARY KEY (id),
-    CONSTRAINT uq_patient_acceptable_blood_patient_id_blood_id UNIQUE (patient_id, blood_id),
-    CONSTRAINT fk_patient_acceptable_blood_patient_id FOREIGN KEY (patient_id) REFERENCES patient(id) ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT fk_patient_acceptable_blood_blood_id FOREIGN KEY (blood_id) REFERENCES blood(id) ON UPDATE CASCADE ON DELETE CASCADE
-);
 
 CREATE TABLE patient_pair (
     id           BIGSERIAL   NOT NULL,
