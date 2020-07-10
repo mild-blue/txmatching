@@ -8,6 +8,9 @@ from kidney_exchange.web.web_utils.load_patients_utils import is_csv_allowed
 
 logger = logging.getLogger(__name__)
 
+# For flask.flash (gives feedback when uploading files)
+app.secret_key = "secret key"
+
 functional_api = Blueprint('functional', __name__)
 
 @functional_api.route('/')

@@ -16,9 +16,6 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# For flask.flash (gives feedback when uploading files)
-app.secret_key = "secret key"
-
 # register blueprints
 app.register_blueprint(service_api)
 app.register_blueprint(functional_api)
