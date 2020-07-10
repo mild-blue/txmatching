@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Iterator
 
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.database.sql_alchemy_schema import ConfigModel, PairingResultModel, PairingResultPatientModel, \
@@ -10,14 +10,23 @@ from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.solvers.matching.matching import Matching
 
 
-def get_config_models() -> List[ConfigModel]:
-    configs = ConfigModel.query.order_by(ConfigModel.created_at).all()
-
+def get_config_models(order_by=ConfigModel.created_at) -> List[ConfigModel]:
+    configs = ConfigModel.query.order_by(order_by).all()
     return configs
 
 
+def config_model_to_config(config_model: ConfigModel) -> Configuration:
+    return Configuration(**config_model.parameters)
+
+
+def get_configs() -> Iterator[Configuration]:
+    for config_model in get_config_models():
+        yield config_model_to_config(config_model)
+
+
 def get_latest_configuration() -> Configuration:
-    return Configuration(**get_config_models()[-1].parameters)
+    latest_config_model = get_config_models(order_by=ConfigModel.created_at)[-1]
+    return config_model_to_config(latest_config_model)
 
 
 def get_configs_compatible_with_params(params: Dict) -> List[ConfigModel]:

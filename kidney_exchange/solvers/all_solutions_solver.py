@@ -18,15 +18,6 @@ class AllSolutionsSolver(SolverBase):
         super().__init__()
         self._verbose = verbose
 
-    def breaking_parameters(self) -> Dict[str, Set[str]]:
-        return {"HLAAdditiveScorer": {
-            "enforce_same_blood_group",
-            "minimum_compatibility_index",
-            "require_new_donor_having_better_match_in_compatibility_index",
-            "require_new_donor_having_better_match_in_compatibility_index_or_blood_group",
-        }
-        }
-
     def solve(self, donors: List[Donor], recipients: List[Recipient], scorer: AdditiveScorer) -> Iterator[Matching]:
         score_matrix = np.zeros((len(donors), len(recipients)))
         for donor_index, donor in enumerate(donors):
