@@ -6,6 +6,7 @@ from sqlalchemy.exc import OperationalError
 
 from kidney_exchange.database.db import db
 
+
 logger = logging.getLogger(__name__)
 
 service_api = Blueprint('service', __name__)
