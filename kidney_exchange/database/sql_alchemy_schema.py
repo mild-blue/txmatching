@@ -55,6 +55,7 @@ class PatientModel(db.Model):
 
 class PatientPairModel(db.Model):
     __tablename__ = 'patient_pair'
+
     id = db.Column(db.BIGINT, primary_key=True, nullable=False)
     recipient_id = db.Column(db.BIGINT, unique=False, nullable=False)
     donor_id = db.Column(db.BIGINT, unique=False, nullable=False)

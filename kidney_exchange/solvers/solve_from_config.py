@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-from typing import List, Iterator, Optional
+from typing import List, Iterator, Optional, Iterable
 
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.config.gives_superset_of_solutions import gives_superset_of_solutions
-from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, get_patients_for_pairing_result, \
+from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, \
+    get_patients_for_pairing_result, \
     db_matching_to_matching, get_latest_configuration, \
     get_donor_from_db, get_recipient_from_db, medical_id_to_id, config_model_to_config, get_config_models, \
     get_all_patients
@@ -16,27 +17,27 @@ from kidney_exchange.solvers.solver_from_config import solver_from_config
 
 
 @dataclass
-class ExchangeParameters:
+class SolverInputParameters:
     donors: List[Donor]
     recipients: List[Recipient]
     configuration: Configuration
 
 
-def solve_from_db():
+def solve_from_db() -> Iterable[Matching]:
     patients = get_all_patients()
     # TODO dont use strings here, use some better logic (ENUMS for example)
     # https://trello.com/c/pKMqnv7X
-    donors = [get_donor_from_db(don.id) for don in patients if don.patient_type == 'DONOR']
-    recipients = [get_recipient_from_db(rec.id) for rec in patients if rec.patient_type == 'RECIPIENT']
-    final_solutions = solve_from_config(ExchangeParameters(
+    donors = [get_donor_from_db(donor.id) for donor in patients if donor.patient_type == 'DONOR']
+    recipients = [get_recipient_from_db(recipient.id) for recipient in patients if recipient.patient_type == 'RECIPIENT']
+    final_solutions = solve_from_config(SolverInputParameters(
         donors=donors,
         recipients=recipients,
         configuration=get_latest_configuration()
     ))
-    return list(final_solutions)
+    return final_solutions
 
 
-def solve_from_config(params: ExchangeParameters):
+def solve_from_config(params: SolverInputParameters) -> Iterable[Matching]:
     scorer = scorer_from_config(params.configuration)
     solver = solver_from_config(params.configuration)
     matchings_in_db = load_matchings_from_database(params)
@@ -49,7 +50,7 @@ def solve_from_config(params: ExchangeParameters):
     return filter(matching_filter.keep, all_solutions)
 
 
-def load_matchings_from_database(exchange_parameters: ExchangeParameters) -> Optional[Iterator[Matching]]:
+def load_matchings_from_database(exchange_parameters: SolverInputParameters) -> Optional[Iterator[Matching]]:
     current_config = exchange_parameters.configuration
 
     compatible_config_models = list()
@@ -73,7 +74,7 @@ def load_matchings_from_database(exchange_parameters: ExchangeParameters) -> Opt
 
 if __name__ == "__main__":
     config = Configuration()
-    solutions = list(solve_from_config(params=ExchangeParameters(
+    solutions = list(solve_from_config(params=SolverInputParameters(
         donors=list(),
         recipients=list(),
         configuration=config

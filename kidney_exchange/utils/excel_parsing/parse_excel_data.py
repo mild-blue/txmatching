@@ -74,7 +74,7 @@ def parse_excel_data(file_path: str) -> Tuple[List[Donor], List[Recipient]]:
         donor_params = PatientParameters(blood_group=blood_group_donor,
                                          hla_antigens=typization_donor,
                                          country_code=country_code_donor)
-        donor = Donor(patient_id=donor_id, parameters=donor_params)
+        donor = Donor(patient_medical_id=donor_id, parameters=donor_params)
         donors.append(donor)
 
         recipient_id = row["RECIPIENT"]
@@ -90,7 +90,7 @@ def parse_excel_data(file_path: str) -> Tuple[List[Donor], List[Recipient]]:
                                                  hla_antibodies=antibodies_recipient,
                                                  acceptable_blood_groups=acceptable_blood_groups_recipient,
                                                  country_code=country_code_recipient)
-            recipient = Recipient(patient_id=recipient_id, parameters=recipient_params, related_donors=donor)
+            recipient = Recipient(patient_medical_id=recipient_id, parameters=recipient_params, related_donors=donor)
             recipients.append(recipient)
 
     return donors, recipients

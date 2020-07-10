@@ -4,8 +4,8 @@ from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
 
 
 def _check_if_config_is_supported(configuration: Configuration):
-    if configuration.solver_constructor_name != AllSolutionsSolver.__name__ \
-            and configuration.scorer_constructor_name != HLAAdditiveScorer.__name__:
+    if not (configuration.solver_constructor_name == AllSolutionsSolver.__name__
+            and configuration.scorer_constructor_name == HLAAdditiveScorer.__name__):
         raise ValueError(f"Unsupported combination "
                          f"({configuration.scorer_constructor_name}, {configuration.solver_constructor_name}) "
                          f"of (scorer, solver)")
@@ -28,6 +28,7 @@ def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configu
                            "require_new_donor_having_better_match_in_compatibility_index_or_blood_group"]
 
     # TODO: There needs to be a better logic here
+    # https://trello.com/c/zseK1Zcf
     # For example for
     # less_strict = (True, 2, True, True)
     # more_strict = (True, 10, True, True)
