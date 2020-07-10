@@ -6,6 +6,7 @@ class ConfigModel(db.Model):
 
     id = db.Column(db.BIGINT, primary_key=True, autoincrement=True)
     parameters = db.Column(db.JSON, unique=False, nullable=False)
+    created_by = db.Column(db.BIGINT, unique=False, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)

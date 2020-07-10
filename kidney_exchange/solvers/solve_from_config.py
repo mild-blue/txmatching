@@ -5,8 +5,8 @@ from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.config.gives_superset_of_solutions import gives_superset_of_solutions
 from kidney_exchange.database.services.matching import get_pairing_result_for_config, get_patients_for_pairing_result, \
     db_matching_to_matching, get_latest_configuration, \
-    get_donor_from_db, get_recipient_from_db, medical_id_to_id, config_model_to_config, get_config_models
-from kidney_exchange.database.sql_alchemy_schema import PatientModel
+    get_donor_from_db, get_recipient_from_db, medical_id_to_id, config_model_to_config, get_config_models, \
+    get_all_patients
 from kidney_exchange.filters.filter_from_config import filter_from_config
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
@@ -23,14 +23,17 @@ class ExchangeParameters:
 
 
 def solve_from_db():
-    pats = PatientModel.query.all()
-    donors = [get_donor_from_db(don.id) for don in pats if don.patient_type == 'DONOR']
-    recipients = [get_recipient_from_db(rec.id) for rec in pats if rec.patient_type == 'RECIPIENT']
-    return list(solve_from_config(ExchangeParameters(
+    patients = get_all_patients()
+    # TODO dont use strings here, use some better logic (ENUMS for example)
+    # https://trello.com/c/pKMqnv7X
+    donors = [get_donor_from_db(don.id) for don in patients if don.patient_type == 'DONOR']
+    recipients = [get_recipient_from_db(rec.id) for rec in patients if rec.patient_type == 'RECIPIENT']
+    final_solutions = solve_from_config(ExchangeParameters(
         donors=donors,
         recipients=recipients,
         configuration=get_latest_configuration()
-    )))
+    ))
+    return list(final_solutions)
 
 
 def solve_from_config(params: ExchangeParameters):

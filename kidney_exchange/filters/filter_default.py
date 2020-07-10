@@ -1,5 +1,5 @@
 from typing import List
-import numpy as np
+
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.filters.filter_base import FilterBase
 from kidney_exchange.patients.patient import Patient
@@ -28,10 +28,12 @@ class FilterDefault(FilterBase):
         sequences = matching.get_sequences()
         cycles = matching.get_cycles()
 
-        if max([cycle.length for cycle in cycles], default=-np.inf) > self._max_cycle_length:
+        if self._max_cycle_length is not None \
+                and max([cycle.length for cycle in cycles], default=0) > self._max_cycle_length:
             return False
 
-        if max([sequence.length for sequence in sequences], default=-np.inf) > self._max_sequence_length:
+        if self._max_sequence_length is not None and \
+                max([sequence.length for sequence in sequences], default=0) > self._max_sequence_length:
             return False
 
         if max([transplant_round.country_count for transplant_round in

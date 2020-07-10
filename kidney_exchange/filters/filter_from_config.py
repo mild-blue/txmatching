@@ -7,5 +7,6 @@ _supported_filters = [FilterDefault]
 
 
 def filter_from_config(config: Configuration) -> FilterBase:
-    # TODO add filter to config when we have more of them
+    # TODO handle filter properly: do all the stuff in filter already in solver and scorer
+    # https://trello.com/c/Cn2HCKLX
     return construct_configurable_object("FilterDefault", _supported_filters, config)

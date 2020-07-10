@@ -75,10 +75,24 @@ def get_donor_from_db(db_id: int) -> Donor:
 
 
 def get_recipient_from_db(db_id: int):
-    pat = get_patient_from_model(db_id)
-    don_id = PatientPairModel.query.filter(PatientPairModel.recipient_id == db_id).all()[0].donor_id
-    return Recipient(pat.patient_id, pat.params, get_donor_from_db(don_id))
+    recipient = get_patient_from_model(db_id)
+    related_donors = PatientPairModel.query.filter(PatientPairModel.recipient_id == db_id).all()
+    if len(related_donors) == 1:
+        don_id = related_donors[0].donor_id
+    else:
+        raise ValueError(f"There has to be 1 donor per recipient, but {len(related_donors)} "
+                         f"were found for recipient with db_id {db_id} and medical id {recipient.patient_id}")
+    return Recipient(recipient.patient_id, recipient.params, get_donor_from_db(don_id))
 
 
 def medical_id_to_id(medical_id: str) -> int:
-    return PatientModel.query.filter(PatientModel.medical_id == medical_id).all()[0].id
+    patients_with_id = PatientModel.query.filter(PatientModel.medical_id == medical_id).all()
+    if len(patients_with_id) == 1:
+        return patients_with_id[0].id
+    else:
+        raise ValueError(f"There has to be 1 patient per medical id, but {len(patients_with_id)} "
+                         f"were found for patient with medical id {medical_id}")
+
+
+def get_all_patients():
+    PatientModel.query.filter(PatientModel.active).all()

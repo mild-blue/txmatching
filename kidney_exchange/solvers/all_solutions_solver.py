@@ -50,6 +50,10 @@ class AllSolutionsSolver(SolverBase):
 
         all_paths = pure_circuits + bridge_paths
 
+        if len(all_paths) == 0:
+            print("[INFO] Empty set of paths, returning empty iterator")
+            return []
+
         if self._verbose:
             print(f"[INFO] Constructing intersection graph, "
                   f"#circuits: {len(pure_circuits)}, #paths: {len(bridge_paths)}")
@@ -57,10 +61,7 @@ class AllSolutionsSolver(SolverBase):
 
         if self._verbose:
             print("[INFO] Listing all max cliques")
-        if len(vertex_to_set) > 0:
-            max_cliques = list(topology.max_cliques(intersection_graph))
-        else:
-            max_cliques = []
+        max_cliques = list(topology.max_cliques(intersection_graph))
 
         if self._verbose:
             print("[INFO] Finding 1 vertex cliques")
