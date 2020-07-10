@@ -42,23 +42,22 @@ def browse_solutions():
 
 @functional_api.route('/load-patients', methods=["GET", "POST"])
 def upload_csv():
-    if request.method == "POST":
-        if request.files:
-            uploaded_csv = request.files["csv"]
-            if uploaded_csv.filename == "":
-                logger.warn("No patients file uploaded")
-                flash("No patients file uploaded")
-
-                return redirect(request.url)
-            
-            if not is_csv_allowed(uploaded_csv.filename):
-                logger.error(f"{uploaded_csv.filename} is not csv or xlsx file")
-                flash("This is not a csv or xlsx file, try again")
-
-                return redirect(request.url)
-
-            flash("File successfully loaded")
+    if request.files:
+        uploaded_csv = request.files["csv"]
+        if uploaded_csv.filename == "":
+            logger.warning("No patients file uploaded")
+            flash("No patients file uploaded")
 
             return redirect(request.url)
+        
+        if not is_csv_allowed(uploaded_csv.filename):
+            logger.error(f"{uploaded_csv.filename} is not csv or xlsx file")
+            flash("This is not a csv or xlsx file, try again")
+
+            return redirect(request.url)
+
+        flash("File successfully loaded")
+
+        return redirect(request.url)
 
     return render_template("load_patients.html")
