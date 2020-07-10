@@ -55,7 +55,7 @@ def get_patient_from_model(patient_id: int) -> Patient:
         acceptable_blood_groups=patient_model.acceptable_blood,
         country_code=patient_model.country,
         hla_antigens=[],  # TODO fill this in from the data https://trello.com/c/1ynqm5tA
-        hla_antibodies=[]  # TODO fill thin in from the data https://trello.com/c/1ynqm5tA
+        hla_antibodies=[]  # TODO fill this in from the data https://trello.com/c/1ynqm5tA
     ))
 
 

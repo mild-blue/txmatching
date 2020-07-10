@@ -16,4 +16,4 @@ class TestSolveFromDbAndItsSupportFunctionality(unittest.TestCase):
                                                                          " pairing result id")
 
             self.assertEqual(1, len(db_matching_to_matching(PairingResultModel.query.all()[0].calculated_matchings)),
-                             "Matching converter has not converted correctly matching from DB investigate!")
+                             "Matching converter has not converted correctly matching from DB. Investigate!")
