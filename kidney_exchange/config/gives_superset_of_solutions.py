@@ -27,5 +27,13 @@ def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configu
                            "require_new_donor_having_better_match_in_compatibility_index",
                            "require_new_donor_having_better_match_in_compatibility_index_or_blood_group"]
 
-    # TODO: Implement
-    raise NotImplementedError("TODO: Implement")
+    # TODO: There needs to be a better logic here
+    # For example for
+    # less_strict = (True, 2, True, True)
+    # more_strict = (True, 10, True, True)
+    # we should also return True (now we would return False)
+    for parameter_name in breaking_parameters:
+        if getattr(less_strict, parameter_name) != getattr(more_strict, parameter_name):
+            return False
+
+    return True
