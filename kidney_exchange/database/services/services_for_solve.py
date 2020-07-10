@@ -95,4 +95,4 @@ def medical_id_to_id(medical_id: str) -> int:
 
 
 def get_all_patients():
-    PatientModel.query.filter(PatientModel.active).all()
+    return PatientModel.query.filter(PatientModel.active).all()

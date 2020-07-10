@@ -3,7 +3,7 @@ from typing import List, Iterator, Optional
 
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.config.gives_superset_of_solutions import gives_superset_of_solutions
-from kidney_exchange.database.services.matching import get_pairing_result_for_config, get_patients_for_pairing_result, \
+from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, get_patients_for_pairing_result, \
     db_matching_to_matching, get_latest_configuration, \
     get_donor_from_db, get_recipient_from_db, medical_id_to_id, config_model_to_config, get_config_models, \
     get_all_patients

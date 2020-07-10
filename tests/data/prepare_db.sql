@@ -1,8 +1,9 @@
 TRUNCATE TABLE public.config RESTART IDENTITY CASCADE;
-
 TRUNCATE TABLE public.app_user RESTART IDENTITY CASCADE;
-
 TRUNCATE TABLE public.patient RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.app_user RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.pairing_result_patient RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.patient_pair RESTART IDENTITY CASCADE;
 
 INSERT INTO public.app_user (id, email, pass_hash, role, created_at, updated_at, deleted_at)
 VALUES (1, 'a', 'a', 'VIEWER', '2020-07-09 19:24:31.284281', '2020-07-09 19:24:31.284281', null);

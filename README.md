@@ -91,3 +91,15 @@ easily be installed via pip and you have to use for example conda to install it.
 ```
 conda install -c conda-forge graph-tool
 ```
+
+### Testing
+To run tests that need database do the following:
+```
+docker-compose run db
+```
+run two SQL scripts on the database:
+```
+kidney_exchange/database/db_migrations/V1_schema.sql
+tests/data/prepare_db.sql
+```
+Then run the tests
