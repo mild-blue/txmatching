@@ -12,6 +12,12 @@ logger = logging.getLogger(__name__)
 service_api = Blueprint('service', __name__)
 
 
+@service_api.route('/')
+def hello():
+    logger.info("Hello from the log!")
+    return "Hello World!"
+
+
 @service_api.route("/db-health")
 def database_health_check():
     try:

@@ -6,9 +6,9 @@ from kidney_exchange.patients.patient_parameters import PatientParameters
 
 
 class Recipient(Patient):
-    def __init__(self, patient_id: str, parameters: PatientParameters = None,
+    def __init__(self, patient_medical_id: str, parameters: PatientParameters = None,
                  related_donors: Union[Donor, List[Donor]] = None):
-        super().__init__(patient_id=patient_id, parameters=parameters)
+        super().__init__(patient_medical_id=patient_medical_id, parameters=parameters)
 
         self._related_donors = related_donors
 
