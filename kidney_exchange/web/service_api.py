@@ -5,6 +5,7 @@ from flask import jsonify, g, render_template, request, redirect, Blueprint, cur
 from sqlalchemy.exc import OperationalError
 
 from kidney_exchange.database.db import db
+from kidney_exchange.web.web_utils.load_patients_utils import is_csv_allowed
 
 logger = logging.getLogger(__name__)
 
@@ -51,25 +52,18 @@ def browse_solutions():
     return render_template("browse_solutions.html")
 
 
-app.config["CSV_UPLOADS"] = "kidney_exchange/web/csv_uploads"
-app.config["ALLOWED_CSV_EXTENSIONS"] = ["CSV", "XLSX"]
-
-
-def allowed_csv(filename):
-    ext = filename.split(".")[1]
-    if ext.upper() in app.config["ALLOWED_CSV_EXTENSIONS"]:
-        return True
-    else:
-        return False
-
-
 @service_api.route('/load-patients', methods=["GET", "POST"])
 def upload_csv():
     if request.method == "POST":
         if request.files:
             uploaded_csv = request.files["csv"]
-            uploaded_csv.save(os.path.join(app.config["CSV_UPLOADS"], uploaded_csv.filename))
-            if not allowed_csv(uploaded_csv.filename):
+
+            csv_uploads_dir = app.config["CSV_UPLOADS"]
+            if not os.path.exists(csv_uploads_dir):
+                os.mkdir(csv_uploads_dir)
+
+            uploaded_csv.save(os.path.join(csv_uploads_dir, uploaded_csv.filename))
+            if not is_csv_allowed(uploaded_csv.filename):
                 print("[WARN] Uploaded file is not .csv or .xlsx")
 
                 return redirect(request.url)

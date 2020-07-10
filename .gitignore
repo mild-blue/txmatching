@@ -306,3 +306,5 @@ dmypy.json
 .history
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,python,pycharm,visualstudiocode
+
+kidney_exchange/web/csv_uploads

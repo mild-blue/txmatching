@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-import traceback
 from importlib import util as importing
 
 from flask import Flask
@@ -18,6 +17,10 @@ app = Flask(__name__)
 
 # register blueprints
 app.register_blueprint(service_api)
+
+# Add config
+app.config["CSV_UPLOADS"] = "kidney_exchange/web/csv_uploads"
+app.config["ALLOWED_CSV_EXTENSIONS"] = ["CSV", "XLSX"]
 
 
 def load_local_development_config():
@@ -44,7 +47,6 @@ def configure_db():
 with app.app_context():
     load_local_development_config()
     configure_db()
-
 
 if __name__ == '__main__':
     app.run(host='localhost', port=8080, debug=True)
