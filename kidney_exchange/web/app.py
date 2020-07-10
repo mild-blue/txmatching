@@ -7,6 +7,7 @@ from flask import Flask
 
 from kidney_exchange.database.db import db
 from kidney_exchange.web.service_api import service_api
+from kidney_exchange.web.functional_api import functional_api
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
@@ -15,8 +16,12 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+# For flask.flash (gives feedback when uploading files)
+app.secret_key = "secret key"
+
 # register blueprints
 app.register_blueprint(service_api)
+app.register_blueprint(functional_api)
 
 # Add config
 app.config["CSV_UPLOADS"] = "kidney_exchange/web/csv_uploads"
