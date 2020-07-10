@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import traceback
 from importlib import util as importing
 
 from flask import Flask
@@ -43,12 +44,6 @@ def configure_db():
 with app.app_context():
     load_local_development_config()
     configure_db()
-
-
-@app.route('/')
-def hello():
-    logger.info("Hello from the log!")
-    return "Hello World!"
 
 
 if __name__ == '__main__':
