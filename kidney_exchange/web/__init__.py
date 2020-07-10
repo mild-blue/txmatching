@@ -26,7 +26,7 @@ def create_app():
 
     # Add config
     app.config["CSV_UPLOADS"] = "kidney_exchange/web/csv_uploads"
-    app.config["ALLOWED_CSV_EXTENSIONS"] = ["CSV", "XLSX"]
+    app.config["ALLOWED_FILE_EXTENSIONS"] = ["CSV", "XLSX"]
 
     def load_local_development_config():
         config_file = 'kidney_exchange.web.local_config'
