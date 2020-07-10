@@ -14,12 +14,12 @@ class Patient:
 
     def __eq__(self, other):
         return self.__class__ == other.__class__ \
-               and self._patient_medical_id == other.patient_id
+               and self._patient_medical_id == other.medical_id
 
     @property
     def params(self):
         return self._parameters
 
     @property
-    def patient_id(self) -> str:
+    def medical_id(self) -> str:
         return self._patient_medical_id

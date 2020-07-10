@@ -1,8 +1,9 @@
 import os
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import pandas as pd
+from werkzeug.datastructures import FileStorage
 
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.patient_parameters import PatientParameters
@@ -61,9 +62,9 @@ def _country_code_from_id(patient_id: str) -> str:
     raise ValueError(f"Could not assign country code to {patient_id}")
 
 
-def parse_excel_data(file_path: str) -> Tuple[List[Donor], List[Recipient]]:
-    print(f"[INFO] Parsing patient data from file {file_path}")
-    data = pd.read_excel(file_path, skiprows=1)
+def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[Donor], List[Recipient]]:
+    print(f"[INFO] Parsing patient data from file")
+    data = pd.read_excel(file_io, skiprows=1)
     donors = list()
     recipients = list()
     for index, row in data.iterrows():
