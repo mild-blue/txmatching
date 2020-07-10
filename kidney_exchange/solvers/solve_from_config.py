@@ -36,7 +36,7 @@ def solve_from_db():
 def solve_from_config(params: ExchangeParameters):
     scorer = scorer_from_config(params.configuration)
     solver = solver_from_config(params.configuration)
-    matchings_in_db = load_matchings_from_database(params, solver)
+    matchings_in_db = load_matchings_from_database(params)
     if matchings_in_db is not None:
         all_solutions = matchings_in_db
     else:
@@ -56,7 +56,7 @@ def load_matchings_from_database(exchange_parameters: ExchangeParameters) -> Opt
                                        more_strict=current_config):
             compatible_config_models.append(config_model)
 
-    current_patient_ids = {medical_id_to_id(patient) for patient in
+    current_patient_ids = {medical_id_to_id(patient.patient_id) for patient in
                            exchange_parameters.donors + exchange_parameters.recipients}
 
     for compatible_config in compatible_config_models:
