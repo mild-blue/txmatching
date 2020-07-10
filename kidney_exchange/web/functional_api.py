@@ -1,17 +1,13 @@
 import logging
-import os
 
-from flask import render_template, request, redirect, Blueprint, flash, current_app as app
+from flask import render_template, request, redirect, Blueprint, flash
 
-from kidney_exchange.web.web_utils.load_patients_utils import is_csv_allowed
-
+from kidney_exchange.web.web_utils.load_patients_utils import is_allowed_file_extension
 
 logger = logging.getLogger(__name__)
 
-# For flask.flash (gives feedback when uploading files)
-app.secret_key = "secret key"
-
 functional_api = Blueprint('functional', __name__)
+
 
 @functional_api.route('/')
 def home():
@@ -52,8 +48,8 @@ def upload_csv():
             flash("No patients file uploaded")
 
             return redirect(request.url)
-        
-        if not is_csv_allowed(uploaded_csv.filename):
+
+        if not is_allowed_file_extension(uploaded_csv.filename):
             logger.error(f"{uploaded_csv.filename} is not csv or xlsx file")
             flash("This is not a csv or xlsx file, try again")
 
