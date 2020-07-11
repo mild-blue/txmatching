@@ -1,14 +1,17 @@
+import dataclasses
 from dataclasses import dataclass
 from typing import List, Iterator, Optional, Iterable
 
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.config.gives_superset_of_solutions import gives_superset_of_solutions
+from kidney_exchange.database.db import db
 from kidney_exchange.database.services.save_patients import medical_id_to_id
 from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, \
     get_patients_for_pairing_result, \
     db_matching_to_matching, get_latest_configuration, \
     get_donor_from_db, get_recipient_from_db, config_model_to_config, get_config_models, \
     get_all_patients
+from kidney_exchange.database.sql_alchemy_schema import PairingResultPatientModel, PairingResultModel
 from kidney_exchange.filters.filter_from_config import filter_from_config
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
@@ -24,6 +27,22 @@ class SolverInputParameters:
     configuration: Configuration
 
 
+@dataclass
+class DonorRecipient:
+    donor: int
+    recipient: int
+
+
+@dataclass
+class CalculatedMatching:
+    donors_recipients: List[DonorRecipient]
+
+
+@dataclass
+class CalculatedMatchings:
+    matchings: List[CalculatedMatching]
+
+
 def solve_from_db() -> Iterable[Matching]:
     patients = get_all_patients()
     # TODO dont use strings here, use some better logic (ENUMS for example)
@@ -31,12 +50,41 @@ def solve_from_db() -> Iterable[Matching]:
     donors = [get_donor_from_db(donor.id) for donor in patients if donor.patient_type == 'DONOR']
     recipients = [get_recipient_from_db(recipient.id) for recipient in patients if
                   recipient.patient_type == 'RECIPIENT']
-    final_solutions = solve_from_config(SolverInputParameters(
+    latest_config_model = get_latest_configuration()
+    configuration = config_model_to_config(latest_config_model)
+    current_config_matchings = solve_from_config(SolverInputParameters(
         donors=donors,
         recipients=recipients,
-        configuration=get_latest_configuration()
+        configuration=configuration
     ))
-    return final_solutions
+    pairing_result_patients = [PairingResultPatientModel(patient_id=patient.id) for patient in patients]
+    current_config_matchings_model = dataclasses.asdict(
+        current_config_matchings_to_model(current_config_matchings)
+    )
+    pairing_result_model = PairingResultModel(
+        patients=pairing_result_patients,
+        score_matrix={},
+        calculated_matchings=current_config_matchings_model,
+        config_id=latest_config_model.id,
+        valid=True
+    )
+    db.session.add(pairing_result_model)
+    db.session.commit()
+
+    return current_config_matchings
+
+
+def current_config_matchings_to_model(config_matchings: Iterable[Matching]) -> CalculatedMatchings:
+    return CalculatedMatchings([
+        CalculatedMatching([
+            DonorRecipient(
+                medical_id_to_id(donor.medical_id),
+                medical_id_to_id(recipient.medical_id)
+            ) for donor, recipient in final_solution.donor_recipient_list
+        ]
+
+        ) for final_solution in config_matchings
+    ])
 
 
 def solve_from_config(params: SolverInputParameters) -> Iterable[Matching]:
@@ -49,7 +97,8 @@ def solve_from_config(params: SolverInputParameters) -> Iterable[Matching]:
         all_solutions = solver.solve(params.donors, params.recipients, scorer)
 
     matching_filter = filter_from_config(params.configuration)
-    return filter(matching_filter.keep, all_solutions)
+    matchings_filtered = filter(matching_filter.keep, all_solutions)
+    return list(matchings_filtered)
 
 
 def load_matchings_from_database(exchange_parameters: SolverInputParameters) -> Optional[Iterator[Matching]]:

@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Iterator
+from typing import List, Dict, Tuple, Iterator, Iterable
 
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.database.sql_alchemy_schema import ConfigModel, PairingResultModel, PairingResultPatientModel, \
@@ -24,9 +24,9 @@ def get_configs() -> Iterator[Configuration]:
         yield config_model_to_config(config_model)
 
 
-def get_latest_configuration() -> Configuration:
+def get_latest_configuration() -> ConfigModel:
     latest_config_model = get_config_models(order_by=ConfigModel.created_at)[-1]
-    return config_model_to_config(latest_config_model)
+    return latest_config_model
 
 
 def get_pairing_result_for_config(config_id: int) -> List[PairingResultModel]:
@@ -75,5 +75,5 @@ def get_recipient_from_db(patient_id: int):
     return Recipient(recipient.medical_id, recipient.params, get_donor_from_db(don_id))
 
 
-def get_all_patients():
+def get_all_patients() -> Iterable[PatientModel]:
     return PatientModel.query.filter(PatientModel.active).all()
