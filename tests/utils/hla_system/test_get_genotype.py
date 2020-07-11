@@ -17,7 +17,7 @@ class TestGetGenotype(unittest.TestCase):
     def test_get_genotype(self):
         print("[INFO] Testing get_genotype")
         for patient_params, genotypes in self._patient_params_genotypes:
-            print(f"Original antigens: {str(patient_params._hla_antigens)}")
+            print(f"Original antigens: {str(patient_params.hla_antigens)}")
             print(f"Low-res antigens: {str(patient_params.hla_antigens_low_resolution)}")
             for gene_code in compatibility_gene_codes:
                 calculated_genotype = get_antigen_genotype(patient_params.hla_antigens_low_resolution, gene_code)
