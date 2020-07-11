@@ -40,7 +40,7 @@ class CalculatedMatching:
 
 @dataclass
 class CalculatedMatchings:
-    machings: List[CalculatedMatching]
+    matchings: List[CalculatedMatching]
 
 
 def solve_from_db() -> Iterable[Matching]:
@@ -52,27 +52,29 @@ def solve_from_db() -> Iterable[Matching]:
                   recipient.patient_type == 'RECIPIENT']
     latest_config_model = get_latest_configuration()
     configuration = config_model_to_config(latest_config_model)
-    final_solutions = solve_from_config(SolverInputParameters(
+    current_config_matchings = solve_from_config(SolverInputParameters(
         donors=donors,
         recipients=recipients,
         configuration=configuration
     ))
     pairing_result_patients = [PairingResultPatientModel(patient_id=patient.id) for patient in patients]
-    calculated_matchings = final_solutions_to_db_format(final_solutions)
-    result_model = PairingResultModel(
+    current_config_matchings_model = dataclasses.asdict(
+        current_config_matchings_to_model(current_config_matchings)
+    )
+    pairing_result_model = PairingResultModel(
         patients=pairing_result_patients,
         score_matrix={},
-        calculated_matchings=dataclasses.asdict(calculated_matchings),
+        calculated_matchings=current_config_matchings_model,
         config_id=latest_config_model.id,
         valid=True
     )
-    db.session.add(result_model)
+    db.session.add(pairing_result_model)
     db.session.commit()
 
-    return final_solutions
+    return current_config_matchings
 
 
-def final_solutions_to_db_format(final_solutions: Iterable[Matching]) -> CalculatedMatchings:
+def current_config_matchings_to_model(config_matchings: Iterable[Matching]) -> CalculatedMatchings:
     return CalculatedMatchings([
         CalculatedMatching([
             DonorRecipient(
@@ -81,7 +83,7 @@ def final_solutions_to_db_format(final_solutions: Iterable[Matching]) -> Calcula
             ) for donor, recipient in final_solution.donor_recipient_list
         ]
 
-        ) for final_solution in final_solutions
+        ) for final_solution in config_matchings
     ])
 
 
