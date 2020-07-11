@@ -1,6 +1,6 @@
 import unittest
 
-from kidney_exchange.database.services.save_patients import save_patients
+from kidney_exchange.database.services.patient_service import save_patients
 from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
 from kidney_exchange.web import create_app
 
