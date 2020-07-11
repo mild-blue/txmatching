@@ -9,6 +9,6 @@ class TestSolveFromDbAndItsSupportFunctionality(unittest.TestCase):
     def test_saving_patients(self):
         app = create_app()
         with app.app_context():
-            patients = parse_excel_data("../../../../data.xlsx")
+            patients = parse_excel_data("../../data/data.xlsx")
             save_patients(patients)
 
