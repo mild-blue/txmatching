@@ -61,5 +61,5 @@ def upload_xlsx():
         flash("File successfully loaded")
 
         return redirect(request.url)
-    if flask.request.method == 'GET':
+    elif flask.request.method == 'GET':
         return render_template("load_patients.html")

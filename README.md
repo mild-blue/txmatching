@@ -95,19 +95,8 @@ conda install -c conda-forge graph-tool
 ### Testing
 To run tests that need database do the following:
 
-add some file as `data.xlsx` with patient data to a folder above the one level above the project root
+```
+make setup-db-for-tests
+```
 
-```
-docker-compose run db
-```
-run two SQL scripts on the database:
-```
-kidney_exchange/database/db_migrations/V1_schema.sql
-tests/data/prepare_db.sql
-```
-Then run the tests, but carefully. The tests in 
-```
-tests/database/services/test_services_for_saving_patient_data.py
-```
-have to be run as last otherwise the database gets broken
-This will be improved in future tasks
+run tests

@@ -1,7 +1,8 @@
 from typing import List, Tuple, Optional
 
 from kidney_exchange.database.db import db
-from kidney_exchange.database.sql_alchemy_schema import PatientAcceptableBloodModel, PatientModel, PatientPairModel
+from kidney_exchange.database.sql_alchemy_schema import PatientAcceptableBloodModel, PatientModel, PatientPairModel, \
+    PairingResultPatientModel
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.patient import Patient
 from kidney_exchange.patients.recipient import Recipient
@@ -47,6 +48,10 @@ def save_patient_models(patient_models: List[PatientModel]):
     for patient, maybe_patient_id in zip(patient_models, existing_patient_ids):
         if maybe_patient_id is not None:
             patient.id = maybe_patient_id
+            patient.patient_results = [PairingResultPatientModel(
+                patient_id=result.patient_id,
+                pairing_result_id=result.pairing_result_id
+            ) for result in PatientModel.query.get(maybe_patient_id).patient_results]
         patients_to_add.append(patient)
 
     PatientModel.query.filter(PatientModel.id.in_(existing_patient_ids)).delete('fetch')
@@ -55,6 +60,8 @@ def save_patient_models(patient_models: List[PatientModel]):
 
 
 def save_patients(donors_recipients: Tuple[List[Donor], List[Recipient]]):
-    patient_models = [create_patient_model_from_patient(patient)
-                      for donor_recipient in donors_recipients for patient in donor_recipient]
-    save_patient_models(patient_models)
+    donor_models = [create_patient_model_from_patient(donor) for donor in donors_recipients[0]]
+    save_patient_models(donor_models)
+
+    recipient_models = [create_patient_model_from_patient(recipient) for recipient in donors_recipients[1]]
+    save_patient_models(recipient_models)
