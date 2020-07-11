@@ -5,11 +5,13 @@ from typing import List, Iterator, Optional, Iterable
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.config.gives_superset_of_solutions import gives_superset_of_solutions
 from kidney_exchange.database.db import db
-from kidney_exchange.database.services.save_patients import medical_id_to_id
+from kidney_exchange.database.services.config_service import get_current_configuration, save_configuration_to_db, \
+    get_config_models, config_model_to_configuration
+from kidney_exchange.database.services.patient_service import medical_id_to_id
 from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, \
     get_patients_for_pairing_result, \
-    db_matching_to_matching, get_latest_configuration, \
-    get_donor_from_db, get_recipient_from_db, config_model_to_config, get_config_models, \
+    db_matching_to_matching, \
+    get_donor_from_db, get_recipient_from_db, \
     get_all_patients
 from kidney_exchange.database.sql_alchemy_schema import PairingResultPatientModel, PairingResultModel
 from kidney_exchange.filters.filter_from_config import filter_from_config
@@ -50,22 +52,22 @@ def solve_from_db() -> Iterable[Matching]:
     donors = [get_donor_from_db(donor.id) for donor in patients if donor.patient_type == 'DONOR']
     recipients = [get_recipient_from_db(recipient.id) for recipient in patients if
                   recipient.patient_type == 'RECIPIENT']
-    latest_config_model = get_latest_configuration()
-    configuration = config_model_to_config(latest_config_model)
+    current_configuration = get_current_configuration()
     current_config_matchings = solve_from_config(SolverInputParameters(
         donors=donors,
         recipients=recipients,
-        configuration=configuration
+        configuration=current_configuration
     ))
     pairing_result_patients = [PairingResultPatientModel(patient_id=patient.id) for patient in patients]
     current_config_matchings_model = dataclasses.asdict(
         current_config_matchings_to_model(current_config_matchings)
     )
+    config_id = save_configuration_to_db(current_configuration)
     pairing_result_model = PairingResultModel(
         patients=pairing_result_patients,
         score_matrix={},
         calculated_matchings=current_config_matchings_model,
-        config_id=latest_config_model.id,
+        config_id=config_id,
         valid=True
     )
     db.session.add(pairing_result_model)
@@ -106,7 +108,7 @@ def load_matchings_from_database(exchange_parameters: SolverInputParameters) -> 
 
     compatible_config_models = list()
     for config_model in get_config_models():
-        config_from_model = config_model_to_config(config_model)
+        config_from_model = config_model_to_configuration(config_model)
         if gives_superset_of_solutions(less_strict=config_from_model,
                                        more_strict=current_config):
             compatible_config_models.append(config_model)

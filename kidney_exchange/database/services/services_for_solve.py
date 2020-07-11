@@ -1,32 +1,12 @@
-from typing import List, Dict, Tuple, Iterator, Iterable
+from typing import List, Dict, Tuple, Iterable
 
-from kidney_exchange.config.configuration import Configuration
-from kidney_exchange.database.sql_alchemy_schema import ConfigModel, PairingResultModel, PairingResultPatientModel, \
+from kidney_exchange.database.sql_alchemy_schema import PairingResultModel, PairingResultPatientModel, \
     PatientModel, PatientPairModel
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.patient import Patient
 from kidney_exchange.patients.patient_parameters import PatientParameters
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.solvers.matching.matching import Matching
-
-
-def get_config_models(order_by=ConfigModel.created_at) -> List[ConfigModel]:
-    configs = ConfigModel.query.order_by(order_by).all()
-    return configs
-
-
-def config_model_to_config(config_model: ConfigModel) -> Configuration:
-    return Configuration(**config_model.parameters)
-
-
-def get_configs() -> Iterator[Configuration]:
-    for config_model in get_config_models():
-        yield config_model_to_config(config_model)
-
-
-def get_latest_configuration() -> ConfigModel:
-    latest_config_model = get_config_models(order_by=ConfigModel.created_at)[-1]
-    return latest_config_model
 
 
 def get_pairing_result_for_config(config_id: int) -> List[PairingResultModel]:

@@ -3,7 +3,7 @@ import logging
 import flask
 from flask import render_template, request, redirect, Blueprint, flash
 
-from kidney_exchange.database.services.save_patients import save_patients
+from kidney_exchange.database.services.patient_service import save_patients
 from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
 from kidney_exchange.web.web_utils.load_patients_utils import is_allowed_file_extension
 
