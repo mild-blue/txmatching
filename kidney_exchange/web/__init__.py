@@ -1,8 +1,8 @@
 import logging
 import os
+import sys
 from importlib import util as importing
 
-import sys
 from flask import Flask
 
 from kidney_exchange.database.db import db

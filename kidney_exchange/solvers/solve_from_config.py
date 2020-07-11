@@ -3,10 +3,11 @@ from typing import List, Iterator, Optional, Iterable
 
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.config.gives_superset_of_solutions import gives_superset_of_solutions
+from kidney_exchange.database.services.save_patients import medical_id_to_id
 from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, \
     get_patients_for_pairing_result, \
     db_matching_to_matching, get_latest_configuration, \
-    get_donor_from_db, get_recipient_from_db, medical_id_to_id, config_model_to_config, get_config_models, \
+    get_donor_from_db, get_recipient_from_db, config_model_to_config, get_config_models, \
     get_all_patients
 from kidney_exchange.filters.filter_from_config import filter_from_config
 from kidney_exchange.patients.donor import Donor
@@ -28,7 +29,8 @@ def solve_from_db() -> Iterable[Matching]:
     # TODO dont use strings here, use some better logic (ENUMS for example)
     # https://trello.com/c/pKMqnv7X
     donors = [get_donor_from_db(donor.id) for donor in patients if donor.patient_type == 'DONOR']
-    recipients = [get_recipient_from_db(recipient.id) for recipient in patients if recipient.patient_type == 'RECIPIENT']
+    recipients = [get_recipient_from_db(recipient.id) for recipient in patients if
+                  recipient.patient_type == 'RECIPIENT']
     final_solutions = solve_from_config(SolverInputParameters(
         donors=donors,
         recipients=recipients,
@@ -60,7 +62,7 @@ def load_matchings_from_database(exchange_parameters: SolverInputParameters) -> 
                                        more_strict=current_config):
             compatible_config_models.append(config_model)
 
-    current_patient_ids = {medical_id_to_id(patient.patient_id) for patient in
+    current_patient_ids = {medical_id_to_id(patient.medical_id) for patient in
                            exchange_parameters.donors + exchange_parameters.recipients}
 
     for compatible_config in compatible_config_models:
