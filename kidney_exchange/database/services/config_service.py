@@ -6,21 +6,21 @@ from kidney_exchange.database.db import db
 from kidney_exchange.database.sql_alchemy_schema import ConfigModel
 
 
-def config_model_to_config(config_model: ConfigModel) -> Configuration:
+def config_model_to_configuration(config_model: ConfigModel) -> Configuration:
     return Configuration(**config_model.parameters)
 
 
 def get_configurations() -> Iterator[Configuration]:
     for config_model in get_config_models():
-        yield config_model_to_config(config_model)
+        yield config_model_to_configuration(config_model)
 
 
-def get_latest_configuration() -> Configuration:
-    latest_config_model = ConfigModel.query.get(0)
-    if latest_config_model is None:
+def get_current_configuration() -> Configuration:
+    current_config_model = ConfigModel.query.get(0)
+    if current_config_model is None:
         return Configuration()
     else:
-        return config_model_to_config(latest_config_model)
+        return config_model_to_configuration(current_config_model)
 
 
 def save_current_config(configuration: Configuration) -> int:
@@ -40,8 +40,8 @@ def save_configuration_to_db(configuration: Configuration) -> int:
     return config_model.id
 
 
-def get_config_models(order_by=ConfigModel.created_at) -> Iterator[ConfigModel]:
-    configs = ConfigModel.query.order_by(order_by).all()
+def get_config_models() -> Iterator[ConfigModel]:
+    configs = ConfigModel.query.all()
     return configs
 
 
