@@ -6,16 +6,9 @@ from sqlalchemy.exc import OperationalError
 
 from kidney_exchange.database.db import db
 
-
 logger = logging.getLogger(__name__)
 
 service_api = Blueprint('service', __name__)
-
-
-@service_api.route('/')
-def hello():
-    logger.info("Hello from the log!")
-    return "Hello World!"
 
 
 @service_api.route("/db-health")
@@ -37,7 +30,7 @@ def get_version() -> str:
     """
     Retrieves version from the flask app.
     """
-    if 'version' not in g:
+    if 'version' not in g:  # TODO tohle nefunguje https://trello.com/c/uW9HT1sx/111-v-getversion-verze-nikdy-neni-v-g
         g.version = read_version('development')
 
     return g.version

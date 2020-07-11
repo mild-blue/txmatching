@@ -17,12 +17,12 @@ def home():
     return render_template("template_main.html")
 
 
-@functional_api.route('/set_parameters')
+@functional_api.route('/set-parameters')
 def set_parameters():
     return render_template("set_parameters.html")
 
 
-@functional_api.route('/set_individual')
+@functional_api.route('/set-individual')
 def set_individual():
     return render_template("set_individual.html")
 
@@ -32,7 +32,7 @@ def solve():
     return render_template("solve.html")
 
 
-@functional_api.route('/browse_solutions')
+@functional_api.route('/browse-solutions')
 def browse_solutions():
     return render_template("browse_solutions.html")
 
