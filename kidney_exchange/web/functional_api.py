@@ -1,7 +1,10 @@
 import logging
 
+import flask
 from flask import render_template, request, redirect, Blueprint, flash
 
+from kidney_exchange.database.services.save_patients import save_patients
+from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
 from kidney_exchange.web.web_utils.load_patients_utils import is_allowed_file_extension
 
 logger = logging.getLogger(__name__)
@@ -12,11 +15,6 @@ functional_api = Blueprint('functional', __name__)
 @functional_api.route('/')
 def home():
     return render_template("template_main.html")
-
-
-@functional_api.route('/load_patients')
-def load_patients():
-    return render_template("load_patients.html")
 
 
 @functional_api.route('/set_parameters')
@@ -40,23 +38,28 @@ def browse_solutions():
 
 
 @functional_api.route('/load-patients', methods=["GET", "POST"])
-def upload_csv():
-    if request.files:
-        uploaded_csv = request.files["csv"]
-        if uploaded_csv.filename == "":
+def upload_xlsx():
+
+    if flask.request.method == 'POST':
+
+        patient_data = request.files['patient_data']
+        if patient_data.filename == "":
             logger.warning("No patients file uploaded")
             flash("No patients file uploaded")
 
             return redirect(request.url)
 
-        if not is_allowed_file_extension(uploaded_csv.filename):
-            logger.error(f"{uploaded_csv.filename} is not csv or xlsx file")
+        if not is_allowed_file_extension(patient_data.filename):
+            logger.error(f"{patient_data.filename} is not csv or xlsx file")
             flash("This is not a csv or xlsx file, try again")
 
             return redirect(request.url)
 
+        parsed_data = parse_excel_data(patient_data)
+        save_patients(parsed_data)
+
         flash("File successfully loaded")
 
         return redirect(request.url)
-
-    return render_template("load_patients.html")
+    if flask.request.method == 'GET':
+        return render_template("load_patients.html")

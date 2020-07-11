@@ -1,13 +1,12 @@
 import logging
 import os
+import sys
 from importlib import util as importing
 
-import sys
 from flask import Flask
 
 from kidney_exchange.database.db import db
 from kidney_exchange.web.functional_api import functional_api
-from kidney_exchange.web.db_api import db_api
 from kidney_exchange.web.service_api import service_api
 
 
@@ -20,7 +19,6 @@ def create_app():
 
     # register blueprints
     app.register_blueprint(service_api)
-    app.register_blueprint(db_api)
     app.register_blueprint(functional_api)
 
     # For flask.flash (gives feedback when uploading files)

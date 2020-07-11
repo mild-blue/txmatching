@@ -6,13 +6,6 @@ from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.patient import Patient
 from kidney_exchange.patients.recipient import Recipient
 
-ACCEPTABLE_BLOOD_GROUPS_DICT = {
-    "A": ["0", "A", "AB"],
-    "0": ["0"],
-    "B": ["0", "B", "AB"],
-    "AB": ["0", "A", "B", "AB"],
-}
-
 
 def medical_id_to_id(medical_id: str) -> Optional[int]:
     patients_with_id = PatientModel.query.filter(PatientModel.medical_id == medical_id).all()
@@ -25,34 +18,31 @@ def medical_id_to_id(medical_id: str) -> Optional[int]:
                          f"were found for patient with medical id {medical_id}")
 
 
-def create_patient_model_from_patient(patient: Patient, patient_type: str) -> PatientModel:
-    acceptable_blood_groups = patient.params.acceptable_blood_groups
-    if patient.params.acceptable_blood_groups is None:
-        acceptable_blood_groups = ACCEPTABLE_BLOOD_GROUPS_DICT[str(patient.params.blood_group)]
-    acceptable_blood_groups = [PatientAcceptableBloodModel(blood_type=blood) for blood in acceptable_blood_groups]
+def create_patient_model_from_patient(patient: Patient) -> PatientModel:
     patient_model = PatientModel(
         medical_id=patient.medical_id,
         country=patient.params.country_code,
-        patient_type=patient_type,
         blood=patient.params.blood_group,
-        typization={},
-        luminex={},
-        acceptable_blood=acceptable_blood_groups,
+        typization={},  # TODO https://trello.com/c/1ynqm5tA,
+        luminex={},  # TODO https://trello.com/c/1ynqm5tA,
         active=True
     )
-    return patient_model
+    if type(patient) == Recipient:
+        patient_model.acceptable_blood = [PatientAcceptableBloodModel(blood_type=blood)
+                                          for blood in patient.params.acceptable_blood_groups]
+        patient_model.patient_type = 'RECIPIENT'
+        patient_model.patient_pairs = [PatientPairModel(donor_id=medical_id_to_id(patient.related_donor.medical_id))]
 
+    elif type(patient) == Donor:
+        patient_model.patient_type = 'DONOR'
+    else:
+        raise TypeError(f"Uexpected patient type {type(patient)}")
 
-def create_recipient_model_from_recipient(recipient: Recipient):
-    patient_model = create_patient_model_from_patient(recipient, 'RECIPIENT')
-
-    patient_model.patient_pairs = [PatientPairModel(donor_id=medical_id_to_id(recipient.related_donor.medical_id))]
     return patient_model
 
 
 def save_patient_models(patient_models: List[PatientModel]):
-    existing_patient_ids = [maybe_patient_id for maybe_patient_id in
-                            [medical_id_to_id(patient.medical_id) for patient in patient_models]]
+    existing_patient_ids = [medical_id_to_id(patient.medical_id) for patient in patient_models]
     patients_to_add = []
     for patient, maybe_patient_id in zip(patient_models, existing_patient_ids):
         if maybe_patient_id is not None:
@@ -65,11 +55,6 @@ def save_patient_models(patient_models: List[PatientModel]):
 
 
 def save_patients(donors_recipients: Tuple[List[Donor], List[Recipient]]):
-    donor_models = [create_patient_model_from_patient(donor, 'DONOR') for donor in donors_recipients[0]]
-    save_patient_models(donor_models)
-
-    recipient_models = [create_recipient_model_from_recipient(recipient) for recipient in donors_recipients[1]]
-    save_patient_models(recipient_models)
-
-
-
+    patient_models = [create_patient_model_from_patient(patient)
+                      for donor_recipient in donors_recipients for patient in donor_recipient]
+    save_patient_models(patient_models)

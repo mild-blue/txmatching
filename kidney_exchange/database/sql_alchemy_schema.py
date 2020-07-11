@@ -53,8 +53,8 @@ class PatientModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    acceptable_blood = relationship("PatientAcceptableBloodModel", back_populates="patient")
-    patient_pairs = relationship("PatientPairModel", back_populates="patient")
+    acceptable_blood = relationship("PatientAcceptableBloodModel", backref="patient")
+    patient_pairs = relationship("PatientPairModel", backref="patient")
 
 
 class PatientAcceptableBloodModel(db.Model):
@@ -66,7 +66,6 @@ class PatientAcceptableBloodModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    patient = relationship("PatientModel", back_populates="acceptable_blood")
 
 
 class PatientPairModel(db.Model):
@@ -78,4 +77,3 @@ class PatientPairModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    patient = relationship("PatientModel", back_populates="patient_pairs")
