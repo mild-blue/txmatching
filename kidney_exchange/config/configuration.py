@@ -3,6 +3,13 @@ from typing import List
 
 
 @dataclass
+class RecipientDonorScore:
+    recipient_id: int
+    donor_id: int
+    compatibility_index: float
+
+
+@dataclass
 class Configuration:
     scorer_constructor_name: str = "HLAAdditiveScorer"
     solver_constructor_name: str = "AllSolutionsSolver"
@@ -15,3 +22,5 @@ class Configuration:
     max_sequence_length: int = 5
     max_number_of_distinct_countries_in_round: int = 2
     required_patient_ids: List[str] = field(default_factory=list)
+    manual_recipient_donor_scores: List[RecipientDonorScore] = field(default_factory=list)
+

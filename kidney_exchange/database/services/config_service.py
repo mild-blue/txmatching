@@ -23,10 +23,12 @@ def get_current_configuration() -> Configuration:
         return config_model_to_configuration(current_config_model)
 
 
-def save_current_config(configuration: Configuration) -> int:
+def save_configuration_as_current(configuration: Configuration) -> int:
     config_model = _configuration_to_config_model(configuration)
     config_model.id = 0
-    return db.session.add(config_model)
+    db.session.add(config_model)
+    db.session.commit()
+    return config_model.id
 
 
 def save_configuration_to_db(configuration: Configuration) -> int:

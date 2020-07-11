@@ -4,9 +4,9 @@ from typing import List, Tuple, Optional
 from kidney_exchange.database.db import db
 from kidney_exchange.database.sql_alchemy_schema import PatientAcceptableBloodModel, PatientModel, PatientPairModel, \
     PairingResultPatientModel
-from kidney_exchange.patients.donor import Donor
-from kidney_exchange.patients.patient import Patient
-from kidney_exchange.patients.recipient import Recipient
+from kidney_exchange.patients.donor import DonorDto
+from kidney_exchange.patients.patient import PatientDto
+from kidney_exchange.patients.recipient import RecipientDto
 
 
 def medical_id_to_id(medical_id: str) -> Optional[int]:
@@ -20,22 +20,27 @@ def medical_id_to_id(medical_id: str) -> Optional[int]:
                          f"were found for patient with medical id {medical_id}")
 
 
-def create_patient_model_from_patient(patient: Patient) -> PatientModel:
+def id_to_medical_id(id: int) -> str:
+    return PatientModel.query.get(id).medical_id
+
+
+def patient_dto_to_patient_model(patient: PatientDto) -> PatientModel:
     patient_model = PatientModel(
         medical_id=patient.medical_id,
-        country=patient.params.country_code,
-        blood=patient.params.blood_group,
-        hla_antigens=dataclasses.asdict(patient.params.hla_antigens),
-        hla_antibodies=dataclasses.asdict(patient.params.hla_antibodies),
+        country=patient.parameters.country_code,
+        blood=patient.parameters.blood_group,
+        hla_antigens=dataclasses.asdict(patient.parameters.hla_antigens),
+        hla_antibodies=dataclasses.asdict(patient.parameters.hla_antibodies),
         active=True
     )
-    if type(patient) == Recipient:
+    if type(patient) == RecipientDto:
         patient_model.acceptable_blood = [PatientAcceptableBloodModel(blood_type=blood)
-                                          for blood in patient.params.acceptable_blood_groups]
+                                          for blood in patient.parameters.acceptable_blood_groups]
         patient_model.patient_type = 'RECIPIENT'
-        patient_model.patient_pairs = [PatientPairModel(donor_id=medical_id_to_id(patient.related_donor.medical_id))]
+        patient_model.patient_pairs = [
+            PatientPairModel(donor_id=medical_id_to_id(patient.related_donor.medical_id))]
 
-    elif type(patient) == Donor:
+    elif type(patient) == DonorDto:
         patient_model.patient_type = 'DONOR'
     else:
         raise TypeError(f"Uexpected patient type {type(patient)}")
@@ -50,7 +55,7 @@ def save_patient_models(patient_models: List[PatientModel]):
         if maybe_patient_id is not None:
             patient.id = maybe_patient_id
             patient.patient_results = [PairingResultPatientModel(
-                patient_id=result.patient_id,
+                patient_id=result.id,
                 pairing_result_id=result.pairing_result_id
             ) for result in PatientModel.query.get(maybe_patient_id).patient_results]
         patients_to_add.append(patient)
@@ -60,9 +65,9 @@ def save_patient_models(patient_models: List[PatientModel]):
     db.session.commit()
 
 
-def save_patients(donors_recipients: Tuple[List[Donor], List[Recipient]]):
-    donor_models = [create_patient_model_from_patient(donor) for donor in donors_recipients[0]]
+def save_patients(donors_recipients: Tuple[List[DonorDto], List[RecipientDto]]):
+    donor_models = [patient_dto_to_patient_model(donor) for donor in donors_recipients[0]]
     save_patient_models(donor_models)
 
-    recipient_models = [create_patient_model_from_patient(recipient) for recipient in donors_recipients[1]]
+    recipient_models = [patient_dto_to_patient_model(recipient) for recipient in donors_recipients[1]]
     save_patient_models(recipient_models)

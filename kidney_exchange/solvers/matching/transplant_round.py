@@ -24,8 +24,8 @@ class TransplantRound:
     def country_count(self) -> int:
         country_codes = set()
         for donor, recipient in self._donor_recipient_list:
-            country_codes.add(donor.params.country_code)
-            country_codes.add(recipient.params.country_code)
+            country_codes.add(donor.parameters.country_code)
+            country_codes.add(recipient.parameters.country_code)
 
         return len(country_codes)
 

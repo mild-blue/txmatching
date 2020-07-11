@@ -17,7 +17,7 @@ from kidney_exchange.database.sql_alchemy_schema import PairingResultPatientMode
 from kidney_exchange.filters.filter_from_config import filter_from_config
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.scorers.scorer_from_config import scorer_from_config
+from kidney_exchange.scorers.scorer_from_config import scorer_from_configuration
 from kidney_exchange.solvers.matching.matching import Matching
 from kidney_exchange.solvers.solver_from_config import solver_from_config
 
@@ -90,7 +90,7 @@ def current_config_matchings_to_model(config_matchings: Iterable[Matching]) -> C
 
 
 def solve_from_config(params: SolverInputParameters) -> Iterable[Matching]:
-    scorer = scorer_from_config(params.configuration)
+    scorer = scorer_from_configuration(params.configuration)
     solver = solver_from_config(params.configuration)
     matchings_in_db = load_matchings_from_database(params)
     if matchings_in_db is not None:

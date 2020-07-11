@@ -6,5 +6,5 @@ from kidney_exchange.utils.construct_configurable_object import construct_config
 _supported_scorers = [HLAAdditiveScorer]
 
 
-def scorer_from_config(config: Configuration) -> ScorerBase:
+def scorer_from_configuration(config: Configuration) -> ScorerBase:
     return construct_configurable_object(config.scorer_constructor_name, _supported_scorers, config)
