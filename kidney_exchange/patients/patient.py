@@ -5,7 +5,7 @@ from kidney_exchange.patients.patient_parameters import PatientParameters
 
 @dataclass
 class Patient:
-    id: int
+    db_id: int
     medical_id: str
     parameters: PatientParameters
 

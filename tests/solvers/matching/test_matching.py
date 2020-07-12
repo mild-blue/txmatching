@@ -2,13 +2,14 @@ from typing import List, Tuple, Set, Iterable, FrozenSet
 from unittest import TestCase
 
 from kidney_exchange.patients.donor import Donor
+from kidney_exchange.patients.patient_parameters import PatientParameters
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.solvers.matching.matching import Matching
 from kidney_exchange.solvers.matching.transplant_round import TransplantRound
 
 
-def _create_recipient(patient_id: str, donor: Donor) -> Recipient:
-    return Recipient(patient_id, related_donors=donor)
+def _create_recipient(id: int, donor: Donor) -> Recipient:
+    return Recipient(id, f"R-{id}", related_donor=donor, parameters=PatientParameters())
 
 
 def _inner_elements_to_frozenset(iterable: Iterable) -> Set[FrozenSet]:
@@ -17,8 +18,8 @@ def _inner_elements_to_frozenset(iterable: Iterable) -> Set[FrozenSet]:
 
 class TestMatching(TestCase):
     def setUp(self) -> None:
-        self._donors = [Donor(f"D-{donor_index}") for donor_index in range(10)]
-        self._recipients = [_create_recipient(f"R-{donor_index}", donor)
+        self._donors = [Donor(donor_index, f"D-{donor_index}", parameters=PatientParameters()) for donor_index in range(10)]
+        self._recipients = [_create_recipient(10 + donor_index, donor)
                             for donor_index, donor in enumerate(self._donors)]
 
         # transplant_indices - (donor_index, recipient_index)

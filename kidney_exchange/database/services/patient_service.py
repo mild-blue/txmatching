@@ -9,7 +9,7 @@ from kidney_exchange.patients.patient import PatientDto
 from kidney_exchange.patients.recipient import RecipientDto
 
 
-def medical_id_to_id(medical_id: str) -> Optional[int]:
+def medical_id_to_db_id(medical_id: str) -> Optional[int]:
     patients_with_id = PatientModel.query.filter(PatientModel.medical_id == medical_id).all()
     if len(patients_with_id) == 0:
         return None
@@ -20,8 +20,8 @@ def medical_id_to_id(medical_id: str) -> Optional[int]:
                          f"were found for patient with medical id {medical_id}")
 
 
-def id_to_medical_id(id: int) -> str:
-    return PatientModel.query.get(id).medical_id
+def db_id_to_medical_id(db_id: int) -> str:
+    return PatientModel.query.get(db_id).medical_id
 
 
 def patient_dto_to_patient_model(patient: PatientDto) -> PatientModel:
@@ -38,18 +38,18 @@ def patient_dto_to_patient_model(patient: PatientDto) -> PatientModel:
                                           for blood in patient.parameters.acceptable_blood_groups]
         patient_model.patient_type = 'RECIPIENT'
         patient_model.patient_pairs = [
-            PatientPairModel(donor_id=medical_id_to_id(patient.related_donor.medical_id))]
+            PatientPairModel(donor_id=medical_id_to_db_id(patient.related_donor.medical_id))]
 
     elif type(patient) == DonorDto:
         patient_model.patient_type = 'DONOR'
     else:
-        raise TypeError(f"Uexpected patient type {type(patient)}")
+        raise TypeError(f"Unexpected patient type {type(patient)}")
 
     return patient_model
 
 
 def save_patient_models(patient_models: List[PatientModel]):
-    existing_patient_ids = [medical_id_to_id(patient.medical_id) for patient in patient_models]
+    existing_patient_ids = [medical_id_to_db_id(patient.medical_id) for patient in patient_models]
     patients_to_add = []
     for patient, maybe_patient_id in zip(patient_models, existing_patient_ids):
         if maybe_patient_id is not None:

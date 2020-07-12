@@ -31,7 +31,7 @@ def get_patients_from_ids(donor_id: int, recipient_id: int) -> Tuple[Donor, Reci
 def get_patient_from_model(patient_id: int) -> Patient:
     patient_model = PatientModel.query.get(patient_id)
     return Patient(
-        id=patient_model.id,
+        db_id=patient_model.id,
         medical_id=patient_model.medical_id,
         parameters=PatientParameters(
             blood_group=patient_model.blood,
@@ -44,7 +44,7 @@ def get_patient_from_model(patient_id: int) -> Patient:
 
 def get_donor_from_db(patient_id: int) -> Donor:
     donor = get_patient_from_model(patient_id)
-    return Donor(donor.id, donor.medical_id, donor.parameters)
+    return Donor(donor.db_id, donor.medical_id, donor.parameters)
 
 
 def get_recipient_from_db(patient_id: int):
@@ -55,7 +55,7 @@ def get_recipient_from_db(patient_id: int):
     else:
         raise ValueError(f"There has to be 1 donor per recipient, but {len(related_donors)} "
                          f"were found for recipient with db_id {patient_id} and medical id {recipient.medical_id}")
-    return Recipient(recipient.id, recipient.medical_id, recipient.parameters,
+    return Recipient(recipient.db_id, recipient.medical_id, recipient.parameters,
                      get_donor_from_db(don_id))
 
 
