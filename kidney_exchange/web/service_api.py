@@ -1,10 +1,14 @@
 import logging
 import os
 
-from flask import jsonify, g, Blueprint, current_app as app
+import bcrypt
+from flask import jsonify, g, Blueprint, current_app as app, render_template, request, url_for, redirect, flash
+from flask_login import login_user, login_required, logout_user, current_user
+# from flask import jsonify, g, Blueprint, current_app as app, render_template
 from sqlalchemy.exc import OperationalError
 
 from kidney_exchange.database.db import db
+from kidney_exchange.database.services.app_user_management import get_app_user_by_email
 
 logger = logging.getLogger(__name__)
 
@@ -51,3 +55,38 @@ def read_version(default: str) -> str:
             logger.info(f'Settings version as: {version}')
 
     return version if version else default
+
+
+@service_api.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("functional.home"))
+
+    if request.method == "GET":
+        return render_template('login.html')
+
+    logger.info(request)
+    user = get_app_user_by_email(request.form["username"])
+    if user is None:
+        logger.warn(f"User {request.form['username']} not found.")
+        return redirect(url_for("service.login"))
+
+    if not bcrypt.checkpw(request.form["password"].encode("utf-8"), user.pass_hash.encode("utf-8")):
+        logger.warn(f"Invalid password for user {request.form['username']}.")
+        return redirect(url_for("service.login"))
+
+    user.set_authenticated(True)
+    login_user(user)
+    logger.info(f"User {request.form['username']} logged in.")
+    flash('Logged in successfully.')
+    return redirect(url_for("functional.home"))
+
+
+@service_api.route('/logout')
+@login_required
+def logout():
+    username = current_user.email
+    logout_user()
+    flash('Logged out successfully.')
+    logger.info(f"User {username} logged out.")
+    return redirect(url_for("functional.home"))

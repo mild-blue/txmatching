@@ -182,3 +182,47 @@ input:focus {
     left: 0;
     margin: auto;
 }
+
+.login-form {
+    display: flex;
+    justify-content: center; /* center horizontally */
+    align-items: center; /* center vertically */
+    width: 100%;
+    position: relative;
+    top: 100px;
+}
+
+.form-field {
+    margin: 10px;
+    width: 290px !important;
+}
+
+.form-field input {
+    margin-top: 10px;
+}
+
+.login-title {
+    font-size: 21px;
+    margin-bottom: 30px;
+}
+
+.header {
+    font-size: 11px;
+    position: relative;
+}
+
+.username {
+    text-align: right;
+    margin-right: 20px;
+}
+
+.username a a:hover, a:visited, a:link, a:active
+{
+    text-decoration: none;
+    color: white;
+}
+
+.username a:hover
+{
+    color: #6eb6de;
+}
