@@ -4,7 +4,6 @@ import os
 import bcrypt
 from flask import jsonify, g, Blueprint, current_app as app, render_template, request, url_for, redirect, flash
 from flask_login import login_user, login_required, logout_user, current_user
-# from flask import jsonify, g, Blueprint, current_app as app, render_template
 from sqlalchemy.exc import OperationalError
 
 from kidney_exchange.database.db import db

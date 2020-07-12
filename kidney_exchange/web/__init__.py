@@ -3,8 +3,8 @@ import os
 import sys
 from importlib import util as importing
 
-from flask import Flask
 import flask_login
+from flask import Flask
 
 from kidney_exchange.database.db import db
 from kidney_exchange.database.services.app_user_management import get_app_user_by_email
@@ -12,6 +12,7 @@ from kidney_exchange.web.functional_api import functional_api
 from kidney_exchange.web.service_api import service_api
 
 login_manager = None
+
 
 def create_app():
     logging.basicConfig(level=logging.DEBUG,

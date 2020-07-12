@@ -12,7 +12,7 @@
 <div class="header">
   <div class="username">
     {% if current_user.is_authenticated %}
-      Hi {{ current_user.email }}!
+      {{ current_user.email }}&nbsp
     {% endif %}
   <a href="/logout">(log out)</a>
   </div>

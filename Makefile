@@ -14,6 +14,9 @@ conda-export:
 conda-update:
 	conda env update --file conda.yml --prune --name $(CONDA_ENV)
 
+conda-activate:
+	conda activate $(CONDA_ENV)
+
 # builds docker image
 docker-build:
 	docker build -t datavid19/kidney-exchange .
