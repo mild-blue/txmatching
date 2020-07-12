@@ -1,7 +1,5 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-# from flask_login import UserMixin
-# from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
 from kidney_exchange.database.db import db
 
