@@ -1,3 +1,4 @@
+import dataclasses
 from typing import List, Tuple, Optional
 
 from kidney_exchange.database.db import db
@@ -24,8 +25,8 @@ def create_patient_model_from_patient(patient: Patient) -> PatientModel:
         medical_id=patient.medical_id,
         country=patient.params.country_code,
         blood=patient.params.blood_group,
-        typization={},  # TODO https://trello.com/c/1ynqm5tA,
-        luminex={},  # TODO https://trello.com/c/1ynqm5tA,
+        hla_antigens=dataclasses.asdict(patient.params.hla_antigens),
+        hla_antibodies=dataclasses.asdict(patient.params.hla_antibodies),
         active=True
     )
     if type(patient) == Recipient:

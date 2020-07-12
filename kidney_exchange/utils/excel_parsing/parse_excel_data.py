@@ -6,7 +6,7 @@ import pandas as pd
 from werkzeug.datastructures import FileStorage
 
 from kidney_exchange.patients.donor import Donor
-from kidney_exchange.patients.patient_parameters import PatientParameters
+from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.utils.hla_system.hla_table import HLA_A, HLA_B, HLA_BW, HLA_CW, HLA_DR, HLA_DRDR, HLA_DQ
 from kidney_exchange.utils.hla_system.hla_table import HLA_A_LOW, HLA_B_LOW, HLA_CW_LOW, HLA_DQ_LOW, HLA_DR_LOW
@@ -49,7 +49,7 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
 
 
 def _country_code_from_id(patient_id: str) -> str:
-    # TODO: Confirm this with IKEM
+    # TODO: Confirm this with IKEM https://trello.com/c/2hYxou7M
     if patient_id.startswith("P-"):
         return "CZE"
 
@@ -73,7 +73,7 @@ def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[Donor], Lis
         typization_donor = _parse_hla(row["TYPIZATION DONOR"])
         country_code_donor = _country_code_from_id(donor_id)
         donor_params = PatientParameters(blood_group=blood_group_donor,
-                                         hla_antigens=typization_donor,
+                                         hla_antigens=HLAAntigens(typization_donor),
                                          country_code=country_code_donor)
         donor = Donor(patient_medical_id=donor_id, parameters=donor_params)
         donors.append(donor)
@@ -87,8 +87,8 @@ def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[Donor], Lis
             country_code_recipient = _country_code_from_id(recipient_id)
 
             recipient_params = PatientParameters(blood_group=blood_group_recipient,
-                                                 hla_antigens=typization_recipient,
-                                                 hla_antibodies=antibodies_recipient,
+                                                 hla_antigens=HLAAntigens(typization_recipient),
+                                                 hla_antibodies=HLAAntibodies(antibodies_recipient),
                                                  acceptable_blood_groups=acceptable_blood_groups_recipient,
                                                  country_code=country_code_recipient)
             recipient = Recipient(patient_medical_id=recipient_id, parameters=recipient_params, related_donors=donor)

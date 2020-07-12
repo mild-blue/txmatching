@@ -4,7 +4,7 @@ from kidney_exchange.database.sql_alchemy_schema import PairingResultModel, Pair
     PatientModel, PatientPairModel
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.patient import Patient
-from kidney_exchange.patients.patient_parameters import PatientParameters
+from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.solvers.matching.matching import Matching
 
@@ -34,8 +34,8 @@ def get_patient_from_model(patient_id: int) -> Patient:
         blood_group=patient_model.blood,
         acceptable_blood_groups=patient_model.acceptable_blood,
         country_code=patient_model.country,
-        hla_antigens=[],  # TODO fill this in from the data https://trello.com/c/1ynqm5tA
-        hla_antibodies=[]  # TODO fill this in from the data https://trello.com/c/1ynqm5tA
+        hla_antigens=HLAAntigens(**patient_model.hla_antigens),
+        hla_antibodies=HLAAntibodies(**patient_model.hla_antibodies)
     ))
 
 
