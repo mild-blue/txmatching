@@ -2,7 +2,7 @@ import logging
 import os
 
 import bcrypt
-from flask import jsonify, g, Blueprint, current_app as app, render_template, request, url_for, redirect, flash
+from flask import jsonify, g, Blueprint, current_app as app, render_template, request, url_for, redirect
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy.exc import OperationalError
 
@@ -77,7 +77,6 @@ def login():
     user.set_authenticated(True)
     login_user(user)
     logger.info(f"User {request.form['username']} logged in.")
-    flash('Logged in successfully.')
     return redirect(url_for("functional.home"))
 
 
@@ -86,6 +85,5 @@ def login():
 def logout():
     username = current_user.email
     logout_user()
-    flash('Logged out successfully.')
     logger.info(f"User {username} logged out.")
     return redirect(url_for("functional.home"))
