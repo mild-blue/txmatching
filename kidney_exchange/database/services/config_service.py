@@ -18,6 +18,7 @@ def get_configurations() -> Iterator[Configuration]:
 def get_current_configuration() -> Configuration:
     current_config_model = ConfigModel.query.get(0)
     if current_config_model is None:
+        save_configuration_as_current(Configuration())
         return Configuration()
     else:
         return config_model_to_configuration(current_config_model)
@@ -43,7 +44,7 @@ def save_configuration_to_db(configuration: Configuration) -> int:
 
 
 def get_config_models() -> Iterator[ConfigModel]:
-    configs = ConfigModel.query.all()
+    configs = ConfigModel.query.filter(ConfigModel.id > 0).all()
     return configs
 
 

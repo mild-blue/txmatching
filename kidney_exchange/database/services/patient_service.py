@@ -1,12 +1,13 @@
 import dataclasses
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Iterable
 
 from kidney_exchange.database.db import db
 from kidney_exchange.database.sql_alchemy_schema import PatientAcceptableBloodModel, PatientModel, PatientPairModel, \
     PairingResultPatientModel
-from kidney_exchange.patients.donor import DonorDto
-from kidney_exchange.patients.patient import PatientDto
-from kidney_exchange.patients.recipient import RecipientDto
+from kidney_exchange.patients.donor import DonorDto, Donor
+from kidney_exchange.patients.patient import PatientDto, Patient
+from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
+from kidney_exchange.patients.recipient import RecipientDto, Recipient
 
 
 def medical_id_to_db_id(medical_id: str) -> Optional[int]:
@@ -71,3 +72,46 @@ def save_patients(donors_recipients: Tuple[List[DonorDto], List[RecipientDto]]):
 
     recipient_models = [patient_dto_to_patient_model(recipient) for recipient in donors_recipients[1]]
     save_patient_models(recipient_models)
+
+
+def get_patient_from_model(patient_id: int) -> Patient:
+    patient_model = PatientModel.query.get(patient_id)
+    return Patient(
+        db_id=patient_model.id,
+        medical_id=patient_model.medical_id,
+        parameters=PatientParameters(
+            blood_group=patient_model.blood,
+            acceptable_blood_groups=patient_model.acceptable_blood,
+            country_code=patient_model.country,
+            hla_antigens=HLAAntigens(**patient_model.hla_antigens),
+            hla_antibodies=HLAAntibodies(**patient_model.hla_antibodies)
+        ))
+
+
+def get_donor_from_db(patient_id: int) -> Donor:
+    donor = get_patient_from_model(patient_id)
+    return Donor(donor.db_id, donor.medical_id, donor.parameters)
+
+
+def get_recipient_from_db(patient_id: int):
+    recipient = get_patient_from_model(patient_id)
+    related_donors = PatientPairModel.query.filter(PatientPairModel.recipient_id == patient_id).all()
+    if len(related_donors) == 1:
+        don_id = related_donors[0].donor_id
+    else:
+        raise ValueError(f"There has to be 1 donor per recipient, but {len(related_donors)} "
+                         f"were found for recipient with db_id {patient_id} and medical id {recipient.medical_id}")
+    return Recipient(recipient.db_id, recipient.medical_id, recipient.parameters,
+                     get_donor_from_db(don_id))
+
+
+def get_all_patients() -> Iterable[PatientModel]:
+    return PatientModel.query.filter(PatientModel.active).all()
+
+
+def get_donors_recipients_from_db() -> Tuple[List[Donor], List[Recipient]]:
+    patients = get_all_patients()
+    donors = [get_donor_from_db(donor.id) for donor in patients if donor.patient_type == 'DONOR']
+    recipients = [get_recipient_from_db(recipient.id) for recipient in patients if
+                  recipient.patient_type == 'RECIPIENT']
+    return donors, recipients

@@ -116,7 +116,6 @@ CREATE TABLE config
     updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
     CONSTRAINT pk_config_id PRIMARY KEY (id),
-    CONSTRAINT uq_config_parameters UNIQUE (parameters),
     CONSTRAINT fk_config_created_by_app_user_id FOREIGN KEY (created_by) REFERENCES app_user (id) -- this is also valid for pairing_result
 );
 

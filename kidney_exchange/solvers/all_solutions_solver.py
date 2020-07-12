@@ -7,7 +7,6 @@ from graph_tool.all import Graph
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.scorers.additive_scorer import AdditiveScorer
 from kidney_exchange.solvers.matching.matching import Matching
 from kidney_exchange.solvers.solver_base import SolverBase
 
@@ -18,16 +17,7 @@ class AllSolutionsSolver(SolverBase):
         super().__init__()
         self._verbose = verbose
 
-    def solve(self, donors: List[Donor], recipients: List[Recipient], scorer: AdditiveScorer) -> Iterator[Matching]:
-        score_matrix = np.zeros((len(donors), len(recipients)))
-        for donor_index, donor in enumerate(donors):
-            for recipient_index, recipient in enumerate(recipients):
-                if recipient.related_donor == donor:
-                    score = np.NaN
-                else:
-                    score = scorer.score_transplant(donor, recipient)
-
-                score_matrix[donor_index, recipient_index] = score
+    def solve(self, donors: List[Donor], recipients: List[Recipient], score_matrix: np.array) -> Iterator[Matching]:
 
         for solution in self._solve(score_matrix=score_matrix):
             matching = Matching(donor_recipient_list=[(donors[i], recipients[j]) for i, j in solution
