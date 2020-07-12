@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 functional_api = Blueprint('functional', __name__)
 
+UPLOAD_XLSX_FLASH_CATEGORY = "UPLOAD_XLSX"
 
 @functional_api.route('/')
 @login_required
@@ -51,20 +52,20 @@ def upload_xlsx():
         patient_data = request.files['patient_data']
         if patient_data.filename == "":
             logger.warning("No patients file uploaded")
-            flash("No patients file uploaded")
+            flash("No patients file uploaded", UPLOAD_XLSX_FLASH_CATEGORY)
 
             return redirect(request.url)
 
         if not is_allowed_file_extension(patient_data.filename):
             logger.error(f"{patient_data.filename} is not csv or xlsx file")
-            flash("This is not a csv or xlsx file, try again")
+            flash("This is not a csv or xlsx file, try again", UPLOAD_XLSX_FLASH_CATEGORY)
 
             return redirect(request.url)
 
         parsed_data = parse_excel_data(patient_data)
         save_patients(parsed_data)
 
-        flash("File successfully loaded")
+        flash("File successfully loaded", UPLOAD_XLSX_FLASH_CATEGORY)
 
         return redirect(request.url)
     elif flask.request.method == 'GET':
