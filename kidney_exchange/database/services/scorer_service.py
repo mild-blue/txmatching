@@ -25,7 +25,7 @@ def calculate_and_save_current_score_matrix():
     )
     maybe_pairing_result = PairingResultModel.query.get(0)
     if maybe_pairing_result is not None:
-        maybe_pairing_result.delete()
+        db.session.delete(maybe_pairing_result)
     db.session.commit()
 
     db.session.add(score_matrix_for_db)
