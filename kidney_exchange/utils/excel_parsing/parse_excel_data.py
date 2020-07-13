@@ -5,9 +5,9 @@ from typing import List, Tuple, Union
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
-from kidney_exchange.patients.donor import Donor
+from kidney_exchange.patients.donor import DonorDto
 from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
-from kidney_exchange.patients.recipient import Recipient
+from kidney_exchange.patients.recipient import RecipientDto
 from kidney_exchange.utils.hla_system.hla_table import HLA_A, HLA_B, HLA_BW, HLA_CW, HLA_DR, HLA_DRDR, HLA_DQ
 from kidney_exchange.utils.hla_system.hla_table import HLA_A_LOW, HLA_B_LOW, HLA_CW_LOW, HLA_DQ_LOW, HLA_DR_LOW
 
@@ -62,7 +62,7 @@ def _country_code_from_id(patient_id: str) -> str:
     raise ValueError(f"Could not assign country code to {patient_id}")
 
 
-def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[Donor], List[Recipient]]:
+def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorDto], List[RecipientDto]]:
     print(f"[INFO] Parsing patient data from file")
     data = pd.read_excel(file_io, skiprows=1)
     donors = list()
@@ -75,7 +75,7 @@ def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[Donor], Lis
         donor_params = PatientParameters(blood_group=blood_group_donor,
                                          hla_antigens=HLAAntigens(typization_donor),
                                          country_code=country_code_donor)
-        donor = Donor(patient_medical_id=donor_id, parameters=donor_params)
+        donor = DonorDto(medical_id=donor_id, parameters=donor_params)
         donors.append(donor)
 
         recipient_id = row["RECIPIENT"]
@@ -91,7 +91,8 @@ def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[Donor], Lis
                                                  hla_antibodies=HLAAntibodies(antibodies_recipient),
                                                  acceptable_blood_groups=acceptable_blood_groups_recipient,
                                                  country_code=country_code_recipient)
-            recipient = Recipient(patient_medical_id=recipient_id, parameters=recipient_params, related_donors=donor)
+            recipient = RecipientDto(medical_id=recipient_id, parameters=recipient_params,
+                                     related_donor=donor)
             recipients.append(recipient)
 
     return donors, recipients

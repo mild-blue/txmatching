@@ -7,7 +7,7 @@ from kidney_exchange.config.gives_superset_of_solutions import gives_superset_of
 from kidney_exchange.database.db import db
 from kidney_exchange.database.services.config_service import get_current_configuration, save_configuration_to_db, \
     get_config_models, config_model_to_configuration
-from kidney_exchange.database.services.patient_service import medical_id_to_id
+from kidney_exchange.database.services.patient_service import medical_id_to_db_id
 from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, \
     get_patients_for_pairing_result, \
     db_matching_to_matching, \
@@ -17,7 +17,7 @@ from kidney_exchange.database.sql_alchemy_schema import PairingResultPatientMode
 from kidney_exchange.filters.filter_from_config import filter_from_config
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.scorers.scorer_from_config import scorer_from_config
+from kidney_exchange.scorers.scorer_from_config import scorer_from_configuration
 from kidney_exchange.solvers.matching.matching import Matching
 from kidney_exchange.solvers.solver_from_config import solver_from_config
 
@@ -80,8 +80,8 @@ def current_config_matchings_to_model(config_matchings: Iterable[Matching]) -> C
     return CalculatedMatchings([
         CalculatedMatching([
             DonorRecipient(
-                medical_id_to_id(donor.medical_id),
-                medical_id_to_id(recipient.medical_id)
+                medical_id_to_db_id(donor.medical_id),
+                medical_id_to_db_id(recipient.medical_id)
             ) for donor, recipient in final_solution.donor_recipient_list
         ]
 
@@ -90,7 +90,7 @@ def current_config_matchings_to_model(config_matchings: Iterable[Matching]) -> C
 
 
 def solve_from_config(params: SolverInputParameters) -> Iterable[Matching]:
-    scorer = scorer_from_config(params.configuration)
+    scorer = scorer_from_configuration(params.configuration)
     solver = solver_from_config(params.configuration)
     matchings_in_db = load_matchings_from_database(params)
     if matchings_in_db is not None:
@@ -113,7 +113,7 @@ def load_matchings_from_database(exchange_parameters: SolverInputParameters) -> 
                                        more_strict=current_config):
             compatible_config_models.append(config_model)
 
-    current_patient_ids = {medical_id_to_id(patient.medical_id) for patient in
+    current_patient_ids = {medical_id_to_db_id(patient.medical_id) for patient in
                            exchange_parameters.donors + exchange_parameters.recipients}
 
     for compatible_config in compatible_config_models:

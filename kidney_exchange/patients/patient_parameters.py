@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
 from kidney_exchange.utils.hla_system.high_resolution_to_low_resolution import hla_high_to_low_res, \
     is_valid_low_res_code
@@ -17,11 +17,11 @@ class HLAAntibodies:
 
 @dataclass
 class PatientParameters:
-    blood_group: str = None
+    blood_group: Optional[str] = None
     acceptable_blood_groups: List[str] = field(default_factory=list)
     hla_antigens: HLAAntigens = HLAAntigens()
-    hla_antibodies: HLAAntibodies = HLAAntigens()
-    country_code: str = None
+    hla_antibodies: HLAAntibodies = HLAAntibodies()
+    country_code: Optional[str] = None
 
     @property
     def hla_antigens_low_resolution(self) -> List[str]:

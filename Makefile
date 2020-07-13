@@ -1,4 +1,4 @@
-#include .env.pub
+include .env.pub
 
 CONDA_ENV=kidney-exchange
 
