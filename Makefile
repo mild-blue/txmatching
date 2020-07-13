@@ -1,8 +1,10 @@
-include .env.pub
+#include .env.pub
+
+CONDA_ENV=kidney-exchange
 
 # creates environment from the file
 conda-create:
-	conda env create -f conda.yml
+	conda env create -f conda.yml --name $(CONDA_ENV)
 
 # exports all changes made localy - then one must copy the changes to conda.yml
 conda-export:
@@ -10,7 +12,10 @@ conda-export:
 
 # updates environment when some changes were applied to the file
 conda-update:
-	conda env update --file conda.yml  --prune
+	conda env update --file conda.yml --prune --name $(CONDA_ENV)
+
+conda-activate:
+	conda activate $(CONDA_ENV)
 
 # builds docker image
 docker-build:

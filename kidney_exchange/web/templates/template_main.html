@@ -9,6 +9,14 @@
 </head>
 
 <body>
+<div class="header">
+  <div class="username">
+    {% if current_user.is_authenticated %}
+      {{ current_user.email }}&nbsp
+    {% endif %}
+  <a href="/logout">(log out)</a>
+  </div>
+</div>
 <div class="title">
     <h1>Kidney Exchange</h1>
 </div>

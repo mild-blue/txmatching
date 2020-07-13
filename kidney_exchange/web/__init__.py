@@ -3,11 +3,15 @@ import os
 import sys
 from importlib import util as importing
 
+import flask_login
 from flask import Flask
 
 from kidney_exchange.database.db import db
+from kidney_exchange.database.services.app_user_management import get_app_user_by_email
 from kidney_exchange.web.functional_api import functional_api
 from kidney_exchange.web.service_api import service_api
+
+login_manager = None
 
 
 def create_app():
@@ -27,6 +31,15 @@ def create_app():
     # Add config
     app.config["CSV_UPLOADS"] = "kidney_exchange/web/csv_uploads"
     app.config["ALLOWED_FILE_EXTENSIONS"] = ["CSV", "XLSX"]
+
+    global login_manager
+    login_manager = flask_login.LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = "service.login"
+
+    @login_manager.user_loader
+    def user_loader(user_id):
+        return get_app_user_by_email(user_id)
 
     def load_local_development_config():
         config_file = 'kidney_exchange.web.local_config'
