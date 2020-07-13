@@ -25,6 +25,9 @@ def get_current_configuration() -> Configuration:
 
 
 def save_configuration_as_current(configuration: Configuration) -> int:
+    maybe_config = ConfigModel.query.get(0)
+    if maybe_config is not None:
+        maybe_config.delete()
     config_model = _configuration_to_config_model(configuration)
     config_model.id = 0
     db.session.add(config_model)

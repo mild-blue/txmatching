@@ -15,7 +15,7 @@ data_api = Blueprint('data', __name__)
 @data_api.route('/configuration', methods=["GET", "POST"])
 def save_and_get_configuration():
     if flask.request.method == 'POST':
-        configuration = configuration_from_dto(**request.json)
+        configuration = configuration_from_dto(request.json)
         save_configuration_as_current(configuration)
         calculate_and_save_current_score_matrix()
         return "Successfully saved configuration"
