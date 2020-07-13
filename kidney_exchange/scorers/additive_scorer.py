@@ -43,7 +43,7 @@ class AdditiveScorer:
         for donor_index, donor in enumerate(donors):
             for recipient_index, recipient in enumerate(recipients):
                 if recipient.related_donor == donor:
-                    score = 0.0
+                    score = float(np.nan)
                 else:
                     score = self.score_transplant(donor, recipient)
 
