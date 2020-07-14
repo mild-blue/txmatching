@@ -38,10 +38,6 @@ def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, in
     basic_acceptable_blood_groups = _acceptable_blood_groups[blood_group]
     if type(acceptable_blood_groups) != str and math.isnan(acceptable_blood_groups):
         return list(basic_acceptable_blood_groups)
-    try:
-        _parse_blood_group(acceptable_blood_groups)
-    except ValueError:
-        pass
     blood_groups_str = str(acceptable_blood_groups).strip()
     acceptable_blood_groups = {_parse_blood_group(acceptable_blood_group) for acceptable_blood_group in
                                re.split("[, ]+", blood_groups_str)}
