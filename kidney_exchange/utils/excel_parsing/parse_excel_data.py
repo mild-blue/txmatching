@@ -43,7 +43,7 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
     if "neg" in hla_allele_str.lower():
         return []
 
-    allele_codes = re.split("[, ()]+", hla_allele_str)
+    allele_codes = re.split("[,. ()]+", hla_allele_str)
     allele_codes = [code for code in allele_codes if len(code) > 0]
     checked_allele_codes = [code for code in allele_codes if code in _valid_allele_codes]
     if len(checked_allele_codes) != len(allele_codes):
@@ -60,17 +60,17 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
 
 def _country_code_from_id(patient_id: str) -> str:
     # TODO: Confirm this with IKEM https://trello.com/c/2hYxou7M
-    if patient_id.startswith("P-"):
-        return "CZE"
-
-    if patient_id.startswith("I-"):
+    if re.match("[PD][0-9]{4}", patient_id):
         return "IL"
 
-    if patient_id.startswith("W-") or patient_id.startswith("IS-") or patient_id.startswith("G-"):
+    if re.match("[PD][0-9]{1,2}", patient_id):
+        return "CZE"
+
+    if patient_id.startswith("W-"):
         return "AUT"
 
-    return "CZE"  # TODO clarify with IKEM
-    # raise ValueError(f"Could not assign country code to {patient_id}")
+    # TODO clarify with IKEM
+    raise ValueError(f"Could not assign country code to {patient_id}")
 
 
 def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorDto], List[RecipientDto]]:
