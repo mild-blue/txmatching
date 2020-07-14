@@ -59,7 +59,8 @@ def _country_code_from_id(patient_id: str) -> str:
     if patient_id.startswith("W-") or patient_id.startswith("IS-") or patient_id.startswith("G-"):
         return "AUT"
 
-    raise ValueError(f"Could not assign country code to {patient_id}")
+    return "CZE"  # TODO clarify with IKEM
+    # raise ValueError(f"Could not assign country code to {patient_id}")
 
 
 def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorDto], List[RecipientDto]]:
