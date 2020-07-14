@@ -1,3 +1,4 @@
+import math
 import os
 import re
 from typing import List, Tuple, Union
@@ -13,20 +14,39 @@ from kidney_exchange.utils.hla_system.hla_table import HLA_A_LOW, HLA_B_LOW, HLA
 
 _valid_blood_groups = ["A", "B", "0", "AB"]
 
+_acceptable_blood_groups = {
+    "0": {"0"},
+    "A": {"0", "A"},
+    "B": {"0", "B"},
+    "AB": {"0", "A", "B", "AB"}
+}
+
 _valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DRDR + \
                       HLA_A_LOW + HLA_B_LOW + HLA_CW_LOW + HLA_DQ_LOW + HLA_DR_LOW
 
 _unknown_allele_codes = set()
 
 
-def _parse_blood_groups(blood_groups_str: str) -> List[str]:
-    blood_groups_str = str(blood_groups_str).strip()
-    blood_groups = re.split("[, ]+", blood_groups_str)
-    checked_blood_groups = [group for group in blood_groups if group in _valid_blood_groups]
-    if len(checked_blood_groups) != len(blood_groups):
-        print(f"[WARN] Encountered invalid group in blood group string {blood_groups_str}")
+def _parse_blood_group(blood_group_str: Union[str, int]) -> str:
+    blood_group_str = str(blood_group_str).strip()
+    if blood_group_str not in _valid_blood_groups:
+        raise ValueError(f"Encountered invalid group in blood group string {blood_group_str}")
+    return blood_group_str
 
-    return checked_blood_groups
+
+def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, int], blood_group: str) -> List[str]:
+    basic_acceptable_blood_groups = _acceptable_blood_groups[blood_group]
+    if type(acceptable_blood_groups) != str and math.isnan(acceptable_blood_groups):
+        return list(basic_acceptable_blood_groups)
+    try:
+        _parse_blood_group(acceptable_blood_groups)
+    except ValueError:
+        pass
+    blood_groups_str = str(acceptable_blood_groups).strip()
+    acceptable_blood_groups = {_parse_blood_group(acceptable_blood_group) for acceptable_blood_group in
+                               re.split("[, ]+", blood_groups_str)}
+
+    return list(acceptable_blood_groups.union(basic_acceptable_blood_groups))
 
 
 def _parse_hla(hla_allele_str: str) -> List[str]:
@@ -70,7 +90,7 @@ def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorDto], 
     recipients = list()
     for index, row in data.iterrows():
         donor_id = row["DONOR"]
-        blood_group_donor = _parse_blood_groups(row["BLOOD GROUP donor"])[0]
+        blood_group_donor = _parse_blood_group(row["BLOOD GROUP donor"])
         typization_donor = _parse_hla(row["TYPIZATION DONOR"])
         country_code_donor = _country_code_from_id(donor_id)
         donor_params = PatientParameters(blood_group=blood_group_donor,
@@ -81,10 +101,11 @@ def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorDto], 
 
         recipient_id = row["RECIPIENT"]
         if not pd.isna(recipient_id):
-            blood_group_recipient = _parse_blood_groups(row["BLOOD GROUP recipient"])[0]
+            blood_group_recipient = _parse_blood_group(row["BLOOD GROUP recipient"])
             typization_recipient = _parse_hla(row["TYPIZATION RECIPIENT"])
             antibodies_recipient = _parse_hla(row["luminex  cut-off (2000 MFI) varianta 2"])
-            acceptable_blood_groups_recipient = _parse_blood_groups(row["Acceptable blood group"])
+            acceptable_blood_groups_recipient = _parse_acceptable_blood_groups(row["Acceptable blood group"],
+                                                                               blood_group_recipient)
             country_code_recipient = _country_code_from_id(recipient_id)
 
             recipient_params = PatientParameters(blood_group=blood_group_recipient,

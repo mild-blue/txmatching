@@ -64,6 +64,7 @@ def solve_from_db() -> Iterable[Matching]:
     current_config_matchings_model = dataclasses.asdict(
         current_config_matchings_to_model(current_config_matchings)
     )
+
     config_id = save_configuration_to_db(current_configuration)
     pairing_result_model = PairingResultModel(
         patients=pairing_result_patients,
