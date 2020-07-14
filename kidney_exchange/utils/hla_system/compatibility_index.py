@@ -10,8 +10,8 @@ compatibility_gene_codes = ["A", "B", "DR"]
 # column in the table.
 # For our purposes, we will use the index of compatibility, which is the inverse of index of incompatibility
 # -- see function compatibility_index -- and is calculated as the number of matches in A, B, DR alleles.
-IK_table = pd.DataFrame({"A":  [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
-                         "B":  [0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2],
+IK_table = pd.DataFrame({"A": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
+                         "B": [0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2],
                          "DR": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
                          "IK": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
                                 24, 25, 26]})
@@ -34,4 +34,6 @@ def compatibility_index(patient_parameters_donor: PatientParameters,
         match_counts[gene_code] = match_count
 
     match_counts_tuple = tuple([match_counts[gene_code] for gene_code in compatibility_gene_codes])
-    return IK_table.loc[match_counts_tuple, "IK"]
+    hla_compatiblity_index = IK_table.loc[match_counts_tuple, "IK"]
+
+    return hla_compatiblity_index
