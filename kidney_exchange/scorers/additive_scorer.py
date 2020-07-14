@@ -11,9 +11,13 @@ TRANSPLANT_IMPOSSIBLE = float("-inf")
 
 
 class AdditiveScorer:
-    def __init__(self, recipient_donor_scores: List[RecipientDonorScore]):
-        self._manual_scores = {(rec_don_score.donor_id, rec_don_score.recipient_id): rec_don_score.compatibility_index
-                               for rec_don_score in recipient_donor_scores}
+    def __init__(self, recipient_donor_scores: List[RecipientDonorScore] = None):
+        if recipient_donor_scores is not None:
+            self._manual_scores = {
+                (rec_don_score.donor_id, rec_don_score.recipient_id): rec_don_score.compatibility_index
+                for rec_don_score in recipient_donor_scores}
+        else:
+            self._manual_scores = dict()
 
     def score_transplant(self, donor: Donor, recipient: Recipient) -> float:
         manual_score = self._manual_scores.get((donor.db_id, recipient.db_id))
