@@ -9,17 +9,11 @@ from werkzeug.datastructures import FileStorage
 from kidney_exchange.patients.donor import DonorDto
 from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
 from kidney_exchange.patients.recipient import RecipientDto
+from kidney_exchange.utils.blood_groups import ACCEPTABLE_BLOOD_GROUPS
 from kidney_exchange.utils.hla_system.hla_table import HLA_A, HLA_B, HLA_BW, HLA_CW, HLA_DR, HLA_DRDR, HLA_DQ
 from kidney_exchange.utils.hla_system.hla_table import HLA_A_LOW, HLA_B_LOW, HLA_CW_LOW, HLA_DQ_LOW, HLA_DR_LOW
 
 _valid_blood_groups = ["A", "B", "0", "AB"]
-
-_acceptable_blood_groups = {
-    "0": {"0"},
-    "A": {"0", "A"},
-    "B": {"0", "B"},
-    "AB": {"0", "A", "B", "AB"}
-}
 
 _valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DRDR + \
                       HLA_A_LOW + HLA_B_LOW + HLA_CW_LOW + HLA_DQ_LOW + HLA_DR_LOW
@@ -35,7 +29,7 @@ def _parse_blood_group(blood_group_str: Union[str, int]) -> str:
 
 
 def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, int], blood_group: str) -> List[str]:
-    basic_acceptable_blood_groups = _acceptable_blood_groups[blood_group]
+    basic_acceptable_blood_groups = ACCEPTABLE_BLOOD_GROUPS[blood_group]
     if type(acceptable_blood_groups) != str and math.isnan(acceptable_blood_groups):
         return list(basic_acceptable_blood_groups)
     blood_groups_str = str(acceptable_blood_groups).strip()

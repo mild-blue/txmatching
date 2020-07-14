@@ -81,7 +81,8 @@ def _get_patient_from_db_id(db_id: int) -> Patient:
         medical_id=patient_model.medical_id,
         parameters=PatientParameters(
             blood_group=patient_model.blood,
-            acceptable_blood_groups=patient_model.acceptable_blood,
+            acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
+                                     patient_model.acceptable_blood],
             country_code=patient_model.country,
             hla_antigens=HLAAntigens(**patient_model.hla_antigens),
             hla_antibodies=HLAAntibodies(**patient_model.hla_antibodies)

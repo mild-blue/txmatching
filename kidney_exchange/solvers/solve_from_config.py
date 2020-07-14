@@ -9,12 +9,11 @@ from kidney_exchange.config.gives_superset_of_solutions import gives_superset_of
 from kidney_exchange.database.db import db
 from kidney_exchange.database.services.config_service import get_current_configuration, save_configuration_to_db, \
     get_config_models, config_model_to_configuration
-from kidney_exchange.database.services.patient_service import medical_id_to_db_id, get_all_patients
+from kidney_exchange.database.services.patient_service import medical_id_to_db_id, get_donors_recipients_from_db
 from kidney_exchange.database.services.scorer_service import score_matrix_to_dto
 from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, \
     get_patients_for_pairing_result, \
-    db_matching_to_matching, \
-    get_donor_from_db_id, get_recipient_from_db_id
+    db_matching_to_matching
 from kidney_exchange.database.sql_alchemy_schema import PairingResultPatientModel, PairingResultModel
 from kidney_exchange.filters.filter_from_config import filter_from_config
 from kidney_exchange.patients.donor import Donor
@@ -48,19 +47,15 @@ class CalculatedMatchings:
 
 
 def solve_from_db() -> Iterable[Matching]:
-    patients = get_all_patients()
-    # TODO dont use strings here, use some better logic (ENUMS for example)
-    # https://trello.com/c/pKMqnv7X
-    donors = [get_donor_from_db_id(donor.id) for donor in patients if donor.patient_type == 'DONOR']
-    recipients = [get_recipient_from_db_id(recipient.id) for recipient in patients if
-                  recipient.patient_type == 'RECIPIENT']
+    donors, recipients = get_donors_recipients_from_db()
+
     current_configuration = get_current_configuration()
     current_config_matchings, score_matrix = solve_from_config(SolverInputParameters(
         donors=donors,
         recipients=recipients,
         configuration=current_configuration
     ))
-    pairing_result_patients = [PairingResultPatientModel(patient_id=patient.id) for patient in patients]
+    pairing_result_patients = [PairingResultPatientModel(patient_id=patient.db_id) for patient in donors + recipients]
     current_config_matchings_model = dataclasses.asdict(
         current_config_matchings_to_model(current_config_matchings)
     )

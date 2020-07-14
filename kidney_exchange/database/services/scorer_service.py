@@ -24,5 +24,4 @@ def calculate_current_score_matrix():
     scorer = scorer_from_configuration(configuration)
     donors, recipients = get_donors_recipients_from_db()
     score_matrix = scorer.get_score_matrix(donors, recipients)
-
-    return score_matrix_to_dto(score_matrix)
+    return score_matrix
