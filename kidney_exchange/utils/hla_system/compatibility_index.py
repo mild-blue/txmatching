@@ -1,7 +1,6 @@
 import pandas as pd
 
 from kidney_exchange.patients.patient_parameters import PatientParameters
-from kidney_exchange.utils.blood_groups import ACCEPTABLE_BLOOD_GROUPS
 from kidney_exchange.utils.hla_system.get_genotype import get_antigen_genotype
 
 compatibility_gene_codes = ["A", "B", "DR"]
@@ -17,8 +16,6 @@ IK_table = pd.DataFrame({"A": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1
                          "IK": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
                                 24, 25, 26]})
 IK_table.set_index(keys=compatibility_gene_codes, inplace=True, verify_integrity=True)
-
-BLOOD_GROUP_COMPATIBILITY_BONUS = 1.0
 
 
 def compatibility_index(patient_parameters_donor: PatientParameters,
@@ -39,8 +36,4 @@ def compatibility_index(patient_parameters_donor: PatientParameters,
     match_counts_tuple = tuple([match_counts[gene_code] for gene_code in compatibility_gene_codes])
     hla_compatiblity_index = IK_table.loc[match_counts_tuple, "IK"]
 
-    if patient_parameters_donor.blood_group in ACCEPTABLE_BLOOD_GROUPS[patient_parameters_recipient.blood_group]:
-        blood_group_compatibility_index = BLOOD_GROUP_COMPATIBILITY_BONUS
-    else:
-        blood_group_compatibility_index = 0.0
-    return hla_compatiblity_index + blood_group_compatibility_index
+    return hla_compatiblity_index

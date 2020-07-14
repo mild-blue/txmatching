@@ -10,7 +10,7 @@ VALUES (1, 'admin@example.com', '$2b$12$3A5.4Ulau0F6AUksx9bojuYygMGNjdyPqHzrCJ1E
 
 INSERT INTO public.config (parameters, created_by)
 VALUES ('{
-  "enforce_same_blood_group": false
+  "enforce_compatible_blood_group": false
 }', 1);
 
 INSERT INTO public.config (parameters, created_by)
