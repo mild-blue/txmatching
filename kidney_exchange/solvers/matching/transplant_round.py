@@ -16,6 +16,11 @@ class TransplantRound:
     def __init__(self, donor_recipient_list: List[Tuple[Donor, Recipient]]):
         self._donor_recipient_list = donor_recipient_list
 
+    def __str__(self) -> str:
+        donor_to_rec_str_list = [f"{donor.medical_id} > {recipient.medical_id}" for donor, recipient in
+                                 self._donor_recipient_list]
+        return ",".join(donor_to_rec_str_list)
+
     @property
     def length(self) -> int:
         return len(self._donor_recipient_list)
