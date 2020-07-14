@@ -74,8 +74,8 @@ def save_patients(donors_recipients: Tuple[List[DonorDto], List[RecipientDto]]):
     save_patient_models(recipient_models)
 
 
-def get_patient_from_model(patient_id: int) -> Patient:
-    patient_model = PatientModel.query.get(patient_id)
+def _get_patient_from_db_id(db_id: int) -> Patient:
+    patient_model = PatientModel.query.get(db_id)
     return Patient(
         db_id=patient_model.id,
         medical_id=patient_model.medical_id,
@@ -88,21 +88,21 @@ def get_patient_from_model(patient_id: int) -> Patient:
         ))
 
 
-def get_donor_from_db(patient_id: int) -> Donor:
-    donor = get_patient_from_model(patient_id)
+def get_donor_from_db_id(db_id: int) -> Donor:
+    donor = _get_patient_from_db_id(db_id)
     return Donor(donor.db_id, donor.medical_id, donor.parameters)
 
 
-def get_recipient_from_db(patient_id: int):
-    recipient = get_patient_from_model(patient_id)
-    related_donors = PatientPairModel.query.filter(PatientPairModel.recipient_id == patient_id).all()
+def get_recipient_from_db_id(db_id: int):
+    recipient = _get_patient_from_db_id(db_id)
+    related_donors = PatientPairModel.query.filter(PatientPairModel.recipient_id == db_id).all()
     if len(related_donors) == 1:
         don_id = related_donors[0].donor_id
     else:
         raise ValueError(f"There has to be 1 donor per recipient, but {len(related_donors)} "
-                         f"were found for recipient with db_id {patient_id} and medical id {recipient.medical_id}")
+                         f"were found for recipient with db_id {db_id} and medical id {recipient.medical_id}")
     return Recipient(recipient.db_id, recipient.medical_id, recipient.parameters,
-                     get_donor_from_db(don_id))
+                     get_donor_from_db_id(don_id))
 
 
 def get_all_patients() -> Iterable[PatientModel]:
@@ -111,7 +111,7 @@ def get_all_patients() -> Iterable[PatientModel]:
 
 def get_donors_recipients_from_db() -> Tuple[List[Donor], List[Recipient]]:
     patients = get_all_patients()
-    donors = [get_donor_from_db(donor.id) for donor in patients if donor.patient_type == 'DONOR']
-    recipients = [get_recipient_from_db(recipient.id) for recipient in patients if
+    donors = [get_donor_from_db_id(donor.id) for donor in patients if donor.patient_type == 'DONOR']
+    recipients = [get_recipient_from_db_id(recipient.id) for recipient in patients if
                   recipient.patient_type == 'RECIPIENT']
     return donors, recipients

@@ -14,6 +14,8 @@ class HLAAdditiveScorer(AdditiveScorer):
                  require_new_donor_having_better_match_in_compatibility_index_or_blood_group: bool = True,
                  use_binary_scoring: bool = False):
         """
+        :param recipient_donor_scores:
+            Manual setting of score for tuple of recipient and donor
         :param enforce_same_blood_group:
             True: donor has to have the same blood group as recipient
             False: donor just needs to have blood group that is in recipients acceptable blood groups
@@ -32,7 +34,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group = require_new_donor_having_better_match_in_compatibility_index_or_blood_group
         self._use_binary_scoring = use_binary_scoring
 
-    def score_transplant(self, donor: Donor, recipient: Recipient) -> float:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> float:
         donor_recipient_ci = compatibility_index(donor.parameters, recipient.parameters)
         related_donor_recipient_ci = compatibility_index(recipient.related_donor.parameters, recipient.parameters)
 

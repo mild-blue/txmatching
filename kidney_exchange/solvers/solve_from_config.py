@@ -1,6 +1,8 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import List, Iterator, Optional, Iterable
+from typing import List, Iterator, Optional, Iterable, Tuple
+
+import numpy as np
 
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.config.gives_superset_of_solutions import gives_superset_of_solutions
@@ -12,7 +14,7 @@ from kidney_exchange.database.services.scorer_service import score_matrix_to_dto
 from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, \
     get_patients_for_pairing_result, \
     db_matching_to_matching, \
-    get_donor_from_db, get_recipient_from_db
+    get_donor_from_db_id, get_recipient_from_db_id
 from kidney_exchange.database.sql_alchemy_schema import PairingResultPatientModel, PairingResultModel
 from kidney_exchange.filters.filter_from_config import filter_from_config
 from kidney_exchange.patients.donor import Donor
@@ -49,8 +51,8 @@ def solve_from_db() -> Iterable[Matching]:
     patients = get_all_patients()
     # TODO dont use strings here, use some better logic (ENUMS for example)
     # https://trello.com/c/pKMqnv7X
-    donors = [get_donor_from_db(donor.id) for donor in patients if donor.patient_type == 'DONOR']
-    recipients = [get_recipient_from_db(recipient.id) for recipient in patients if
+    donors = [get_donor_from_db_id(donor.id) for donor in patients if donor.patient_type == 'DONOR']
+    recipients = [get_recipient_from_db_id(recipient.id) for recipient in patients if
                   recipient.patient_type == 'RECIPIENT']
     current_configuration = get_current_configuration()
     current_config_matchings, score_matrix = solve_from_config(SolverInputParameters(
@@ -89,7 +91,7 @@ def current_config_matchings_to_model(config_matchings: Iterable[Matching]) -> C
     ])
 
 
-def solve_from_config(params: SolverInputParameters) -> Iterable[Matching]:
+def solve_from_config(params: SolverInputParameters) -> Tuple[Iterable[Matching], np.array]:
     scorer = scorer_from_configuration(params.configuration)
     solver = solver_from_config(params.configuration)
     matchings_in_db = load_matchings_from_database(params)

@@ -1,6 +1,6 @@
 from typing import List, Dict, Tuple
 
-from kidney_exchange.database.services.patient_service import get_donor_from_db, get_recipient_from_db
+from kidney_exchange.database.services.patient_service import get_donor_from_db_id, get_recipient_from_db_id
 from kidney_exchange.database.sql_alchemy_schema import PairingResultModel, PairingResultPatientModel
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
@@ -23,4 +23,4 @@ def db_matching_to_matching(json_matchings: List[List[Dict[str, int]]]) -> List[
 
 
 def get_patients_from_ids(donor_id: int, recipient_id: int) -> Tuple[Donor, Recipient]:
-    return get_donor_from_db(donor_id), get_recipient_from_db(recipient_id)
+    return get_donor_from_db_id(donor_id), get_recipient_from_db_id(recipient_id)
