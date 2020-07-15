@@ -2,6 +2,7 @@ from typing import List
 
 from kidney_exchange.utils.hla_system.hla_table import split_to_broad, HLA_A, HLA_B, HLA_DR
 
+# TODO combine with hla_table.py https://trello.com/c/sSRh7uRh/126-combine-hlatablepy-and-splittobroadresolutionpy
 
 def hla_split_to_broad(split_code: str) -> str:
     return split_to_broad.get(split_code) or split_code

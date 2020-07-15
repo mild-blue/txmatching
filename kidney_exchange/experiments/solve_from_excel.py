@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     print("[INFO] Sorting matchings")
     scored_matchings = list(zip(matchings, matching_round_counts, matching_patients_involved, matching_scores))
-    for criterion_index in [3, 2, 1]:
+    for criterion_index in [1, 3, 2]:
         scored_matchings.sort(key=lambda matching_score: matching_score[criterion_index], reverse=True)
     print("    -- done")
 
