@@ -85,6 +85,11 @@ class AllSolutionsSolver(SolverBase):
 
         for clique in max_cliques:
             circuit_list = [vertex_to_set[v] for v in clique]
+
+            for circuit_index, circuit in enumerate(circuit_list):
+                if circuit in pure_circuits:
+                    circuit_list[circuit_index] = tuple(list(circuit) + [circuit[0]])
+
             pairs = [[(circuit[i], pair_index_to_recipient_index[circuit[i + 1]])
                       for i in range(len(circuit) - 1)]
                      for circuit in circuit_list]
