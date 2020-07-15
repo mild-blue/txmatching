@@ -23,8 +23,8 @@ def compatibility_index(patient_parameters_donor: PatientParameters,
     match_counts = {code: 0 for code in compatibility_gene_codes}
 
     for gene_code in compatibility_gene_codes:
-        donor_genotype = get_antigen_genotype(patient_parameters_donor.hla_antigens_low_resolution, gene_code)
-        recipient_genotype = get_antigen_genotype(patient_parameters_recipient.hla_antigens_low_resolution, gene_code)
+        donor_genotype = get_antigen_genotype(patient_parameters_donor.hla_antigens_broad_resolution, gene_code)
+        recipient_genotype = get_antigen_genotype(patient_parameters_recipient.hla_antigens_broad_resolution, gene_code)
         common_allele_codes = set(donor_genotype.keys()).intersection(set(recipient_genotype.keys()))
 
         match_count = 0

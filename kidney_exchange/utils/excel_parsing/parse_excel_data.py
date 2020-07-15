@@ -10,13 +10,14 @@ from kidney_exchange.patients.donor import DonorDto
 from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
 from kidney_exchange.patients.recipient import RecipientDto
 from kidney_exchange.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
+from kidney_exchange.utils.countries import IL, CZE, AUT
 from kidney_exchange.utils.hla_system.hla_table import HLA_A, HLA_B, HLA_BW, HLA_CW, HLA_DR, HLA_DRDR, HLA_DQ
-from kidney_exchange.utils.hla_system.hla_table import HLA_A_LOW, HLA_B_LOW, HLA_CW_LOW, HLA_DQ_LOW, HLA_DR_LOW
+from kidney_exchange.utils.hla_system.hla_table import HLA_A_BROAD, HLA_B_BROAD, HLA_CW_BROAD, HLA_DQ_BROAD, HLA_DR_BROAD
 
 _valid_blood_groups = ["A", "B", "0", "AB"]
 
 _valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DRDR + \
-                      HLA_A_LOW + HLA_B_LOW + HLA_CW_LOW + HLA_DQ_LOW + HLA_DR_LOW
+                      HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DQ_BROAD + HLA_DR_BROAD
 
 _unknown_allele_codes = set()
 
@@ -59,15 +60,14 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
 
 
 def _country_code_from_id(patient_id: str) -> str:
-
     if re.match("[PD][0-9]{4}", patient_id):
-        return "IL"
+        return IL
 
     if re.match("[PD][0-9]{1,2}", patient_id):
-        return "CZE"
+        return CZE
 
     if patient_id.startswith("W-"):
-        return "AUT"
+        return AUT
 
     raise ValueError(f"Could not assign country code to {patient_id}")
 
