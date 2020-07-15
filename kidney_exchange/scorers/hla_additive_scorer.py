@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from kidney_exchange.config.configuration import Configuration, RecipientDonorScore
 from kidney_exchange.patients.donor import Donor
@@ -47,15 +47,15 @@ class HLAAdditiveScorer(AdditiveScorer):
             return TRANSPLANT_IMPOSSIBLE
 
         # Recipient can't have antibodies that donor has antigens for
-        # TODO: Ask immunologists what is exactly the bad combination and for what antigens?
-        for antibody_code in recipient.parameters.hla_antibodies.codes + recipient.parameters.hla_antibodies_low_resolution:
-            if antibody_code in donor.parameters.hla_antigens.codes + donor.parameters.hla_antigens_low_resolution:
-                return TRANSPLANT_IMPOSSIBLE
+        is_positive_hla_crossmath = self._is_positive_hla_crossmatch(donor, recipient)
+        if is_positive_hla_crossmath is True or is_positive_hla_crossmath is None:
+            return TRANSPLANT_IMPOSSIBLE  # TODO: Add flag: allow_low_high_res_incompatible that if set to True would
+            # not return TRANSPLANT_IMPOSSIBLE here
 
         # If required, donor must have either better match in blood group or better compatibility index than
         # the donor related to the recipient
         if self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group \
-                and (donor.parameters.blood_group != recipient.parameters.blood_group
+                and (not blood_groups_compatible(donor, recipient)
                      and donor_recipient_ci <= related_donor_recipient_ci):
             return TRANSPLANT_IMPOSSIBLE
 
@@ -97,3 +97,19 @@ class HLAAdditiveScorer(AdditiveScorer):
             return BLOOD_GROUP_COMPATIBILITY_BONUS
         else:
             return 0.0
+
+    @staticmethod
+    def _is_positive_hla_crossmatch(donor: Donor, recipient: Recipient) -> Optional[bool]:
+        """
+        Do donor and recipient have positive crossmatch in HLA system?
+        If this can't be determined, return None
+        e.g. A23 -> A23 True
+             A9 -> A9  None
+             A23 -> A9 None
+             A23 -> A24 False
+        :param donor:
+        :param recipient:
+        :return:
+        """
+        # TODO: Ask immunologists what is exactly the bad combination and for what antigens?
+        raise NotImplementedError("TODO: Implement")  # TODO: Implement
