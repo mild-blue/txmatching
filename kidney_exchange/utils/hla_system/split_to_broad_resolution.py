@@ -22,8 +22,8 @@ def is_valid_broad_code(code: str) -> bool:
 
 if __name__ == "__main__":
     test_code = "B38"
-    low_res_code = hla_split_to_broad(test_code)
-    print(f"Broad res code: {low_res_code} [is valid: {is_valid_broad_code(low_res_code)}]")
+    broad_res_code = hla_split_to_broad(test_code)
+    print(f"Broad res code: {broad_res_code} [is valid: {is_valid_broad_code(broad_res_code)}]")
 
     print(HLA_A_broad)
     print(HLA_B_broad)

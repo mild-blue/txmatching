@@ -24,13 +24,13 @@ class PatientParameters:
     country_code: Optional[str] = None
 
     @property
-    def hla_antigens_low_resolution(self) -> List[str]:
-        low_res_codes = [hla_split_to_broad(antigen) for antigen in self.hla_antigens.codes]
-        low_res_codes = [code for code in low_res_codes if is_valid_broad_code(code)]
-        return low_res_codes
+    def hla_antigens_broad_resolution(self) -> List[str]:
+        broad_res_codes = [hla_split_to_broad(antigen) for antigen in self.hla_antigens.codes]
+        broad_res_codes = [code for code in broad_res_codes if is_valid_broad_code(code)]
+        return broad_res_codes
 
     @property
-    def hla_antibodies_low_resolution(self) -> List[str]:
-        low_res_codes = [hla_split_to_broad(antibody) for antibody in self.hla_antibodies.codes]
-        low_res_codes = [code for code in low_res_codes if is_valid_broad_code(code)]
-        return low_res_codes
+    def hla_antibodies_broad_resolution(self) -> List[str]:
+        broad_res_codes = [hla_split_to_broad(antibody) for antibody in self.hla_antibodies.codes]
+        broad_res_codes = [code for code in broad_res_codes if is_valid_broad_code(code)]
+        return broad_res_codes
