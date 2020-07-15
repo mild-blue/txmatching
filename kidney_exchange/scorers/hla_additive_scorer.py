@@ -76,7 +76,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         if self._use_binary_scoring:
             return 1.0
         else:
-            blood_group_bonus = self._blood_group_bonus(donor, recipient)
+            blood_group_bonus = self._blood_group_compatibility_bonus(donor, recipient)
             return donor_recipient_ci + blood_group_bonus
 
     @classmethod
@@ -92,7 +92,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         return hla_additive_scorer
 
     @staticmethod
-    def _blood_group_bonus(donor: Donor, recipient: Recipient):
+    def _blood_group_compatibility_bonus(donor: Donor, recipient: Recipient):
         if blood_groups_compatible(donor, recipient):
             return BLOOD_GROUP_COMPATIBILITY_BONUS
         else:
