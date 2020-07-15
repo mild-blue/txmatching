@@ -1,6 +1,4 @@
-from typing import List
-
-import numpy as np
+from typing import List, Union
 
 from kidney_exchange.config.configuration import RecipientDonorScore, Configuration
 from kidney_exchange.patients.donor import Donor
@@ -8,7 +6,9 @@ from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.scorer_base import ScorerBase
 from kidney_exchange.solvers.matching.matching import Matching
 
-TRANSPLANT_IMPOSSIBLE = float("-inf")
+ORIGINAL_DONOR_RECIPIENT_TUPLE = "Original Donor recipient tuple"
+
+ScoreMatrix = List[List[Union[float, str]]]
 
 
 class AdditiveScorer(ScorerBase):
@@ -27,7 +27,7 @@ class AdditiveScorer(ScorerBase):
         else:
             return manual_score
 
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> float:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> Union[float, str]:
         raise NotImplementedError("Has to be overridden")
 
     def score(self, matching: Matching) -> float:
@@ -43,17 +43,20 @@ class AdditiveScorer(ScorerBase):
 
         return total_score
 
-    def get_score_matrix(self, donors: List[Donor], recipients: List[Recipient]) -> np.array:
-        score_matrix = np.zeros((len(donors), len(recipients)))
-        for donor_index, donor in enumerate(donors):
-            for recipient_index, recipient in enumerate(recipients):
-                if recipient.related_donor == donor:
-                    score = float(np.nan)
-                else:
-                    score = self.score_transplant(donor, recipient)
+    def get_score_matrix(self, donors: List[Donor], recipients: List[Recipient]) -> ScoreMatrix:
+        score_matrix = [
+            [self._score_transplant_including_original_tuple(donor, recipient) for recipient in recipients]
+            for donor in donors
+        ]
 
-                score_matrix[donor_index, recipient_index] = score
         return score_matrix
+
+    def _score_transplant_including_original_tuple(self, donor: Donor, recipient: Recipient) -> Union[float, str]:
+        if recipient.related_donor == donor:
+            score = ORIGINAL_DONOR_RECIPIENT_TUPLE
+        else:
+            score = self.score_transplant(donor, recipient)
+        return score
 
     @classmethod
     def from_config(cls, configuration: Configuration) -> "AdditiveScorer":

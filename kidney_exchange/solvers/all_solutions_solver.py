@@ -7,7 +7,8 @@ from graph_tool.all import Graph
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.scorers.additive_scorer import AdditiveScorer
+from kidney_exchange.scorers.additive_scorer import AdditiveScorer, ORIGINAL_DONOR_RECIPIENT_TUPLE
+from kidney_exchange.scorers.scorer_base import TRANSPLANT_IMPOSSIBLE
 from kidney_exchange.solvers.matching.matching import Matching
 from kidney_exchange.solvers.solver_base import SolverBase
 
@@ -19,17 +20,18 @@ class AllSolutionsSolver(SolverBase):
         self._verbose = verbose
 
     def solve(self, donors: List[Donor], recipients: List[Recipient], scorer: AdditiveScorer) -> Iterator[Matching]:
-        score_matrix = np.zeros((len(donors), len(recipients)))
-        for donor_index, donor in enumerate(donors):
-            for recipient_index, recipient in enumerate(recipients):
-                if recipient.related_donor == donor:
-                    score = np.NaN
-                else:
-                    score = scorer.score_transplant(donor, recipient)
+        score_matrix = scorer.get_score_matrix(donors, recipients)
+        score_matrix_array = np.zeros((len(donors), len(recipients)))
+        for row_index, row in enumerate(score_matrix):
+            for column_index, value in enumerate(row):
+                if value == ORIGINAL_DONOR_RECIPIENT_TUPLE:
+                    value = np.NaN
+                elif value == TRANSPLANT_IMPOSSIBLE:
+                    value = np.inf
 
-                score_matrix[donor_index, recipient_index] = score
+                score_matrix_array[row_index, column_index] = value
 
-        for solution in self._solve(score_matrix=score_matrix):
+        for solution in self._solve(score_matrix=score_matrix_array):
             matching = Matching(donor_recipient_list=[(donors[i], recipients[j]) for i, j in solution
                                                       if i < len(donors) and j < len(recipients)])
             yield matching

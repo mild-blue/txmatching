@@ -1,11 +1,13 @@
+from typing import Union
+
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.solvers.matching.matching import Matching
 
-TRANSPLANT_IMPOSSIBLE = float("-inf")
+TRANSPLANT_IMPOSSIBLE = "Transplant Impossible"
 
 
 class ScorerBase:
-    def score(self, matching: Matching) -> float:
+    def score(self, matching: Matching) -> Union[float, str]:
         """
         Higher score means better matching
         :param matching:
