@@ -28,7 +28,7 @@ if __name__ == "__main__":
     donors, recipients = _get_donors_recipients(donors_raw, recipients_raw)
 
     scorer = HLAAdditiveScorer(enforce_compatible_blood_group=False,
-                               minimum_compatibility_index=0,
+                               minimum_compatibility_index=0.0,
                                require_new_donor_having_better_match_in_compatibility_index_or_blood_group=False,
                                require_new_donor_having_better_match_in_compatibility_index=False,
                                use_binary_scoring=False)
@@ -44,13 +44,17 @@ if __name__ == "__main__":
     matching_scores = [
         sum(scorer.score_transplant(donor, recipient) for donor, recipient in matching.donor_recipient_list)
         for matching in matchings]
+    matching_round_counts = [len(matching.get_rounds()) for matching in matchings]
+    matching_patients_involved = [len(matching.donor_recipient_list) for matching in matchings]
     print("    -- done")
 
     print("[INFO] Sorting matchings")
-    scored_matchings = list(zip(matchings, matching_scores))
-    scored_matchings.sort(key=lambda matching_score: matching_score[1], reverse=True)
+    scored_matchings = list(zip(matchings, matching_round_counts, matching_patients_involved, matching_scores))
+    for criterion_index in [3, 2, 1]:
+        scored_matchings.sort(key=lambda matching_score: matching_score[criterion_index], reverse=True)
     print("    -- done")
 
-    for matching, score in scored_matchings[:10]:
-        print(score)
-        print(matching)
+    for matching, round_count, patient_count, score in scored_matchings[:10]:
+        rounds_str = "  ".join([f"[{str(round)}]" for round in matching.get_rounds()])
+        str_repr = f"{round_count}/{patient_count} ({score}):  {rounds_str}"
+        print(str_repr)
