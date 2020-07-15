@@ -52,12 +52,17 @@ def browse_solutions():
     selected_exchange_index = request.args.get("selected_exchange_index", 1)
     matchings = get_latest_matchings()
 
+    matching_index, round_index, pair_index = 1, 1, 1
+
     return render_template("browse_solutions.html",
                            matchings=matchings,
                            scorer=scorer,
                            selected_exchange_index=selected_exchange_index,
                            configuration=configuration,
-                           ui_utils=ui_utils)
+                           ui_utils=ui_utils,
+                           matching_index=matching_index,
+                           round_index=round_index,
+                           pair_index=pair_index)
 
 
 @functional_api.route('/load-patients', methods=["GET", "POST"])

@@ -1,5 +1,6 @@
 {% from 'config_form_macro.html' import form_from_configuration %}
 {% from 'matching_macro.html' import render_matching %}
+{% from 'transplant_macro.html' import render_transplant %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,6 +15,9 @@
 <div style="height: 400px">
     <div style="width: 50%; float: left">
         {{ form_from_configuration(configuration) }}
+    </div>
+    <div style="width: 50%; float: left">
+        {{ render_transplant(matchings, scorer, matching_index, round_index, pair_index)}}
     </div>
 </div>
 
