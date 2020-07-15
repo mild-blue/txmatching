@@ -25,7 +25,7 @@ def _get_donors_recipients(donor_dtos: List[DonorDto], recipient_dtos: List[Reci
 if __name__ == "__main__":
     excel_path = os.environ.get("PATIENT_DATA_PATH")
     donors_raw, recipients_raw = parse_excel_data(excel_path)
-    donors, recipients = _get_donors_recipients(donors_raw, recipients_raw)
+    main_donors, main_recipients = _get_donors_recipients(donors_raw, recipients_raw)
 
     scorer = HLAAdditiveScorer(enforce_compatible_blood_group=False,
                                minimum_compatibility_index=0.0,
@@ -34,7 +34,7 @@ if __name__ == "__main__":
                                use_binary_scoring=False)
 
     solver = AllSolutionsSolver()
-    matching_iterator = solver.solve(donors=donors, recipients=recipients, scorer=scorer)
+    matching_iterator = solver.solve(donors=main_donors, recipients=main_recipients, scorer=scorer)
 
     print("[INFO] Looking for matchings")
     matchings = list(matching_iterator)
@@ -55,6 +55,6 @@ if __name__ == "__main__":
     print("    -- done")
 
     for matching, round_count, patient_count, score in scored_matchings[:10]:
-        rounds_str = "  ".join([f"[{str(round)}]" for round in matching.get_rounds()])
-        str_repr = f"{round_count}/{patient_count} ({score}):  {rounds_str}"
+        rounds_str = "  ".join([f"[{str(transplant_round)}]" for transplant_round in matching.get_rounds()])
+        str_repr = f"{patient_count}/{round_count} ({score}):  {rounds_str}"
         print(str_repr)
