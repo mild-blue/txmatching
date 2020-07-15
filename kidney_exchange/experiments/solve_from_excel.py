@@ -10,12 +10,14 @@ from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_dat
 
 def _get_donors_recipients(donor_dtos: List[DonorDto], recipient_dtos: List[RecipientDto]) \
         -> Tuple[List[Donor], List[Recipient]]:
-    donors = [Donor(db_id=hash(donor.medical_id), medical_id=donor.medical_id, parameters=donor.parameters)
+    donors = [Donor(db_id=hash(donor.medical_id),
+                    medical_id=donor.medical_id,
+                    parameters=donor.parameters)
               for donor in donor_dtos]
-    recipients = [Recipient(db_id=hash(recipient.medical_id), medical_id=recipient.medical_id, parameters=recipient.parameters,
-                            related_donor=Donor(db_id=hash(recipient.related_donor.medical_id),
-                                                medical_id=recipient.related_donor.medical_id,
-                                                parameters=recipient.related_donor.parameters))
+    recipients = [Recipient(db_id=hash(recipient.medical_id),
+                            medical_id=recipient.medical_id,
+                            parameters=recipient.parameters,
+                            related_donor=donors[donor_dtos.index(recipient.related_donor)])
                   for recipient in recipient_dtos]
     return donors, recipients
 

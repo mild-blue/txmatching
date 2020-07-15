@@ -19,22 +19,22 @@ class Matching:
 
     def __str__(self) -> str:
         cycles = self.get_cycles()
-        sequences = self.get_cycles()
+        sequences = self.get_sequences()
 
-        repr = "[Matching]"
+        str_repr = "[Matching]"
 
         if len(cycles) > 0:
-            repr += "Cycles:\n"
+            str_repr += "Cycles:\n"
 
             for cycle in self.get_cycles():
-                repr += "\t" + str(cycle) + "\n"
+                str_repr += "\t" + str(cycle) + "\n"
 
         if len(sequences) > 0:
-            repr = "\nSequences:\n"
+            str_repr = "\nSequences:\n"
             for sequence in sequences:
-                repr += "\t" + str(sequence) + "\n"
+                str_repr += "\t" + str(sequence) + "\n"
 
-        return repr
+        return str_repr
 
     @property
     def donor_recipient_list(self):

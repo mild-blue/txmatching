@@ -19,7 +19,8 @@ class TransplantRound:
     def __str__(self) -> str:
         donor_to_rec_str_list = [f"{donor.medical_id} > {recipient.medical_id}" for donor, recipient in
                                  self._donor_recipient_list]
-        return ",".join(donor_to_rec_str_list)
+        str_repr = ",".join(donor_to_rec_str_list)
+        return str_repr
 
     @property
     def length(self) -> int:
