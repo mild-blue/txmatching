@@ -59,7 +59,7 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
 
 
 def _country_code_from_id(patient_id: str) -> str:
-    # TODO: Confirm this with IKEM https://trello.com/c/2hYxou7M
+
     if re.match("[PD][0-9]{4}", patient_id):
         return "IL"
 
@@ -69,7 +69,6 @@ def _country_code_from_id(patient_id: str) -> str:
     if patient_id.startswith("W-"):
         return "AUT"
 
-    # TODO clarify with IKEM
     raise ValueError(f"Could not assign country code to {patient_id}")
 
 

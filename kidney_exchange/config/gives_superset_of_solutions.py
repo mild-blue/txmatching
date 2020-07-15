@@ -18,7 +18,7 @@ def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configu
     :param more_strict: Configuration which we believe could be more strict
     :return:
     """
-    # TODO: When we add more solvers and scorers this has to change
+    # TODO: When we add more solvers and scorers this has to change https://trello.com/c/M9Fqi5Ig
     _check_if_config_is_supported(less_strict)
     _check_if_config_is_supported(more_strict)
 
@@ -28,8 +28,7 @@ def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configu
                            "require_new_donor_having_better_match_in_compatibility_index_or_blood_group",
                            "manual_recipient_donor_scores"]
 
-    # TODO: There needs to be a better logic here
-    # https://trello.com/c/zseK1Zcf
+    # TODO: There needs to be a better logic here https://trello.com/c/zseK1Zcf
     # For example for
     # less_strict = (True, 2, True, True)
     # more_strict = (True, 10, True, True)

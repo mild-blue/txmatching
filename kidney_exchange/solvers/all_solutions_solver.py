@@ -13,7 +13,7 @@ from kidney_exchange.solvers.solver_base import SolverBase
 
 
 class AllSolutionsSolver(SolverBase):
-    # TODO: This is legacy code, refactor, try to optimize speed
+    # TODO: This is legacy code, refactor, try to optimize speed https://trello.com/c/lKFXAQfE
     def __init__(self, verbose: bool = True):
         super().__init__()
         self._verbose = verbose

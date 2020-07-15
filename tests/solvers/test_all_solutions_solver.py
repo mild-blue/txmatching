@@ -18,7 +18,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
         self._expected_num_solutions = 1886
 
     def test_solve(self):
-        # TODO: Add more specific test
+        # TODO: Add more specific test https://trello.com/c/1Cdaujkx
         scorer = TabularScorer(score_matrix=self._score_matrix)
         solver = AllSolutionsSolver()
         all_solutions = list(solver._solve(score_matrix=np.array(self._score_matrix)))

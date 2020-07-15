@@ -111,6 +111,6 @@ class HLAAdditiveScorer(AdditiveScorer):
         :param recipient:
         :return:
         """
-        # TODO: Ask immunologists what is exactly the bad combination and for what antigens?
+        # TODO: Ask immunologists what is exactly the bad combination and for what antigens? https://trello.com/c/MR4qk853
         return False
 

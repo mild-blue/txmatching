@@ -15,7 +15,7 @@ class ScoreMatrix:
 
 
 def score_matrix_to_dto(score_matrix):
-    # TODO should we save the matrix? Is there any point? There is issue with np.nan anyway..
+    # TODO score matrix list of list with strings instead of -inf  https://trello.com/c/UN4mydXe
     return dataclasses.asdict(ScoreMatrix(np.nan_to_num(score_matrix).tolist()))
 
 

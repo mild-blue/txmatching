@@ -3,9 +3,10 @@
 #
 # For more info, see: https://en.wikipedia.org/wiki/History_and_naming_of_human_leukocyte_antigens
 
-# TODO: Confirm this table with some immunologist
-# TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9)
-# TODO: ask what exact antigens should I count in the matches - for example what about DR52, DR53 - what do those mean
+# TODO: Confirm this table with some immunologist https://trello.com/c/08MZVRCk
+# TODO: ask what exact antigens should I count in the matches - for example what about DR52, DR53 - what do those mean https://trello.com/c/08MZVRCk
+# TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9) https://trello.com/c/MR4qk853
+
 
 HLA_A = ["A1", "A2", "A203", "A210", "A3", "A11", "A23", "A24", "A2403",
          "A25", "A26", "A29", "A30", "A31", "A32", "A33", "A34", "A36",
