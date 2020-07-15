@@ -1,0 +1,8 @@
+{% macro render_patient(patient) %}
+
+<div class="patient_box">
+    Name, blood group: {{ patient.medical_id }}, {{ patient.parameters.blood_group }}<br>
+    Acceptable blood groups: {{patient.parameters.acceptable_blood_groups}}
+</div>
+
+{% endmacro %}

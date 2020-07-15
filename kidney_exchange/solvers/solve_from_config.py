@@ -13,7 +13,7 @@ from kidney_exchange.database.services.patient_service import medical_id_to_db_i
 from kidney_exchange.database.services.scorer_service import score_matrix_to_dto
 from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, \
     get_patients_for_pairing_result, \
-    db_matching_to_matching
+    db_matchings_to_matching_list
 from kidney_exchange.database.sql_alchemy_schema import PairingResultPatientModel, PairingResultModel
 from kidney_exchange.filters.filter_from_config import filter_from_config
 from kidney_exchange.patients.donor import Donor
@@ -121,7 +121,7 @@ def load_matchings_from_database(exchange_parameters: SolverInputParameters) -> 
         for pairing_result in get_pairing_result_for_config(compatible_config.id):
             compatible_config_patient_ids = {p.patient_id for p in get_patients_for_pairing_result(pairing_result.id)}
             if compatible_config_patient_ids == current_patient_ids:
-                return db_matching_to_matching(pairing_result.calculated_matchings)
+                return db_matchings_to_matching_list(pairing_result.calculated_matchings)
 
     return None
 

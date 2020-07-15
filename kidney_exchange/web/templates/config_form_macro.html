@@ -1,0 +1,35 @@
+{% macro form_from_configuration(configuration) %}
+
+<form action="" method="post" class="configuration_form">
+
+    <input type="checkbox" value="on" name="enforce_compatible_blood_group"
+           {{ "checked" if configuration.enforce_compatible_blood_group }}>
+    Require compatible blood group<br>
+
+    <input type="checkbox" value="on" name="require_new_donor_having_better_match_in_compatibility_index"
+           {{ "checked" if configuration.require_new_donor_having_better_match_in_compatibility_index }}>
+    Require new donor having better CI match<br>
+
+    <input type="checkbox" value="on" name="require_new_donor_having_better_match_in_compatibility_index_or_blood_group"
+           {{ "checked" if configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group }}>
+    Require new donor having better CI match or better blood group<br>
+
+    <input type="checkbox" value="on" name="use_binary_scoring" {{ "checked" if configuration.use_binary_scoring }}>
+    Use binary scoring<br>
+
+    Min compatibility
+    <input type="number" value="{{ configuration.minimum_compatibility_index }}" name="minimum_compatibility_index"><br>
+
+    Max cycle length
+    <input type="number" value="{{ configuration.max_cycle_length }}" name="max_cycle_length"><br>
+
+    Max sequence length
+    <input type="number" value="{{ configuration.max_sequence_length }}" name="max_sequence_length"><br>
+
+    <input type="submit" value="Recalculate" class="submit_button">
+
+    <!-- TODO: Add  manual_recipient_donor_scores: List[RecipientDonorScore] = field(default_factory=list) -->
+</form>
+
+
+{% endmacro %}

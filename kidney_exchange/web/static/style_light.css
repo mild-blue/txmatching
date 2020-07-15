@@ -1,0 +1,62 @@
+body {
+    font-family: sans-serif;
+    line-height: 150%;
+    margin: 50px;
+}
+
+.configuration_form {
+    background: whitesmoke;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 50px;
+}
+
+.matching_box {
+    background: whitesmoke;
+    border-radius: 10px;
+    padding: 20px;
+    padding-bottom: 3px;
+}
+
+.chain_link {
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 10px;
+    padding-top: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: black;
+    text-decoration: none;
+}
+
+.submit_button {
+    background: darkseagreen;
+    margin-top: 20px;
+    width: 120px;
+    height: 50px;
+    border-radius: 10px;
+    color: white;
+    border: 2px solid green;
+    font-weight: bold;
+}
+
+.matching_browse_box {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 800px;
+}
+
+.transplant-description {
+    padding-left: 20px;
+    margin-bottom: 20px;
+    color: gray;
+}
+
+.inline_code {
+    border-radius: 3px;
+    border: 1px solid plum;
+    background: #e6e6e6;
+    padding-left: 3px;
+    padding-right: 3px;
+    color: rebeccapurple;
+}

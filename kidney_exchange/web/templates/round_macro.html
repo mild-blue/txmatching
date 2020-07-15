@@ -1,0 +1,16 @@
+{% macro render_round(round, scorer, ui_utils, round_index, matching_index) %}
+
+<div class="round_box">
+    {{ round_index }}
+    {% for donor, recipient in round.donor_recipient_list %}
+    {% set score = (100 * scorer.score_transplant(donor, recipient) / 46 | int) %}
+    <a class="chain_link" style="background-color: {{ ui_utils.color_gradient(score) }}"
+       href="?matching_index={{matching_index}}&round_index={{round_index}}&pair_index={{loop.index}}">
+        <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px">
+        {{ donor.medical_id }} ⮕ {{ recipient.medical_id }}
+        <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px">
+    </a>
+    {% endfor %}
+</div>
+
+{% endmacro %}

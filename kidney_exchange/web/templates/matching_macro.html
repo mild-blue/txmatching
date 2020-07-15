@@ -1,0 +1,18 @@
+{% from 'round_macro.html' import render_round %}
+
+{% macro render_matching(matching, scorer, ui_utils, matching_index) %}
+
+<div class="matching_box">
+    <div class="transplant-description">
+        Matching index: <span class="inline_code">{{ matching_index }}</span> |
+        Score: <span class="inline_code">{{ scorer.score(matching) }}</span> |
+        Rounds: <span class="inline_code">{{ matching.get_rounds() | length }}</span> |
+        Transplants: <span class="inline_code">{{matching.donor_recipient_list | length}}</span>
+    </div>
+    {% for round in matching.get_rounds() %}
+    {{ render_round(round, scorer, ui_utils, loop.index, matching_index) }}
+    <br>
+    {% endfor %}
+</div>
+
+{% endmacro %}

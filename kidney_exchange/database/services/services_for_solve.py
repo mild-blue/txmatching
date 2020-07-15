@@ -16,8 +16,7 @@ def get_patients_for_pairing_result(pairing_result_id: int) -> List[PairingResul
         PairingResultPatientModel.pairing_result_id == pairing_result_id).all()
 
 
-def db_matching_to_matching(json_matchings: Dict[str, List[Dict[str, List[Dict[str, int]]]]]) -> List[Matching]:
-
+def db_matchings_to_matching_list(json_matchings: Dict[str, List[Dict[str, List[Dict[str, int]]]]]) -> List[Matching]:
     return [Matching([get_patients_from_ids(donor_recipient_ids['donor'], donor_recipient_ids['recipient'])
                       for donor_recipient_ids in json_matching['donors_recipients']
                       ]) for json_matching in json_matchings["matchings"]]
@@ -25,3 +24,8 @@ def db_matching_to_matching(json_matchings: Dict[str, List[Dict[str, List[Dict[s
 
 def get_patients_from_ids(donor_id: int, recipient_id: int) -> Tuple[Donor, Recipient]:
     return get_donor_from_db_id(donor_id), get_recipient_from_db_id(recipient_id)
+
+
+def get_latest_matchings() -> List[Matching]:
+    last_pairing_result_model = PairingResultModel.query.order_by(PairingResultModel.updated_at.desc()).first()
+    return db_matchings_to_matching_list(last_pairing_result_model.calculated_matchings)

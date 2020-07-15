@@ -36,11 +36,12 @@ class FilterDefault(FilterBase):
             return False
 
         if max([transplant_round.country_count for transplant_round in
-                set.union(sequences, cycles)]) > self._max_number_of_distinct_countries_in_round:
+                sequences + cycles]) > self._max_number_of_distinct_countries_in_round:
             return False
 
         for patient_db_id in self._required_patients:
-            if not any([transplant_round.contains_patient_db_id(patient_db_id) for transplant_round in set.union(sequences, cycles)]):
+            if not any([transplant_round.contains_patient_db_id(patient_db_id) for transplant_round in
+                        sequences + cycles]):
                 return False
 
         return True

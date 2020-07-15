@@ -1,3 +1,31 @@
-{% extends "template_main.html" -%}
-{% block main_content -%}
-{%- endblock %}
+{% from 'config_form_macro.html' import form_from_configuration %}
+{% from 'matching_macro.html' import render_matching %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kidney Exchange</title>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style_light.css') }}">
+</head>
+<body>
+
+
+<div style="height: 400px">
+    <div style="width: 50%; float: left">
+        {{ form_from_configuration(configuration) }}
+    </div>
+    <div style="width: 50%; float: left">
+        {{ render_exchange(matchings, scorer, matching_index, round_index, pair_index)}}
+    </div>
+</div>
+
+<div class="matching_browse_box">
+    {% for matching in matchings %}
+    {{ render_matching(matching, scorer, ui_utils, loop.index) }}<br>
+    {% endfor %}
+</div>
+
+
+</body>
+</html>

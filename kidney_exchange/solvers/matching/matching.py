@@ -1,4 +1,4 @@
-from typing import List, Tuple, Set
+from typing import List, Tuple
 
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
@@ -40,16 +40,16 @@ class Matching:
     def donor_recipient_list(self):
         return self._donor_recipient_list
 
-    def get_cycles(self) -> Set[TransplantCycle]:
+    def get_cycles(self) -> List[TransplantCycle]:
         return self._cycles
 
-    def get_sequences(self) -> Set[TransplantSequence]:
+    def get_sequences(self) -> List[TransplantSequence]:
         return self._sequences
 
-    def get_rounds(self) -> Set[TransplantRound]:
+    def get_rounds(self) -> List[TransplantRound]:
         cycles = self.get_cycles()
         sequences = self.get_sequences()
-        return set.union(cycles, sequences)
+        return cycles + sequences
 
     def _initialize(self):
         recipients = [recipient for donor, recipient in self._donor_recipient_list]
@@ -88,7 +88,7 @@ class Matching:
             else:
                 raise AssertionError("Next vertex is not None nor equal to start vertex")
 
-        self._cycles = set(TransplantCycle([self._donor_recipient_list[i] for i in cycle])
-                           for cycle in vertex_cycles)
-        self._sequences = set(TransplantSequence([self._donor_recipient_list[i] for i in seq])
-                              for seq in vertex_sequences)
+        self._cycles = list(TransplantCycle([self._donor_recipient_list[i] for i in cycle])
+                            for cycle in vertex_cycles)
+        self._sequences = list(TransplantSequence([self._donor_recipient_list[i] for i in seq])
+                               for seq in vertex_sequences)
