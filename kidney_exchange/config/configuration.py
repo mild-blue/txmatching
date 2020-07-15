@@ -31,7 +31,7 @@ class Configuration:
     max_cycle_length: int = 5
     max_sequence_length: int = 5
     max_number_of_distinct_countries_in_round: int = 2
-    required_patient_ids: List[str] = field(default_factory=list)
+    required_patient_db_ids: List[int] = field(default_factory=list)
     manual_recipient_donor_scores: List[RecipientDonorScore] = field(default_factory=list)
 
 

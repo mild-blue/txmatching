@@ -112,4 +112,5 @@ class HLAAdditiveScorer(AdditiveScorer):
         :return:
         """
         # TODO: Ask immunologists what is exactly the bad combination and for what antigens?
-        raise NotImplementedError("TODO: Implement")  # TODO: Implement
+        return False
+

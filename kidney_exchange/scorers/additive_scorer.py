@@ -5,12 +5,13 @@ import numpy as np
 from kidney_exchange.config.configuration import RecipientDonorScore, Configuration
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
+from kidney_exchange.scorers.scorer_base import ScorerBase
 from kidney_exchange.solvers.matching.matching import Matching
 
 TRANSPLANT_IMPOSSIBLE = float("-inf")
 
 
-class AdditiveScorer:
+class AdditiveScorer(ScorerBase):
     def __init__(self, recipient_donor_scores: List[RecipientDonorScore] = None):
         if recipient_donor_scores is not None:
             self._manual_scores = {

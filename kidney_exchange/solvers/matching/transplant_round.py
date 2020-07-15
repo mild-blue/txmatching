@@ -1,7 +1,6 @@
 from typing import Tuple, List
 
 from kidney_exchange.patients.donor import Donor
-from kidney_exchange.patients.patient import Patient
 from kidney_exchange.patients.recipient import Recipient
 
 
@@ -35,9 +34,9 @@ class TransplantRound:
 
         return len(country_codes)
 
-    def contains_patient(self, patient: Patient) -> bool:
+    def contains_patient_db_id(self, patient_db_id: int) -> bool:
         for donor, recipient in self._donor_recipient_list:
-            if patient == donor or patient == recipient:
+            if patient_db_id == donor.db_id or patient_db_id == recipient.db_id:
                 return True
 
         return False

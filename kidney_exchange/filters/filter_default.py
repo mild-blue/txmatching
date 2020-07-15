@@ -2,7 +2,6 @@ from typing import List
 
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.filters.filter_base import FilterBase
-from kidney_exchange.patients.patient import Patient
 from kidney_exchange.solvers.matching.matching import Matching
 
 
@@ -12,17 +11,17 @@ class FilterDefault(FilterBase):
         return FilterDefault(max_cycle_length=configuration.max_cycle_length,
                              max_sequence_length=configuration.max_sequence_length,
                              max_number_of_distinct_countries_in_round=configuration.max_number_of_distinct_countries_in_round,
-                             required_patients=[Patient(patient_id) for patient_id in
-                                                configuration.required_patient_ids])
+                             required_patient_db_ids=configuration.required_patient_db_ids
+                             )
 
     def __init__(self, max_cycle_length: int = None,
                  max_sequence_length: int = None,
                  max_number_of_distinct_countries_in_round: int = None,
-                 required_patients: List[Patient] = None):
+                 required_patient_db_ids: List[int] = None):
         self._max_cycle_length = max_cycle_length
         self._max_sequence_length = max_sequence_length
         self._max_number_of_distinct_countries_in_round = max_number_of_distinct_countries_in_round
-        self._required_patients = required_patients
+        self._required_patients = required_patient_db_ids
 
     def keep(self, matching: Matching) -> bool:
         sequences = matching.get_sequences()
@@ -40,8 +39,8 @@ class FilterDefault(FilterBase):
                 set.union(sequences, cycles)]) > self._max_number_of_distinct_countries_in_round:
             return False
 
-        for patient in self._required_patients:
-            if not any([transplant_round.contains_patient(patient) for transplant_round in set.union(sequences, cycles)]):
+        for patient_db_id in self._required_patients:
+            if not any([transplant_round.contains_patient_db_id(patient_db_id) for transplant_round in set.union(sequences, cycles)]):
                 return False
 
         return True

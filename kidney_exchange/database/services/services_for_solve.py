@@ -16,12 +16,11 @@ def get_patients_for_pairing_result(pairing_result_id: int) -> List[PairingResul
         PairingResultPatientModel.pairing_result_id == pairing_result_id).all()
 
 
-def db_matching_to_matching(json_matchings: Dict[str, List[List[Dict[str, int]]]]) -> List[Matching]:
-    matchings = json_matchings["matchings"]
+def db_matching_to_matching(json_matchings: Dict[str, List[Dict[str, List[Dict[str, int]]]]]) -> List[Matching]:
 
     return [Matching([get_patients_from_ids(donor_recipient_ids['donor'], donor_recipient_ids['recipient'])
-                      for donor_recipient_ids in json_matching
-                      ]) for json_matching in matchings]
+                      for donor_recipient_ids in json_matching['donors_recipients']
+                      ]) for json_matching in json_matchings["matchings"]]
 
 
 def get_patients_from_ids(donor_id: int, recipient_id: int) -> Tuple[Donor, Recipient]:

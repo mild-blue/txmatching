@@ -25,34 +25,34 @@ VALUES ('{
 
 INSERT INTO public.pairing_result (config_id, calculated_matchings, score_matrix, valid)
 VALUES (1, '{
-  "matchings": [
-    [
+  "matchings": [{
+    "donors_recipients": [
       {
-        "recipient": 2,
+        "recipient": 3,
         "donor": 1
       }
     ]
-  ]
+  }]
 }', '{}', true);
 INSERT INTO public.pairing_result (config_id, calculated_matchings, score_matrix, valid)
 VALUES (2, '{
-  "matchings": [
-    [
+  "matchings": [{
+    "donors_recipients": [
       {
-        "recipient": 2,
+        "recipient": 3,
         "donor": 1
       }
     ]
-  ]
+  }]
 }', '{}', true);
 
 
 INSERT INTO public.pairing_result_patient (pairing_result_id, patient_id)
 VALUES (1, 1);
 INSERT INTO public.pairing_result_patient (pairing_result_id, patient_id)
-VALUES (1, 2);
+VALUES (1, 3);
 INSERT INTO public.pairing_result_patient (pairing_result_id, patient_id)
 VALUES (2, 1);
 INSERT INTO public.pairing_result_patient (pairing_result_id, patient_id)
-VALUES (2, 2);
+VALUES (2, 3);
 

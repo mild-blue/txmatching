@@ -61,7 +61,10 @@ class AllSolutionsSolver(SolverBase):
 
         if self._verbose:
             print("[INFO] Listing all max cliques")
-        max_cliques = list(topology.max_cliques(intersection_graph))
+        if len(list(intersection_graph.vertices())) > 0:
+            max_cliques = list(topology.max_cliques(intersection_graph))
+        else:
+            max_cliques = []
 
         if self._verbose:
             print("[INFO] Finding 1 vertex cliques")

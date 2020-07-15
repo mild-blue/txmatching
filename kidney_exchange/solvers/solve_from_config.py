@@ -97,7 +97,7 @@ def solve_from_config(params: SolverInputParameters) -> Tuple[Iterable[Matching]
     if matchings_in_db is not None:
         all_solutions = matchings_in_db
     else:
-        all_solutions = solver.solve(params.donors, params.recipients, score_matrix)
+        all_solutions = solver.solve(params.donors, params.recipients, scorer)
 
     matching_filter = filter_from_config(params.configuration)
     matchings_filtered = filter(matching_filter.keep, all_solutions)

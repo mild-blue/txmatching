@@ -25,7 +25,8 @@ def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configu
     breaking_parameters = ["enforce_compatible_blood_group",
                            "minimum_compatibility_index",
                            "require_new_donor_having_better_match_in_compatibility_index",
-                           "require_new_donor_having_better_match_in_compatibility_index_or_blood_group"]
+                           "require_new_donor_having_better_match_in_compatibility_index_or_blood_group",
+                           "manual_recipient_donor_scores"]
 
     # TODO: There needs to be a better logic here
     # https://trello.com/c/zseK1Zcf

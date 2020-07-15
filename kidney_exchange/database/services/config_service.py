@@ -1,13 +1,20 @@
 import dataclasses
 from typing import Iterator
 
-from kidney_exchange.config.configuration import Configuration
+from kidney_exchange.config.configuration import Configuration, RecipientDonorScore
 from kidney_exchange.database.db import db
 from kidney_exchange.database.sql_alchemy_schema import ConfigModel
 
+manual_recipients = 'manual_recipient_donor_scores'
+
 
 def config_model_to_configuration(config_model: ConfigModel) -> Configuration:
-    return Configuration(**config_model.parameters)
+    configuration_dict = config_model.parameters.copy()
+    if 'manual_recipient_donor_scores' in configuration_dict:
+        configuration_dict[manual_recipients] = [RecipientDonorScore(**recipient_donor_score) for
+                                                 recipient_donor_score in
+                                                 configuration_dict[manual_recipients]]
+    return Configuration(**configuration_dict)
 
 
 def get_configurations() -> Iterator[Configuration]:
