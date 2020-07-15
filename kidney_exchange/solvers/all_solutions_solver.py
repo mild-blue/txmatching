@@ -61,6 +61,8 @@ class AllSolutionsSolver(SolverBase):
 
         if self._verbose:
             print("[INFO] Listing all max cliques")
+
+        # TODO: Fix this properly https://trello.com/c/0GBzQWt2
         if len(list(intersection_graph.vertices())) > 0:
             max_cliques = list(topology.max_cliques(intersection_graph))
         else:
