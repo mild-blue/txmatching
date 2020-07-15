@@ -52,6 +52,7 @@ def rec_donor_score_to_dto(self: RecipientDonorScore) -> RecipientDonorScoreDto:
 
 
 def configuration_from_dto(configuration_dto: Dict) -> Configuration:
+    configuration_dto = configuration_dto.copy()
     configuration_dto["manual_recipient_donor_scores"] = [
         rec_donor_score_from_dto(rec_don_score) for rec_don_score in
         configuration_dto.pop("manual_recipient_donor_scores_dtos", [])]

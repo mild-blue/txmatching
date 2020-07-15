@@ -1,7 +1,7 @@
 import logging
 
 import flask
-from flask import request, Blueprint
+from flask import request, Blueprint, redirect
 
 from kidney_exchange.config.configuration import configuration_to_dto, configuration_from_dto
 from kidney_exchange.database.services.config_service import save_configuration_as_current, get_current_configuration
@@ -16,9 +16,10 @@ data_api = Blueprint('data', __name__)
 @data_api.route('/configuration', methods=["GET", "POST"])
 def save_and_get_configuration():
     if flask.request.method == 'POST':
-        configuration = configuration_from_dto(request.json)
+        configuration = configuration_from_dto(request.form)
         save_configuration_as_current(configuration)
-        return "Successfully saved configuration"
+        solve_from_db()
+        return redirect("/browse-solutions")
 
     elif flask.request.method == 'GET':
         return configuration_to_dto(get_current_configuration())

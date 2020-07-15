@@ -1,6 +1,6 @@
 {% macro form_from_configuration(configuration) %}
 
-<form action="" method="post" class="configuration_form">
+<form action="configuration" method="post" class="configuration_form">
 
     <input type="checkbox" value="on" name="enforce_compatible_blood_group"
            {{ "checked" if configuration.enforce_compatible_blood_group }}>
