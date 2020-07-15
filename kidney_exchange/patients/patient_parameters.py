@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from kidney_exchange.utils.hla_system.high_resolution_to_low_resolution import hla_high_to_low_res, \
-    is_valid_low_res_code
+from kidney_exchange.utils.hla_system.split_to_broad_resolution import hla_split_to_broad, \
+    is_valid_broad_code
 
 
 @dataclass
@@ -25,12 +25,12 @@ class PatientParameters:
 
     @property
     def hla_antigens_low_resolution(self) -> List[str]:
-        low_res_codes = [hla_high_to_low_res(antigen) for antigen in self.hla_antigens.codes]
-        low_res_codes = [code for code in low_res_codes if is_valid_low_res_code(code)]
+        low_res_codes = [hla_split_to_broad(antigen) for antigen in self.hla_antigens.codes]
+        low_res_codes = [code for code in low_res_codes if is_valid_broad_code(code)]
         return low_res_codes
 
     @property
     def hla_antibodies_low_resolution(self) -> List[str]:
-        low_res_codes = [hla_high_to_low_res(antibody) for antibody in self.hla_antibodies.codes]
-        low_res_codes = [code for code in low_res_codes if is_valid_low_res_code(code)]
+        low_res_codes = [hla_split_to_broad(antibody) for antibody in self.hla_antibodies.codes]
+        low_res_codes = [code for code in low_res_codes if is_valid_broad_code(code)]
         return low_res_codes

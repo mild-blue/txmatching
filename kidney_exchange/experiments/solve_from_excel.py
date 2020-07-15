@@ -29,18 +29,27 @@ if __name__ == "__main__":
 
     scorer = HLAAdditiveScorer(enforce_compatible_blood_group=False,
                                minimum_compatibility_index=0,
-                               require_new_donor_having_better_match_in_compatibility_index_or_blood_group=True,
+                               require_new_donor_having_better_match_in_compatibility_index_or_blood_group=False,
                                require_new_donor_having_better_match_in_compatibility_index=False,
                                use_binary_scoring=False)
 
     solver = AllSolutionsSolver()
     matching_iterator = solver.solve(donors=donors, recipients=recipients, scorer=scorer)
+
+    print("[INFO] Looking for matchings")
     matchings = list(matching_iterator)
+    print("    -- done")
+
+    print("[INFO] Scoring matchings")
     matching_scores = [
         sum(scorer.score_transplant(donor, recipient) for donor, recipient in matching.donor_recipient_list)
         for matching in matchings]
+    print("    -- done")
+
+    print("[INFO] Sorting matchings")
     scored_matchings = list(zip(matchings, matching_scores))
     scored_matchings.sort(key=lambda matching_score: matching_score[1], reverse=True)
+    print("    -- done")
 
     for matching, score in scored_matchings[:10]:
         print(score)

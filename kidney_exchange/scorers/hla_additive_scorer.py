@@ -5,9 +5,11 @@ from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.additive_scorer import AdditiveScorer, TRANSPLANT_IMPOSSIBLE
 from kidney_exchange.utils.blood_groups import blood_groups_compatible
+from kidney_exchange.utils.countries import AUT, IL
 from kidney_exchange.utils.hla_system.compatibility_index import compatibility_index
+from kidney_exchange.utils.hla_system.hla_table import is_split, broad_to_split
 
-BLOOD_GROUP_COMPATIBILITY_BONUS = 0.5
+BLOOD_GROUP_COMPATIBILITY_BONUS = 20.0 - 1.0
 
 
 class HLAAdditiveScorer(AdditiveScorer):
@@ -42,6 +44,11 @@ class HLAAdditiveScorer(AdditiveScorer):
         donor_recipient_ci = compatibility_index(donor.parameters, recipient.parameters)
         related_donor_recipient_ci = compatibility_index(recipient.related_donor.parameters, recipient.parameters)
 
+        # We can't do exchanges between some countries
+        forbidden_country_combinations = [(AUT, IL), (IL, AUT)]
+        if (donor.parameters.country_code, recipient.parameters.country_code) in forbidden_country_combinations:
+            return TRANSPLANT_IMPOSSIBLE
+
         # Donor must have blood group that is acceptable for recipient
         if donor.parameters.blood_group not in recipient.parameters.acceptable_blood_groups:
             return TRANSPLANT_IMPOSSIBLE
@@ -49,8 +56,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         # Recipient can't have antibodies that donor has antigens for
         is_positive_hla_crossmath = self._is_positive_hla_crossmatch(donor, recipient)
         if is_positive_hla_crossmath is True or is_positive_hla_crossmath is None:
-            return TRANSPLANT_IMPOSSIBLE  # TODO: Add flag: allow_low_high_res_incompatible that if set to True would
-            # not return TRANSPLANT_IMPOSSIBLE here
+            return TRANSPLANT_IMPOSSIBLE  # TODO: Add flag: allow_low_high_res_incompatible that if set to True would not return TRANSPLANT_IMPOSSIBLE here
 
         # If required, donor must have either better match in blood group or better compatibility index than
         # the donor related to the recipient
@@ -104,13 +110,45 @@ class HLAAdditiveScorer(AdditiveScorer):
         Do donor and recipient have positive crossmatch in HLA system?
         If this can't be determined, return None
         e.g. A23 -> A23 True
-             A9 -> A9  None
-             A23 -> A9 None
+             A9 -> A9  True -- A9 in antibodies indicates wider range of antibodies, in this case A23, A24
+             A23 -> A9 True
              A23 -> A24 False
+             A9 -> A23 None -- A9 in antigens indicates incomplete information
         :param donor:
         :param recipient:
         :return:
         """
-        # TODO: Ask immunologists what is exactly the bad combination and for what antigens? https://trello.com/c/MR4qk853
-        return False
+        POSITIVE_CROSSMATCH = True
+        NEGATIVE_CROSSMATCH = False
+        CROSSMATCH_CANT_BE_DETERMINED = None
 
+        recipient_antibodies = recipient.parameters.hla_antibodies.codes
+        recipient_antibodies_with_splits = list(recipient_antibodies)
+
+        for antibody_code in recipient_antibodies:
+            split_codes = broad_to_split.get(antibody_code)
+            if split_codes is not None:
+                recipient_antibodies_with_splits.extend(split_codes)
+
+        crossmatch_cant_be_determined_so_far = False
+
+        for antigen_code in donor.parameters.hla_antigens.codes:
+            code_is_split = is_split(antigen_code)
+
+            if code_is_split is True or code_is_split is None:  # Code is split or we don't know
+                if antigen_code in recipient_antibodies_with_splits:
+                    return POSITIVE_CROSSMATCH
+            else:  # Code is broad
+                if antigen_code in recipient_antibodies:
+                    return POSITIVE_CROSSMATCH
+
+                antigen_splits = broad_to_split.get(antigen_code)
+                if antigen_splits is not None:
+                    for antigen_split in antigen_splits:
+                        if antigen_split in recipient_antibodies:
+                            crossmatch_cant_be_determined_so_far = True
+
+        if crossmatch_cant_be_determined_so_far is True:
+            return CROSSMATCH_CANT_BE_DETERMINED
+
+        return NEGATIVE_CROSSMATCH
