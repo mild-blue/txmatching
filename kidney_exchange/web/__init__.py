@@ -17,8 +17,8 @@ login_manager = None
 
 def create_app():
     logging.basicConfig(level=logging.DEBUG,
-                        format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
-                        stream=sys.stdout)
+                       format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
+                       stream=sys.stdout)
 
     app = Flask(__name__)
 

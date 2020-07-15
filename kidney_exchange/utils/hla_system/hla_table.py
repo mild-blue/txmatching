@@ -6,8 +6,10 @@
 # TODO: Confirm this table with some immunologist https://trello.com/c/08MZVRCk
 # TODO: ask what exact antigens should I count in the matches - for example what about DR52, DR53 - what do those mean https://trello.com/c/08MZVRCk
 # TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9) https://trello.com/c/MR4qk853
+import logging
 from typing import Optional
 
+logger = logging.getLogger()
 HLA_A = ["A1", "A2", "A203", "A210", "A3", "A11", "A23", "A24", "A2403",
          "A25", "A26", "A29", "A30", "A31", "A32", "A33", "A34", "A36",
          "A43", "A66", "A68", "A69", "A74", "A80"]
@@ -122,4 +124,4 @@ def is_split(antigen_code: str) -> Optional[bool]:
 
 
 if __name__ == "__main__":
-    print(broad_to_split)
+    logger.info(broad_to_split)

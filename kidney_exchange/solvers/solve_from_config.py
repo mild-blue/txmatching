@@ -1,4 +1,5 @@
 import dataclasses
+import logging
 from dataclasses import dataclass
 from typing import List, Iterator, Optional, Iterable, Tuple
 
@@ -21,6 +22,8 @@ from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.scorer_from_config import scorer_from_configuration
 from kidney_exchange.solvers.matching.matching import Matching
 from kidney_exchange.solvers.solver_from_config import solver_from_config
+
+logger = logging.getLogger()
 
 
 @dataclass
@@ -133,4 +136,4 @@ if __name__ == "__main__":
         recipients=list(),
         configuration=config
     ))
-    print(list(solutions))
+    logger.info(list(solutions))

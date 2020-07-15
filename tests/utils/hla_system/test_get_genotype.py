@@ -1,8 +1,11 @@
+import logging
 import unittest
 
 from kidney_exchange.utils.hla_system.compatibility_index import compatibility_gene_codes
 from kidney_exchange.utils.hla_system.get_genotype import get_antigen_genotype
 from tests.patients.test_patient_parameters import donor_parameters_Joe, recipient_parameters_Jack
+
+logger = logging.getLogger()
 
 
 class TestGetGenotype(unittest.TestCase):
@@ -15,14 +18,13 @@ class TestGetGenotype(unittest.TestCase):
                                                                        "DR": {"DR4": 1, "DR5": 1}})]
 
     def test_get_genotype(self):
-        print("[INFO] Testing get_genotype")
+        logger.info("Testing get_genotype")
         for patient_params, genotypes in self._patient_params_genotypes:
-            print(f"Original antigens: {str(patient_params.hla_antigens)}")
-            print(f"Low-res antigens: {str(patient_params.hla_antigens_broad_resolution)}")
+            logger.info(f"Original antigens: {str(patient_params.hla_antigens)}")
+            logger.info(f"Low-res antigens: {str(patient_params.hla_antigens_broad_resolution)}")
             for gene_code in compatibility_gene_codes:
                 calculated_genotype = get_antigen_genotype(patient_params.hla_antigens_broad_resolution, gene_code)
                 expected_genotype = genotypes[gene_code]
                 self.assertEqual(calculated_genotype, expected_genotype)
-                print(f"{gene_code} genotype: {str(calculated_genotype)}")
-            print()
-        print("    -- done\n")
+                logger.info(f"{gene_code} genotype: {str(calculated_genotype)}")
+        logger.info("    -- done\n")

@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List, Tuple
 
@@ -6,6 +7,8 @@ from kidney_exchange.patients.recipient import Recipient, RecipientDto
 from kidney_exchange.scorers.hla_additive_scorer import HLAAdditiveScorer
 from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
 from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
+
+logger = logging.getLogger()
 
 
 def _get_donors_recipients(donor_dtos: List[DonorDto], recipient_dtos: List[RecipientDto]) \
@@ -36,25 +39,25 @@ if __name__ == "__main__":
     solver = AllSolutionsSolver()
     matching_iterator = solver.solve(donors=main_donors, recipients=main_recipients, scorer=scorer)
 
-    print("[INFO] Looking for matchings")
+    logger.info("Looking for matchings")
     matchings = list(matching_iterator)
-    print("    -- done")
+    logger.info("    -- done")
 
-    print("[INFO] Scoring matchings")
+    logger.info("Scoring matchings")
     matching_scores = [
         sum(scorer.score_transplant(donor, recipient) for donor, recipient in matching.donor_recipient_list)
         for matching in matchings]
     matching_round_counts = [len(matching.get_rounds()) for matching in matchings]
     matching_patients_involved = [len(matching.donor_recipient_list) for matching in matchings]
-    print("    -- done")
+    logger.info("    -- done")
 
-    print("[INFO] Sorting matchings")
+    logger.info("Sorting matchings")
     scored_matchings = list(zip(matchings, matching_round_counts, matching_patients_involved, matching_scores))
     for criterion_index in [1, 3, 2]:
         scored_matchings.sort(key=lambda matching_score: matching_score[criterion_index], reverse=True)
-    print("    -- done")
+    logger.info("    -- done")
 
     for matching, round_count, patient_count, score in scored_matchings[:10]:
         rounds_str = "  ".join([f"[{str(transplant_round)}]" for transplant_round in matching.get_rounds()])
         str_repr = f"{patient_count}/{round_count} ({score}):  {rounds_str}"
-        print(str_repr)
+        logger.info(str_repr)
