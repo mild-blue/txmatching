@@ -19,7 +19,7 @@ def get_latest_matchings() -> List[Matching]:
 
     all_matchings.sort(key=lambda matching: len(matching.get_rounds()), reverse=True)
     all_matchings.sort(key=lambda matching: len(matching.donor_recipient_list), reverse=True)
-    all_matchings = all_matchings[:500]
+    all_matchings = all_matchings[:200]
     all_matchings.sort(key=lambda matching: scorer.score(matching), reverse=True)
     all_matchings.sort(key=lambda matching: len(matching.donor_recipient_list), reverse=True)
     return all_matchings
