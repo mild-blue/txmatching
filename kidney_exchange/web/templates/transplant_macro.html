@@ -1,6 +1,6 @@
 {% from 'patient_macro.html' import render_patient %}
 
-{% macro render_transplant(matchings, scorer, matching_index, round_index, pair_index) %}
+{% macro render_transplant(matchings, score_dict, matching_index, round_index, pair_index) %}
 {% if matchings | length > 0 %}
 {% set donor, recipient = matchings[matching_index-1].get_rounds()[round_index-1].donor_recipient_list[pair_index-1] %}
 <div style="height: 100%">
