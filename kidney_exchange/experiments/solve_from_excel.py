@@ -28,7 +28,7 @@ if __name__ == "__main__":
     main_donors, main_recipients = _get_donors_recipients(donors_raw, recipients_raw)
 
     scorer = HLAAdditiveScorer(enforce_compatible_blood_group=False,
-                               minimum_compatibility_index=0.0,
+                               minimum_total_score=0.0,
                                require_new_donor_having_better_match_in_compatibility_index_or_blood_group=False,
                                require_new_donor_having_better_match_in_compatibility_index=False,
                                use_binary_scoring=False)
