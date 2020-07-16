@@ -9,25 +9,24 @@
     <meta charset="UTF-8">
     <title>Kidney Exchange</title>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style_light.css') }}">
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style_boxing.css') }}">
 </head>
 <body>
 
 {{ render_user_info(current_user) }}
-<div style="height: 300px; margin-bottom: 50px;">
-    <div style="width: 50%; float: left; height: 300px;">
-        {{ form_from_configuration(configuration) }}
-    </div>
-    <div style="width: 50%; float: left; height: 300px; display: block; overflow-y: scroll; overflow-x: hidden;">
+<div class="main-boxing">
+    <div class="header-boxing">
+        <div class="configuration-boxing">
+            {{ form_from_configuration(configuration) }}
+        </div>
         {{ render_transplant(matchings, score_dict, matching_index, round_index, pair_index)}}
     </div>
-</div>
 
-<div class="matching_browse_box">
+<div class="matching-boxing">
     {% for matching in matchings %}
-    {{ render_matching(matching, score_dict, ui_utils, loop.index) }}<br>
+    {{ render_matching(matching, score_dict, ui_utils, loop.index) }}
     {% endfor %}
 </div>
-
 
 </body>
 </html>
