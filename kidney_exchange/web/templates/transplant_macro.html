@@ -2,19 +2,20 @@
 
 {% macro render_transplant(matchings, scorer, matching_index, round_index, pair_index) %}
 {% if matchings | length > 0 %}
-    {% set donor, recipient = matchings[matching_index-1].get_rounds()[round_index-1].donor_recipient_list[pair_index-1] %}
-    <div style="height: 100%">
-        <div style="width: 50%; float: left">
-            {{ render_patient(donor) }}
-        </div>
-        <div style="width: 50%;float: left;">
-            {{ render_patient(recipient) }}
-        </div>
+{% set donor, recipient = matchings[matching_index-1].get_rounds()[round_index-1].donor_recipient_list[pair_index-1] %}
+<div style="height: 100%">
+    <div style="width: 50%; float: left">
+        {{ render_patient(donor) }}
     </div>
+    <div style="width: 50%;float: left;">
+        {{ render_patient(recipient) }}
+    </div>
+</div>
 {% else %}
-    <div class="matching_box">
-        <h3>No matchings yet. Please, load patients and calculate matchings first. Allow up to several minutes for the algorithm to finish.</h3>
-    </div>
+<div class="matching_box">
+    <h3>No matchings found. Please, relax some of the constraints and click Recalculate to find suitable matchings.
+        Allow up to several minutes for the algorithm to finish.</h3>
+</div>
 {% endif %}
 {% endmacro %}
 
