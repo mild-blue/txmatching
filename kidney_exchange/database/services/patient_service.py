@@ -1,5 +1,5 @@
 import dataclasses
-from typing import List, Tuple, Optional, Iterable
+from typing import List, Tuple, Optional, Iterable, Dict
 
 from kidney_exchange.database.db import db
 from kidney_exchange.database.sql_alchemy_schema import PatientAcceptableBloodModel, PatientModel, PatientPairModel, \
@@ -88,44 +88,33 @@ def _get_base_patient_from_patient_model(patient_model: PatientModel) -> Patient
         ))
 
 
-def get_patient_from_db_id(db_id: int):
-    patient_model = PatientModel.query.get(db_id)
+def _get_patient_from_patient_model(patient_model: PatientModel,
+                                    patient_models_dict: Dict[int, PatientModel]) -> Patient:
+    base_patient = _get_base_patient_from_patient_model(patient_model)
     if patient_model.patient_type == 'RECIPIENT':
-        recipient = _get_base_patient_from_patient_model(patient_model)
-        related_donors = PatientPairModel.query.filter(PatientPairModel.recipient_id == db_id).all()
+        related_donors = patient_model.patient_pairs
         if len(related_donors) == 1:
             don_id = related_donors[0].donor_id
         else:
             raise ValueError(f"There has to be 1 donor per recipient, but {len(related_donors)} "
-                             f"were found for recipient with db_id {db_id} and medical id {recipient.medical_id}")
-        return Recipient(recipient.db_id, recipient.medical_id, recipient.parameters,
-                         get_donor_from_db_id(don_id))
+                             f"were found for recipient with db_id {base_patient.db_id} and medical id {base_patient.medical_id}")
+        return Recipient(base_patient.db_id, base_patient.medical_id, base_patient.parameters,
+                         _get_patient_from_patient_model(patient_models_dict[don_id], patient_models_dict))
+
     if patient_model.patient_type == 'DONOR':
-        donor = _get_base_patient_from_patient_model(patient_model)
-        return Donor(donor.db_id, donor.medical_id, donor.parameters)
+        return Donor(base_patient.db_id, base_patient.medical_id, base_patient.parameters)
 
 
-def get_donor_from_db_id(db_id: int) -> Donor:
-    donor = get_patient_from_db_id(db_id)
-    if type(donor) != Donor:
-        raise ValueError()
-    return donor
-
-
-def get_recipient_from_db_id(db_id: int) -> Recipient:
-    recipient = get_patient_from_db_id(db_id)
-    if type(recipient) != Recipient:
-        raise ValueError()
-    return recipient
-
-
-def get_all_patients() -> Iterable[PatientModel]:
-    return PatientModel.query.filter(PatientModel.active).all()
+def get_all_patients() -> Iterable[Patient]:
+    patient_models_dict = {patient_model.id: patient_model for patient_model in
+                           PatientModel.query.filter(PatientModel.active).all()}
+    patients = [_get_patient_from_patient_model(patient_model, patient_models_dict) for patient_model in
+                patient_models_dict.values()]
+    return patients
 
 
 def get_donors_recipients_from_db() -> Tuple[List[Donor], List[Recipient]]:
     patients = get_all_patients()
-    donors = [get_donor_from_db_id(donor.id) for donor in patients if donor.patient_type == 'DONOR']
-    recipients = [get_recipient_from_db_id(recipient.id) for recipient in patients if
-                  recipient.patient_type == 'RECIPIENT']
+    donors = [donor for donor in patients if type(donor) == Donor]
+    recipients = [recipient for recipient in patients if type(recipient) == Recipient]
     return donors, recipients
