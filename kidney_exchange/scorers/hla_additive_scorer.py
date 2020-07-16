@@ -14,10 +14,10 @@ BLOOD_GROUP_COMPATIBILITY_BONUS = 20.0 - 1.0
 
 class HLAAdditiveScorer(AdditiveScorer):
     def __init__(self, recipient_donor_scores: List[RecipientDonorScore] = None,
-                 enforce_compatible_blood_group: bool = True,
+                 enforce_compatible_blood_group: bool = False,
                  minimum_total_score: float = 0.0,
-                 require_new_donor_having_better_match_in_compatibility_index: bool = True,
-                 require_new_donor_having_better_match_in_compatibility_index_or_blood_group: bool = True,
+                 require_new_donor_having_better_match_in_compatibility_index: bool = False,
+                 require_new_donor_having_better_match_in_compatibility_index_or_blood_group: bool = False,
                  use_binary_scoring: bool = False):
         """
         :param recipient_donor_scores:
