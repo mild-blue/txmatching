@@ -126,11 +126,20 @@ body {
     position: relative;
     color: #fff;
     padding-bottom: 10px;
+    height: 30px
 }
+
 
 .username {
     text-align: right;
     margin-right: 20px;
+    float: right;
+}
+
+.contact {
+    text-align: left;
+    margin-right: 20px;
+    float: left;
 }
 
 .username a a:hover, a:visited, a:link, a:active {
