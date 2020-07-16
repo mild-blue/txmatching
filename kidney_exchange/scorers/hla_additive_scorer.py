@@ -1,10 +1,10 @@
 from typing import List, Optional, Union
 
-from kidney_exchange.config.configuration import Configuration, RecipientDonorScore
+from kidney_exchange.config.configuration import Configuration, DonorRecipientScore
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.additive_scorer import AdditiveScorer
-from kidney_exchange.scorers.scorer_base import TRANSPLANT_IMPOSSIBLE
+from kidney_exchange.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE
 from kidney_exchange.utils.blood_groups import blood_groups_compatible
 from kidney_exchange.utils.countries import AUT, IL
 from kidney_exchange.utils.hla_system.compatibility_index import compatibility_index
@@ -14,14 +14,14 @@ BLOOD_GROUP_COMPATIBILITY_BONUS = 20.0 - 1.0
 
 
 class HLAAdditiveScorer(AdditiveScorer):
-    def __init__(self, recipient_donor_scores: List[RecipientDonorScore] = None,
+    def __init__(self, donor_recipient_scores: List[DonorRecipientScore] = None,
                  enforce_compatible_blood_group: bool = False,
                  minimum_total_score: float = 0.0,
                  require_new_donor_having_better_match_in_compatibility_index: bool = False,
                  require_new_donor_having_better_match_in_compatibility_index_or_blood_group: bool = False,
                  use_binary_scoring: bool = False):
         """
-        :param recipient_donor_scores:
+        :param donor_recipient_scores:
             Manual setting of score for tuple of recipient and donor
         :param enforce_compatible_blood_group:
             True: donor has to have the compatible blood group with the recipient
@@ -36,7 +36,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         :param use_binary_scoring: If all the conditions above are satisfied, then use just 1 for possible transplant
             and -inf for impossible
         """
-        super().__init__(recipient_donor_scores)
+        super().__init__(donor_recipient_scores)
         self._enforce_compatible_blood = enforce_compatible_blood_group
         self._minimum_total_score = minimum_total_score
         self._require_new_donor_having_better_match_in_compatibility_index = require_new_donor_having_better_match_in_compatibility_index
@@ -93,7 +93,7 @@ class HLAAdditiveScorer(AdditiveScorer):
     @classmethod
     def from_config(cls, configuration: Configuration) -> "HLAAdditiveScorer":
         hla_additive_scorer = HLAAdditiveScorer(
-            recipient_donor_scores=configuration.manual_recipient_donor_scores,
+            donor_recipient_scores=configuration.manual_donor_recipient_scores,
             enforce_compatible_blood_group=configuration.enforce_compatible_blood_group,
             minimum_total_score=configuration.minimum_total_score,
             require_new_donor_having_better_match_in_compatibility_index=configuration.require_new_donor_having_better_match_in_compatibility_index,

@@ -1,8 +1,13 @@
+import ast
 import dataclasses
+import logging
 from dataclasses import dataclass, field
-from typing import List, Dict
+from typing import List, Dict, Tuple, Union
 
 from kidney_exchange.database.services.patient_service import medical_id_to_db_id, db_id_to_medical_id
+from kidney_exchange.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE
+
+logger = logging.getLogger(__name__)
 
 BOOL_KEYS_IN_CONFIG = [
     'enforce_compatible_blood_group',
@@ -22,23 +27,26 @@ INT_KEYS_IN_CONFIG = [
 
 ]
 
+MAN_DON_REC_SCORES = 'manual_donor_recipient_scores'
+MAN_DON_REC_SCORES_DTO = 'manual_donor_recipient_scores_dto'
+
 
 @dataclass
-class RecipientDonorScore:
-    recipient_id: int
+class DonorRecipientScore:
     donor_id: int
-    compatibility_index: float
+    recipient_id: int
+    score: float
 
 
 @dataclass
-class RecipientDonorScoreDto:
-    recipient_medical_id: str
+class DonorRecipientScoreDto:
     donor_medical_id: str
-    compatibility_index: float
+    recipient_medical_id: str
+    score: float
 
 
 @dataclass
-class Configuration:
+class ConfigurationBase:
     scorer_constructor_name: str = "HLAAdditiveScorer"
     solver_constructor_name: str = "AllSolutionsSolver"
     enforce_compatible_blood_group: bool = False
@@ -50,48 +58,85 @@ class Configuration:
     max_sequence_length: int = 100
     max_number_of_distinct_countries_in_round: int = 2
     required_patient_db_ids: List[int] = field(default_factory=list)
-    manual_recipient_donor_scores: List[RecipientDonorScore] = field(default_factory=list)
 
 
-def rec_donor_score_from_dto(self: RecipientDonorScoreDto) -> RecipientDonorScore:
-    return RecipientDonorScore(
-        medical_id_to_db_id(self.recipient_medical_id),
-        medical_id_to_db_id(self.donor_medical_id),
-        self.compatibility_index
-    )
+@dataclass
+class Configuration(ConfigurationBase):
+    manual_donor_recipient_scores: List[DonorRecipientScore] = field(default_factory=list)
 
 
-def rec_donor_score_to_dto(self: RecipientDonorScore) -> RecipientDonorScoreDto:
-    return RecipientDonorScoreDto(
-        db_id_to_medical_id(self.recipient_id),
+@dataclass
+class ConfigurationDto(Configuration):
+    manual_donor_recipient_scores_dto: List[Tuple[str, str, float]] = field(default_factory=list)
+
+
+def donor_recipient_score_to_dto(self: DonorRecipientScore) -> Tuple[str, str, float]:
+    return (
         db_id_to_medical_id(self.donor_id),
-        self.compatibility_index
+        db_id_to_medical_id(self.recipient_id),
+        score_to_dto(self.score)
     )
+
+
+def score_to_dto(score: Union[float, str]) -> float:
+    if type(score) == int or type(score) == float:
+        return score
+    else:
+        return -1
+
+
+def score_from_dto(score: float) -> Union[float, str]:
+    if type(score) == int or type(score) == float:
+        if score == -1:
+            return TRANSPLANT_IMPOSSIBLE
+        elif score < 0:
+            raise ValueError("Score cannot be smaller than 0")
+        else:
+            return score
+    else:
+        raise ValueError(f"Unexpected format of {score}")
 
 
 def configuration_from_dto(configuration_dto: Dict) -> Configuration:
-    configuration_dto = configuration_dto.copy()
+    configuration = configuration_dto.copy()
+    try:
+        possible_man = configuration.pop(MAN_DON_REC_SCORES_DTO, '[]')
+        if possible_man == '':
+            possible_man = '[]'
+        score_dtos = ast.literal_eval(possible_man)
+        scores = []
+        for score_tuple in score_dtos:
+            scores.append(DonorRecipientScore(
+                donor_id=medical_id_to_db_id(score_tuple[0]),
+                recipient_id=medical_id_to_db_id(score_tuple[1]),
+                score=score_from_dto(score_tuple[2])
+            ))
+        configuration[MAN_DON_REC_SCORES] = scores
+
+    except (ValueError, IndexError, SyntaxError) as e:
+        logger.error(f"could not process {MAN_DON_REC_SCORES_DTO}: {e}")
+        configuration[MAN_DON_REC_SCORES] = []
+        pass
     for bool_key in BOOL_KEYS_IN_CONFIG:
-        if bool_key in configuration_dto:
-            configuration_dto[bool_key] = True
+        if bool_key in configuration:
+            configuration[bool_key] = True
         else:
-            configuration_dto[bool_key] = False
+            configuration[bool_key] = False
     for int_key in INT_KEYS_IN_CONFIG:
-        if int_key in configuration_dto:
-            configuration_dto[int_key] = int(configuration_dto[int_key])
+        if int_key in configuration:
+            configuration[int_key] = int(configuration[int_key])
     for float_key in FLOAT_KEYS_IN_CONFIG:
-        if float_key in configuration_dto:
-            configuration_dto[float_key] = float(configuration_dto[float_key])
+        if float_key in configuration:
+            configuration[float_key] = float(configuration[float_key])
 
-    configuration_dto["manual_recipient_donor_scores"] = [
-        rec_donor_score_from_dto(rec_don_score) for rec_don_score in
-        configuration_dto.pop("manual_recipient_donor_scores_dtos", [])]
-    return Configuration(**configuration_dto)
+    return Configuration(**configuration)
 
 
-def configuration_to_dto(configuration: Configuration) -> Dict:
+def configuration_to_dto(configuration: Configuration) -> ConfigurationDto:
     configuration_dto = dataclasses.asdict(configuration)
-    configuration_dto["manual_recipient_donor_scores_dtos"] = [
-        rec_donor_score_to_dto(rec_don_score) for rec_don_score in
-        configuration_dto.pop("manual_recipient_donor_scores", [])]
-    return configuration_dto
+    configuration_dto[MAN_DON_REC_SCORES_DTO] = [
+        donor_recipient_score_to_dto(don_rec_score) for don_rec_score in
+        configuration.manual_donor_recipient_scores]
+    del configuration_dto[MAN_DON_REC_SCORES]
+
+    return ConfigurationDto(**configuration_dto)

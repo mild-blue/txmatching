@@ -9,7 +9,7 @@ from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.additive_scorer import AdditiveScorer, ORIGINAL_DONOR_RECIPIENT_TUPLE
-from kidney_exchange.scorers.scorer_base import TRANSPLANT_IMPOSSIBLE
+from kidney_exchange.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE
 from kidney_exchange.solvers.matching.matching_with_score import MatchingWithScore
 from kidney_exchange.solvers.solver_base import SolverBase
 
