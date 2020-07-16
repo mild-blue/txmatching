@@ -4,6 +4,24 @@ from typing import List, Dict
 
 from kidney_exchange.database.services.patient_service import medical_id_to_db_id, db_id_to_medical_id
 
+BOOL_KEYS_IN_CONFIG = [
+    'enforce_compatible_blood_group',
+    'require_new_donor_having_better_match_in_compatibility_index',
+    'require_new_donor_having_better_match_in_compatibility_index_or_blood_group',
+    'use_binary_scoring'
+]
+
+FLOAT_KEYS_IN_CONFIG = [
+    'minimum_compatibility_index'
+]
+
+INT_KEYS_IN_CONFIG = [
+    'max_cycle_length',
+    'max_sequence_length',
+    'max_number_of_distinct_countries_in_round'
+
+]
+
 
 @dataclass
 class RecipientDonorScore:
@@ -53,6 +71,18 @@ def rec_donor_score_to_dto(self: RecipientDonorScore) -> RecipientDonorScoreDto:
 
 def configuration_from_dto(configuration_dto: Dict) -> Configuration:
     configuration_dto = configuration_dto.copy()
+    for bool_key in BOOL_KEYS_IN_CONFIG:
+        if bool_key in configuration_dto:
+            configuration_dto[bool_key] = True
+        else:
+            configuration_dto[bool_key] = False
+    for int_key in INT_KEYS_IN_CONFIG:
+        if int_key in configuration_dto:
+            configuration_dto[int_key] = int(configuration_dto[int_key])
+    for float_key in FLOAT_KEYS_IN_CONFIG:
+        if float_key in configuration_dto:
+            configuration_dto[float_key] = float(configuration_dto[float_key])
+
     configuration_dto["manual_recipient_donor_scores"] = [
         rec_donor_score_from_dto(rec_don_score) for rec_don_score in
         configuration_dto.pop("manual_recipient_donor_scores_dtos", [])]
