@@ -17,7 +17,7 @@ def get_latest_matchings() -> List[Matching]:
     configuration = get_current_configuration()
     scorer = scorer_from_configuration(configuration)
 
-    all_matchings.sort(key=lambda matching: scorer.score(matching), reverse=True)
     all_matchings.sort(key=lambda matching: len(matching.get_rounds()), reverse=True)
+    all_matchings.sort(key=lambda matching: scorer.score(matching), reverse=True)
     all_matchings.sort(key=lambda matching: len(matching.donor_recipient_list), reverse=True)
     return all_matchings[:20]

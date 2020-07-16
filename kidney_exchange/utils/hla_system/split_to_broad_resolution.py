@@ -1,6 +1,5 @@
-from typing import List
-
 from kidney_exchange.utils.hla_system.hla_table import split_to_broad, HLA_A, HLA_B, HLA_DR
+
 
 # TODO combine with hla_table.py https://trello.com/c/sSRh7uRh/126-combine-hlatablepy-and-splittobroadresolutionpy
 

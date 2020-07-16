@@ -1,40 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Kidney Exchange</title>
-  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
-  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>Kidney Exchange</title>
+    <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
 <body>
 <div class="title">
-  <h1>Kidney Exchange</h1>
+    <h1>Kidney Exchange</h1>
 </div>
 
 <div class="login-form">
-  <form action="login" method="POST">
-    <div class="login-title">Log into the application</div>
-    <div class="form-field">
-      <label for="username">Username</label>
-      <input type="text" name="username" id="username">
-    </div>
-    <div class="form-field">
-      <label for="password">Password</label>
-      <input type="password" name="password" id="password">
-    </div>
-    <button type="submit" class="btn btn-primary">Log in</button>
-  </form>
+    <form action="login" method="POST">
+        <div class="login-title">Log into the application</div>
+        <div class="form-field">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username">
+        </div>
+        <div class="form-field">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password">
+        </div>
+        <button type="submit" class="btn btn-primary">Log in</button>
+    </form>
 </div>
 <div class="login-form" style="margin-top: 20px;">
-  {% with messages = get_flashed_messages(category_filter=["LOGIN"]) %}
+    {% with messages = get_flashed_messages(category_filter=["LOGIN"]) %}
     {% if messages %}
-        {% for message in messages %}
-          {{ message }}
-        {% endfor %}
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
     {% endif %}
-  {% endwith %}
+    {% endwith %}
 </div>
 </body>
 </html>
