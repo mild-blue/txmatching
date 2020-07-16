@@ -24,8 +24,8 @@ def color_gradient(value: float, colors: Dict = {0: "#ff8282", 50: "#ffde82", 10
 
     key_values = [(k, v) for k, v in colors.items()]
     key_values.sort(key=lambda item: item[0])
-    for index, item in enumerate(
-            key_values):  # TODO index=len(key_values)-1? https://trello.com/c/MB2yxffW/128-improve-uiutils-see-code
+    # TODO index=len(key_values)-1? https://trello.com/c/MB2yxffW/128-improve-uiutils-see-code
+    for index, item in enumerate(key_values):
         k, v = item
         if value < k:
             break
