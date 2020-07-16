@@ -19,10 +19,10 @@ def get_patients_for_pairing_result(pairing_result_id: int) -> List[PairingResul
 
 def db_matchings_to_matching_list(json_matchings: Dict[str, List[Dict[str, List[Dict[str, int]]]]]) -> List[Matching]:
     patients = get_all_patients()
-    patients_dict_from_db_id = {patient.id: get_patient_from_db_id(patient.id) for patient in patients}
+    patients_dict = {patient.id: get_patient_from_db_id(patient.id) for patient in patients}
 
-    return [Matching([(patients_dict_from_db_id[donor_recipient_ids['donor']],
-                       patients_dict_from_db_id[donor_recipient_ids['recipient']])
+    return [Matching([(patients_dict[donor_recipient_ids['donor']],
+                       patients_dict[donor_recipient_ids['recipient']])
                       for donor_recipient_ids in json_matching['donors_recipients']
                       ]) for json_matching in json_matchings["matchings"]]
 
