@@ -5,8 +5,8 @@ from flask import render_template, request, redirect, Blueprint, flash
 from flask_login import login_required, current_user
 
 from kidney_exchange.database.services.config_service import get_current_configuration
+from kidney_exchange.database.services.matching_service import get_latest_matchings
 from kidney_exchange.database.services.patient_service import save_patients
-from kidney_exchange.database.services.services_for_solve import get_latest_matchings
 from kidney_exchange.scorers.scorer_from_config import scorer_from_configuration
 from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
 from kidney_exchange.web.web_utils import ui_utils
@@ -52,7 +52,9 @@ def browse_solutions():
     selected_exchange_index = request.args.get("selected_exchange_index", 1)
     matchings = get_latest_matchings()
 
-    matching_index, round_index, pair_index = 1, 1, 1
+    matching_index = int(request.args.get("matching_index", 1))
+    round_index = int(request.args.get("round_index", 1))
+    pair_index = int(request.args.get("pair_index", 1))
 
     return render_template("browse_solutions.html",
                            matchings=matchings,
