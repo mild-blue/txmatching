@@ -1,6 +1,8 @@
 body {
-    font-family: sans-serif;
     line-height: 150%;
+    font-family: 'Open Sans', sans-serif;
+    background: #465266;
+    letter-spacing: 1.2px;
     margin: 50px;
 }
 
@@ -27,6 +29,7 @@ body {
     padding-right: 10px;
     color: black;
     text-decoration: none;
+    text-shadow: 0 0 3px #232222;
 }
 
 .submit_button {
@@ -75,4 +78,66 @@ body {
     border-radius: 20px;
     padding: 30px;
     margin-left: 30px;
+}
+
+.login-form {
+    display: flex;
+    justify-content: center; /* center horizontally */
+    align-items: center; /* center vertically */
+    width: 100%;
+    position: relative;
+    top: 100px;
+    color: #fff;
+    text-align: center;
+    font-size: 18px;
+}
+
+.title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 400px;
+    height: 400px;
+    color: #fff;
+    text-align: center;
+}
+
+.login-title {
+    font-size: 21px;
+    margin-bottom: 30px;
+}
+
+.form-field {
+    margin: 10px;
+    width: 290px !important;
+}
+
+.text_box {
+    background: whitesmoke;
+    border-radius: 10px;
+    padding: 20px;
+    padding-bottom: 3px;
+    margin: 50px;
+}
+
+.header {
+    font-size: 11px;
+    position: relative;
+    color: #fff;
+    padding-bottom: 10px;
+}
+
+.username {
+    text-align: right;
+    margin-right: 20px;
+}
+
+.username a a:hover, a:visited, a:link, a:active {
+    text-decoration: none;
+    color: white;
+}
+
+.username a:hover {
+    color: #6eb6de;
 }

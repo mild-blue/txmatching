@@ -81,7 +81,7 @@ def login():
     user.set_authenticated(True)
     login_user(user)
     logger.info(f"User {request.form['username']} logged in.")
-    return redirect(url_for("functional.home"))
+    return redirect(url_for("functional.browse_solutions"))
 
 
 @service_api.route('/logout')
