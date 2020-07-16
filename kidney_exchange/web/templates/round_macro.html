@@ -4,6 +4,7 @@
     {{ round_index }}
     {% for donor, recipient in round.donor_recipient_list %}
     {% set score = (100 * scorer.score_transplant(donor, recipient) / 46 | int) %}
+<!--    TODO provazat 46 se samotnou skorovaci funkci https://trello.com/c/5qD6Hs46/127-connect-max-score-value-from-fe-with-actual-scoring-function -->
     <a class="chain_link" style="background-color: {{ ui_utils.color_gradient(score) }}"
        href="?matching_index={{matching_index}}&round_index={{round_index}}&pair_index={{loop.index}}">
         <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px">
