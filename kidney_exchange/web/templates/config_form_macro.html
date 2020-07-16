@@ -1,5 +1,5 @@
 {% macro form_from_configuration(configuration) %}
-
+<div style="height: 100%">
 <form action="configuration" method="post" class="configuration_form">
 
     <input type="checkbox" value="on" name="enforce_compatible_blood_group"
@@ -26,37 +26,17 @@
     Max sequence length
     <input type="number" value="{{ configuration.max_sequence_length }}" name="max_sequence_length"><br>
 
+    <p>Manual donor recipient scores. Fill in a list of such manual settings.</p>
+    <p>The format shall be: "[(donor_name,recipient_name,score)]".</p>
+    <p>For example [("D1","R1",23), ("D1","R1",-1)]</p>
+    <p>use -1 for forbidden exchanges</p>
+    <input type="text" value="{{ configuration.manual_donor_recipient_scores_dto }}" name="manual_donor_recipient_scores_dto"><br>
 
-    <!--    Custom Donor Recipient Score-->
-    <!--    <table id="myTable">-->
-    <!--        {% for round in configuration.manual_recipient_donor_scores %}-->
-    <!--        <tr>-->
-    <!--            <td><input type="text" value="Donor ID"><br></td>-->
-    <!--            <td><input type="text" value="Recipient ID"><br></td>-->
-    <!--            <td><input type="number" value=0.0><br></td>-->
-    <!--        </tr>-->
-    <!--        {% endfor %}-->
-    <!--    </table>-->
-    <!--    <button type="button" onclick="myFunction()">Add another custom donor recipient score</button>-->
-
-    <!--    <script>-->
-    <!--        function myFunction() {-->
-    <!--            var table = document.getElementById("myTable");-->
-    <!--            var row = table.insertRow(0);-->
-    <!--            var cell1 = row.insertCell(0);-->
-    <!--            var cell2 = row.insertCell(1);-->
-    <!--            var cell3 = row.insertCell(2);-->
-    <!--            cell1.innerHTML = '<td><input type="text" value="Donor ID"><br></td>';-->
-    <!--            cell2.innerHTML = '<td><input type="text" value="Recipient ID"><br></td>';-->
-    <!--            cell3.innerHTML = '<td><input type="number" value=0.0><br></td>'-->
-    <!--        }-->
-    <!--    </script>-->
 
     <input type="submit" value="Recalculate" class="submit_button">
 
 
-    <!-- TODO: Add  manual_recipient_donor_scores: List[RecipientDonorScore] = field(default_factory=list) -->
 </form>
-
+</div>
 
 {% endmacro %}

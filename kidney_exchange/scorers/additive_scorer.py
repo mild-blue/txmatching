@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from kidney_exchange.config.configuration import RecipientDonorScore, Configuration
+from kidney_exchange.config.configuration import DonorRecipientScore, Configuration
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.scorer_base import ScorerBase
@@ -12,10 +12,10 @@ ScoreMatrix = List[List[Union[float, str]]]
 
 
 class AdditiveScorer(ScorerBase):
-    def __init__(self, recipient_donor_scores: List[RecipientDonorScore] = None):
+    def __init__(self, recipient_donor_scores: List[DonorRecipientScore] = None):
         if recipient_donor_scores is not None:
             self._manual_scores = {
-                (rec_don_score.donor_id, rec_don_score.recipient_id): rec_don_score.compatibility_index
+                (rec_don_score.donor_id, rec_don_score.recipient_id): rec_don_score.score
                 for rec_don_score in recipient_donor_scores}
         else:
             self._manual_scores = dict()

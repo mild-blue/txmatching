@@ -34,7 +34,7 @@ VALUES (1, '{
     ],
     "score": 1.0
   }]
-}', '{}', true);
+}', '{"score_matrix_dto": [[1,2],[1,2]]}', true);
 INSERT INTO public.pairing_result (config_id, calculated_matchings, score_matrix, valid)
 VALUES (2, '{
   "matchings": [{
@@ -46,7 +46,7 @@ VALUES (2, '{
     ],
     "score": 1.0
   }]
-}', '{}', true);
+}', '{"score_matrix_dto": [[1,2],[1,2]]}', true);
 
 
 INSERT INTO public.pairing_result_patient (pairing_result_id, patient_id)

@@ -3,7 +3,7 @@ from typing import Union
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.solvers.matching.matching import Matching
 
-TRANSPLANT_IMPOSSIBLE = "Transplant Impossible"
+
 
 
 class ScorerBase:
