@@ -8,9 +8,9 @@
 
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: center;
 
-    margin-bottom: 50px;
+    margin-bottom: 20px;
 }
 
 .main-boxing {
@@ -20,18 +20,17 @@
     height: 100%;
 }
 
-
 .configuration-boxing {
-    min-width: 45%;
     margin-right: 20px;
 }
 
 .patient-detail {
-
+    margin: 20px;
 }
 
 .matching-boxing {
     display: flex;
     flex-flow: column;
-    flex: 1 1 auto
+    max-height: 40rem;
+    overflow-y: scroll;
 }
