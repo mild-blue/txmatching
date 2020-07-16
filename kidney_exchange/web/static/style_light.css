@@ -1,6 +1,8 @@
 body {
-    font-family: sans-serif;
     line-height: 150%;
+    font-family: 'Open Sans', sans-serif;
+    background: #092756;
+    letter-spacing: 1.2px;
     margin: 50px;
 }
 
@@ -75,4 +77,34 @@ body {
     border-radius: 20px;
     padding: 30px;
     margin-left: 30px;
+}
+
+.login-form {
+    display: flex;
+    justify-content: center; /* center horizontally */
+    align-items: center; /* center vertically */
+    width: 100%;
+    position: relative;
+    top: 100px;
+    color: #fff;
+    text-align: center;
+    font-size: 18px;
+}
+
+.login-title {
+    font-size: 21px;
+    margin-bottom: 30px;
+}
+
+.form-field {
+    margin: 10px;
+    width: 290px !important;
+}
+
+.text_box {
+    background: whitesmoke;
+    border-radius: 10px;
+    padding: 20px;
+    padding-bottom: 3px;
+    margin: 50px;
 }
