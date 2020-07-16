@@ -23,7 +23,7 @@ def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configu
     _check_if_config_is_supported(more_strict)
 
     breaking_parameters = ["enforce_compatible_blood_group",
-                           "minimum_compatibility_index",
+                           "minimum_total_score",
                            "require_new_donor_having_better_match_in_compatibility_index",
                            "require_new_donor_having_better_match_in_compatibility_index_or_blood_group",
                            "manual_recipient_donor_scores"]

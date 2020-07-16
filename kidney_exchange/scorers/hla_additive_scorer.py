@@ -15,7 +15,7 @@ BLOOD_GROUP_COMPATIBILITY_BONUS = 20.0 - 1.0
 class HLAAdditiveScorer(AdditiveScorer):
     def __init__(self, recipient_donor_scores: List[RecipientDonorScore] = None,
                  enforce_compatible_blood_group: bool = True,
-                 minimum_compatibility_index: float = 0.0,
+                 minimum_total_score: float = 0.0,
                  require_new_donor_having_better_match_in_compatibility_index: bool = True,
                  require_new_donor_having_better_match_in_compatibility_index_or_blood_group: bool = True,
                  use_binary_scoring: bool = False):
@@ -25,17 +25,19 @@ class HLAAdditiveScorer(AdditiveScorer):
         :param enforce_compatible_blood_group:
             True: donor has to have the compatible blood group with the recipient
             False: donor just needs to have blood group that is in recipients acceptable blood groups
-        :param minimum_compatibility_index: Minimum index of compatibility that is required for a transplant to be possible
+        :param minimum_total_score: Minimum total score (compatibility index + blood group bonus) that is required for
+            a transplant to be possible
         :param require_new_donor_having_better_match_in_compatibility_index: New donor for recipient needs to have
             a better match in the compatibility index than (the best of) his original relative(s)
-        :param require_new_donor_having_better_match_in_compatibility_index_or_blood_group: New donor for recipient needs
-            to have a better match in compatibility index or in blood group than (the best of) his original relative(s)
+        :param require_new_donor_having_better_match_in_compatibility_index_or_blood_group: New donor for recipient
+            has to have a better match in compatibility index or in blood group than (the best of) his original
+            relative(s)
         :param use_binary_scoring: If all the conditions above are satisfied, then use just 1 for possible transplant
             and -inf for impossible
         """
         super().__init__(recipient_donor_scores)
         self._enforce_compatible_blood = enforce_compatible_blood_group
-        self._minimum_compatibility_index = minimum_compatibility_index
+        self._minimum_total_score = minimum_total_score
         self._require_new_donor_having_better_match_in_compatibility_index = require_new_donor_having_better_match_in_compatibility_index
         self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group = require_new_donor_having_better_match_in_compatibility_index_or_blood_group
         self._use_binary_scoring = use_binary_scoring
@@ -75,22 +77,24 @@ class HLAAdditiveScorer(AdditiveScorer):
                 and donor_recipient_ci <= related_donor_recipient_ci:
             return TRANSPLANT_IMPOSSIBLE
 
-        # The compatibility index must be higher than the minimum required
-        if donor_recipient_ci < self._minimum_compatibility_index:
-            return TRANSPLANT_IMPOSSIBLE
-
         if self._use_binary_scoring:
             return 1.0
         else:
             blood_group_bonus = self._blood_group_compatibility_bonus(donor, recipient)
-            return donor_recipient_ci + blood_group_bonus
+            total_score = donor_recipient_ci + blood_group_bonus
+
+            # The total score must be higher than the minimum required
+            if total_score < self._minimum_total_score:
+                return TRANSPLANT_IMPOSSIBLE
+            else:
+                return total_score
 
     @classmethod
     def from_config(cls, configuration: Configuration) -> "HLAAdditiveScorer":
         hla_additive_scorer = HLAAdditiveScorer(
             recipient_donor_scores=configuration.manual_recipient_donor_scores,
             enforce_compatible_blood_group=configuration.enforce_compatible_blood_group,
-            minimum_compatibility_index=configuration.minimum_compatibility_index,
+            minimum_total_score=configuration.minimum_total_score,
             require_new_donor_having_better_match_in_compatibility_index=configuration.require_new_donor_having_better_match_in_compatibility_index,
             require_new_donor_having_better_match_in_compatibility_index_or_blood_group=configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group,
             use_binary_scoring=configuration.use_binary_scoring)
