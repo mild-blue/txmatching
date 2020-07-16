@@ -216,13 +216,11 @@ input:focus {
     margin-right: 20px;
 }
 
-.username a a:hover, a:visited, a:link, a:active
-{
+.username a a:hover, a:visited, a:link, a:active {
     text-decoration: none;
     color: white;
 }
 
-.username a:hover
-{
+.username a:hover {
     color: #6eb6de;
 }

@@ -15,14 +15,14 @@
                 <button type="submit" class="btn btn-primary">Upload patient data</button>
             </form>
             {% with messages = get_flashed_messages(category_filter=["UPLOAD_XLSX"]) %}
-	            {% if messages %}
-		            <ul class=flashes>
-		            {% for message in messages %}
-		                <li>{{ message }}</li>
-		            {% endfor %}
-		            </ul>
-	            {% endif %}
-	          {% endwith %}
+            {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
         </div>
     </div>
 </div>

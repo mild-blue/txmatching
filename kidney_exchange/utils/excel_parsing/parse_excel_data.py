@@ -12,7 +12,8 @@ from kidney_exchange.patients.recipient import RecipientDto
 from kidney_exchange.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
 from kidney_exchange.utils.countries import IL, CZE, AUT
 from kidney_exchange.utils.hla_system.hla_table import HLA_A, HLA_B, HLA_BW, HLA_CW, HLA_DR, HLA_DRDR, HLA_DQ
-from kidney_exchange.utils.hla_system.hla_table import HLA_A_BROAD, HLA_B_BROAD, HLA_CW_BROAD, HLA_DQ_BROAD, HLA_DR_BROAD
+from kidney_exchange.utils.hla_system.hla_table import HLA_A_BROAD, HLA_B_BROAD, HLA_CW_BROAD, HLA_DQ_BROAD, \
+    HLA_DR_BROAD
 
 _valid_blood_groups = ["A", "B", "0", "AB"]
 
