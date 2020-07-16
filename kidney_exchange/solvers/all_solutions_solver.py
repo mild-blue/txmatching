@@ -13,7 +13,7 @@ from kidney_exchange.scorers.scorer_base import TRANSPLANT_IMPOSSIBLE
 from kidney_exchange.solvers.matching.matching import Matching
 from kidney_exchange.solvers.solver_base import SolverBase
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class AllSolutionsSolver(SolverBase):

@@ -8,7 +8,7 @@ from kidney_exchange.scorers.hla_additive_scorer import HLAAdditiveScorer
 from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
 from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def _get_donors_recipients(donor_dtos: List[DonorDto], recipient_dtos: List[RecipientDto]) \

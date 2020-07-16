@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def get_absolute_path(project_relative_path: str) -> str:

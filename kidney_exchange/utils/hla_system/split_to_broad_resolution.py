@@ -4,7 +4,7 @@ import logging
 
 
 # TODO combine with hla_table.py https://trello.com/c/sSRh7uRh/126-combine-hlatablepy-and-splittobroadresolutionpy
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def hla_split_to_broad(split_code: str) -> str:

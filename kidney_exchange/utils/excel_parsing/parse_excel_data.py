@@ -23,7 +23,7 @@ _valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DR
 
 _unknown_allele_codes = set()
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def _parse_blood_group(blood_group_str: Union[str, int]) -> str:

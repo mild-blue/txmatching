@@ -9,7 +9,7 @@
 import logging
 from typing import Optional
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 HLA_A = ["A1", "A2", "A203", "A210", "A3", "A11", "A23", "A24", "A2403",
          "A25", "A26", "A29", "A30", "A31", "A32", "A33", "A34", "A36",
          "A43", "A66", "A68", "A69", "A74", "A80"]

@@ -5,7 +5,7 @@ from kidney_exchange.utils.hla_system.compatibility_index import compatibility_g
 from kidney_exchange.utils.hla_system.get_genotype import get_antigen_genotype
 from tests.patients.test_patient_parameters import donor_parameters_Joe, recipient_parameters_Jack
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class TestGetGenotype(unittest.TestCase):

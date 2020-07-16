@@ -23,7 +23,7 @@ from kidney_exchange.scorers.scorer_from_config import scorer_from_configuration
 from kidney_exchange.solvers.matching.matching import Matching
 from kidney_exchange.solvers.solver_from_config import solver_from_config
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 @dataclass

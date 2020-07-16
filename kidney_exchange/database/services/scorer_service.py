@@ -1,6 +1,6 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict
 
 from kidney_exchange.database.services.config_service import get_current_configuration
 from kidney_exchange.database.services.patient_service import get_donors_recipients_from_db
@@ -13,7 +13,7 @@ class ScoreMatrixDto:
     score_matrix_dto: List
 
 
-def score_matrix_to_dto(score_matrix: ScoreMatrix):
+def score_matrix_to_dto(score_matrix: ScoreMatrix) -> Dict[str, Dict[str, ScoreMatrix]]:
     return dataclasses.asdict(ScoreMatrixDto(score_matrix))
 
 
