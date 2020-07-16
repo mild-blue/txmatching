@@ -1,3 +1,5 @@
+{% from 'show_user_macro.html' import render_user_info %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,14 +11,7 @@
 </head>
 
 <body>
-<div class="header">
-    <div class="username">
-        {% if current_user.is_authenticated %}
-        {{ current_user.email }}&nbsp
-        {% endif %}
-        <a href="/logout">(log out)</a>
-    </div>
-</div>
+{{ render_user_info(current_user) }}
 <div class="title">
     <h1>Kidney Exchange</h1>
 </div>

@@ -1,6 +1,7 @@
 {% from 'config_form_macro.html' import form_from_configuration %}
 {% from 'matching_macro.html' import render_matching %}
 {% from 'transplant_macro.html' import render_transplant %}
+{% from 'show_user_macro.html' import render_user_info %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +12,7 @@
 </head>
 <body>
 
-
+{{ render_user_info(current_user) }}
 <div style="height: 300px; margin-bottom: 50px;">
     <div style="width: 50%; float: left; height: 300px;">
         {{ form_from_configuration(configuration) }}

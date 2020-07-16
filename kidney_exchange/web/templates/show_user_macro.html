@@ -1,0 +1,12 @@
+{% macro render_user_info(current_user) %}
+
+<div class="header">
+    <div class="username">
+        {% if current_user.is_authenticated %}
+        {{ current_user.email }}&nbsp
+        {% endif %}
+        <a href="/logout">(log out)</a>
+    </div>
+</div>
+
+{% endmacro %}
