@@ -61,6 +61,21 @@ body {
     color: rebeccapurple;
 }
 
+.matching-blood-group {
+    border: 1px solid green;
+    background: darkseagreen;
+}
+
+.matching-antigens {
+    border: 1px solid green; !important;
+    background: darkseagreen !important;
+}
+
+.matching-antibodies {
+    border: 1px solid red !important;
+    background: #e0a7a7 !important;
+}
+
 .inline_code_blue {
     border-radius: 3px;
     border: 1px solid lightskyblue;
