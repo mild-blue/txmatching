@@ -27,8 +27,8 @@ INT_KEYS_IN_CONFIG = [
 
 ]
 
-MAN_REC_DON_SCORES = 'manual_donor_recipient_scores'
-MAN_REC_DON_SCORES_DTO = 'manual_donor_recipient_scores_dto'
+MAN_DON_REC_SCORES = 'manual_donor_recipient_scores'
+MAN_DON_REC_SCORES_DTO = 'manual_donor_recipient_scores_dto'
 
 
 @dataclass
@@ -70,7 +70,7 @@ class ConfigurationDto(Configuration):
     manual_donor_recipient_scores_dto: List[Tuple[str, str, float]] = field(default_factory=list)
 
 
-def rec_donor_score_to_dto(self: DonorRecipientScore) -> Tuple[str, str, float]:
+def donor_recipient_score_to_dto(self: DonorRecipientScore) -> Tuple[str, str, float]:
     return (
         db_id_to_medical_id(self.donor_id),
         db_id_to_medical_id(self.recipient_id),
@@ -100,7 +100,7 @@ def score_from_dto(score: float) -> Union[float, str]:
 def configuration_from_dto(configuration_dto: Dict) -> Configuration:
     configuration = configuration_dto.copy()
     try:
-        possible_man = configuration.pop(MAN_REC_DON_SCORES_DTO, '[]')
+        possible_man = configuration.pop(MAN_DON_REC_SCORES_DTO, '[]')
         if possible_man == '':
             possible_man = '[]'
         score_dtos = ast.literal_eval(possible_man)
@@ -111,11 +111,11 @@ def configuration_from_dto(configuration_dto: Dict) -> Configuration:
                 recipient_id=medical_id_to_db_id(score_tuple[1]),
                 score=score_from_dto(score_tuple[2])
             ))
-        configuration[MAN_REC_DON_SCORES] = scores
+        configuration[MAN_DON_REC_SCORES] = scores
 
     except (ValueError, IndexError, SyntaxError) as e:
-        logger.error(f"could not process {MAN_REC_DON_SCORES_DTO}: {e}")
-        configuration[MAN_REC_DON_SCORES] = []
+        logger.error(f"could not process {MAN_DON_REC_SCORES_DTO}: {e}")
+        configuration[MAN_DON_REC_SCORES] = []
         pass
     for bool_key in BOOL_KEYS_IN_CONFIG:
         if bool_key in configuration:
@@ -134,9 +134,9 @@ def configuration_from_dto(configuration_dto: Dict) -> Configuration:
 
 def configuration_to_dto(configuration: Configuration) -> ConfigurationDto:
     configuration_dto = dataclasses.asdict(configuration)
-    configuration_dto[MAN_REC_DON_SCORES_DTO] = [
-        rec_donor_score_to_dto(rec_don_score) for rec_don_score in
+    configuration_dto[MAN_DON_REC_SCORES_DTO] = [
+        donor_recipient_score_to_dto(don_rec_score) for don_rec_score in
         configuration.manual_donor_recipient_scores]
-    del configuration_dto[MAN_REC_DON_SCORES]
+    del configuration_dto[MAN_DON_REC_SCORES]
 
     return ConfigurationDto(**configuration_dto)

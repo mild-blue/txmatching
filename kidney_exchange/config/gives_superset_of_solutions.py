@@ -1,4 +1,4 @@
-from kidney_exchange.config.configuration import Configuration, MAN_REC_DON_SCORES
+from kidney_exchange.config.configuration import Configuration, MAN_DON_REC_SCORES
 from kidney_exchange.scorers.hla_additive_scorer import HLAAdditiveScorer
 from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
 
@@ -26,7 +26,7 @@ def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configu
                            "minimum_total_score",
                            "require_new_donor_having_better_match_in_compatibility_index",
                            "require_new_donor_having_better_match_in_compatibility_index_or_blood_group",
-                           MAN_REC_DON_SCORES]
+                           MAN_DON_REC_SCORES]
 
     # TODO: There needs to be a better logic here https://trello.com/c/zseK1Zcf
     # For example for
