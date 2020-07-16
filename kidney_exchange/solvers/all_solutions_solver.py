@@ -1,3 +1,4 @@
+import logging
 from typing import List, Tuple, Dict, Iterator, Set
 
 import numpy as np
@@ -7,9 +8,12 @@ from graph_tool.all import Graph
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.scorers.additive_scorer import AdditiveScorer
+from kidney_exchange.scorers.additive_scorer import AdditiveScorer, ORIGINAL_DONOR_RECIPIENT_TUPLE
+from kidney_exchange.scorers.scorer_base import TRANSPLANT_IMPOSSIBLE
 from kidney_exchange.solvers.matching.matching import Matching
 from kidney_exchange.solvers.solver_base import SolverBase
+
+logger = logging.getLogger(__name__)
 
 
 class AllSolutionsSolver(SolverBase):
@@ -19,17 +23,18 @@ class AllSolutionsSolver(SolverBase):
         self._verbose = verbose
 
     def solve(self, donors: List[Donor], recipients: List[Recipient], scorer: AdditiveScorer) -> Iterator[Matching]:
-        score_matrix = np.zeros((len(donors), len(recipients)))
-        for donor_index, donor in enumerate(donors):
-            for recipient_index, recipient in enumerate(recipients):
-                if recipient.related_donor == donor:
-                    score = np.NaN
-                else:
-                    score = scorer.score_transplant(donor, recipient)
+        score_matrix = scorer.get_score_matrix(donors, recipients)
+        score_matrix_array = np.zeros((len(donors), len(recipients)))
+        for row_index, row in enumerate(score_matrix):
+            for column_index, value in enumerate(row):
+                if value == ORIGINAL_DONOR_RECIPIENT_TUPLE:
+                    value = np.NaN
+                elif value == TRANSPLANT_IMPOSSIBLE:
+                    value = - np.inf
 
-                score_matrix[donor_index, recipient_index] = score
+                score_matrix_array[row_index, column_index] = value
 
-        for solution in self._solve(score_matrix=score_matrix):
+        for solution in self._solve(score_matrix=score_matrix_array):
             matching = Matching(donor_recipient_list=[(donors[i], recipients[j]) for i, j in solution
                                                       if i < len(donors) and j < len(recipients)])
             yield matching
@@ -51,16 +56,16 @@ class AllSolutionsSolver(SolverBase):
         all_paths = pure_circuits + bridge_paths
 
         if len(all_paths) == 0:
-            print("[INFO] Empty set of paths, returning empty iterator")
+            logger.info("Empty set of paths, returning empty iterator")
             return []
 
         if self._verbose:
-            print(f"[INFO] Constructing intersection graph, "
-                  f"#circuits: {len(pure_circuits)}, #paths: {len(bridge_paths)}")
+            logger.info(f"Constructing intersection graph, "
+                        f"#circuits: {len(pure_circuits)}, #paths: {len(bridge_paths)}")
         intersection_graph, vertex_to_set = self._construct_intersection_graph(all_paths)
 
         if self._verbose:
-            print("[INFO] Listing all max cliques")
+            logger.info("Listing all max cliques")
 
         # TODO: Fix this properly https://trello.com/c/0GBzQWt2
         if len(list(intersection_graph.vertices())) > 0:
@@ -69,7 +74,7 @@ class AllSolutionsSolver(SolverBase):
             max_cliques = []
 
         if self._verbose:
-            print("[INFO] Finding 1 vertex cliques")
+            logger.info("Finding 1 vertex cliques")
         used_vertices = set()
         all_vertices = set([intersection_graph.vertex_index[vertex] for vertex in vertex_to_set.keys()])
 
@@ -80,7 +85,7 @@ class AllSolutionsSolver(SolverBase):
         max_cliques.extend(single_vertex_cliques)
 
         if self._verbose:
-            print("[INFO] Creating pairings from paths and circuits ")
+            logger.info("Creating pairings from paths and circuits ")
         pair_index_to_recipient_index = self._construct_pair_index_to_recipient_index(score_matrix)
 
         for clique in max_cliques:
@@ -248,13 +253,13 @@ class AllSolutionsSolver(SolverBase):
 if __name__ == "__main__":
     x = np.array([np.NAN, np.NINF, 0.0, 9.8])
     indices = list(np.where(np.isfinite(x))[0])
-    print(indices)
+    logger.info(indices)
 
     matrix = np.array([[1, 2, 3], [4, 5, 6]])
     new_matrix_1 = matrix[-1, :]
-    print(new_matrix_1)
+    logger.info(new_matrix_1)
 
-    print(matrix.shape)
+    logger.info(matrix.shape)
 
     score_matrix_test = np.array([[np.NAN, np.NINF, 10.2, 13.1],
                                   [0.2, np.NAN, np.NINF, 1],
@@ -266,4 +271,4 @@ if __name__ == "__main__":
     test_solver = AllSolutionsSolver()
     solutions = test_solver._solve(score_matrix_test)
     for test_solution in solutions:
-        print(test_solution)
+        logger.info(test_solution)

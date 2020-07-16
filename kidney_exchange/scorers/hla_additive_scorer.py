@@ -1,9 +1,10 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from kidney_exchange.config.configuration import Configuration, RecipientDonorScore
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.scorers.additive_scorer import AdditiveScorer, TRANSPLANT_IMPOSSIBLE
+from kidney_exchange.scorers.additive_scorer import AdditiveScorer
+from kidney_exchange.scorers.scorer_base import TRANSPLANT_IMPOSSIBLE
 from kidney_exchange.utils.blood_groups import blood_groups_compatible
 from kidney_exchange.utils.countries import AUT, IL
 from kidney_exchange.utils.hla_system.compatibility_index import compatibility_index
@@ -42,7 +43,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group = require_new_donor_having_better_match_in_compatibility_index_or_blood_group
         self._use_binary_scoring = use_binary_scoring
 
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> float:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> Union[float, str]:
         donor_recipient_ci = compatibility_index(donor.parameters, recipient.parameters)
         related_donor_recipient_ci = compatibility_index(recipient.related_donor.parameters, recipient.parameters)
 

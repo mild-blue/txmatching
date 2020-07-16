@@ -1,5 +1,8 @@
+import logging
 import os
 import sys
+
+logger = logging.getLogger(__name__)
 
 
 def get_absolute_path(project_relative_path: str) -> str:
@@ -27,4 +30,4 @@ def get_absolute_path(project_relative_path: str) -> str:
 if __name__ == "__main__":
     test_file_path = "/tests/resources/sample_score_matrix.json"
     abs_path = get_absolute_path(test_file_path)
-    print(abs_path)
+    logger.info(abs_path)

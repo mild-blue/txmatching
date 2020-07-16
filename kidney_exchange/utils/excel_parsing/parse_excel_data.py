@@ -1,3 +1,4 @@
+import logging
 import math
 import os
 import re
@@ -21,6 +22,8 @@ _valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DR
                       HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DQ_BROAD + HLA_DR_BROAD
 
 _unknown_allele_codes = set()
+
+logger = logging.getLogger(__name__)
 
 
 def _parse_blood_group(blood_group_str: Union[str, int]) -> str:
@@ -54,8 +57,8 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
             if code not in checked_allele_codes:
                 unknown_allele_codes.append(code)
                 _unknown_allele_codes.add(code)
-        print(f"[WARN] Following codes are not in the antigen codes table: \n {', '.join(unknown_allele_codes)}")
-        print(f"[WARN] They were encountered in allele codes string {hla_allele_str}\n")
+        logger.warning(f"Following codes are not in the antigen codes table: \n {', '.join(unknown_allele_codes)}")
+        logger.warning(f"They were encountered in allele codes string {hla_allele_str}\n")
 
     return allele_codes
 
@@ -74,7 +77,7 @@ def _country_code_from_id(patient_id: str) -> str:
 
 
 def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorDto], List[RecipientDto]]:
-    print(f"[INFO] Parsing patient data from file")
+    logger.info(f"Parsing patient data from file")
     data = pd.read_excel(file_io, skiprows=1)
     donors = list()
     recipients = list()
@@ -113,12 +116,12 @@ def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorDto], 
 if __name__ == "__main__":
     patient_data_path = os.getenv("PATIENT_DATA_PATH")
     final_donors, final_recipients = parse_excel_data(patient_data_path)
-    print("\nDonors: \n" + "-" * 50 + "\n")
+    logger.info("\nDonors: \n" + "-" * 50 + "\n")
     for final_donor in final_donors:
-        print(final_donor)
+        logger.info(final_donor)
 
-    print("\nRecipients: \n" + "-" * 50 + "\n")
+    logger.info("\nRecipients: \n" + "-" * 50 + "\n")
     for final_recipient in final_recipients:
-        print(final_recipient)
+        logger.info(final_recipient)
 
-    print(f"\nUnknown allele codes: {sorted(_unknown_allele_codes)}")
+    logger.info(f"\nUnknown allele codes: {sorted(_unknown_allele_codes)}")
