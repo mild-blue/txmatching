@@ -1,19 +1,29 @@
-.main-boxing {
+.boxing {
     display: flex;
     flex-direction: column;
-    align-content: center;
-    height: 100%;
 }
 
 .header-boxing {
     height: 100%;
+
     display: flex;
     flex-direction: row;
+    justify-content: space-around;
+
     margin-bottom: 50px;
 }
 
+.main-boxing {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    height: 100%;
+}
+
+
 .configuration-boxing {
-    min-width: 40%;
+    min-width: 45%;
+    margin-right: 20px;
 }
 
 .patient-detail {
@@ -23,4 +33,5 @@
 .matching-boxing {
     display: flex;
     flex-flow: column;
+    flex: 1 1 auto
 }

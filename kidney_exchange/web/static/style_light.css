@@ -72,12 +72,12 @@ body {
     padding-right: 3px;
     color: darkblue;
 }
-
+/* TODO this fixed width is ugly, but it works.. */
 .patient_box {
     background: whitesmoke;
     border-radius: 20px;
     padding: 30px;
-    margin-left: 30px;
+    width: 30rem;
 }
 
 .login-form {
