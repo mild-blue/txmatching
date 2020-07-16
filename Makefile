@@ -78,5 +78,4 @@ setup-db-for-tests:
 	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./tests/data/prepare_db.sql
 
 clean-db:
-	cd tests/data; PYTHONPATH=../..:$PYTHONPATH python prepare_db.py
 	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./tests/data/clean_db.sql
