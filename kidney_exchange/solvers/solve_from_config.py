@@ -128,7 +128,7 @@ def load_matchings_from_database(exchange_parameters: SolverInputParameters) -> 
 
 if __name__ == "__main__":
     config = Configuration()
-    solutions, score_matrix = solve_from_config(params=SolverInputParameters(
+    solutions, score_matrix_main = solve_from_config(params=SolverInputParameters(
         donors=list(),
         recipients=list(),
         configuration=config
