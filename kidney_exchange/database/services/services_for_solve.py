@@ -25,7 +25,3 @@ def db_matchings_to_matching_list(json_matchings: Dict[str, List[Dict[str, List[
                        patients_dict[donor_recipient_ids['recipient']])
                       for donor_recipient_ids in json_matching['donors_recipients']
                       ]) for json_matching in json_matchings["matchings"]]
-
-
-def get_patients_from_ids(donor_id: int, recipient_id: int) -> Tuple[Donor, Recipient]:
-    return get_donor_from_db_id(donor_id), get_recipient_from_db_id(recipient_id)
