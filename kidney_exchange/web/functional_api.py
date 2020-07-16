@@ -1,7 +1,7 @@
 import logging
 
 import flask
-from flask import render_template, request, redirect, Blueprint, flash
+from flask import render_template, request, redirect, Blueprint, flash, url_for
 from flask_login import login_required, current_user
 
 from kidney_exchange.config.configuration import configuration_to_dto
@@ -22,7 +22,7 @@ UPLOAD_XLSX_FLASH_CATEGORY = "UPLOAD_XLSX"
 @functional_api.route('/')
 @login_required
 def home():
-    return render_template("template_main.html", current_user=current_user)
+    return redirect(url_for("functional.browse_solutions"))
 
 
 @functional_api.route('/set-parameters')

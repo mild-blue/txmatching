@@ -17,7 +17,7 @@
     <input type="checkbox" value="on" name="use_binary_scoring" {{ "checked" if configuration.use_binary_scoring }}>
     Use binary scoring<br>
 
-    Min total score
+    Min transplant score
     <input type="number" value="{{ configuration.minimum_total_score }}" name="minimum_total_score"><br>
 
     Max cycle length
@@ -25,6 +25,10 @@
 
     Max sequence length
     <input type="number" value="{{ configuration.max_sequence_length }}" name="max_sequence_length"><br>
+
+    Max countries in sequence
+    <input type="number" value="{{ configuration.max_number_of_distinct_countries_in_round }}"
+           name="max_number_of_distinct_countries_in_round"><br>
 
     <p>Manual donor recipient scores. Fill in a list of such manual settings.</p>
     <p>The format shall be: "[(donor_name,recipient_name,score)]".</p>

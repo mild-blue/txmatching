@@ -1,0 +1,36 @@
+.boxing {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-boxing {
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    margin-bottom: 20px;
+}
+
+.main-boxing {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    height: 100%;
+}
+
+.configuration-boxing {
+    margin-right: 20px;
+}
+
+.patient-detail {
+    margin: 20px;
+}
+
+.matching-boxing {
+    display: flex;
+    flex-flow: column;
+    max-height: 40rem;
+    overflow-y: scroll;
+}

@@ -56,7 +56,7 @@ class ConfigurationBase:
     use_binary_scoring: bool = False
     max_cycle_length: int = 100
     max_sequence_length: int = 100
-    max_number_of_distinct_countries_in_round: int = 100
+    max_number_of_distinct_countries_in_round: int = 2
     required_patient_db_ids: List[int] = field(default_factory=list)
 
 
