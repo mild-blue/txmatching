@@ -18,13 +18,13 @@
         {{ form_from_configuration(configuration) }}
     </div>
     <div style="width: 50%; float: left; height: 300px; display: block; overflow-y: scroll; overflow-x: hidden;">
-        {{ render_transplant(matchings, scorer, matching_index, round_index, pair_index)}}
+        {{ render_transplant(matchings, score_dict, matching_index, round_index, pair_index)}}
     </div>
 </div>
 
 <div class="matching_browse_box">
     {% for matching in matchings %}
-    {{ render_matching(matching, scorer, ui_utils, loop.index) }}<br>
+    {{ render_matching(matching, score_dict, ui_utils, loop.index) }}<br>
     {% endfor %}
 </div>
 

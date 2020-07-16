@@ -10,7 +10,7 @@ from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.additive_scorer import AdditiveScorer, ORIGINAL_DONOR_RECIPIENT_TUPLE
 from kidney_exchange.scorers.scorer_base import TRANSPLANT_IMPOSSIBLE
-from kidney_exchange.solvers.matching.matching import Matching
+from kidney_exchange.solvers.matching.matching_with_score import MatchingWithScore
 from kidney_exchange.solvers.solver_base import SolverBase
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,8 @@ class AllSolutionsSolver(SolverBase):
         super().__init__()
         self._verbose = verbose
 
-    def solve(self, donors: List[Donor], recipients: List[Recipient], scorer: AdditiveScorer) -> Iterator[Matching]:
+    def solve(self, donors: List[Donor],
+              recipients: List[Recipient], scorer: AdditiveScorer) -> Iterator[MatchingWithScore]:
         score_matrix = scorer.get_score_matrix(donors, recipients)
         score_matrix_array = np.zeros((len(donors), len(recipients)))
         for row_index, row in enumerate(score_matrix):
@@ -35,8 +36,12 @@ class AllSolutionsSolver(SolverBase):
                 score_matrix_array[row_index, column_index] = value
 
         for solution in self._solve(score_matrix=score_matrix_array):
-            matching = Matching(donor_recipient_list=[(donors[i], recipients[j]) for i, j in solution
-                                                      if i < len(donors) and j < len(recipients)])
+            donor_recipient_list = [(donors[i], recipients[j]) for i, j in solution
+                                    if i < len(donors) and j < len(recipients)]
+            score = sum([score_matrix_array[i, j] for i, j in solution
+                         if i < len(donors) and j < len(recipients)])
+
+            matching = MatchingWithScore(donor_recipient_list, score)
             yield matching
 
     def _solve(self, score_matrix: np.ndarray) -> Iterator[List[Tuple[int, int]]]:

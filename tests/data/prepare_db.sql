@@ -31,7 +31,8 @@ VALUES (1, '{
         "recipient": 3,
         "donor": 1
       }
-    ]
+    ],
+    "score": 1.0
   }]
 }', '{}', true);
 INSERT INTO public.pairing_result (config_id, calculated_matchings, score_matrix, valid)
@@ -42,7 +43,8 @@ VALUES (2, '{
         "recipient": 3,
         "donor": 1
       }
-    ]
+    ],
+    "score": 1.0
   }]
 }', '{}', true);
 
