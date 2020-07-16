@@ -11,6 +11,10 @@
             {{ render_patient(recipient) }}
         </div>
     </div>
+{% else %}
+    <div class="matching_box">
+        <h3>No matchings yet. Please, load patients and calculate matchings first. Allow up to several minutes for the algorithm to finish.</h3>
+    </div>
 {% endif %}
 {% endmacro %}
 
