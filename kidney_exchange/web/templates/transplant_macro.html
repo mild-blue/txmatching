@@ -3,13 +3,11 @@
 {% macro render_transplant(matchings, score_dict, matching_index, round_index, pair_index) %}
 {% if matchings | length > 0 %}
 {% set donor, recipient = matchings[matching_index-1].get_rounds()[round_index-1].donor_recipient_list[pair_index-1] %}
-<div style="height: 100%">
-    <div style="width: 50%; float: left">
-        {{ render_patient(donor) }}
-    </div>
-    <div style="width: 50%;float: left;">
-        {{ render_patient(recipient) }}
-    </div>
+<div class="patient-detail">
+    {{ render_patient(donor) }}
+</div>
+<div class="patient-detail">
+    {{ render_patient(recipient) }}
 </div>
 {% else %}
 <div class="text_box">

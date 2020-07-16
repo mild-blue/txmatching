@@ -1,19 +1,19 @@
 {% macro render_hla(patient, code_prefix) %}
 
 
-<table width="100%">
+<table>
     <tr>
-        <td width="40">
+        <td>
             {{code_prefix}}
         </td>
-        <td width="300">
+        <td>
             {% for code in patient.parameters.hla_antigens.codes %}
             {% if code.startswith(code_prefix) %}
             <span class="inline_code">{{ code }}</span>
             {% endif %}
             {% endfor %}
         </td>
-        <td width="300">
+        <td>
             {%if patient.is_recipient %}
             <div style="width: 50%; float: left">
                 {% for code in patient.parameters.hla_antibodies.codes %}
