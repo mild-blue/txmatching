@@ -8,6 +8,10 @@ from kidney_exchange.patients.patient import Patient, PatientDto
 class Recipient(Patient):
     related_donor: Donor
 
+    @property
+    def is_recipient(self) -> bool:
+        return True
+
 
 @dataclass
 class RecipientDto(PatientDto):

@@ -7,6 +7,10 @@ from kidney_exchange.patients.patient import Patient, PatientDto
 class Donor(Patient):
     pass
 
+    @property
+    def is_recipient(self) -> bool:
+        return False
+
 
 @dataclass
 class DonorDto(PatientDto):

@@ -60,3 +60,19 @@ body {
     padding-right: 3px;
     color: rebeccapurple;
 }
+
+.inline_code_blue {
+    border-radius: 3px;
+    border: 1px solid lightskyblue;
+    background: aliceblue;
+    padding-left: 3px;
+    padding-right: 3px;
+    color: darkblue;
+}
+
+.patient_box {
+    background: whitesmoke;
+    border-radius: 20px;
+    padding: 30px;
+    margin-left: 30px;
+}
