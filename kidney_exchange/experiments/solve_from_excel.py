@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from typing import List, Tuple
 
 from kidney_exchange.patients.donor import Donor, DonorDto
@@ -26,6 +27,9 @@ def _get_donors_recipients(donor_dtos: List[DonorDto], recipient_dtos: List[Reci
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG,
+                        format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
+                        stream=sys.stdout)
     excel_path = os.environ.get("PATIENT_DATA_PATH")
     donors_raw, recipients_raw = parse_excel_data(excel_path)
     main_donors, main_recipients = _get_donors_recipients(donors_raw, recipients_raw)
