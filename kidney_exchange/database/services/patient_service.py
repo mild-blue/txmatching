@@ -74,8 +74,7 @@ def save_patients(donors_recipients: Tuple[List[DonorDto], List[RecipientDto]]):
     save_patient_models(recipient_models)
 
 
-def _get_patient_from_db_id(db_id: int) -> Patient:
-    patient_model = PatientModel.query.get(db_id)
+def _get_base_patient_from_patient_model(patient_model: PatientModel) -> Patient:
     return Patient(
         db_id=patient_model.id,
         medical_id=patient_model.medical_id,
@@ -89,21 +88,35 @@ def _get_patient_from_db_id(db_id: int) -> Patient:
         ))
 
 
+def get_patient_from_db_id(db_id: int):
+    patient_model = PatientModel.query.get(db_id)
+    if patient_model.patient_type == 'RECIPIENT':
+        recipient = _get_base_patient_from_patient_model(patient_model)
+        related_donors = PatientPairModel.query.filter(PatientPairModel.recipient_id == db_id).all()
+        if len(related_donors) == 1:
+            don_id = related_donors[0].donor_id
+        else:
+            raise ValueError(f"There has to be 1 donor per recipient, but {len(related_donors)} "
+                             f"were found for recipient with db_id {db_id} and medical id {recipient.medical_id}")
+        return Recipient(recipient.db_id, recipient.medical_id, recipient.parameters,
+                         get_donor_from_db_id(don_id))
+    if patient_model.patient_type == 'DONOR':
+        donor = _get_base_patient_from_patient_model(patient_model)
+        return Donor(donor.db_id, donor.medical_id, donor.parameters)
+
+
 def get_donor_from_db_id(db_id: int) -> Donor:
-    donor = _get_patient_from_db_id(db_id)
-    return Donor(donor.db_id, donor.medical_id, donor.parameters)
+    donor = get_patient_from_db_id(db_id)
+    if type(donor) != Donor:
+        raise ValueError()
+    return donor
 
 
-def get_recipient_from_db_id(db_id: int):
-    recipient = _get_patient_from_db_id(db_id)
-    related_donors = PatientPairModel.query.filter(PatientPairModel.recipient_id == db_id).all()
-    if len(related_donors) == 1:
-        don_id = related_donors[0].donor_id
-    else:
-        raise ValueError(f"There has to be 1 donor per recipient, but {len(related_donors)} "
-                         f"were found for recipient with db_id {db_id} and medical id {recipient.medical_id}")
-    return Recipient(recipient.db_id, recipient.medical_id, recipient.parameters,
-                     get_donor_from_db_id(don_id))
+def get_recipient_from_db_id(db_id: int) -> Recipient:
+    recipient = get_patient_from_db_id(db_id)
+    if type(recipient) != Recipient:
+        raise ValueError()
+    return recipient
 
 
 def get_all_patients() -> Iterable[PatientModel]:
