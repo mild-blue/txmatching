@@ -1,7 +1,7 @@
 body {
     line-height: 150%;
     font-family: 'Open Sans', sans-serif;
-    background: #092756;
+    background: #465266;
     letter-spacing: 1.2px;
     margin: 50px;
 }
@@ -29,6 +29,7 @@ body {
     padding-right: 10px;
     color: black;
     text-decoration: none;
+    text-shadow: 0 0 3px #232222;
 }
 
 .submit_button {
