@@ -33,4 +33,5 @@
     flex-flow: column;
     max-height: 40rem;
     overflow-y: scroll;
+    flex-grow: 2;
 }
