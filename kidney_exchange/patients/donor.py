@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 
-from kidney_exchange.patients.patient import Patient, PatientDto
+from kidney_exchange.patients.patient import Patient, PatientDto, PatientType
 
 
 @dataclass
 class Donor(Patient):
+    patient_type: PatientType = PatientType.DONOR
     pass
 
     @property

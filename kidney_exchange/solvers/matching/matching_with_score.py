@@ -1,8 +1,6 @@
-from typing import List, Tuple
+from typing import List
 
-from kidney_exchange.patients.donor import Donor
-from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.solvers.matching.matching import Matching
+from kidney_exchange.solvers.matching.matching import Matching, DonorRecipientTuple
 
 
 class MatchingWithScore(Matching):
@@ -10,7 +8,7 @@ class MatchingWithScore(Matching):
     Set of disjoint TransplantRound's
     """
 
-    def __init__(self, donor_recipient_list: List[Tuple[Donor, Recipient]], score: float):
+    def __init__(self, donor_recipient_list: List[DonorRecipientTuple], score: float):
         super().__init__(donor_recipient_list)
         self._score = score
 

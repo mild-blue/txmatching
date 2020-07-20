@@ -1,7 +1,7 @@
-from typing import List, Tuple
+from typing import List
 
-from kidney_exchange.patients.donor import Donor
-from kidney_exchange.patients.recipient import Recipient
+from kidney_exchange.patients.patient import PatientType
+from kidney_exchange.patients.patient_types import DonorRecipientTuple
 from kidney_exchange.solvers.matching.transplant_cycle import TransplantCycle
 from kidney_exchange.solvers.matching.transplant_round import TransplantRound
 from kidney_exchange.solvers.matching.transplant_sequence import TransplantSequence
@@ -12,7 +12,7 @@ class Matching:
     Set of disjoint TransplantRound's
     """
 
-    def __init__(self, donor_recipient_list: List[Tuple[Donor, Recipient]] = None):
+    def __init__(self, donor_recipient_list: List[DonorRecipientTuple] = None):
         # TODO list of TransplantRounds?
         self._donor_recipient_list = donor_recipient_list
         self._initialize()
@@ -39,6 +39,13 @@ class Matching:
     @property
     def donor_recipient_list(self):
         return self._donor_recipient_list
+
+    def get_altruist_count(self):
+        return len([donor for donor, _ in self._donor_recipient_list if donor.patient_type == PatientType.ALTRUIST])
+
+    def get_bridging_donor_count(self):
+        return len(
+            [donor for donor, _ in self._donor_recipient_list if donor.patient_type == PatientType.BRIDGING_DONOR])
 
     def get_cycles(self) -> List[TransplantCycle]:
         return self._cycles
