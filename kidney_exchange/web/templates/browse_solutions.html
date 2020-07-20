@@ -16,14 +16,12 @@
 {{ render_user_info(current_user) }}
 <div class="boxing">
 
-    <div class="header-boxing">
-        {{ render_transplant(matchings, score_dict, matching_index, round_index, pair_index)}}
+    <div class="configuration-boxing">
+        {{ form_from_configuration(configuration, enable_configuration) }}
     </div>
 
+
     <div class="main-boxing">
-        <div class="configuration-boxing">
-            {{ form_from_configuration(configuration, enable_configuration) }}
-        </div>
 
         <div class="matching-boxing">
             {% for matching in matchings %}
