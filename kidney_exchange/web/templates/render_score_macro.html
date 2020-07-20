@@ -1,0 +1,11 @@
+{% macro render_score(code_prefix, matchingAntigens, score) %}
+
+<b>{{code_prefix}}</b>:
+{% for code in matchingAntigens %}
+    {% if code.startswith(code_prefix) %}
+        <span class="inline_code matching-antigens">{{ code }}</span>
+    {% endif %}
+{% endfor %}
+= {{score}}
+
+{% endmacro %}

@@ -1,9 +1,9 @@
-{% macro render_hla(patient, code_prefix, matchingAntigens, matchingAntibodies, score) %}
+{% macro render_hla(patient, code_prefix, matchingAntigens, matchingAntibodies) %}
 
 <table>
     <tr>
         <td>
-            {{code_prefix}} | score: {{ score }}
+            {{code_prefix}}:
         </td>
         <td>
             {% for code in patient.parameters.hla_antigens.codes %}
