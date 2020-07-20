@@ -2,6 +2,7 @@
 {% from 'matching_macro.html' import render_matching %}
 {% from 'transplant_macro.html' import render_transplant %}
 {% from 'show_user_macro.html' import render_user_info %}
+{% from 'matching_detail_macro.html' import render_matching_detail %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,18 +16,19 @@
 
 {{ render_user_info(current_user) }}
 <div class="boxing">
-
     <div class="configuration-boxing">
         {{ form_from_configuration(configuration, enable_configuration) }}
     </div>
 
-
     <div class="main-boxing">
-
-        <div class="matching-boxing">
+        <div>
             {% for matching in matchings %}
-            {{ render_matching(matching, score_dict, ui_utils, loop.index) }}
+            {{ render_matching(matching, score_dict, ui_utils, loop.index, matching_index) }}
             {% endfor %}
+        </div>
+        <div></div>
+        <div>
+            {{ render_matching_detail(matchings[matching_index-1], score_dict, ui_utils) }}
         </div>
     </div>
 </div>
