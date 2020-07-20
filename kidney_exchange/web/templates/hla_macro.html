@@ -2,10 +2,10 @@
 
 <table>
     <tr>
-        <td>
+        <td style="width: 30px;">
             {{code_prefix}}:
         </td>
-        <td>
+        <td style="width: 200px;">
             {% for code in patient.parameters.hla_antigens.codes %}
                 {% if code.startswith(code_prefix) %}
                     {% set matched_antigen_class = "matching-antigens" if code in matching_antigens else "" %}
@@ -13,7 +13,7 @@
                 {% endif %}
             {% endfor %}
         </td>
-        <td>
+        <td style="width: 200px;">
             {%if patient.is_recipient %}
             <div style="width: 50%; float: left">
                 {% for code in patient.parameters.hla_antibodies.codes %}

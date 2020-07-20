@@ -1,0 +1,22 @@
+{% from 'patient_macro.html' import render_patient %}
+
+
+{% macro render_matching_detail(matching, score_dict, ui_utils, round_index) %}
+
+
+{% for round in matching.get_rounds() %}
+<div style="color: white; margin-left: 50px; width: 90%; border-top: 2px dotted white; padding-top: 10px;">Round:
+    {{loop.index}}
+</div>
+{% for donor, recipient in round.donor_recipient_list %}
+<table class="matching_detail">
+    <tr>
+        <td>{{ render_patient(donor) }}</td>
+        <td>{{ render_patient(recipient) }}</td>
+    </tr>
+</table>
+{% endfor %}
+<br>
+{% endfor %}
+
+{% endmacro %}

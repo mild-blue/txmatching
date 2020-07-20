@@ -2,7 +2,7 @@ import logging
 
 import flask
 from flask import render_template, request, redirect, Blueprint, flash, url_for
-from flask_login import login_required, current_user
+from flask_login import login_required
 
 from kidney_exchange.config.configuration import configuration_to_dto
 from kidney_exchange.database.services.config_service import get_current_configuration
@@ -52,8 +52,6 @@ def browse_solutions():
     matchings, score_dict = get_latest_matchings_and_score_matrix()
 
     matching_index = int(request.args.get("matching_index", 1))
-    round_index = int(request.args.get("round_index", 1))
-    pair_index = int(request.args.get("pair_index", 1))
 
     return render_template("browse_solutions.html",
                            matchings=matchings,
@@ -61,9 +59,7 @@ def browse_solutions():
                            selected_exchange_index=selected_exchange_index,
                            configuration=configuration_dto,
                            ui_utils=ui_utils,
-                           matching_index=matching_index,
-                           round_index=round_index,
-                           pair_index=pair_index)
+                           matching_index=matching_index)
 
 
 @functional_api.route('/load-patients', methods=["GET", "POST"])
