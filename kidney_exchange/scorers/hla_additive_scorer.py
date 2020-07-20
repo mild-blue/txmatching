@@ -10,7 +10,8 @@ from kidney_exchange.utils.countries import AUT, IL
 from kidney_exchange.utils.hla_system.compatibility_index import compatibility_index
 from kidney_exchange.utils.hla_system.hla_table import is_split, broad_to_split
 
-BLOOD_GROUP_COMPATIBILITY_BONUS = 20.0 - 1.0
+# TODO make configurable https://trello.com/c/OY3WNmMe/144-all-algorithm-constants-configurable
+BLOOD_GROUP_COMPATIBILITY_BONUS = 0.0
 
 
 class HLAAdditiveScorer(AdditiveScorer):
