@@ -110,7 +110,7 @@ def _get_patient_from_patient_model(patient_model: PatientModel,
 
 def get_all_patients() -> Iterable[Patient]:
     patient_models_dict = {patient_model.id: patient_model for patient_model in
-                           PatientModel.query.filter(PatientModel.active).all()}
+                           PatientModel.query.filter(PatientModel.active).order_by(PatientModel.id).all()}
     patients = [_get_patient_from_patient_model(patient_model, patient_models_dict) for patient_model in
                 patient_models_dict.values()]
     return patients
