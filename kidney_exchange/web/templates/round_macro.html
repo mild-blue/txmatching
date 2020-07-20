@@ -3,7 +3,7 @@
 <div class="round_box">
     {{ round_index }}
     {% for donor, recipient in round.donor_recipient_list %}
-    {% set score = (100 * score_dict[(donor.db_id, recipient.db_id)] / 46 | int) %}
+    {% set score = (100 * score_dict[(donor.db_id, recipient.db_id)] / 27 | int) %}
     <a class="chain_link" style="background-color: {{ ui_utils.color_gradient(score) }}"
        href="?matching_index={{matching_index}}&round_index={{round_index}}&pair_index={{loop.index}}">
         <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px">
