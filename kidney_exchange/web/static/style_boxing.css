@@ -14,24 +14,21 @@
 }
 
 .main-boxing {
-    display: flex;
-    flex-direction: row;
-    align-content: center;
+    display: grid;
+    grid-template-columns: 1fr 50px 2fr;
     height: 100%;
 }
 
 .configuration-boxing {
     margin-right: 20px;
+    margin-bottom: 50px;
 }
 
 .patient-detail {
     margin: 20px;
 }
 
-.matching-boxing {
-    display: flex;
-    flex-flow: column;
-    max-height: 40rem;
-    overflow-y: scroll;
-    flex-grow: 2;
+.matching-list-boxing {
+    width: 100%;
+    margin-left: 50px;
 }

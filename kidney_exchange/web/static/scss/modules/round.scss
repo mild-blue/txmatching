@@ -1,0 +1,40 @@
+.round {
+
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  padding: 5px 0;
+
+  span {
+    font-weight: 700;
+    color: var(--brand-grey-darker);
+    margin-right: 15px;
+    display: inline-block;
+  }
+
+  > div {
+    flex: 1;
+  }
+
+  .chain_link {
+    display: inline-block;
+    padding: 8px 10px 5px;
+    background-color: #ababab; // todo: make variable
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+    margin: 2px 0;
+    transition: all 0.2s ease;
+
+    &.light {
+      background-color: var(--brand-grey-dark);
+    }
+
+    &:not(:last-child) {
+      margin-right: 5px;
+    }
+
+    &:hover {
+      color: var(--brand-white) !important;
+      background-color: #2f2f2f;
+    }
+  }
+}

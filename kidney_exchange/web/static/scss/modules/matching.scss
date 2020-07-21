@@ -1,0 +1,128 @@
+.matching {
+  padding: var(--padding-x);
+  background: var(--box-bg);
+  width: 40%;
+  max-width: 900px;
+
+  &-item {
+    background: var(--brand-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    border: 1px solid var(--brand-grey);
+
+    display: flex;
+
+    &:not(:last-child) {
+      margin-bottom: 20px;
+    }
+
+    &.active {
+
+      background: var(--brand-grey);
+      border: 1px solid var(--color-primary);
+
+      .matching-item__link {
+        background: var(--color-primary);
+        color: var(--brand-white);
+      }
+    }
+
+    &__content {
+      padding: 20px;
+      flex: 1;
+    }
+
+    &__link {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 30px;
+      background: var(--brand-grey);
+
+      &:hover {
+        background: var(--brand-grey-dark);
+      }
+    }
+  }
+
+  .description {
+    font-size: 14px;
+    color: var(--brand-grey-darker);
+    margin-bottom: 20px;
+  }
+}
+
+.matching {
+  //&_envelope {
+  //  border-spacing: 0px;
+  //  background: whitesmoke;
+  //  border-radius: 10px;
+  //  margin-bottom: 20px;
+  //  display: grid;
+  //  grid-template-columns: 1fr 50px;
+  //  padding: 20px 20px 3px;
+  //}
+
+  &_box {
+    //background: whitesmoke;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 20px 20px 3px;
+
+    .chain_link {
+      border-radius: 5px;
+      margin-left: 10px;
+      padding: 8px 10px 5px;
+      color: black;
+      text-decoration: none;
+      background: slategray;
+    }
+
+    &_expand {
+      border-bottom-right-radius: 10px;
+      border-top-right-radius: 10px;
+      text-align: center;
+      display: block;
+      padding-top: 20px;
+      vertical-align: middle;
+      background: silver;
+
+      &:hover {
+        background: gray;
+        color: whitesmoke;
+      }
+    }
+  }
+
+  &-blood-group {
+    border: 1px solid green;
+    background: darkseagreen;
+  }
+
+  &-antigens {
+    border: 1px solid green !important;
+    background: darkseagreen !important;
+  }
+
+  &-antibodies {
+    border: 1px solid red !important;
+    background: #e0a7a7 !important;
+  }
+}
+
+
+.matching_detail {
+  border-spacing: 20px;
+  margin-bottom: 50px;
+}
+
+.matching_detail tr {
+  vertical-align: top;
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.matching_detail td {
+  margin-right: 20px;
+}

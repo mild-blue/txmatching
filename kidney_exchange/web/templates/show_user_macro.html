@@ -1,15 +1,22 @@
 {% macro render_user_info(current_user) %}
 
-<div class="header">
-    <div class="username">
-        {% if current_user.is_authenticated %}
-        {{ current_user.email }}&nbsp
-        {% endif %}
-        <a href="/logout">(log out)</a>
+<header>
+    <div class="logo">
+        <a href="/">
+            <img src="../static/img/logo_ikem.svg" alt="logo" />
+        </a>
     </div>
-    <div class="contact">
-        Not working? Questions? Call +420 723 927 536.
+    <div class="info">
+        <div class="username">
+            {% if current_user.is_authenticated %}
+            {{ current_user.email }}&nbsp|&nbsp
+            {% endif %}
+            <a href="/logout">Log out</a>
+        </div>
+        <div class="contact">
+            Not working? Questions? Call +420 723 927 536
+        </div>
     </div>
-</div>
+</header>
 
 {% endmacro %}

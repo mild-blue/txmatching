@@ -1,35 +1,34 @@
 {% from 'config_form_macro.html' import form_from_configuration %}
 {% from 'matching_macro.html' import render_matching %}
-{% from 'transplant_macro.html' import render_transplant %}
 {% from 'show_user_macro.html' import render_user_info %}
+{% from 'matching_detail_macro.html' import render_matching_detail %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Kidney Exchange</title>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style_light.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style_boxing.css') }}">
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
 <body>
 
 {{ render_user_info(current_user) }}
-<div class="boxing">
+{{ form_from_configuration(configuration, enable_configuration) }}
 
-    <div class="header-boxing">
-        {{ render_transplant(matchings, score_dict, matching_index, round_index, pair_index)}}
-    </div>
-
-    <div class="main-boxing">
-        <div class="configuration-boxing">
-            {{ form_from_configuration(configuration, enable_configuration) }}
-        </div>
-
-        <div class="matching-boxing">
+<div class="content">
+    <div class="matching">
+        <h1>Found matchings ({{ matchings|length }})</h1>
+        <div class="matching-list">
             {% for matching in matchings %}
-            {{ render_matching(matching, score_dict, ui_utils, loop.index) }}
+            {{ render_matching(matching, score_dict, ui_utils, loop.index, matching_index, compatible_blood_dict) }}
             {% endfor %}
         </div>
+    </div>
+
+    <div class="matching-detail">
+        {% if matchings | length >= matching_index %}
+            {{ render_matching_detail(matchings[matching_index-1], score_dict, ui_utils) }}
+        {% endif %}
     </div>
 </div>
 </body>

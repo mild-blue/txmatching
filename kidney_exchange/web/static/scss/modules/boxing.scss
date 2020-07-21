@@ -1,0 +1,25 @@
+
+.header-boxing {
+  height: 100%;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  margin-bottom: 20px;
+}
+
+.main-boxing {
+  display: grid;
+  grid-template-columns: 1fr 50px 2fr;
+  height: 100%;
+}
+
+.patient-detail {
+  margin: 20px;
+}
+
+.matching-list-boxing {
+  width: 100%;
+  margin-left: 50px;
+}

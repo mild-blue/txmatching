@@ -1,0 +1,21 @@
+.inline_code {
+  border-radius: 3px;
+  border: 1px solid plum;
+  background: #e6e6e6;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: rebeccapurple;
+  margin: 1px;
+  display: inline-block;
+
+  &_blue {
+    border-radius: 3px;
+    border: 1px solid lightskyblue;
+    background: aliceblue;
+    padding-left: 3px;
+    padding-right: 3px;
+    color: darkblue;
+    margin: 1px;
+    display: inline-block;
+  }
+}
