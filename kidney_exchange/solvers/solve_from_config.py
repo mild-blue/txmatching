@@ -83,8 +83,8 @@ def current_config_matchings_to_model(config_matchings: Iterable[MatchingWithSco
     return CalculatedMatchings([
         CalculatedMatching([
             DonorRecipient(
-                medical_id_to_db_id(donor.medical_id),
-                medical_id_to_db_id(recipient.medical_id)
+                donor.db_id,
+                recipient.db_id
             ) for donor, recipient in final_solution.donor_recipient_list
         ],
             final_solution.score()
