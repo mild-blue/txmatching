@@ -1,7 +1,7 @@
 .matching {
   padding: var(--padding-x);
   background: var(--box-bg);
-  width: 40%;
+  width: var(--matching-column-width);
   max-width: 900px;
 
   &-item {

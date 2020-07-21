@@ -16,6 +16,7 @@
                 0 .6px 1.8px 0 rgba(0, 0, 0, .108);
   --button-bg: var(--color-primary);
   --button-hover-bg: var(--brand-red-darker);
+  --matching-column-width: 40%;
 }
 
 html {
@@ -27,6 +28,9 @@ body {
   background: var(--brand-white);
   color: var(--text-color);
   margin: 0;
+}
+body * {
+  box-sizing: border-box;
 }
 
 header {
@@ -133,6 +137,7 @@ h1::after {
 
 .content {
   display: flex;
+  position: relative;
 }
 
 .configuration {
@@ -223,6 +228,7 @@ h1::after {
   border-radius: var(--border-radius);
   margin: 2px 0;
   transition: all 0.2s ease;
+  font-weight: 400;
 }
 .round .chain_link.light {
   background-color: var(--brand-grey-dark);
@@ -387,7 +393,7 @@ h1::after {
 .matching {
   padding: var(--padding-x);
   background: var(--box-bg);
-  width: 40%;
+  width: var(--matching-column-width);
   max-width: 900px;
 }
 .matching-item {
@@ -489,6 +495,15 @@ h1::after {
   flex: 1;
   display: flex;
   flex-direction: column;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: calc(100% - var(--matching-column-width));
+  height: 100vh;
+}
+.matching-detail.fixed {
+  position: fixed;
+  overflow: scroll;
 }
 
 .round-detail {
