@@ -7,7 +7,7 @@
     <a class="chain_link" style="background-color: {{ ui_utils.color_gradient(score) }}"
        href="?matching_index={{matching_index}}&round_index={{round_index}}&pair_index={{loop.index}}">
         <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px">
-        {{ donor.medical_id }} ⮕ {{ recipient.medical_id }}
+        {{ donor.medical_id }} &rArr; {{ recipient.medical_id }}
         <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px">
     </a>
     {% endfor %}
