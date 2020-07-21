@@ -8,10 +8,10 @@
   top: 0;
   right: 0;
   width: calc(100% - var(--matching-column-width));
-  height: 100vh;
 
   &.fixed {
     position: fixed;
     overflow: scroll;
+    height: 100vh;
   }
 }
