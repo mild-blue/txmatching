@@ -2,7 +2,7 @@ import logging
 import os
 
 import bcrypt
-from flask import jsonify, g, Blueprint, current_app as app, render_template, request, url_for, redirect, flash
+from flask import jsonify, g, Blueprint, current_app as app, render_template, request, url_for, redirect, flash, abort
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy.exc import OperationalError
 
@@ -91,3 +91,14 @@ def logout():
     logout_user()
     logger.info(f"User {username} logged out.")
     return redirect(url_for("functional.home"))
+
+
+# TODO Improve this
+def check_admin(role: str):
+    if role != 'ADMIN':
+        abort(403)
+
+
+def check_admin_or_editor(role: str):
+    if role not in {'ADMIN', 'EDITOR'}:
+        abort(403)
