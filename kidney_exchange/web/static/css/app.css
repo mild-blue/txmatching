@@ -15,8 +15,6 @@
                 0 .6px 1.8px 0 rgba(0, 0, 0, .108);
   --button-bg: var(--color-primary);
   --button-hover-bg: var(--brand-red-darker);
-  --chain-link-bg: var(--brand-grey-dark);
-  --chain-link-hover-bg: var(--brand-grey-darker);
 }
 
 html {
@@ -219,17 +217,22 @@ h1::after {
 .round .chain_link {
   display: inline-block;
   padding: 8px 10px 5px;
-  background-color: var(--chain-link-bg);
+  background-color: var(--brand-grey-darker);
+  color: var(--brand-white);
   border-radius: var(--border-radius);
   margin: 2px 0;
   transition: all 0.2s ease;
+}
+.round .chain_link.light {
+  background-color: var(--brand-grey);
+  color: var(--text-color);
 }
 .round .chain_link:not(:last-child) {
   margin-right: 5px;
 }
 .round .chain_link:hover {
   color: var(--brand-white) !important;
-  background-color: var(--chain-link-hover-bg);
+  background-color: #2f2f2f;
 }
 
 .transplant {
@@ -306,7 +309,7 @@ h1::after {
   border-left: none;
 }
 .transplant .table .td:last-child {
-  background: #f1f1f1;
+  background: #f9f9f9;
 }
 .transplant .table-footer {
   width: 100%;

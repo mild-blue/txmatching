@@ -8,9 +8,9 @@
         {% set score = (100 * transplant_score / 46 | int) %}
         {% set should_be_background_dark_grey =  compatible_blood_dict[(donor.db_id, recipient.db_id)] %}
         {% if should_be_background_dark_grey %}
-        <!-- TODO add here that if should_be_background_light_grey is true then background is dark grey, otherwise light grey-->
         {% endif %}
-        <a class="chain_link" style="border-right: 20px solid {{ ui_utils.color_gradient(score) }}"
+        <a class="chain_link {% if should_be_background_light_grey %}light{% endif %}"
+           style="border-right: 20px solid {{ ui_utils.color_gradient(score) }}"
            href="?matching_index={{matching_index}}&round_index={{round_index}}&pair_index={{loop.index}}">
             <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px">
             {{ donor.medical_id }} &rArr; {{ recipient.medical_id }}
