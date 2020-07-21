@@ -143,6 +143,11 @@ h1::after {
   position: relative;
   flex: 1;
 }
+@media (max-width: 1200px) {
+  .content {
+    flex-direction: column;
+  }
+}
 
 .configuration {
   padding: var(--padding-x);
@@ -431,6 +436,16 @@ h1::after {
   width: var(--matching-column-width);
   max-width: 900px;
 }
+@media (max-width: 1200px) {
+  .matching {
+    width: 100%;
+    max-width: 100%;
+  }
+  .matching-list {
+    height: 600px;
+    overflow: scroll;
+  }
+}
 .matching-item {
   background: var(--brand-white);
   border-radius: var(--border-radius);
@@ -527,7 +542,6 @@ h1::after {
 }
 
 .matching-detail {
-  flex: 1;
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -539,6 +553,12 @@ h1::after {
   position: fixed;
   overflow: scroll;
   height: 100vh;
+}
+@media (max-width: 1200px) {
+  .matching-detail {
+    position: relative;
+    width: 100%;
+  }
 }
 
 .round-detail {
