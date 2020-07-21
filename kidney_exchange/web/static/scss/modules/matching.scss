@@ -1,8 +1,18 @@
 .matching {
   padding: var(--padding-x);
   background: var(--box-bg);
-  width: 40%;
+  width: var(--matching-column-width);
   max-width: 900px;
+
+  @media (max-width: 1200px) {
+    width: 100%;
+    max-width: 100%;
+
+    &-list {
+      height: 600px;
+      overflow: scroll;
+    }
+  }
 
   &-item {
     background: var(--brand-white);
@@ -17,15 +27,18 @@
       margin-bottom: 20px;
     }
 
-    &.active {
+    &.active, &:hover {
 
-      background: var(--brand-grey);
       border: 1px solid var(--color-primary);
 
       .matching-item__link {
         background: var(--color-primary);
         color: var(--brand-white);
       }
+    }
+
+    &.active {
+      background: rgba(var(--brand-red-rgb), 0.05);
     }
 
     &__content {

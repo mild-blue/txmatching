@@ -18,23 +18,20 @@
   .chain_link {
     display: inline-block;
     padding: 8px 10px 5px;
-    background-color: #ababab; // todo: make variable
-    color: var(--text-color);
+    background-color: var(--brand-grey-darker);
+    color: var(--brand-white);
     border-radius: var(--border-radius);
     margin: 2px 0;
     transition: all 0.2s ease;
+    font-weight: 400;
 
     &.light {
       background-color: var(--brand-grey-dark);
+      color: var(--text-color);
     }
 
     &:not(:last-child) {
       margin-right: 5px;
-    }
-
-    &:hover {
-      color: var(--brand-white) !important;
-      background-color: #2f2f2f;
     }
   }
 }
