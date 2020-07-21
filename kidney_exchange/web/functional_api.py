@@ -2,7 +2,7 @@ import logging
 
 import flask
 from flask import render_template, request, redirect, Blueprint, flash, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from kidney_exchange.config.configuration import configuration_to_dto
 from kidney_exchange.database.services.config_service import get_current_configuration
