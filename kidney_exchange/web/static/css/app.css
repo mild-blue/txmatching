@@ -294,9 +294,6 @@ h1::after {
 .transplant .table-row:first-child .td:last-child {
   color: var(--color-primary);
 }
-.transplant .table-row:last-child .td:last-child {
-  border-bottom: 5px solid var(--border-color);
-}
 .transplant .table .td {
   padding: 5px 10px;
   text-align: center;
@@ -310,6 +307,9 @@ h1::after {
 }
 .transplant .table .td:last-child {
   background: #f9f9f9;
+}
+.transplant .table .td.border-bottom {
+  border-bottom: 5px solid var(--border-color);
 }
 .transplant .table-footer {
   width: 100%;

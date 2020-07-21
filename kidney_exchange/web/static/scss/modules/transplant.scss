@@ -72,11 +72,6 @@
         }
       }
 
-      &:last-child {
-        .td:last-child {
-          border-bottom: 5px solid var(--border-color);
-        }
-      }
     }
 
     .td {
@@ -93,6 +88,10 @@
 
       &:last-child {
         background: #f9f9f9;
+      }
+
+      &.border-bottom {
+        border-bottom: 5px solid var(--border-color);
       }
     }
   }
