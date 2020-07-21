@@ -5,7 +5,7 @@
     <div>
     {% for donor, recipient in round.donor_recipient_list %}
         {% set transplant_score = (score_dict[(donor.db_id, recipient.db_id)] | int) %}
-        {% set score = (100 * transplant_score / 46 | int) %}
+        {% set score = (100 * transplant_score / 27 | int) %}
         {% set should_be_background_dark_grey =  compatible_blood_dict[(donor.db_id, recipient.db_id)] %}
         {% set linkClass = 'chain_link' %}
         {% if should_be_background_dark_grey %}
