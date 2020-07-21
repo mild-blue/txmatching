@@ -1,7 +1,7 @@
-from typing import Tuple, List
+from typing import List
 
-from kidney_exchange.patients.donor import Donor
-from kidney_exchange.patients.recipient import Recipient
+from kidney_exchange.patients.patient import PatientType
+from kidney_exchange.solvers.matching.matching import DonorRecipientTuple
 
 
 class TransplantRound:
@@ -12,7 +12,7 @@ class TransplantRound:
     cycle: donor_1 -> recipient_2, donor_2 -> recipient_3, donor_3 -> recipient_1
     """
 
-    def __init__(self, donor_recipient_list: List[Tuple[Donor, Recipient]]):
+    def __init__(self, donor_recipient_list: List[DonorRecipientTuple]):
         self._donor_recipient_list = donor_recipient_list
 
     def __str__(self) -> str:
@@ -42,5 +42,14 @@ class TransplantRound:
         return False
 
     @property
-    def donor_recipient_list(self) -> List[Tuple[Donor, Recipient]]:
+    def donor_recipient_list(self) -> List[DonorRecipientTuple]:
         return self._donor_recipient_list
+
+    def briding_donor_altruist_or_nothing(self):
+        first_donor_type = self._donor_recipient_list[0][0].patient_type
+        if first_donor_type == PatientType.BRIDGING_DONOR:
+            return "B"
+        elif first_donor_type == PatientType.ALTRUIST:
+            return "A"
+        else:
+            return ""

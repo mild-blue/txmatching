@@ -7,6 +7,8 @@
         Score: <span class="inline_code">{{ matching.score() }}</span> |
         Rounds: <span class="inline_code">{{ matching.get_rounds() | length }}</span> |
         Transplants: <span class="inline_code">{{matching.donor_recipient_list | length}}</span>
+        Bridging donors: <span class="inline_code">{{matching.get_bridging_donor_count()}}</span>
+        Altruists: <span class="inline_code">{{matching.get_altruist_count()}}</span>
     </div>
     {% for round in matching.get_rounds() %}
     {{ render_round(round, score_dict, ui_utils, loop.index, matching_index) }}

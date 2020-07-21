@@ -2,6 +2,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 from kidney_exchange.database.db import db
+from kidney_exchange.patients.patient import PatientType
 
 
 class ConfigModel(db.Model):
@@ -50,7 +51,7 @@ class PatientModel(db.Model):
     id = db.Column(db.BIGINT, primary_key=True, nullable=False)
     medical_id = db.Column(db.TEXT, unique=False, nullable=False)
     country = db.Column(db.TEXT, unique=False, nullable=False)
-    patient_type = db.Column(db.TEXT, unique=False, nullable=False)
+    patient_type = db.Column(db.Enum(PatientType), unique=False, nullable=False)
     blood = db.Column(db.TEXT, unique=False, nullable=False)
     hla_antigens = db.Column(db.JSON, unique=False, nullable=False)
     hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)

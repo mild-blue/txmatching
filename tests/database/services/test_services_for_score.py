@@ -17,6 +17,6 @@ class TestSolveFromDbAndItsSupportFunctionality(unittest.TestCase):
             )
             score_matrix = calculate_current_score_matrix()
             testing.assert_array_equal(
-                [['Original Donor recipient tuple', '19.0'],
-                 ['19.0', 'Original Donor recipient tuple']],
+                [['Original Donor recipient tuple', '0.0'],
+                 ['0.0', 'Original Donor recipient tuple']],
                 score_matrix)

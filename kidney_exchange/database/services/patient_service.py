@@ -5,7 +5,7 @@ from kidney_exchange.database.db import db
 from kidney_exchange.database.sql_alchemy_schema import PatientAcceptableBloodModel, PatientModel, PatientPairModel, \
     PairingResultPatientModel
 from kidney_exchange.patients.donor import DonorDto, Donor
-from kidney_exchange.patients.patient import PatientDto, Patient
+from kidney_exchange.patients.patient import PatientDto, Patient, PatientType
 from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
 from kidney_exchange.patients.recipient import RecipientDto, Recipient
 
@@ -37,12 +37,12 @@ def patient_dto_to_patient_model(patient: PatientDto) -> PatientModel:
     if type(patient) == RecipientDto:
         patient_model.acceptable_blood = [PatientAcceptableBloodModel(blood_type=blood)
                                           for blood in patient.parameters.acceptable_blood_groups]
-        patient_model.patient_type = 'RECIPIENT'
+        patient_model.patient_type = PatientType.RECIPIENT
         patient_model.patient_pairs = [
             PatientPairModel(donor_id=medical_id_to_db_id(patient.related_donor.medical_id))]
 
     elif type(patient) == DonorDto:
-        patient_model.patient_type = 'DONOR'
+        patient_model.patient_type = PatientType.DONOR
     else:
         raise TypeError(f"Unexpected patient type {type(patient)}")
 
@@ -91,7 +91,7 @@ def _get_base_patient_from_patient_model(patient_model: PatientModel) -> Patient
 def _get_patient_from_patient_model(patient_model: PatientModel,
                                     patient_models_dict: Dict[int, PatientModel]) -> Patient:
     base_patient = _get_base_patient_from_patient_model(patient_model)
-    if patient_model.patient_type == 'RECIPIENT':
+    if patient_model.patient_type.is_recipient_like():
         related_donors = patient_model.patient_pairs
         if len(related_donors) == 1:
             don_id = related_donors[0].donor_id
@@ -99,15 +99,18 @@ def _get_patient_from_patient_model(patient_model: PatientModel,
             raise ValueError(f"There has to be 1 donor per recipient, but {len(related_donors)} "
                              f"were found for recipient with db_id {base_patient.db_id} and medical id {base_patient.medical_id}")
         return Recipient(base_patient.db_id, base_patient.medical_id, base_patient.parameters,
-                         _get_patient_from_patient_model(patient_models_dict[don_id], patient_models_dict))
+                         related_donor=_get_patient_from_patient_model(patient_models_dict[don_id],
+                                                                       patient_models_dict),
+                         patient_type=patient_model.patient_type)
 
-    if patient_model.patient_type == 'DONOR':
-        return Donor(base_patient.db_id, base_patient.medical_id, base_patient.parameters)
+    if patient_model.patient_type.is_donor_like():
+        return Donor(base_patient.db_id, base_patient.medical_id, parameters=base_patient.parameters,
+                     patient_type=patient_model.patient_type)
 
 
 def get_all_patients() -> Iterable[Patient]:
     patient_models_dict = {patient_model.id: patient_model for patient_model in
-                           PatientModel.query.filter(PatientModel.active).all()}
+                           PatientModel.query.filter(PatientModel.active).order_by(PatientModel.id).all()}
     patients = [_get_patient_from_patient_model(patient_model, patient_models_dict) for patient_model in
                 patient_models_dict.values()]
     return patients

@@ -37,10 +37,10 @@ lists of donors, recipients using scorer.
     - `SolverBase().solve(donors, recipients, scorer)`
     
     which returns a list of matchings in the form:      
-    - `Matching(donor_recipient_list: List[Tuple[Donor, Recipient]])`
+    - `Matching(donor_recipient_list: List[DonorRecipientTuple])`
 
     which consist of several disjoint rounds. 
-    - `TransplantRound(donor_recipient_list: List[Tuple[Donor, Recipient]])`  
+    - `TransplantRound(donor_recipient_list: List[DonorRecipientTuple])`  
     
     These can be either a closed cycle or sequence of transplants
     - `TransplantCycle[TransplantRound]`
