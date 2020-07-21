@@ -1,5 +1,9 @@
+@import "variables"
+;
 @import "native/html";
 @import "native/body";
+@import "native/header";
+@import "native/a";
 
 @import "modules/boxing";
 @import "modules/patient";
