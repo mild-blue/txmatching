@@ -9,6 +9,7 @@ from kidney_exchange.database.services.config_service import get_current_configu
 from kidney_exchange.database.services.matching_service import get_latest_matchings_and_score_matrix
 from kidney_exchange.database.services.patient_service import save_patients
 from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
+from kidney_exchange.web.service_api import check_admin
 from kidney_exchange.web.web_utils import ui_utils
 from kidney_exchange.web.web_utils.load_patients_utils import is_allowed_file_extension
 
@@ -24,24 +25,6 @@ MATCHINGS_TO_SHOW_TO_VIEWER = 5
 @login_required
 def home():
     return redirect(url_for("functional.browse_solutions"))
-
-
-@functional_api.route('/set-parameters')
-@login_required
-def set_parameters():
-    return render_template("set_parameters.html")
-
-
-@functional_api.route('/set-individual')
-@login_required
-def set_individual():
-    return render_template("set_individual.html")
-
-
-@functional_api.route('/solve')
-@login_required
-def solve():
-    return render_template("solve.html")
 
 
 @functional_api.route('/browse-solutions')
@@ -74,6 +57,7 @@ def browse_solutions():
 @functional_api.route('/load-patients', methods=["GET", "POST"])
 @login_required
 def upload_xlsx():
+    check_admin(current_user.role)
     if flask.request.method == 'POST':
 
         patient_data = request.files['patient_data']
