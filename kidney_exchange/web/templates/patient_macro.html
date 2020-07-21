@@ -1,28 +1,28 @@
 {% from 'hla_macro.html' import render_hla %}
 
-{% macro render_patient(patient, matchingBloodGroup, matchingAntigens, matchingAntibodies) %}
+{% macro render_patient(patient, matching_blood_group, matching_antigens) %}
 
 <div class="patient_box">
     <h1>{{ patient.medical_id }}</h1>
 
     Blood Group:
-    {% set bloodClass = "matching-blood-group" if matchingBloodGroup == patient.parameters.blood_group else "" %}
+    {% set bloodClass = "matching-blood-group" if matching_blood_group == patient.parameters.blood_group else "" %}
     <span class="inline_code {{ bloodClass }}">{{ patient.parameters.blood_group }}</span>
     {% if patient.is_recipient %} |
     Acceptable:
     {% for blood_group in patient.parameters.acceptable_blood_groups%}
-    {% set acceptableBloodClass = "matching-blood-group" if matchingBloodGroup == blood_group else "" %}
+    {% set acceptableBloodClass = "matching-blood-group" if matching_blood_group == blood_group else "" %}
     <span class="inline_code {{ acceptableBloodClass }}">{{ blood_group }}</span>
     {% endfor %}
     {% endif %}
 
 
     <hr>
-    {{ render_hla(patient, "A", matchingAntigens, matchingAntibodies) }}
+    {{ render_hla(patient, "A", matching_antigens) }}
     <hr>
-    {{ render_hla(patient, "B", matchingAntigens, matchingAntibodies) }}
+    {{ render_hla(patient, "B", matching_antigens) }}
     <hr>
-    {{ render_hla(patient, "DR", matchingAntigens, matchingAntibodies) }}
+    {{ render_hla(patient, "DR", matching_antigens) }}
 </div>
 
 {% endmacro %}
