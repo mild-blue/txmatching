@@ -3,11 +3,12 @@
 <div class="round_box">
     {{ round_index }}
     {% for donor, recipient in round.donor_recipient_list %}
-    {% set score = (100 * score_dict[(donor.db_id, recipient.db_id)] / 27 | int) %}
-    <a class="chain_link" style="background-color: {{ ui_utils.color_gradient(score) }}"
+    {% set transplant_score = (score_dict[(donor.db_id, recipient.db_id)] | int) %}
+    {% set score = (100 * transplant_score / 46 | int) %}
+    <a class="chain_link" style="border-right: 20px solid {{ ui_utils.color_gradient(score) }}"
        href="?matching_index={{matching_index}}&round_index={{round_index}}&pair_index={{loop.index}}">
         <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px">
-        {{ donor.medical_id }} ⮕ {{ recipient.medical_id }}
+        {{ donor.medical_id }} &rArr; {{ recipient.medical_id }}
         <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px">
     </a>
     {% endfor %}
