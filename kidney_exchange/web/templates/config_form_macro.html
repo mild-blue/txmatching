@@ -1,31 +1,36 @@
 {% macro form_from_configuration(configuration, enable_configuration) %}
-<div>
-    <form action="configuration" method="post" class="configuration_form" id="configuration-form">
+<div class="configuration">
+    <form action="configuration" method="post" id="configuration-form">
 
-        <table class="config-table">
-            <tr>
-                <td><input type="checkbox" value="on" name="enforce_compatible_blood_group"
+        <div class="configuration__boxes">
+            <div>
+                <div class="configuration__box checkboxes">
+                    <input type="checkbox" value="on" name="enforce_compatible_blood_group"
                            {{ "checked" if configuration.enforce_compatible_blood_group }}>
-                    Require compatible blood group<br><br>
+                    Require compatible blood group
+                    <br><br>
 
                     <input type="checkbox" value="on"
                            name="require_new_donor_having_better_match_in_compatibility_index"
                            {{ "checked" if configuration.require_new_donor_having_better_match_in_compatibility_index
                     }}>
-                    Require new donor having better CI match<br><br>
+                    Require new donor having better CI match
+                    <br><br>
 
                     <input type="checkbox" value="on"
                            name="require_new_donor_having_better_match_in_compatibility_index_or_blood_group"
                            {{ "checked" if
                     configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group
                     }}>
-                    <span>Require new donor having better CI match or better blood group</span><br><br>
+                    <span>Require new donor having better CI match or better blood group</span>
+                    <br><br>
 
                     <input type="checkbox" value="on" name="use_binary_scoring" {{ "checked" if
                     configuration.use_binary_scoring }}>
-                    Use binary scoring<br>
-                </td>
-                <td>
+                    Use binary scoring
+                </div>
+
+                <div class="configuration__box inputs">
                     Min transplant score<br>
                     <input type="number" value="{{ configuration.minimum_total_score }}" name="minimum_total_score"><br><br>
 
@@ -40,29 +45,27 @@
 
                     Max countries in sequence<br>
                     <input type="number" value="{{ configuration.max_number_of_distinct_countries_in_round }}"
-                           name="max_number_of_distinct_countries_in_round"><br>
-                </td>
-                <td>
-                    <b>Manual donor recipient scores</b>
-                    <ul>
-                        <li>Fill in a list of such manual settings.</li>
-                        <li>The format shall be: <br>"[(donor_name,recipient_name,score)]".</li>
-                        <li>For example [("D1","R1",23), ("D1","R1",-1)]</li>
-                        <li>use -1 for forbidden exchanges</li>
-                    </ul>
-                    <textarea cols="60" rows="7" name="manual_donor_recipient_scores_dto">{{ configuration.manual_donor_recipient_scores_dto }}</textarea>
-                    <br>
+                           name="max_number_of_distinct_countries_in_round">
+                </div>
+            </div>
 
-                </td>
-            </tr>
-        </table>
+            <div class="configuration__box manual">
+                <b>Manual donor recipient scores</b>
+                <ul>
+                    <li>Fill in a list of such manual settings.</li>
+                    <li>The format shall be: <br>"[(donor_name,recipient_name,score)]".</li>
+                    <li>For example [("D1","R1",23), ("D1","R1",-1)]</li>
+                    <li>use -1 for forbidden exchanges</li>
+                </ul>
+                <textarea cols="60" rows="7" name="manual_donor_recipient_scores_dto">{{ configuration.manual_donor_recipient_scores_dto }}</textarea>
+            </div>
+        </div>
 
         {% if enable_configuration %}
-        <input type="submit" value="Recalculate" class="submit_button">
+        <input type="submit" value="Recalculate">
         {% else %}
         You are just a viewer, you are not allowed to submit recalculation
         {% endif %}
-
     </form>
 
 </div>

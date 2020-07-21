@@ -1,10 +1,20 @@
 :root {
   --brand-red: #e2001a;
+  --brand-red-darker: #a80018;
   --brand-white: #ffffff;
-  --brand-grey-dark: #666666;
+  --brand-grey: #eee;
+  --brand-grey-dark: #ddd;
+  --brand-grey-darker: #666666;
   --color-primary: var(--brand-red);
   --text-color: #000000;
-  --padding-x: 50px ;
+  --box-bg: #f5f5f5;
+  --padding-x: 50px;
+  --border-color: var(--brand-grey-dark);
+  --border-radius: 6px;
+  --box-shadow: 0 3.2px 7.2px 0 rgba(0, 0, 0, .132),
+                0 .6px 1.8px 0 rgba(0, 0, 0, .108);
+  --button-bg: var(--color-primary);
+  --button-hover-bg: var(--brand-red-darker);
 }
 
 html {
@@ -58,7 +68,7 @@ header .info {
   line-height: 1.75;
 }
 header .info .contact {
-  color: var(--brand-grey-dark);
+  color: var(--brand-grey-darker);
 }
 @media (max-width: 540px) {
   header .info {
@@ -79,9 +89,96 @@ a:not(.no-style):hover, a:not(.no-style):active, a:not(.no-style):focus {
   border-bottom-color: transparent;
 }
 
-.boxing {
+form input, form textarea {
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 10px 15px;
+}
+form input[type=submit] {
+  background-color: var(--button-bg);
+  border: none;
+  box-shadow: none;
+  border-radius: var(--border-radius);
+  color: var(--brand-white);
+  padding: 10px;
+  font-size: inherit;
+  font-weight: 600;
+}
+form input[type=submit]:hover {
+  cursor: pointer;
+  background-color: var(--button-hover-bg);
+}
+
+.content {
   display: flex;
   flex-direction: column;
+  padding: var(--padding-x);
+}
+
+.configuration {
+  background: var(--box-bg);
+  padding: var(--padding-x);
+}
+.configuration__boxes {
+  display: flex;
+  width: 100%;
+}
+@media (max-width: 1200px) {
+  .configuration__boxes {
+    flex-direction: column;
+  }
+}
+.configuration__boxes > div {
+  display: flex;
+}
+@media (max-width: 540px) {
+  .configuration__boxes > div {
+    flex-direction: column;
+  }
+}
+.configuration__box {
+  border: 1px solid var(--brand-grey);
+  border-radius: var(--border-radius);
+  background: var(--brand-white);
+  box-shadow: var(--box-shadow);
+  flex: 1;
+  padding: 20px;
+}
+@media (max-width: 1200px) {
+  .configuration .checkboxes {
+    margin-right: 10px;
+  }
+}
+@media (max-width: 540px) {
+  .configuration .checkboxes {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
+.configuration .inputs {
+  margin: 0 10px;
+}
+@media (max-width: 1200px) {
+  .configuration .inputs {
+    margin: 0;
+  }
+}
+.configuration .manual {
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 1200px) {
+  .configuration .manual {
+    margin-top: 10px;
+  }
+}
+.configuration form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.configuration form input[type=submit] {
+  margin-top: 30px;
 }
 
 .header-boxing {
@@ -96,11 +193,6 @@ a:not(.no-style):hover, a:not(.no-style):active, a:not(.no-style):focus {
   display: grid;
   grid-template-columns: 1fr 50px 2fr;
   height: 100%;
-}
-
-.configuration-boxing {
-  margin-right: 20px;
-  margin-bottom: 50px;
 }
 
 .patient-detail {
@@ -119,40 +211,6 @@ a:not(.no-style):hover, a:not(.no-style):active, a:not(.no-style):focus {
   min-width: 38rem;
   height: 100%;
   vertical-align: top;
-}
-
-.configuration_form {
-  overflow-y: scroll;
-  background: whitesmoke;
-  border-radius: 10px;
-  padding: 30px;
-}
-.configuration_form .submit_button {
-  background: darkseagreen;
-  margin-top: 5px;
-  width: 100%;
-  height: 50px;
-  border-radius: 10px;
-  color: white;
-  border: 2px solid green;
-  font-weight: bold;
-}
-
-.config-table {
-  margin-bottom: 30px;
-  border-spacing: 10px;
-}
-
-.config-table td {
-  text-align: left;
-  vertical-align: top;
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-top: 30px;
-  padding-bottom: 30px;
-  width: 30%;
-  border-radius: 10px;
-  border: 1px dashed gray;
 }
 
 .matching_envelope {

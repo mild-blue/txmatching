@@ -1,7 +1,3 @@
-.boxing {
-  display: flex;
-  flex-direction: column;
-}
 
 .header-boxing {
   height: 100%;
@@ -17,11 +13,6 @@
   display: grid;
   grid-template-columns: 1fr 50px 2fr;
   height: 100%;
-}
-
-.configuration-boxing {
-  margin-right: 20px;
-  margin-bottom: 50px;
 }
 
 .patient-detail {

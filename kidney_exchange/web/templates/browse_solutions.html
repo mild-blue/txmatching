@@ -13,11 +13,9 @@
 <body>
 
 {{ render_user_info(current_user) }}
-<div class="boxing">
-    <div class="configuration-boxing">
-        {{ form_from_configuration(configuration, enable_configuration) }}
-    </div>
+{{ form_from_configuration(configuration, enable_configuration) }}
 
+<div class="content">
     <div class="main-boxing">
         <div>
             {% for matching in matchings %}

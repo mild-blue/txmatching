@@ -1,13 +1,16 @@
-@import "variables"
-;
+@import "variables";
+
 @import "native/html";
 @import "native/body";
 @import "native/header";
 @import "native/a";
+@import "native/form";
+
+@import "modules/content";
+@import "modules/configuration";
 
 @import "modules/boxing";
 @import "modules/patient";
-@import "modules/configuration";
 @import "modules/matching";
 
 @import "pages/login";
