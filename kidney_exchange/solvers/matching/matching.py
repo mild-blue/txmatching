@@ -43,6 +43,14 @@ class Matching:
     def get_altruist_count(self):
         return len([donor for donor, _ in self._donor_recipient_list if donor.patient_type == PatientType.ALTRUIST])
 
+    def get_donors_for_country_count(self, country_code: str):
+        return len([donor.parameters.country_code for donor, _ in self._donor_recipient_list if
+                    donor.parameters.country_code == country_code])
+
+    def get_recipients_for_country_count(self, country_code: str):
+        return len([recipient.parameters.country_code for _, recipient in self._donor_recipient_list if
+                    recipient.parameters.country_code == country_code])
+
     def get_bridging_donor_count(self):
         return len(
             [donor for donor, _ in self._donor_recipient_list if donor.patient_type == PatientType.BRIDGING_DONOR])

@@ -1,4 +1,5 @@
 {% from 'round_macro.html' import render_round %}
+{% from 'donor_recipient_country_count_macro.html' import donor_recipient_country_count_macro %}
 
 {% macro render_matching(matching, score_dict, ui_utils, matching_index, selected_matching_index, compatible_blood_dict) %}
 <div class="matching-item {% if matching_index == selected_matching_index %}active{% endif %}">
@@ -6,9 +7,10 @@
         <div class="description">
             Score: <span class="inline_code">{{ matching.score() }}</span> |
             Rounds: <span class="inline_code">{{ matching.get_rounds() | length }}</span> |
-            Transplants: <span class="inline_code">{{matching.donor_recipient_list | length}}</span>
-        Bridging&nbspdonors: <span class="inline_code">{{matching.get_bridging_donor_count()}}</span>
-        Altruists: <span class="inline_code">{{matching.get_altruist_count()}}</span>
+            Transplants: <span class="inline_code">{{matching.donor_recipient_list | length}}</span> |
+            {{donor_recipient_country_count_macro(matching, "CZE")}} |
+            {{donor_recipient_country_count_macro(matching, "AUT")}} |
+            {{donor_recipient_country_count_macro(matching, "IL")}}
         </div>
 
         {% for round in matching.get_rounds() %}
