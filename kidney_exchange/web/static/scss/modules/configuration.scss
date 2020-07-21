@@ -1,0 +1,34 @@
+.configuration_form {
+  overflow-y: scroll;
+  background: whitesmoke;
+  border-radius: 10px;
+  padding: 30px;
+
+  .submit_button {
+    background: darkseagreen;
+    margin-top: 5px;
+    width: 100%;
+    height: 50px;
+    border-radius: 10px;
+    color: white;
+    border: 2px solid green;
+    font-weight: bold;
+  }
+}
+
+.config-table {
+  margin-bottom: 30px;
+  border-spacing: 10px;
+}
+
+.config-table td {
+  text-align: left;
+  vertical-align: top;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  width: 30%;
+  border-radius: 10px;
+  border: 1px dashed gray;
+}

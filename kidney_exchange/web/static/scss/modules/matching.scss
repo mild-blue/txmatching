@@ -1,0 +1,97 @@
+.matching {
+  &_envelope {
+    border-spacing: 0px;
+    background: whitesmoke;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr 50px;
+    padding: 20px 20px 3px;
+  }
+
+  &_box {
+    background: whitesmoke;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 20px 20px 3px;
+
+    .transplant-description {
+      padding-left: 20px;
+      margin-bottom: 20px;
+      color: gray;
+
+      .inline_code {
+        border-radius: 3px;
+        border: 1px solid plum;
+        background: #e6e6e6;
+        padding-left: 3px;
+        padding-right: 3px;
+        color: rebeccapurple;
+
+        &_blue {
+          border-radius: 3px;
+          border: 1px solid lightskyblue;
+          background: aliceblue;
+          padding-left: 3px;
+          padding-right: 3px;
+          color: darkblue;
+        }
+      }
+    }
+
+    .chain_link {
+      border-radius: 5px;
+      margin-left: 10px;
+      padding: 8px 10px 5px;
+      color: black;
+      text-decoration: none;
+      background: slategray;
+    }
+
+    &_expand {
+      border-bottom-right-radius: 10px;
+      border-top-right-radius: 10px;
+      text-align: center;
+      display: block;
+      padding-top: 20px;
+      vertical-align: middle;
+      background: silver;
+
+      &:hover {
+        background: gray;
+        color: whitesmoke;
+      }
+    }
+  }
+
+  &-blood-group {
+    border: 1px solid green;
+    background: darkseagreen;
+  }
+
+  &-antigens {
+    border: 1px solid green !important;
+    background: darkseagreen !important;
+  }
+
+  &-antibodies {
+    border: 1px solid red !important;
+    background: #e0a7a7 !important;
+  }
+}
+
+
+.matching_detail {
+  border-spacing: 20px;
+  margin-bottom: 50px;
+}
+
+.matching_detail tr {
+  vertical-align: top;
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.matching_detail td {
+  margin-right: 20px;
+}
