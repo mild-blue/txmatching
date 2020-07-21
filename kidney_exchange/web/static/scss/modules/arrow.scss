@@ -1,0 +1,9 @@
+.arrow-right {
+  display: block;
+  width: 30px;
+  height: 10px;
+  border-left: 15px solid var(--color-primary);
+  border-right: 15px solid transparent;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}

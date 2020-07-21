@@ -9,10 +9,14 @@
 
 @import "modules/content";
 @import "modules/configuration";
+@import "modules/round";
+@import "modules/transplant";
+@import "modules/arrow";
 
 @import "modules/boxing";
 @import "modules/patient";
 @import "modules/matching";
-@import "modules/round";
+@import "modules/matching-detail";
+@import "modules/round-detail";
 
 @import "pages/login";

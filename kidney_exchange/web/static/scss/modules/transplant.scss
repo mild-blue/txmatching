@@ -1,0 +1,22 @@
+.transplant {
+
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+
+  &:not(:last-child) {
+    margin-bottom: 20px;
+  }
+
+  &-header {
+    background: var(--box-bg);
+    padding: 10px 15px;
+  }
+
+  &-content {
+    flex: 1;
+  }
+}

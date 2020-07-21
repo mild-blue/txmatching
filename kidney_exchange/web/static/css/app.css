@@ -202,6 +202,65 @@ h1::after {
   margin-top: 30px;
 }
 
+.round {
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  padding: 5px 0;
+}
+.round span {
+  font-weight: 700;
+  color: var(--brand-grey-darker);
+  margin-right: 15px;
+  display: inline-block;
+}
+.round > div {
+  flex: 1;
+}
+.round .chain_link {
+  display: inline-block;
+  padding: 8px 10px 5px;
+  background-color: var(--chain-link-bg);
+  border-radius: var(--border-radius);
+  margin: 2px 0;
+  transition: all 0.2s ease;
+}
+.round .chain_link:not(:last-child) {
+  margin-right: 5px;
+}
+.round .chain_link:hover {
+  color: var(--brand-white) !important;
+  background-color: var(--chain-link-hover-bg);
+}
+
+.transplant {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+.transplant:not(:last-child) {
+  margin-bottom: 20px;
+}
+.transplant-header {
+  background: var(--box-bg);
+  padding: 10px 15px;
+}
+.transplant-content {
+  flex: 1;
+}
+
+.arrow-right {
+  display: block;
+  width: 30px;
+  height: 10px;
+  border-left: 15px solid var(--color-primary);
+  border-right: 15px solid transparent;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
 .header-boxing {
   height: 100%;
   display: flex;
@@ -349,34 +408,20 @@ h1::after {
   margin-right: 20px;
 }
 
-.round {
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  padding: 5px 0;
-}
-.round span {
-  font-weight: 700;
-  color: var(--brand-grey-darker);
-  margin-right: 15px;
-  display: inline-block;
-}
-.round > div {
+.matching-detail {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
-.round .chain_link {
-  display: inline-block;
-  padding: 8px 10px 5px;
-  background-color: var(--chain-link-bg);
-  border-radius: var(--border-radius);
-  margin: 2px 0;
-  transition: all 0.2s ease;
+
+.round-detail {
+  border-bottom: 1px solid var(--border-color);
+  padding: 30px var(--padding-x) 60px;
 }
-.round .chain_link:not(:last-child) {
-  margin-right: 5px;
-}
-.round .chain_link:hover {
-  color: var(--brand-white) !important;
-  background-color: var(--chain-link-hover-bg);
+.round-detail h2 {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 20px;
 }
 
 .login-form {
