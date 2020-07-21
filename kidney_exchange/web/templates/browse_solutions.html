@@ -16,19 +16,25 @@
 {{ form_from_configuration(configuration, enable_configuration) }}
 
 <div class="content">
-    <div class="main-boxing">
-        <div>
+    <div class="matching">
+        <h1>Found matchings ({{ matchings|length }})</h1>
+        <div class="matching-list">
             {% for matching in matchings %}
             {{ render_matching(matching, score_dict, ui_utils, loop.index, matching_index) }}
             {% endfor %}
         </div>
-        <div></div>
-        <div>
-            {% if matchings | length >= matching_index %}
-            {{ render_matching_detail(matchings[matching_index-1], score_dict, ui_utils) }}
-            {% endif %}
-        </div>
     </div>
+<!--    <div class="main-boxing">-->
+<!--        <div>-->
+<!--            -->
+<!--        </div>-->
+<!--        <div></div>-->
+<!--        <div>-->
+<!--            {% if matchings | length >= matching_index %}-->
+<!--            {{ render_matching_detail(matchings[matching_index-1], score_dict, ui_utils) }}-->
+<!--            {% endif %}-->
+<!--        </div>-->
+<!--    </div>-->
 </div>
 </body>
 </html>

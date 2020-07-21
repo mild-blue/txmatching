@@ -1,43 +1,93 @@
 .matching {
-  &_envelope {
-    border-spacing: 0px;
-    background: whitesmoke;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    display: grid;
-    grid-template-columns: 1fr 50px;
-    padding: 20px 20px 3px;
-  }
+  padding: var(--padding-x);
+  background: var(--box-bg);
+  width: 40%;
+  max-width: 900px;
 
-  &_box {
-    background: whitesmoke;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    padding: 20px 20px 3px;
+  &-item {
+    background: var(--brand-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    border: 1px solid var(--brand-grey);
 
-    .transplant-description {
-      padding-left: 20px;
+    display: flex;
+
+    &:not(:last-child) {
       margin-bottom: 20px;
-      color: gray;
+    }
 
-      .inline_code {
-        border-radius: 3px;
-        border: 1px solid plum;
-        background: #e6e6e6;
-        padding-left: 3px;
-        padding-right: 3px;
-        color: rebeccapurple;
+    &.active {
 
-        &_blue {
-          border-radius: 3px;
-          border: 1px solid lightskyblue;
-          background: aliceblue;
-          padding-left: 3px;
-          padding-right: 3px;
-          color: darkblue;
-        }
+      background: var(--brand-grey);
+      border: 1px solid var(--color-primary);
+
+      .matching-item__link {
+        background: var(--color-primary);
+        color: var(--brand-white) !important;
       }
     }
+
+    &__content {
+      padding: 20px;
+      flex: 1;
+    }
+
+    &__link {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none !important;
+      width: 30px;
+      background: var(--brand-grey);
+
+      &:hover {
+        background: var(--brand-grey-dark);
+      }
+    }
+  }
+
+  .description {
+    //display: flex;
+    font-size: 14px;
+    color: var(--brand-grey-darker);
+
+    .inline_code {
+      border-radius: 3px;
+      border: 1px solid plum;
+      background: #e6e6e6;
+      padding-left: 3px;
+      padding-right: 3px;
+      color: rebeccapurple;
+
+      &_blue {
+        border-radius: 3px;
+        border: 1px solid lightskyblue;
+        background: aliceblue;
+        padding-left: 3px;
+        padding-right: 3px;
+        color: darkblue;
+      }
+    }
+  }
+}
+
+.matching {
+  //&_envelope {
+  //  border-spacing: 0px;
+  //  background: whitesmoke;
+  //  border-radius: 10px;
+  //  margin-bottom: 20px;
+  //  display: grid;
+  //  grid-template-columns: 1fr 50px;
+  //  padding: 20px 20px 3px;
+  //}
+
+  &_box {
+    //background: whitesmoke;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 20px 20px 3px;
 
     .chain_link {
       border-radius: 5px;

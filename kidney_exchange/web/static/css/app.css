@@ -109,15 +109,28 @@ form input[type=submit]:hover {
   background-color: var(--button-hover-bg);
 }
 
+h1 {
+  margin: 0 0 35px;
+  color: var(--color-primary);
+  position: relative;
+}
+h1::after {
+  content: "";
+  height: 3px;
+  width: 60px;
+  background: var(--brand-grey-dark);
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+}
+
 .content {
   display: flex;
-  flex-direction: column;
-  padding: var(--padding-x);
 }
 
 .configuration {
-  background: var(--box-bg);
   padding: var(--padding-x);
+  background: var(--brand-grey);
 }
 .configuration__boxes {
   display: flex;
@@ -213,27 +226,51 @@ form input[type=submit]:hover {
   vertical-align: top;
 }
 
-.matching_envelope {
-  border-spacing: 0px;
-  background: whitesmoke;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  display: grid;
-  grid-template-columns: 1fr 50px;
-  padding: 20px 20px 3px;
+.matching {
+  padding: var(--padding-x);
+  background: var(--box-bg);
+  width: 40%;
+  max-width: 900px;
 }
-.matching_box {
-  background: whitesmoke;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  padding: 20px 20px 3px;
+.matching-item {
+  background: var(--brand-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  border: 1px solid var(--brand-grey);
+  display: flex;
 }
-.matching_box .transplant-description {
-  padding-left: 20px;
+.matching-item:not(:last-child) {
   margin-bottom: 20px;
-  color: gray;
 }
-.matching_box .transplant-description .inline_code {
+.matching-item.active {
+  background: var(--brand-grey);
+  border: 1px solid var(--color-primary);
+}
+.matching-item.active .matching-item__link {
+  background: var(--color-primary);
+  color: var(--brand-white) !important;
+}
+.matching-item__content {
+  padding: 20px;
+  flex: 1;
+}
+.matching-item__link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none !important;
+  width: 30px;
+  background: var(--brand-grey);
+}
+.matching-item__link:hover {
+  background: var(--brand-grey-dark);
+}
+.matching .description {
+  font-size: 14px;
+  color: var(--brand-grey-darker);
+}
+.matching .description .inline_code {
   border-radius: 3px;
   border: 1px solid plum;
   background: #e6e6e6;
@@ -241,13 +278,19 @@ form input[type=submit]:hover {
   padding-right: 3px;
   color: rebeccapurple;
 }
-.matching_box .transplant-description .inline_code_blue {
+.matching .description .inline_code_blue {
   border-radius: 3px;
   border: 1px solid lightskyblue;
   background: aliceblue;
   padding-left: 3px;
   padding-right: 3px;
   color: darkblue;
+}
+
+.matching_box {
+  border-radius: 10px;
+  margin-bottom: 20px;
+  padding: 20px 20px 3px;
 }
 .matching_box .chain_link {
   border-radius: 5px;
