@@ -50,7 +50,7 @@ def browse_solutions():
     configuration_dto = configuration_to_dto(get_current_configuration())
 
     selected_exchange_index = request.args.get("selected_exchange_index", 1)
-    matchings, score_dict = get_latest_matchings_and_score_matrix()
+    matchings, score_dict, compatible_blood_dict = get_latest_matchings_and_score_matrix()
 
     matching_index = int(request.args.get("matching_index", 1))
 
@@ -67,7 +67,8 @@ def browse_solutions():
                            selected_exchange_index=selected_exchange_index,
                            configuration=configuration_dto,
                            ui_utils=ui_utils,
-                           matching_index=matching_index)
+                           matching_index=matching_index,
+                           compatible_blood_dict=compatible_blood_dict)
 
 
 @functional_api.route('/load-patients', methods=["GET", "POST"])
