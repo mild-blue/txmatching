@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-    scrollWatcher();
+    if(window.innerWidth > 1200) {
+        scrollWatcher();
+    }
 })
 
 function scrollWatcher() {
