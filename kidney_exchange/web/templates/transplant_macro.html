@@ -68,16 +68,16 @@
 
             <!-- A -->
             <div class="table-row">
-                <div class="td">
+                <div class="td" style="padding-top: 33px">
                     <strong>A</strong>
                 </div>
-                <div class="td">
-                    {{ render_hla(donor, "A", matching_antigens) }}
+                <div class="td no-padding">
+                    {{ render_hla(donor, "A", matching_antigens, true) }}
                 </div>
-                <div class="td">
-                    {{ render_hla(recipient, "A", matching_antigens) }}
+                <div class="td no-padding">
+                    {{ render_hla(recipient, "A", matching_antigens, true) }}
                 </div>
-                <div class="td">
+                <div class="td" style="padding-top: 33px">
                     {{ scoreA }}
                 </div>
             </div>
@@ -87,11 +87,11 @@
                 <div class="td">
                     <strong>B</strong>
                 </div>
-                <div class="td">
-                    {{ render_hla(donor, "B", matching_antigens) }}
+                <div class="td no-padding">
+                    {{ render_hla(donor, "B", matching_antigens, false) }}
                 </div>
-                <div class="td">
-                    {{ render_hla(recipient, "B", matching_antigens) }}
+                <div class="td no-padding">
+                    {{ render_hla(recipient, "B", matching_antigens, false) }}
                 </div>
                 <div class="td">
                     {{ scoreB }}
@@ -103,11 +103,11 @@
                 <div class="td">
                     <strong>DR</strong>
                 </div>
-                <div class="td">
-                    {{ render_hla(donor, "DR", matching_antigens) }}
+                <div class="td no-padding">
+                    {{ render_hla(donor, "DR", matching_antigens, false) }}
                 </div>
-                <div class="td">
-                    {{ render_hla(recipient, "DR", matching_antigens) }}
+                <div class="td no-padding">
+                    {{ render_hla(recipient, "DR", matching_antigens, false) }}
                 </div>
                 <div class="td border-bottom">
                     {{ scoreDR }}
