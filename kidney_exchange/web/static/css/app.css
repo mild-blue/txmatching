@@ -15,6 +15,8 @@
                 0 .6px 1.8px 0 rgba(0, 0, 0, .108);
   --button-bg: var(--color-primary);
   --button-hover-bg: var(--brand-red-darker);
+  --chain-link-bg: var(--brand-grey-dark);
+  --chain-link-hover-bg: var(--brand-grey-darker);
 }
 
 html {
@@ -67,6 +69,17 @@ header .info {
   font-size: 14px;
   line-height: 1.75;
 }
+header .info a {
+  font-weight: 700;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--text-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+header .info a:hover, header .info a:active, header .info a:focus {
+  color: var(--color-primary);
+  border-bottom-color: transparent;
+}
 header .info .contact {
   color: var(--brand-grey-darker);
 }
@@ -77,16 +90,12 @@ header .info .contact {
   }
 }
 
-a:not(.no-style) {
-  font-weight: 700;
-  color: var(--text-color);
-  border-bottom: 1px solid var(--text-color);
+a {
   text-decoration: none;
-  transition: all 0.2s ease;
+  color: var(--text-color);
 }
-a:not(.no-style):hover, a:not(.no-style):active, a:not(.no-style):focus {
-  color: var(--color-primary);
-  border-bottom-color: transparent;
+a:hover {
+  text-decoration: none;
 }
 
 form input, form textarea {
@@ -111,7 +120,6 @@ form input[type=submit]:hover {
 
 h1 {
   margin: 0 0 35px;
-  color: var(--color-primary);
   position: relative;
 }
 h1::after {
@@ -249,7 +257,7 @@ h1::after {
 }
 .matching-item.active .matching-item__link {
   background: var(--color-primary);
-  color: var(--brand-white) !important;
+  color: var(--brand-white);
 }
 .matching-item__content {
   padding: 20px;
@@ -259,7 +267,6 @@ h1::after {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: none !important;
   width: 30px;
   background: var(--brand-grey);
 }
@@ -269,6 +276,7 @@ h1::after {
 .matching .description {
   font-size: 14px;
   color: var(--brand-grey-darker);
+  margin-bottom: 20px;
 }
 .matching .description .inline_code {
   border-radius: 3px;
@@ -339,6 +347,36 @@ h1::after {
 
 .matching_detail td {
   margin-right: 20px;
+}
+
+.round {
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  padding: 5px 0;
+}
+.round span {
+  font-weight: 700;
+  color: var(--brand-grey-darker);
+  margin-right: 15px;
+  display: inline-block;
+}
+.round > div {
+  flex: 1;
+}
+.round .chain_link {
+  display: inline-block;
+  padding: 8px 10px 5px;
+  background-color: var(--chain-link-bg);
+  border-radius: var(--border-radius);
+  margin: 2px 0;
+  transition: all 0.2s ease;
+}
+.round .chain_link:not(:last-child) {
+  margin-right: 5px;
+}
+.round .chain_link:hover {
+  color: var(--brand-white) !important;
+  background-color: var(--chain-link-hover-bg);
 }
 
 .login-form {

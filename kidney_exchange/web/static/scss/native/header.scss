@@ -38,6 +38,19 @@ header {
     font-size: 14px;
     line-height: 1.75;
 
+    a {
+      font-weight: 700;
+      color: var(--text-color);
+      border-bottom: 1px solid var(--text-color);
+      text-decoration: none;
+      transition: all .2s ease;
+
+      &:hover, &:active, &:focus {
+        color: var(--color-primary);
+        border-bottom-color: transparent;
+      }
+    }
+
     .contact {
       color: var(--brand-grey-darker);
     }

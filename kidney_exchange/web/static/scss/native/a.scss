@@ -1,12 +1,8 @@
-a:not(.no-style) {
-  font-weight: 700;
-  color: var(--text-color);
-  border-bottom: 1px solid var(--text-color);
+a {
   text-decoration: none;
-  transition: all .2s ease;
+  color: var(--text-color);
 
-  &:hover, &:active, &:focus {
-    color: var(--color-primary);
-    border-bottom-color: transparent;
+  &:hover {
+    text-decoration: none;
   }
 }

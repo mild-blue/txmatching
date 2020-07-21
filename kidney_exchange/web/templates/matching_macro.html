@@ -13,7 +13,6 @@
 
         {% for round in matching.get_rounds() %}
             {{ render_round(round, score_dict, ui_utils, loop.index, matching_index) }}
-            <br>
         {% endfor %}
     </div>
 

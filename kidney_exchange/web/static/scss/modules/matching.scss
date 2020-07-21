@@ -24,7 +24,7 @@
 
       .matching-item__link {
         background: var(--color-primary);
-        color: var(--brand-white) !important;
+        color: var(--brand-white);
       }
     }
 
@@ -37,7 +37,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      border: none !important;
       width: 30px;
       background: var(--brand-grey);
 
@@ -48,9 +47,9 @@
   }
 
   .description {
-    //display: flex;
     font-size: 14px;
     color: var(--brand-grey-darker);
+    margin-bottom: 20px;
 
     .inline_code {
       border-radius: 3px;
