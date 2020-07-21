@@ -7,11 +7,13 @@ from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.solvers.matching.matching_with_score import MatchingWithScore
 from kidney_exchange.solvers.solve_from_config import solve_from_db
+from kidney_exchange.utils.blood_groups import blood_groups_compatible
 
 ScoreDict = Dict[Tuple[int, int], float]
+BloodCompatibleDict = Dict[Tuple[int, int], bool]
 
 
-def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], ScoreDict]:
+def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], ScoreDict, BloodCompatibleDict]:
     patients = get_all_patients()
     patients_dict = {patient.db_id: patient for patient in patients}
 
@@ -34,4 +36,8 @@ def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], Sc
         (donors_dict[donor_index], recipients_dict[recipient_index]): score for donor_index, row in
         enumerate(score_matrix) for recipient_index, score in enumerate(row)
     }
-    return all_matchings, score_dict
+
+    compatible_blood_dict = {(donor.db_id, recipient.db_id): blood_groups_compatible(donor, recipient) for donor in
+                             patients if type(donor) == Donor for recipient in patients if type(recipient) == Recipient}
+
+    return all_matchings, score_dict, compatible_blood_dict

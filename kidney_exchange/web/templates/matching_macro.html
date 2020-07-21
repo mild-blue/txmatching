@@ -1,6 +1,6 @@
 {% from 'round_macro.html' import render_round %}
 
-{% macro render_matching(matching, score_dict, ui_utils, matching_index, selected_matching_index) %}
+{% macro render_matching(matching, score_dict, ui_utils, matching_index, selected_matching_index, compatible_blood_dict) %}
 <div class="matching-item {% if matching_index == selected_matching_index %}active{% endif %}">
     <div class="matching-item__content">
         <div class="description">
@@ -12,7 +12,7 @@
         </div>
 
         {% for round in matching.get_rounds() %}
-            {{ render_round(round, score_dict, ui_utils, loop.index, matching_index) }}
+            {{ render_round(round, score_dict, ui_utils, loop.index, matching_index, compatible_blood_dict) }}
         {% endfor %}
     </div>
 
