@@ -18,8 +18,7 @@
             <div style="width: 50%; float: left">
                 {% for code in patient.parameters.hla_antibodies.codes %}
                     {% if code.startswith(code_prefix) %}
-                        {% set matching_antigen_class = "matching-antigens" if code in matching_antigens else "" %}
-                        <span class="inline_code_blue {{ matching_antigen_class }}">{{ code }}</span>
+                        <span class="inline_code_blue">{{ code }}</span>
                     {% endif %}
                 {% endfor %}
             </div>
