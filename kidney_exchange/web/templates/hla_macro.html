@@ -2,9 +2,6 @@
 
 <table>
     <tr>
-        <td style="width: 30px;">
-            {{code_prefix}}:
-        </td>
         <td style="width: 200px;">
             {% for code in patient.parameters.hla_antigens.codes %}
                 {% if code.startswith(code_prefix) %}
@@ -13,8 +10,8 @@
                 {% endif %}
             {% endfor %}
         </td>
+        {% if patient.is_recipient and patient.parameters.hla_antibodies.codes|length > 0 %}
         <td style="width: 200px;">
-            {%if patient.is_recipient %}
             <div style="width: 50%; float: left">
                 {% for code in patient.parameters.hla_antibodies.codes %}
                     {% if code.startswith(code_prefix) %}
@@ -22,8 +19,8 @@
                     {% endif %}
                 {% endfor %}
             </div>
-            {% endif %}
         </td>
+        {% endif %}
     </tr>
 </table>
 

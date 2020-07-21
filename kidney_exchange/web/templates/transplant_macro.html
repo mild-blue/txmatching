@@ -1,5 +1,6 @@
 {% from 'patient_macro.html' import render_patient %}
 {% from 'render_score_macro.html' import render_score %}
+{% from 'hla_macro.html' import render_hla %}
 
 {% macro render_transplant(donor, recipient, score_dict, matching_index, round_index, pair_index) %}
 {% set score = score_dict[(donor.db_id, recipient.db_id)] %}
@@ -12,9 +13,9 @@
 <div class="transplant">
     <div class="transplant-header">
         <div class="pair">
-            <img src="static/img/countries/{{donor.parameters.country_code}}.png" class="flag" />
+            <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px"/>
             {{ donor.medical_id }} <span class="arrow-right"></span> {{ recipient.medical_id }}
-            <img src="static/img/countries/{{recipient.parameters.country_code}}.png" class="flag" />
+            <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px"/>
         </div>
 
         <div class="score">
@@ -22,15 +23,16 @@
         </div>
     </div>
 
-    <div class="transplant-detail">
+    <div class="transplant-content">
         <div class="table">
-            <div class="table-row table-header">
+            <div class="table-row">
+                <div class="td"></div>
                 <div class="td">
-                    <img src="static/img/countries/{{donor.parameters.country_code}}.png" class="flag" />
+                    <img src="static/img/countries/{{donor.parameters.country_code}}.png"/>
                     {{ donor.medical_id }}
                 </div>
                 <div class="td">
-                    <img src="static/img/countries/{{recipient.parameters.country_code}}.png" class="flag" />
+                    <img src="static/img/countries/{{recipient.parameters.country_code}}.png"/>
                     {{ recipient.medical_id }}
                 </div>
                 <div class="td">
@@ -38,21 +40,25 @@
                 </div>
             </div>
 
+            <!-- Blood group -->
             <div class="table-row">
                 <div class="td">
                     <strong>Blood group</strong>
                 </div>
                 <div class="td">
-                    {% set bloodClass = "matching-blood-group" if matching_blood_group == donor.parameters.blood_group else "" %}
+                    {% set bloodClass = "matching-blood-group" if matching_blood_group == donor.parameters.blood_group
+                    else "" %}
                     <span class="inline_code {{ bloodClass }}">{{ donor.parameters.blood_group }}</span>
                 </div>
                 <div class="td">
-                    {% set bloodClass = "matching-blood-group" if matching_blood_group == recipient.parameters.blood_group else "" %}
+                    {% set bloodClass = "matching-blood-group" if matching_blood_group ==
+                    recipient.parameters.blood_group else "" %}
                     <span class="inline_code {{ bloodClass }}">{{ recipient.parameters.blood_group }}</span>
                     <div class="small">
                         Acceptable:
                         {% for blood_group in recipient.parameters.acceptable_blood_groups%}
-                        {% set acceptableBloodClass = "matching-blood-group" if matching_blood_group == blood_group else "" %}
+                        {% set acceptableBloodClass = "matching-blood-group" if matching_blood_group == blood_group else
+                        "" %}
                         <span class="inline_code {{ acceptableBloodClass }}">{{ blood_group }}</span>
                         {% endfor %}
                     </div>
@@ -61,6 +67,60 @@
                     -
                 </div>
             </div>
+
+            <!-- A -->
+            <div class="table-row">
+                <div class="td">
+                    <strong>A</strong>
+                </div>
+                <div class="td">
+                    {{ render_hla(donor, "A", matching_antigens) }}
+                </div>
+                <div class="td">
+                    {{ render_hla(recipient, "A", matching_antigens) }}
+                </div>
+                <div class="td">
+                    {{ scoreA }}
+                </div>
+            </div>
+
+            <!-- B -->
+            <div class="table-row">
+                <div class="td">
+                    <strong>B</strong>
+                </div>
+                <div class="td">
+                    {{ render_hla(donor, "B", matching_antigens) }}
+                </div>
+                <div class="td">
+                    {{ render_hla(recipient, "B", matching_antigens) }}
+                </div>
+                <div class="td">
+                    {{ scoreB }}
+                </div>
+            </div>
+
+            <!-- DR -->
+            <div class="table-row">
+                <div class="td">
+                    <strong>DR</strong>
+                </div>
+                <div class="td">
+                    {{ render_hla(donor, "DR", matching_antigens) }}
+                </div>
+                <div class="td">
+                    {{ render_hla(recipient, "DR", matching_antigens) }}
+                </div>
+                <div class="td">
+                    {{ scoreDR }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Score total -->
+        <div class="table-footer">
+            Final score:
+            <span>{{ score }}</span>
         </div>
     </div>
 </div>

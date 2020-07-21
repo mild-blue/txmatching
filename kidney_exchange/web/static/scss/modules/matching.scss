@@ -51,23 +51,7 @@
     color: var(--brand-grey-darker);
     margin-bottom: 20px;
 
-    .inline_code {
-      border-radius: 3px;
-      border: 1px solid plum;
-      background: #e6e6e6;
-      padding-left: 3px;
-      padding-right: 3px;
-      color: rebeccapurple;
 
-      &_blue {
-        border-radius: 3px;
-        border: 1px solid lightskyblue;
-        background: aliceblue;
-        padding-left: 3px;
-        padding-right: 3px;
-        color: darkblue;
-      }
-    }
   }
 }
 
