@@ -1,6 +1,6 @@
 {% macro render_score(code_prefix, matching_antigens, score) %}
 
-matching antigens <b>{{code_prefix}}</b>:
+matching <b>{{code_prefix}}</b>:
 {% set ns = namespace(is_empty=true) %}
 {% for code in matching_antigens %}
     {% if code.startswith(code_prefix) %}
