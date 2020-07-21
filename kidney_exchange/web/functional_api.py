@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 functional_api = Blueprint('functional', __name__)
 
 UPLOAD_XLSX_FLASH_CATEGORY = "UPLOAD_XLSX"
+MATCHINGS_TO_SHOW_TO_VIEWER = 5
 
 
 @functional_api.route('/')
@@ -55,7 +56,14 @@ def browse_solutions():
     round_index = int(request.args.get("round_index", 1))
     pair_index = int(request.args.get("pair_index", 1))
 
+    if current_user.role == 'VIEWER':
+        matchings = matchings[:MATCHINGS_TO_SHOW_TO_VIEWER]
+        enable_configuration = False
+    else:
+        enable_configuration = True
+
     return render_template("browse_solutions.html",
+                           enable_configuration=enable_configuration,
                            matchings=matchings,
                            score_dict=score_dict,
                            selected_exchange_index=selected_exchange_index,
