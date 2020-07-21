@@ -28,7 +28,9 @@
         </div>
         <div></div>
         <div>
+            {% if matchings | length >= matching_index %}
             {{ render_matching_detail(matchings[matching_index-1], score_dict, ui_utils) }}
+            {% endif %}
         </div>
     </div>
 </div>
