@@ -1,4 +1,4 @@
-{% macro form_from_configuration(configuration) %}
+{% macro form_from_configuration(configuration, enable_configuration) %}
 <div>
     <form action="configuration" method="post" class="configuration_form" id="configuration-form">
 
@@ -57,7 +57,11 @@
             </tr>
         </table>
 
+        {% if enable_configuration %}
         <input type="submit" value="Recalculate" class="submit_button">
+        {% else %}
+        You are just a viewer, you are not allowed to submit recalculation
+        {% endif %}
 
     </form>
 

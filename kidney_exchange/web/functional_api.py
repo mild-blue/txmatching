@@ -2,7 +2,7 @@ import logging
 
 import flask
 from flask import render_template, request, redirect, Blueprint, flash, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from kidney_exchange.config.configuration import configuration_to_dto
 from kidney_exchange.database.services.config_service import get_current_configuration
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 functional_api = Blueprint('functional', __name__)
 
 UPLOAD_XLSX_FLASH_CATEGORY = "UPLOAD_XLSX"
+MATCHINGS_TO_SHOW_TO_VIEWER = 5
 
 
 @functional_api.route('/')
@@ -53,7 +54,14 @@ def browse_solutions():
 
     matching_index = int(request.args.get("matching_index", 1))
 
+    if current_user.role == 'VIEWER':
+        matchings = matchings[:MATCHINGS_TO_SHOW_TO_VIEWER]
+        enable_configuration = False
+    else:
+        enable_configuration = True
+
     return render_template("browse_solutions.html",
+                           enable_configuration=enable_configuration,
                            matchings=matchings,
                            score_dict=score_dict,
                            selected_exchange_index=selected_exchange_index,
