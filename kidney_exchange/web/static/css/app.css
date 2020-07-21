@@ -1,5 +1,6 @@
 :root {
   --brand-red: #e2001a;
+  --brand-red-rgb: 226, 0, 26;
   --brand-red-darker: #a80018;
   --brand-white: #ffffff;
   --brand-grey: #eee;
@@ -400,13 +401,15 @@ h1::after {
 .matching-item:not(:last-child) {
   margin-bottom: 20px;
 }
-.matching-item.active {
-  background: var(--brand-grey);
+.matching-item.active, .matching-item:hover {
   border: 1px solid var(--color-primary);
 }
-.matching-item.active .matching-item__link {
+.matching-item.active .matching-item__link, .matching-item:hover .matching-item__link {
   background: var(--color-primary);
   color: var(--brand-white);
+}
+.matching-item.active {
+  background: rgba(var(--brand-red-rgb), 0.05);
 }
 .matching-item__content {
   padding: 20px;

@@ -1,7 +1,8 @@
 {% from 'round_macro.html' import render_round %}
 
 {% macro render_matching(matching, score_dict, ui_utils, matching_index, selected_matching_index, compatible_blood_dict) %}
-<div class="matching-item {% if matching_index == selected_matching_index %}active{% endif %}">
+<a href="?matching_index={{matching_index}}"
+   class="matching-item {% if matching_index == selected_matching_index %}active{% endif %}">
     <div class="matching-item__content">
         <div class="description">
             Score: <span class="inline_code">{{ matching.score() }}</span> |
@@ -16,9 +17,7 @@
         {% endfor %}
     </div>
 
-    <a href="?matching_index={{matching_index}}"
-       class="matching-item__link">▶</a>
-
-</div>
+    <span class="matching-item__link">▶</span>
+</a>
 
 {% endmacro %}

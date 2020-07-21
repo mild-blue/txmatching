@@ -17,15 +17,18 @@
       margin-bottom: 20px;
     }
 
-    &.active {
+    &.active, &:hover {
 
-      background: var(--brand-grey);
       border: 1px solid var(--color-primary);
 
       .matching-item__link {
         background: var(--color-primary);
         color: var(--brand-white);
       }
+    }
+
+    &.active {
+      background: rgba(var(--brand-red-rgb), 0.05);
     }
 
     &__content {
