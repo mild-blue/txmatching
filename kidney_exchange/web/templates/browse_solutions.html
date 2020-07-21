@@ -25,11 +25,13 @@
         </div>
     </div>
 
-    <div class="matching-detail">
+    <div class="matching-detail" data-js-selector="fix-top-on-scroll">
         {% if matchings | length >= matching_index %}
             {{ render_matching_detail(matchings[matching_index-1], score_dict, ui_utils) }}
         {% endif %}
     </div>
 </div>
+
+<script src="../static/js/app.js"></script>
 </body>
 </html>
