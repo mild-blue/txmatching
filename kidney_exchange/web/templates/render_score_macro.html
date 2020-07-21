@@ -1,0 +1,17 @@
+{% macro render_score(code_prefix, matching_antigens, score) %}
+
+matching <b>{{code_prefix}}</b>:
+{% set ns = namespace(is_empty=true) %}
+{% for code in matching_antigens %}
+    {% if code.startswith(code_prefix) %}
+    <span class="inline_code matching-antigens">{{ code }}</span>
+    {% set ns.is_empty = false %}
+    {% endif %}
+{% endfor %}
+{% if ns.is_empty %}
+<span> None </span>
+{% endif %}
+
+imply score: {{score}}
+
+{% endmacro %}

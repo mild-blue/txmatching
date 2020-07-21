@@ -1,13 +1,40 @@
 {% from 'patient_macro.html' import render_patient %}
+{% from 'render_score_macro.html' import render_score %}
 
 {% macro render_transplant(matchings, score_dict, matching_index, round_index, pair_index) %}
 {% if matchings | length > 0 %}
 {% set donor, recipient = matchings[matching_index-1].get_rounds()[round_index-1].donor_recipient_list[pair_index-1] %}
+{% set score = score_dict[(donor.db_id, recipient.db_id)] %}
+{% set matching_blood_group = donor.parameters.blood_group if donor.parameters.blood_group in recipient.parameters.acceptable_blood_groups else None %}
+{% set matching_antigens = donor.parameters.hla_antigens.codes | intersect(recipient.parameters.hla_antigens.codes) %}
+{% set scoreA = (matching_antigens | filtered_count_by_prefix("A")) * 1 %}
+{% set scoreB = (matching_antigens | filtered_count_by_prefix("B")) * 3 %}
+{% set scoreDR = (matching_antigens | filtered_count_by_prefix("DR")) * 9 %}
+
 <div class="patient-detail">
-    {{ render_patient(donor) }}
+    {{ render_patient(donor, matching_blood_group, matching_antigens) }}
 </div>
 <div class="patient-detail">
-    {{ render_patient(recipient) }}
+    <div class="patient_box">
+        <h1>Score: {{ score }}</h1>
+        <hr>
+        <b>Blood:</b>
+        {% for group in matching_blood_group %}
+            <span class="inline_code matching-blood-group">{{ group }}</span>
+        {% endfor %}
+        <hr>
+        {{render_score("A", matching_antigens, scoreA)}}
+        <hr>
+        {{render_score("B", matching_antigens, scoreB)}}
+        <hr>
+        {{render_score("DR", matching_antigens, scoreDR)}}
+        <hr>
+        {{scoreA}} + {{scoreB}} + {{scoreDR}} = {{score}}
+    </div>
+
+</div>
+<div class="patient-detail">
+    {{ render_patient(recipient, matching_blood_group, matching_antigens) }}
 </div>
 {% else %}
 <div class="text_box">
