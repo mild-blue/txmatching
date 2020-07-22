@@ -403,7 +403,9 @@ h1::after {
 }
 .matching-item.active .matching-item__link, .matching-item:hover .matching-item__link {
   background: #e2001a;
-  color: #ffffff;
+}
+.matching-item.active .matching-item__link .arrow-right, .matching-item:hover .matching-item__link .arrow-right {
+  border-left-color: #ffffff;
 }
 .matching-item.active {
   background: rgba(226, 0, 26, 0.05);
@@ -420,8 +422,8 @@ h1::after {
   width: 30px;
   background: #eee;
 }
-.matching-item__link:hover {
-  background: #ddd;
+.matching-item__link .arrow-right {
+  border-left-color: #000000;
 }
 .matching .description {
   font-size: 14px;
