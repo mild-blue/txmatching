@@ -13,9 +13,9 @@
         {% endif %}
         <span class="{{ linkClass }}"
            style="border-right: 20px solid {{ ui_utils.color_gradient(score) }}">
-            <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px">
+            <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px" class="flag">
             {{ donor.medical_id }} &rArr; {{ recipient.medical_id }}
-            <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px">
+            <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px" class="flag">
         </span>
     {% endfor %}
     </div>

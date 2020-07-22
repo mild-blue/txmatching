@@ -199,6 +199,9 @@ h1::after {
   display: flex;
   padding: 5px 0;
 }
+.round:last-child {
+  border-bottom: none;
+}
 .round span {
   font-weight: 700;
   color: #666666;
@@ -249,9 +252,6 @@ h1::after {
   flex-grow: 1;
   display: flex;
   align-items: center;
-}
-.transplant-header .pair img {
-  box-shadow: 0 3.2px 7.2px 0 rgba(0, 0, 0, 0.132), 0 0.6px 1.8px 0 rgba(0, 0, 0, 0.108);
 }
 .transplant-header .pair .arrow-right {
   margin: 0 10px;
@@ -346,38 +346,6 @@ h1::after {
   color: darkblue;
   margin: 1px;
   display: inline-block;
-}
-
-.header-boxing {
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.main-boxing {
-  display: grid;
-  grid-template-columns: 1fr 50px 2fr;
-  height: 100%;
-}
-
-.patient-detail {
-  margin: 20px;
-}
-
-.matching-list-boxing {
-  width: 100%;
-  margin-left: 50px;
-}
-
-.patient_box {
-  background: whitesmoke;
-  border-radius: 20px;
-  padding: 30px;
-  min-width: 38rem;
-  height: 100%;
-  vertical-align: top;
 }
 
 .matching {
@@ -481,46 +449,8 @@ h1::after {
   margin: 0 0 20px;
 }
 
-.login-form {
-  display: flex;
-  justify-content: center;
-  /* center horizontally */
-  align-items: center;
-  /* center vertically */
-  width: 100%;
-  position: relative;
-  top: 100px;
-  color: #fff;
-  text-align: center;
-  font-size: 18px;
-}
-
-.title {
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin: auto;
-  width: 400px;
-  height: 400px;
-  color: #fff;
-  text-align: center;
-}
-
-.login-title {
-  font-size: 21px;
-  margin-bottom: 30px;
-}
-
-.form-field {
-  margin: 10px;
-  width: 290px !important;
-}
-
-.text_box {
-  background: whitesmoke;
-  border-radius: 10px;
-  padding: 20px 20px 3px;
-  margin: 50px;
+.flag {
+  box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 /*# sourceMappingURL=app.css.map */

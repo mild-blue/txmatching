@@ -11,9 +11,9 @@
 <div class="transplant">
     <div class="transplant-header">
         <div class="pair">
-            <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px"/>
+            <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px" class="flag"/>
             {{ donor.medical_id }} <span class="arrow-right"></span> {{ recipient.medical_id }}
-            <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px"/>
+            <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px" class="flag"/>
         </div>
 
         <div class="score">
@@ -28,11 +28,11 @@
             <tr>
                 <td></td>
                 <td>
-                    <img src="static/img/countries/{{donor.parameters.country_code}}.png"/>
+                    <img src="static/img/countries/{{donor.parameters.country_code}}.png" class="flag"/>
                     {{ donor.medical_id }}
                 </td>
                 <td colspan="2">
-                    <img src="static/img/countries/{{recipient.parameters.country_code}}.png"/>
+                    <img src="static/img/countries/{{recipient.parameters.country_code}}.png" class="flag"/>
                     {{ recipient.medical_id }}
                 </td>
                 <td>Score</td>

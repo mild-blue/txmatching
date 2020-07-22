@@ -4,6 +4,10 @@
   display: flex;
   padding: 5px 0;
 
+  &:last-child {
+    border-bottom: none;
+  }
+
   span {
     font-weight: 700;
     color: $brand-grey-darker;
