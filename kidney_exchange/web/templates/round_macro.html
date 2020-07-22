@@ -11,12 +11,12 @@
         {% if should_be_background_dark_grey %}
             {% set linkClass = linkClass + ' light' %}
         {% endif %}
-        <span class="{{ linkClass }}"
+        <div class="{{ linkClass }}"
            style="border-right: 20px solid {{ ui_utils.color_gradient(score) }}">
             <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px" class="flag">
-            {{ donor.medical_id }} &rArr; {{ recipient.medical_id }}
+            {{ donor.medical_id }}<span class="arrow-right"></span>{{ recipient.medical_id }}
             <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px" class="flag">
-        </span>
+        </div>
     {% endfor %}
     </div>
 </div>

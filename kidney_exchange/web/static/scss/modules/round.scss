@@ -33,9 +33,18 @@
     transition: all 0.2s ease;
     font-weight: 400;
 
+    .arrow-right {
+      border-left-color: $brand-white;
+      margin: 0 10px 2px 10px;
+    }
+
     &.light {
       background-color: $brand-grey-dark;
       color: $text-color;
+
+      .arrow-right {
+        border-left-color: $text-color;
+      }
     }
 
     &:not(:last-child) {

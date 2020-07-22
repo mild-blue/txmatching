@@ -230,9 +230,16 @@ h1::after {
   transition: all 0.2s ease;
   font-weight: 400;
 }
+.round .chain_link .arrow-right {
+  border-left-color: #ffffff;
+  margin: 0 10px 2px 10px;
+}
 .round .chain_link.light {
   background-color: #ddd;
   color: #000000;
+}
+.round .chain_link.light .arrow-right {
+  border-left-color: #000000;
 }
 .round .chain_link:not(:last-child) {
   margin-right: 5px;
@@ -325,7 +332,7 @@ h1::after {
 
 .arrow-right {
   display: block;
-  border-color: transparent #e2001a;
+  border-color: transparent #000000;
   border-style: solid;
   border-width: 5px 0 5px 10px;
   height: 0;
