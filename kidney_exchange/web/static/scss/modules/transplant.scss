@@ -18,7 +18,7 @@
     display: flex;
 
     .pair {
-      flex: 1;
+      flex-grow: 1;
       display: flex;
       align-items: center;
 
@@ -41,7 +41,7 @@
   }
 
   &-content {
-    flex: 1;
+    flex-grow: 1;
     padding: var(--padding-x);
   }
 
@@ -126,7 +126,7 @@
         }
 
         td {
-          flex: 1;
+          flex-grow: 1;
           padding: 5px 10px;
         }
 
