@@ -17,7 +17,7 @@ function scrollWatcher() {
     const rightColTopPosition = rightCol.offsetParent.offsetTop;
 
     window.addEventListener('scroll', function () {
-        const currentTop = window.scrollY;
+        const currentTop = window.pageYOffset;
 
         if (currentTop >= rightColTopPosition) {
             rightCol.classList.add('fixed');
