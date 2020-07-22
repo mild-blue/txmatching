@@ -295,7 +295,6 @@ h1::after {
 }
 .transplant table {
   width: 100%;
-  max-width: 900px;
   margin: auto;
   border-collapse: collapse;
 }
@@ -375,7 +374,6 @@ h1::after {
   padding: 50px;
   background: #f5f5f5;
   width: 40%;
-  max-width: 900px;
 }
 @media (max-width: 1200px) {
   .matching {
