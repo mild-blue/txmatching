@@ -132,6 +132,12 @@ h1::after {
   padding: 50px;
   background: #eee;
 }
+.configuration label {
+  display: block;
+}
+.configuration label:not(:last-child) {
+  margin-bottom: 20px;
+}
 .configuration__boxes {
   display: flex;
   width: 100%;

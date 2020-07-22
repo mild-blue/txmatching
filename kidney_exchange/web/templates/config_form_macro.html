@@ -5,29 +5,34 @@
         <div class="configuration__boxes">
             <div>
                 <div class="configuration__box checkboxes">
-                    <input type="checkbox" value="on" name="enforce_compatible_blood_group"
-                           {{ "checked" if configuration.enforce_compatible_blood_group }}>
-                    Require compatible blood group
-                    <br><br>
+                    <label>
+                        <input type="checkbox" value="on" name="enforce_compatible_blood_group"
+                               {{ "checked" if configuration.enforce_compatible_blood_group }}>
+                        Require compatible blood group
+                    </label>
 
+                    <label>
                     <input type="checkbox" value="on"
                            name="require_new_donor_having_better_match_in_compatibility_index"
                            {{ "checked" if configuration.require_new_donor_having_better_match_in_compatibility_index
                     }}>
                     Require new donor having better CI match than original donor
-                    <br><br>
+                    </label>
 
+                    <label>
                     <input type="checkbox" value="on"
                            name="require_new_donor_having_better_match_in_compatibility_index_or_blood_group"
                            {{ "checked" if
                     configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group
                     }}>
-                    <span>Require new donor having better CI match than original donor or blood group match</span>
-                    <br><br>
+                    Require new donor having better CI match than original donor or blood group match
+                    </label>
 
+                    <label>
                     <input type="checkbox" value="on" name="use_binary_scoring" {{ "checked" if
                     configuration.use_binary_scoring }}>
                     Use binary scoring
+                    </label>
                 </div>
 
                 <div class="configuration__box inputs">

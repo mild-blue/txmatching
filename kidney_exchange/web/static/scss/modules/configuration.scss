@@ -2,6 +2,14 @@
   padding: $padding-x;
   background: $brand-grey;
 
+  label {
+    display: block;
+
+    &:not(:last-child) {
+      margin-bottom: 20px;
+    }
+  }
+
   &__boxes {
     display: flex;
     width: 100%;
