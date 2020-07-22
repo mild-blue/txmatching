@@ -470,6 +470,7 @@ h1::after {
 .matching-item__content {
   padding: 20px;
   flex-grow: 1;
+  width: 100%;
 }
 .matching-item__link {
   display: flex;
