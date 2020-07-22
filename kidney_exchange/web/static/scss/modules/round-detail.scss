@@ -1,6 +1,6 @@
 .round-detail {
-  border-bottom: 1px solid var(--border-color);
-  padding: 30px var(--padding-x) 60px;
+  border-bottom: 1px solid $border-color;
+  padding: 30px $padding-x 60px;
 
   h2 {
     text-transform: uppercase;

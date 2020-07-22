@@ -1,8 +1,3 @@
-cssVars({
-    // Treat all browsers as legacy
-    onlyLegacy: false
-});
-
 document.addEventListener('DOMContentLoaded', function () {
     if(window.innerWidth > 1200) {
         scrollWatcher();

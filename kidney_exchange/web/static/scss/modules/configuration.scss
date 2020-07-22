@@ -1,6 +1,6 @@
 .configuration {
-  padding: var(--padding-x);
-  background: var(--brand-grey);
+  padding: $padding-x;
+  background: $brand-grey;
 
   &__boxes {
     display: flex;
@@ -20,10 +20,10 @@
   }
 
   &__box {
-    border: 1px solid var(--brand-grey);
-    border-radius: var(--border-radius);
-    background: var(--brand-white);
-    box-shadow: var(--box-shadow);
+    border: 1px solid $brand-grey;
+    border-radius: $border-radius;
+    background: $brand-white;
+    box-shadow: $box-shadow;
     flex-grow: 1;
     padding: 20px;
   }

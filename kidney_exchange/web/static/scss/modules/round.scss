@@ -1,12 +1,12 @@
 .round {
 
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid $border-color;
   display: flex;
   padding: 5px 0;
 
   span {
     font-weight: 700;
-    color: var(--brand-grey-darker);
+    color: $brand-grey-darker;
     margin-right: 15px;
     display: inline-block;
   }
@@ -18,16 +18,16 @@
   .chain_link {
     display: inline-block;
     padding: 8px 10px 5px;
-    background-color: var(--brand-grey-darker);
-    color: var(--brand-white);
-    border-radius: var(--border-radius);
+    background-color: $brand-grey-darker;
+    color: $brand-white;
+    border-radius: $border-radius;
     margin: 2px 0;
     transition: all 0.2s ease;
     font-weight: 400;
 
     &.light {
-      background-color: var(--brand-grey-dark);
-      color: var(--text-color);
+      background-color: $brand-grey-dark;
+      color: $text-color;
     }
 
     &:not(:last-child) {
