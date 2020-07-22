@@ -1,0 +1,69 @@
+.transplant {
+
+  .small {
+    font-size: 12px !important;
+    margin-top: 5px;
+  }
+
+  table {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    border-collapse: collapse;
+  }
+
+  tr {
+    border-top: 1px solid $border-color;
+
+    &:first-child {
+      font-weight: 700;
+      border-top: none;
+    }
+
+    &.anti-header {
+      td {
+        background: #f9f9f9;
+        font-size: 12px;
+        padding: 2px;
+      }
+    }
+  }
+
+  td {
+
+    text-align: center;
+    padding: 5px;
+    border-right: 1px solid $border-color;
+
+    &:not([colspan]) {
+      width: calc(65% / 3);
+    }
+
+    &:first-child {
+      width: 20%;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    &:last-child {
+      width: 15%;
+      background: #f9f9f9;
+      border-right: none;
+    }
+  }
+
+  .footer-score {
+
+    td {
+      text-align: right;
+      background: $brand-white !important;
+      border: none !important;
+    }
+
+    span {
+      font-size: 24px;
+      font-weight: 700;
+      color: $color-primary;
+    }
+  }
+}

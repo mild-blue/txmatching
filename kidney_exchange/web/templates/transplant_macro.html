@@ -22,105 +22,76 @@
     </div>
 
     <div class="transplant-content">
-        <div class="table">
-            <div class="table-row">
-                <div class="td"></div>
-                <div class="td">
+
+        <table>
+            <tbody>
+            <tr>
+                <td></td>
+                <td>
                     <img src="static/img/countries/{{donor.parameters.country_code}}.png"/>
                     {{ donor.medical_id }}
-                </div>
-                <div class="td">
+                </td>
+                <td colspan="2">
                     <img src="static/img/countries/{{recipient.parameters.country_code}}.png"/>
                     {{ recipient.medical_id }}
-                </div>
-                <div class="td">
-                    Score
-                </div>
-            </div>
-
-            <!-- Blood group -->
-            <div class="table-row">
-                <div class="td">
-                    <strong>Blood group</strong>
-                </div>
-                <div class="td">
-                    {% set bloodClass = "matching-blood-group" if matching_blood_group == donor.parameters.blood_group
-                    else "" %}
+                </td>
+                <td>Score</td>
+            </tr>
+            <tr>
+                <td>Blood type</td>
+                <td>
+                    {% set bloodClass = "matching-blood-group" if matching_blood_group == donor.parameters.blood_group else "" %}
                     <span class="inline_code {{ bloodClass }}">{{ donor.parameters.blood_group }}</span>
-                </div>
-                <div class="td">
+                </td>
+                <td colspan="2">
                     {% set bloodClass = "matching-blood-group" if matching_blood_group ==
                     recipient.parameters.blood_group else "" %}
                     <span class="inline_code {{ bloodClass }}">{{ recipient.parameters.blood_group }}</span>
                     <div class="small">
                         Acceptable:
                         {% for blood_group in recipient.parameters.acceptable_blood_groups%}
-                        {% set acceptableBloodClass = "matching-blood-group" if matching_blood_group == blood_group else
-                        "" %}
+                        {% set acceptableBloodClass = "matching-blood-group" if matching_blood_group == blood_group else "" %}
                         <span class="inline_code {{ acceptableBloodClass }}">{{ blood_group }}</span>
                         {% endfor %}
                     </div>
-                </div>
-                <div class="td">
+                </td>
+                <td>
                     -
-                </div>
-            </div>
-
-            <!-- A -->
-            <div class="table-row">
-                <div class="td" style="padding-top: 33px">
-                    <strong>A</strong>
-                </div>
-                <div class="td no-padding">
-                    {{ render_hla(donor, "A", matching_antigens, true) }}
-                </div>
-                <div class="td no-padding">
-                    {{ render_hla(recipient, "A", matching_antigens, true) }}
-                </div>
-                <div class="td" style="padding-top: 33px">
-                    {{ scoreA }}
-                </div>
-            </div>
-
-            <!-- B -->
-            <div class="table-row">
-                <div class="td">
-                    <strong>B</strong>
-                </div>
-                <div class="td no-padding">
-                    {{ render_hla(donor, "B", matching_antigens, false) }}
-                </div>
-                <div class="td no-padding">
-                    {{ render_hla(recipient, "B", matching_antigens, false) }}
-                </div>
-                <div class="td">
-                    {{ scoreB }}
-                </div>
-            </div>
-
-            <!-- DR -->
-            <div class="table-row">
-                <div class="td">
-                    <strong>DR</strong>
-                </div>
-                <div class="td no-padding">
-                    {{ render_hla(donor, "DR", matching_antigens, false) }}
-                </div>
-                <div class="td no-padding">
-                    {{ render_hla(recipient, "DR", matching_antigens, false) }}
-                </div>
-                <div class="td border-bottom">
-                    {{ scoreDR }}
-                </div>
-            </div>
-
-            <!-- Score total -->
-            <div class="table-footer">
-                Final score:
-                <span>{{ score }}</span>
-            </div>
-        </div>
-
+                </td>
+            </tr>
+            <tr class="anti-header">
+                <td></td>
+                <td>Antigens</td>
+                <td>Antigens</td>
+                <td>Antibodies</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>A</td>
+                {{ render_hla(donor, "A", matching_antigens, true) }}
+                {{ render_hla(recipient, "A", matching_antigens, true) }}
+                <td>{{ scoreA }}</td>
+            </tr>
+            <tr>
+                <td>B</td>
+                {{ render_hla(donor, "B", matching_antigens, true) }}
+                {{ render_hla(recipient, "B", matching_antigens, true) }}
+                <td>{{ scoreB }}</td>
+            </tr>
+            <tr>
+                <td>DR</td>
+                {{ render_hla(donor, "DR", matching_antigens, true) }}
+                {{ render_hla(recipient, "DR", matching_antigens, true) }}
+                <td>{{ scoreDR }}</td>
+            </tr>
+            <tr class="footer-score">
+                <td colspan="4">
+                    Final score:
+                </td>
+                <td><span>{{ score }}</span></td>
+            </tr>
+            </tbody>
+        </table>
 
     </div>
 </div>
