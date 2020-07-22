@@ -7,6 +7,7 @@
 
   table {
     width: 100%;
+    max-width: 1200px;
     margin: auto;
     border-collapse: collapse;
   }
@@ -16,6 +17,10 @@
 
     &:first-child {
       font-weight: 700;
+      border-top: none;
+    }
+
+    &:last-child {
       border-top: none;
     }
 
@@ -56,7 +61,14 @@
     td {
       text-align: right;
       background: $brand-white !important;
-      border: none !important;
+
+      &:not(:last-child) {
+        border: none !important;
+      }
+
+      &:last-child {
+        border-top: 3px solid $color-primary;
+      }
     }
 
     span {
