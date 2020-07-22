@@ -6,13 +6,14 @@ from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.additive_scorer import AdditiveScorer
 from kidney_exchange.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE
 from kidney_exchange.utils.blood_groups import blood_groups_compatible
+from kidney_exchange.utils.countries import AUT, IL
 from kidney_exchange.utils.hla_system.compatibility_index import compatibility_index
 from kidney_exchange.utils.hla_system.hla_table import is_split, broad_to_split
 
 # TODO make configurable https://trello.com/c/OY3WNmMe/144-all-algorithm-constants-configurable
 BLOOD_GROUP_COMPATIBILITY_BONUS = 0.0
 # TODO make configurable https://trello.com/c/OY3WNmMe/144-all-algorithm-constants-configurable
-FORBIDDEN_COUNTRY_COMBINATIONS = []  # changed from upon IKEM request [(AUT, IL), (IL, AUT)]
+FORBIDDEN_COUNTRY_COMBINATIONS = [(AUT, IL), (IL, AUT)]
 
 
 class HLAAdditiveScorer(AdditiveScorer):
