@@ -67,7 +67,7 @@ header .logo img {
   }
 }
 header .info {
-  flex: 1;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -141,7 +141,7 @@ h1::after {
 .content {
   display: flex;
   position: relative;
-  flex: 1;
+  flex-grow: 1;
 }
 @media (max-width: 1200px) {
   .content {
@@ -175,7 +175,7 @@ h1::after {
   border-radius: var(--border-radius);
   background: var(--brand-white);
   box-shadow: var(--box-shadow);
-  flex: 1;
+  flex-grow: 1;
   padding: 20px;
 }
 @media (max-width: 1200px) {
@@ -227,7 +227,7 @@ h1::after {
   display: inline-block;
 }
 .round > div {
-  flex: 1;
+  flex-grow: 1;
 }
 .round .chain_link {
   display: inline-block;
@@ -264,7 +264,7 @@ h1::after {
   display: flex;
 }
 .transplant-header .pair {
-  flex: 1;
+  flex-grow: 1;
   display: flex;
   align-items: center;
 }
@@ -280,7 +280,7 @@ h1::after {
   color: var(--color-primary);
 }
 .transplant-content {
-  flex: 1;
+  flex-grow: 1;
   padding: var(--padding-x);
 }
 .transplant .table {
@@ -348,7 +348,7 @@ h1::after {
   padding-top: 5px;
 }
 .transplant .table .td table td {
-  flex: 1;
+  flex-grow: 1;
   padding: 5px 10px;
 }
 .transplant .table .td table td + td {
@@ -469,7 +469,7 @@ h1::after {
 }
 .matching-item__content {
   padding: 20px;
-  flex: 1;
+  flex-grow: 1;
 }
 .matching-item__link {
   display: flex;

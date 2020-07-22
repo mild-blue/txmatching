@@ -1,7 +1,7 @@
 .content {
   display: flex;
   position: relative;
-  flex: 1;
+  flex-grow: 1;
 
   @media (max-width: 1200px) {
     flex-direction: column;
