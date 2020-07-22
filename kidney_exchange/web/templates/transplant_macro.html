@@ -50,8 +50,7 @@
                     <div class="small">
                         Acceptable:
                         {% for blood_group in recipient.parameters.acceptable_blood_groups%}
-                        {% set acceptableBloodClass = "matching-blood-group" if matching_blood_group == blood_group else "" %}
-                        <span class="inline_code {{ acceptableBloodClass }}">{{ blood_group }}</span>
+                        <span class="inline_code">{{ blood_group }}</span>
                         {% endfor %}
                     </div>
                 </td>
