@@ -1,7 +1,7 @@
 {% macro render_round(round, score_dict, ui_utils, round_index, matching_index, compatible_blood_dict) %}
 
 <div class="round">
-    <span>{{ round_index }}{{ round.briding_donor_altruist_or_nothing()}}</span>
+    <span class="index">{{ round_index }}{{ round.briding_donor_altruist_or_nothing()}}</span>
     <div>
     {% for donor, recipient in round.donor_recipient_list %}
         {% set transplant_score = (score_dict[(donor.db_id, recipient.db_id)] | int) %}

@@ -205,6 +205,9 @@ h1::after {
   margin-right: 15px;
   display: inline-block;
 }
+.round span.index {
+  min-width: 20px;
+}
 .round > div {
   flex-grow: 1;
 }
@@ -435,32 +438,6 @@ h1::after {
   margin-bottom: 20px;
 }
 
-.matching_box {
-  border-radius: 10px;
-  margin-bottom: 20px;
-  padding: 20px 20px 3px;
-}
-.matching_box .chain_link {
-  border-radius: 5px;
-  margin-left: 10px;
-  padding: 8px 10px 5px;
-  color: black;
-  text-decoration: none;
-  background: slategray;
-}
-.matching_box_expand {
-  border-bottom-right-radius: 10px;
-  border-top-right-radius: 10px;
-  text-align: center;
-  display: block;
-  padding-top: 20px;
-  vertical-align: middle;
-  background: silver;
-}
-.matching_box_expand:hover {
-  background: gray;
-  color: whitesmoke;
-}
 .matching-blood-group {
   border: 1px solid green;
   background: darkseagreen;
@@ -472,21 +449,6 @@ h1::after {
 .matching-antibodies {
   border: 1px solid red !important;
   background: #e0a7a7 !important;
-}
-
-.matching_detail {
-  border-spacing: 20px;
-  margin-bottom: 50px;
-}
-
-.matching_detail tr {
-  vertical-align: top;
-  display: flex;
-  margin-bottom: 10px;
-}
-
-.matching_detail td {
-  margin-right: 20px;
 }
 
 .matching-detail {

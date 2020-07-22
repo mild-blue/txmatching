@@ -9,6 +9,10 @@
     color: $brand-grey-darker;
     margin-right: 15px;
     display: inline-block;
+
+    &.index {
+      min-width: 20px;
+    }
   }
 
   > div {
