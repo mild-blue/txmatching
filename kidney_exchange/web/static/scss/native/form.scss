@@ -3,6 +3,13 @@ form {
     border: 1px solid $border-color;
     border-radius: $border-radius;
     padding: 10px 15px;
+    overflow: hidden;
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 5px rgba($color-primary, 0.5);
+      border: 1px solid $color-primary;
+    }
   }
 
   input[type="submit"] {
@@ -19,5 +26,11 @@ form {
       cursor: pointer;
       background-color: $button-hover-bg;
     }
+  }
+}
+
+button, input[type="submit"] {
+  &:focus {
+    outline: none;
   }
 }

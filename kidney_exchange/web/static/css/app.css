@@ -87,6 +87,12 @@ form input, form textarea {
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 10px 15px;
+  overflow: hidden;
+}
+form input:focus, form textarea:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(226, 0, 26, 0.5);
+  border: 1px solid #e2001a;
 }
 form input[type=submit] {
   background-color: #e2001a;
@@ -101,6 +107,10 @@ form input[type=submit] {
 form input[type=submit]:hover {
   cursor: pointer;
   background-color: #a80018;
+}
+
+button:focus, input[type=submit]:focus {
+  outline: none;
 }
 
 h1 {
