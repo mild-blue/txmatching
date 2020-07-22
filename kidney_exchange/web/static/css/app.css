@@ -291,7 +291,7 @@ h1::after {
   border-right: 1px solid #ddd;
 }
 .transplant td:not([colspan]) {
-  width: calc(65% / 3);
+  width: 21.6666%;
 }
 .transplant td:first-child {
   width: 20%;
