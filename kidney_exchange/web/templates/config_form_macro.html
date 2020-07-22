@@ -14,7 +14,7 @@
                            name="require_new_donor_having_better_match_in_compatibility_index"
                            {{ "checked" if configuration.require_new_donor_having_better_match_in_compatibility_index
                     }}>
-                    Require new donor having better CI match
+                    Require new donor having better CI match than original donor
                     <br><br>
 
                     <input type="checkbox" value="on"
@@ -22,7 +22,7 @@
                            {{ "checked" if
                     configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group
                     }}>
-                    <span>Require new donor having better CI match or better blood group</span>
+                    <span>Require new donor having better CI match than original donor or blood group match</span>
                     <br><br>
 
                     <input type="checkbox" value="on" name="use_binary_scoring" {{ "checked" if
