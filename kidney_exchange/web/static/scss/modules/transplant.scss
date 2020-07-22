@@ -2,9 +2,9 @@
 
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
   overflow: hidden;
 
   &:not(:last-child) {
@@ -12,7 +12,7 @@
   }
 
   &-header {
-    background: var(--box-bg);
+    background: $box-bg;
     padding: 10px 15px;
 
     display: flex;
@@ -23,7 +23,7 @@
       align-items: center;
 
       img {
-        box-shadow: var(--box-shadow);
+        box-shadow: $box-shadow;
       }
 
       .arrow-right {
@@ -35,14 +35,14 @@
       span {
         font-size: 22px;
         font-weight: 700;
-        color: var(--color-primary);
+        color: $color-primary;
       }
     }
   }
 
   &-content {
     flex-grow: 1;
-    padding: var(--padding-x);
+    padding: $padding-x;
   }
 
   .table {
@@ -60,7 +60,7 @@
       display: flex;
 
       &:not(:first-child) {
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid $border-color;
       }
 
       &:first-child {
@@ -72,7 +72,7 @@
         }
 
         .td:last-child {
-          color: var(--color-primary);
+          color: $color-primary;
         }
       }
 
@@ -82,7 +82,7 @@
       padding: 5px 10px;
       text-align: center;
       flex-basis: 35%;
-      border-left: 1px solid var(--border-color);
+      border-left: 1px solid $border-color;
 
       &.no-padding {
         padding: 0;
@@ -101,7 +101,7 @@
       }
 
       &.border-bottom {
-        border-bottom: 5px solid var(--border-color);
+        border-bottom: 5px solid $border-color;
       }
 
       table {
@@ -115,7 +115,7 @@
             height: 28px;
             font-size: 12px;
             background: #f9f9f9;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid $border-color;
 
             ~ tr {
               td {
@@ -131,7 +131,7 @@
         }
 
         td + td {
-          border-left: 1px solid var(--border-color);
+          border-left: 1px solid $border-color;
         }
       }
     }
@@ -147,7 +147,7 @@
       font-weight: 700;
       display: inline-block;
       margin-left: 15px;
-      color: var(--color-primary);
+      color: $color-primary;
     }
   }
 }

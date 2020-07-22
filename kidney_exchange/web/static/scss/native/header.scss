@@ -1,7 +1,7 @@
 header {
   display: flex;
   height: 70px;
-  padding: 10px var(--padding-x);
+  padding: 10px $padding-x;
   
   @media (max-width: 540px) {
     height: auto;
@@ -40,19 +40,19 @@ header {
 
     a {
       font-weight: 700;
-      color: var(--text-color);
-      border-bottom: 1px solid var(--text-color);
+      color: $text-color;
+      border-bottom: 1px solid $text-color;
       text-decoration: none;
       transition: all .2s ease;
 
       &:hover, &:active, &:focus {
-        color: var(--color-primary);
+        color: $color-primary;
         border-bottom-color: transparent;
       }
     }
 
     .contact {
-      color: var(--brand-grey-darker);
+      color: $brand-grey-darker;
     }
 
     @media (max-width: 540px) {
