@@ -139,7 +139,7 @@ h1::after {
 }
 
 .configuration {
-  padding: 50px;
+  padding: 20px 50px 50px;
   background: #eee;
 }
 .configuration label {
@@ -160,10 +160,17 @@ h1::after {
 .configuration__boxes > div {
   display: flex;
   flex-basis: 50%;
+  width: 50%;
 }
 @media (max-width: 540px) {
   .configuration__boxes > div {
     flex-direction: column;
+  }
+}
+@media (max-width: 1200px) {
+  .configuration__boxes > div {
+    flex-basis: 100%;
+    width: 100%;
   }
 }
 .configuration__box {
@@ -194,18 +201,53 @@ h1::after {
 .configuration .inputs {
   margin: 0 10px;
 }
+.configuration .inputs label {
+  display: flex;
+  align-items: center;
+}
+.configuration .inputs label span {
+  padding-right: 15px;
+  flex-basis: 70%;
+  width: 70%;
+}
+.configuration .inputs label input {
+  min-width: 80px;
+  flex-basis: 30%;
+  width: 30%;
+}
 @media (max-width: 1200px) {
   .configuration .inputs {
     margin: 0;
   }
 }
 .configuration .manual {
-  display: flex;
   flex-direction: column;
+}
+.configuration .manual p {
+  line-height: 1.6;
+}
+.configuration .manual code {
+  font-size: 12px;
 }
 @media (max-width: 1200px) {
   .configuration .manual {
     margin-top: 10px;
+  }
+}
+.configuration .manual-row {
+  display: flex;
+  flex-direction: column;
+}
+@media (min-width: 960px) {
+  .configuration .manual-row {
+    flex-direction: row;
+  }
+  .configuration .manual-row > div {
+    padding-right: 15px;
+  }
+  .configuration .manual-row > * {
+    flex-basis: 50%;
+    width: 50%;
   }
 }
 .configuration form {
@@ -490,6 +532,22 @@ h1::after {
 
 .flag {
   box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+code {
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #666;
+  page-break-inside: avoid;
+  font-family: monospace;
+  font-size: 15px;
+  max-width: 100%;
+  overflow: auto;
+  padding: 5px 10px;
+  display: block;
+  word-wrap: break-word;
+  margin: 5px 0;
 }
 
 /*# sourceMappingURL=app.css.map */

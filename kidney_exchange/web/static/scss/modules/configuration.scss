@@ -1,5 +1,5 @@
 .configuration {
-  padding: $padding-x;
+  padding: 20px $padding-x $padding-x;
   background: $brand-grey;
 
   label {
@@ -21,9 +21,15 @@
     > div {
       display: flex;
       flex-basis: 50%;
+      width: 50%;
 
       @media (max-width: 540px) {
         flex-direction: column;
+      }
+
+      @media (max-width: 1200px) {
+        flex-basis: 100%;
+        width: 100%;
       }
     }
   }
@@ -57,17 +63,59 @@
   .inputs {
     margin: 0 10px;
 
+    label {
+      display: flex;
+      align-items: center;
+
+      span {
+        padding-right: 15px;
+        flex-basis: 70%;
+        width: 70%;
+      }
+
+      input {
+        min-width: 80px;
+        flex-basis: 30%;
+        width: 30%;
+      }
+    }
+
     @media (max-width: 1200px) {
       margin: 0;
     }
   }
 
   .manual {
-    display: flex;
     flex-direction: column;
+
+    p {
+      line-height: 1.6;
+    }
+
+    code {
+      font-size: 12px;
+    }
 
     @media (max-width: 1200px) {
       margin-top: 10px;
+    }
+
+    &-row {
+      display: flex;
+      flex-direction: column;
+
+      @media (min-width: 960px) {
+        flex-direction: row;
+
+        > div {
+          padding-right: 15px;
+        }
+
+        > * {
+          flex-basis: 50%;
+          width: 50%;
+        }
+      }
     }
   }
 

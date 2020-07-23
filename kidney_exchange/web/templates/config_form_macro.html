@@ -36,33 +36,44 @@
                 </div>
 
                 <div class="configuration__box inputs">
-                    Min transplant score<br>
-                    <input type="number" value="{{ configuration.minimum_total_score }}" name="minimum_total_score"><br><br>
+                    <label>
+                        <span>Min transplant score</span>
+                        <input type="number" value="{{ configuration.minimum_total_score }}" name="minimum_total_score"><br><br>
+                    </label>
 
+                    <label>
+                        <span>Max cycle length</span>
+                        <input type="number" value="{{ configuration.max_cycle_length }}" name="max_cycle_length"><br><br>
+                    </label>
 
-                    Max cycle length<br>
-                    <input type="number" value="{{ configuration.max_cycle_length }}" name="max_cycle_length"><br><br>
+                    <label>
+                        <span>Max sequence length</span>
+                        <input type="number" value="{{ configuration.max_sequence_length }}" name="max_sequence_length"><br><br>
+                    </label>
 
+                    <label>
+                        <span>Max countries in sequence</span>
+                        <input type="number" value="{{ configuration.max_number_of_distinct_countries_in_round }}"
+                               name="max_number_of_distinct_countries_in_round">
+                    </label>
 
-                    Max sequence length<br>
-                    <input type="number" value="{{ configuration.max_sequence_length }}" name="max_sequence_length"><br><br>
-
-
-                    Max countries in sequence<br>
-                    <input type="number" value="{{ configuration.max_number_of_distinct_countries_in_round }}"
-                           name="max_number_of_distinct_countries_in_round">
                 </div>
             </div>
 
             <div class="configuration__box manual">
                 <b>Manual donor recipient scores</b>
-                <ul>
-                    <li>Fill in a list of such manual settings.</li>
-                    <li>The format shall be: <br>"[(donor_name,recipient_name,score)]".</li>
-                    <li>For example [("D1","R1",23), ("D1","R1",-1)]</li>
-                    <li>use -1 for forbidden exchanges</li>
-                </ul>
-                <textarea cols="60" rows="7" name="manual_donor_recipient_scores_dto">{{ configuration.manual_donor_recipient_scores_dto }}</textarea>
+                <div class="manual-row">
+                    <div>
+                        <p>
+                            Fill in a list of such manual settings. Format:
+                            <code>[(donor_name,recipient_name,score)]</code>
+                            Example:
+                            <code>[("D1","R1",23), ("D1","R1",-1)]</code>
+                            Use <strong>-1</strong> for forbidden exchanges.
+                        </p>
+                    </div>
+                    <textarea cols="60" rows="7" name="manual_donor_recipient_scores_dto">{{ configuration.manual_donor_recipient_scores_dto }}</textarea>
+                </div>
             </div>
         </div>
 
