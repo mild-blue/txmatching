@@ -318,6 +318,7 @@ h1::after {
 .transplant-header {
   background: #f5f5f5;
   padding: 10px 15px;
+  font-weight: 700;
   display: flex;
 }
 .transplant-header .pair {
@@ -340,7 +341,9 @@ h1::after {
 
 .transplant .small {
   font-size: 12px !important;
-  margin-top: 5px;
+  display: inline-block;
+  margin-left: 10px;
+  color: #666666;
 }
 .transplant table {
   width: 100%;
@@ -365,8 +368,9 @@ h1::after {
 }
 .transplant td {
   text-align: center;
-  padding: 5px;
+  padding: 10px;
   border-right: 1px solid #ddd;
+  vertical-align: top;
 }
 .transplant td:not([colspan]) {
   width: 21.6666%;
@@ -414,7 +418,7 @@ h1::after {
   padding-left: 3px;
   padding-right: 3px;
   color: rebeccapurple;
-  margin: 1px;
+  margin: 2px;
   display: inline-block;
 }
 .inline_code_blue {
@@ -424,7 +428,7 @@ h1::after {
   padding-left: 3px;
   padding-right: 3px;
   color: darkblue;
-  margin: 1px;
+  margin: 2px;
   display: inline-block;
 }
 

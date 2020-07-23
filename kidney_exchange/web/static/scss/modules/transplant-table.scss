@@ -2,7 +2,9 @@
 
   .small {
     font-size: 12px !important;
-    margin-top: 5px;
+    display: inline-block;
+    margin-left: 10px;
+    color: $brand-grey-darker;
   }
 
   table {
@@ -36,8 +38,9 @@
   td {
 
     text-align: center;
-    padding: 5px;
+    padding: 10px;
     border-right: 1px solid $border-color;
+    vertical-align: top;
 
     &:not([colspan]) {
       width: 21.6666%;

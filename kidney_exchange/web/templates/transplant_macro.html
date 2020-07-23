@@ -40,7 +40,7 @@
             <tr>
                 <td>Blood type</td>
                 <td>
-                    {% set bloodClass = "matching-blood-group" if matching_blood_group == donor.parameters.blood_group else "" %}
+                    {% set bloodClass = "matching-blood-group" if donor.parameters.blood_group == recipient.parameters.blood_group else "" %}
                     <span class="inline_code {{ bloodClass }}">{{ donor.parameters.blood_group }}</span>
                 </td>
                 <td colspan="2">
@@ -49,7 +49,7 @@
                     <span class="inline_code {{ bloodClass }}">{{ recipient.parameters.blood_group }}</span>
                     <div class="small">
                         Acceptable:
-                        {% for blood_group in recipient.parameters.acceptable_blood_groups%}
+                        {% for blood_group in recipient.parameters.acceptable_blood_groups %}
                         <span class="inline_code">{{ blood_group }}</span>
                         {% endfor %}
                     </div>
