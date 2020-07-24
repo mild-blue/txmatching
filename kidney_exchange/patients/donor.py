@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from kidney_exchange.patients.patient import Patient, PatientDto, PatientType
+from kidney_exchange.patients.patient import Patient, PatientType
 
 
 @dataclass
@@ -11,8 +11,3 @@ class Donor(Patient):
     @property
     def is_recipient(self) -> bool:
         return False
-
-
-@dataclass
-class DonorDto(PatientDto):
-    pass

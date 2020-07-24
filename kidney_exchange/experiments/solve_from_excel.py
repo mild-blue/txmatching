@@ -3,8 +3,10 @@ import os
 import sys
 from typing import List, Tuple
 
-from kidney_exchange.patients.donor import Donor, DonorDto
-from kidney_exchange.patients.recipient import Recipient, RecipientDto
+from kidney_exchange.patients.donor import Donor
+from kidney_exchange.web.data_transfer_objects.patient_dtos.donor_dto import DonorDTO
+from kidney_exchange.patients.recipient import Recipient
+from kidney_exchange.web.data_transfer_objects.patient_dtos.recipient_dto import RecipientDTO
 from kidney_exchange.scorers.hla_additive_scorer import HLAAdditiveScorer
 from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
 from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
@@ -12,7 +14,7 @@ from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_dat
 logger = logging.getLogger(__name__)
 
 
-def _get_donors_recipients(donor_dtos: List[DonorDto], recipient_dtos: List[RecipientDto]) \
+def _get_donors_recipients(donor_dtos: List[DonorDTO], recipient_dtos: List[RecipientDTO]) \
         -> Tuple[List[Donor], List[Recipient]]:
     donors = [Donor(db_id=hash(donor.medical_id),
                     medical_id=donor.medical_id,
