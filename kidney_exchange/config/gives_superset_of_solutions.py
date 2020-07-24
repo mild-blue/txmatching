@@ -1,11 +1,9 @@
 from kidney_exchange.config.configuration import Configuration, MAN_DON_REC_SCORES
-from kidney_exchange.scorers.hla_additive_scorer import HLAAdditiveScorer
-from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
 
 
 def _check_if_config_is_supported(configuration: Configuration):
-    if not (configuration.solver_constructor_name == AllSolutionsSolver.__name__
-            and configuration.scorer_constructor_name == HLAAdditiveScorer.__name__):
+    if not (configuration.solver_constructor_name == "AllSolutionsSolver"
+            and configuration.scorer_constructor_name == "HLAAdditiveScorer"):
         raise ValueError(f"Unsupported combination "
                          f"({configuration.scorer_constructor_name}, {configuration.solver_constructor_name}) "
                          f"of (scorer, solver)")
