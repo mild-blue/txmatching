@@ -1,102 +1,28 @@
-import dataclasses
 import logging
-from dataclasses import dataclass
-from typing import List, Iterator, Optional, Iterable, Tuple
+from typing import Iterator, Optional, Iterable, Tuple
 
 import numpy as np
 
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.config.gives_superset_of_solutions import gives_superset_of_solutions
-from kidney_exchange.database.db import db
-from kidney_exchange.database.services.config_service import get_current_configuration, save_configuration_to_db, \
-    get_config_models, config_model_to_configuration
-from kidney_exchange.database.services.patient_service import medical_id_to_db_id, get_donors_recipients_from_db
-from kidney_exchange.database.services.scorer_service import score_matrix_to_dto
+from kidney_exchange.database.services.config_service import get_config_models, config_model_to_configuration
+from kidney_exchange.database.services.patient_service import medical_id_to_db_id
 from kidney_exchange.database.services.services_for_solve import get_pairing_result_for_config, \
     get_patients_for_pairing_result, \
     db_matchings_to_matching_list
-from kidney_exchange.database.sql_alchemy_schema import PairingResultPatientModel, PairingResultModel
 from kidney_exchange.filters.filter_from_config import filter_from_config
-from kidney_exchange.patients.donor import Donor
-from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.scorer_from_config import scorer_from_configuration
-from kidney_exchange.solvers.matching.matching import Matching
+from kidney_exchange.solve_service.data_objects.solver_input_parameters import SolverInputParameters
 from kidney_exchange.solvers.matching.matching_with_score import MatchingWithScore
 from kidney_exchange.solvers.solver_from_config import solver_from_config
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class SolverInputParameters:
-    donors: List[Donor]
-    recipients: List[Recipient]
-    configuration: Configuration
-
-
-@dataclass
-class DonorRecipient:
-    donor: int
-    recipient: int
-
-
-@dataclass
-class CalculatedMatching:
-    donors_recipients: List[DonorRecipient]
-    score: float
-
-
-@dataclass
-class CalculatedMatchings:
-    matchings: List[CalculatedMatching]
-
-
-def solve_from_db() -> Iterable[Matching]:
-    donors, recipients = get_donors_recipients_from_db()
-
-    current_configuration = get_current_configuration()
-    current_config_matchings, score_matrix = solve_from_config(SolverInputParameters(
-        donors=donors,
-        recipients=recipients,
-        configuration=current_configuration
-    ))
-    pairing_result_patients = [PairingResultPatientModel(patient_id=patient.db_id) for patient in donors + recipients]
-    current_config_matchings_model = dataclasses.asdict(
-        current_config_matchings_to_model(current_config_matchings)
-    )
-
-    config_id = save_configuration_to_db(current_configuration)
-    pairing_result_model = PairingResultModel(
-        patients=pairing_result_patients,
-        score_matrix=score_matrix_to_dto(score_matrix),
-        calculated_matchings=current_config_matchings_model,
-        config_id=config_id,
-        valid=True
-    )
-    db.session.add(pairing_result_model)
-    db.session.commit()
-
-    return current_config_matchings
-
-
-def current_config_matchings_to_model(config_matchings: Iterable[MatchingWithScore]) -> CalculatedMatchings:
-    return CalculatedMatchings([
-        CalculatedMatching([
-            DonorRecipient(
-                donor.db_id,
-                recipient.db_id
-            ) for donor, recipient in final_solution.donor_recipient_list
-        ],
-            final_solution.score()
-
-        ) for final_solution in config_matchings
-    ])
-
-
 def solve_from_config(params: SolverInputParameters) -> Tuple[Iterable[MatchingWithScore], np.array]:
     scorer = scorer_from_configuration(params.configuration)
     solver = solver_from_config(params.configuration)
-    matchings_in_db = load_matchings_from_database(params)
+    matchings_in_db = _load_matchings_from_database(params)
     score_matrix = scorer.get_score_matrix(
         params.donors, params.recipients
     )
@@ -110,7 +36,7 @@ def solve_from_config(params: SolverInputParameters) -> Tuple[Iterable[MatchingW
     return list(matchings_filtered), score_matrix
 
 
-def load_matchings_from_database(exchange_parameters: SolverInputParameters) -> Optional[Iterator[MatchingWithScore]]:
+def _load_matchings_from_database(exchange_parameters: SolverInputParameters) -> Optional[Iterator[MatchingWithScore]]:
     current_config = exchange_parameters.configuration
 
     compatible_config_models = list()

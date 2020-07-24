@@ -6,7 +6,7 @@ from kidney_exchange.database.sql_alchemy_schema import PairingResultModel
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.solvers.matching.matching_with_score import MatchingWithScore
-from kidney_exchange.solve_service.solve_from_config import solve_from_db
+from kidney_exchange.solve_service.solve_from_db import solve_from_db
 from kidney_exchange.utils.blood_groups import blood_groups_compatible
 
 ScoreDict = Dict[Tuple[int, int], float]
