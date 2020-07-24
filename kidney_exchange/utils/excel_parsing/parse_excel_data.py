@@ -7,9 +7,9 @@ from typing import List, Tuple, Union
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
-from kidney_exchange.web.data_transfer_objects.patient_dtos.donor_dto import DonorDTO
+from kidney_exchange.data_transfer_objects.patients.donor_dto import DonorDTO
 from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
-from kidney_exchange.web.data_transfer_objects.patient_dtos.recipient_dto import RecipientDTO
+from kidney_exchange.data_transfer_objects.patients.recipient_dto import RecipientDTO
 from kidney_exchange.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
 from kidney_exchange.utils.countries import IL, CZE, AUT
 from kidney_exchange.utils.hla_system.hla_table import HLA_A, HLA_B, HLA_BW, HLA_CW, HLA_DR, HLA_DRDR, HLA_DQ

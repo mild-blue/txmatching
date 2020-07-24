@@ -1,16 +1,16 @@
 import dataclasses
 from typing import List, Tuple, Optional, Iterable, Dict
 
+from kidney_exchange.data_transfer_objects.patients.donor_dto import DonorDTO
+from kidney_exchange.data_transfer_objects.patients.patient_dto import PatientDTO
+from kidney_exchange.data_transfer_objects.patients.recipient_dto import RecipientDTO
 from kidney_exchange.database.db import db
 from kidney_exchange.database.sql_alchemy_schema import PatientAcceptableBloodModel, PatientModel, PatientPairModel, \
     PairingResultPatientModel
 from kidney_exchange.patients.donor import Donor
-from kidney_exchange.web.data_transfer_objects.patient_dtos.donor_dto import DonorDTO
 from kidney_exchange.patients.patient import Patient, PatientType
-from kidney_exchange.web.data_transfer_objects.patient_dtos.patient_dto import PatientDTO
 from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
 from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.web.data_transfer_objects.patient_dtos.recipient_dto import RecipientDTO
 
 
 def medical_id_to_db_id(medical_id: str) -> Optional[int]:

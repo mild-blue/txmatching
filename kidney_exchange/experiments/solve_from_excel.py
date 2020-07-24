@@ -3,10 +3,10 @@ import os
 import sys
 from typing import List, Tuple
 
+from kidney_exchange.data_transfer_objects.patients.donor_dto import DonorDTO
+from kidney_exchange.data_transfer_objects.patients.recipient_dto import RecipientDTO
 from kidney_exchange.patients.donor import Donor
-from kidney_exchange.web.data_transfer_objects.patient_dtos.donor_dto import DonorDTO
 from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.web.data_transfer_objects.patient_dtos.recipient_dto import RecipientDTO
 from kidney_exchange.scorers.hla_additive_scorer import HLAAdditiveScorer
 from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
 from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data

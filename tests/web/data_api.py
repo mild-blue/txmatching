@@ -1,7 +1,8 @@
 import unittest
 
 from kidney_exchange.config.configuration import Configuration
-from kidney_exchange.web.data_transfer_objects.configuration_dto import configuration_from_dto, configuration_to_dto
+from kidney_exchange.data_transfer_objects.configuration.configuration_to_dto import configuration_to_dto
+from kidney_exchange.data_transfer_objects.configuration.configuration_from_dto import configuration_from_dto
 from kidney_exchange.database.sql_alchemy_schema import ConfigModel
 from kidney_exchange.web import create_app
 

@@ -4,7 +4,8 @@ import flask
 from flask import request, Blueprint, redirect
 from flask_login import current_user, login_required
 
-from kidney_exchange.web.data_transfer_objects.configuration_dto import configuration_from_dto, configuration_to_dto
+from kidney_exchange.data_transfer_objects.configuration.configuration_to_dto import configuration_to_dto
+from kidney_exchange.data_transfer_objects.configuration.configuration_from_dto import configuration_from_dto
 from kidney_exchange.database.services.config_service import save_configuration_as_current, get_current_configuration
 from kidney_exchange.database.services.scorer_service import calculate_current_score_matrix
 from kidney_exchange.solve_service.solve_from_db import solve_from_db
