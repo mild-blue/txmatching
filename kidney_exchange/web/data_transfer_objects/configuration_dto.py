@@ -7,7 +7,7 @@ from typing import List, Tuple, Union, Dict
 from kidney_exchange.config.configuration import Configuration, DonorRecipientScore, BOOL_KEYS_IN_CONFIG, \
     FLOAT_KEYS_IN_CONFIG, INT_KEYS_IN_CONFIG, MAN_DON_REC_SCORES
 from kidney_exchange.database.services.patient_service import db_id_to_medical_id, medical_id_to_db_id
-from kidney_exchange.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE
+from kidney_exchange.scorers.additive_scorer import TRANSPLANT_IMPOSSIBLE
 
 logger = logging.getLogger(__name__)
 
