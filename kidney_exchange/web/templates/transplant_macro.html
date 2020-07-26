@@ -11,9 +11,9 @@
 <div class="transplant">
     <div class="transplant-header">
         <div class="pair">
-            <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px"/>
+            <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px" class="flag"/>
             {{ donor.medical_id }} <span class="arrow-right"></span> {{ recipient.medical_id }}
-            <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px"/>
+            <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px" class="flag"/>
         </div>
 
         <div class="score">
@@ -28,11 +28,11 @@
             <tr>
                 <td></td>
                 <td>
-                    <img src="static/img/countries/{{donor.parameters.country_code}}.png"/>
+                    <img src="static/img/countries/{{donor.parameters.country_code}}.png" class="flag"/>
                     {{ donor.medical_id }}
                 </td>
                 <td colspan="2">
-                    <img src="static/img/countries/{{recipient.parameters.country_code}}.png"/>
+                    <img src="static/img/countries/{{recipient.parameters.country_code}}.png" class="flag"/>
                     {{ recipient.medical_id }}
                 </td>
                 <td>Score</td>
@@ -40,7 +40,7 @@
             <tr>
                 <td>Blood type</td>
                 <td>
-                    {% set bloodClass = "matching-blood-group" if matching_blood_group == donor.parameters.blood_group else "" %}
+                    {% set bloodClass = "matching-blood-group" if donor.parameters.blood_group == recipient.parameters.blood_group else "" %}
                     <span class="inline_code {{ bloodClass }}">{{ donor.parameters.blood_group }}</span>
                 </td>
                 <td colspan="2">
@@ -49,9 +49,8 @@
                     <span class="inline_code {{ bloodClass }}">{{ recipient.parameters.blood_group }}</span>
                     <div class="small">
                         Acceptable:
-                        {% for blood_group in recipient.parameters.acceptable_blood_groups%}
-                        {% set acceptableBloodClass = "matching-blood-group" if matching_blood_group == blood_group else "" %}
-                        <span class="inline_code {{ acceptableBloodClass }}">{{ blood_group }}</span>
+                        {% for blood_group in recipient.parameters.acceptable_blood_groups %}
+                        <span class="inline_code">{{ blood_group }}</span>
                         {% endfor %}
                     </div>
                 </td>

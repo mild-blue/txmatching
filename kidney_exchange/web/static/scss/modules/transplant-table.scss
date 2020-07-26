@@ -2,12 +2,14 @@
 
   .small {
     font-size: 12px !important;
-    margin-top: 5px;
+    display: inline-block;
+    margin-left: 10px;
+    color: $brand-grey-darker;
   }
 
   table {
     width: 100%;
-    max-width: 900px;
+    max-width: 1200px;
     margin: auto;
     border-collapse: collapse;
   }
@@ -17,6 +19,10 @@
 
     &:first-child {
       font-weight: 700;
+      border-top: none;
+    }
+
+    &:last-child {
       border-top: none;
     }
 
@@ -32,8 +38,9 @@
   td {
 
     text-align: center;
-    padding: 5px;
+    padding: 10px;
     border-right: 1px solid $border-color;
+    vertical-align: top;
 
     &:not([colspan]) {
       width: 21.6666%;
@@ -57,7 +64,14 @@
     td {
       text-align: right;
       background: $brand-white !important;
-      border: none !important;
+
+      &:not(:last-child) {
+        border: none !important;
+      }
+
+      &:last-child {
+        border-top: 3px solid $color-primary;
+      }
     }
 
     span {

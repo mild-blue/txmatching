@@ -2,7 +2,6 @@
   padding: $padding-x;
   background: $box-bg;
   width: $matching-column-width;
-  max-width: 900px;
 
   @media (max-width: 1200px) {
     width: 100%;
@@ -33,7 +32,10 @@
 
       .matching-item__link {
         background: $color-primary;
-        color: $brand-white;
+
+        .arrow-right {
+          border-left-color: $brand-white;
+        }
       }
     }
 
@@ -54,8 +56,8 @@
       width: 30px;
       background: $brand-grey;
 
-      &:hover {
-        background: $brand-grey-dark;
+      .arrow-right {
+        border-left-color: $text-color;
       }
     }
   }
@@ -68,47 +70,6 @@
 }
 
 .matching {
-  //&_envelope {
-  //  border-spacing: 0px;
-  //  background: whitesmoke;
-  //  border-radius: 10px;
-  //  margin-bottom: 20px;
-  //  display: grid;
-  //  grid-template-columns: 1fr 50px;
-  //  padding: 20px 20px 3px;
-  //}
-
-  &_box {
-    //background: whitesmoke;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    padding: 20px 20px 3px;
-
-    .chain_link {
-      border-radius: 5px;
-      margin-left: 10px;
-      padding: 8px 10px 5px;
-      color: black;
-      text-decoration: none;
-      background: slategray;
-    }
-
-    &_expand {
-      border-bottom-right-radius: 10px;
-      border-top-right-radius: 10px;
-      text-align: center;
-      display: block;
-      padding-top: 20px;
-      vertical-align: middle;
-      background: silver;
-
-      &:hover {
-        background: gray;
-        color: whitesmoke;
-      }
-    }
-  }
-
   &-blood-group {
     border: 1px solid green;
     background: darkseagreen;
@@ -123,20 +84,4 @@
     border: 1px solid red !important;
     background: #e0a7a7 !important;
   }
-}
-
-
-.matching_detail {
-  border-spacing: 20px;
-  margin-bottom: 50px;
-}
-
-.matching_detail tr {
-  vertical-align: top;
-  display: flex;
-  margin-bottom: 10px;
-}
-
-.matching_detail td {
-  margin-right: 20px;
 }

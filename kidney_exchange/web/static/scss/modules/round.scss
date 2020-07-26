@@ -4,11 +4,19 @@
   display: flex;
   padding: 5px 0;
 
+  &:last-child {
+    border-bottom: none;
+  }
+
   span {
     font-weight: 700;
     color: $brand-grey-darker;
     margin-right: 15px;
     display: inline-block;
+
+    &.index {
+      min-width: 20px;
+    }
   }
 
   > div {
@@ -25,9 +33,18 @@
     transition: all 0.2s ease;
     font-weight: 400;
 
+    .arrow-right {
+      border-left-color: $brand-white;
+      margin: 0 10px 2px 10px;
+    }
+
     &.light {
       background-color: $brand-grey-dark;
       color: $text-color;
+
+      .arrow-right {
+        border-left-color: $text-color;
+      }
     }
 
     &:not(:last-child) {

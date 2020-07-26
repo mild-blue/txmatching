@@ -1,7 +1,7 @@
 {% macro render_round(round, score_dict, ui_utils, round_index, matching_index, compatible_blood_dict) %}
 
 <div class="round">
-    <span>{{ round_index }}{{ round.briding_donor_altruist_or_nothing()}}</span>
+    <span class="index">{{ round_index }}{{ round.briding_donor_altruist_or_nothing()}}</span>
     <div>
     {% for donor, recipient in round.donor_recipient_list %}
         {% set transplant_score = (score_dict[(donor.db_id, recipient.db_id)] | int) %}
@@ -11,12 +11,12 @@
         {% if should_be_background_dark_grey %}
             {% set linkClass = linkClass + ' light' %}
         {% endif %}
-        <span class="{{ linkClass }}"
+        <div class="{{ linkClass }}"
            style="border-right: 20px solid {{ ui_utils.color_gradient(score) }}">
-            <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px">
-            {{ donor.medical_id }} &rArr; {{ recipient.medical_id }}
-            <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px">
-        </span>
+            <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px" class="flag">
+            {{ donor.medical_id }}<span class="arrow-right"></span>{{ recipient.medical_id }}
+            <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px" class="flag">
+        </div>
     {% endfor %}
     </div>
 </div>
