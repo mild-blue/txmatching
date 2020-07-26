@@ -4,8 +4,6 @@ from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.solvers.matching.matching import Matching
 
 
-
-
 class ScorerBase:
     def score(self, matching: Matching) -> Union[float, str]:
         """

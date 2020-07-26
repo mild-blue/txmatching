@@ -4,11 +4,12 @@ import flask
 from flask import render_template, request, redirect, Blueprint, flash, url_for
 from flask_login import login_required, current_user
 
-from kidney_exchange.config.configuration import configuration_to_dto
 from kidney_exchange.database.services.config_service import get_current_configuration
 from kidney_exchange.database.services.matching_service import get_latest_matchings_and_score_matrix
 from kidney_exchange.database.services.patient_service import save_patients
+from kidney_exchange.solve_service.solve_from_db import solve_from_db
 from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
+from kidney_exchange.data_transfer_objects.configuration.configuration_to_dto import configuration_to_dto
 from kidney_exchange.web.service_api import check_admin
 from kidney_exchange.web.web_utils import ui_utils
 from kidney_exchange.web.web_utils.load_patients_utils import is_allowed_file_extension
@@ -33,7 +34,14 @@ def browse_solutions():
     configuration_dto = configuration_to_dto(get_current_configuration())
 
     selected_exchange_index = request.args.get("selected_exchange_index", 1)
-    matchings, score_dict, compatible_blood_dict = get_latest_matchings_and_score_matrix()
+
+    try:
+        latest_matchings_and_score_matrix = get_latest_matchings_and_score_matrix()
+    except AssertionError:
+        solve_from_db()
+        latest_matchings_and_score_matrix = get_latest_matchings_and_score_matrix()
+
+    matchings, score_dict, compatible_blood_dict = latest_matchings_and_score_matrix
 
     matching_index = int(request.args.get("matching_index", 1))
 

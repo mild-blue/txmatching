@@ -20,6 +20,10 @@ IK_table.set_index(keys=compatibility_gene_codes, inplace=True, verify_integrity
 
 def compatibility_index(patient_parameters_donor: PatientParameters,
                         patient_parameters_recipient: PatientParameters) -> float:
+    """
+    The "compatibility index" is terminus technicus defined by the IK_table dataframe.
+    This function thus should not be modified unless after consulting with immunologists.
+    """
     match_counts = {code: 0 for code in compatibility_gene_codes}
 
     for gene_code in compatibility_gene_codes:

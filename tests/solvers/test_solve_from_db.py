@@ -2,7 +2,7 @@ import unittest
 
 from kidney_exchange.config.configuration import Configuration, DonorRecipientScore
 from kidney_exchange.database.services.config_service import save_configuration_as_current
-from kidney_exchange.solvers.solve_from_config import solve_from_db
+from kidney_exchange.solve_service.solve_from_db import solve_from_db
 from kidney_exchange.web import create_app
 
 

@@ -16,6 +16,7 @@ class PatientType(Enum):
     def is_recipient_like(self):
         return self in {PatientType.RECIPIENT}
 
+
 @dataclass
 class Patient:
     db_id: int
@@ -29,9 +30,3 @@ class Patient:
             raise ValueError(f"patient type was None, which should never happend as it shall be defined in subclasses")
         else:
             return self.patient_type.is_recipient_like()
-
-
-@dataclass
-class PatientDto:
-    medical_id: str
-    parameters: PatientParameters
