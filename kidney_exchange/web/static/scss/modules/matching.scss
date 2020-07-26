@@ -72,16 +72,19 @@
 .matching {
   &-blood-group {
     border: 1px solid green;
-    background: darkseagreen;
+    background: rgba(green, 0.2);
+    color: green;
   }
 
   &-antigens {
     border: 1px solid green !important;
-    background: darkseagreen !important;
+    background: rgba(green, 0.2) !important;
+    color: green !important;
   }
 
   &-antibodies {
     border: 1px solid red !important;
-    background: #e0a7a7 !important;
+    background: rgba(red, 0.2) !important;
+    color: red !important;
   }
 }

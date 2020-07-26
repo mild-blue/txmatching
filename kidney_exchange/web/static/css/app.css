@@ -493,15 +493,18 @@ h1::after {
 
 .matching-blood-group {
   border: 1px solid green;
-  background: darkseagreen;
+  background: rgba(0, 128, 0, 0.2);
+  color: green;
 }
 .matching-antigens {
   border: 1px solid green !important;
-  background: darkseagreen !important;
+  background: rgba(0, 128, 0, 0.2) !important;
+  color: green !important;
 }
 .matching-antibodies {
   border: 1px solid red !important;
-  background: #e0a7a7 !important;
+  background: rgba(255, 0, 0, 0.2) !important;
+  color: red !important;
 }
 
 .matching-detail {
