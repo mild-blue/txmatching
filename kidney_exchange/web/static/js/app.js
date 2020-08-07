@@ -21,3 +21,12 @@ function scrollWatcher() {
         }
     })
 }
+
+// IE fix
+const tables = document.querySelectorAll('[data-js-selector="set-table-height"]');
+for(let t of tables) {
+    const height = t.offsetHeight;
+    if(height) {
+        t.style.height = height + 'px';
+    }
+}
