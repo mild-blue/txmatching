@@ -49,7 +49,8 @@ def create_app():
             app.config.from_object(config_file)
 
     def configure_db():
-        # TODO load configuration from file and override it with env - to discussion with team https://trello.com/c/OXeSTk75/
+        # TODO load configuration from file and override it with env - to discussion with team
+        #  https://trello.com/c/OXeSTk75/
         user = os.environ.get("POSTGRES_USER", app.config.get("POSTGRES_USER"))
         password = os.environ.get("POSTGRES_PASSWORD", app.config.get("POSTGRES_PASSWORD"))
         url = os.environ.get("POSTGRES_URL", app.config.get("POSTGRES_URL"))

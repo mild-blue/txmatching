@@ -13,7 +13,7 @@ class Matching:
     """
 
     def __init__(self, donor_recipient_list: List[DonorRecipientTuple] = None):
-        # TODO list of TransplantRounds?
+        # TODO list of TransplantRounds? https://trello.com/c/rVM316iW
         self._donor_recipient_list = donor_recipient_list
         self._initialize()
 
