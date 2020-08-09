@@ -7,6 +7,7 @@
 # TODO: ask what exact antigens should I count in the matches - for example what about DR52, DR53 - what do those mean https://trello.com/c/08MZVRCk
 # TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9) https://trello.com/c/MR4qk853
 import logging
+import sys
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -123,5 +124,32 @@ def is_split(antigen_code: str) -> Optional[bool]:
     return None
 
 
+def hla_split_to_broad(split_code: str) -> str:
+    return split_to_broad.get(split_code) or split_code
+
+
+HLA_A_broad = list(map(hla_split_to_broad, HLA_A))
+HLA_B_broad = list(map(hla_split_to_broad, HLA_B))
+HLA_DR_broad = list(map(hla_split_to_broad, HLA_DR))
+
+
+def is_valid_broad_code(code: str) -> bool:
+    for code_list in [HLA_A_broad, HLA_B_broad, HLA_DR_broad]:
+        if code in code_list:
+            return True
+
+    return False
+
+
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG,
+                        format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
+                        stream=sys.stdout)
+    test_code = "B38"
+    broad_res_code = hla_split_to_broad(test_code)
+    logger.info(f"Broad res code: {broad_res_code} [is valid: {is_valid_broad_code(broad_res_code)}]")
+
+    logger.info(HLA_A_broad)
+    logger.info(HLA_B_broad)
+    logger.info(HLA_DR_broad)
     logger.info(broad_to_split)
