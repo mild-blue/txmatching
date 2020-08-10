@@ -35,8 +35,8 @@ class FilterDefault(FilterBase):
                 max([sequence.length for sequence in sequences], default=0) > self._max_sequence_length:
             return False
 
-        # TODO tady to funguje, ale ze solveru ocividne nevylezou vsechny, protoze se nenajde zadna, kde by byl pocet = 1 (ackoliv z logiky veci musi existovat)
-        # https://trello.com/c/HL4xunKV/132-solver-does-not-return-trivial-matchings
+        # TODO update to get even non-maximal matchings, i.e. with 1 country only
+        #  https://trello.com/c/HL4xunKV/132-solver-does-not-return-trivial-matchings
         if max([transplant_round.country_count for transplant_round in
                 sequences + cycles]) > self._max_number_of_distinct_countries_in_round:
             return False
