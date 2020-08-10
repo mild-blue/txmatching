@@ -142,6 +142,7 @@ def is_valid_broad_code(code: str) -> bool:
 
 
 if __name__ == "__main__":
+    # TODO move to proper tests https://trello.com/c/4dLy7x6Y
     logging.basicConfig(level=logging.DEBUG,
                         format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
                         stream=sys.stdout)
