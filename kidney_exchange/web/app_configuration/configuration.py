@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
-class Config:
+class ApplicationConfiguration:
     """
     Configuration of the web application.
     """
@@ -22,19 +22,19 @@ class Config:
     postgres_url: str
 
 
-def get_config() -> Config:
+def get_application_configuration() -> ApplicationConfiguration:
     """
     Obtains configuration from the application context.
     """
-    return get_or_set('config', build_configuration)
+    return get_or_set('application_configuration', build_application_configuration)
 
 
-def build_configuration() -> Config:
+def build_application_configuration() -> ApplicationConfiguration:
     """
     Builds configuration from environment or from the Flask properties
     """
     logger.debug('Building configuration.')
-    config = Config(
+    config = ApplicationConfiguration(
         postgres_user=get_prop('POSTGRES_USER'),
         postgres_password=get_prop('POSTGRES_PASSWORD'),
         postgres_db=get_prop('POSTGRES_DB'),
