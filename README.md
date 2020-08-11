@@ -88,7 +88,7 @@ When there's new change in the `conda.yml` (a teammate added new package) execut
 Right now Flask web server tries to load configuration from the environment
 with fallback to loading from [`local_config.py`](kidney_exchange/web/local_config.py). 
 All current configuration can be found [here](kidney_exchange/web/app_configuration/configuration.py).
-To obtain configuration in the code, one should call `get_config()`
+To obtain configuration in the code, one should call `get_application_configuration()`
  from [configuration.py](kidney_exchange/web/app_configuration/configuration.py).
 
 ## Graph Tool
