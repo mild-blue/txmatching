@@ -87,9 +87,9 @@ When there's new change in the `conda.yml` (a teammate added new package) execut
 ## Application configuration
 Right now Flask web server tries to load configuration from the environment
 with fallback to loading from [`local_config.py`](kidney_exchange/web/local_config.py). 
-All current configuration can be found [here](kidney_exchange/web/app_configuration/configuration.py).
+All current configuration can be found [here](kidney_exchange/web/app_configuration/application_configuration.py).
 To obtain configuration in the code, one should call `get_application_configuration()`
- from [configuration.py](kidney_exchange/web/app_configuration/configuration.py).
+ from [application_configuration.py](kidney_exchange/web/app_configuration/application_configuration.py).
 
 ## Graph Tool
 Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't 
