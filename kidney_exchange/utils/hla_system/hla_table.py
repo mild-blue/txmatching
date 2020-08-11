@@ -140,18 +140,3 @@ def is_valid_broad_code(code: str) -> bool:
             return True
 
     return False
-
-
-if __name__ == "__main__":
-    # TODO move to proper tests https://trello.com/c/4dLy7x6Y
-    logging.basicConfig(level=logging.DEBUG,
-                        format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
-                        stream=sys.stdout)
-    test_code = "B38"
-    broad_res_code = hla_split_to_broad(test_code)
-    logger.info(f"Broad res code: {broad_res_code} [is valid: {is_valid_broad_code(broad_res_code)}]")
-
-    logger.info(HLA_A_broad)
-    logger.info(HLA_B_broad)
-    logger.info(HLA_DR_broad)
-    logger.info(broad_to_split)
