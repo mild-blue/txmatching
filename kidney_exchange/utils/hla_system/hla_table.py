@@ -8,6 +8,7 @@
 #  https://trello.com/c/08MZVRCk
 # TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9) https://trello.com/c/UIo23mPb
 import logging
+import sys
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -124,5 +125,18 @@ def is_split(antigen_code: str) -> Optional[bool]:
     return None
 
 
-if __name__ == "__main__":
-    logger.info(broad_to_split)
+def hla_split_to_broad(split_code: str) -> str:
+    return split_to_broad.get(split_code) or split_code
+
+
+HLA_A_broad = list(map(hla_split_to_broad, HLA_A))
+HLA_B_broad = list(map(hla_split_to_broad, HLA_B))
+HLA_DR_broad = list(map(hla_split_to_broad, HLA_DR))
+
+
+def is_valid_broad_code(code: str) -> bool:
+    for code_list in [HLA_A_broad, HLA_B_broad, HLA_DR_broad]:
+        if code in code_list:
+            return True
+
+    return False
