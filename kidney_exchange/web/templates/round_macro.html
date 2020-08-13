@@ -12,6 +12,8 @@
             {% set linkClass = linkClass + ' light' %}
         {% endif %}
         <div class="{{ linkClass }}"
+             data-js-selector="set-score-gradient"
+             data-score="{{ score }}"
            style="border-right: 20px solid {{ ui_utils.color_gradient(score) }}">
             <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px" class="flag">
             {{ donor.medical_id }}<span class="arrow-right"></span>{{ recipient.medical_id }}
