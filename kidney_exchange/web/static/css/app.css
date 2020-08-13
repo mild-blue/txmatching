@@ -94,7 +94,8 @@ form input:focus, form textarea:focus {
   box-shadow: 0 0 5px rgba(226, 0, 26, 0.5);
   border: 1px solid #e2001a;
 }
-form input[type=submit] {
+
+button, input[type=submit] {
   background-color: #e2001a;
   border: none;
   box-shadow: none;
@@ -104,11 +105,10 @@ form input[type=submit] {
   font-size: inherit;
   font-weight: 600;
 }
-form input[type=submit]:hover {
+button:hover, input[type=submit]:hover {
   cursor: pointer;
   background-color: #a80018;
 }
-
 button:focus, input[type=submit]:focus {
   outline: none;
 }
@@ -336,7 +336,7 @@ h1::after {
 }
 .transplant-content {
   flex-grow: 1;
-  padding: 30px;
+  padding: 30px 30px 10px;
 }
 
 .transplant .small {
@@ -550,6 +550,29 @@ code {
   display: block;
   word-wrap: break-word;
   margin: 5px 0;
+}
+
+.main h1::after {
+  display: none;
+}
+.main .title {
+  text-align: center;
+}
+.main .content {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  padding: 0 30px;
+  display: flex;
+  flex-direction: column;
+}
+.main .buttons {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.load_patients_container button {
+  margin-top: 30px;
 }
 
 /*# sourceMappingURL=app.css.map */
