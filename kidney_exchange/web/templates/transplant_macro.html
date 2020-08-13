@@ -2,9 +2,7 @@
 
 {% macro render_transplant(donor, recipient, score_dict, matching_index, pair_index, compatible_blood_dict) %}
 {% set score = score_dict[(donor.db_id, recipient.db_id)] %}
-{% set donor_blood_is_acceptable = donor.parameters.blood_group in recipient.parameters.acceptable_blood_groups %}
 {% set donor_blood_is_compatible = compatible_blood_dict[(donor.db_id, recipient.db_id)] %}
-{% set matching_blood_group = donor.parameters.blood_group if donor_blood_is_acceptable else None %}
 {% set matching_antigens = donor.parameters.hla_antigens.codes | intersect(recipient.parameters.hla_antigens.codes) %}
 {% set scoreA = (matching_antigens | filtered_count_by_prefix("A")) * 1 %}
 {% set scoreB = (matching_antigens | filtered_count_by_prefix("B")) * 3 %}

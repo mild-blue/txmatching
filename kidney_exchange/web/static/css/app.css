@@ -94,8 +94,7 @@ form input:focus, form textarea:focus {
   box-shadow: 0 0 5px rgba(226, 0, 26, 0.5);
   border: 1px solid #e2001a;
 }
-
-button, input[type=submit] {
+form input[type=submit] {
   background-color: #e2001a;
   border: none;
   box-shadow: none;
@@ -105,10 +104,11 @@ button, input[type=submit] {
   font-size: inherit;
   font-weight: 600;
 }
-button:hover, input[type=submit]:hover {
+form input[type=submit]:hover {
   cursor: pointer;
   background-color: #a80018;
 }
+
 button:focus, input[type=submit]:focus {
   outline: none;
 }
@@ -336,7 +336,7 @@ h1::after {
 }
 .transplant-content {
   flex-grow: 1;
-  padding: 30px 30px 10px;
+  padding: 30px;
 }
 
 .transplant .small {
@@ -501,11 +501,6 @@ h1::after {
   background: rgba(0, 128, 0, 0.2) !important;
   color: green !important;
 }
-.matching-antibodies {
-  border: 1px solid red !important;
-  background: rgba(255, 0, 0, 0.2) !important;
-  color: red !important;
-}
 
 .matching-detail {
   display: flex;
@@ -557,27 +552,46 @@ code {
   margin: 5px 0;
 }
 
-.main h1::after {
-  display: none;
-}
-.main .title {
-  text-align: center;
-}
-.main .content {
-  width: 100%;
-  max-width: 900px;
-  margin: auto;
-  padding: 0 30px;
+.login-form {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  /* center horizontally */
+  align-items: center;
+  /* center vertically */
+  width: 100%;
+  position: relative;
+  top: 100px;
+  color: #fff;
+  text-align: center;
+  font-size: 18px;
 }
-.main .buttons {
-  margin-bottom: 40px;
+
+.title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 400px;
+  height: 400px;
+  color: #fff;
   text-align: center;
 }
 
-.load_patients_container button {
-  margin-top: 30px;
+.login-title {
+  font-size: 21px;
+  margin-bottom: 30px;
+}
+
+.form-field {
+  margin: 10px;
+  width: 290px !important;
+}
+
+.text_box {
+  background: whitesmoke;
+  border-radius: 10px;
+  padding: 20px 20px 3px;
+  margin: 50px;
 }
 
 /*# sourceMappingURL=app.css.map */
