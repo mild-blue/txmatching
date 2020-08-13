@@ -113,7 +113,7 @@ Styles are located in `kidney_exchange/web/static/scss` directory. Minor files l
 
 #### Install SASS
 Install SASS preprocessor using `npm` by running:
-```~~~~~~~~~~~~
+```
 npm install -g sass
 ```
 #### Compile
