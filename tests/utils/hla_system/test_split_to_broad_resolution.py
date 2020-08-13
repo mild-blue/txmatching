@@ -1,7 +1,7 @@
 import logging
 import unittest
 
-from kidney_exchange.utils.hla_system.split_to_broad_resolution import hla_split_to_broad
+from kidney_exchange.utils.hla_system.hla_table import hla_split_to_broad
 from tests.patients.test_patient_parameters import donor_parameters_Joe, recipient_parameters_Jack
 
 logger = logging.getLogger(__name__)

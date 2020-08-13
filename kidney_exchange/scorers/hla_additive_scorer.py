@@ -58,9 +58,11 @@ class HLAAdditiveScorer(AdditiveScorer):
             return TRANSPLANT_IMPOSSIBLE
 
         # Recipient can't have antibodies that donor has antigens for
+        # TODO: Add flag: allow_low_high_res_incompatible that if set to True would not return TRANSPLANT_IMPOSSIBLE
+        #  https://trello.com/c/UIo23mPb
         is_positive_hla_crossmatch = self._is_positive_hla_crossmatch(donor, recipient)
         if is_positive_hla_crossmatch is True or is_positive_hla_crossmatch is None:
-            return TRANSPLANT_IMPOSSIBLE  # TODO: Add flag: allow_low_high_res_incompatible that if set to True would not return TRANSPLANT_IMPOSSIBLE here
+            return TRANSPLANT_IMPOSSIBLE
 
         # If required, donor must have either better match in blood group or better compatibility index than
         # the donor related to the recipient

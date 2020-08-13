@@ -1,5 +1,4 @@
 import logging
-import os
 import sys
 from importlib import util as importing
 
@@ -8,6 +7,8 @@ from flask import Flask
 
 from kidney_exchange.database.db import db
 from kidney_exchange.database.services.app_user_management import get_app_user_by_email
+from kidney_exchange.web.app_configuration.application_configuration import ApplicationConfiguration, \
+    get_application_configuration
 from kidney_exchange.web.data_api import data_api
 from kidney_exchange.web.functional_api import functional_api
 from kidney_exchange.web.service_api import service_api
@@ -48,20 +49,17 @@ def create_app():
         if importing.find_spec(config_file):
             app.config.from_object(config_file)
 
-    def configure_db():
-        # TODO load configuration from file and override it with env - to discussion with team https://trello.com/c/OXeSTk75/
-        user = os.environ.get("POSTGRES_USER", app.config.get("POSTGRES_USER"))
-        password = os.environ.get("POSTGRES_PASSWORD", app.config.get("POSTGRES_PASSWORD"))
-        url = os.environ.get("POSTGRES_URL", app.config.get("POSTGRES_URL"))
-        po_db = os.environ.get("POSTGRES_DB", app.config.get("POSTGRES_DB"))
-
+    def configure_db(application_config: ApplicationConfiguration):
         app.config['SQLALCHEMY_DATABASE_URI'] \
-            = f'postgresql+psycopg2://{user}:{password}@{url}/{po_db}'
+            = f'postgresql+psycopg2://' \
+              f'{application_config.postgres_user}:{application_config.postgres_password}@' \
+              f'{application_config.postgres_url}/{application_config.postgres_db}'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
         db.init_app(app)
 
     with app.app_context():
         load_local_development_config()
-        configure_db()
+        application_config = get_application_configuration()
+        configure_db(application_config)
         return app

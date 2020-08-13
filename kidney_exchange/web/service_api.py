@@ -2,7 +2,7 @@ import logging
 import os
 
 import bcrypt
-from flask import jsonify, g, Blueprint, current_app as app, render_template, request, url_for, redirect, flash, abort
+from flask import jsonify, Blueprint, current_app as app, render_template, request, url_for, redirect, flash, abort
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy.exc import OperationalError
 
@@ -35,10 +35,7 @@ def get_version() -> str:
     """
     Retrieves version from the flask app.
     """
-    if 'version' not in g:  # TODO tohle nefunguje https://trello.com/c/uW9HT1sx/111-v-getversion-verze-nikdy-neni-v-g
-        g.version = read_version('development')
-
-    return g.version
+    return read_version('development')
 
 
 def read_version(default: str) -> str:
@@ -93,7 +90,7 @@ def logout():
     return redirect(url_for("functional.home"))
 
 
-# TODO Improve this
+# TODO Improve this https://trello.com/c/pKMqnv7X
 def check_admin(role: str):
     if role != 'ADMIN':
         abort(403)

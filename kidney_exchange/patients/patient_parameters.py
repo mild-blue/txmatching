@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from kidney_exchange.utils.hla_system.split_to_broad_resolution import hla_split_to_broad, \
-    is_valid_broad_code
+from kidney_exchange.utils.hla_system.hla_table import hla_split_to_broad, is_valid_broad_code
 
 
 @dataclass
