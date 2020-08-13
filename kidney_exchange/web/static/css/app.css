@@ -501,11 +501,6 @@ h1::after {
   background: rgba(0, 128, 0, 0.2) !important;
   color: green !important;
 }
-.matching-antibodies {
-  border: 1px solid red !important;
-  background: rgba(255, 0, 0, 0.2) !important;
-  color: red !important;
-}
 
 .matching-detail {
   display: flex;
@@ -555,6 +550,48 @@ code {
   display: block;
   word-wrap: break-word;
   margin: 5px 0;
+}
+
+.login-form {
+  display: flex;
+  justify-content: center;
+  /* center horizontally */
+  align-items: center;
+  /* center vertically */
+  width: 100%;
+  position: relative;
+  top: 100px;
+  color: #fff;
+  text-align: center;
+  font-size: 18px;
+}
+
+.title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 400px;
+  height: 400px;
+  color: #fff;
+  text-align: center;
+}
+
+.login-title {
+  font-size: 21px;
+  margin-bottom: 30px;
+}
+
+.form-field {
+  margin: 10px;
+  width: 290px !important;
+}
+
+.text_box {
+  background: whitesmoke;
+  border-radius: 10px;
+  padding: 20px 20px 3px;
+  margin: 50px;
 }
 
 /*# sourceMappingURL=app.css.map */
