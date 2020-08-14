@@ -1,7 +1,7 @@
 {% from 'round_macro.html' import render_round %}
 {% from 'donor_recipient_country_count_macro.html' import donor_recipient_country_count_macro %}
 
-{% macro render_matching(matching, score_dict, use_binary_scoring, matching_index, selected_matching_index, compatible_blood_dict) %}
+{% macro render_matching(matching, score_dict, configuration, matching_index, selected_matching_index, compatible_blood_dict) %}
 <a href="?matching_index={{matching_index}}"
    class="matching-item {% if matching_index == selected_matching_index %}active{% endif %}">
     <div class="matching-item__content">
@@ -15,7 +15,7 @@
         </div>
 
         {% for round in matching.get_rounds() %}
-            {{ render_round(round, score_dict, use_binary_scoring, loop.index, matching_index, compatible_blood_dict) }}
+            {{ render_round(round, score_dict, configuration, loop.index, matching_index, compatible_blood_dict) }}
         {% endfor %}
     </div>
 
