@@ -1,4 +1,4 @@
-{% macro render_round(round, score_dict, ui_utils, round_index, matching_index, compatible_blood_dict) %}
+{% macro render_round(round, score_dict, use_binary_scoring, round_index, matching_index, compatible_blood_dict) %}
 
 <div class="round">
     <span class="index">{{ round_index }}{{ round.briding_donor_altruist_or_nothing()}}</span>
@@ -12,7 +12,7 @@
             {% set linkClass = linkClass + ' light' %}
         {% endif %}
         <div class="{{ linkClass }}"
-             data-js-selector="set-score-gradient"
+             data-js-selector="{% if not use_binary_scoring %}set-score-gradient{% endif %}"
              data-score="{{ score }}">
             <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px" class="flag">
             {{ donor.medical_id }}<span class="arrow-right"></span>{{ recipient.medical_id }}
