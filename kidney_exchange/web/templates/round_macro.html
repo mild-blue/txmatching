@@ -5,16 +5,15 @@
     <div>
     {% for donor, recipient in round.donor_recipient_list %}
         {% set transplant_score = (score_dict[(donor.db_id, recipient.db_id)] | int) %}
-        {% set score = (100 * transplant_score / 27 | int) %}
-        {% set should_be_background_dark_grey =  compatible_blood_dict[(donor.db_id, recipient.db_id)] %}
+        {% set score = transplant_score / 27 %} <!-- Score is a float value between 0 and 1 -->
+        {% set should_be_background_dark_grey = compatible_blood_dict[(donor.db_id, recipient.db_id)] %}
         {% set linkClass = 'chain_link' %}
         {% if should_be_background_dark_grey %}
             {% set linkClass = linkClass + ' light' %}
         {% endif %}
         <div class="{{ linkClass }}"
              data-js-selector="set-score-gradient"
-             data-score="{{ transplant_score }}"
-           style="border-right: 20px solid {{ ui_utils.color_gradient(score) }}">
+             data-score="{{ score }}">
             <img src="static/img/countries/{{donor.parameters.country_code}}.png" style="margin-right: 5px" class="flag">
             {{ donor.medical_id }}<span class="arrow-right"></span>{{ recipient.medical_id }}
             <img src="static/img/countries/{{recipient.parameters.country_code}}.png" style="margin-left: 5px" class="flag">
