@@ -11,7 +11,6 @@ from kidney_exchange.solve_service.solve_from_db import solve_from_db
 from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
 from kidney_exchange.data_transfer_objects.configuration.configuration_to_dto import configuration_to_dto
 from kidney_exchange.web.service_api import check_admin
-from kidney_exchange.web.web_utils import ui_utils
 from kidney_exchange.web.web_utils.load_patients_utils import is_allowed_file_extension
 
 logger = logging.getLogger(__name__)
@@ -57,7 +56,6 @@ def browse_solutions():
                            score_dict=score_dict,
                            selected_exchange_index=selected_exchange_index,
                            configuration=configuration_dto,
-                           ui_utils=ui_utils,
                            matching_index=matching_index,
                            compatible_blood_dict=compatible_blood_dict)
 
