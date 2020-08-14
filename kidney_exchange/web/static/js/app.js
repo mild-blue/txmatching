@@ -2,8 +2,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if(window.innerWidth > 1200) {
         scrollWatcher();
     }
-
-    initColors();
 })
 
 function scrollWatcher() {
@@ -26,35 +24,29 @@ function scrollWatcher() {
 
 // Gradient generator
 
-function initColors() {
-    const colorMap = new Map();
-    const maxScore = 27;
-    const increment = 1.0 / (maxScore - 1);
-
-    for (let i = 0; i <= maxScore; i++) {
-        const colorObject = bezierInterpolation(increment * i);
-        colorMap.set(i, `rgb(${colorObject.r}, ${colorObject.g}, ${colorObject.b})`);
-    }
-
-    const rounds = document.querySelectorAll('[data-js-selector="set-score-gradient"]');
-
-    for(let round of rounds) {
-        const score = Number(round.getAttribute('data-score'));
-        const color = colorMap.get(score);
+const rounds = document.querySelectorAll('[data-js-selector="set-score-gradient"]');
+for(let round of rounds) {
+    const score = Number(round.getAttribute('data-score'));
+    if(score >= 0 && score <= 1) {
+        const color = getGradientColor(score);
         if(color) {
             round.setAttribute('style', `border-right: 20px solid ${color}`);
         }
     }
 }
 
-function bezierInterpolation(x) {
-    const firstColor = {r: 226, g: 0, b: 26}; // minimum -- red
-    const secondColor = {r: 0, g: 128, b: 0}; // maximum -- green
-    const y = 1 - x;
+function getGradientColor(score) {
+    // generating colors in this gradient range: https://uigradients.com/#KyooPal
+    const startColor = {r: 221, g: 62, b: 84}; // score = 0 -> red
+    const endColor = {r: 107, g: 229, b: 113}; // score = 1 -> green
 
-    const vR = y * firstColor.r + x * secondColor.r;
-    const vG = y * firstColor.g + x * secondColor.g;
-    const vB = y * firstColor.b + x * secondColor.b;
+    let diffRed = endColor.r - startColor.r;
+    let diffGreen = endColor.g - startColor.g;
+    let diffBlue = endColor.b - startColor.b;
 
-    return { r: Math.trunc(vR), g: Math.trunc(vG), b: Math.trunc(vB) };
+    diffRed = (diffRed * score) + startColor.r;
+    diffGreen = (diffGreen * score) + startColor.g;
+    diffBlue = (diffBlue * score) + startColor.b;
+
+    return `rgb(${diffRed}, ${diffGreen}, ${diffBlue})`;
 }
