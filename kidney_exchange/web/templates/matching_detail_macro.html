@@ -1,6 +1,6 @@
 {% from 'transplant_macro.html' import render_transplant %}
 
-{% macro render_matching_detail(matching, score_dict, ui_utils, round_index) %}
+{% macro render_matching_detail(matching, score_dict, round_index) %}
 
 {% for round in matching.get_rounds() %}
 <div class="round-detail">
