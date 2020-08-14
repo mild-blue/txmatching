@@ -20,7 +20,7 @@
         <h1>Found matchings ({{ matchings|length }})</h1>
         <div class="matching-list">
             {% for matching in matchings %}
-                {{ render_matching(matching, score_dict, configuration.use_binary_scoring, loop.index, matching_index, compatible_blood_dict) }}
+                {{ render_matching(matching, score_dict, configuration, loop.index, matching_index, compatible_blood_dict) }}
             {% endfor %}
         </div>
     </div>
