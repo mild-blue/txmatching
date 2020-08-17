@@ -1,8 +1,8 @@
 {% from 'hla_macro.html' import render_hla %}
 
-{% macro render_transplant(donor, recipient, score_dict, matching_index, round_index, pair_index) %}
+{% macro render_transplant(donor, recipient, score_dict, matching_index, pair_index, compatible_blood_dict) %}
 {% set score = score_dict[(donor.db_id, recipient.db_id)] %}
-{% set matching_blood_group = donor.parameters.blood_group if donor.parameters.blood_group in recipient.parameters.acceptable_blood_groups else None %}
+{% set donor_blood_is_compatible = compatible_blood_dict[(donor.db_id, recipient.db_id)] %}
 {% set matching_antigens = donor.parameters.hla_antigens.codes | intersect(recipient.parameters.hla_antigens.codes) %}
 {% set scoreA = (matching_antigens | filtered_count_by_prefix("A")) * 1 %}
 {% set scoreB = (matching_antigens | filtered_count_by_prefix("B")) * 3 %}
@@ -40,12 +40,11 @@
             <tr>
                 <td>Blood type</td>
                 <td>
-                    {% set bloodClass = "matching-blood-group" if donor.parameters.blood_group == recipient.parameters.blood_group else "" %}
+                    {% set bloodClass = "matching-blood-group" if donor_blood_is_compatible else "" %}
                     <span class="inline_code {{ bloodClass }}">{{ donor.parameters.blood_group }}</span>
                 </td>
                 <td colspan="2">
-                    {% set bloodClass = "matching-blood-group" if matching_blood_group ==
-                    recipient.parameters.blood_group else "" %}
+                    {% set bloodClass = "matching-blood-group" if donor_blood_is_compatible else "" %}
                     <span class="inline_code {{ bloodClass }}">{{ recipient.parameters.blood_group }}</span>
                     <div class="small">
                         Acceptable:
