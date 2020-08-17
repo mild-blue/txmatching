@@ -1,6 +1,6 @@
 {% from 'transplant_macro.html' import render_transplant %}
 
-{% macro render_matching_detail(matching, score_dict, round_index) %}
+{% macro render_matching_detail(matching, score_dict, compatible_blood_dict) %}
 
 {% for round in matching.get_rounds() %}
 <div class="round-detail">
@@ -9,7 +9,7 @@
         {{loop.index}}
     </h2>
     {% for donor, recipient in round.donor_recipient_list %}
-        {{ render_transplant(donor, recipient, score_dict, matching_index, round_index, pair_index) }}
+        {{ render_transplant(donor, recipient, score_dict, matching_index, pair_index, compatible_blood_dict) }}
     {% endfor %}
 </div>
 {% endfor %}
