@@ -284,10 +284,11 @@ h1::after {
   padding: 8px 10px 5px;
   background-color: #666666;
   color: #ffffff;
-  border-radius: 6px;
-  margin: 2px 0;
+  border-radius: 6px 0 0 6px;
+  margin: 2px 20px 2px 0;
   transition: all 0.2s ease;
   font-weight: 400;
+  position: relative;
 }
 .round .chain_link .arrow-right {
   border-left-color: #ffffff;
@@ -301,7 +302,17 @@ h1::after {
   border-left-color: #000000;
 }
 .round .chain_link:not(:last-child) {
-  margin-right: 5px;
+  margin-right: 25px;
+}
+.round .chain_link .indicator {
+  background: linear-gradient(to right, #ff0000, #fff200, #1e9600) no-repeat;
+  background-size: 100vw;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  height: 100%;
+  width: 20px;
+  border-radius: 0 6px 6px 0;
 }
 
 .transplant {
