@@ -1,6 +1,7 @@
 import logging
 
-from kidney_exchange.scorers.hla_additive_scorer import BLOOD_GROUP_COMPATIBILITY_BONUS
+from kidney_exchange.scorers.hla_additive_scorer import \
+    BLOOD_GROUP_COMPATIBILITY_BONUS
 from kidney_exchange.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
 from kidney_exchange.web import create_app
 
@@ -9,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 @app.template_filter('intersect')
-def intersect(a, b):
-    return list(set(a) & set(b))
+def intersect(set_1, set_2):
+    return list(set(set_1) & set(set_2))
 
 
 @app.template_filter('filtered_count_by_prefix')
