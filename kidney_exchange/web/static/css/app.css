@@ -10,6 +10,7 @@ body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 body * {
   box-sizing: border-box;
@@ -584,6 +585,49 @@ code {
 
 .load_patients_container button {
   margin-top: 30px;
+}
+
+.login {
+  padding: 30px;
+  background: #eee;
+}
+.login h1 {
+  text-align: center;
+}
+.login h1:after {
+  display: none;
+}
+.login main {
+  flex-grow: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.login-form {
+  padding: 30px;
+  width: 350px;
+  max-width: 100%;
+  border-radius: 6px;
+  box-shadow: 0 3.2px 7.2px 0 rgba(0, 0, 0, 0.132), 0 0.6px 1.8px 0 rgba(0, 0, 0, 0.108);
+  background: #ffffff;
+}
+.login-form .form-field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.login-form .form-field > * {
+  flex-grow: 1;
+}
+.login-form button {
+  margin: auto;
+  display: block;
+  margin-top: 30px;
+}
+.login .messages {
+  color: #e2001a;
 }
 
 /*# sourceMappingURL=app.css.map */
