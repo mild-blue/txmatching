@@ -1,14 +1,18 @@
 import datetime
+from dataclasses import dataclass
 from typing import Tuple, Optional
 
 import jwt
 
 from kidney_exchange.database.sql_alchemy_schema import AppUser
 from kidney_exchange.web.app_configuration.application_configuration import get_application_configuration
-from kidney_exchange.web.auth.bcrypt import bcrypt
+from kidney_exchange.web.auth import bcrypt
 
 
 def encode_password(password: str) -> str:
+    """
+    Encodes password to hash.
+    """
     return bcrypt.generate_password_hash(password).decode()
 
 
@@ -40,14 +44,20 @@ def encode_auth_token(user: AppUser) -> bytearray:
     )
 
 
-def decode_auth_token(auth_token: str) -> Tuple[Optional[str], Optional[str]]:
+@dataclass(frozen=True)
+class BearerToken:
+    user_email: str
+    role: str
+
+
+def decode_auth_token(auth_token: str) -> Tuple[Optional[BearerToken], Optional[str]]:
     """
     Validates the auth token, returns user mail on success, error message on failure.
     """
     try:
         app_conf = get_application_configuration()
         payload = jwt.decode(auth_token, app_conf.jwt_secret)
-        return payload['user_email'], None
+        return BearerToken(payload['user_email'], payload['role']), None
     except jwt.ExpiredSignatureError:
         return None, 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:

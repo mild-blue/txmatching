@@ -13,7 +13,7 @@ from txmatching.database.services.app_user_management import \
 from txmatching.web.api.auth_api import user_api
 from txmatching.web.app_configuration.application_configuration import (
     ApplicationConfiguration, get_application_configuration)
-from txmatching.web.auth.bcrypt import bcrypt
+from txmatching.web.auth import bcrypt
 from txmatching.web.data_api import data_api
 from txmatching.web.functional_api import functional_api
 from txmatching.web.service_api import service_api
