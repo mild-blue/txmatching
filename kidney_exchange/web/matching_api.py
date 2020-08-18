@@ -1,55 +1,59 @@
 import logging
+from typing import List
 
-import bcrypt
-from flask import Blueprint, flash, redirect, render_template, request, url_for
-from flask_login import current_user, login_user
+import flask
+from flask import Blueprint, request
+from flask_login import current_user
 
-from kidney_exchange.data_transfer_objects.configuration.configuration_to_dto import \
-    configuration_to_dto
-from kidney_exchange.database.services.app_user_management import \
-    get_app_user_by_email
+from kidney_exchange.data_transfer_objects.configuration.configuration_from_dto import \
+    configuration_from_dto
+from kidney_exchange.data_transfer_objects.matchings.matching_dto import (
+    MatchingDTO, RoundDTO, Transplant)
 from kidney_exchange.database.services.config_service import \
-    get_current_configuration
+    save_configuration_as_current
 from kidney_exchange.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
+from kidney_exchange.database.services.patient_service import get_all_patients
+from kidney_exchange.patients.patient import Patient
 from kidney_exchange.solve_service.solve_from_db import solve_from_db
-from kidney_exchange.web.functional_api import MATCHINGS_TO_SHOW_TO_VIEWER
+from kidney_exchange.web.service_api import check_admin_or_editor
 
 logger = logging.getLogger(__name__)
 
-service_api = Blueprint('service', __name__)
+matching_api = Blueprint('matching', __name__)
 
 LOGIN_FLASH_CATEGORY = 'LOGIN'
 
 
-@service_api.route('/get-matchings', methods=['POST'])
-def get_matchings():
-
-    configuration_dto = configuration_to_dto(get_current_configuration())
-
-    selected_exchange_index = request.args.get('selected_exchange_index', 1)
-
-    try:
-        latest_matchings_and_score_matrix = get_latest_matchings_and_score_matrix()
-    except AssertionError:
+@matching_api.route('/get-matchings', methods=['POST'])
+def get_matchings() -> List[MatchingDTO]:
+    check_admin_or_editor(current_user.role)
+    if flask.request.method == 'POST':
+        configuration = configuration_from_dto(request.json)
+        save_configuration_as_current(configuration)
         solve_from_db()
-        latest_matchings_and_score_matrix = get_latest_matchings_and_score_matrix()
+        matchings, score_dict, compatible_blood_dict = get_latest_matchings_and_score_matrix()
 
-    matchings, score_dict, compatible_blood_dict = latest_matchings_and_score_matrix
+        matching_dtos = [
+            MatchingDTO(
+                rounds=[
+                    RoundDTO(
+                        transplants=[
+                            Transplant(
+                                score_dict[(donor.db_id, recipient.db_id)],
+                                compatible_blood_dict[(donor.db_id, recipient.db_id)],
+                                donor.medical_id,
+                                recipient.medical_id) for donor, recipient in round.donor_recipient_list])
+                    for round in matching.get_rounds()],
+                countries=matching.get_country_codes_counts(),
+                score=matching.score()
+            ) for matching in matchings
+        ]
 
-    matching_index = int(request.args.get('matching_index', 1))
+        return matching_dtos
 
-    if current_user.role == 'VIEWER':
-        matchings = matchings[:MATCHINGS_TO_SHOW_TO_VIEWER]
-        enable_configuration = False
-    else:
-        enable_configuration = True
 
-    return render_template('browse_solutions.html',
-                           enable_configuration=enable_configuration,
-                           matchings=matchings,
-                           score_dict=score_dict,
-                           selected_exchange_index=selected_exchange_index,
-                           configuration=configuration_dto,
-                           matching_index=matching_index,
-                           compatible_blood_dict=compatible_blood_dict)
+@matching_api.route('/get-matchings', methods=['GET'])
+def get_patients() -> List[Patient]:
+    check_admin_or_editor(current_user.role)
+    return list(get_all_patients())

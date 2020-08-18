@@ -6,7 +6,8 @@ from kidney_exchange.patients.patient_types import CountryCode, MedicalId
 
 @dataclass
 class Transplant:
-    score: int
+    score: float
+    compatible_blood: bool
     donor: MedicalId
     recipient: MedicalId
 
@@ -16,6 +17,7 @@ class RoundDTO:
     transplants: List[Transplant]
 
 
+@dataclass
 class CountryDTO:
     country_code: CountryCode
     donor_count: int
@@ -24,6 +26,6 @@ class CountryDTO:
 
 @dataclass
 class MatchingDTO:
-    score: int
+    score: float
     rounds: List[RoundDTO]
     countries: List[CountryDTO]
