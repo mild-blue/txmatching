@@ -4,12 +4,16 @@ from importlib import util as importing
 
 import flask_login
 from flask import Flask
+from flask_restx import Api
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from txmatching.database.db import db
 from txmatching.database.services.app_user_management import \
     get_app_user_by_email
+from txmatching.web.api.auth_api import user_api
 from txmatching.web.app_configuration.application_configuration import (
     ApplicationConfiguration, get_application_configuration)
+from txmatching.web.auth.bcrypt import bcrypt
 from txmatching.web.data_api import data_api
 from txmatching.web.functional_api import functional_api
 from txmatching.web.service_api import service_api
@@ -23,6 +27,8 @@ def create_app():
                         stream=sys.stdout)
 
     app = Flask(__name__)
+    # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_port=1, x_for=1, x_host=1, x_prefix=1)
 
     # register blueprints
     app.register_blueprint(service_api)
@@ -59,8 +65,26 @@ def create_app():
 
         db.init_app(app)
 
+    def configure_encryption():
+        bcrypt.init_app(app)
+
+    def configure_apis():
+        # Set up Swagger and API
+        authorizations = {
+            'bearer': {
+                'type': 'apiKey',
+                'in': 'header',
+                'name': 'Authorization'
+            }
+        }
+
+        api = Api(app, authorizations=authorizations, doc='/doc/')
+        api.add_namespace(user_api, path='/user')
+
     with app.app_context():
         load_local_development_config()
         application_config = get_application_configuration()
         configure_db(application_config)
+        configure_encryption()
+        configure_apis()
         return app

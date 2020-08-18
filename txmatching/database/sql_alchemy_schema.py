@@ -100,7 +100,10 @@ class AppUser(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
-    def __init__(self):
+    def __init__(self, email: str, pass_hash: str, role: str):
+        self.email = email
+        self.pass_hash = pass_hash
+        self.role = role
         self._is_authenticated = False
 
     @staticmethod
