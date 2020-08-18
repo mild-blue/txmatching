@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 
 from kidney_exchange.database.services.app_user_management import get_app_user_by_email, persist_user
 from kidney_exchange.database.sql_alchemy_schema import AppUser
-from kidney_exchange.web.auth.crypto import compare_passwords, encode_auth_token, decode_auth_token, encode_password
+from kidney_exchange.web.auth.crypto import password_matches_hash, encode_auth_token, decode_auth_token, encode_password
 
 logger = logging.getLogger(__name__)
 
@@ -17,12 +17,8 @@ def obtain_login_token(email: str, password: str) -> Tuple[Optional[str], Option
         # fetch the user data
         user = get_app_user_by_email(email)
         error = None
-        if not user:
-            error = None, 'User does not exist!'
-        elif not compare_passwords(user.pass_hash, password):
-            # TODO - this is in a fact security vulnerability, we leaking information that user exist
-            # TODO - to discuss with a team, how do we want to proceed
-            error = None, 'Passwords do not match!'
+        if not user or not password_matches_hash(user.pass_hash, password):
+            error = None, 'Email password mismatch!'
 
         return error if error else (encode_auth_token(user).decode(), None)
     except Exception as e:

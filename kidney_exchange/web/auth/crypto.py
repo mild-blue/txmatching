@@ -16,11 +16,11 @@ def encode_password(password: str) -> str:
     return bcrypt.generate_password_hash(password).decode()
 
 
-def compare_passwords(pwd_hash: str, password: str) -> bool:
+def password_matches_hash(pwd_hash: str, password: str) -> bool:
     """
-    >>> compare_passwords(encode_password('hello'), 'hello')
+    >>> password_matches_hash(encode_password('hello'), 'hello')
     True
-    >>> compare_passwords(encode_password('hello'), 'not hello')
+    >>> password_matches_hash(encode_password('hello'), 'not hello')
     False
     """
     return bcrypt.check_password_hash(pwd_hash, password)
