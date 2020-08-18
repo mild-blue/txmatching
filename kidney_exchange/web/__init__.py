@@ -17,6 +17,7 @@ from kidney_exchange.web.app_configuration.application_configuration import (
 from kidney_exchange.web.auth import bcrypt
 from kidney_exchange.web.data_api import data_api
 from kidney_exchange.web.functional_api import functional_api
+from kidney_exchange.web.api.matching_api import matching_api, matching_blueprint
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'
@@ -35,6 +36,7 @@ def create_app():
     app.register_blueprint(functional_api)
     app.register_blueprint(data_api)
     app.register_blueprint(service_blueprint)
+    app.register_blueprint(matching_blueprint)
 
     # For flask.flash (gives feedback when uploading files)
     app.secret_key = 'secret key'
@@ -82,6 +84,7 @@ def create_app():
         api = Api(app, authorizations=authorizations, doc='/doc/')
         api.add_namespace(user_api, path=f'{API_VERSION}/user')
         api.add_namespace(service_api, path=f'{API_VERSION}/service')
+        api.add_namespace(matching_api, path=f'{API_VERSION}/matching')
 
     with app.app_context():
         load_local_development_config()
