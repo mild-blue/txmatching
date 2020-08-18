@@ -8,11 +8,11 @@ from flask import Flask
 from kidney_exchange.database.db import db
 from kidney_exchange.database.services.app_user_management import \
     get_app_user_by_email
-from kidney_exchange.web import matching_api
 from kidney_exchange.web.app_configuration.application_configuration import (
     ApplicationConfiguration, get_application_configuration)
 from kidney_exchange.web.data_api import data_api
 from kidney_exchange.web.functional_api import functional_api
+from kidney_exchange.web.matching_api import matching_api
 from kidney_exchange.web.service_api import service_api
 
 LOGIN_MANAGER = None
