@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: datavid19/kidney-exchange
+    image: mildblue/kidney-exchange
     env_file:
       - .env.pub
     ports:

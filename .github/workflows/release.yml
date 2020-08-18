@@ -17,7 +17,7 @@ jobs:
         uses: docker/build-push-action@v1
         with:
           # login to repo
-          repository: datavid19/kidney-exchange
+          repository: mildblue/kidney-exchange
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           # pass release_version

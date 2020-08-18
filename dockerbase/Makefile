@@ -1,2 +1,2 @@
 build:
-	docker build -t datavid19/conda-base .
+	docker build -t mildblue/conda-base .

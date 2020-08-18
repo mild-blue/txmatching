@@ -19,7 +19,7 @@ conda-activate:
 
 # builds docker image
 docker-build:
-	docker build -t datavid19/kidney-exchange .
+	docker build -t mildblue/kidney-exchange .
 
 # start up the db
 db:
@@ -58,7 +58,7 @@ deploy:
 redeploy:
 	git pull; \
 	docker image prune -f; \
-	docker pull datavid19/kidney-exchange:latest; \
+	docker pull mildblue/kidney-exchange:latest; \
 	docker-compose -f docker-compose.prod.yml stop backend || true; \
 	docker-compose -f docker-compose.prod.yml rm -f backend || true; \
 	docker-compose -f docker-compose.prod.yml up -d backend;

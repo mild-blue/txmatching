@@ -1,4 +1,6 @@
-FROM datavid19/conda-base AS build
+FROM mildblue/conda-base AS build
+LABEL description="Mild Blue - Kidney Matching"
+LABEL project="mildblue:txm"
 
 WORKDIR /app
 
