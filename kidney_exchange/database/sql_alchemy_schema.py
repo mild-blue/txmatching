@@ -92,7 +92,7 @@ class AppUser(db.Model):
     __tablename__ = 'app_user'
     __table_args__ = {'extend_existing': True}
 
-    id = db.Column(db.BIGINT, primary_key=True, nullable=False)
+    id = db.Column(db.BIGINT, primary_key=True, nullable=False, autoincrement=True)
     email = db.Column(db.TEXT, unique=True, nullable=False)
     pass_hash = db.Column(db.TEXT, unique=False, nullable=False)
     role = db.Column(db.TEXT, unique=False, nullable=False)

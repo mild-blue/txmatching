@@ -3,7 +3,8 @@ import logging
 from flask import request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields
 
-from kidney_exchange.web.auth.user_authentication import obtain_login_token, refresh_token
+from kidney_exchange.web.auth.login_check import login_required, require_role
+from kidney_exchange.web.auth.user_authentication import obtain_login_token, refresh_token, register_user
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,7 @@ class LoginApi(Resource):
 
 @user_api.route('/refresh-token', methods=['GET'])
 class RefreshTokenApi(Resource):
+    @login_required()
     @user_api.doc(security='bearer', responses={200: 'Success', 401: 'Auth denied'})
     def get(self):
         auth_header = request.headers.get('Authorization')
@@ -46,6 +48,27 @@ class RefreshTokenApi(Resource):
 
         if error:
             return auth_denied(error)
+        elif token:
+            return ok_token_status(token)
+
+
+@user_api.route('/register', methods=['POST'])
+class RegistrationApi(Resource):
+    registration_model = user_api.model('UserRegistration', {
+        'email': fields.String(required=True, description='Email used for authentication.'),
+        'password': fields.String(required=True, description='Users password.'),
+        'role': fields.String(required=True, description='Users role.'),
+    })
+
+    @user_api.doc(body=registration_model, security='bearer')
+    @require_role('ADMIN')
+    def post(self):
+        post_data = request.get_json()
+        token, error = register_user(email=post_data.get('email'),
+                                     password=post_data.get('password'),
+                                     role=post_data.get('role'))
+        if error:
+            return make_response({'status': 'error', 'message': error}, 400)
         elif token:
             return ok_token_status(token)
 

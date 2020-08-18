@@ -34,19 +34,28 @@ def refresh_token(auth_token: str) -> Tuple[Optional[str], Optional[str]]:
     """"
     If current token is valid, generates new one.
     """
-    email, error = decode_auth_token(auth_token)
+    token, error = decode_auth_token(auth_token)
     if error:
         return None, error
     # if the token is valid than this should always succeed
     # if not, we have inconsistent database or leaked JWT secret
-    user = get_app_user_by_email(email)
+    user = get_app_user_by_email(token.user_email)
     return encode_auth_token(user).decode(), None
 
 
 def register_user(email: str, password: str, role: str) -> Tuple[Optional[str], Optional[str]]:
     """
     Registers new user for given email, password and role.
+    >>> register_user('', 'pwd', 'role')
+    (None, 'Incorrectly set values.')
+    >>> register_user('email', '', 'role')
+    (None, 'Incorrectly set values.')
+    >>> register_user('email', 'pwd', '')
+    (None, 'Incorrectly set values.')
     """
+    if not email or not password or not role:
+        return None, 'Incorrectly set values.'
+
     user = get_app_user_by_email(email)
     if user:
         return None, 'The e-mail address is already in use.'
