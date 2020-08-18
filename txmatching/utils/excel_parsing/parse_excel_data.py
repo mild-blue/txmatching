@@ -7,8 +7,9 @@ from typing import Dict, List, Tuple, Union
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
-from txmatching.data_transfer_objects.patients.donor_dto import DonorDTO
-from txmatching.data_transfer_objects.patients.recipient_dto import \
+from txmatching.data_transfer_objects.patients.donor_excel_dto import \
+    DonorDTO
+from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientDTO
 from txmatching.patients.patient_parameters import (HLAAntibodies,
                                                          HLAAntigens,

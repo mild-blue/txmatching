@@ -4,11 +4,11 @@ from enum import Enum
 from txmatching.patients.patient_parameters import PatientParameters
 
 
-class PatientType(Enum):
-    RECIPIENT = 1
-    DONOR = 2
-    BRIDGING_DONOR = 3
-    ALTRUIST = 4
+class PatientType(str, Enum):
+    RECIPIENT = 'RECIPIENT'
+    DONOR = 'DONOR'
+    BRIDGING_DONOR = 'BRIDGING_DONOR'
+    ALTRUIST = 'ALTRUIST'
 
     def is_donor_like(self):
         return self in {PatientType.DONOR, PatientType.ALTRUIST, PatientType.BRIDGING_DONOR}

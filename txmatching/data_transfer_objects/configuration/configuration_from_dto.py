@@ -49,7 +49,9 @@ def configuration_from_dto(configuration_dto: Dict) -> Configuration:
         logger.error(f'could not process {MAN_DON_REC_SCORES_DTO}: {error}')
         configuration[MAN_DON_REC_SCORES] = []
     for bool_key in BOOL_KEYS_IN_CONFIG:
-        if bool_key in configuration:
+        if bool_key in configuration and (configuration[bool_key] == "on" or
+                                          (isinstance(configuration[bool_key], bool)
+                                           and configuration[bool_key])):
             configuration[bool_key] = True
         else:
             configuration[bool_key] = False
