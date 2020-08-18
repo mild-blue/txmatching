@@ -34,17 +34,13 @@ class RefreshTokenApi(Resource):
     @login_required()
     @user_api.doc(security='bearer', responses={200: 'Success', 401: 'Auth denied'})
     def get(self):
-        auth_header = request.headers.get('Authorization')
         error, token = None, None
-        if auth_header:
-            try:
-                auth_token = auth_header.split(" ")[1]
-                token, token_error = refresh_token(auth_token)
-                error = token_error
-            except Exception:
-                error = 'Bearer token malformed.'
-        else:
-            error = 'Access denied.'
+        try:
+            # should always succeed as [login_required] annotation is used
+            auth_token = request.headers.get('Authorization').split(" ")[1]
+            token, error = refresh_token(auth_token)
+        except Exception:
+            error = 'Bearer token malformed.'
 
         if error:
             return auth_denied(error)
