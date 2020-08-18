@@ -6,7 +6,7 @@ CONDA_ENV=kidney-exchange
 conda-create:
 	conda env create -f conda.yml --name $(CONDA_ENV)
 
-# exports all changes made localy - then one must copy the changes to conda.yml
+# exports all changes made locally - then one must copy the changes to conda.yml
 conda-export:
 	conda env export --from-history
 
@@ -25,7 +25,7 @@ docker-build:
 db:
 	docker-compose up -d db
 
-# run app localy on bare metal with debug flask and hot reload enabled
+# run app locally on bare metal with debug flask and hot reload enabled
 run:
 	export FLASK_APP=kidney_exchange.web.app:app; \
 	export FLASK_ENV=development; \
@@ -43,7 +43,7 @@ dorerun: docker-build
 	docker-compose up backend;
 
 # ------- following commands should be used only on production machine -------
-# depoyment to prod with local build
+# deployment to prod with local build
 build-redeploy:
 	git pull; \
 	docker-compose -f docker-compose.prod.yml stop backend || true; \
