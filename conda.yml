@@ -22,3 +22,6 @@ dependencies:
       - pylint-flask-sqlalchemy==0.2.0
       - pylint-plugin-utils==0.6
       - pre-commit==2.6.0
+      - flask_restx==0.2.0
+      - flask_bcrypt==0.7.1
+      - pyjwt==1.7.1

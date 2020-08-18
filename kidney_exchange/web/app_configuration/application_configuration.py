@@ -21,6 +21,9 @@ class ApplicationConfiguration:
     postgres_db: str
     postgres_url: str
 
+    jwt_secret: str
+    jwt_expiration_days: int
+
 
 def get_application_configuration() -> ApplicationConfiguration:
     """
@@ -38,7 +41,9 @@ def build_application_configuration() -> ApplicationConfiguration:
         postgres_user=get_prop('POSTGRES_USER'),
         postgres_password=get_prop('POSTGRES_PASSWORD'),
         postgres_db=get_prop('POSTGRES_DB'),
-        postgres_url=get_prop('POSTGRES_URL')
+        postgres_url=get_prop('POSTGRES_URL'),
+        jwt_secret=get_prop('JWT_SECRET'),
+        jwt_expiration_days=int(get_prop('JWT_EXPIRATION_DAYS'))
     )
     return config
 
