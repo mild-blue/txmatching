@@ -8,6 +8,7 @@ from flask import Flask
 from kidney_exchange.database.db import db
 from kidney_exchange.database.services.app_user_management import \
     get_app_user_by_email
+from kidney_exchange.web import matching_api
 from kidney_exchange.web.app_configuration.application_configuration import (
     ApplicationConfiguration, get_application_configuration)
 from kidney_exchange.web.data_api import data_api
@@ -28,6 +29,7 @@ def create_app():
     app.register_blueprint(service_api)
     app.register_blueprint(functional_api)
     app.register_blueprint(data_api)
+    app.register_blueprint(matching_api)
 
     # For flask.flash (gives feedback when uploading files)
     app.secret_key = 'secret key'
