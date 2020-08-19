@@ -1,8 +1,7 @@
 import dataclasses
-import json
 import logging
 
-from flask import Response, Blueprint
+from flask import Blueprint, jsonify
 from flask_restx import Resource
 
 from kidney_exchange.data_transfer_objects.patients.patient_swagger import PATIENT_MODEL
@@ -20,5 +19,4 @@ class Patient(Resource):
     @patient_api.response(code=200, model=PATIENT_MODEL, description="")
     def get(self) -> str:
         patients = list(get_all_patients())
-        json_data = json.dumps([dataclasses.asdict(patient) for patient in patients])
-        return Response(json_data, mimetype='application/json')
+        return jsonify([dataclasses.asdict(patient) for patient in patients])
