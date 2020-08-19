@@ -1,0 +1,28 @@
+---
+repos:
+  - repo: https://github.com/asottile/seed-isort-config
+    rev: v2.2.0
+    hooks:
+      - id: seed-isort-config
+  - repo: https://github.com/timothycrosley/isort
+    rev: 4.3.21
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.0.1
+    hooks:
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: check-executables-have-shebangs
+      - id: check-symlinks
+      - id: trailing-whitespace
+      - id: double-quote-string-fixer
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.3.7
+    hooks:
+      - id: nbstripout
+        files: ".ipynb"

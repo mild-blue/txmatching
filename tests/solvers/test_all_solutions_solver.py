@@ -3,15 +3,15 @@ import unittest
 
 import numpy as np
 
-from kidney_exchange.scorers.tabular_scorer import TabularScorer
 from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
 from kidney_exchange.utils.get_absolute_path import get_absolute_path
+from tests.solvers.tabular_scorer import TabularScorer
 
 
 class TestAllSolutionsSolver(unittest.TestCase):
     def setUp(self) -> None:
-        sample_score_matrix_path = get_absolute_path("/tests/resources/sample_score_matrix.json")
-        with open(sample_score_matrix_path, "r") as sample_score_matrix_file:
+        sample_score_matrix_path = get_absolute_path('/tests/resources/sample_score_matrix.json')
+        with open(sample_score_matrix_path, 'r') as sample_score_matrix_file:
             self._score_matrix = json.load(sample_score_matrix_file)
 
         self._expected_max_score = 92.0
@@ -30,3 +30,21 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         self.assertEqual(max(all_scores), self._expected_max_score)
         self.assertEqual(len(all_solutions), self._expected_num_solutions)
+
+    def test_solve_specific(self):
+        x = np.array([np.NAN, np.NINF, 0.0, 9.8])
+        indices = list(np.where(np.isfinite(x))[0])
+
+        matrix = np.array([[1, 2, 3], [4, 5, 6]])
+        new_matrix_1 = matrix[-1, :]
+
+        score_matrix_test = np.array([[np.NAN, np.NINF, 10.2, 13.1],
+                                      [0.2, np.NAN, np.NINF, 1],
+                                      [0.1, 10.2, 10.3, np.NAN],
+                                      [np.NINF, np.NINF, np.NAN, 10],
+                                      [0.2, 0.4, np.NINF, 0.5],
+                                      [0.2, np.NINF, np.NINF, 0.5]])
+
+        test_solver = AllSolutionsSolver()
+        solutions = test_solver._solve(score_matrix_test)
+        self.assertEqual(len(list(solutions)), 53)

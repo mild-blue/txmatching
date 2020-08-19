@@ -1,15 +1,20 @@
 import dataclasses
-from typing import List, Tuple, Optional, Iterable, Dict
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from kidney_exchange.data_transfer_objects.patients.donor_dto import DonorDTO
-from kidney_exchange.data_transfer_objects.patients.patient_dto import PatientDTO
-from kidney_exchange.data_transfer_objects.patients.recipient_dto import RecipientDTO
+from kidney_exchange.data_transfer_objects.patients.patient_dto import \
+    PatientDTO
+from kidney_exchange.data_transfer_objects.patients.recipient_dto import \
+    RecipientDTO
 from kidney_exchange.database.db import db
-from kidney_exchange.database.sql_alchemy_schema import PatientAcceptableBloodModel, PatientModel, PatientPairModel, \
-    PairingResultPatientModel
+from kidney_exchange.database.sql_alchemy_schema import (
+    PairingResultPatientModel, PatientAcceptableBloodModel, PatientModel,
+    PatientPairModel)
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.patient import Patient, PatientType
-from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
+from kidney_exchange.patients.patient_parameters import (HLAAntibodies,
+                                                         HLAAntigens,
+                                                         PatientParameters)
 from kidney_exchange.patients.recipient import Recipient
 
 
@@ -20,8 +25,8 @@ def medical_id_to_db_id(medical_id: str) -> Optional[int]:
     elif len(patients_with_id) == 1:
         return patients_with_id[0].id
     else:
-        raise ValueError(f"There has to be 1 patient per medical id, but {len(patients_with_id)} "
-                         f"were found for patient with medical id {medical_id}")
+        raise ValueError(f'There has to be 1 patient per medical id, but {len(patients_with_id)} '
+                         f'were found for patient with medical id {medical_id}')
 
 
 def db_id_to_medical_id(db_id: int) -> str:
@@ -37,17 +42,17 @@ def patient_dto_to_patient_model(patient: PatientDTO) -> PatientModel:
         hla_antibodies=dataclasses.asdict(patient.parameters.hla_antibodies),
         active=True
     )
-    if type(patient) == RecipientDTO:
+    if isinstance(patient, RecipientDTO):
         patient_model.acceptable_blood = [PatientAcceptableBloodModel(blood_type=blood)
                                           for blood in patient.parameters.acceptable_blood_groups]
         patient_model.patient_type = PatientType.RECIPIENT
         patient_model.patient_pairs = [
             PatientPairModel(donor_id=medical_id_to_db_id(patient.related_donor.medical_id))]
 
-    elif type(patient) == DonorDTO:
+    elif isinstance(patient, DonorDTO):
         patient_model.patient_type = PatientType.DONOR
     else:
-        raise TypeError(f"Unexpected patient type {type(patient)}")
+        raise TypeError(f'Unexpected patient type {type(patient)}')
 
     return patient_model
 
@@ -99,16 +104,16 @@ def _get_patient_from_patient_model(patient_model: PatientModel,
         if len(related_donors) == 1:
             don_id = related_donors[0].donor_id
         else:
-            raise ValueError(f"There has to be 1 donor per recipient, but {len(related_donors)} "
-                             f"were found for recipient with db_id {base_patient.db_id} and medical id {base_patient.medical_id}")
+            raise ValueError(f'There has to be 1 donor per recipient, but {len(related_donors)} '
+                             f'were found for recipient with db_id {base_patient.db_id}'
+                             f' and medical id {base_patient.medical_id}')
         return Recipient(base_patient.db_id, base_patient.medical_id, base_patient.parameters,
                          related_donor=_get_patient_from_patient_model(patient_models_dict[don_id],
                                                                        patient_models_dict),
                          patient_type=patient_model.patient_type)
 
-    if patient_model.patient_type.is_donor_like():
-        return Donor(base_patient.db_id, base_patient.medical_id, parameters=base_patient.parameters,
-                     patient_type=patient_model.patient_type)
+    return Donor(base_patient.db_id, base_patient.medical_id, parameters=base_patient.parameters,
+                 patient_type=patient_model.patient_type)
 
 
 def get_all_patients() -> Iterable[Patient]:
@@ -121,6 +126,6 @@ def get_all_patients() -> Iterable[Patient]:
 
 def get_donors_recipients_from_db() -> Tuple[List[Donor], List[Recipient]]:
     patients = get_all_patients()
-    donors = [donor for donor in patients if type(donor) == Donor]
-    recipients = [recipient for recipient in patients if type(recipient) == Recipient]
+    donors = [donor for donor in patients if isinstance(donor, Donor)]
+    recipients = [recipient for recipient in patients if isinstance(recipient, Recipient)]
     return donors, recipients

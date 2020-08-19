@@ -1,12 +1,21 @@
-from typing import List
+from typing import List, Union
 
+from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
 from kidney_exchange.scorers.additive_scorer import AdditiveScorer
 
 
 class TabularScorer(AdditiveScorer):
+    @classmethod
+    def from_config(cls, configuration: Configuration) -> 'AdditiveScorer':
+        raise NotImplementedError('Will not be implemented for the moment as this class is just for testing')
+
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> Union[float, str]:
+        raise NotImplementedError('Will not be implemented for the moment as this class is just for testing')
+
     def __init__(self, score_matrix: List[List[float]], donors: List[Donor] = None, recipients: List[Recipient] = None):
+        super().__init__()
         self._score_matrix = score_matrix
         self._donors = donors
         self._recipients = recipients

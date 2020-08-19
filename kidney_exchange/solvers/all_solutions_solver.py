@@ -1,5 +1,8 @@
+# pylint: skip-file
+# at the moment the solver is not optimal but works alright. We do not want to invest time in its improvement
+# at the moment as later there might be some complete rewrite of it if it bothers us.
 import logging
-from typing import List, Tuple, Dict, Iterator, Set
+from typing import Dict, Iterator, List, Set, Tuple
 
 import numpy as np
 from graph_tool import topology
@@ -8,9 +11,10 @@ from graph_tool.all import Graph
 from kidney_exchange.config.configuration import Configuration
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.scorers.additive_scorer import AdditiveScorer, ORIGINAL_DONOR_RECIPIENT_TUPLE, \
-    TRANSPLANT_IMPOSSIBLE
-from kidney_exchange.solvers.matching.matching_with_score import MatchingWithScore
+from kidney_exchange.scorers.additive_scorer import (
+    ORIGINAL_DONOR_RECIPIENT_TUPLE, TRANSPLANT_IMPOSSIBLE, AdditiveScorer)
+from kidney_exchange.solvers.matching.matching_with_score import \
+    MatchingWithScore
 from kidney_exchange.solvers.solver_base import SolverBase
 
 logger = logging.getLogger(__name__)
@@ -61,16 +65,16 @@ class AllSolutionsSolver(SolverBase):
         all_paths = pure_circuits + bridge_paths
 
         if len(all_paths) == 0:
-            logger.info("Empty set of paths, returning empty iterator")
+            logger.info('Empty set of paths, returning empty iterator')
             return []
 
         if self._verbose:
-            logger.info(f"Constructing intersection graph, "
-                        f"#circuits: {len(pure_circuits)}, #paths: {len(bridge_paths)}")
+            logger.info(f'Constructing intersection graph, '
+                        f'#circuits: {len(pure_circuits)}, #paths: {len(bridge_paths)}')
         intersection_graph, vertex_to_set = self._construct_intersection_graph(all_paths)
 
         if self._verbose:
-            logger.info("Listing all max cliques")
+            logger.info('Listing all max cliques')
 
         # TODO: Fix this properly https://trello.com/c/0GBzQWt2
         if len(list(intersection_graph.vertices())) > 0:
@@ -79,9 +83,9 @@ class AllSolutionsSolver(SolverBase):
             max_cliques = []
 
         if self._verbose:
-            logger.info("Finding 1 vertex cliques")
+            logger.info('Finding 1 vertex cliques')
         used_vertices = set()
-        all_vertices = set([intersection_graph.vertex_index[vertex] for vertex in vertex_to_set.keys()])
+        all_vertices = {intersection_graph.vertex_index[vertex] for vertex in vertex_to_set.keys()}
 
         for clique in max_cliques:
             used_vertices.update(clique)
@@ -90,7 +94,7 @@ class AllSolutionsSolver(SolverBase):
         max_cliques.extend(single_vertex_cliques)
 
         if self._verbose:
-            logger.info("Creating pairings from paths and circuits ")
+            logger.info('Creating pairings from paths and circuits ')
         pair_index_to_recipient_index = self._construct_pair_index_to_recipient_index(score_matrix)
 
         for clique in max_cliques:
@@ -148,7 +152,7 @@ class AllSolutionsSolver(SolverBase):
 
     def _graph_from_score_matrix(self, score_matrix: np.array,
                                  add_fake_edges_for_bridge_donors: bool = False) -> Tuple[Graph, Dict]:
-        n_donors, n_recipients = score_matrix.shape
+        n_donors, _ = score_matrix.shape
 
         recipient_index_to_pair_index = {recipient_ix: donor_ix for donor_ix, recipient_ix in
                                          zip(*np.where(np.isnan(score_matrix)))}
@@ -223,7 +227,7 @@ class AllSolutionsSolver(SolverBase):
     @staticmethod
     def _construct_pair_index_to_recipient_index(score_matrix: np.ndarray) -> Dict[int, int]:
         pair_index_to_recipient_index = dict()
-        n_donor, n_recipient = score_matrix.shape
+        n_donor, _ = score_matrix.shape
         for pair_index in range(n_donor):
             recipient_indices = np.where(np.isnan(score_matrix[pair_index, :]))[0]
             if len(recipient_indices) > 0:
@@ -251,29 +255,5 @@ class AllSolutionsSolver(SolverBase):
         return paths
 
     @classmethod
-    def from_config(cls, configuration: Configuration) -> "AllSolutionsSolver":
+    def from_config(cls, configuration: Configuration) -> 'AllSolutionsSolver':
         return AllSolutionsSolver()
-
-
-if __name__ == "__main__":
-    x = np.array([np.NAN, np.NINF, 0.0, 9.8])
-    indices = list(np.where(np.isfinite(x))[0])
-    logger.info(indices)
-
-    matrix = np.array([[1, 2, 3], [4, 5, 6]])
-    new_matrix_1 = matrix[-1, :]
-    logger.info(new_matrix_1)
-
-    logger.info(matrix.shape)
-
-    score_matrix_test = np.array([[np.NAN, np.NINF, 10.2, 13.1],
-                                  [0.2, np.NAN, np.NINF, 1],
-                                  [0.1, 10.2, 10.3, np.NAN],
-                                  [np.NINF, np.NINF, np.NAN, 10],
-                                  [0.2, 0.4, np.NINF, 0.5],
-                                  [0.2, np.NINF, np.NINF, 0.5]])
-
-    test_solver = AllSolutionsSolver()
-    solutions = test_solver._solve(score_matrix_test)
-    for test_solution in solutions:
-        logger.info(test_solution)

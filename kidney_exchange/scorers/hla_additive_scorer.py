@@ -1,13 +1,16 @@
 from typing import List, Optional, Union
 
-from kidney_exchange.config.configuration import Configuration, DonorRecipientScore
+from kidney_exchange.config.configuration import (Configuration,
+                                                  DonorRecipientScore)
 from kidney_exchange.patients.donor import Donor
 from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.scorers.additive_scorer import AdditiveScorer, TRANSPLANT_IMPOSSIBLE
+from kidney_exchange.scorers.additive_scorer import (TRANSPLANT_IMPOSSIBLE,
+                                                     AdditiveScorer)
 from kidney_exchange.utils.blood_groups import blood_groups_compatible
 from kidney_exchange.utils.countries import AUT, IL
-from kidney_exchange.utils.hla_system.compatibility_index import compatibility_index
-from kidney_exchange.utils.hla_system.hla_table import is_split, broad_to_split
+from kidney_exchange.utils.hla_system.compatibility_index import \
+    compatibility_index
+from kidney_exchange.utils.hla_system.hla_table import broad_to_split, is_split
 
 # TODO make configurable https://trello.com/c/OY3WNmMe/144-all-algorithm-constants-configurable
 BLOOD_GROUP_COMPATIBILITY_BONUS = 0.0
@@ -15,6 +18,8 @@ BLOOD_GROUP_COMPATIBILITY_BONUS = 0.0
 FORBIDDEN_COUNTRY_COMBINATIONS = [(AUT, IL), (IL, AUT)]
 
 
+# pylint: disable=too-many-arguments
+# TODO https://trello.com/c/6HFc35Vo/
 class HLAAdditiveScorer(AdditiveScorer):
     def __init__(self, manual_donor_recipient_scores: List[DonorRecipientScore] = None,
                  enforce_compatible_blood_group: bool = False,
@@ -41,10 +46,14 @@ class HLAAdditiveScorer(AdditiveScorer):
         super().__init__(manual_donor_recipient_scores)
         self._enforce_compatible_blood = enforce_compatible_blood_group
         self._minimum_total_score = minimum_total_score
-        self._require_new_donor_having_better_match_in_compatibility_index = require_new_donor_having_better_match_in_compatibility_index
-        self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group = require_new_donor_having_better_match_in_compatibility_index_or_blood_group
+        self._require_new_donor_having_better_match_in_compatibility_index = \
+            require_new_donor_having_better_match_in_compatibility_index
+        self._require_new_donor_having_better_match_in_compatibility_index_or_blood_group = \
+            require_new_donor_having_better_match_in_compatibility_index_or_blood_group
         self._use_binary_scoring = use_binary_scoring
 
+    # pylint: disable=too-many-return-statements
+    # it seems that it is reasonable to want many return statements here as it is still well readable
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> Union[float, str]:
         donor_recipient_ci = compatibility_index(donor.parameters, recipient.parameters)
         related_donor_recipient_ci = compatibility_index(recipient.related_donor.parameters, recipient.parameters)
@@ -93,14 +102,18 @@ class HLAAdditiveScorer(AdditiveScorer):
             else:
                 return total_score
 
+    # pylint: enable=too-many-return-statements
+
     @classmethod
-    def from_config(cls, configuration: Configuration) -> "HLAAdditiveScorer":
+    def from_config(cls, configuration: Configuration) -> 'HLAAdditiveScorer':
         hla_additive_scorer = HLAAdditiveScorer(
             manual_donor_recipient_scores=configuration.manual_donor_recipient_scores,
             enforce_compatible_blood_group=configuration.enforce_compatible_blood_group,
             minimum_total_score=configuration.minimum_total_score,
-            require_new_donor_having_better_match_in_compatibility_index=configuration.require_new_donor_having_better_match_in_compatibility_index,
-            require_new_donor_having_better_match_in_compatibility_index_or_blood_group=configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group,
+            require_new_donor_having_better_match_in_compatibility_index=
+            configuration.require_new_donor_having_better_match_in_compatibility_index,
+            require_new_donor_having_better_match_in_compatibility_index_or_blood_group=
+            configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group,
             use_binary_scoring=configuration.use_binary_scoring)
 
         return hla_additive_scorer
@@ -126,9 +139,9 @@ class HLAAdditiveScorer(AdditiveScorer):
         :param recipient:
         :return:
         """
-        POSITIVE_CROSSMATCH = True
-        NEGATIVE_CROSSMATCH = False
-        CROSSMATCH_CANT_BE_DETERMINED = None
+        positive_crossmatch = True
+        negative_crossmatch = False
+        crossmatch_cant_be_determined = None
 
         recipient_antibodies = recipient.parameters.hla_antibodies.codes
         recipient_antibodies_with_splits = list(recipient_antibodies)
@@ -145,10 +158,10 @@ class HLAAdditiveScorer(AdditiveScorer):
 
             if code_is_split is True or code_is_split is None:  # Code is split or we don't know
                 if antigen_code in recipient_antibodies_with_splits:
-                    return POSITIVE_CROSSMATCH
+                    return positive_crossmatch
             else:  # Code is broad
                 if antigen_code in recipient_antibodies:
-                    return POSITIVE_CROSSMATCH
+                    return positive_crossmatch
 
                 antigen_splits = broad_to_split.get(antigen_code)
                 if antigen_splits is not None:
@@ -157,6 +170,6 @@ class HLAAdditiveScorer(AdditiveScorer):
                             crossmatch_cant_be_determined_so_far = True
 
         if crossmatch_cant_be_determined_so_far is True:
-            return CROSSMATCH_CANT_BE_DETERMINED
+            return crossmatch_cant_be_determined
 
-        return NEGATIVE_CROSSMATCH
+        return negative_crossmatch

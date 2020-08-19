@@ -29,7 +29,7 @@ class PairingResultModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    patients = relationship("PairingResultPatientModel", backref="pairing_result")
+    patients = relationship('PairingResultPatientModel', backref='pairing_result')
 
 
 class PairingResultPatientModel(db.Model):
@@ -59,9 +59,9 @@ class PatientModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    acceptable_blood = relationship("PatientAcceptableBloodModel", backref="patient")
-    patient_pairs = relationship("PatientPairModel", backref="patient")
-    patient_results = relationship("PairingResultPatientModel", backref="patient")
+    acceptable_blood = relationship('PatientAcceptableBloodModel', backref='patient')
+    patient_pairs = relationship('PatientPairModel', backref='patient')
+    patient_results = relationship('PairingResultPatientModel', backref='patient')
 
 
 class PatientAcceptableBloodModel(db.Model):
@@ -92,7 +92,7 @@ class AppUser(db.Model):
     __tablename__ = 'app_user'
     __table_args__ = {'extend_existing': True}
 
-    id = db.Column(db.BIGINT, primary_key=True, nullable=False)
+    id = db.Column(db.BIGINT, primary_key=True, nullable=False, autoincrement=True)
     email = db.Column(db.TEXT, unique=True, nullable=False)
     pass_hash = db.Column(db.TEXT, unique=False, nullable=False)
     role = db.Column(db.TEXT, unique=False, nullable=False)
@@ -100,16 +100,21 @@ class AppUser(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
-    def __init__(self):
+    def __init__(self, email: str, pass_hash: str, role: str):
+        self.email = email
+        self.pass_hash = pass_hash
+        self.role = role
         self._is_authenticated = False
 
-    def is_active(self):
+    @staticmethod
+    def is_active():
         return True
 
     def is_authenticated(self):
         return self._is_authenticated
 
-    def is_anonymous(self):
+    @staticmethod
+    def is_anonymous():
         return False
 
     def get_id(self):

@@ -1,7 +1,7 @@
 from typing import List
 
 from kidney_exchange.patients.patient import PatientType
-from kidney_exchange.solvers.matching.matching import DonorRecipientTuple
+from kidney_exchange.patients.patient_types import DonorRecipientTuple
 
 
 class TransplantRound:
@@ -16,9 +16,9 @@ class TransplantRound:
         self._donor_recipient_list = donor_recipient_list
 
     def __str__(self) -> str:
-        donor_to_rec_str_list = [f"{donor.medical_id} > {recipient.medical_id}" for donor, recipient in
+        donor_to_rec_str_list = [f'{donor.medical_id} > {recipient.medical_id}' for donor, recipient in
                                  self._donor_recipient_list]
-        str_repr = ",".join(donor_to_rec_str_list)
+        str_repr = ','.join(donor_to_rec_str_list)
         return str_repr
 
     @property
@@ -36,7 +36,7 @@ class TransplantRound:
 
     def contains_patient_db_id(self, patient_db_id: int) -> bool:
         for donor, recipient in self._donor_recipient_list:
-            if patient_db_id == donor.db_id or patient_db_id == recipient.db_id:
+            if patient_db_id in {donor.db_id, recipient.db_id}:
                 return True
 
         return False
@@ -48,8 +48,8 @@ class TransplantRound:
     def briding_donor_altruist_or_nothing(self):
         first_donor_type = self._donor_recipient_list[0][0].patient_type
         if first_donor_type == PatientType.BRIDGING_DONOR:
-            return "B"
+            return 'B'
         elif first_donor_type == PatientType.ALTRUIST:
-            return "A"
+            return 'A'
         else:
-            return ""
+            return ''

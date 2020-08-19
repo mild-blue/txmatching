@@ -7,10 +7,11 @@ from kidney_exchange.solvers.matching.matching import Matching
 
 class FilterDefault(FilterBase):
     @classmethod
-    def from_config(cls, configuration: Configuration) -> "FilterBase":
+    def from_config(cls, configuration: Configuration) -> 'FilterBase':
         return FilterDefault(max_cycle_length=configuration.max_cycle_length,
                              max_sequence_length=configuration.max_sequence_length,
-                             max_number_of_distinct_countries_in_round=configuration.max_number_of_distinct_countries_in_round,
+                             max_number_of_distinct_countries_in_round=
+                             configuration.max_number_of_distinct_countries_in_round,
                              required_patient_db_ids=configuration.required_patient_db_ids
                              )
 
