@@ -14,7 +14,7 @@ from kidney_exchange.database.services.patient_service import save_patients
 from kidney_exchange.solve_service.solve_from_db import solve_from_db
 from kidney_exchange.utils.excel_parsing.parse_excel_data import \
     parse_excel_data
-from kidney_exchange.web.service_api import check_admin
+from kidney_exchange.web.api.service_api import check_admin
 from kidney_exchange.web.web_utils.load_patients_utils import \
     is_allowed_file_extension
 

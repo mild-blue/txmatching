@@ -2,10 +2,11 @@ import logging
 import os
 
 import bcrypt
-from flask import Blueprint, abort
+from flask import abort, Blueprint
 from flask import current_app as app
 from flask import flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
+from flask_restx import Namespace, Resource, fields
 from sqlalchemy.exc import OperationalError
 
 from kidney_exchange.database.db import db
@@ -14,24 +15,41 @@ from kidney_exchange.database.services.app_user_management import \
 
 logger = logging.getLogger(__name__)
 
-service_api = Blueprint('service', __name__)
+service_api = Namespace('service')
+service_blueprint = Blueprint('service', __name__)
 
 LOGIN_FLASH_CATEGORY = 'LOGIN'
 
 
-@service_api.route('/db-health')
-def database_health_check():
-    try:
-        db.session.execute('SELECT 1')
-        return jsonify({'status': 'ok'})
-    except OperationalError as ex:
-        logger.exception('Connection to database is not working.')
-        return jsonify({'status': 'error', 'exception': ex.args[0]}), 503
+@service_api.route('/status', methods=['GET'])
+class Status(Resource):
+    status = service_api.model('ServiceStatus', {
+        'status': fields.String(required=True, description='Indication of service\'s health.', enum=['OK', 'Failing']),
+        'exception': fields.String(required=False, description='Additional indication what is wrong.')
+    })
+
+    @service_api.response(code=200, model=status, description='Returns ok if service is healthy.')
+    @service_api.response(code=503, model=status, description='Some services are failing.')
+    def get(self):
+        try:
+            db.session.execute('SELECT 1')
+            return {'status': 'ok'}
+        except OperationalError as ex:
+            logger.exception('Connection to database is not working.')
+            return {'status': 'error', 'exception': ex.args[0]}, 503
 
 
-@service_api.route('/version')
-def version_route():
-    return jsonify({'version': get_version()})
+@service_api.route('/version', methods=['GET'])
+class Version(Resource):
+    version_model = service_api.model('Version', {
+        'version': fields.String(required=True, description='Version of the running code.')
+    })
+
+    @service_api.response(code=200, model=version_model, description="Returns version of the code")
+    def get(self):
+        version = get_version()
+        logger.debug(f"Responding on version endpoint with version {version}")
+        return jsonify({'version': get_version()})
 
 
 def get_version() -> str:
@@ -58,7 +76,7 @@ def read_version(default: str) -> str:
     return version if version else default
 
 
-@service_api.route('/login', methods=['GET', 'POST'])
+@service_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('functional.home'))
@@ -84,7 +102,7 @@ def login():
     return redirect(url_for('functional.browse_solutions'))
 
 
-@service_api.route('/logout')
+@service_blueprint.route('/logout')
 @login_required
 def logout():
     username = current_user.email

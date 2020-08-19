@@ -11,14 +11,15 @@ from kidney_exchange.database.db import db
 from kidney_exchange.database.services.app_user_management import \
     get_app_user_by_email
 from kidney_exchange.web.api.auth_api import user_api
+from kidney_exchange.web.api.service_api import service_api, service_blueprint
 from kidney_exchange.web.app_configuration.application_configuration import (
     ApplicationConfiguration, get_application_configuration)
 from kidney_exchange.web.auth import bcrypt
 from kidney_exchange.web.data_api import data_api
 from kidney_exchange.web.functional_api import functional_api
-from kidney_exchange.web.service_api import service_api
 
 LOGIN_MANAGER = None
+API_VERSION = '/v1'
 
 
 def create_app():
@@ -31,9 +32,9 @@ def create_app():
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_port=1, x_for=1, x_host=1, x_prefix=1)
 
     # register blueprints
-    app.register_blueprint(service_api)
     app.register_blueprint(functional_api)
     app.register_blueprint(data_api)
+    app.register_blueprint(service_blueprint)
 
     # For flask.flash (gives feedback when uploading files)
     app.secret_key = 'secret key'
@@ -79,7 +80,8 @@ def create_app():
         }
 
         api = Api(app, authorizations=authorizations, doc='/doc/')
-        api.add_namespace(user_api, path='/user')
+        api.add_namespace(user_api, path=f'{API_VERSION}/user')
+        api.add_namespace(service_api, path=f'{API_VERSION}/service')
 
     with app.app_context():
         load_local_development_config()
