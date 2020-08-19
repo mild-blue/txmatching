@@ -55,6 +55,10 @@ For testing purposes the patient data can be loaded from `.xlsx` file using the 
 PATIENT_DATA_PATH=/home/user/path/to/your/patient_data.xlsx
 ```
 
+## Swagger
+We'have a swagger UI running on `/doc/` route (so for example, `localhost:8080/doc/`).
+How to use it and some useful info [here on doc](https://flask-restx.readthedocs.io/en/latest/swagger.html).
+
 ## Dependencies management
 We are using `conda` for managing dependencies as [graph-tool](https://graph-tool.skewed.de/)
 can be installed just from the `conda-forge` repository.
@@ -68,11 +72,12 @@ to switch to correct environment.
 This must be execute every time when you try to use new terminal.
 
 #### Adding new dependencies
-To add new package add the package to conda.yml and then run
- ```
-make conda-update
- ```
-to install the package in your environment. Try to always isnstall new things through the make conda-update
+To add new package put `<package>` to `conda.yml` and execute `make conda-update`.
+Please try to install specific version which you put to `conda.yml` in order to guarantee that whole team has same 
+packages versions.
+Try to put package to `dependencies` part of yaml, that are the packages installed from conda repository,
+if the package is not in the conda repo, put it in the `pip` part of yaml.
+
 #### Updating packages
 when someone updates and you pull new version from git do the following:
 ```
@@ -96,11 +101,10 @@ To obtain configuration in the code, one should call `get_application_configurat
  from [application_configuration.py](kidney_exchange/web/app_configuration/application_configuration.py).
 
 ## Graph Tool
-Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't
-easily be installed via pip and you have to use for example conda to install it. For more info see the official website.
-```
-conda install -c conda-forge graph-tool
-```
+Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't 
+easily be installed via pip and you have to use for example conda to install it.
+This is the reason we're using Conda. There's also no package for Windows, thus we support only
+mac and linux.
 
 ### Testing
 To run tests that need database do the following:
