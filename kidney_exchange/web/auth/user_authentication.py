@@ -55,13 +55,17 @@ def register_user(email: str, password: str, role: str) -> Tuple[Optional[str], 
     user = get_app_user_by_email(email)
     if user:
         return None, 'The e-mail address is already in use.'
+    try:
+        user = AppUser(
+            email=email,
+            pass_hash=encode_password(password),
+            role=role
+        )
 
-    user = AppUser(
-        email=email,
-        pass_hash=encode_password(password),
-        role=role
-    )
+        persist_user(user)
+    except Exception:
+        logger.exception('Exception during saving user to database.')
+        return None, 'It was not possible to register user!'
 
-    persist_user(user)
     auth_token = encode_auth_token(user).decode()
     return auth_token, None
