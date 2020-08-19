@@ -7,8 +7,9 @@ from typing import Dict, List, Tuple, Union
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
-from kidney_exchange.data_transfer_objects.patients.donor_dto import DonorDTO
-from kidney_exchange.data_transfer_objects.patients.recipient_dto import \
+from kidney_exchange.data_transfer_objects.patients.donor_excel_dto import \
+    DonorDTO
+from kidney_exchange.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientDTO
 from kidney_exchange.patients.patient_parameters import (HLAAntibodies,
                                                          HLAAntigens,
