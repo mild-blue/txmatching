@@ -1,3 +1,6 @@
+# pylint: disable=no-self-use
+# can not, they are used for generating swagger which needs class
+
 import logging
 import os
 
@@ -45,10 +48,10 @@ class Version(Resource):
         'version': fields.String(required=True, description='Version of the running code.')
     })
 
-    @service_api.response(code=200, model=version_model, description="Returns version of the code")
+    @service_api.response(code=200, model=version_model, description='Returns version of the code')
     def get(self):
         version = get_version()
-        logger.debug(f"Responding on version endpoint with version {version}")
+        logger.debug(f'Responding on version endpoint with version {version}')
         return jsonify({'version': get_version()})
 
 

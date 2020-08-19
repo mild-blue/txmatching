@@ -1,3 +1,6 @@
+# pylint: disable=broad-except
+# as this is authentication, we need to catch everything
+
 import functools
 
 from flask import abort
