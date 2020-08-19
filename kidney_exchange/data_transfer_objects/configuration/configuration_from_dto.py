@@ -8,8 +8,7 @@ from kidney_exchange.config.configuration import (BOOL_KEYS_IN_CONFIG,
                                                   MAN_DON_REC_SCORES,
                                                   Configuration,
                                                   DonorRecipientScore)
-from kidney_exchange.data_transfer_objects.configuration.configuration_dto import \
-    MAN_DON_REC_SCORES_DTO
+from kidney_exchange.data_transfer_objects.configuration.configuration_dto import MAN_DON_REC_SCORES_DTO
 from kidney_exchange.database.services.patient_service import \
     medical_id_to_db_id
 from kidney_exchange.scorers.additive_scorer import TRANSPLANT_IMPOSSIBLE

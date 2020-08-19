@@ -2,32 +2,33 @@ import dataclasses
 import json
 import logging
 
-import flask
 from flask import request, Response, Blueprint
-from flask_restx import Namespace
+from flask_restx import Resource
 
+from kidney_exchange.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_MODEL
 from kidney_exchange.data_transfer_objects.configuration.configuration_from_dto import \
     configuration_from_dto
+from kidney_exchange.data_transfer_objects.matchings.matching_swagger import MATCHING_MODEL
 from kidney_exchange.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, Transplant)
 from kidney_exchange.database.services.config_service import \
     save_configuration_as_current
 from kidney_exchange.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
-from kidney_exchange.database.services.patient_service import get_all_patients
 from kidney_exchange.solve_service.solve_from_db import solve_from_db
-
+from kidney_exchange.web.api.namespaces import matching_api, MATCHING_NAMESPACE
 logger = logging.getLogger(__name__)
 
-matching_api = Namespace('matching')
-matching_blueprint = Blueprint('matching', __name__)
+matching_blueprint = Blueprint(MATCHING_NAMESPACE, __name__)
 
 LOGIN_FLASH_CATEGORY = 'LOGIN'
 
 
-@matching_blueprint.route('/get-matchings', methods=['POST'])
-def get_matchings() -> str:
-    if flask.request.method == 'POST':
+@matching_api.route('/calculate-for-config', methods=['POST'])
+class CalculateFromConfig(Resource):
+    @matching_api.doc(body=CONFIGURATION_MODEL)
+    @matching_api.response(200, model=MATCHING_MODEL, description="")
+    def post(self) -> str:
         configuration = configuration_from_dto(request.json)
         save_configuration_as_current(configuration)
         solve_from_db()
@@ -52,10 +53,3 @@ def get_matchings() -> str:
         json_data = json.dumps(matching_dtos)
 
         return Response(json_data, mimetype='application/json')
-
-
-@matching_blueprint.route('/get-patients', methods=['GET'])
-def get_patients() -> str:
-    patients = list(get_all_patients())
-    json_data = json.dumps([dataclasses.asdict(patient) for patient in patients])
-    return Response(json_data, mimetype='application/json')

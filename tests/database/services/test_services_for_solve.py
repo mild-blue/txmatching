@@ -14,4 +14,3 @@ class TestSolveFromDbAndItsSupportFunctionality(unittest.TestCase):
 
             self.assertEqual(2, len(get_patients_for_pairing_result(1)), "Incorrect patients returned for"
                                                                          " pairing result id")
-
