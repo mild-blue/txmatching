@@ -1,26 +1,32 @@
 import ast
 import logging
-from typing import Union, Dict
+from typing import Dict, Union
 
-from kidney_exchange.config.configuration import Configuration, DonorRecipientScore, MAN_DON_REC_SCORES, \
-    BOOL_KEYS_IN_CONFIG, INT_KEYS_IN_CONFIG, FLOAT_KEYS_IN_CONFIG
-from kidney_exchange.data_transfer_objects.configuration.configuration_dto import MAN_DON_REC_SCORES_DTO
-from kidney_exchange.database.services.patient_service import medical_id_to_db_id
+from kidney_exchange.config.configuration import (BOOL_KEYS_IN_CONFIG,
+                                                  FLOAT_KEYS_IN_CONFIG,
+                                                  INT_KEYS_IN_CONFIG,
+                                                  MAN_DON_REC_SCORES,
+                                                  Configuration,
+                                                  DonorRecipientScore)
+from kidney_exchange.data_transfer_objects.configuration.configuration_dto import \
+    MAN_DON_REC_SCORES_DTO
+from kidney_exchange.database.services.patient_service import \
+    medical_id_to_db_id
 from kidney_exchange.scorers.additive_scorer import TRANSPLANT_IMPOSSIBLE
 
 logger = logging.getLogger(__name__)
 
 
 def _score_from_dto(score: float) -> Union[float, str]:
-    if type(score) == int or type(score) == float:
+    if isinstance(score, (float, int)):
         if score == -1:
             return TRANSPLANT_IMPOSSIBLE
         elif score < 0:
-            raise ValueError("Score cannot be smaller than 0")
+            raise ValueError('Score cannot be smaller than 0')
         else:
             return score
     else:
-        raise ValueError(f"Unexpected format of {score}")
+        raise ValueError(f'Unexpected format of {score}')
 
 
 def configuration_from_dto(configuration_dto: Dict) -> Configuration:
@@ -39,10 +45,9 @@ def configuration_from_dto(configuration_dto: Dict) -> Configuration:
             ))
         configuration[MAN_DON_REC_SCORES] = scores
 
-    except (ValueError, IndexError, SyntaxError) as e:
-        logger.error(f"could not process {MAN_DON_REC_SCORES_DTO}: {e}")
+    except (ValueError, IndexError, SyntaxError) as error:
+        logger.error(f'could not process {MAN_DON_REC_SCORES_DTO}: {error}')
         configuration[MAN_DON_REC_SCORES] = []
-        pass
     for bool_key in BOOL_KEYS_IN_CONFIG:
         if bool_key in configuration:
             configuration[bool_key] = True

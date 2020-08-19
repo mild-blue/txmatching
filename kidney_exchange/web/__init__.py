@@ -6,14 +6,15 @@ import flask_login
 from flask import Flask
 
 from kidney_exchange.database.db import db
-from kidney_exchange.database.services.app_user_management import get_app_user_by_email
-from kidney_exchange.web.app_configuration.application_configuration import ApplicationConfiguration, \
-    get_application_configuration
+from kidney_exchange.database.services.app_user_management import \
+    get_app_user_by_email
+from kidney_exchange.web.app_configuration.application_configuration import (
+    ApplicationConfiguration, get_application_configuration)
 from kidney_exchange.web.data_api import data_api
 from kidney_exchange.web.functional_api import functional_api
 from kidney_exchange.web.service_api import service_api
 
-login_manager = None
+LOGIN_MANAGER = None
 
 
 def create_app():
@@ -29,18 +30,18 @@ def create_app():
     app.register_blueprint(data_api)
 
     # For flask.flash (gives feedback when uploading files)
-    app.secret_key = "secret key"
+    app.secret_key = 'secret key'
 
     # Add config
-    app.config["CSV_UPLOADS"] = "kidney_exchange/web/csv_uploads"
-    app.config["ALLOWED_FILE_EXTENSIONS"] = ["CSV", "XLSX"]
+    app.config['CSV_UPLOADS'] = 'kidney_exchange/web/csv_uploads'
+    app.config['ALLOWED_FILE_EXTENSIONS'] = ['CSV', 'XLSX']
 
-    global login_manager
-    login_manager = flask_login.LoginManager()
-    login_manager.init_app(app)
-    login_manager.login_view = "service.login"
+    global LOGIN_MANAGER
+    LOGIN_MANAGER = flask_login.LoginManager()
+    LOGIN_MANAGER.init_app(app)
+    LOGIN_MANAGER.login_view = 'service.login'
 
-    @login_manager.user_loader
+    @LOGIN_MANAGER.user_loader
     def user_loader(user_id):
         return get_app_user_by_email(user_id)
 

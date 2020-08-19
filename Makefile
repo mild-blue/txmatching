@@ -79,3 +79,6 @@ setup-db-for-tests:
 
 clean-db:
 	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./tests/data/clean_db.sql
+
+run-linter:
+	pylint kidney_exchange

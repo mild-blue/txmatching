@@ -2,16 +2,24 @@ import dataclasses
 from typing import Iterable
 
 from kidney_exchange.database.db import db
-from kidney_exchange.database.services.config_service import get_current_configuration, save_configuration_to_db
-from kidney_exchange.database.services.patient_service import get_donors_recipients_from_db
-from kidney_exchange.database.services.scorer_service import score_matrix_to_dto
-from kidney_exchange.database.sql_alchemy_schema import PairingResultPatientModel, PairingResultModel
-from kidney_exchange.solve_service.data_objects.calculated_matchings import CalculatedMatchings, CalculatedMatching
-from kidney_exchange.solve_service.data_objects.donor_recipient import DonorRecipient
-from kidney_exchange.solve_service.data_objects.solver_input_parameters import SolverInputParameters
+from kidney_exchange.database.services.config_service import (
+    get_current_configuration, save_configuration_to_db)
+from kidney_exchange.database.services.patient_service import \
+    get_donors_recipients_from_db
+from kidney_exchange.database.services.scorer_service import \
+    score_matrix_to_dto
+from kidney_exchange.database.sql_alchemy_schema import (
+    PairingResultModel, PairingResultPatientModel)
+from kidney_exchange.solve_service.data_objects.calculated_matchings import (
+    CalculatedMatching, CalculatedMatchings)
+from kidney_exchange.solve_service.data_objects.donor_recipient import \
+    DonorRecipient
+from kidney_exchange.solve_service.data_objects.solver_input_parameters import \
+    SolverInputParameters
 from kidney_exchange.solve_service.solve_from_config import solve_from_config
 from kidney_exchange.solvers.matching.matching import Matching
-from kidney_exchange.solvers.matching.matching_with_score import MatchingWithScore
+from kidney_exchange.solvers.matching.matching_with_score import \
+    MatchingWithScore
 
 
 def solve_from_db() -> Iterable[Matching]:
@@ -44,13 +52,12 @@ def solve_from_db() -> Iterable[Matching]:
 
 def _current_config_matchings_to_model(config_matchings: Iterable[MatchingWithScore]) -> CalculatedMatchings:
     return CalculatedMatchings([
-        CalculatedMatching([
-            DonorRecipient(
-                donor.db_id,
-                recipient.db_id
-            ) for donor, recipient in final_solution.donor_recipient_list
-        ],
+        CalculatedMatching(
+            [
+                DonorRecipient(donor.db_id, recipient.db_id)
+                for donor, recipient in final_solution.donor_recipient_list
+            ],
             final_solution.score()
-
-        ) for final_solution in config_matchings
+        )
+        for final_solution in config_matchings
     ])

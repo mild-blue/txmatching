@@ -29,7 +29,7 @@ class PairingResultModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    patients = relationship("PairingResultPatientModel", backref="pairing_result")
+    patients = relationship('PairingResultPatientModel', backref='pairing_result')
 
 
 class PairingResultPatientModel(db.Model):
@@ -59,9 +59,9 @@ class PatientModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    acceptable_blood = relationship("PatientAcceptableBloodModel", backref="patient")
-    patient_pairs = relationship("PatientPairModel", backref="patient")
-    patient_results = relationship("PairingResultPatientModel", backref="patient")
+    acceptable_blood = relationship('PatientAcceptableBloodModel', backref='patient')
+    patient_pairs = relationship('PatientPairModel', backref='patient')
+    patient_results = relationship('PairingResultPatientModel', backref='patient')
 
 
 class PatientAcceptableBloodModel(db.Model):
@@ -103,13 +103,15 @@ class AppUser(db.Model):
     def __init__(self):
         self._is_authenticated = False
 
-    def is_active(self):
+    @staticmethod
+    def is_active():
         return True
 
     def is_authenticated(self):
         return self._is_authenticated
 
-    def is_anonymous(self):
+    @staticmethod
+    def is_anonymous():
         return False
 
     def get_id(self):

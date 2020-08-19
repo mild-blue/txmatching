@@ -26,7 +26,7 @@ class Patient:
 
     @property
     def is_recipient(self) -> bool:
-        if self.patient_type is None:
-            raise ValueError(f"patient type was None, which should never happend as it shall be defined in subclasses")
-        else:
+        if self.patient_type is not None:
             return self.patient_type.is_recipient_like()
+        else:
+            raise ValueError('patient type was None, which should never happened as it shall be defined in subclasses')
