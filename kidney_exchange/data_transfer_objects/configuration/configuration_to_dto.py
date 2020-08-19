@@ -6,8 +6,7 @@ from kidney_exchange.config.configuration import (MAN_DON_REC_SCORES,
                                                   DonorRecipientScore)
 from kidney_exchange.data_transfer_objects.configuration.configuration_dto import ConfigurationDTO, \
     MAN_DON_REC_SCORES_DTO
-from kidney_exchange.database.services.patient_service import \
-    db_id_to_medical_id
+from kidney_exchange.database.services.patient_service import db_id_to_medical_id
 
 
 def _score_to_dto(score: Union[float, str]) -> float:
