@@ -1,6 +1,6 @@
 import logging
 
-from flask import request, jsonify, make_response
+from flask import request
 from flask_restx import Namespace, Resource, fields
 
 from kidney_exchange.web.auth.login_check import login_required, require_role
@@ -64,14 +64,14 @@ class RegistrationApi(Resource):
                                      password=post_data.get('password'),
                                      role=post_data.get('role'))
         if error:
-            return make_response({'status': 'error', 'message': error}, 400)
+            return {'status': 'error', 'message': error}, 400
         elif token:
             return ok_token_status(token)
 
 
-def ok_token_status(token: str) -> str:
-    return jsonify({'status': 'ok', 'auth_token': token})
+def ok_token_status(token: str):
+    return {'status': 'ok', 'auth_token': token}
 
 
 def auth_denied(error: str):
-    return make_response(jsonify({'status': 'error', 'message': error}), 401)
+    return {'status': 'error', 'message': error}, 401
