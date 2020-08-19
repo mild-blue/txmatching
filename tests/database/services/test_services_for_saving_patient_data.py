@@ -11,4 +11,3 @@ class TestSolveFromDbAndItsSupportFunctionality(unittest.TestCase):
         with app.app_context():
             patients = parse_excel_data("data/data.xlsx")
             save_patients(patients)
-

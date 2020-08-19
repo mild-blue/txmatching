@@ -11,13 +11,15 @@ from txmatching.database.db import db
 from txmatching.database.services.app_user_management import \
     get_app_user_by_email
 from txmatching.web.api.auth_api import user_api
+from txmatching.web.api.namespaces import PATIENT_NAMESPACE, patient_api, MATCHING_NAMESPACE, matching_api
+from txmatching.web.api.patient_api import patient_blueprint
 from txmatching.web.api.service_api import service_api, service_blueprint
 from txmatching.web.app_configuration.application_configuration import (
     ApplicationConfiguration, get_application_configuration)
 from txmatching.web.auth import bcrypt
 from txmatching.web.data_api import data_api
 from txmatching.web.functional_api import functional_api
-from txmatching.web.api.matching_api import matching_api, matching_blueprint
+from txmatching.web.api.matching_api import matching_blueprint
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'
@@ -37,6 +39,7 @@ def create_app():
     app.register_blueprint(data_api)
     app.register_blueprint(service_blueprint)
     app.register_blueprint(matching_blueprint)
+    app.register_blueprint(patient_blueprint)
 
     # For flask.flash (gives feedback when uploading files)
     app.secret_key = 'secret key'
@@ -84,7 +87,8 @@ def create_app():
         api = Api(app, authorizations=authorizations, doc='/doc/')
         api.add_namespace(user_api, path=f'{API_VERSION}/user')
         api.add_namespace(service_api, path=f'{API_VERSION}/service')
-        api.add_namespace(matching_api, path=f'{API_VERSION}/matching')
+        api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
+        api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
 
     with app.app_context():
         load_local_development_config()

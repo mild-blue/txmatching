@@ -32,11 +32,6 @@ class TestAllSolutionsSolver(unittest.TestCase):
         self.assertEqual(len(all_solutions), self._expected_num_solutions)
 
     def test_solve_specific(self):
-        x = np.array([np.NAN, np.NINF, 0.0, 9.8])
-        indices = list(np.where(np.isfinite(x))[0])
-
-        matrix = np.array([[1, 2, 3], [4, 5, 6]])
-        new_matrix_1 = matrix[-1, :]
 
         score_matrix_test = np.array([[np.NAN, np.NINF, 10.2, 13.1],
                                       [0.2, np.NAN, np.NINF, 1],

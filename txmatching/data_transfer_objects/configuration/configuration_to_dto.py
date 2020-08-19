@@ -4,8 +4,8 @@ from typing import Tuple, Union
 from txmatching.config.configuration import (MAN_DON_REC_SCORES,
                                                   Configuration,
                                                   DonorRecipientScore)
-from txmatching.data_transfer_objects.configuration.configuration_dto import (
-    MAN_DON_REC_SCORES_DTO, ConfigurationDTO)
+from txmatching.data_transfer_objects.configuration.configuration_dto import ConfigurationDTO, \
+    MAN_DON_REC_SCORES_DTO
 from txmatching.database.services.patient_service import \
     db_id_to_medical_id
 
