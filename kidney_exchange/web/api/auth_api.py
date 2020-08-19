@@ -1,3 +1,6 @@
+# pylint: disable=no-self-use
+# can not, they are used for generating swagger which needs class
+
 import logging
 
 from flask import request
@@ -27,6 +30,8 @@ class LoginApi(Resource):
             return auth_denied(error)
         elif token:
             return ok_token_status(token)
+        else:
+            return default_inconsistency()
 
 
 @user_api.route('/refresh-token', methods=['GET'])
@@ -39,6 +44,8 @@ class RefreshTokenApi(Resource):
             # should always succeed as [login_required] annotation is used
             auth_token = request.headers.get('Authorization').split(" ")[1]
             token, error = refresh_token(auth_token)
+        # pylint: disable=broad-except
+        # as this is authentication, we need to catch everything
         except Exception:
             error = 'Bearer token malformed.'
 
@@ -46,6 +53,8 @@ class RefreshTokenApi(Resource):
             return auth_denied(error)
         elif token:
             return ok_token_status(token)
+        else:
+            return default_inconsistency()
 
 
 @user_api.route('/register', methods=['POST'])
@@ -67,6 +76,8 @@ class RegistrationApi(Resource):
             return {'status': 'error', 'message': error}, 400
         elif token:
             return ok_token_status(token)
+        else:
+            return default_inconsistency()
 
 
 def ok_token_status(token: str):
@@ -75,3 +86,7 @@ def ok_token_status(token: str):
 
 def auth_denied(error: str):
     return {'status': 'error', 'message': error}, 401
+
+
+def default_inconsistency():
+    return {'status': 'error', 'message': 'Internal inconsistency.'}, 500

@@ -1,3 +1,6 @@
+# pylint: disable=broad-except
+# as this is authentication, we need to catch everything
+
 import logging
 from typing import Optional, Tuple
 
@@ -21,8 +24,8 @@ def obtain_login_token(email: str, password: str) -> Tuple[Optional[str], Option
             error = None, 'Email password mismatch!'
 
         return error if error else (encode_auth_token(user).decode(), None)
-    except Exception as e:
-        logger.error(e)
+    except Exception:
+        logger.exception('Exception during user login.')
         return None, 'It was not possible to verify user.'
 
 
