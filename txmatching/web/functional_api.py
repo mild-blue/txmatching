@@ -14,7 +14,7 @@ from txmatching.database.services.patient_service import save_patients
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import \
     parse_excel_data
-from txmatching.web.service_api import check_admin
+from txmatching.web.api.service_api import check_admin
 from txmatching.web.web_utils.load_patients_utils import \
     is_allowed_file_extension
 
