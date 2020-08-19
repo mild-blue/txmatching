@@ -1,7 +1,7 @@
 import dataclasses
 import logging
 
-from flask import request, Blueprint, jsonify
+from flask import request, jsonify
 from flask_restx import Resource
 
 from kidney_exchange.data_transfer_objects.configuration.configuration_from_dto import \
@@ -15,11 +15,9 @@ from kidney_exchange.database.services.config_service import \
 from kidney_exchange.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from kidney_exchange.solve_service.solve_from_db import solve_from_db
-from kidney_exchange.web.api.namespaces import matching_api, MATCHING_NAMESPACE
+from kidney_exchange.web.api.namespaces import matching_api
 
 logger = logging.getLogger(__name__)
-
-matching_blueprint = Blueprint(MATCHING_NAMESPACE, __name__)
 
 LOGIN_FLASH_CATEGORY = 'LOGIN'
 

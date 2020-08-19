@@ -4,22 +4,15 @@
 import logging
 import os
 
-import bcrypt
-from flask import abort, Blueprint
 from flask import current_app as app
-from flask import flash, jsonify, redirect, render_template, request, url_for
-from flask_login import current_user, login_required, login_user, logout_user
-from flask_restx import Namespace, Resource, fields
+from flask import jsonify
+from flask_restx import Resource, fields
 from sqlalchemy.exc import OperationalError
 
 from txmatching.database.db import db
-from txmatching.database.services.app_user_management import \
-    get_app_user_by_email
+from txmatching.web.api.namespaces import service_api
 
 logger = logging.getLogger(__name__)
-
-service_api = Namespace('service')
-service_blueprint = Blueprint('service', __name__)
 
 LOGIN_FLASH_CATEGORY = 'LOGIN'
 
@@ -77,49 +70,3 @@ def read_version(default: str) -> str:
             logger.info(f'Settings version as: {version}')
 
     return version if version else default
-
-
-@service_blueprint.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('functional.home'))
-
-    if request.method == 'GET':
-        return render_template('login.html')
-
-    logger.info(request)
-    user = get_app_user_by_email(request.form['username'])
-    if user is None:
-        logger.warning(f"User {request.form['username']} not found.")
-        flash('Invalid credentials', LOGIN_FLASH_CATEGORY)
-        return redirect(url_for('service.login'))
-
-    if not bcrypt.checkpw(request.form['password'].encode('utf-8'), user.pass_hash.encode('utf-8')):
-        logger.warning(f"Invalid password for user {request.form['username']}.")
-        flash('Invalid credentials', LOGIN_FLASH_CATEGORY)
-        return redirect(url_for('service.login'))
-
-    user.set_authenticated(True)
-    login_user(user)
-    logger.info(f"User {request.form['username']} logged in.")
-    return redirect(url_for('functional.browse_solutions'))
-
-
-@service_blueprint.route('/logout')
-@login_required
-def logout():
-    username = current_user.email
-    logout_user()
-    logger.info(f'User {username} logged out.')
-    return redirect(url_for('functional.home'))
-
-
-# TODO Improve this https://trello.com/c/pKMqnv7X
-def check_admin(role: str):
-    if role != 'ADMIN':
-        abort(403)
-
-
-def check_admin_or_editor(role: str):
-    if role not in {'ADMIN', 'EDITOR'}:
-        abort(403)
