@@ -30,12 +30,12 @@ class Matching:
             str_repr += 'Cycles:\n'
 
             for cycle in self.get_cycles():
-                str_repr += '\t' + str(cycle) + '\n'
+                str_repr += f'\t{cycle}\n'
 
         if len(sequences) > 0:
             str_repr = '\nSequences:\n'
             for sequence in sequences:
-                str_repr += '\t' + str(sequence) + '\n'
+                str_repr += f'\t{sequence}\n'
 
         return str_repr
 
