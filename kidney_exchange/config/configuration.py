@@ -8,7 +8,8 @@ class DonorRecipientScore:
     recipient_id: int
     score: float
 
-
+# pylint: disable=too-many-instance-attributes
+# I think it is reasonable to have many attributes here
 @dataclass
 class ConfigurationBase:
     scorer_constructor_name: str = "HLAAdditiveScorer"
