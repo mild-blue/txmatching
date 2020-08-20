@@ -1,4 +1,5 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, event
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 from txmatching.database.db import db
@@ -122,3 +123,36 @@ class AppUser(db.Model):
 
     def set_authenticated(self, authenticated: bool):
         self._is_authenticated = authenticated
+
+
+def modified_trigger(table_name):
+    return f"""
+CREATE TRIGGER trg_{table_name}_set_updated_at
+BEFORE UPDATE ON {table_name}
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at())
+"""
+
+
+def created_trigger(table_name):
+    return f"""
+CREATE TRIGGER trg_{table_name}_set_created_at
+BEFORE INSERT ON {table_name}
+FOR EACH ROW EXECUTE PROCEDURE set_created_at())
+"""
+
+
+def create_modified_trigger(target, connection, **kwargs):
+    """
+    This is used to add bookkeeping triggers after a table is created. It hooks
+    into the SQLAlchemy event system. It expects the target to be an instance of
+    MetaData.
+    """
+    for key in target.tables:
+        table = target.tables[key]
+        connection.execute(modified_trigger(table.name))
+        connection.execute(created_trigger(table.name))
+
+
+Base = declarative_base()
+
+event.listen(Base.metadata, 'after_create', create_modified_trigger)
