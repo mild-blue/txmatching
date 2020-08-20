@@ -4,14 +4,13 @@
 import logging
 
 from flask import request
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Resource, fields
 
+from kidney_exchange.web.api.namespaces import user_api
 from kidney_exchange.web.auth.login_check import login_required, require_role
 from kidney_exchange.web.auth.user_authentication import obtain_login_token, refresh_token, register_user
 
 logger = logging.getLogger(__name__)
-
-user_api = Namespace('user')
 
 
 @user_api.route('/login', methods=['POST'])

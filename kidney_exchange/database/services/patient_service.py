@@ -1,10 +1,11 @@
 import dataclasses
 from typing import Dict, Iterable, List, Optional, Tuple
 
-from kidney_exchange.data_transfer_objects.patients.donor_dto import DonorDTO
-from kidney_exchange.data_transfer_objects.patients.patient_dto import \
-    PatientDTO
-from kidney_exchange.data_transfer_objects.patients.recipient_dto import \
+from kidney_exchange.data_transfer_objects.patients.donor_excel_dto import \
+    DonorDTO
+from kidney_exchange.data_transfer_objects.patients.patient_excel_dto import \
+    PatientExcelDTO
+from kidney_exchange.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientDTO
 from kidney_exchange.database.db import db
 from kidney_exchange.database.sql_alchemy_schema import (
@@ -33,7 +34,7 @@ def db_id_to_medical_id(db_id: int) -> str:
     return PatientModel.query.get(db_id).medical_id
 
 
-def patient_dto_to_patient_model(patient: PatientDTO) -> PatientModel:
+def patient_dto_to_patient_model(patient: PatientExcelDTO) -> PatientModel:
     patient_model = PatientModel(
         medical_id=patient.medical_id,
         country=patient.parameters.country_code,

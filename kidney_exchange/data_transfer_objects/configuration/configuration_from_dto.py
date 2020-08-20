@@ -8,8 +8,7 @@ from kidney_exchange.config.configuration import (BOOL_KEYS_IN_CONFIG,
                                                   MAN_DON_REC_SCORES,
                                                   Configuration,
                                                   DonorRecipientScore)
-from kidney_exchange.data_transfer_objects.configuration.configuration_dto import \
-    MAN_DON_REC_SCORES_DTO
+from kidney_exchange.data_transfer_objects.configuration.configuration_dto import MAN_DON_REC_SCORES_DTO
 from kidney_exchange.database.services.patient_service import \
     medical_id_to_db_id
 from kidney_exchange.scorers.additive_scorer import TRANSPLANT_IMPOSSIBLE
@@ -49,7 +48,9 @@ def configuration_from_dto(configuration_dto: Dict) -> Configuration:
         logger.error(f'could not process {MAN_DON_REC_SCORES_DTO}: {error}')
         configuration[MAN_DON_REC_SCORES] = []
     for bool_key in BOOL_KEYS_IN_CONFIG:
-        if bool_key in configuration:
+        if bool_key in configuration and (configuration[bool_key] == "on" or
+                                          (isinstance(configuration[bool_key], bool)
+                                           and configuration[bool_key])):
             configuration[bool_key] = True
         else:
             configuration[bool_key] = False

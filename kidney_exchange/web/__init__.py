@@ -2,21 +2,21 @@ import logging
 import sys
 from importlib import util as importing
 
-import flask_login
 from flask import Flask
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from kidney_exchange.database.db import db
-from kidney_exchange.database.services.app_user_management import \
-    get_app_user_by_email
-from kidney_exchange.web.api.auth_api import user_api
-from kidney_exchange.web.api.service_api import service_api, service_blueprint
+from kidney_exchange.web.api.configuration_api import configuration_api
+from kidney_exchange.web.api.matching_api import matching_api
+from kidney_exchange.web.api.namespaces import PATIENT_NAMESPACE, MATCHING_NAMESPACE, \
+    USER_NAMESPACE, SERVICE_NAMESPACE, CONFIGURATION_NAMESPACE
+from kidney_exchange.web.api.patient_api import patient_api
+from kidney_exchange.web.api.service_api import service_api
+from kidney_exchange.web.api.user_api import user_api
 from kidney_exchange.web.app_configuration.application_configuration import (
     ApplicationConfiguration, get_application_configuration)
 from kidney_exchange.web.auth import bcrypt
-from kidney_exchange.web.data_api import data_api
-from kidney_exchange.web.functional_api import functional_api
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'
@@ -31,26 +31,8 @@ def create_app():
     # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_port=1, x_for=1, x_host=1, x_prefix=1)
 
-    # register blueprints
-    app.register_blueprint(functional_api)
-    app.register_blueprint(data_api)
-    app.register_blueprint(service_blueprint)
-
     # For flask.flash (gives feedback when uploading files)
     app.secret_key = 'secret key'
-
-    # Add config
-    app.config['CSV_UPLOADS'] = 'kidney_exchange/web/csv_uploads'
-    app.config['ALLOWED_FILE_EXTENSIONS'] = ['CSV', 'XLSX']
-
-    global LOGIN_MANAGER
-    LOGIN_MANAGER = flask_login.LoginManager()
-    LOGIN_MANAGER.init_app(app)
-    LOGIN_MANAGER.login_view = 'service.login'
-
-    @LOGIN_MANAGER.user_loader
-    def user_loader(user_id):
-        return get_app_user_by_email(user_id)
 
     def load_local_development_config():
         config_file = 'kidney_exchange.web.local_config'
@@ -80,8 +62,11 @@ def create_app():
         }
 
         api = Api(app, authorizations=authorizations, doc='/doc/')
-        api.add_namespace(user_api, path=f'{API_VERSION}/user')
-        api.add_namespace(service_api, path=f'{API_VERSION}/service')
+        api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
+        api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
+        api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
+        api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
+        api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
 
     with app.app_context():
         load_local_development_config()

@@ -1,10 +1,13 @@
 from typing import List
 
+from kidney_exchange.data_transfer_objects.matchings.matching_dto import \
+    CountryDTO
 from kidney_exchange.patients.patient import PatientType
 from kidney_exchange.patients.patient_types import DonorRecipientTuple
 from kidney_exchange.solvers.matching.transplant_cycle import TransplantCycle
 from kidney_exchange.solvers.matching.transplant_round import TransplantRound
-from kidney_exchange.solvers.matching.transplant_sequence import TransplantSequence
+from kidney_exchange.solvers.matching.transplant_sequence import \
+    TransplantSequence
 
 
 class Matching:
@@ -21,18 +24,18 @@ class Matching:
         cycles = self.get_cycles()
         sequences = self.get_sequences()
 
-        str_repr = "[Matching]"
+        str_repr = '[Matching]'
 
         if len(cycles) > 0:
-            str_repr += "Cycles:\n"
+            str_repr += 'Cycles:\n'
 
             for cycle in self.get_cycles():
-                str_repr += "\t" + str(cycle) + "\n"
+                str_repr += f'\t{cycle}\n'
 
         if len(sequences) > 0:
-            str_repr = "\nSequences:\n"
+            str_repr = '\nSequences:\n'
             for sequence in sequences:
-                str_repr += "\t" + str(sequence) + "\n"
+                str_repr += f'\t{sequence}\n'
 
         return str_repr
 
@@ -50,6 +53,14 @@ class Matching:
     def get_recipients_for_country_count(self, country_code: str):
         return len([recipient.parameters.country_code for _, recipient in self._donor_recipient_list if
                     recipient.parameters.country_code == country_code])
+
+    def get_country_codes_counts(self) -> List[CountryDTO]:
+        countries = {patient.parameters.country_code for donor_recipient in self._donor_recipient_list for patient in
+                     donor_recipient}
+
+        return [CountryDTO(country,
+                           self.get_donors_for_country_count(country),
+                           self.get_recipients_for_country_count(country)) for country in countries]
 
     def get_bridging_donor_count(self):
         return len(
@@ -101,7 +112,7 @@ class Matching:
                     previous_vertex = reverse_edges.get(previous_vertex)
                 vertex_sequences.add(tuple(vertex_round))
             else:
-                raise AssertionError("Next vertex is not None nor equal to start vertex")
+                raise AssertionError('Next vertex is not None nor equal to start vertex')
 
         self._cycles = list(TransplantCycle([self._donor_recipient_list[i] for i in cycle])
                             for cycle in vertex_cycles)
