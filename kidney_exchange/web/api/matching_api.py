@@ -23,6 +23,8 @@ logger = logging.getLogger(__name__)
 LOGIN_FLASH_CATEGORY = 'LOGIN'
 
 
+# pylint: disable=no-self-use
+# the methods here need self due to the annotations
 @matching_api.route('/calculate-for-config', methods=['POST'])
 class CalculateFromConfig(Resource):
     @matching_api.doc(body=CONFIGURATION_MODEL, security='bearer')
@@ -43,8 +45,8 @@ class CalculateFromConfig(Resource):
                                 score_dict[(donor.db_id, recipient.db_id)],
                                 compatible_blood_dict[(donor.db_id, recipient.db_id)],
                                 donor.medical_id,
-                                recipient.medical_id) for donor, recipient in round.donor_recipient_list])
-                    for round in matching.get_rounds()],
+                                recipient.medical_id) for donor, recipient in matching_round.donor_recipient_list])
+                    for matching_round in matching.get_rounds()],
                 countries=matching.get_country_codes_counts(),
                 score=matching.score()
             )) for matching in matchings

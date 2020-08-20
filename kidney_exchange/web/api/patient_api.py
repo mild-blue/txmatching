@@ -12,6 +12,8 @@ from kidney_exchange.web.auth.login_check import login_required
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=no-self-use
+# the methods here need self due to the annotations
 @patient_api.route('/', methods=['GET'])
 class Patient(Resource):
 

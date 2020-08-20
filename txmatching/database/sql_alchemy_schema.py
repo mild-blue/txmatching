@@ -6,6 +6,8 @@ from txmatching.database.db import db
 from txmatching.patients.patient import PatientType
 
 
+# pylint: disable=too-few-public-methods
+# disable because sqlalchemy needs classes without public methods
 class ConfigModel(db.Model):
     __tablename__ = 'config'
     __table_args__ = {'extend_existing': True}
