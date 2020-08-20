@@ -84,8 +84,8 @@ class PatientPairModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     recipient_id = db.Column(db.BigInteger, ForeignKey('patient.id'), unique=False, nullable=False)
     donor_id = db.Column(db.BigInteger, unique=False, nullable=False)
-    created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
-    updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
 

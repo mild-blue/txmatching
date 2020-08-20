@@ -67,7 +67,7 @@ redeploy:
 logs:
 	docker-compose -f docker-compose.prod.yml logs --follow backend
 
-setup-db-for-tests:
+setup-non-empty-db:
 	docker-compose stop db || true
 	docker-compose rm -f db || true
 	docker volume rm  txmatching_txmatching-postgres || true
