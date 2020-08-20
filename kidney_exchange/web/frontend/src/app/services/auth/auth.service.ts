@@ -21,13 +21,13 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  login(username: string, password: string) {
+  login(email: string, password: string) {
     return this.http.post(
-      `${environment.apiUrl}/users/authenticate`,
-      { username, password }
+      `${environment.apiUrl}/user/login`,
+      { email, password }
     ).pipe(
       map((user: User) => {
-        user.authData = window.btoa(username + ':' + password);
+        user.authData = window.btoa(email + ':' + password);
         localStorage.setItem('currentUser', JSON.stringify(user));
         this.currentUserSubject.next(user);
         return user;

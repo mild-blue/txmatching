@@ -1,0 +1,32 @@
+:root {
+  --font-family: 'Open Sans', sans-serif;
+  --brand-red: #e2001a;
+  --brand-red-darker: #a80018;
+  --brand-white: #ffffff;
+  --brand-grey: #eee;
+  --brand-grey-dark: #ddd;
+  --brand-grey-darker: #666666;
+
+  --color-primary: var(--brand-red);
+  --color-primary-rgb: 226, 0, 26;
+  --color-error: #dc3545;
+  --color-error-rgb: 220, 53, 69;
+  --color-success: #28a745;
+  --color-success-rgb: 40, 167, 69;
+  --color-accent: #007bff;
+  --color-accent-rgb: 0, 123, 255;
+
+  --text-color: #000000;
+  --box-bg: #f5f5f5;
+
+  --padding-x: 50px;
+  --border-color: var(--brand-grey-dark);
+  --border-radius: 6px;
+  --box-shadow: 0 3.2px 7.2px 0 rgba(0, 0, 0, .132),
+  0 .6px 1.8px 0 rgba(0, 0, 0, .108);
+
+  --button-bg: var(--color-primary);
+  --button-hover-bg: var(--brand-red-darker);
+
+  --login-bg: var(--brand-grey);
+}

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
 import { first } from 'rxjs/operators';
@@ -26,20 +26,21 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  get f() {
+  get f(): { [key: string]: AbstractControl } {
     return this.loginForm.controls;
   }
 
   ngOnInit(): void {
     this.loginForm = this._formBuilder.group({
-      username: ['', Validators.required],
+      username: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
 
     this._returnUrl = this._route.snapshot.queryParams['returnUrl'] || '/';
   }
 
-  onSubmit() {
+  onSubmit(event) {
+    event.preventDefault();
     this.submitted = true;
 
     // stop here if form is invalid
@@ -52,7 +53,8 @@ export class LoginComponent implements OnInit {
     .pipe(first())
     .subscribe(
       data => {
-        this._router.navigate([this._returnUrl]);
+        console.log(data);
+        // this._router.navigate([this._returnUrl]);
       },
       error => {
         this.error = error;
