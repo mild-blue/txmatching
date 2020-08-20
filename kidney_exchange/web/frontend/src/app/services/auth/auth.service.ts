@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { User } from '@app/model/User';
 import { environment } from '@environments/environment';
 import { map } from 'rxjs/operators';
+import { AuthResponse } from '@app/services/auth/auth.interface';
+import decode from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +15,7 @@ export class AuthService {
   private currentUserSubject: BehaviorSubject<User>;
 
   constructor(private http: HttpClient) {
-    this.currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
+    this.currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('user')));
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
@@ -21,14 +23,25 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  get isTokenValid(): boolean {
+    const user = this.currentUserValue;
+    if (!user) {
+      return false;
+    }
+
+    const decoded = decode(user.token);
+    return decoded.exp >= Date.now() / 1000;
+  }
+
   login(email: string, password: string) {
     return this.http.post(
       `${environment.apiUrl}/user/login`,
       { email, password }
     ).pipe(
-      map((user: User) => {
-        user.authData = window.btoa(email + ':' + password);
-        localStorage.setItem('currentUser', JSON.stringify(user));
+      map((response: AuthResponse) => {
+        const token = response.auth_token;
+        const user: User = { email, password, token };
+        localStorage.setItem('user', JSON.stringify(user));
         this.currentUserSubject.next(user);
         return user;
       })
@@ -36,7 +49,7 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem('user');
     this.currentUserSubject.next(null);
   }
 }
