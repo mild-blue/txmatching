@@ -107,10 +107,13 @@ This is the reason we're using Conda. There's also no package for Windows, thus 
 mac and linux.
 
 ### Testing
-To run tests that need database do the following:
+To run tests simply run them.
+
+### Experimenting
+It is useful to have non-empty db, for that run
 
 ```
-make setup-db-for-tests
+make setup-non-empty-db
 ```
 
 run tests

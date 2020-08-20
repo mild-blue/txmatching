@@ -67,7 +67,7 @@ redeploy:
 logs:
 	docker-compose -f docker-compose.prod.yml logs --follow backend
 
-setup-db-for-tests:
+setup-non-empty-db:
 	docker stop kidney-exchange_db_1 || true
 	docker rm kidney-exchange_db_1 || true
 	docker volume rm  kidney-exchange_kidney-exchange-postgres || true
