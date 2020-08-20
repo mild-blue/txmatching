@@ -1,1 +1,27 @@
-<p>login works!</p>
+<div class="login">
+
+  <div class="login-content">
+    <h1>Kidney Exchange</h1>
+
+    <div class="login-form">
+      <form (ngSubmit)="onSubmit($event)" [formGroup]="loginForm">
+        <label [class.error]="f.username.value && f.username.invalid"
+               [class.success]="f.username.valid">
+          <span>E-mail</span>
+          <input formControlName="username" type="email">
+        </label>
+
+        <label [class.error]="f.password.value && f.password.invalid"
+               [class.success]="f.password.valid">
+          <span>Password</span>
+          <input formControlName="password" type="password">
+        </label>
+
+        <button [disabled]="!loginForm.valid" type="submit">Submit</button>
+
+      </form>
+    </div>
+  </div>
+
+
+</div>
