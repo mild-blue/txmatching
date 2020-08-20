@@ -32,15 +32,14 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = this._formBuilder.group({
-      username: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
 
     this._returnUrl = this._route.snapshot.queryParams['returnUrl'] || '/';
   }
 
-  onSubmit(event) {
-    event.preventDefault();
+  onSubmit() {
     this.submitted = true;
 
     // stop here if form is invalid
@@ -49,12 +48,13 @@ export class LoginComponent implements OnInit {
     }
 
     this.loading = true;
-    this._authService.login(this.f.username.value, this.f.password.value)
+    const form = this.f;
+
+    this._authService.login(form.email.value, form.password.value)
     .pipe(first())
     .subscribe(
       data => {
-        console.log(data);
-        // this._router.navigate([this._returnUrl]);
+        this._router.navigate([this._returnUrl]);
       },
       error => {
         this.error = error;
