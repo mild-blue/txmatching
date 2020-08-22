@@ -1,3 +1,6 @@
+# pylint: disable=no-self-use
+# can not, they are used for generating swagger which needs class
+
 import dataclasses
 import logging
 

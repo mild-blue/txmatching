@@ -2,11 +2,29 @@
 # as this is authentication, we need to catch everything
 
 import functools
+import logging
+from typing import Optional
 
 from flask import abort, g
 from flask import request
 
-from kidney_exchange.web.auth.crypto import decode_auth_token
+from kidney_exchange.web.auth.crypto import decode_auth_token, BearerToken
+
+logger = logging.getLogger(__name__)
+
+
+def get_request_token() -> Optional[BearerToken]:
+    """
+    Returns token of the currently logged in user.
+    """
+    auth_header = request.headers.get('Authorization')
+    token = None
+    try:
+        auth_token = auth_header.split(" ")[1]
+        token, _ = decode_auth_token(auth_token)
+    except Exception:
+        logger.exception('Exception during token parsing.')
+    return token
 
 
 def login_required():
