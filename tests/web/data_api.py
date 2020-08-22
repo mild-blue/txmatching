@@ -1,10 +1,10 @@
 import unittest
 
-from kidney_exchange.config.configuration import Configuration
-from kidney_exchange.data_transfer_objects.configuration.configuration_to_dto import configuration_to_dto
-from kidney_exchange.data_transfer_objects.configuration.configuration_from_dto import configuration_from_dto
-from kidney_exchange.database.sql_alchemy_schema import ConfigModel
-from kidney_exchange.web import create_app
+from txmatching.config.configuration import Configuration
+from txmatching.data_transfer_objects.configuration.configuration_to_dto import configuration_to_dto
+from txmatching.data_transfer_objects.configuration.configuration_from_dto import configuration_from_dto
+from txmatching.database.sql_alchemy_schema import ConfigModel
+from txmatching.web import create_app
 
 
 class TestSaveAndGetConfiguration(unittest.TestCase):

@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from kidney_exchange.utils.excel_parsing.parse_excel_data import _parse_acceptable_blood_groups
+from txmatching.utils.excel_parsing.parse_excel_data import _parse_acceptable_blood_groups
 
 
 class TestAcceptableBloodGroupParsing(unittest.TestCase):

@@ -1,4 +1,4 @@
-name: kidney-exchange
+name: txmatching
 channels:
   - conda-forge
   - defaults
