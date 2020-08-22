@@ -1,15 +1,3 @@
-# Config map
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: backend-config
-  labels:
-    app: backend
-data:
-  POSTGRES_DB: datavid
-  POSTGRES_USER: super-cool-datavid19
-  POSTGRES_PASSWORD: super-secret-pwd
----
 # Deployment
 apiVersion: apps/v1
 kind: Deployment
@@ -31,9 +19,27 @@ spec:
           imagePullPolicy: "Always"
           ports:
             - containerPort: 8080
-          envFrom:
-            - configMapRef:
-                name: backend-config
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: POSTGRES_URL
 ---
 # Service
 apiVersion: v1
