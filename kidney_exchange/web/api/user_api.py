@@ -7,8 +7,9 @@ from flask import request
 from flask_restx import Resource, fields
 
 from kidney_exchange.web.api.namespaces import user_api
-from kidney_exchange.web.auth.login_check import login_required, require_role
-from kidney_exchange.web.auth.user_authentication import obtain_login_token, refresh_token, register_user
+from kidney_exchange.web.auth.login_check import login_required, require_role, get_request_token
+from kidney_exchange.web.auth.user_authentication import obtain_login_token, refresh_token, register_user, \
+    change_user_password
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,24 @@ class RefreshTokenApi(Resource):
             return ok_token_status(token)
         else:
             return default_inconsistency()
+
+
+@user_api.route('/change-password', methods=['PUT'])
+class PasswordChangeApi(Resource):
+    password_change_model = user_api.model('PasswordChange', {
+        'new_password': fields.String(required=True, description='New password.')
+    })
+
+    @user_api.doc(body=password_change_model, security='bearer')
+    @login_required()
+    def put(self):
+        data = request.get_json()
+        token = get_request_token()
+        if token:
+            change_user_password(email=token.user_email, new_password=data.get('new_password'))
+            return {'status': 'ok'}
+        else:
+            return {'status': 'error'}, 400
 
 
 @user_api.route('/register', methods=['POST'])

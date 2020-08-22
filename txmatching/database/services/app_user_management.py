@@ -23,3 +23,8 @@ def persist_user(user: AppUser):
     # insert the user
     db.session.add(user)
     db.session.commit()
+
+
+def update_password_for_user(email: str, new_password_hash: str):
+    get_app_user_by_email(email).pass_hash = new_password_hash
+    db.session.commit()

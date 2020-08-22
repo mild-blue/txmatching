@@ -5,7 +5,7 @@ import logging
 from typing import Optional, Tuple
 
 from kidney_exchange.database.services.app_user_management import get_app_user_by_email, persist_user, \
-    get_app_user_by_id
+    get_app_user_by_id, update_password_for_user
 from kidney_exchange.database.sql_alchemy_schema import AppUser
 from kidney_exchange.web.auth.crypto import password_matches_hash, encode_auth_token, decode_auth_token, encode_password
 
@@ -73,3 +73,11 @@ def register_user(email: str, password: str, role: str) -> Tuple[Optional[str], 
 
     auth_token = encode_auth_token(user).decode()
     return auth_token, None
+
+
+def change_user_password(email: str, new_password: str):
+    """
+    Updates password for the user.
+    """
+    pwd_hash = encode_password(new_password)
+    update_password_for_user(email=email, new_password_hash=pwd_hash)
