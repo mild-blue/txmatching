@@ -15,7 +15,7 @@ from txmatching.patients.patient import Patient, PatientType
 from txmatching.patients.patient_parameters import (HLAAntibodies,
                                                          HLAAntigens,
                                                          PatientParameters)
-from kidney_exchange.patients.recipient import Recipient
+from txmatching.patients.recipient import Recipient
 
 
 def medical_id_to_db_id(medical_id: str) -> Optional[int]:

@@ -5,7 +5,7 @@ Solver for kidney exchange problems.
 ## Algorithm API
 The file structure containing the key classes of the algoritm API is:
 ```
-kidney_exchange
+txmatching
     ├── filters
     │   └── filter_base.py
     ├── patients
