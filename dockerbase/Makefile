@@ -1,5 +1,5 @@
 build:
-	docker build -t mildblue/conda-base .
+	docker build -t mildblue/txmatching-base .
 
 publish: build
-	docker push mildblue/conda-base:latest
+	docker push mildblue/txmatching-base:latest

@@ -1,4 +1,4 @@
-# Kidney Exchange
+# txmatching
 
 Solver for kidney exchange problems.
 

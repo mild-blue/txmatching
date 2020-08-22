@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: mildblue/kidney-exchange
+    image: mildblue/txmatching
     env_file:
       - .env.pub
     ports:
@@ -19,7 +19,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - kidney-exchange-postgres:/var/lib/postgresql/data/
+      - txmatching-postgres:/var/lib/postgresql/data/
 
 volumes:
-  kidney-exchange-postgres:
+  txmatching-postgres:
