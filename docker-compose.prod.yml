@@ -18,8 +18,7 @@ services:
       - 9092:5432
     restart: always
     volumes:
-      # leaving the name, we don't want to loose data on prod
-      - kidney-exchange-postgres-prod:/var/lib/postgresql/data/
+      - txmatching-postgres-prod:/var/lib/postgresql/data/
 
 volumes:
-  kidney-exchange-postgres-prod:
+  txmatching-postgres-prod:
