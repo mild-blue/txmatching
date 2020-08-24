@@ -15,6 +15,10 @@ def get_app_user_by_email(email: str) -> Optional[AppUser]:
     return AppUser.query.filter(AppUser.email == email).first()
 
 
+def get_app_user_by_id(user_id: int) -> Optional[AppUser]:
+    return AppUser.query.filter(AppUser.id == user_id).first()
+
+
 def persist_user(user: AppUser):
     # insert the user
     db.session.add(user)

@@ -16,6 +16,7 @@ from kidney_exchange.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from kidney_exchange.solve_service.solve_from_db import solve_from_db
 from kidney_exchange.web.api.namespaces import matching_api
+from kidney_exchange.web.auth.login_check import login_required
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,9 @@ LOGIN_FLASH_CATEGORY = 'LOGIN'
 
 @matching_api.route('/calculate-for-config', methods=['POST'])
 class CalculateFromConfig(Resource):
-    @matching_api.doc(body=CONFIGURATION_MODEL)
-    @matching_api.response(200, model=MATCHING_MODEL, description="")
+    @matching_api.doc(body=CONFIGURATION_MODEL, security='bearer')
+    @matching_api.response(200, model=MATCHING_MODEL, description='')
+    @login_required()
     def post(self) -> str:
         configuration = configuration_from_dto(request.json)
         save_configuration_as_current(configuration)

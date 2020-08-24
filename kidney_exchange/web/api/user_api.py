@@ -35,8 +35,9 @@ class LoginApi(Resource):
 
 @user_api.route('/refresh-token', methods=['GET'])
 class RefreshTokenApi(Resource):
-    @login_required()
+
     @user_api.doc(security='bearer', responses={200: 'Success', 401: 'Auth denied'})
+    @login_required()
     def get(self):
         error, token = None, None
         try:
