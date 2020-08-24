@@ -85,6 +85,6 @@ def create_app():
         application_config = get_application_configuration()
         configure_db(application_config)
         configure_encryption()
-        register_static_proxy()
+        register_static_proxy()  # must be registered before apis
         configure_apis()
         return app
