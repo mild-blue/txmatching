@@ -1,11 +1,11 @@
-# Kidney Exchange
+# txmatching
 
 Solver for kidney exchange problems.
 
 ## Algorithm API
 The file structure containing the key classes of the algoritm API is:
 ```
-kidney_exchange
+txmatching
     ├── filters
     │   └── filter_base.py
     ├── patients
@@ -63,7 +63,7 @@ can be installed just from the `conda-forge` repository.
 After you cloned the repository, execute `make conda-create` which creates Conda env for you.
 
 #### Development
-One must switch to `conda` env before development - use `conda activate kidney-exchange`
+One must switch to `conda` env before development - use `conda activate txmatching`
 to switch to correct environment.
 This must be execute every time when you try to use new terminal.
 
@@ -90,10 +90,10 @@ that would contain data to git.
 
 ## Application configuration
 Right now Flask web server tries to load configuration from the environment
-with fallback to loading from [`local_config.py`](kidney_exchange/web/local_config.py).
-All current configuration can be found [here](kidney_exchange/web/app_configuration/application_configuration.py).
+with fallback to loading from [`local_config.py`](txmatching/web/local_config.py).
+All current configuration can be found [here](txmatching/web/app_configuration/application_configuration.py).
 To obtain configuration in the code, one should call `get_application_configuration()`
- from [application_configuration.py](kidney_exchange/web/app_configuration/application_configuration.py).
+ from [application_configuration.py](txmatching/web/app_configuration/application_configuration.py).
 
 ## Graph Tool
 Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't
@@ -113,7 +113,7 @@ run tests
 
 ### Frontend
 
-Styles are located in `kidney_exchange/web/static/scss` directory. Minor files located in subdirectories are imported to `app.scss` file. This file is compiled to `kidney_exchange/web/static/css/app.css`, which is used on web.
+Styles are located in `txmatching/web/static/scss` directory. Minor files located in subdirectories are imported to `app.scss` file. This file is compiled to `txmatching/web/static/css/app.css`, which is used on web.
 
 #### Install SASS
 Install SASS preprocessor using `npm` by running:
@@ -121,7 +121,7 @@ Install SASS preprocessor using `npm` by running:
 npm install -g sass
 ```
 #### Compile
-To compile `.scss` to `.css` open terminal in `kidney_exchange/web/static/` folder and run:
+To compile `.scss` to `.css` open terminal in `txmatching/web/static/` folder and run:
 ```
 sass scss/app.scss css/app.css
 ```

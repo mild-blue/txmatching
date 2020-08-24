@@ -3,8 +3,8 @@ import unittest
 
 import numpy as np
 
-from kidney_exchange.solvers.all_solutions_solver import AllSolutionsSolver
-from kidney_exchange.utils.get_absolute_path import get_absolute_path
+from txmatching.solvers.all_solutions_solver import AllSolutionsSolver
+from txmatching.utils.get_absolute_path import get_absolute_path
 from tests.solvers.tabular_scorer import TabularScorer
 
 

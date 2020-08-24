@@ -1,8 +1,8 @@
 import logging
 import unittest
 
-from kidney_exchange.utils.hla_system.compatibility_index import compatibility_gene_codes
-from kidney_exchange.utils.hla_system.get_genotype import get_antigen_genotype
+from txmatching.utils.hla_system.compatibility_index import compatibility_gene_codes
+from txmatching.utils.hla_system.get_genotype import get_antigen_genotype
 from tests.patients.test_patient_parameters import donor_parameters_Joe, recipient_parameters_Jack
 
 logger = logging.getLogger(__name__)

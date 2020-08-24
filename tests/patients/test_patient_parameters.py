@@ -1,4 +1,4 @@
-from kidney_exchange.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
+from txmatching.patients.patient_parameters import PatientParameters, HLAAntigens, HLAAntibodies
 
 donor_parameters_Joe = PatientParameters(blood_group="A",
                                          hla_antigens=HLAAntigens(

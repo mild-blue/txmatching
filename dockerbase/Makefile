@@ -1,2 +1,5 @@
 build:
-	docker build -t datavid19/conda-base .
+	docker build -t mildblue/txmatching-base .
+
+publish: build
+	docker push mildblue/txmatching-base:latest

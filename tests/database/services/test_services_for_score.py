@@ -2,10 +2,10 @@ import unittest
 
 import numpy.testing as testing
 
-from kidney_exchange.config.configuration import Configuration
-from kidney_exchange.database.services.config_service import save_configuration_as_current
-from kidney_exchange.database.services.scorer_service import calculate_current_score_matrix
-from kidney_exchange.web import create_app
+from txmatching.config.configuration import Configuration
+from txmatching.database.services.config_service import save_configuration_as_current
+from txmatching.database.services.scorer_service import calculate_current_score_matrix
+from txmatching.web import create_app
 
 
 class TestSolveFromDbAndItsSupportFunctionality(unittest.TestCase):

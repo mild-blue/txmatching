@@ -1,11 +1,11 @@
 from typing import List, Tuple, Set, Iterable, FrozenSet
 from unittest import TestCase
 
-from kidney_exchange.patients.donor import Donor
-from kidney_exchange.patients.patient_parameters import PatientParameters
-from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.solvers.matching.matching import Matching
-from kidney_exchange.solvers.matching.transplant_round import TransplantRound
+from txmatching.patients.donor import Donor
+from txmatching.patients.patient_parameters import PatientParameters
+from txmatching.patients.recipient import Recipient
+from txmatching.solvers.matching.matching import Matching
+from txmatching.solvers.matching.transplant_round import TransplantRound
 
 
 def _create_recipient(id: int, donor: Donor) -> Recipient:

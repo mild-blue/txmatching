@@ -1,4 +1,6 @@
 FROM debian:buster-slim
+LABEL description="Mild Blue - Transplant Kidney Matching base image with conda. "
+LABEL project="mildblue:txmatching"
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH

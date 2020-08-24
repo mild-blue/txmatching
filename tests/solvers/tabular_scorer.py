@@ -1,9 +1,9 @@
 from typing import List, Union
 
-from kidney_exchange.config.configuration import Configuration
-from kidney_exchange.patients.donor import Donor
-from kidney_exchange.patients.recipient import Recipient
-from kidney_exchange.scorers.additive_scorer import AdditiveScorer
+from txmatching.config.configuration import Configuration
+from txmatching.patients.donor import Donor
+from txmatching.patients.recipient import Recipient
+from txmatching.scorers.additive_scorer import AdditiveScorer
 
 
 class TabularScorer(AdditiveScorer):

@@ -1,8 +1,8 @@
 import unittest
 
-from kidney_exchange.database.services.config_service import get_config_models
-from kidney_exchange.database.services.services_for_solve import get_patients_for_pairing_result
-from kidney_exchange.web import create_app
+from txmatching.database.services.config_service import get_config_models
+from txmatching.database.services.services_for_solve import get_patients_for_pairing_result
+from txmatching.web import create_app
 
 
 class TestSolveFromDbAndItsSupportFunctionality(unittest.TestCase):

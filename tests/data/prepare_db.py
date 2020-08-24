@@ -1,6 +1,6 @@
-from kidney_exchange.database.services.patient_service import save_patients
-from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
-from kidney_exchange.web import create_app
+from txmatching.database.services.patient_service import save_patients
+from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
+from txmatching.web import create_app
 
 if __name__ == '__main__':
     app = create_app()

@@ -1,0 +1,36 @@
+{% from 'show_user_macro.html' import render_user_info %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kidney Exchange</title>
+    <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+
+</head>
+
+<body class="main">
+{{ render_user_info(current_user) }}
+
+<div class="title">
+    <h1>Kidney Exchange</h1>
+</div>
+
+<div class="content">
+    <div class="buttons">
+        <button type="submit" class="btn btn-primary btn-block btn-large"
+                onclick="location.href='load-patients'">Load patients
+        </button>
+        <button type="submit" class="btn btn-primary btn-block btn-large"
+                onclick="location.href='browse-solutions'">Browse solutions
+        </button>
+    </div>
+
+    {% block main_content %}
+    {% endblock %}
+</div>
+
+
+</body>
+</html>
