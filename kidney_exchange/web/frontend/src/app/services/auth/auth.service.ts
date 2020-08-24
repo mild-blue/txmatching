@@ -40,7 +40,7 @@ export class AuthService {
     ).pipe(
       map((response: AuthResponse) => {
         const token = response.auth_token;
-        const user: User = { email, password, token };
+        const user: User = { email, token };
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUserSubject.next(user);
         return user;
