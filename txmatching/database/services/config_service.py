@@ -5,7 +5,7 @@ from typing import Iterator
 from txmatching.config.configuration import Configuration, DonorRecipientScore, MAN_DON_REC_SCORES
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ConfigModel
-from txmatching.web.auth.login_check import get_current_user_id
+from txmatching.utils.logged_user import get_current_user_id
 
 logger = logging.getLogger(__name__)
 

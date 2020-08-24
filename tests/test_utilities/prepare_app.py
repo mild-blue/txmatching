@@ -10,6 +10,7 @@ from txmatching.database.services.patient_service import save_patients
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.web import user_api
+from txmatching.web.auth.login_check import store_user_in_context
 
 
 class DbTests(unittest.TestCase):
@@ -39,10 +40,11 @@ class DbTests(unittest.TestCase):
         self.api = Api(self.app)
         self.api.add_namespace(user_api, path='/user')
         with self.app.test_client() as client:
-            email, password = ADMIN_USER
-            json = client.post('/user/login', json={'email': email, 'password': password}).json
+            json = client.post('/user/login',
+                               json={'email': ADMIN_USER['email'], 'password': ADMIN_USER['password']}).json
             token = json['auth_token']
             self.auth_headers = {'Authorization': f'Bearer {token}'}
+            store_user_in_context(ADMIN_USER['id'])
 
     def _load_local_development_config(self):
         config_file = 'txmatching.web.local_config'

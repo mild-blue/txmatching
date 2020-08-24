@@ -42,7 +42,7 @@ def login_required():
                 try:
                     auth_token = auth_header.split(" ")[1]
                     token, error = decode_auth_token(auth_token)
-                    _store_user_in_context(token.user_id)
+                    store_user_in_context(token.user_id)
                 except Exception:
                     error = 'Bearer token malformed.'
             else:
@@ -72,7 +72,7 @@ def require_role(*role_names):
                 try:
                     auth_token = auth_header.split(" ")[1]
                     token, error = decode_auth_token(auth_token)
-                    _store_user_in_context(token.user_id)
+                    store_user_in_context(token.user_id)
                 except Exception:
                     error = 'Bearer token malformed.'
             else:
@@ -91,17 +91,8 @@ def require_role(*role_names):
     return decorator
 
 
-def _store_user_in_context(user_id: int):
+def store_user_in_context(user_id: int):
     """
     Sets user id for the current request context.
     """
     g.user_id = user_id
-
-
-def get_current_user_id() -> int:
-    """
-    Retrieves user id from the request context.
-
-    Can trow AttributeError if not executed inside the Flask context.
-    """
-    return g.user_id
