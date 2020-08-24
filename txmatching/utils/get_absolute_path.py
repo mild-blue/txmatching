@@ -18,7 +18,7 @@ def get_absolute_path(project_relative_path: str) -> str:
 
     path_parts = os.path.abspath(__file__).split(separator)
     directory_index = path_parts.index('txmatching')
-    project_path = '/'.join(path_parts[:directory_index])
+    project_path = '/'.join(path_parts[:(directory_index + 1)])
     if not project_relative_path.startswith('/'):
         project_relative_path = f'/{project_relative_path}'
     absolute_path = project_path + project_relative_path
