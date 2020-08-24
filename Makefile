@@ -82,3 +82,6 @@ clean-db:
 
 run-linter:
 	pylint kidney_exchange
+
+build-fe:
+	cd kidney_exchange/web/frontend; npm install && npm run build
