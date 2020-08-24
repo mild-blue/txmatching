@@ -64,6 +64,7 @@ def _configuration_to_config_model(configuration: Configuration) -> ConfigModel:
     try:
         user_id = get_current_user_id()
     except AttributeError:
+        # TODO https://trello.com/c/yrEex4R4
         logger.warning(
             'Running outside of the application context (probably in unit test)! created_by set to default user')
         user_id = 1
