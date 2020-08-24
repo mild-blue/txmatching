@@ -1,3 +1,4 @@
+import os
 import unittest
 from importlib import util as importing
 
@@ -14,6 +15,7 @@ from txmatching.web.auth.login_check import store_user_in_context
 
 
 class DbTests(unittest.TestCase):
+    _database_name = 'memory.sqlite'
 
     def setUp(self):
         """
@@ -21,7 +23,10 @@ class DbTests(unittest.TestCase):
         """
 
         self.app = Flask(__name__)
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self._database_name}'
+        self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         db.init_app(self.app)
+
         self.app.app_context().push()
         self._load_local_development_config()
 
@@ -57,3 +62,6 @@ class DbTests(unittest.TestCase):
         """
         with self.app.app_context():
             db.drop_all()
+
+        if os.path.exists(f'test_utilities/{self._database_name}'):
+            os.remove(f'test_utilities/{self._database_name}')

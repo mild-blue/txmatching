@@ -56,7 +56,7 @@ def decode_auth_token(auth_token: str) -> Tuple[Optional[BearerToken], Optional[
     """
     try:
         app_conf = get_application_configuration()
-        payload = jwt.decode(auth_token, app_conf.jwt_secret)
+        payload = jwt.decode(auth_token, app_conf.jwt_secret, algorithms=['HS256'])
         return BearerToken(int(payload['user_id']), payload['role']), None
     except jwt.ExpiredSignatureError:
         return None, 'Signature expired. Please log in again.'
