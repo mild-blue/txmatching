@@ -4,7 +4,8 @@
 import logging
 from typing import Optional, Tuple
 
-from kidney_exchange.database.services.app_user_management import get_app_user_by_email, persist_user
+from kidney_exchange.database.services.app_user_management import get_app_user_by_email, persist_user, \
+    get_app_user_by_id
 from kidney_exchange.database.sql_alchemy_schema import AppUser
 from kidney_exchange.web.auth.crypto import password_matches_hash, encode_auth_token, decode_auth_token, encode_password
 
@@ -38,7 +39,7 @@ def refresh_token(auth_token: str) -> Tuple[Optional[str], Optional[str]]:
         return None, error
     # if the token is valid than this should always succeed
     # if not, we have inconsistent database or leaked JWT secret
-    user = get_app_user_by_email(token.user_email)
+    user = get_app_user_by_id(token.user_id)
     return encode_auth_token(user).decode(), None
 
 

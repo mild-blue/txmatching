@@ -3,7 +3,7 @@
 
 import functools
 
-from flask import abort
+from flask import abort, g
 from flask import request
 
 from kidney_exchange.web.auth.crypto import decode_auth_token
@@ -21,7 +21,8 @@ def login_required():
             if auth_header:
                 try:
                     auth_token = auth_header.split(" ")[1]
-                    _, error = decode_auth_token(auth_token)
+                    token, error = decode_auth_token(auth_token)
+                    _store_user_in_context(token.user_id)
                 except Exception:
                     error = 'Bearer token malformed.'
             else:
@@ -51,6 +52,7 @@ def require_role(*role_names):
                 try:
                     auth_token = auth_header.split(" ")[1]
                     token, error = decode_auth_token(auth_token)
+                    _store_user_in_context(token.user_id)
                 except Exception:
                     error = 'Bearer token malformed.'
             else:
@@ -67,3 +69,19 @@ def require_role(*role_names):
         return decorated_route
 
     return decorator
+
+
+def _store_user_in_context(user_id: int):
+    """
+    Sets user id for the current request context.
+    """
+    g.user_id = user_id
+
+
+def get_current_user_id() -> int:
+    """
+    Retrieves user id from the request context.
+
+    Can trow AttributeError if not executed inside the Flask context.
+    """
+    return g.user_id
