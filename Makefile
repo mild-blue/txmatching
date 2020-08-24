@@ -87,6 +87,6 @@ build-fe:
 	cd txmatching/web/frontend; npm install && npm run build
 
 test:
-	cd tests; python -m unittest discover -s . -t .
+	cd tests; export PYTHONPATH=../; python -m unittest discover -s . -t .
 
 check: run-linter test
