@@ -16,7 +16,7 @@ def get_app_user_by_email(email: str) -> Optional[AppUser]:
 
 
 def get_app_user_by_id(user_id: int) -> Optional[AppUser]:
-    return AppUser.query.filter(AppUser.id == user_id).first()
+    return AppUser.query.get(user_id)
 
 
 def persist_user(user: AppUser):
