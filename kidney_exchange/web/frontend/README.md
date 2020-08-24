@@ -1,6 +1,34 @@
 # Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.1.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli).
+
+## Prerequisites
+### Node.js and npm
+
+npm is distributed with Node.js, which means that when you download Node.js, you automatically get npm installed on your computer.
+
+[Download Node.js and npm](https://nodejs.org/en/)
+
+Verify installation by running in Terminal or Command line:
+```
+node -v
+```
+and then:
+```
+npm -v
+```
+
+### Angular
+
+In Terminal or Command line run:
+```
+npm install -g @angular/cli
+```
+
+It will globally install Angular on your machine.
+
+## Before starting dev server
+After downloading a new version of frontend app, you need to run `npm install` in case there is a need to install additional modules.
 
 ## Development server
 

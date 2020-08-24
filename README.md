@@ -117,21 +117,4 @@ run tests
 
 ### Frontend
 
-Styles are located in `txmatching/web/static/scss` directory. Minor files located in subdirectories are imported to `app.scss` file. This file is compiled to `txmatching/web/static/css/app.css`, which is used on web.
-
-#### Install SASS
-Install SASS preprocessor using `npm` by running:
-```
-npm install -g sass
-```
-#### Compile
-To compile `.scss` to `.css` open terminal in `txmatching/web/static/` folder and run:
-```
-sass scss/app.scss css/app.css
-```
-
-#### Watcher
-Run watcher to autocompile `.scss` to `.css` by executing:
-```
-sass --watch scss/app.scss css/app.css
-```
+See [README.md](txmatching/web/frontend/README.md)
