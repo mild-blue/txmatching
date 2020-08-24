@@ -32,7 +32,7 @@ def encode_auth_token(user: AppUser) -> bytearray:
     """
     app_conf = get_application_configuration()
     payload = {
-        'user_email': user.email,
+        'user_id': user.id,
         'role': user.role,
         'iat': datetime.datetime.utcnow(),
         'exp': datetime.datetime.utcnow() + datetime.timedelta(days=app_conf.jwt_expiration_days)
@@ -46,7 +46,7 @@ def encode_auth_token(user: AppUser) -> bytearray:
 
 @dataclass(frozen=True)
 class BearerToken:
-    user_email: str
+    user_id: int
     role: str
 
 
@@ -57,7 +57,7 @@ def decode_auth_token(auth_token: str) -> Tuple[Optional[BearerToken], Optional[
     try:
         app_conf = get_application_configuration()
         payload = jwt.decode(auth_token, app_conf.jwt_secret)
-        return BearerToken(payload['user_email'], payload['role']), None
+        return BearerToken(int(payload['user_id']), payload['role']), None
     except jwt.ExpiredSignatureError:
         return None, 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
