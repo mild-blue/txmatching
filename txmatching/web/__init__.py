@@ -68,6 +68,8 @@ def create_app():
         api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
         api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
 
+    # pylint: disable=unused-variable
+    # routes registered in flask
     def register_static_proxy():
         # serving main html which then asks for all javascript
         @app.route('/')

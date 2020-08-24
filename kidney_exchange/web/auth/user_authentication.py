@@ -75,9 +75,9 @@ def register_user(email: str, password: str, role: str) -> Tuple[Optional[str], 
     return auth_token, None
 
 
-def change_user_password(email: str, new_password: str):
+def change_user_password(user_id: int, new_password: str):
     """
     Updates password for the user.
     """
     pwd_hash = encode_password(new_password)
-    update_password_for_user(email=email, new_password_hash=pwd_hash)
+    update_password_for_user(user_id=user_id, new_password_hash=pwd_hash)

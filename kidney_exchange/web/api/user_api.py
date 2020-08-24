@@ -70,7 +70,7 @@ class PasswordChangeApi(Resource):
         data = request.get_json()
         token = get_request_token()
         if token:
-            change_user_password(email=token.user_email, new_password=data.get('new_password'))
+            change_user_password(user_id=token.user_id, new_password=data.get('new_password'))
             return {'status': 'ok'}
         else:
             return {'status': 'error'}, 400
