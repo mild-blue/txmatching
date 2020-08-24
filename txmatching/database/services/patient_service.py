@@ -14,8 +14,8 @@ from txmatching.database.sql_alchemy_schema import (
 from txmatching.patients.donor import Donor
 from txmatching.patients.patient import Patient, PatientType
 from txmatching.patients.patient_parameters import (HLAAntibodies,
-                                                         HLAAntigens,
-                                                         PatientParameters)
+                                                    HLAAntigens,
+                                                    PatientParameters)
 from txmatching.patients.recipient import Recipient
 
 

@@ -1,6 +1,6 @@
 from flask_restx import fields
 
-from kidney_exchange.web.api.namespaces import matching_api
+from txmatching.web.api.namespaces import matching_api
 
 CONFIGURATION_MODEL = matching_api.model(
     'Configuration',

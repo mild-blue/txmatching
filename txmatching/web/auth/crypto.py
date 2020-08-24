@@ -4,9 +4,9 @@ from typing import Tuple, Optional
 
 import jwt
 
-from kidney_exchange.database.sql_alchemy_schema import AppUser
-from kidney_exchange.web.app_configuration.application_configuration import get_application_configuration
-from kidney_exchange.web.auth import bcrypt
+from txmatching.database.sql_alchemy_schema import AppUser
+from txmatching.web.app_configuration.application_configuration import get_application_configuration
+from txmatching.web.auth import bcrypt
 
 
 def encode_password(password: str) -> str:

@@ -1,6 +1,6 @@
-from kidney_exchange.config.configuration import Configuration, DonorRecipientScore
-from kidney_exchange.database.services.config_service import save_configuration_as_current
-from kidney_exchange.solve_service.solve_from_db import solve_from_db
+from txmatching.config.configuration import Configuration, DonorRecipientScore
+from txmatching.database.services.config_service import save_configuration_as_current
+from txmatching.solve_service.solve_from_db import solve_from_db
 from tests.test_utilities.prepare_app import DbTests
 
 

@@ -7,10 +7,10 @@ import logging
 from flask import jsonify
 from flask_restx import Resource
 
-from kidney_exchange.data_transfer_objects.patients.patient_swagger import PATIENT_MODEL
-from kidney_exchange.database.services.patient_service import get_all_patients
-from kidney_exchange.web.api.namespaces import patient_api
-from kidney_exchange.web.auth.login_check import login_required
+from txmatching.data_transfer_objects.patients.patient_swagger import PATIENT_MODEL
+from txmatching.database.services.patient_service import get_all_patients
+from txmatching.web.api.namespaces import patient_api
+from txmatching.web.auth.login_check import login_required
 
 logger = logging.getLogger(__name__)
 

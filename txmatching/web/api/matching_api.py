@@ -7,19 +7,19 @@ import logging
 from flask import request, jsonify
 from flask_restx import Resource
 
-from kidney_exchange.data_transfer_objects.configuration.configuration_from_dto import \
+from txmatching.data_transfer_objects.configuration.configuration_from_dto import \
     configuration_from_dto
-from kidney_exchange.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_MODEL
-from kidney_exchange.data_transfer_objects.matchings.matching_dto import (
+from txmatching.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_MODEL
+from txmatching.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, Transplant)
-from kidney_exchange.data_transfer_objects.matchings.matching_swagger import MATCHING_MODEL
-from kidney_exchange.database.services.config_service import \
+from txmatching.data_transfer_objects.matchings.matching_swagger import MATCHING_MODEL
+from txmatching.database.services.config_service import \
     save_configuration_as_current
-from kidney_exchange.database.services.matching_service import \
+from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
-from kidney_exchange.solve_service.solve_from_db import solve_from_db
-from kidney_exchange.web.api.namespaces import matching_api
-from kidney_exchange.web.auth.login_check import login_required
+from txmatching.solve_service.solve_from_db import solve_from_db
+from txmatching.web.api.namespaces import matching_api
+from txmatching.web.auth.login_check import login_required
 
 logger = logging.getLogger(__name__)
 

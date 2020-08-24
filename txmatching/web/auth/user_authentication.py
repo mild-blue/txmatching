@@ -4,10 +4,10 @@
 import logging
 from typing import Optional, Tuple
 
-from kidney_exchange.database.services.app_user_management import get_app_user_by_email, persist_user, \
+from txmatching.database.services.app_user_management import get_app_user_by_email, persist_user, \
     get_app_user_by_id, update_password_for_user
-from kidney_exchange.database.sql_alchemy_schema import AppUser
-from kidney_exchange.web.auth.crypto import password_matches_hash, encode_auth_token, decode_auth_token, encode_password
+from txmatching.database.sql_alchemy_schema import AppUser
+from txmatching.web.auth.crypto import password_matches_hash, encode_auth_token, decode_auth_token, encode_password
 
 logger = logging.getLogger(__name__)
 

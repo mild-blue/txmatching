@@ -1,9 +1,9 @@
 from flask_restx import Api
 
-from kidney_exchange.config.configuration import Configuration
-from kidney_exchange.data_transfer_objects.configuration.configuration_to_dto import \
+from txmatching.config.configuration import Configuration
+from txmatching.data_transfer_objects.configuration.configuration_to_dto import \
     configuration_to_dto
-from kidney_exchange.web import patient_api, matching_api
+from txmatching.web import patient_api, matching_api
 from tests.test_utilities.prepare_app import DbTests
 
 

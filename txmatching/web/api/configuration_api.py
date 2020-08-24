@@ -6,12 +6,12 @@ import logging
 from flask import jsonify, request
 from flask_restx import Resource
 
-from kidney_exchange.data_transfer_objects.configuration.configuration_from_dto import configuration_from_dto
-from kidney_exchange.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_MODEL
-from kidney_exchange.data_transfer_objects.configuration.configuration_to_dto import configuration_to_dto
-from kidney_exchange.database.services.config_service import get_current_configuration, save_configuration_as_current
-from kidney_exchange.web.api.namespaces import configuration_api
-from kidney_exchange.web.auth.login_check import login_required
+from txmatching.data_transfer_objects.configuration.configuration_from_dto import configuration_from_dto
+from txmatching.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_MODEL
+from txmatching.data_transfer_objects.configuration.configuration_to_dto import configuration_to_dto
+from txmatching.database.services.config_service import get_current_configuration, save_configuration_as_current
+from txmatching.web.api.namespaces import configuration_api
+from txmatching.web.auth.login_check import login_required
 
 logger = logging.getLogger(__name__)
 

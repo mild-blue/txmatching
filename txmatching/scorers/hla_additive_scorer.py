@@ -1,11 +1,11 @@
 from typing import List, Optional, Union
 
 from txmatching.config.configuration import (Configuration,
-                                                  DonorRecipientScore)
+                                             DonorRecipientScore)
 from txmatching.patients.donor import Donor
 from txmatching.patients.recipient import Recipient
 from txmatching.scorers.additive_scorer import (TRANSPLANT_IMPOSSIBLE,
-                                                     AdditiveScorer)
+                                                AdditiveScorer)
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.countries import AUT, IL
 from txmatching.utils.hla_system.compatibility_index import \

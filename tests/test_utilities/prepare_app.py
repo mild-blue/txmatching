@@ -2,10 +2,10 @@ import unittest
 
 from flask import Flask
 
-from kidney_exchange.database.db import db
-from kidney_exchange.database.services.patient_service import save_patients
-from kidney_exchange.solve_service.solve_from_db import solve_from_db
-from kidney_exchange.utils.excel_parsing.parse_excel_data import parse_excel_data
+from txmatching.database.db import db
+from txmatching.database.services.patient_service import save_patients
+from txmatching.solve_service.solve_from_db import solve_from_db
+from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 
 
 class DbTests(unittest.TestCase):

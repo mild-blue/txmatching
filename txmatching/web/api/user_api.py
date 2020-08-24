@@ -6,9 +6,9 @@ import logging
 from flask import request
 from flask_restx import Resource, fields
 
-from kidney_exchange.web.api.namespaces import user_api
-from kidney_exchange.web.auth.login_check import login_required, require_role, get_request_token
-from kidney_exchange.web.auth.user_authentication import obtain_login_token, refresh_token, register_user, \
+from txmatching.web.api.namespaces import user_api
+from txmatching.web.auth.login_check import login_required, require_role, get_request_token
+from txmatching.web.auth.user_authentication import obtain_login_token, refresh_token, register_user, \
     change_user_password
 
 logger = logging.getLogger(__name__)

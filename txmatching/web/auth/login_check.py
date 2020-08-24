@@ -8,7 +8,7 @@ from typing import Optional
 from flask import abort, g
 from flask import request
 
-from kidney_exchange.web.auth.crypto import decode_auth_token, BearerToken
+from txmatching.web.auth.crypto import decode_auth_token, BearerToken
 
 logger = logging.getLogger(__name__)
 

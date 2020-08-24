@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from kidney_exchange.patients.patient_types import CountryCode, MedicalId
+from txmatching.patients.patient_types import CountryCode, MedicalId
 
 
 @dataclass

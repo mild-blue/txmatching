@@ -1,7 +1,7 @@
 from flask_restx import fields
 
-from kidney_exchange.patients.patient import PatientType
-from kidney_exchange.web.api.namespaces import patient_api
+from txmatching.patients.patient import PatientType
+from txmatching.web.api.namespaces import patient_api
 
 PATIENT_PARAMETERS_MODEL = patient_api.model('Patient Parameters', {
     "blood_group": fields.String(required=False),
