@@ -88,3 +88,5 @@ build-fe:
 
 test:
 	cd tests; python -m unittest discover -s . -t .
+
+check: run-linter test
