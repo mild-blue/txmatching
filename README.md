@@ -117,4 +117,10 @@ run tests
 
 ### Frontend
 
-See [README.md](txmatching/web/frontend/README.md)
+For detailed FE related stuff see [README.md](txmatching/web/frontend/README.md).
+
+#### Build FE for BE
+In order to build FE for the app one must run `make build-fe`. 
+One must do that ever time when something was changed in the FE code in order to have up to date FE.
+What this does is that it builds FE code to `txmatching/web/frontend/dist/frontend` directory, 
+where it is picked up by the Flask.

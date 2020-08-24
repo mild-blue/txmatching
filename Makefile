@@ -82,3 +82,6 @@ clean-db:
 
 run-linter:
 	pylint txmatching
+
+build-fe:
+	cd txmatching/web/frontend; npm install && npm run build
