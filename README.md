@@ -117,21 +117,4 @@ run tests
 
 ### Frontend
 
-Styles are located in `kidney_exchange/web/static/scss` directory. Minor files located in subdirectories are imported to `app.scss` file. This file is compiled to `kidney_exchange/web/static/css/app.css`, which is used on web.
-
-#### Install SASS
-Install SASS preprocessor using `npm` by running:
-```
-npm install -g sass
-```
-#### Compile
-To compile `.scss` to `.css` open terminal in `kidney_exchange/web/static/` folder and run:
-```
-sass scss/app.scss css/app.css
-```
-
-#### Watcher
-Run watcher to autocompile `.scss` to `.css` by executing:
-```
-sass --watch scss/app.scss css/app.css
-```
+See [README.md](kidney_exchange/web/frontend/README.md)
