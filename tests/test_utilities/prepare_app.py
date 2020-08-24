@@ -1,11 +1,15 @@
 import unittest
+from importlib import util as importing
 
 from flask import Flask
+from flask_restx import Api
 
+from tests.test_utilities.populate_db import add_users, ADMIN_USER
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import save_patients
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
+from txmatching.web import user_api
 
 
 class DbTests(unittest.TestCase):
@@ -18,12 +22,32 @@ class DbTests(unittest.TestCase):
         self.app = Flask(__name__)
         db.init_app(self.app)
         self.app.app_context().push()
+        self._load_local_development_config()
 
         db.create_all()
-        patients = parse_excel_data("test_utilities/data.xlsx")
+
+        add_users()
+
+        self._set_bearer_token()
+
+        patients = parse_excel_data('test_utilities/data.xlsx')
         save_patients(patients)
 
         solve_from_db()
+
+    def _set_bearer_token(self):
+        self.api = Api(self.app)
+        self.api.add_namespace(user_api, path='/user')
+        with self.app.test_client() as client:
+            email, password = ADMIN_USER
+            json = client.post('/user/login', json={'email': email, 'password': password}).json
+            token = json['auth_token']
+            self.auth_headers = {'Authorization': f'Bearer {token}'}
+
+    def _load_local_development_config(self):
+        config_file = 'txmatching.web.local_config'
+        if importing.find_spec(config_file):
+            self.app.config.from_object(config_file)
 
     def tearDown(self):
         """
