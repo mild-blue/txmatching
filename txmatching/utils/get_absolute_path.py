@@ -11,7 +11,7 @@ def get_absolute_path(project_relative_path: str) -> str:
     :param project_relative_path: e.g. "/txmatching/config/configuration.py"
     :return:
     """
-    if sys.platform == 'linux':
+    if sys.platform in {'linux', 'darwin'}:
         separator = '/'
     else:
         raise NotImplementedError(f'Not implemented for operating system: {sys.platform}')
