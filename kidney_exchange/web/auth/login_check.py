@@ -16,11 +16,13 @@ logger = logging.getLogger(__name__)
 def get_request_token() -> Optional[BearerToken]:
     """
     Returns token of the currently logged in user.
+
+    Token is present in the header Authorization: Bearer <real_token>
     """
     auth_header = request.headers.get('Authorization')
     token = None
     try:
-        auth_token = auth_header.split(" ")[1]
+        auth_token = auth_header.split(' ')[1]
         token, _ = decode_auth_token(auth_token)
     except Exception:
         logger.exception('Exception during token parsing.')
