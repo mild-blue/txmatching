@@ -2,7 +2,7 @@ import logging
 import sys
 from importlib import util as importing
 
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -68,10 +68,23 @@ def create_app():
         api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
         api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
 
+    def register_static_proxy():
+        # serving main html which then asks for all javascript
+        @app.route('/')
+        def index_html():
+            return send_from_directory('frontend/dist/frontend', 'index.html')
+
+        # used only if the there's no other endpoint registered
+        # we need it to load static resources for the frontend
+        @app.route('/<path:path>', methods=['GET'])
+        def static_proxy(path):
+            return send_from_directory('frontend/dist/frontend', path)
+
     with app.app_context():
         load_local_development_config()
         application_config = get_application_configuration()
         configure_db(application_config)
         configure_encryption()
+        register_static_proxy()
         configure_apis()
         return app
