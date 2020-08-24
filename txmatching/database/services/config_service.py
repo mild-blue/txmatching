@@ -61,11 +61,5 @@ def get_config_models() -> Iterator[ConfigModel]:
 
 
 def _configuration_to_config_model(configuration: Configuration) -> ConfigModel:
-    try:
-        user_id = get_current_user_id()
-    except AttributeError:
-        # TODO https://trello.com/c/yrEex4R4
-        logger.warning(
-            'Running outside of the application context (probably in unit test)! created_by set to default user')
-        user_id = 1
+    user_id = get_current_user_id()
     return ConfigModel(parameters=dataclasses.asdict(configuration), created_by=user_id)
