@@ -1,0 +1,29 @@
+<div class="login">
+
+  <div class="login-content">
+    <h1>Kidney Exchange</h1>
+
+    <div class="login-form">
+      <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+        <label [class.error]="f.email.value && f.email.invalid"
+               [class.success]="f.email.valid">
+          <span>E-mail</span>
+          <input formControlName="email" type="email">
+        </label>
+
+        <label [class.error]="f.password.value && f.password.invalid"
+               [class.success]="f.password.valid">
+          <span>Password</span>
+          <input formControlName="password" type="password">
+        </label>
+
+        <button [disabled]="(f.password.value && f.password.invalid) && (f.email.value && f.email.invalid)"
+                type="submit">Submit
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+
+</div>

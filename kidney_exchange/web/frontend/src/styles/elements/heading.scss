@@ -1,0 +1,14 @@
+h1 {
+  margin: 0 0 35px;
+  position: relative;
+
+  &::after {
+    content: '';
+    height: 3px;
+    width: 60px;
+    background: var(--brand-grey-dark);
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+  }
+}

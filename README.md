@@ -117,21 +117,10 @@ run tests
 
 ### Frontend
 
-Styles are located in `kidney_exchange/web/static/scss` directory. Minor files located in subdirectories are imported to `app.scss` file. This file is compiled to `kidney_exchange/web/static/css/app.css`, which is used on web.
+For detailed FE related stuff see [README.md](kidney_exchange/web/frontend/README.md).
 
-#### Install SASS
-Install SASS preprocessor using `npm` by running:
-```
-npm install -g sass
-```
-#### Compile
-To compile `.scss` to `.css` open terminal in `kidney_exchange/web/static/` folder and run:
-```
-sass scss/app.scss css/app.css
-```
-
-#### Watcher
-Run watcher to autocompile `.scss` to `.css` by executing:
-```
-sass --watch scss/app.scss css/app.css
-```
+#### Build FE for BE
+In order to build FE for the app one must run `make build-fe`. 
+One must do that ever time when something was changed in the FE code in order to have up to date FE.
+What this does is that it builds FE code to `kidney_exchange/web/frontend/dist/frontend` directory, 
+where it is picked up by the Flask.
