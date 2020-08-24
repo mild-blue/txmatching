@@ -1,9 +1,13 @@
 import dataclasses
+import logging
 from typing import Iterator
 
 from txmatching.config.configuration import Configuration, DonorRecipientScore, MAN_DON_REC_SCORES
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ConfigModel
+from txmatching.web.auth.login_check import get_current_user_id
+
+logger = logging.getLogger(__name__)
 
 
 def config_model_to_configuration(config_model: ConfigModel) -> Configuration:
@@ -57,4 +61,10 @@ def get_config_models() -> Iterator[ConfigModel]:
 
 
 def _configuration_to_config_model(configuration: Configuration) -> ConfigModel:
-    return ConfigModel(parameters=dataclasses.asdict(configuration), created_by=1)
+    try:
+        user_id = get_current_user_id()
+    except AttributeError:
+        logger.warning(
+            'Running outside of the application context (probably in unit test)! created_by set to default user')
+        user_id = 1
+    return ConfigModel(parameters=dataclasses.asdict(configuration), created_by=user_id)
