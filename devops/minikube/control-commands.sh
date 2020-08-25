@@ -20,7 +20,7 @@ kubectl get secret secrets --namespace="${DEPLOYMENT_NAMESPACE}" -o yaml
 kubectl apply -f postgres.yaml --namespace="${DEPLOYMENT_NAMESPACE}"
 
 # Check that pod exists
-  kubectl get pods -l app=postgres --namespace="${DEPLOYMENT_NAMESPACE}"
+kubectl get pods -l app=postgres --namespace="${DEPLOYMENT_NAMESPACE}"
 
 # Show its logs
 kubectl logs -l app=postgres --namespace="${DEPLOYMENT_NAMESPACE}"
