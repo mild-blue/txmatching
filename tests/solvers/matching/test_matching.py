@@ -8,8 +8,8 @@ from txmatching.solvers.matching.matching import Matching
 from txmatching.solvers.matching.transplant_round import TransplantRound
 
 
-def _create_recipient(id: int, donor: Donor) -> Recipient:
-    return Recipient(id, f"R-{id}", related_donor=donor, parameters=PatientParameters())
+def _create_recipient(idd: int, donor: Donor) -> Recipient:
+    return Recipient(idd, f"R-{idd}", related_donor=donor, parameters=PatientParameters())
 
 
 def _inner_elements_to_frozenset(iterable: Iterable) -> Set[FrozenSet]:
@@ -18,7 +18,8 @@ def _inner_elements_to_frozenset(iterable: Iterable) -> Set[FrozenSet]:
 
 class TestMatching(TestCase):
     def setUp(self) -> None:
-        self._donors = [Donor(donor_index, f"D-{donor_index}", parameters=PatientParameters()) for donor_index in range(10)]
+        self._donors = [Donor(donor_index, f"D-{donor_index}", parameters=PatientParameters())
+                        for donor_index in range(10)]
         self._recipients = [_create_recipient(10 + donor_index, donor)
                             for donor_index, donor in enumerate(self._donors)]
 
