@@ -13,20 +13,24 @@ DEPLOYMENT_NAMESPACE=txmatch
 
 # 2. Deploy Secrets
 kubectl apply -f secrets.yaml --namespace="${DEPLOYMENT_NAMESPACE}"
+
 kubectl get secret secrets --namespace="${DEPLOYMENT_NAMESPACE}" -o yaml
 
 # 3. Deploy Postgres
 kubectl apply -f postgres.yaml --namespace="${DEPLOYMENT_NAMESPACE}"
+
 # Check that pod exists
-kubectl get pods -l app=postgres --namespace="${DEPLOYMENT_NAMESPACE}"
+  kubectl get pods -l app=postgres --namespace="${DEPLOYMENT_NAMESPACE}"
 
 # Show its logs
 kubectl logs -l app=postgres --namespace="${DEPLOYMENT_NAMESPACE}"
 
 # 4. Deploy Backend
 kubectl apply -f backend.yaml --namespace="${DEPLOYMENT_NAMESPACE}"
+
 # Check that pod exists
 kubectl get pods -l app=backend --namespace="${DEPLOYMENT_NAMESPACE}"
+
 # Show its logs
 kubectl logs -l app=backend --namespace="${DEPLOYMENT_NAMESPACE}"
 
@@ -48,3 +52,10 @@ kubectl get svc -l app=backend --namespace="${DEPLOYMENT_NAMESPACE}" -o yaml | g
 
 # Expose backend service to be accessible outside of Minikube
 minikube service backend -n="${DEPLOYMENT_NAMESPACE}"
+
+# Get postgres service IP address and port
+minikube service postgres -n="${DEPLOYMENT_NAMESPACE}"
+
+# Connect to DB
+psql -h IP_ADDRESS -p PORT -U USER datavid
+# psql -h 172.17.3.14 -p 30380 -U super-cool-datavid19m datavid

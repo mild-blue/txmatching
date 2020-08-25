@@ -96,3 +96,6 @@ minikube status
 
 # Minikube dashboard
 minikube dashboard --url
+
+# Install Postgres client
+yum install -y postgresql

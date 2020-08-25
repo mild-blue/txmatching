@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: datavid19/kidney-exchange:latest
+          image: mildblue/txmatching:latest
           imagePullPolicy: "Always"
           ports:
             - containerPort: 8080
