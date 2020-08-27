@@ -58,4 +58,3 @@ minikube service postgres -n="${DEPLOYMENT_NAMESPACE}"
 
 # Connect to DB
 psql -h IP_ADDRESS -p PORT -U USER datavid
-# psql -h 172.17.3.14 -p 30380 -U super-cool-datavid19m datavid
