@@ -17,13 +17,11 @@
           <input formControlName="password" type="password">
         </label>
 
-        <button [disabled]="(f.password.value && f.password.invalid) && (f.email.value && f.email.invalid)"
-                type="submit">Submit
-        </button>
+        <app-button [loading]="loading">Submit</app-button>
 
       </form>
     </div>
   </div>
-
-
 </div>
+
+<app-alert></app-alert>

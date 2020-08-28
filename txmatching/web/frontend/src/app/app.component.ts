@@ -9,7 +9,7 @@ import { AuthService } from '@app/services/auth/auth.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  currentUser: User;
+  currentUser?: User;
 
   constructor(private _router: Router,
               private _authService: AuthService

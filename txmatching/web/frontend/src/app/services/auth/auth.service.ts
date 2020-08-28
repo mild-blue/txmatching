@@ -5,22 +5,30 @@ import { User } from '@app/model/User';
 import { environment } from '@environments/environment';
 import { map } from 'rxjs/operators';
 import { AuthResponse } from '@app/services/auth/auth.interface';
-import decode from 'jwt-decode';
+import * as jwt_decode from "jwt-decode";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  public currentUser: Observable<User>;
-  private currentUserSubject: BehaviorSubject<User>;
+
+  private _currentUserSubject: BehaviorSubject<User | undefined> = new BehaviorSubject<User | undefined>(undefined);
+  public currentUser: Observable<User | undefined> = this._currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    this.currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('user')));
-    this.currentUser = this.currentUserSubject.asObservable();
+    this._setCurrentUser();
   }
 
-  get currentUserValue(): User {
-    return this.currentUserSubject.value;
+  private _setCurrentUser(): void {
+    const lsUser = localStorage.getItem('user');
+    if(lsUser) {
+      this._currentUserSubject.next(JSON.parse(lsUser));
+      this.currentUser = this._currentUserSubject.asObservable();
+    }
+  }
+
+  get currentUserValue(): User | undefined {
+    return this._currentUserSubject.value;
   }
 
   get isTokenValid(): boolean {
@@ -29,8 +37,10 @@ export class AuthService {
       return false;
     }
 
-    const decoded = decode(user.token);
-    return decoded.exp >= Date.now() / 1000;
+    const decoded = jwt_decode(user.token);
+    console.log(decoded);
+    return true;
+    // return decoded.exp >= Date.now() / 1000;
   }
 
   login(email: string, password: string) {
@@ -38,11 +48,12 @@ export class AuthService {
       `${environment.apiUrl}/user/login`,
       { email, password }
     ).pipe(
-      map((response: AuthResponse) => {
+      map((r: Object) => {
+        const response = r as AuthResponse;
         const token = response.auth_token;
         const user: User = { email, token };
         localStorage.setItem('user', JSON.stringify(user));
-        this.currentUserSubject.next(user);
+        this._currentUserSubject.next(user);
         return user;
       })
     );
@@ -50,6 +61,6 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('user');
-    this.currentUserSubject.next(null);
+    this._currentUserSubject.next(undefined);
   }
 }

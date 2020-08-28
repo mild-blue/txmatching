@@ -3,62 +3,60 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
 import { first } from 'rxjs/operators';
+import { AlertService } from '@app/services/alert/alert.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
+
   public loginForm: FormGroup;
   public loading = false;
-
-  submitted = false;
-  error = '';
-  private _returnUrl: string;
 
   constructor(private _formBuilder: FormBuilder,
               private _route: ActivatedRoute,
               private _router: Router,
-              private _authService: AuthService) {
-    if (this._authService.currentUserValue) {
-      this._router.navigate(['/']);
-    }
-  }
-
-  get f(): { [key: string]: AbstractControl } {
-    return this.loginForm.controls;
-  }
-
-  ngOnInit(): void {
+              private _authService: AuthService,
+              private _alertService: AlertService)
+  {
     this.loginForm = this._formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
-
-    this._returnUrl = this._route.snapshot.queryParams['returnUrl'] || '/';
   }
 
-  onSubmit() {
-    this.submitted = true;
+  ngOnInit(): void {
+    if (this._authService.currentUserValue) {
+      this._navigateToHomepage();
+    }
+  }
 
-    // stop here if form is invalid
+  private _navigateToHomepage(): void {
+    this._router.navigate(['/']);
+  }
+
+  public onSubmit() {
+
     if (this.loginForm.invalid) {
       return;
     }
 
     this.loading = true;
-    const form = this.f;
+    const { email, password } = this.f;
 
-    this._authService.login(form.email.value, form.password.value)
+    this._authService.login(email.value, password.value)
     .pipe(first())
     .subscribe(
-      data => {
-        this._router.navigate([this._returnUrl]);
-      },
+      () => this._navigateToHomepage(),
       error => {
-        this.error = error;
         this.loading = false;
+        this._alertService.error(error);
       });
+  }
+
+  get f(): { [key: string]: AbstractControl } {
+    return this.loginForm.controls;
   }
 }

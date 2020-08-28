@@ -1,0 +1,36 @@
+button {
+  min-width: 120px;
+  margin: 30px auto 0;
+  display: block;
+
+  &.loading {
+    opacity: 0.5;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    fa-icon {
+      width: 20px;
+      height: 20px;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      margin-left: 10px;
+      transform: none;
+      animation: rotate 0.5s linear infinite;
+    }
+  }
+}
+
+@keyframes rotate {
+  from  {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
