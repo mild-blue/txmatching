@@ -48,6 +48,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.configOpened = false;
+    this.loading = true;
+
     const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids } = this.appConfiguration;
     const updatedConfig: AppConfiguration = {
       ...configuration,
