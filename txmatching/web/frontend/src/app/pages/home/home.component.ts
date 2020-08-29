@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
+import { faSlidersH } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-home',
@@ -10,6 +11,7 @@ import { AuthService } from '@app/services/auth/auth.service';
 export class HomeComponent implements OnInit {
 
   public user?: User;
+  public configIcon = faSlidersH;
 
   constructor(private _authService: AuthService) {
   }

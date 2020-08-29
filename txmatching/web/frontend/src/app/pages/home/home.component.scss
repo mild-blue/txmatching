@@ -1,0 +1,40 @@
+:host {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.home {
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: var(--padding);
+
+    .config {
+      button {
+        color: var(--brand-grey-darker);
+
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+
+        font-size: 14px;
+
+        fa-icon {
+          margin-left: 5px;
+          transform: rotate(90deg);
+          display: block;
+        }
+      }
+    }
+  }
+
+  &-content {
+    flex-grow: 1;
+    background: var(--brand-white);
+    border-radius: 40px 40px 0 0;
+    padding: var(--padding);
+  }
+}

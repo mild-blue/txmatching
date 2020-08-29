@@ -4,7 +4,7 @@ header {
   display: flex;
   align-items: center;
   height: 70px;
-  padding: 0 var(--padding-x);
+  padding: 0 var(--padding);
 
   @include media-breakpoint-down(sm) {
     height: auto;
@@ -35,7 +35,7 @@ header {
 
   .menu {
     flex-grow: 1;
-    padding: 0 calc(var(--padding-x) * 2);
+    padding: 0 calc(var(--padding) * 2);
 
     @include media-breakpoint-down(sm) {
       padding: var(--padding-x) 0;
