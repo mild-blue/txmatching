@@ -3,6 +3,7 @@ import sys
 from importlib import util as importing
 
 from flask import Flask, send_from_directory
+from flask_cors import CORS
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -28,6 +29,8 @@ def create_app():
                         stream=sys.stdout)
 
     app = Flask(__name__)
+    # enable cors for localhost development
+    CORS(app, resources={rf'/${API_VERSION}/*': {'origins': ['http://localhost:4200']}}, supports_credentials=True)
     # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_port=1, x_for=1, x_host=1, x_prefix=1)
 
