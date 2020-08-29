@@ -31,16 +31,20 @@ export class HomeComponent implements OnInit {
     this.user = this._authService.currentUserValue;
   }
 
+  public calculate(configuration: Configuration): void {
+    const updatedConfig = {
+      ...this.appConfiguration,
+      ...configuration
+    };
+    console.log(updatedConfig);
+  }
+
   private _initConfiguration(): void {
     this._configService.getConfiguration()
     .pipe(first())
     .subscribe((config: AppConfiguration) => {
       this.appConfiguration = config;
-      const {
-        scorer_constructor_name, solver_constructor_name,
-        maximum_total_score, required_patient_db_ids,
-        ...rest
-      } = config;
+      const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids, ...rest } = config;
       this.configuration = rest;
     });
   }

@@ -18,7 +18,3 @@ export interface AppConfiguration extends Configuration {
   maximum_total_score: number;
   required_patient_db_ids: number[];
 }
-
-// export type configurationType = {
-//   [key: string]: boolean | string
-// }

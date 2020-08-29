@@ -12,7 +12,8 @@
   </div>
 
   <div *ngIf="configuration" class="home-config">
-    <app-configuration [configuration]="configuration"></app-configuration>
+    <app-configuration (configSubmitted)="calculate($event)"
+                       [configuration]="configuration"></app-configuration>
   </div>
 
 

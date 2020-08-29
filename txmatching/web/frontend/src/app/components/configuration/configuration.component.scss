@@ -1,4 +1,6 @@
 .configuration {
+  margin-bottom: calc(var(--padding) * 2);
+
   label {
     display: block;
 
@@ -10,6 +12,7 @@
   &__boxes {
     display: flex;
     width: 100%;
+    padding: var(--padding);
 
     @media (max-width: 1200px) {
       flex-direction: column;

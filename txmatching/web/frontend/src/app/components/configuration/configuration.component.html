@@ -1,4 +1,4 @@
-<div *ngIf="configuration" class="configuration">
+<div *ngIf="configuration && configForm" class="configuration">
   <form [formGroup]="configForm">
     <div class="configuration__boxes">
       <div>
@@ -73,6 +73,8 @@
         </div>
       </div>
     </div>
+
+    <app-button (click)="submitAction()">Recalculate</app-button>
 
   </form>
 </div>
