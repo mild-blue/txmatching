@@ -24,9 +24,11 @@
     "@fortawesome/free-regular-svg-icons": "^5.14.0",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@types/jwt-decode": "^2.2.1",
+    "@types/uuid": "^8.3.0",
     "jwt-decode": "^2.2.0",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
+    "uuid": "^8.3.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {

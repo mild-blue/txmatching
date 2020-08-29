@@ -1,4 +1,5 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import * as uuid from 'uuid';
 
 @Component({
   selector: 'app-dropdown',
@@ -7,22 +8,29 @@ import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Outpu
 })
 export class DropdownComponent implements OnInit {
 
+  @ViewChild('dropdown') dropdown?: ElementRef;
   @Output() clickedOutside: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Input() open: boolean = false;
 
+  public id: string;
+
   constructor(private _elementRef: ElementRef) {
+    this.id = uuid.v4();
   }
 
   ngOnInit(): void {
   }
 
-  @HostListener('document:click', ['$event'])
-  clickOut(event: MouseEvent): void {
-    if (this.open) {
-      if (event.target && !this._elementRef.nativeElement.contains(event.target)) {
-        this.clickedOutside.emit(true);
-      }
-    }
-  }
+  // todo click outside
+  // @HostListener('document:click', ['$event'])
+  // clickout(event) {
+  //   if(!this.dropdown) {
+  //     return;
+  //   }
+  //   const clickedId = this.dropdown.nativeElement.getAttribute('id');
+  //   if(clickedId === this.id) {
+  //     console.log("clicked inside", this.id);
+  //   }
+  // }
 
 }

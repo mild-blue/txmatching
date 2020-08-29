@@ -34,13 +34,11 @@ export class HeaderComponent implements OnInit {
     return this._openedDropdownId;
   }
 
-  closeDropdowns(event: boolean): void {
-    console.log('close', event);
+  closeDropdowns(): void {
     this._openedDropdownId = '';
   }
 
   openDropdown(id: string): void {
-    console.log(id);
-    this._openedDropdownId = id;
+    this._openedDropdownId = this._openedDropdownId === id ? '' : id;
   }
 }

@@ -11,8 +11,8 @@
     </div>
   </div>
 
-  <div class="home-config">
-    <app-configuration></app-configuration>
+  <div *ngIf="configuration" class="home-config">
+    <app-configuration [configuration]="configuration"></app-configuration>
   </div>
 
 

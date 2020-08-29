@@ -1,0 +1,129 @@
+.configuration {
+  label {
+    display: block;
+
+    &:not(:last-child) {
+      margin-bottom: 20px;
+    }
+  }
+
+  &__boxes {
+    display: flex;
+    width: 100%;
+
+    @media (max-width: 1200px) {
+      flex-direction: column;
+    }
+
+    > div {
+      display: flex;
+      flex-basis: 50%;
+      width: 50%;
+
+      @media (max-width: 540px) {
+        flex-direction: column;
+      }
+
+      @media (max-width: 1200px) {
+        flex-basis: 100%;
+        width: 100%;
+      }
+    }
+  }
+
+  &__box {
+    border-radius: var(--border-radius--wide);
+    background: var(--brand-white);
+    box-shadow: var(--box-shadow);
+    flex-grow: 1;
+    flex-basis: 50%;
+    padding: 20px;
+
+    @media (max-width: 540px) {
+      flex-basis: 100%;
+    }
+  }
+
+  .checkboxes {
+
+    @media (max-width: 1200px) {
+      margin-right: 10px;
+    }
+
+    @media (max-width: 540px) {
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+  }
+
+  .inputs {
+    margin: 0 10px;
+
+    label {
+      display: flex;
+      align-items: center;
+
+      span {
+        padding-right: 15px;
+        flex-basis: 70%;
+        width: 70%;
+      }
+
+      input {
+        min-width: 80px;
+        flex-basis: 30%;
+        width: 30%;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      margin: 0;
+    }
+  }
+
+  .manual {
+    flex-direction: column;
+
+    p {
+      line-height: 1.6;
+    }
+
+    code {
+      font-size: 12px;
+    }
+
+    @media (max-width: 1200px) {
+      margin-top: 10px;
+    }
+
+    &-row {
+      display: flex;
+      flex-direction: column;
+
+      @media (min-width: 960px) {
+        flex-direction: row;
+
+        > div {
+          padding-right: 15px;
+        }
+
+        > * {
+          flex-basis: 50%;
+          width: 50%;
+        }
+      }
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    input[type="submit"] {
+      margin-top: 30px;
+    }
+
+  }
+
+}
