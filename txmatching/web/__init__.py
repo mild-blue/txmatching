@@ -2,8 +2,7 @@ import logging
 import sys
 from importlib import util as importing
 
-from flask import Flask, send_from_directory
-from flask_cors import CORS
+from flask import Flask, send_from_directory, request
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -30,8 +29,10 @@ def create_app():
 
     app = Flask(__name__)
     # enable cors for localhost development
-    CORS(app, resources={rf'{API_VERSION}/*': {'origins': 'http://localhost:4200'}},
-         expose_headers=['Content-Type', 'Authorization'])
+    # CORS(app, resources=rf'{API_VERSION}/*',
+    #      origins='http://localhost:4200',
+    #      allow_headers=['Content-Type', 'Authorization'],
+    #      expose_headers=['Content-Type', 'Authorization'])
     # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_port=1, x_for=1, x_host=1, x_prefix=1)
 
@@ -86,11 +87,24 @@ def create_app():
         def static_proxy(path):
             return send_from_directory('frontend/dist/frontend', path)
 
+    def enable_cors():
+        @app.after_request
+        def add_headers(response):
+            # URL of testing FE
+            if request.headers.get('origin') == 'http://localhost:4200':
+                response.headers.add('Content-Type', 'application/json')
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:4200')
+                response.headers.add('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
+                response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+                response.headers.add('Access-Control-Expose-Headers', 'Content-Type,Authorization')
+            return response
+
     with app.app_context():
         load_local_development_config()
         application_config = get_application_configuration()
         configure_db(application_config)
         configure_encryption()
         register_static_proxy()  # must be registered before apis
+        enable_cors()
         configure_apis()
         return app
