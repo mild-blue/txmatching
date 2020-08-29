@@ -2,7 +2,7 @@ import logging
 import sys
 from importlib import util as importing
 
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, request
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -38,6 +38,7 @@ def create_app():
         config_file = 'txmatching.web.local_config'
         if importing.find_spec(config_file):
             app.config.from_object(config_file)
+            app.config['IS_LOCAL_DEV'] = True
 
     def configure_db(application_config: ApplicationConfiguration):
         app.config['SQLALCHEMY_DATABASE_URI'] \
@@ -82,11 +83,27 @@ def create_app():
         def static_proxy(path):
             return send_from_directory('frontend/dist/frontend', path)
 
+    def enable_cors_for_local_dev():
+        @app.after_request
+        def add_headers(response):
+            # URL of testing FE, allowed only for API
+            if request.headers.get('origin') == 'http://localhost:4200' \
+                    and request.path.startswith(f'{API_VERSION}/'):
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:4200')
+                response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            return response
+
     with app.app_context():
         load_local_development_config()
         application_config = get_application_configuration()
+        # use configuration for app
         configure_db(application_config)
         configure_encryption()
-        register_static_proxy()  # must be registered before apis
+        # must be registered before apis
+        register_static_proxy()
+        # enable cors only if running on localhost
+        if app.config.get('IS_LOCAL_DEV'):
+            enable_cors_for_local_dev()
+        # finish configuration
         configure_apis()
         return app
