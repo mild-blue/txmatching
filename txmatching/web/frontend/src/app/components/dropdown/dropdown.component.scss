@@ -1,0 +1,23 @@
+:host {
+  position: relative;
+}
+
+.dropdown {
+  display: none;
+
+  position: absolute;
+  top: 100%;
+  right: 0;
+
+  width: 220px;
+  background: var(--brand-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+
+  margin-top: 10px;
+  padding: 10px 10px 20px;
+
+  &.open {
+    display: block;
+  }
+}

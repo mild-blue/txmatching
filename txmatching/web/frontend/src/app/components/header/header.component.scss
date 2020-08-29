@@ -1,9 +1,12 @@
+@import "../../../styles/breakpoints";
+
 header {
   display: flex;
+  align-items: center;
   height: 70px;
-  padding: 10px var(--padding-x);
+  padding: 0 var(--padding-x);
 
-  @media (max-width: 540px) {
+  @include media-breakpoint-down(sm) {
     height: auto;
     flex-direction: column;
   }
@@ -11,12 +14,13 @@ header {
   .logo {
     width: 80px;
     height: 100%;
+    padding: 10px 0;
 
     img {
       height: 100%;
     }
 
-    @media (max-width: 540px) {
+    @include media-breakpoint-down(sm) {
       width: 100%;
       height: 50px;
       margin-bottom: 10px;
@@ -29,35 +33,78 @@ header {
     }
   }
 
-  .info {
+  .menu {
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    font-size: 12px;
-    line-height: 1.75;
+    padding: 0 calc(var(--padding-x) * 2);
 
-    a {
-      font-weight: 700;
-      color: var(--text-color);
-      border-bottom: 1px solid var(--text-color);
-      text-decoration: none;
-      transition: all .2s ease;
+    @include media-breakpoint-down(sm) {
+      padding: var(--padding-x) 0;
+    }
 
-      &:hover, &:active, &:focus {
-        color: var(--color-primary);
-        border-bottom-color: transparent;
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      display: flex;
+
+      a {
+        text-transform: uppercase;
+        font-size: 15px;
+        letter-spacing: 1px;
+        font-weight: 600;
+
+        &.active {
+          color: var(--color-primary);
+        }
       }
     }
+  }
 
-    .contact {
-      color: var(--brand-grey-darker);
+  .icons {
+    display: flex;
+    justify-content: flex-end;
+
+    > div:not(:last-child) {
+      margin-right: 5px;
     }
 
-    @media (max-width: 540px) {
-      align-items: center;
+    button {
+      color: var(--brand-grey-dark);
+    }
+
+    p {
       text-align: center;
+      font-size: 14px;
+    }
+
+    .info {
+      button {
+        font-size: 16px;
+      }
+
+      .pdf-link {
+        text-align: center;
+
+        a {
+          border-radius: var(--border-radius);
+          color: var(--brand-white);
+          background-color: var(--button-bg);
+
+          padding: 5px 10px;
+          margin-top: 10px;
+          font-size: 14px;
+          font-weight: 600;
+
+          &:hover {
+            background-color: var(--button-hover-bg);
+          }
+
+        }
+      }
+
+
     }
   }
+
 }

@@ -14,6 +14,9 @@ export class HeaderComponent implements OnInit {
   public userIcon = faUserAlt;
   public infoIcon = faQuestionCircle;
 
+  public userDropdownOpened: boolean = false;
+  public infoDropdownOpened: boolean = false;
+
   constructor() {
   }
 

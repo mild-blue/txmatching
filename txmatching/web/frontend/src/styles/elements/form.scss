@@ -32,19 +32,11 @@ form {
 }
 
 button, input[type="submit"] {
-  background-color: var(--button-bg);
   border: none;
   box-shadow: none;
-  border-radius: var(--border-radius);
-  color: var(--brand-white);
-  padding: 10px;
   font-size: inherit;
-  font-weight: 600;
-
-  &:hover {
-    cursor: pointer;
-    background-color: var(--button-hover-bg);
-  }
+  background: none;
+  cursor: pointer;
 
   &:focus {
     outline: none;
