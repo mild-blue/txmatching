@@ -47,5 +47,9 @@
     background: var(--brand-white);
     border-radius: var(--border-radius--wide) var(--border-radius--wide) 0 0;
     padding: var(--padding);
+
+    h3 {
+      text-align: center;
+    }
   }
 }

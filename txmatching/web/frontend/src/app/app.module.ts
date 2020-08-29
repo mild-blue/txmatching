@@ -17,6 +17,7 @@ import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { ConfigurationComponent } from './components/configuration/configuration.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { CountComponent } from './components/count/count.component';
+import { MatchingsExplorerComponent } from './components/matchings-explorer/matchings-explorer.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { CountComponent } from './components/count/count.component';
     DropdownComponent,
     ConfigurationComponent,
     LoadingComponent,
-    CountComponent
+    CountComponent,
+    MatchingsExplorerComponent
   ],
   imports: [
     BrowserModule,

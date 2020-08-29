@@ -28,8 +28,11 @@
 
 
   <div class="home-content">
-    content
+    <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>
+    <app-matchings-explorer *ngIf="matchings.length > 0"
+                            [matchings]="matchings"></app-matchings-explorer>
   </div>
+
 
 </section>
 

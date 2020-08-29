@@ -1,0 +1,12 @@
+.matchings-explorer {
+  flex-grow: 1;
+  background: var(--brand-white);
+  border-radius: var(--border-radius--wide) var(--border-radius--wide) 0 0;
+  padding: var(--padding);
+}
+
+:host {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
