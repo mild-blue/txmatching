@@ -8,6 +8,7 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
+import { Matching } from '@app/model/Matching';
 
 @Component({
   selector: 'app-home',
@@ -18,14 +19,16 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public loading: boolean = false;
   private _configSubscription?: Subscription;
+  public matchings: Matching[] = [];
 
   public user?: User;
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
+  private _matchingSubscription?: Subscription;
+
   public configIcon = faSlidersH;
   public closeIcon = faTimes;
   public configOpened: boolean = false;
-  private _matchingSubscription?: Subscription;
 
   constructor(private _authService: AuthService,
               private _configService: ConfigurationService,
@@ -59,14 +62,15 @@ export class HomeComponent implements OnInit, OnDestroy {
       maximum_total_score,
       required_patient_db_ids
     };
-    console.log(updatedConfig);
+    console.log('Calculating with config', updatedConfig);
 
     this._matchingSubscription = this._matchingService.calculate(updatedConfig)
     .pipe(first())
     .subscribe(
-      (r: any) => {
+      (matchings: Matching[]) => {
+        console.log('Calculated matchings', matchings);
+        this.matchings = matchings;
         this.loading = false;
-        console.log(r);
       },
       error => {
         this.loading = false;

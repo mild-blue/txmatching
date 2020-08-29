@@ -16,6 +16,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { ConfigurationComponent } from './components/configuration/configuration.component';
 import { LoadingComponent } from './components/loading/loading.component';
+import { CountComponent } from './components/count/count.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { LoadingComponent } from './components/loading/loading.component';
     HeaderComponent,
     DropdownComponent,
     ConfigurationComponent,
-    LoadingComponent
+    LoadingComponent,
+    CountComponent
   ],
   imports: [
     BrowserModule,
