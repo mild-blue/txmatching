@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
 import { first } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert/alert.service';
@@ -17,7 +17,6 @@ export class LoginComponent implements OnInit {
   public submitted: boolean = false;
 
   constructor(private _formBuilder: FormBuilder,
-              private _route: ActivatedRoute,
               private _router: Router,
               private _authService: AuthService,
               private _alertService: AlertService) {
@@ -28,13 +27,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this._authService.currentUserValue) {
-      this._navigateToHomepage();
-    }
-  }
-
-  private _navigateToHomepage(): void {
-    this._router.navigate(['/']);
+    this._authService.logout();
   }
 
   public onSubmit() {
@@ -51,7 +44,7 @@ export class LoginComponent implements OnInit {
     this._authService.login(email.value, password.value)
     .pipe(first())
     .subscribe(
-      () => this._navigateToHomepage(),
+      () => this._router.navigate(['/']),
       error => {
         this.loading = false;
         this._alertService.error(error);

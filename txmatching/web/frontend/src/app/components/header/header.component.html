@@ -1,0 +1,29 @@
+<header>
+  <div class="logo">
+    <a routerLink="/">
+      <img alt="logo" src="assets/img/logo_ikem.svg"/>
+    </a>
+  </div>
+  <div class="menu">
+    <ul>
+      <li>
+        <a routerLink="/" routerLinkActive="active">Matchings</a>
+      </li>
+    </ul>
+  </div>
+  <div class="icons">
+    <div *ngIf="user" class="user">
+      <fa-icon [icon]="userIcon"></fa-icon>
+      <app-dropdown>
+        <div class="username">{{user.email}}</div>
+        <a routerLink="/login">Log out</a>
+      </app-dropdown>
+    </div>
+    <div class="info">
+      <fa-icon [icon]="infoIcon"></fa-icon>
+      <app-dropdown>
+        Not working? Questions? Call +420 723 927 536. See also <a href="assets/algorithm_description.pdf" target="_blank">algorithm description</a>.
+      </app-dropdown>
+    </div>
+  </div>
+</header>
