@@ -22,7 +22,7 @@ export class AlertComponent implements OnInit, OnDestroy {
               private alertService: AlertService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.alertSubscription = this.alertService.onAlert(this.id)
     .subscribe(alert => this.alerts.push(alert));
 
@@ -33,12 +33,12 @@ export class AlertComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.alertSubscription?.unsubscribe();
     this.routeSubscription?.unsubscribe();
   }
 
-  removeAlert(alert: Alert) {
+  public removeAlert(alert: Alert): void {
     // check if already removed to prevent error on auto close
     if (!this.alerts.includes(alert)) {
       return;
@@ -56,9 +56,9 @@ export class AlertComponent implements OnInit, OnDestroy {
     }, 250);
   }
 
-  cssClass(alert: Alert) {
+  public getClass(alert: Alert): string {
     if (!alert) {
-      return;
+      return '';
     }
 
     const classes = ['alert', 'alert-dismissable'];
