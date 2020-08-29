@@ -3,17 +3,24 @@
 <section class="home">
   <div class="home-header">
     <h1>Matchings</h1>
-    <div class="config">
-      <button>
-        Config
-        <fa-icon [icon]="configIcon"></fa-icon>
+    <div *ngIf="configuration" class="config">
+      <button (click)="toggleConfiguration()" [class.opened]="configOpened">
+        <ng-container *ngIf="!configOpened">
+          Change settings
+          <fa-icon [icon]="configIcon"></fa-icon>
+        </ng-container>
+        <ng-container *ngIf="configOpened">
+          Close settings
+          <fa-icon [icon]="closeIcon"></fa-icon>
+        </ng-container>
       </button>
     </div>
   </div>
 
   <div *ngIf="configuration" class="home-config">
     <app-configuration (configSubmitted)="calculate($event)"
-                       [configuration]="configuration"></app-configuration>
+                       [configuration]="configuration"
+                       [isOpened]="configOpened"></app-configuration>
   </div>
 
 
@@ -22,3 +29,5 @@
   </div>
 
 </section>
+
+<app-alert></app-alert>

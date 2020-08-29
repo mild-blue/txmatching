@@ -1,4 +1,6 @@
-<div *ngIf="configuration && configForm" class="configuration">
+<div *ngIf="configuration && configForm"
+     [class.open]="isOpened"
+     class="configuration">
   <form [formGroup]="configForm">
     <div class="configuration__boxes">
       <div>

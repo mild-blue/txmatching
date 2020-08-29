@@ -14,18 +14,29 @@
 
     .config {
       button {
-        color: var(--brand-grey-darker);
+        color: var(--text-color-secondary);
 
         display: flex;
-        justify-content: flex-end;
-        align-items: flex-end;
+        justify-content: center;
+
+        border: 1px solid var(--text-color-secondary);
+        border-radius: var(--border-radius--wide);
+        padding: 5px 10px;
+        min-width: 200px;
 
         font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 300;
+
+        &.opened {
+          color: var(--body-bg);
+          background: var(--text-color-secondary);
+        }
 
         fa-icon {
           margin-left: 5px;
           transform: rotate(90deg);
-          display: block;
         }
       }
     }

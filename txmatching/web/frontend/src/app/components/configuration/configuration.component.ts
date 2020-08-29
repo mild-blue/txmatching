@@ -9,6 +9,7 @@ import { Configuration } from '@app/model/Configuration';
 })
 export class ConfigurationComponent implements OnInit {
 
+  @Input() isOpened: boolean = false;
   @Input() configuration?: Configuration;
   @Output() configSubmitted: EventEmitter<Configuration> = new EventEmitter<Configuration>();
   public configForm?: FormGroup;

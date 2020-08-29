@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
-import { faSlidersH } from '@fortawesome/free-solid-svg-icons';
+import { faSlidersH, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
 import { first } from 'rxjs/operators';
 import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
+import { AlertService } from '@app/services/alert/alert.service';
 
 @Component({
   selector: 'app-home',
@@ -18,9 +19,12 @@ export class HomeComponent implements OnInit {
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
   public configIcon = faSlidersH;
+  public closeIcon = faTimes;
+  public configOpened: boolean = false;
 
   constructor(private _authService: AuthService,
               private _configService: ConfigurationService,
+              private _alertService: AlertService,
               private _matchingService: MatchingService) {
   }
 
@@ -50,19 +54,31 @@ export class HomeComponent implements OnInit {
 
     this._matchingService.calculate(updatedConfig)
     .pipe(first())
-    .subscribe((r: any) => {
-      console.log(r);
-    });
+    .subscribe(
+      (r: any) => {
+        console.log(r);
+      },
+      error => {
+        this._alertService.error(error);
+      });
+  }
+
+  public toggleConfiguration(): void {
+    this.configOpened = !this.configOpened;
   }
 
   private _initConfiguration(): void {
     this._configService.getConfiguration()
     .pipe(first())
-    .subscribe((config: AppConfiguration) => {
-      this.appConfiguration = config;
-      const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids, ...rest } = config;
-      this.configuration = rest;
-    });
+    .subscribe(
+      (config: AppConfiguration) => {
+        this.appConfiguration = config;
+        const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids, ...rest } = config;
+        this.configuration = rest;
+      },
+      error => {
+        this._alertService.error(error);
+      });
   }
 
 }
