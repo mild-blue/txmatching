@@ -8,15 +8,15 @@
   border-radius: var(--border-radius);
 
   &-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
+    color: var(--alert-success-color);
+    background-color: var(--alert-success-bg);
+    border-color: var(--alert-success-border-color);
   }
 
   &-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
+    color: var(--alert-error-color);
+    background-color: var(--alert-error-bg);
+    border-color: var(--alert-error-border-color);
   }
 
   .close {

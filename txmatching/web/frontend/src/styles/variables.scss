@@ -9,12 +9,19 @@
 
   --color-primary: var(--brand-red);
   --color-primary-rgb: 226, 0, 26;
-  --color-error: #dc3545;
-  --color-error-rgb: 220, 53, 69;
-  --color-success: #28a745;
-  --color-success-rgb: 40, 167, 69;
   --color-accent: #007bff;
   --color-accent-rgb: 0, 123, 255;
+
+  --color-error: #dc3545;
+  --color-success: #28a745;
+
+  --alert-error-color: #721c24;
+  --alert-error-bg: #f8d7da;
+  --alert-error-border-color: #f5c6cb;
+
+  --alert-success-color: #155724;
+  --alert-success-bg: #d4edda;
+  --alert-success-border-color: #c3e6cb;
 
   --text-color: #000000;
   --box-bg: #f5f5f5;

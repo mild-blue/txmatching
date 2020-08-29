@@ -17,15 +17,15 @@ form {
   label {
     &.error {
       input {
-        border-color: var(--color-error);
-        box-shadow: 0 0 5px rgba(var(--color-error-rgb), 0.5);
+        border-color: var(--alert-error-border-color);
+        box-shadow: 0 0 5px var(--alert-error-bg);
       }
     }
 
     &.success {
       input {
-        border-color: var(--color-success);
-        box-shadow: 0 0 5px rgba(var(--color-success-rgb), 0.5);
+        border-color: var(--alert-success-border-color);
+        box-shadow: 0 0 5px var(--alert-success-bg);
       }
     }
   }
