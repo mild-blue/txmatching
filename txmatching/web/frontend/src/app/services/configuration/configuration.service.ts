@@ -13,7 +13,6 @@ export class ConfigurationService {
   }
 
   public getConfiguration(): Observable<AppConfiguration> {
-    console.log('get config');
     return this._http.get<AppConfiguration>(
       `${environment.apiUrl}/configuration/`
     ).pipe();

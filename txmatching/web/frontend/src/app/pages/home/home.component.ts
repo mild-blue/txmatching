@@ -5,6 +5,7 @@ import { faSlidersH } from '@fortawesome/free-solid-svg-icons';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
 import { first } from 'rxjs/operators';
 import { AppConfiguration, Configuration } from '@app/model/Configuration';
+import { MatchingService } from '@app/services/matching/matching.service';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +20,8 @@ export class HomeComponent implements OnInit {
   public configIcon = faSlidersH;
 
   constructor(private _authService: AuthService,
-              private _configService: ConfigurationService) {
+              private _configService: ConfigurationService,
+              private _matchingService: MatchingService) {
   }
 
   ngOnInit(): void {
@@ -32,11 +34,25 @@ export class HomeComponent implements OnInit {
   }
 
   public calculate(configuration: Configuration): void {
-    const updatedConfig = {
-      ...this.appConfiguration,
-      ...configuration
+    if (!this.appConfiguration) {
+      return;
+    }
+
+    const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids } = this.appConfiguration;
+    const updatedConfig: AppConfiguration = {
+      ...configuration,
+      scorer_constructor_name,
+      solver_constructor_name,
+      maximum_total_score,
+      required_patient_db_ids
     };
     console.log(updatedConfig);
+
+    this._matchingService.calculate(updatedConfig)
+    .pipe(first())
+    .subscribe((r: any) => {
+      console.log(r);
+    });
   }
 
   private _initConfiguration(): void {
