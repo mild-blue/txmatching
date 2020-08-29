@@ -30,8 +30,8 @@ def create_app():
 
     app = Flask(__name__)
     # enable cors for localhost development
-    CORS(app, resources={rf'{API_VERSION}/*': {'origins': ['http://localhost:4200']}}, supports_credentials=True)
-    app.config['CORS_HEADERS'] = ['Content-Type', 'Authorization']
+    CORS(app, resources={rf'{API_VERSION}/*': {'origins': 'http://localhost:4200'}},
+         expose_headers=['Content-Type', 'Authorization'])
     # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_port=1, x_for=1, x_host=1, x_prefix=1)
 
