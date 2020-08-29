@@ -10,17 +10,17 @@ import { AlertService } from '@app/services/alert/alert.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   public loginForm: FormGroup;
-  public loading = false;
+  public loading: boolean = false;
+  public submitted: boolean = false;
 
   constructor(private _formBuilder: FormBuilder,
               private _route: ActivatedRoute,
               private _router: Router,
               private _authService: AuthService,
-              private _alertService: AlertService)
-  {
+              private _alertService: AlertService) {
     this.loginForm = this._formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -38,6 +38,8 @@ export class LoginComponent {
   }
 
   public onSubmit() {
+
+    this.submitted = true;
 
     if (this.loginForm.invalid) {
       return;

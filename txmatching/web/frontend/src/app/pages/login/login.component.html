@@ -5,13 +5,13 @@
 
     <div class="login-form">
       <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
-        <label [class.error]="f.email.value && f.email.invalid"
+        <label [class.error]="(submitted || f.email.value) && f.email.invalid"
                [class.success]="f.email.valid">
           <span>E-mail</span>
           <input formControlName="email" type="email">
         </label>
 
-        <label [class.error]="f.password.value && f.password.invalid"
+        <label [class.error]="(submitted || f.password.value) && f.password.invalid"
                [class.success]="f.password.valid">
           <span>Password</span>
           <input formControlName="password" type="password">
