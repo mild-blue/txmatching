@@ -28,11 +28,6 @@ def create_app():
                         stream=sys.stdout)
 
     app = Flask(__name__)
-    # enable cors for localhost development
-    # CORS(app, resources=rf'{API_VERSION}/*',
-    #      origins='http://localhost:4200',
-    #      allow_headers=['Content-Type', 'Authorization'],
-    #      expose_headers=['Content-Type', 'Authorization'])
     # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_port=1, x_for=1, x_host=1, x_prefix=1)
 
@@ -43,6 +38,7 @@ def create_app():
         config_file = 'txmatching.web.local_config'
         if importing.find_spec(config_file):
             app.config.from_object(config_file)
+            app.config['IS_LOCAL_DEV'] = True
 
     def configure_db(application_config: ApplicationConfiguration):
         app.config['SQLALCHEMY_DATABASE_URI'] \
@@ -87,11 +83,12 @@ def create_app():
         def static_proxy(path):
             return send_from_directory('frontend/dist/frontend', path)
 
-    def enable_cors():
+    def enable_cors_for_local_dev():
         @app.after_request
         def add_headers(response):
-            # URL of testing FE
-            if request.headers.get('origin') == 'http://localhost:4200':
+            # URL of testing FE, allowed only for API
+            if request.headers.get('origin') == 'http://localhost:4200' \
+                    and request.path.startswith(f'{API_VERSION}/'):
                 response.headers.add('Access-Control-Allow-Origin', 'http://localhost:4200')
                 response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
             return response
@@ -99,9 +96,14 @@ def create_app():
     with app.app_context():
         load_local_development_config()
         application_config = get_application_configuration()
+        # use configuration for app
         configure_db(application_config)
         configure_encryption()
-        register_static_proxy()  # must be registered before apis
-        enable_cors()
+        # must be registered before apis
+        register_static_proxy()
+        # enable cors only if running on localhost
+        if app.config.get('IS_LOCAL_DEV'):
+            enable_cors_for_local_dev()
+        # finish configuration
         configure_apis()
         return app
