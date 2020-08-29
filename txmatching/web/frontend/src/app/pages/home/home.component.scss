@@ -34,7 +34,7 @@
   &-content {
     flex-grow: 1;
     background: var(--brand-white);
-    border-radius: 40px 40px 0 0;
+    border-radius: var(--border-radius--wide) var(--border-radius--wide) 0 0;
     padding: var(--padding);
   }
 }

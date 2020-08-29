@@ -14,6 +14,7 @@ import { ButtonComponent } from './components/button/button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HeaderComponent } from './components/header/header.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
+import { ConfigurationComponent } from './components/configuration/configuration.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { DropdownComponent } from './components/dropdown/dropdown.component';
     AlertComponent,
     ButtonComponent,
     HeaderComponent,
-    DropdownComponent
+    DropdownComponent,
+    ConfigurationComponent
   ],
   imports: [
     BrowserModule,

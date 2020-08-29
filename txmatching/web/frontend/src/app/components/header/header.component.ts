@@ -14,8 +14,7 @@ export class HeaderComponent implements OnInit {
   public userIcon = faUserAlt;
   public infoIcon = faQuestionCircle;
 
-  public userDropdownOpened: boolean = false;
-  public infoDropdownOpened: boolean = false;
+  public _openedDropdownId: string = '';
 
   constructor() {
   }
@@ -23,4 +22,25 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  get userDropdownId(): string {
+    return 'user-dropdown';
+  }
+
+  get infoDropdownId(): string {
+    return 'info-dropdown';
+  }
+
+  get openedDropdownId(): string {
+    return this._openedDropdownId;
+  }
+
+  closeDropdowns(event: boolean): void {
+    console.log('close', event);
+    this._openedDropdownId = '';
+  }
+
+  openDropdown(id: string): void {
+    console.log(id);
+    this._openedDropdownId = id;
+  }
 }

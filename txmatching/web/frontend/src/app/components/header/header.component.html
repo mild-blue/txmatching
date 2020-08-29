@@ -13,19 +13,20 @@
   </div>
   <div class="icons">
     <div *ngIf="user" class="user">
-      <button (click)="infoDropdownOpened = false; userDropdownOpened = !userDropdownOpened">
+      <button (click)="openDropdown(userDropdownId)">
         <fa-icon [icon]="userIcon"></fa-icon>
       </button>
-      <app-dropdown [open]="userDropdownOpened">
+      <app-dropdown (clickedOutside)="closeDropdowns($event)" [open]="userDropdownId === openedDropdownId">
         <p>{{user.email}}</p>
         <app-button routerLink="/login" size="sm">Log out</app-button>
       </app-dropdown>
     </div>
     <div class="info">
-      <button (click)="userDropdownOpened = false; infoDropdownOpened = !infoDropdownOpened">
+      <!--      {{infoDropdownId === openedDropdownId}}-->
+      <button (click)="openDropdown(infoDropdownId)">
         <fa-icon [icon]="infoIcon"></fa-icon>
       </button>
-      <app-dropdown [open]="infoDropdownOpened">
+      <app-dropdown (clickedOutside)="closeDropdowns($event)" [open]="infoDropdownId === openedDropdownId">
         <p>Not working? Questions?<br>Call +420 723 927 536.</p>
         <div class="pdf-link">
           <a href="assets/algorithm_description.pdf" target="_blank">Algorithm description</a>

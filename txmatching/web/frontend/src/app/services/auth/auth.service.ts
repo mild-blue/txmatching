@@ -15,7 +15,7 @@ export class AuthService {
   private _currentUserSubject: BehaviorSubject<User | undefined> = new BehaviorSubject<User | undefined>(undefined);
   public currentUser: Observable<User | undefined> = this._currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private _http: HttpClient) {
     this._setCurrentUser();
   }
 
@@ -41,8 +41,8 @@ export class AuthService {
     return decoded.exp >= Date.now() / 1000;
   }
 
-  login(email: string, password: string) {
-    return this.http.post(
+  public login(email: string, password: string): Observable<User> {
+    return this._http.post(
       `${environment.apiUrl}/user/login`,
       { email, password }
     ).pipe(
@@ -57,7 +57,7 @@ export class AuthService {
     );
   }
 
-  logout(): void {
+  public logout(): void {
     localStorage.removeItem('user');
     this._currentUserSubject.next(undefined);
   }
