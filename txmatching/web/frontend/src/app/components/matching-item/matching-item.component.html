@@ -1,0 +1,22 @@
+<div *ngIf="matching"
+     [class.active]="isActive"
+     [id]="'matching-' + matching.index"
+     class="matching-item">
+
+  <app-matching-header [matching]="matching"></app-matching-header>
+
+
+  <ul class="description">
+    <li>Rounds: <strong>{{ matching.rounds.length }}</strong></li>
+    <li>Transplants: <strong>{{ getTransplantsCount(matching) }}</strong></li>
+    <li *ngFor="let country of matching.countries">
+      <flag [countryCode]="country.country_code"></flag>
+      :
+      <app-code>{{country.donor_count}}/{{country.recipient_count}}</app-code>
+    </li>
+  </ul>
+
+  <!--        {% for round in matching.get_rounds() %}-->
+  <!--        {{ render_round(round, score_dict, configuration, loop.index, matching_index, compatible_blood_dict) }}-->
+  <!--        {% endfor %}-->
+</div>

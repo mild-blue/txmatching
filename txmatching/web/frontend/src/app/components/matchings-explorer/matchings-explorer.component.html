@@ -1,26 +1,10 @@
 <app-content>
   <div class="matchings-explorer">
     <div #list class="list">
-      <div (click)="setActive(matching)"
-           *ngFor="let matching of matchings"
-           [class.active]="matching === activeMatching"
-           [id]="'matching-' + matching.index"
-           class="matching-item">
-
-        <ul class="description">
-          <li>Score: <span>{{ matching.score }}</span></li>
-          <li>Rounds: <span>{{ matching.rounds.length }}</span></li>
-          <li>Transplants: <span>{{ getTransplantsCount(matching) }}</span></li>
-          <li *ngFor="let country of matching.countries">
-            <img class="flag" src="../../../assets/img/countries/{{country.country_code}}.png"/>:
-            <span>{{country.donor_count}}/{{country.recipient_count}}</span>
-          </li>
-        </ul>
-
-        <!--        {% for round in matching.get_rounds() %}-->
-        <!--        {{ render_round(round, score_dict, configuration, loop.index, matching_index, compatible_blood_dict) }}-->
-        <!--        {% endfor %}-->
-      </div>
+      <app-matching-item (click)="setActive(matching)"
+                         *ngFor="let matching of matchings"
+                         [isActive]="matching === activeMatching"
+                         [matching]="matching"></app-matching-item>
     </div>
     <div #detail class="detail">
       <div *ngIf="activeMatching">

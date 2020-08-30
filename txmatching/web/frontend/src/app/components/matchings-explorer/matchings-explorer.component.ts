@@ -31,14 +31,6 @@ export class MatchingsExplorerComponent implements OnInit {
     }
   }
 
-  public getTransplantsCount(matching: MatchingView): number {
-    let sum = 0;
-    for (let round of matching.rounds) {
-      sum += round.transplants.length;
-    }
-    return sum;
-  }
-
   private _scrollToElement(id: number): void {
     const focusedElement = document.getElementById(`matching-${id}`);
     if (!this.list || !focusedElement) {

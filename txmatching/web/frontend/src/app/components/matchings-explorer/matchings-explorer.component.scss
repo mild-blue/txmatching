@@ -47,36 +47,6 @@
   }
 }
 
-.matching {
-  &-item {
-
-    background-color: transparent;
-    transition: background-color 0.5s ease;
-    padding: var(--padding) calc(var(--padding) * 2);
-    border-radius: var(--border-radius--wide) 0 0 var(--border-radius--wide);
-    cursor: pointer;
-
-    height: calc(100% / 5);
-    min-height: 180px;
-
-    &.active {
-      background-color: var(--brand-white);
-      box-shadow: var(--box-shadow--wide);
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-    }
-  }
-
-  &-detail {
-
-  }
-}
-
 :host {
   flex-grow: 1;
   display: flex;

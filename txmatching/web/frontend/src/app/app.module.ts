@@ -25,6 +25,8 @@ import { MatchingRoundComponent } from './components/matching-round/matching-rou
 import { MatchingTransplantComponent } from './components/matching-transplant/matching-transplant.component';
 import { CodeComponent } from './components/code/code.component';
 import { FlagComponent } from './components/flag/flag.component';
+import { MatchingItemComponent } from './components/matching-item/matching-item.component';
+import { MatchingHeaderComponent } from './components/matching-header/matching-header.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +47,9 @@ import { FlagComponent } from './components/flag/flag.component';
     MatchingRoundComponent,
     MatchingTransplantComponent,
     CodeComponent,
-    FlagComponent
+    FlagComponent,
+    MatchingItemComponent,
+    MatchingHeaderComponent
   ],
   imports: [
     BrowserModule,

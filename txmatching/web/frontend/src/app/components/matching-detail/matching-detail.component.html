@@ -1,9 +1,7 @@
 <div *ngIf="matching" class="matching-detail">
 
-  <div class="matching-detail__header">
-    <h2>Matching #{{matching.index}}</h2>
-    <h2 class="score">{{matching.score}}</h2>
-  </div>
+  <app-matching-header [matching]="matching"></app-matching-header>
+
   <div *ngFor="let round of matching.rounds; let i = index" class="round">
     <h3>Round {{ i + 1 }}/{{matching.rounds.length}}</h3>
     <app-matching-transplant *ngFor="let transplant of round.transplants"
