@@ -3,6 +3,11 @@
   background: var(--brand-white);
   border-radius: var(--border-radius--wide) var(--border-radius--wide) 0 0;
   overflow: hidden;
+  box-shadow: var(--box-shadow--wide);
+
+  display: flex;
+  flex-direction: column;
+
 }
 
 :host {

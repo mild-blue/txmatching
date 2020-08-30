@@ -1,30 +1,74 @@
+@import "../../../styles/breakpoints";
+
 .matchings-explorer {
   flex-grow: 1;
   background: var(--brand-white);
   border-radius: var(--border-radius--wide) var(--border-radius--wide) 0 0;
 
+  position: relative;
+
   min-height: calc(50vh);
   height: 100%;
   display: flex;
 
-  .list {
-    width: calc(30vw);
-    min-width: 400px;
+  @include media-breakpoint-down(md) {
+    flex-direction: column;
+  }
 
-    overflow-y: scroll;
+  .list, .detail {
+    position: absolute;
     height: 100%;
+    overflow-y: scroll;
 
-    background: var(--text-color-secondary);
+    @include media-breakpoint-down(md) {
+      position: relative;
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+    }
+  }
+
+  .list {
+    width: calc(40vw);
+    max-width: 500px;
+    left: 0;
+    background: var(--box-bg);
+    scroll-behavior: smooth;
+
+    @include media-breakpoint-down(md) {
+      height: 600px;
+    }
   }
 
   .detail {
-    flex-grow: 1;
+    width: calc(60vw);
+    min-width: calc(100vw - 500px);
+    right: 0;
   }
 }
 
 .matching {
   &-item {
 
+    background-color: transparent;
+    transition: background-color 0.5s ease;
+    padding: var(--padding) calc(var(--padding) * 2);
+    border-radius: var(--border-radius--wide) 0 0 var(--border-radius--wide);
+    cursor: pointer;
+
+    height: calc(100% / 5);
+    min-height: 180px;
+
+    &.active {
+      background-color: var(--brand-white);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+    }
   }
 
   &-detail {
