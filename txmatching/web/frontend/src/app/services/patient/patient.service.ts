@@ -11,8 +11,8 @@ import { map } from 'rxjs/operators';
 export class PatientService {
 
   private static _updateLocalStorage(patients: Patient[]) {
-    localStorage.removeItem(patientsLSKey);
-    localStorage.setItem(patientsLSKey, JSON.stringify(patients));
+    sessionStorage.removeItem(patientsLSKey);
+    sessionStorage.setItem(patientsLSKey, JSON.stringify(patients));
   }
 
   constructor(private _http: HttpClient) {
@@ -31,13 +31,13 @@ export class PatientService {
   }
 
   public getPatients(): Observable<Patient[]> {
-    const localPatients = localStorage.getItem(patientsLSKey);
+    const localPatients = sessionStorage.getItem(patientsLSKey);
 
     if (!localPatients) {
       return this.updatePatients();
+    } else {
+      console.log('Getting patients from local storage');
+      return of(JSON.parse(localPatients));
     }
-
-    console.log('Getting patients from local storage');
-    return of(JSON.parse(localPatients));
   }
 }
