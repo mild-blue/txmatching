@@ -34,10 +34,10 @@ const compatibleBloodGroups: { [key: string]: string[] } = {
   'AB': ['0', 'A', 'B', 'AB']
 };
 
-const antigenMultipliers: { [key: string]: number } = {
+const antibodiesMultipliers: { [key: string]: number } = {
   'A': 1,
   'B': 2,
   'DR': 9
 };
 
-export { compatibleBloodGroups, antigenMultipliers };
+export { compatibleBloodGroups, antibodiesMultipliers };

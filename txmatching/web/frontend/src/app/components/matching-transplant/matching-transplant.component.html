@@ -49,23 +49,21 @@
         <td>Antibodies</td>
         <td></td>
       </tr>
-      <tr>
-        <td>A</td>
-        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="donor" antigenPrefix="A"></app-matching-transplant-hla>
-        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="recipient" antigenPrefix="A"></app-matching-transplant-hla>
-        <td>{{ antigenScore('A') }}</td>
-      </tr>
-      <tr>
-        <td>B</td>
-        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="donor" antigenPrefix="B"></app-matching-transplant-hla>
-        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="recipient" antigenPrefix="B"></app-matching-transplant-hla>
-        <td>{{ antigenScore('B') }}</td>
-      </tr>
-      <tr>
-        <td>DR</td>
-        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="donor" antigenPrefix="DR"></app-matching-transplant-hla>
-        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="recipient" antigenPrefix="DR"></app-matching-transplant-hla>
-        <td>{{ antigenScore('DR') }}</td>
+      <tr *ngFor="let antibody of antibodies">
+        <td>{{antibody}}</td>
+        <td>
+          <span *ngFor="let code of filterCodes(donor.parameters.hla_antigens.codes, antibody)"
+                [class.matching-antigens]="matchingAntigens.includes(code)">{{ code }}</span>
+        </td>
+        <td>
+          <span *ngFor="let code of filterCodes(recipient.parameters.hla_antigens.codes, antibody)"
+                [class.matching-antigens]="matchingAntigens.includes(code)">{{ code }}</span>
+        </td>
+        <td>
+          <span *ngFor="let code of filterCodes(recipient.parameters.hla_antibodies.codes, antibody)"
+                [class.matching-antigens]="matchingAntigens.includes(code)">{{ code }}</span>
+        </td>
+        <td>{{ antibodyScore(antibody) }}</td>
       </tr>
       <tr class="footer-score">
         <td colspan="4">
@@ -75,6 +73,5 @@
       </tr>
       </tbody>
     </table>
-
   </div>
 </div>

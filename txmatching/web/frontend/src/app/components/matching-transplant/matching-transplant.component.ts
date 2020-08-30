@@ -3,7 +3,7 @@ import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { compatibleBloodGroups, Patient } from '@app/model/Patient';
+import { antibodiesMultipliers, compatibleBloodGroups, Patient } from '@app/model/Patient';
 
 @Component({
   selector: 'app-matching-transplant',
@@ -64,7 +64,11 @@ export class MatchingTransplantComponent implements OnInit {
     return `../../../assets/img/countries/${country}.png`;
   }
 
-  public antigenScore(prefix: string): number {
+  get antibodies(): string[] {
+    return Object.keys(antibodiesMultipliers);
+  }
+
+  public antibodyScore(prefix: string): number {
     return this.matchingAntigens ? this.matchingAntigens.filter(a => a.startsWith(prefix)).length : 0;
   }
 
@@ -72,5 +76,9 @@ export class MatchingTransplantComponent implements OnInit {
     this._patientsSubscription = this._patientService.getPatients()
     .pipe(first())
     .subscribe((patients: Patient[]) => this._patients = patients);
+  }
+
+  public filterCodes(codes: string[], prefix: string): string[] {
+    return codes.filter(code => code.startsWith(prefix));
   }
 }

@@ -75,7 +75,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(first())
     .subscribe(
       (matchings: Matching[]) => {
-        this.matchings = matchings.map((m, key) => {
+        this.matchings = matchings.slice(0, 10).map((m, key) => {
           return { index: key + 1, ...m };
         });
         console.log('Calculated matchings', matchings);

@@ -1,9 +1,0 @@
-<td *ngIf="patient"
-    [class.recipient]="isRecipient">
-    <span *ngFor="let code of filteredCodes(patient.parameters.hla_antigens.codes)"
-          [class.matching-antigens]="matchingAntigens.includes(code)">{{ code }}</span>
-</td>
-<td *ngIf="patient && isRecipient"
-    [class.recipient]="isRecipient">
-  <span *ngFor="let code of filteredCodes(patient.parameters.hla_antibodies.codes)">{{ code }}</span>
-</td>
