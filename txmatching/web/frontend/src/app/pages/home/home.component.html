@@ -23,12 +23,10 @@
   </app-container>
 
 
-  <div *ngIf="!loading && configuration" class="home-config">
-    <app-configuration (configSubmitted)="calculate($event)"
-                       [configuration]="configuration"
-                       [isOpened]="configOpened"></app-configuration>
-  </div>
-
+  <app-configuration (configSubmitted)="calculate($event)"
+                     *ngIf="configuration"
+                     [configuration]="configuration"
+                     [isOpened]="configOpened"></app-configuration>
 
   <app-content>
     <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>
