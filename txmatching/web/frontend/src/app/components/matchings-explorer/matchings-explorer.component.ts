@@ -9,7 +9,9 @@ import { Patient } from '@app/model/Patient';
 })
 export class MatchingsExplorerComponent implements OnInit {
 
-  @ViewChild('scrollable') scrollable?: ElementRef;
+  @ViewChild('list') list?: ElementRef;
+  @ViewChild('detail') detail?: ElementRef;
+
   @Input() matchings: MatchingView[] = [];
   @Input() patients: Patient[] = [];
 
@@ -39,11 +41,15 @@ export class MatchingsExplorerComponent implements OnInit {
 
   private _scrollToElement(id: number): void {
     const focusedElement = document.getElementById(`matching-${id}`);
-    if (!this.scrollable || !focusedElement) {
+    if (!this.list || !focusedElement) {
       return;
     }
 
-    const scrollable = this.scrollable.nativeElement;
+    const scrollable = this.list.nativeElement;
     scrollable.scrollTop = focusedElement.offsetTop;
+
+    if (this.detail) {
+      this.detail.nativeElement.scrollTop = 0;
+    }
   }
 }

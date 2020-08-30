@@ -1,6 +1,6 @@
 <app-content>
   <div class="matchings-explorer">
-    <div #scrollable class="list">
+    <div #list class="list">
       <div (click)="setActive(matching)"
            *ngFor="let matching of matchings"
            [class.active]="matching === activeMatching"
@@ -22,7 +22,7 @@
         <!--        {% endfor %}-->
       </div>
     </div>
-    <div class="detail">
+    <div #detail class="detail">
       <div *ngIf="activeMatching">
         <app-matching-detail [matching]="activeMatching"></app-matching-detail>
       </div>

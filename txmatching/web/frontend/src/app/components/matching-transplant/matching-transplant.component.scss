@@ -6,6 +6,9 @@
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   overflow: hidden;
+  margin: 0 auto 20px;
+
+  max-width: 960px;
 
   &:not(:last-child) {
     margin-bottom: 20px;

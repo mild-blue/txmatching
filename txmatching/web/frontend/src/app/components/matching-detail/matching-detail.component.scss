@@ -1,0 +1,30 @@
+@import "../../../styles/variables/colors";
+@import "../../../styles/variables/sizes";
+
+.matching-detail {
+  padding: $padding-y $padding-x;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .score {
+      color: #ffffff;
+      background: $primary;
+      border-radius: var(--border-radius);
+      padding: 5px 10px;
+    }
+  }
+
+  .round {
+    margin-bottom: 30px;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $border-color;
+    }
+  }
+}

@@ -2,7 +2,7 @@
 
   <div class="matching-detail__header">
     <h2>Matching #{{matching.index}}</h2>
-    <h2>{{matching.score}}</h2>
+    <h2 class="score">{{matching.score}}</h2>
   </div>
   <div *ngFor="let round of matching.rounds; let i = index" class="round">
     <h3>Round {{ i + 1 }}/{{matching.rounds.length}}</h3>
