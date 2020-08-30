@@ -6,12 +6,14 @@
          [class.w-indicator]="configuration && !configuration.use_binary_scoring"
          class="matching-round__transplant">
 
-      <ng-container *ngIf="donor(transplant) && recipient(transplant)">
-        <!--        <flag [countryCode]="donor(transplant).parameters.country_code"></flag>-->
+      <ng-container *ngVar="donor(transplant) as donor">
+        <flag [countryCode]="donor.parameters.country_code"></flag>
         {{ transplant.donor }}
-        <fa-icon [icon]="arrowRight"></fa-icon>
+      </ng-container>
+      <fa-icon [icon]="arrowRight"></fa-icon>
+      <ng-container *ngVar="recipient(transplant) as recipient">
         {{ transplant.recipient }}
-        <!--        <flag [countryCode]="recipient(transplant).parameters.country_code"></flag>-->
+        <flag [countryCode]="recipient.parameters.country_code"></flag>
       </ng-container>
 
       <div *ngIf="configuration && !configuration.use_binary_scoring"

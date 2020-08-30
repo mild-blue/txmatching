@@ -27,6 +27,7 @@ import { CodeComponent } from './components/code/code.component';
 import { FlagComponent } from './components/flag/flag.component';
 import { MatchingItemComponent } from './components/matching-item/matching-item.component';
 import { MatchingHeaderComponent } from './components/matching-header/matching-header.component';
+import { VarDirective } from './directives/ng-var/var.directive';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { MatchingHeaderComponent } from './components/matching-header/matching-h
     CodeComponent,
     FlagComponent,
     MatchingItemComponent,
-    MatchingHeaderComponent
+    MatchingHeaderComponent,
+    VarDirective
   ],
   imports: [
     BrowserModule,

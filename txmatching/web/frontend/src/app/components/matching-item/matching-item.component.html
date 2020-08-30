@@ -3,10 +3,10 @@
      [id]="'matching-' + matching.index"
      class="matching-item">
 
-  <app-matching-header [matching]="matching"></app-matching-header>
-
+  <h2>Matching #{{matching.index}}</h2>
 
   <ul class="description">
+    <li>Score: <strong>{{ matching.score }}</strong></li>
     <li>Rounds: <strong>{{ matching.rounds.length }}</strong></li>
     <li>Transplants: <strong>{{ getTransplantsCount(matching) }}</strong></li>
     <li *ngFor="let country of matching.countries">
@@ -21,8 +21,4 @@
                       [index]="i"
                       [patients]="patients"
                       [round]="round"></app-matching-round>
-
-  <!--        {% for round in matching.get_rounds() %}-->
-  <!--        {{ render_round(round, score_dict, configuration, loop.index, matching_index, compatible_blood_dict) }}-->
-  <!--        {% endfor %}-->
 </div>
