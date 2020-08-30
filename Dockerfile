@@ -4,7 +4,7 @@ FROM node:12.16.1-alpine as frontend-build
 COPY txmatching/web/frontend ./frontend
 WORKDIR ./frontend
 RUN npm i
-RUN npm run build
+RUN npm run build-prod
 
 # Build backend
 FROM mildblue/txmatching-base AS backend-build
