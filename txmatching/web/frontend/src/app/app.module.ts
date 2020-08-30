@@ -23,6 +23,7 @@ import { ContentComponent } from './components/content/content.component';
 import { MatchingDetailComponent } from './components/matching-detail/matching-detail.component';
 import { MatchingRoundComponent } from './components/matching-round/matching-round.component';
 import { MatchingTransplantComponent } from './components/matching-transplant/matching-transplant.component';
+import { MatchingTransplantHlaComponent } from './components/matching-transplant-hla/matching-transplant-hla.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { MatchingTransplantComponent } from './components/matching-transplant/ma
     ContentComponent,
     MatchingDetailComponent,
     MatchingRoundComponent,
-    MatchingTransplantComponent
+    MatchingTransplantComponent,
+    MatchingTransplantHlaComponent
   ],
   imports: [
     BrowserModule,

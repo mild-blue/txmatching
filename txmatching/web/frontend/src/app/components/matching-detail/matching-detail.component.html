@@ -4,7 +4,8 @@
     <h2>Matching #{{matching.index}}</h2>
     <h2>{{matching.score}}</h2>
   </div>
-  <div *ngFor="let round of matching.rounds" class="round">
+  <div *ngFor="let round of matching.rounds; let i = index" class="round">
+    <h3>Round {{ i + 1 }}/{{matching.rounds.length}}</h3>
     <app-matching-transplant *ngFor="let transplant of round.transplants"
                              [transplant]="transplant"></app-matching-transplant>
   </div>

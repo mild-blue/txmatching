@@ -1,0 +1,13 @@
+<ng-template *ngIf="patient">
+  <td>
+    <ng-template *ngFor="let code in patient.parameters.hla_antigens.codes">
+    <span *ngIf="code.startsWith(antigenPrefix)"
+          [class.matching-antigens]="matchingAntigens.includes(code)">{{ code }}</span>
+    </ng-template>
+  </td>
+  <td *ngIf="patient.patient_type === PatientType.RECIPIENT">
+    <ng-template *ngFor="let code in patient.parameters.hla_antibodies.codes">
+      <span *ngIf="code.startsWith(antigenPrefix)">{{ code }}</span>
+    </ng-template>
+  </td>
+</ng-template>

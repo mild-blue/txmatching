@@ -1,1 +1,80 @@
-<p>matching-transplant works!</p>
+<div *ngIf="transplant && donor && recipient && matchingAntigens" class="transplant">
+  <div class="transplant-header">
+    <div class="pair">
+      <img [src]="countryImage(donor.parameters.country_code)" alt="flag"/>
+      {{ donor.medical_id }} <span class="arrow-right"></span> {{ recipient.medical_id }}
+      <img [src]="countryImage(recipient.parameters.country_code)" alt="flag"/>
+    </div>
+
+    <div class="score">
+      Score: <span>{{ transplant.score }}</span>
+    </div>
+  </div>
+
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr>
+        <td></td>
+        <td>
+          <img [src]="countryImage(donor.parameters.country_code)" alt="flag"/>
+          {{ donor.medical_id }}
+        </td>
+        <td colspan="2">
+          <img [src]="countryImage(recipient.parameters.country_code)" alt="flag"/>
+          {{ recipient.medical_id }}
+        </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <span [class.matching-blood-group]="isDonorBloodCompatible">{{ donor.parameters.blood_group }}</span>
+        </td>
+        <td colspan="2">
+          <span [class.matching-blood-group]="isDonorBloodCompatible">{{ recipient.parameters.blood_group }}</span>
+          <div class="small">
+            Acceptable:
+            <span *ngFor="let bloodGroup of recipient.parameters.acceptable_blood_groups">{{ bloodGroup }}</span>
+          </div>
+        </td>
+        <td>
+
+        </td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td>Antibodies</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>A</td>
+        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="donor" antigenPrefix="A"></app-matching-transplant-hla>
+        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="recipient" antigenPrefix="A"></app-matching-transplant-hla>
+        <td>{{ antigenScore('A') }}</td>
+      </tr>
+      <tr>
+        <td>B</td>
+        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="donor" antigenPrefix="B"></app-matching-transplant-hla>
+        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="recipient" antigenPrefix="B"></app-matching-transplant-hla>
+        <td>{{ antigenScore('B') }}</td>
+      </tr>
+      <tr>
+        <td>DR</td>
+        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="donor" antigenPrefix="DR"></app-matching-transplant-hla>
+        <app-matching-transplant-hla [matchingAntigens]="matchingAntigens" [patient]="recipient" antigenPrefix="DR"></app-matching-transplant-hla>
+        <td>{{ antigenScore('DR') }}</td>
+      </tr>
+      <tr class="footer-score">
+        <td colspan="4">
+          Final score:
+        </td>
+        <td><span>{{ transplant.score }}</span></td>
+      </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
