@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Round, Transplant } from '@app/model/Matching';
-import { compatibleBloodGroups, Patient } from '@app/model/Patient';
+import { compatibleBloodGroups, Patient, PatientType } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { AppConfiguration } from '@app/model/Configuration';
 
@@ -22,7 +22,24 @@ export class MatchingRoundComponent implements OnInit {
   }
 
   get roundIndex(): string {
-    return '';
+    const roundIndex = `${this.index}`;
+    if (!this.round || !this.round.transplants.length) {
+      return roundIndex;
+    }
+
+    const firstTransplant = this.round.transplants[0];
+    const donor = this.donor(firstTransplant);
+
+    if (donor) {
+      if (donor.patient_type === PatientType.BRIDGING_DONOR.valueOf()) {
+        return `${roundIndex}B`;
+      }
+      if (donor.patient_type === PatientType.ALTRUIST.valueOf()) {
+        return `${roundIndex}A`;
+      }
+    }
+
+    return roundIndex;
   }
 
   ngOnInit(): void {
