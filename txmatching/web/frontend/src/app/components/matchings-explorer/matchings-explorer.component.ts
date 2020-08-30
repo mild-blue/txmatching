@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { Matching } from '@app/model/Matching';
+import { MatchingView } from '@app/model/Matching';
 import { Patient } from '@app/model/Patient';
 
 @Component({
@@ -10,26 +10,26 @@ import { Patient } from '@app/model/Patient';
 export class MatchingsExplorerComponent implements OnInit {
 
   @ViewChild('scrollable') scrollable?: ElementRef;
-  @Input() matchings: Matching[] = [];
+  @Input() matchings: MatchingView[] = [];
   @Input() patients: Patient[] = [];
 
-  public activeMatching?: Matching;
+  public activeMatching?: MatchingView;
 
   constructor() {
   }
 
   ngOnInit(): void {
-    this.setActive(this.matchings[0]);
+    this.setActive(this.matchings.length ? this.matchings[0] : undefined);
   }
 
-  public setActive(matching: Matching, elementId?: string): void {
+  public setActive(matching: MatchingView | undefined): void {
     this.activeMatching = matching;
-    if (elementId) {
-      this._scrollToElement(elementId);
+    if (matching && matching.index) {
+      this._scrollToElement(matching.index);
     }
   }
 
-  public getTransplantsCount(matching: Matching): number {
+  public getTransplantsCount(matching: MatchingView): number {
     let sum = 0;
     for (let round of matching.rounds) {
       sum += round.transplants.length;
@@ -37,9 +37,8 @@ export class MatchingsExplorerComponent implements OnInit {
     return sum;
   }
 
-  private _scrollToElement(elementId: string): void {
-    const focusedElement = document.getElementById(elementId);
-    console.log(this.scrollable?.nativeElement, focusedElement);
+  private _scrollToElement(id: number): void {
+    const focusedElement = document.getElementById(`matching-${id}`);
     if (!this.scrollable || !focusedElement) {
       return;
     }

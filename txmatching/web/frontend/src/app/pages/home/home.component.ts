@@ -8,7 +8,7 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { Matching } from '@app/model/Matching';
+import { Matching, MatchingView } from '@app/model/Matching';
 import { Patient } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 
@@ -21,13 +21,14 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public loading: boolean = false;
   private _configSubscription?: Subscription;
-  public matchings: Matching[] = [];
+  public matchings: MatchingView[] = [];
   public patients: Patient[] = [];
 
   public user?: User;
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
   private _matchingSubscription?: Subscription;
+  private _patientsSubscription?: Subscription;
 
   public configIcon = faCog;
   public closeIcon = faTimes;
@@ -49,15 +50,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._configSubscription?.unsubscribe();
     this._matchingSubscription?.unsubscribe();
-  }
-
-  private _initPatients(): void {
-    this._patientService.getPatients()
-    .pipe(first())
-    .subscribe((patients: Patient[]) => {
-      console.log('Loaded patients', patients);
-      this.patients = patients;
-    });
+    this._patientsSubscription?.unsubscribe();
   }
 
   public calculate(configuration: Configuration): void {
@@ -82,14 +75,26 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(first())
     .subscribe(
       (matchings: Matching[]) => {
+        this.matchings = matchings.map((m, key) => {
+          return { index: key + 1, ...m };
+        });
         console.log('Calculated matchings', matchings);
-        this.matchings = matchings;
         this.loading = false;
+        console.log('Loading?', this.loading);
       },
       error => {
         this.loading = false;
         this._alertService.error(error);
       });
+  }
+
+  private _initPatients(): void {
+    this._patientsSubscription = this._patientService.getPatients()
+    .pipe(first())
+    .subscribe((patients: Patient[]) => {
+      console.log('Loaded patients', patients);
+      this.patients = patients;
+    });
   }
 
   private _getResultsWithInitConfig(): void {
@@ -98,6 +103,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(first())
     .subscribe(
       (config: AppConfiguration) => {
+        console.log('Got config from server', config);
         this.appConfiguration = config;
         const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids, ...rest } = config;
         this.configuration = rest;

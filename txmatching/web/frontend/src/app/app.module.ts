@@ -20,6 +20,9 @@ import { CountComponent } from './components/count/count.component';
 import { MatchingsExplorerComponent } from './components/matchings-explorer/matchings-explorer.component';
 import { ContainerComponent } from './components/container/container.component';
 import { ContentComponent } from './components/content/content.component';
+import { MatchingDetailComponent } from './components/matching-detail/matching-detail.component';
+import { MatchingRoundComponent } from './components/matching-round/matching-round.component';
+import { MatchingTransplantComponent } from './components/matching-transplant/matching-transplant.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,10 @@ import { ContentComponent } from './components/content/content.component';
     CountComponent,
     MatchingsExplorerComponent,
     ContainerComponent,
-    ContentComponent
+    ContentComponent,
+    MatchingDetailComponent,
+    MatchingRoundComponent,
+    MatchingTransplantComponent
   ],
   imports: [
     BrowserModule,

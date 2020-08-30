@@ -4,6 +4,10 @@ export interface Matching {
   countries: MatchingCountry[];
 }
 
+export interface MatchingView extends Matching {
+  index: number;
+}
+
 export interface Round {
   transplants: Transplant[];
 }

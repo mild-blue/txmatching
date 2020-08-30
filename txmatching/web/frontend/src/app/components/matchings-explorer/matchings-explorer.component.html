@@ -1,10 +1,10 @@
 <app-content>
   <div class="matchings-explorer">
     <div #scrollable class="list">
-      <div (click)="setActive(matching, 'matching-' + i)"
-           *ngFor="let matching of matchings; let i = index"
+      <div (click)="setActive(matching)"
+           *ngFor="let matching of matchings"
            [class.active]="matching === activeMatching"
-           [id]="'matching-' + i"
+           [id]="'matching-' + matching.index"
            class="matching-item">
 
         <ul class="description">
@@ -23,8 +23,8 @@
       </div>
     </div>
     <div class="detail">
-      <div *ngIf="activeMatching" class="matching-detail">
-        {{ activeMatching.score }}
+      <div *ngIf="activeMatching">
+        <app-matching-detail [matching]="activeMatching"></app-matching-detail>
       </div>
     </div>
   </div>
