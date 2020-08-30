@@ -1,10 +1,18 @@
 // === BRAND COLORS === //
 $brand-red: #e2001a;
 $brand-grey-dark: #ddd;
+$brand-grey-darker: #666666;
 
 // === APP COLORS === //
+$black: #000000;
+$white: #ffffff;
+$grey: $brand-grey-darker;
+
+$dark: $brand-grey-dark;
+
 $primary: $brand-red;
 $border-color: $brand-grey-dark;
+$text-color: $black;
 
 // === ANTIBODIES & ANTIGENS CODES === //
 // basic code

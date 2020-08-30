@@ -1,6 +1,7 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MatchingView } from '@app/model/Matching';
 import { Patient } from '@app/model/Patient';
+import { AppConfiguration } from '@app/model/Configuration';
 
 @Component({
   selector: 'app-matchings-explorer',
@@ -14,6 +15,7 @@ export class MatchingsExplorerComponent implements OnInit {
 
   @Input() matchings: MatchingView[] = [];
   @Input() patients: Patient[] = [];
+  @Input() configuration?: AppConfiguration;
 
   public activeMatching?: MatchingView;
 

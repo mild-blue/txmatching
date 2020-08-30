@@ -34,6 +34,7 @@
     <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>
     <app-matchings-explorer *ngIf="!loading && matchings.length > 0"
                             [matchings]="matchings"
+                            [configuration]="appConfiguration"
                             [patients]="patients"></app-matchings-explorer>
   </app-content>
 

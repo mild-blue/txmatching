@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatchingView } from '@app/model/Matching';
+import { Patient } from '@app/model/Patient';
 
 @Component({
   selector: 'app-matching-detail',
@@ -9,6 +10,7 @@ import { MatchingView } from '@app/model/Matching';
 export class MatchingDetailComponent implements OnInit {
 
   @Input() matching?: MatchingView;
+  @Input() patients: Patient[] = [];
 
   constructor() {
   }

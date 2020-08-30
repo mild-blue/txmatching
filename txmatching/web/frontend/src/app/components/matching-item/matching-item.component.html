@@ -16,6 +16,12 @@
     </li>
   </ul>
 
+  <app-matching-round *ngFor="let round of matching.rounds; let i = index"
+                      [configuration]="configuration"
+                      [index]="i"
+                      [patients]="patients"
+                      [round]="round"></app-matching-round>
+
   <!--        {% for round in matching.get_rounds() %}-->
   <!--        {{ render_round(round, score_dict, configuration, loop.index, matching_index, compatible_blood_dict) }}-->
   <!--        {% endfor %}-->

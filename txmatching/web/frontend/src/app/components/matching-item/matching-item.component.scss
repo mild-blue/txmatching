@@ -6,7 +6,7 @@
   border-radius: var(--border-radius--wide) 0 0 var(--border-radius--wide);
   cursor: pointer;
 
-  height: calc(100% / 5);
+  height: auto;
   min-height: 180px;
 
   &.active {

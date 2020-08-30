@@ -1,0 +1,62 @@
+@import "../../../styles/variables/colors";
+@import "../../../styles/variables/sizes";
+
+.matching-round {
+
+  border-bottom: 1px solid $border-color;
+  display: flex;
+  padding: 5px 0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .index {
+    font-weight: 700;
+    color: $brand-grey-darker;
+    margin-right: 15px;
+    display: inline-block;
+    min-width: 20px;
+  }
+
+  .content {
+    flex-grow: 1;
+  }
+
+  &__transplant {
+    display: inline-block;
+    padding: 8px 10px 5px;
+    margin: 2px 20px 2px 0;
+    border-radius: $border-radius;
+    position: relative;
+
+    background-color: $grey;
+    color: $white;
+
+    fa-icon {
+      margin: 0 10px 2px 10px;
+    }
+
+    &.compatible {
+      background-color: $dark;
+      color: $black;
+    }
+
+    &.w-indicator {
+      border-radius: $border-radius 0 0 $border-radius;
+    }
+
+    .indicator {
+      background: linear-gradient(to right, #ff0000, #fff200, #1e9600) no-repeat;
+      background-size: 100vw;
+      position: absolute;
+      left: 100%;
+      top: 0;
+      height: 100%;
+      width: 20px;
+
+      border-radius: 0 $border-radius $border-radius 0;
+    }
+
+  }
+}

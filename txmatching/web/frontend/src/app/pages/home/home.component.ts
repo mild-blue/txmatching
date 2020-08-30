@@ -71,6 +71,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     };
     console.log('Calculating with config', updatedConfig);
 
+    this.appConfiguration = updatedConfig;
+
     this._matchingSubscription = this._matchingService.calculate(updatedConfig)
     .pipe(first())
     .subscribe(

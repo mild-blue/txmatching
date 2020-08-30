@@ -1,8 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
-import { Subscription } from 'rxjs';
-import { first } from 'rxjs/operators';
 import { antibodiesMultipliers, compatibleBloodGroups, Patient } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -11,12 +9,10 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './matching-transplant.component.html',
   styleUrls: ['./matching-transplant.component.scss']
 })
-export class MatchingTransplantComponent implements OnInit {
+export class MatchingTransplantComponent {
 
   @Input() transplant?: Transplant;
-
-  private _patients: Patient[] = [];
-  private _patientsSubscription?: Subscription;
+  @Input() patients: Patient[] = [];
 
   private _donor?: Patient;
   private _recipient?: Patient;
@@ -29,14 +25,14 @@ export class MatchingTransplantComponent implements OnInit {
 
   get donor(): Patient | undefined {
     if (!this._donor) {
-      this._donor = this._patients.find(p => p.medical_id === this.transplant?.donor);
+      this._donor = this.patients.find(p => p.medical_id === this.transplant?.donor);
     }
     return this._donor;
   }
 
   get recipient(): Patient | undefined {
     if (!this._recipient) {
-      this._recipient = this._patients.find(p => p.medical_id === this.transplant?.recipient);
+      this._recipient = this.patients.find(p => p.medical_id === this.transplant?.recipient);
     }
     return this._recipient;
   }
@@ -59,22 +55,12 @@ export class MatchingTransplantComponent implements OnInit {
     return compatibleBloodGroups[recipientBloodGroup].includes(donorBloodGroup);
   }
 
-  ngOnInit(): void {
-    this._loadPatients();
-  }
-
   get antibodies(): string[] {
     return Object.keys(antibodiesMultipliers);
   }
 
   public antigenScore(prefix: string): number {
     return this.matchingAntigens ? this.matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix] : 0;
-  }
-
-  private _loadPatients(): void {
-    this._patientsSubscription = this._patientService.getPatients()
-    .pipe(first())
-    .subscribe((patients: Patient[]) => this._patients = patients);
   }
 
   public filterCodes(codes: string[], prefix: string): string[] {
