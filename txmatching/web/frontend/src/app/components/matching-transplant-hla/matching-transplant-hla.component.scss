@@ -1,0 +1,15 @@
+:host {
+  width: 21.6666%;
+}
+
+td {
+  text-align: center;
+  padding: 10px;
+  border-right: 1px solid var(--border-color);
+  vertical-align: top;
+
+  &.recipient {
+    width: 50%;
+  }
+
+}

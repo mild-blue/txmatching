@@ -18,8 +18,10 @@ export interface PatientParameters {
 }
 
 export enum PatientType {
-  DONOR,
-  RECIPIENT
+  DONOR = 'DONOR',
+  RECIPIENT = 'RECIPIENT',
+  BRIDGING_DONOR = 'BRIDGING_DONOR',
+  ALTRUIST = 'ALTRUIST'
 }
 
 export const patientsLSKey = 'patients';

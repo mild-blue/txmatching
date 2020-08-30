@@ -20,4 +20,11 @@ export class MatchingTransplantHlaComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  get isRecipient(): boolean {
+    return this.patient ? this.patient.patient_type === PatientType.RECIPIENT.valueOf() : false;
+  }
+
+  public filteredCodes(codes?: string[]): string[] {
+    return codes ? codes.filter(code => code.startsWith(this.antigenPrefix)) : [];
+  }
 }
