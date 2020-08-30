@@ -7,13 +7,9 @@
   align-items: center;
   flex-direction: column;
 
-  h1 {
+  h2 {
     text-align: center;
     margin-top: 0;
-
-    &:after {
-      display: none;
-    }
   }
 
   &-content {
