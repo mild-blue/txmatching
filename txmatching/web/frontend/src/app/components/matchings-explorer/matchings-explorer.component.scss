@@ -22,28 +22,32 @@
 
     @include media-breakpoint-down(md) {
       position: relative;
-      width: 100%;
-      min-width: 0;
-      max-width: none;
     }
   }
 
   .list {
     width: calc(40vw);
-    max-width: 600px;
+    max-width: 800px;
     left: 0;
     background: var(--brand-white);
     scroll-behavior: smooth;
 
     @include media-breakpoint-down(md) {
       height: 600px;
+      width: 100%;
+      max-width: none;
     }
   }
 
   .detail {
     width: calc(60vw);
-    min-width: calc(100vw - 600px);
+    min-width: calc(100vw - 800px);
     right: 0;
+
+    @include media-breakpoint-down(md) {
+      width: 100%;
+      min-width: 0;
+    }
   }
 }
 
