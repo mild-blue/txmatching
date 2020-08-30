@@ -11,8 +11,8 @@ def get_absolute_path(project_relative_path: str) -> str:
     :return:
     """
     # sanitize input
-    if project_relative_path.endswith('/'):
-        project_relative_path = project_relative_path[:-1]
+    if not project_relative_path.startswith('/'):
+        project_relative_path = f'/{project_relative_path}'
 
     python_path = os.environ['PYTHONPATH'].split(':')
     # case when running from Pycharm
