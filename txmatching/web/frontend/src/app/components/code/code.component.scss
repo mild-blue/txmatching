@@ -1,0 +1,26 @@
+@import "../../../styles/colors";
+
+.code {
+  display: inline-block;
+  border-radius: 3px;
+  padding: 0 3px;
+  margin: 2px;
+  border: 1px solid $code-border-color--basic;
+
+  background: $code-bg--basic;
+  color: $code-color--basic;
+}
+
+:host {
+  &.antibody > .code {
+    background: $code-bg--antibody;
+    border-color: $code-border-color--antibody;
+    color: $code-color--antibody;
+  }
+
+  &.matching > .code {
+    background: $code-bg--matching;
+    border-color: $code-border-color--matching;
+    color: $code-color--matching;
+  }
+}

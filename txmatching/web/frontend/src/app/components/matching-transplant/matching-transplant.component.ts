@@ -4,6 +4,7 @@ import { PatientService } from '@app/services/patient/patient.service';
 import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { antibodiesMultipliers, compatibleBloodGroups, Patient } from '@app/model/Patient';
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-matching-transplant',
@@ -20,6 +21,8 @@ export class MatchingTransplantComponent implements OnInit {
   private _donor?: Patient;
   private _recipient?: Patient;
   private _matchingAntigens?: string[];
+
+  public arrowRight = faAngleRight;
 
   constructor(private _patientService: PatientService) {
   }
@@ -60,16 +63,12 @@ export class MatchingTransplantComponent implements OnInit {
     this._loadPatients();
   }
 
-  public countryImage(country: string): string {
-    return `../../../assets/img/countries/${country}.png`;
-  }
-
   get antibodies(): string[] {
     return Object.keys(antibodiesMultipliers);
   }
 
-  public antibodyScore(prefix: string): number {
-    return this.matchingAntigens ? this.matchingAntigens.filter(a => a.startsWith(prefix)).length : 0;
+  public antigenScore(prefix: string): number {
+    return this.matchingAntigens ? this.matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix] : 0;
   }
 
   private _loadPatients(): void {

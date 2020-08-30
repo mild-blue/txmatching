@@ -23,8 +23,18 @@
       display: flex;
       align-items: center;
 
-      .arrow-right {
+      fa-icon {
         margin: 0 10px;
+      }
+
+      flag {
+        &:first-of-type {
+          margin-right: 5px;
+        }
+
+        &:last-of-type {
+          margin-left: 5px;
+        }
       }
     }
 
