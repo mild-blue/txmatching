@@ -38,8 +38,6 @@ def save_configuration_as_current(configuration: Configuration) -> int:
     if maybe_config is not None:
         db.session.delete(maybe_config)
     config_model = _configuration_to_config_model(configuration)
-    # pylint: disable=C0103
-    config_model.id = 0
     db.session.add(config_model)
     db.session.commit()
     return config_model.id
