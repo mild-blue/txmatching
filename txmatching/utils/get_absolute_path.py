@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 
 logger = logging.getLogger(__name__)
 
@@ -11,15 +10,27 @@ def get_absolute_path(project_relative_path: str) -> str:
     :param project_relative_path: e.g. "/txmatching/config/configuration.py"
     :return:
     """
-    if sys.platform in {'linux', 'darwin'}:
-        separator = '/'
-    else:
-        raise NotImplementedError(f'Not implemented for operating system: {sys.platform}')
+    # sanitize input
+    if project_relative_path.endswith('/'):
+        project_relative_path = project_relative_path[:-1]
 
-    path_parts = os.path.abspath(__file__).split(separator)
-    directory_index = path_parts.index('txmatching')
-    project_path = '/'.join(path_parts[:(directory_index + 1)])
-    if not project_relative_path.startswith('/'):
-        project_relative_path = f'/{project_relative_path}'
-    absolute_path = project_path + project_relative_path
-    return absolute_path
+    python_path = os.environ['PYTHONPATH'].split(':')
+    # case when running from Pycharm
+    explicit_paths = [path for path in python_path if path.endswith('txmatching')]
+    # use the top level path
+    explicit_paths = sorted(explicit_paths, key=len)
+
+    if len(explicit_paths) == 1:
+        project_root = explicit_paths[0]
+    elif len(python_path) == 1:
+        project_root = python_path[0]
+    else:
+        logger.error(f'Could not determine correct path! PYTHONPATH={python_path}')
+        raise AssertionError('It was not possible to determine correct path to resources!')
+
+    # make the path absolute
+    project_root = os.path.abspath(project_root)
+    if project_root.endswith('/'):
+        project_root = project_root[:-1]
+
+    return project_root + project_relative_path
