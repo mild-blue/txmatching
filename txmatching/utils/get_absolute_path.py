@@ -20,13 +20,18 @@ def get_absolute_path(project_relative_path: str) -> str:
     # use the top level path
     explicit_paths = sorted(explicit_paths, key=len)
 
+    # case path set by Pycharm, repo cloned as "txmatching"
     if len(explicit_paths) == 1:
         project_root = explicit_paths[0]
+    # case running from command line
     elif len(python_path) == 1:
         project_root = python_path[0]
+    # case when we are not sure about the path, so we're guessing,
+    # probably running in Pycharm and cloned with different name than "txmatching"
+    # then the real directory is usually the first record in the path
     else:
-        logger.error(f'Could not determine correct path! PYTHONPATH={python_path}')
-        raise AssertionError('It was not possible to determine correct path to resources!')
+        logger.warning(f'Could not determine correct path! PYTHONPATH={python_path}, using the first.')
+        project_root = python_path[0]
 
     # make the path absolute
     project_root = os.path.abspath(project_root)
