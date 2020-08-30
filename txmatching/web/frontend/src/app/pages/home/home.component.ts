@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
-import { faSlidersH, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
 import { first } from 'rxjs/operators';
 import { AppConfiguration, Configuration } from '@app/model/Configuration';
@@ -9,6 +9,8 @@ import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
 import { Matching } from '@app/model/Matching';
+import { Patient } from '@app/model/Patient';
+import { PatientService } from '@app/services/patient/patient.service';
 
 @Component({
   selector: 'app-home',
@@ -20,30 +22,42 @@ export class HomeComponent implements OnInit, OnDestroy {
   public loading: boolean = false;
   private _configSubscription?: Subscription;
   public matchings: Matching[] = [];
+  public patients: Patient[] = [];
 
   public user?: User;
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
   private _matchingSubscription?: Subscription;
 
-  public configIcon = faSlidersH;
+  public configIcon = faCog;
   public closeIcon = faTimes;
   public configOpened: boolean = false;
 
   constructor(private _authService: AuthService,
               private _configService: ConfigurationService,
               private _alertService: AlertService,
-              private _matchingService: MatchingService) {
+              private _matchingService: MatchingService,
+              private _patientService: PatientService) {
   }
 
   ngOnInit(): void {
     this._initUser();
+    this._initPatients();
     this._getResultsWithInitConfig();
   }
 
   ngOnDestroy(): void {
     this._configSubscription?.unsubscribe();
     this._matchingSubscription?.unsubscribe();
+  }
+
+  private _initPatients(): void {
+    this._patientService.getPatients()
+    .pipe(first())
+    .subscribe((patients: Patient[]) => {
+      console.log('Loaded patients', patients);
+      this.patients = patients;
+    });
   }
 
   public calculate(configuration: Configuration): void {

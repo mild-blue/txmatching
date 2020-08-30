@@ -10,17 +10,17 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding: var(--padding);
+    padding: calc(var(--padding) / 2) 0;
 
     .config {
       button {
-        color: var(--text-color-secondary);
+        color: var(--text-color);
+        opacity: 0.5;
+        transition: opacity 0.5s ease;
 
         display: flex;
         justify-content: center;
 
-        border: 1px solid var(--text-color-secondary);
-        border-radius: var(--border-radius--wide);
         padding: 5px 10px;
         min-width: 200px;
 
@@ -29,27 +29,23 @@
         letter-spacing: 1px;
         font-weight: 300;
 
+        &:hover {
+          opacity: 1;
+        }
+
         &.opened {
-          color: var(--body-bg);
-          background: var(--text-color-secondary);
+          opacity: 1;
         }
 
         fa-icon {
           margin-left: 5px;
-          transform: rotate(90deg);
         }
       }
     }
   }
 
-  &-content {
-    flex-grow: 1;
-    background: var(--brand-white);
-    border-radius: var(--border-radius--wide) var(--border-radius--wide) 0 0;
+  h3 {
+    text-align: center;
     padding: var(--padding);
-
-    h3 {
-      text-align: center;
-    }
   }
 }

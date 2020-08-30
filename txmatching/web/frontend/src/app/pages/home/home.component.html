@@ -1,38 +1,41 @@
 <app-header [user]="user"></app-header>
 
 <section class="home">
-  <div class="home-header">
-    <h1>
-      Matchings
-      <app-count *ngIf="!loading">{{matchings.length}}</app-count>
-    </h1>
-    <div *ngIf="configuration" class="config">
-      <button (click)="toggleConfiguration()" [class.opened]="configOpened">
-        <ng-container *ngIf="!configOpened">
-          Change settings
-          <fa-icon [icon]="configIcon"></fa-icon>
-        </ng-container>
-        <ng-container *ngIf="configOpened">
-          Close settings
-          <fa-icon [icon]="closeIcon"></fa-icon>
-        </ng-container>
-      </button>
+  <app-container>
+    <div class="home-header">
+      <h1>
+        Matchings
+        <app-count *ngIf="!loading">{{matchings.length}}</app-count>
+      </h1>
+      <div *ngIf="!loading && configuration" class="config">
+        <button (click)="toggleConfiguration()" [class.opened]="configOpened">
+          <ng-container *ngIf="!configOpened">
+            Configure
+            <fa-icon [icon]="configIcon"></fa-icon>
+          </ng-container>
+          <ng-container *ngIf="configOpened">
+            Close configuration
+            <fa-icon [icon]="closeIcon"></fa-icon>
+          </ng-container>
+        </button>
+      </div>
     </div>
-  </div>
+  </app-container>
 
-  <div *ngIf="configuration" class="home-config">
+
+  <div *ngIf="!loading && configuration" class="home-config">
     <app-configuration (configSubmitted)="calculate($event)"
                        [configuration]="configuration"
                        [isOpened]="configOpened"></app-configuration>
   </div>
 
 
-  <div class="home-content">
+  <app-content>
     <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>
-    <app-matchings-explorer *ngIf="matchings.length > 0"
-                            [matchings]="matchings"></app-matchings-explorer>
-  </div>
-
+    <app-matchings-explorer *ngIf="!loading && matchings.length > 0"
+                            [matchings]="matchings"
+                            [patients]="patients"></app-matchings-explorer>
+  </app-content>
 
 </section>
 

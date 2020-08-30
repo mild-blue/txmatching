@@ -2,7 +2,34 @@
   flex-grow: 1;
   background: var(--brand-white);
   border-radius: var(--border-radius--wide) var(--border-radius--wide) 0 0;
-  padding: var(--padding);
+
+  min-height: calc(50vh);
+  height: 100%;
+  display: flex;
+
+  .list {
+    width: calc(30vw);
+    min-width: 400px;
+
+    overflow-y: scroll;
+    height: 100%;
+
+    background: var(--text-color-secondary);
+  }
+
+  .detail {
+    flex-grow: 1;
+  }
+}
+
+.matching {
+  &-item {
+
+  }
+
+  &-detail {
+
+  }
 }
 
 :host {

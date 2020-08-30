@@ -21,7 +21,7 @@ export class AuthService {
 
   private _setCurrentUser(): void {
     const lsUser = localStorage.getItem('user');
-    if(lsUser) {
+    if (lsUser) {
       this._currentUserSubject.next(JSON.parse(lsUser));
       this.currentUser = this._currentUserSubject.asObservable();
     }
@@ -31,12 +31,14 @@ export class AuthService {
     return this._currentUserSubject.value;
   }
 
-  get isTokenValid(): boolean {
+  get isLoggedIn(): boolean {
+    // check if user exists
     const user = this.currentUserValue;
     if (!user) {
       return false;
     }
 
+    // check if token is valid
     const decoded = jwt_decode(user.token) as DecodedToken;
     return decoded.exp >= Date.now() / 1000;
   }
