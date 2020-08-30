@@ -33,13 +33,13 @@ def get_current_configuration() -> Configuration:
         return config_model_to_configuration(current_config_model)
 
 
+# pylint: disable=invalid-name,redefined-builtin
+# bug in pylint on linux on config_model.id
 def save_configuration_as_current(configuration: Configuration) -> int:
     maybe_config = ConfigModel.query.get(0)
     if maybe_config is not None:
         db.session.delete(maybe_config)
     config_model = _configuration_to_config_model(configuration)
-    # pylint: disable=invalid-name
-    # bug in pylint on linux
     config_model.id = 0
     db.session.add(config_model)
     db.session.commit()
