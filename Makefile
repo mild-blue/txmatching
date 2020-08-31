@@ -80,7 +80,7 @@ setup-non-empty-db:
 clean-db:
 	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./tests/test_utilities/clean_db.sql
 
-run-linter:
+lint:
 	pylint txmatching
 
 build-fe:
@@ -89,4 +89,4 @@ build-fe:
 test:
 	cd tests; export PYTHONPATH=../; python -m unittest discover -s . -t .
 
-check: run-linter test
+check: lint test
