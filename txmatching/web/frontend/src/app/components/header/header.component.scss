@@ -35,7 +35,7 @@ header {
 
   .menu {
     flex-grow: 1;
-    padding: 0 calc(var(--padding) * 2);
+    padding: 0 calc(var(--padding) * 3);
 
     @include media-breakpoint-down(sm) {
       padding: var(--padding-x) 0;
@@ -47,6 +47,7 @@ header {
       padding: 0;
 
       display: flex;
+      justify-content: flex-end;
 
       a {
         text-transform: uppercase;

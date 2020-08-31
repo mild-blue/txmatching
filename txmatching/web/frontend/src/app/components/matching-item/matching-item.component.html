@@ -19,7 +19,7 @@
   <ng-container *ngIf="isActive">
     <app-matching-round *ngFor="let round of matching.rounds; let i = index"
                         [configuration]="configuration"
-                        [index]="i"
+                        [index]="i + 1"
                         [patients]="patients"
                         [round]="round"></app-matching-round>
   </ng-container>

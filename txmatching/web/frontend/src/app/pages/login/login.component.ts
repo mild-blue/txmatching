@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
               private _alertService: AlertService,
               private _patientService: PatientService) {
     this.loginForm = this._formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required]], // todo: add Validators.email when relevant
       password: ['', Validators.required]
     });
   }

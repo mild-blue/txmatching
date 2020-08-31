@@ -23,14 +23,16 @@ export class DropdownComponent implements OnInit {
 
   // todo click outside
   // @HostListener('document:click', ['$event'])
-  // clickout(event) {
+  // clickOut(event: MouseEvent) {
   //   if(!this.dropdown) {
   //     return;
   //   }
-  //   const clickedId = this.dropdown.nativeElement.getAttribute('id');
-  //   if(clickedId === this.id) {
+  //   const inside = this._elementRef.nativeElement.contains(event.target);
+  //   console.log(event.currentTarget)
+  //   if(inside) {
   //     console.log("clicked inside", this.id);
+  //   } else {
+  //     console.log("clicked outside", this.id);
   //   }
   // }
-
 }
