@@ -19,17 +19,13 @@ export class PatientService {
               private _logger: LoggerService) {
   }
 
-  public updatePatients(): Promise<Patient[]> {
-    return new Promise((resolve, reject) => {
-      this._http.get<Patient[]>(
-        `${environment.apiUrl}/patients/`
-      ).pipe(first())
-      .subscribe((patients: Patient[]) => {
-        this._logger.log('Got patients from server', [patients]);
-        PatientService._updateLocalStorage(patients);
-        resolve(patients);
-      });
-    });
+  public async updatePatients(): Promise<Patient[]> {
+    const patients: Patient[] = await this._http.get<Patient[]>(
+      `${environment.apiUrl}/patients/`
+    ).pipe(first()).toPromise();
+
+    PatientService._updateLocalStorage(patients);
+    return patients;
   }
 
   public getPatients(): Patient[] {

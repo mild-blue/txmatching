@@ -20,20 +20,19 @@ import { LoggerService } from '@app/services/logger/logger.service';
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
-  public loading: boolean = false;
   private _configSubscription?: Subscription;
-  public matchings: MatchingView[] = [];
-  // public patients: Patient[] = [];
+  public loading: boolean = false;
+  private _matchingSubscription?: Subscription;
 
+  public matchings: MatchingView[] = [];
   public user?: User;
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
-  private _matchingSubscription?: Subscription;
-  private _patientsSubscription?: Subscription;
 
   public configIcon = faCog;
   public closeIcon = faTimes;
   public configOpened: boolean = false;
+  private _patientsSubscription?: Subscription;
 
   constructor(private _authService: AuthService,
               private _configService: ConfigurationService,

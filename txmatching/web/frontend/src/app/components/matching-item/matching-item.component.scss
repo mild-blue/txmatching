@@ -1,42 +1,47 @@
+@import "../../../styles/variables/properties";
+@import "../../../styles/variables/colors";
+
 .matching-item {
 
   transition: background-color 0.5s ease;
   padding: var(--padding);
   position: relative;
-
-  cursor: pointer;
-
-  height: auto;
-  min-height: 180px;
-
-  background-color: var(--brand-white);
-  border-radius: var(--border-radius--wide);
-  box-shadow: var(--box-shadow--wide);
-
-  margin: 20px;
+  z-index: 1;
+  filter: drop-shadow(0 $box-shadow-size $box-shadow--color);
 
   h2 {
     margin-top: 0;
   }
 
-  &::after {
+  &::after, &::before {
     content: '';
-    width: 100%;
-    height: 100%;
-    background: #fff;
-    opacity: 0.5;
     position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2;
-    border-radius: var(--border-radius--wide);
-    overflow: hidden;
   }
 
-  &:hover, &.active {
+  &:not(.active) {
+    margin: 20px;
+    cursor: pointer;
+
+    background-color: var(--brand-white);
+    border-radius: var(--border-radius--wide);
+
     &::after {
-      opacity: 0;
-      height: 0;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      border-radius: var(--border-radius--wide);
+      overflow: hidden;
+      background: #fff;
+      opacity: 0.5;
+      width: 100%;
+      height: 100%;
+    }
+
+    &:hover {
+      &::after {
+        opacity: 0;
+        height: 0;
+      }
     }
   }
 
@@ -45,9 +50,31 @@
     border-radius: var(--border-radius--wide) 0 0 var(--border-radius--wide);
 
     margin: 0;
-    padding: var(--padding) calc(var(--padding) + 20px);
+    padding: calc(var(--padding) + 20px);
 
     pointer-events: none;
+
+    &::after, &::before {
+      content: "";
+      position: absolute;
+      background-color: transparent;
+      right: 0;
+
+      height: calc(var(--border-radius--wide) * 2);
+      width: var(--border-radius--wide);
+    }
+
+    &::before {
+      top: calc(var(--border-radius--wide) * -2);
+      border-bottom-right-radius: var(--border-radius--wide);
+      box-shadow: 0 calc(var(--border-radius--wide)) 0 0 #ffffff;
+    }
+
+    &::after {
+      bottom: calc(var(--border-radius--wide) * -2);
+      border-top-right-radius: var(--border-radius--wide);
+      box-shadow: 0 calc(-1 * var(--border-radius--wide)) 0 0 #ffffff;
+    }
   }
 
   app-matching-header {

@@ -1,4 +1,7 @@
 @import "../../../styles/breakpoints";
+@import "../../../styles/variables/sizes";
+@import "../../../styles/variables/colors";
+@import "../../../styles/variables/properties";
 
 .matchings-explorer {
   flex-grow: 1;
@@ -29,13 +32,19 @@
     width: calc(40vw);
     max-width: 800px;
     left: 0;
-    background: var(--brand-white);
+    background: var(--box-bg);
     scroll-behavior: smooth;
+
+    box-shadow: inset calc(-#{$box-shadow--wide-size}) 0 $box-shadow--wide-size calc(-#{$box-shadow--wide-size}) $box-shadow--color;
 
     @include media-breakpoint-down(md) {
       height: 600px;
       width: 100%;
       max-width: none;
+
+      &::after {
+        display: none;
+      }
     }
   }
 

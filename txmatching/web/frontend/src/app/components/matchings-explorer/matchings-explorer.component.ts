@@ -27,22 +27,27 @@ export class MatchingsExplorerComponent implements OnInit {
   }
 
   public setActive(matching: MatchingView | undefined): void {
-    const lastActiveIndex = this.activeMatching?.index;
     this.activeMatching = matching;
     if (matching && matching.index) {
-      this._scrollToElement(matching.index, lastActiveIndex);
+      this._scrollToElement(matching.index);
     }
   }
 
-  private _scrollToElement(id: number, lastActiveIndex?: number): void {
+  private _scrollToElement(id: number): void {
     const focusedElement = document.getElementById(`matching-${id}`);
+
     if (!this.list || !focusedElement) {
       return;
     }
 
-    const addition = lastActiveIndex !== undefined && lastActiveIndex === 1 ? 20 : 0;
     const scrollable = this.list.nativeElement;
-    scrollable.scrollTop = focusedElement.offsetTop + addition;
+    const isScrollingDown = scrollable.scrollTop <= focusedElement.offsetTop;
+
+    setTimeout(() => {
+      scrollable.scrollTop = focusedElement.offsetTop;
+    }, 1);
+
+    // scrollable.scrollTop = isScrollingDown ? focusedElement.offsetTop - 20 : focusedElement.offsetTop + 20;
 
     if (this.detail) {
       this.detail.nativeElement.scrollTop = 0;
