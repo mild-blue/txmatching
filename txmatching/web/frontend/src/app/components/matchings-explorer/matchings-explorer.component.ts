@@ -41,13 +41,11 @@ export class MatchingsExplorerComponent implements OnInit {
     }
 
     const scrollable = this.list.nativeElement;
-    const isScrollingDown = scrollable.scrollTop <= focusedElement.offsetTop;
 
+    // wait for element to have .active class
     setTimeout(() => {
       scrollable.scrollTop = focusedElement.offsetTop;
-    }, 1);
-
-    // scrollable.scrollTop = isScrollingDown ? focusedElement.offsetTop - 20 : focusedElement.offsetTop + 20;
+    }, 0); // lol yes, 0ms is enough
 
     if (this.detail) {
       this.detail.nativeElement.scrollTop = 0;
