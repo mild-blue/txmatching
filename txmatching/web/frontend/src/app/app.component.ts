@@ -14,8 +14,17 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    this._updatePatients();
+  }
+
+  /*
+  *   When logged in
+  *   update patients from server
+  *   after every page refresh
+  */
+  private async _updatePatients(): Promise<void> {
     if (this._authService.isLoggedIn) {
-      this._patientService.updatePatients();
+      await this._patientService.updatePatients();
     }
   }
 }

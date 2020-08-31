@@ -47,9 +47,10 @@ export class LoginComponent implements OnInit {
     .pipe(first())
     .subscribe(
       () => {
-        this._patientService.updatePatients()
-        .pipe(first())
-        .subscribe(() => this._router.navigate(['/']));
+        // update patients after login and then navigate to homepage
+        this._patientService.updatePatients().then(() => {
+          this._router.navigate(['/']);
+        });
       },
       error => {
         this.loading = false;

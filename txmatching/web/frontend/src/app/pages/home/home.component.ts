@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public loading: boolean = false;
   private _configSubscription?: Subscription;
   public matchings: MatchingView[] = [];
-  public patients: Patient[] = [];
+  // public patients: Patient[] = [];
 
   public user?: User;
   public appConfiguration?: AppConfiguration;
@@ -45,7 +45,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._initUser();
-    this._initPatients();
     this._getResultsWithInitConfig();
   }
 
@@ -93,15 +92,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  private _initPatients(): void {
-    this._patientsSubscription = this._patientService.getPatients()
-    .pipe(first())
-    .subscribe((patients: Patient[]) => {
-      this._logger.log('Loaded patients', [patients]);
-      this.patients = patients;
-    });
-  }
-
   private _getResultsWithInitConfig(): void {
     this.loading = true;
     this._configSubscription = this._configService.getConfiguration()
@@ -127,6 +117,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public toggleConfiguration(): void {
     this.configOpened = !this.configOpened;
+  }
+
+  get patients(): Patient[] {
+    return this._patientService.getPatients();
   }
 
 }
