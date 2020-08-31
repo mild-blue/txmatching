@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 import { Matching, MatchingView } from '@app/model/Matching';
 import { Patient } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
+import { LoggerService } from '@app/services/logger/logger.service';
 
 @Component({
   selector: 'app-home',
@@ -38,7 +39,8 @@ export class HomeComponent implements OnInit, OnDestroy {
               private _configService: ConfigurationService,
               private _alertService: AlertService,
               private _matchingService: MatchingService,
-              private _patientService: PatientService) {
+              private _patientService: PatientService,
+              private _logger: LoggerService) {
   }
 
   ngOnInit(): void {
@@ -69,7 +71,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       maximum_total_score,
       required_patient_db_ids
     };
-    console.log('Calculating with config', updatedConfig);
+    this._logger.log('Calculating with config', [updatedConfig]);
 
     this.appConfiguration = updatedConfig;
     this.configuration = configuration;
@@ -82,9 +84,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.matchings = matchings.slice(0, 10).map((m, key) => {
           return { index: key + 1, ...m };
         });
-        console.log('Calculated matchings', matchings);
+        this._logger.log('Calculated matchings', [matchings]);
         this.loading = false;
-        console.log('Loading?', this.loading);
       },
       error => {
         this.loading = false;
@@ -96,7 +97,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._patientsSubscription = this._patientService.getPatients()
     .pipe(first())
     .subscribe((patients: Patient[]) => {
-      console.log('Loaded patients', patients);
+      this._logger.log('Loaded patients', [patients]);
       this.patients = patients;
     });
   }
@@ -107,7 +108,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(first())
     .subscribe(
       (config: AppConfiguration) => {
-        console.log('Got config from server', config);
+        this._logger.log('Got config from server', [config]);
         this.appConfiguration = config;
         const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids, ...rest } = config;
         this.configuration = rest;
