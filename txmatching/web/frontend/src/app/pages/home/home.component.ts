@@ -21,8 +21,10 @@ import { LoggerService } from '@app/services/logger/logger.service';
 export class HomeComponent implements OnInit, OnDestroy {
 
   private _configSubscription?: Subscription;
-  public loading: boolean = false;
   private _matchingSubscription?: Subscription;
+  private _patientsSubscription?: Subscription;
+
+  public loading: boolean = false;
 
   public matchings: MatchingView[] = [];
   public user?: User;
@@ -32,7 +34,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   public configIcon = faCog;
   public closeIcon = faTimes;
   public configOpened: boolean = false;
-  private _patientsSubscription?: Subscription;
 
   constructor(private _authService: AuthService,
               private _configService: ConfigurationService,
@@ -51,6 +52,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._configSubscription?.unsubscribe();
     this._matchingSubscription?.unsubscribe();
     this._patientsSubscription?.unsubscribe();
+  }
+
+  get patients(): Patient[] {
+    return this._patientService.getPatients();
+  }
+
+  public toggleConfiguration(): void {
+    this.configOpened = !this.configOpened;
   }
 
   public calculate(configuration: Configuration): void {
@@ -112,14 +121,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private _initUser(): void {
     this.user = this._authService.currentUserValue;
-  }
-
-  public toggleConfiguration(): void {
-    this.configOpened = !this.configOpened;
-  }
-
-  get patients(): Patient[] {
-    return this._patientService.getPatients();
   }
 
 }

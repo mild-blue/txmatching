@@ -1,3 +1,10 @@
+export enum AlertType {
+  Success,
+  Error,
+  Info,
+  Warning
+}
+
 export class Alert {
   id?: string;
   type?: AlertType;
@@ -9,9 +16,4 @@ export class Alert {
   }
 }
 
-export enum AlertType {
-  Success,
-  Error,
-  Info,
-  Warning
-}
+export const fadeDuration = 250;

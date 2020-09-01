@@ -203,9 +203,11 @@ module.exports = {
           0,
           1,
           2,
+          200,
           10,
           100,
-          1000
+          1000,
+          401
         ]
       }
     ],
@@ -222,12 +224,13 @@ module.exports = {
       'ForInStatement'
     ],
     'no-return-await': 'error',
-    'no-shadow': [
-      'error',
-      {
-        'hoist': 'all'
-      }
-    ],
+    // not working correctly with enums
+    // 'no-shadow': [
+    //   'error',
+    //   {
+    //     'hoist': 'all'
+    //   }
+    // ],
     'no-throw-literal': 'error',
     'no-trailing-spaces': 'error',
     'no-undef-init': 'error',
@@ -280,10 +283,10 @@ module.exports = {
       {
         'selector': 'memberLike',
         'modifiers': ['public'],
-        'format': ['camelCase', 'PascalCase'],
+        'format': ['camelCase', 'PascalCase', 'snake_case'],
         'leadingUnderscore': 'forbid'
       },
-      { 'selector': 'variableLike', 'format': ['camelCase'] },
+      { 'selector': 'variableLike', 'format': ['camelCase', 'snake_case'] },
       {
         'selector': 'interface',
         'format': ['PascalCase'],

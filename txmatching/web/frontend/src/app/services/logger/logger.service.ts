@@ -6,10 +6,7 @@ import { environment } from '@environments/environment';
 })
 export class LoggerService {
 
-  constructor() {
-  }
-
-  public log(text: string, args?: any[]): void {
+  public log(text: string, args?: unknown[]): void {
     if (!environment.production) {
       console.log(text);
       if (args) {

@@ -8,8 +8,8 @@ import { filter } from 'rxjs/operators';
 })
 export class AlertService {
 
-  private _subject = new Subject<Alert>();
-  private _defaultId = 'default-alert';
+  private _subject: Subject<Alert> = new Subject<Alert>();
+  private _defaultId: string = 'default-alert';
 
   public onAlert(id = this._defaultId): Observable<Alert> {
     return this._subject.asObservable().pipe(filter(x => x && x.id === id));

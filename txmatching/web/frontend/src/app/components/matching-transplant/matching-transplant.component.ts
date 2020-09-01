@@ -11,12 +11,12 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 })
 export class MatchingTransplantComponent {
 
-  @Input() transplant?: Transplant;
-  @Input() patients: Patient[] = [];
-
   private _donor?: Patient;
   private _recipient?: Patient;
   private _matchingAntigens?: string[];
+
+  @Input() transplant?: Transplant;
+  @Input() patients: Patient[] = [];
 
   public arrowRight = faAngleRight;
 

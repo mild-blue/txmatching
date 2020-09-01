@@ -7,7 +7,7 @@
     "build": "ng build",
     "build-prod": "ng build --prod",
     "test": "ng test",
-    "lint": "ng lint",
+    "lint": "eslint -c .eslintrc.js --ext .ts src",
     "e2e": "ng e2e"
   },
   "private": true,
@@ -25,11 +25,9 @@
     "@fortawesome/free-regular-svg-icons": "^5.14.0",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@types/jwt-decode": "^2.2.1",
-    "@types/uuid": "^8.3.0",
     "jwt-decode": "^2.2.0",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
-    "uuid": "^8.3.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
@@ -40,6 +38,8 @@
     "@types/node": "^12.11.1",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
+    "@typescript-eslint/eslint-plugin": "~4.0.1",
+    "@typescript-eslint/parser": "~4.0.1",
     "codelyzer": "^5.1.2",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
@@ -50,7 +50,12 @@
     "karma-jasmine-html-reporter": "^1.4.2",
     "protractor": "~5.4.3",
     "ts-node": "~8.3.0",
-    "tslint": "~5.18.0",
-    "typescript": "~3.9.7"
+    "typescript": "~3.9.7",
+    "eslint": "~7.8.0",
+    "eslint-config-prettier": "~6.11.0",
+    "eslint-plugin-deprecation": "~1.1.0",
+    "eslint-plugin-no-null": "~1.0.2",
+    "eslint-plugin-prefer-arrow": "~1.2.2",
+    "eslint-plugin-prettier": "~3.1.4"
   }
 }

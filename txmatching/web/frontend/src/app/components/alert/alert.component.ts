@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Alert, AlertType } from '@app/model/Alert';
+import { Alert, AlertType, fadeDuration } from '@app/model/Alert';
 import { Subscription } from 'rxjs';
 import { NavigationStart, Router } from '@angular/router';
 import { AlertService } from '@app/services/alert/alert.service';
@@ -11,31 +11,30 @@ import { AlertService } from '@app/services/alert/alert.service';
 })
 export class AlertComponent implements OnInit, OnDestroy {
 
-  @Input() id = 'default-alert';
-  @Input() fade = true;
+  @Input() id: string = 'default-alert';
+  @Input() fade: boolean = true;
+  public alerts: Alert[] = [];
+  private _alertSubscription?: Subscription;
+  private _routeSubscription?: Subscription;
 
-  alerts: Alert[] = [];
-  alertSubscription?: Subscription;
-  routeSubscription?: Subscription;
-
-  constructor(private router: Router,
-              private alertService: AlertService) {
+  constructor(private _router: Router,
+              private _alertService: AlertService) {
   }
 
   ngOnInit(): void {
-    this.alertSubscription = this.alertService.onAlert(this.id)
+    this._alertSubscription = this._alertService.onAlert(this.id)
     .subscribe(alert => this.alerts.push(alert));
 
-    this.routeSubscription = this.router.events.subscribe(event => {
+    this._routeSubscription = this._router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
-        this.alertService.clear(this.id);
+        this._alertService.clear(this.id);
       }
     });
   }
 
   ngOnDestroy(): void {
-    this.alertSubscription?.unsubscribe();
-    this.routeSubscription?.unsubscribe();
+    this._alertSubscription?.unsubscribe();
+    this._routeSubscription?.unsubscribe();
   }
 
   public removeAlert(alert: Alert): void {
@@ -53,7 +52,7 @@ export class AlertComponent implements OnInit, OnDestroy {
     // remove alert after faded out
     setTimeout(() => {
       this.alerts = this.alerts.filter(x => x !== alert);
-    }, 250);
+    }, fadeDuration);
   }
 
   public getClass(alert: Alert): string {
@@ -70,7 +69,7 @@ export class AlertComponent implements OnInit, OnDestroy {
       [AlertType.Warning]: 'alert alert-warning'
     };
 
-    if(alert.type) {
+    if (alert.type) {
       classes.push(alertTypeClass[alert.type]);
     }
 

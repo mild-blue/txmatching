@@ -19,14 +19,6 @@ export class AuthService {
     this._setCurrentUser();
   }
 
-  private _setCurrentUser(): void {
-    const lsUser = localStorage.getItem('user');
-    if (lsUser) {
-      this._currentUserSubject.next(JSON.parse(lsUser));
-      this.currentUser = this._currentUserSubject.asObservable();
-    }
-  }
-
   get currentUserValue(): User | undefined {
     return this._currentUserSubject.value;
   }
@@ -62,5 +54,13 @@ export class AuthService {
   public logout(): void {
     localStorage.removeItem('user');
     this._currentUserSubject.next(undefined);
+  }
+
+  private _setCurrentUser(): void {
+    const lsUser = localStorage.getItem('user');
+    if (lsUser) {
+      this._currentUserSubject.next(JSON.parse(lsUser));
+      this.currentUser = this._currentUserSubject.asObservable();
+    }
   }
 }

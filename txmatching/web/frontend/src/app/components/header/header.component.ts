@@ -9,12 +9,12 @@ import { faQuestionCircle, faUserAlt } from '@fortawesome/free-solid-svg-icons';
 })
 export class HeaderComponent {
 
+  private _openedDropdownId: string = '';
+
   @Input() user?: User;
 
   public userIcon = faUserAlt;
   public infoIcon = faQuestionCircle;
-
-  public _openedDropdownId: string = '';
 
   get userDropdownId(): string {
     return 'user-dropdown';

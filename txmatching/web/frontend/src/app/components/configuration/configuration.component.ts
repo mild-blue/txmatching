@@ -12,6 +12,7 @@ export class ConfigurationComponent implements OnInit {
   @Input() isOpened: boolean = false;
   @Input() configuration?: Configuration;
   @Output() configSubmitted: EventEmitter<Configuration> = new EventEmitter<Configuration>();
+
   public configForm?: FormGroup;
 
   constructor(private _formBuilder: FormBuilder) {
@@ -19,6 +20,12 @@ export class ConfigurationComponent implements OnInit {
 
   ngOnInit(): void {
     this._buildFormFromConfig();
+  }
+
+  public submitAction(): void {
+    if (this.configForm) {
+      this.configSubmitted.emit(this.configForm.value);
+    }
   }
 
   private _buildFormFromConfig(): void {
@@ -29,17 +36,11 @@ export class ConfigurationComponent implements OnInit {
     const group: { [key: string]: AbstractControl; } = {};
 
     const names: string[] = Object.keys(this.configuration);
-    for (let name of names) {
+    for (const name of names) {
       const value = this.configuration[name];
       group[name] = new FormControl(value);
     }
 
     this.configForm = new FormGroup(group);
-  }
-
-  public submitAction(): void {
-    if (this.configForm) {
-      this.configSubmitted.emit(this.configForm.value);
-    }
   }
 }

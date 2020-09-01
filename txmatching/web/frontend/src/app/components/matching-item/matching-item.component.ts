@@ -23,7 +23,7 @@ export class MatchingItemComponent implements OnInit {
 
   public getTransplantsCount(matching: MatchingView): number {
     let sum = 0;
-    for (let round of matching.rounds) {
+    for (const round of matching.rounds) {
       sum += round.transplants.length;
     }
     return sum;

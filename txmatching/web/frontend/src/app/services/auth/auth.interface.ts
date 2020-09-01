@@ -9,3 +9,8 @@ export interface DecodedToken {
   iat: number;
   exp: number;
 }
+
+export enum ResponseStatusCode {
+  OK = 200,
+  UNAUTHORIZED = 401
+}
