@@ -1,0 +1,22 @@
+:host {
+  position: relative;
+}
+
+.count {
+  position: absolute;
+  top: 0;
+  left: 100%;
+
+  color: white;
+  background: var(--color-success);
+  border-radius: var(--border-radius);
+
+  font-weight: 700;
+  font-size: 12px;
+  margin-left: 5px;
+  padding: 1px 6px 1px 5px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

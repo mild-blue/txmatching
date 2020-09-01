@@ -1,0 +1,17 @@
+<app-content>
+  <div class="matchings-explorer">
+    <div #list class="list">
+      <app-matching-item (click)="setActive(matching)"
+                         *ngFor="let matching of matchings"
+                         [isActive]="matching === activeMatching"
+                         [configuration]="configuration"
+                         [matching]="matching"
+                         [patients]="patients"></app-matching-item>
+    </div>
+    <div #detail class="detail">
+      <div *ngIf="activeMatching">
+        <app-matching-detail [matching]="activeMatching" [patients]="patients"></app-matching-detail>
+      </div>
+    </div>
+  </div>
+</app-content>

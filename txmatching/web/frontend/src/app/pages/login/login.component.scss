@@ -1,0 +1,43 @@
+.login {
+  padding: var(--padding);
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  h2 {
+    text-align: center;
+    margin-top: 0;
+  }
+
+  &-content {
+    transform: translateY(-60px);
+  }
+
+  &-form {
+    padding: 30px;
+    width: 350px;
+    max-width: 100%;
+    border-radius: var(--border-radius--wide);
+    box-shadow: var(--box-shadow);
+    background: var(--brand-white);
+
+    label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+
+      span {
+        flex-grow: 1;
+        flex-basis: calc(100% / 3);
+      }
+
+      input {
+        flex-grow: 2;
+        flex-basis: calc(100% / 3 * 2);
+      }
+    }
+  }
+}

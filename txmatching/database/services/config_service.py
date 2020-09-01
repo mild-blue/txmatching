@@ -1,9 +1,13 @@
 import dataclasses
+import logging
 from typing import Iterator
 
 from txmatching.config.configuration import Configuration, DonorRecipientScore, MAN_DON_REC_SCORES
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ConfigModel
+from txmatching.utils.logged_user import get_current_user_id
+
+logger = logging.getLogger(__name__)
 
 
 def config_model_to_configuration(config_model: ConfigModel) -> Configuration:
@@ -34,6 +38,7 @@ def save_configuration_as_current(configuration: Configuration) -> int:
     if maybe_config is not None:
         db.session.delete(maybe_config)
     config_model = _configuration_to_config_model(configuration)
+    # explicitly saving as 0 -> default configuration
     config_model.id = 0
     db.session.add(config_model)
     db.session.commit()
@@ -57,4 +62,5 @@ def get_config_models() -> Iterator[ConfigModel]:
 
 
 def _configuration_to_config_model(configuration: Configuration) -> ConfigModel:
-    return ConfigModel(parameters=dataclasses.asdict(configuration), created_by=1)
+    user_id = get_current_user_id()
+    return ConfigModel(parameters=dataclasses.asdict(configuration), created_by=user_id)

@@ -1,0 +1,147 @@
+@import "../../../styles/breakpoints";
+
+.configuration {
+  height: 0;
+  overflow: hidden;
+
+  &.open {
+    height: auto;
+    margin-bottom: calc(var(--padding) * 2);
+
+    .configuration__box {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  label {
+    display: block;
+
+    &:not(:last-child) {
+      margin-bottom: 20px;
+    }
+  }
+
+  &__boxes {
+    display: flex;
+    width: 100%;
+    padding: var(--padding);
+
+    @include media-breakpoint-down(lg) {
+      flex-direction: column;
+    }
+
+    > div {
+      display: flex;
+      flex-basis: 50%;
+      width: 50%;
+
+      @include media-breakpoint-down(md) {
+        flex-direction: column;
+      }
+
+      @include media-breakpoint-down(lg) {
+        flex-basis: 100%;
+        width: 100%;
+      }
+    }
+  }
+
+  &__box {
+    border-radius: var(--border-radius);
+    background: var(--brand-white);
+    box-shadow: var(--box-shadow);
+    flex-grow: 1;
+    flex-basis: 50%;
+    padding: 20px;
+
+    opacity: 0.5;
+    transform: translateY(-10px);
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out 0.25s;
+
+    @include media-breakpoint-down(md) {
+      flex-basis: 100%;
+    }
+  }
+
+  .checkboxes {
+
+    @include media-breakpoint-down(lg) {
+      margin-right: var(--padding);
+    }
+
+    @include media-breakpoint-down(md) {
+      margin-right: 0;
+      margin-bottom: var(--padding);
+    }
+  }
+
+  .inputs {
+    margin: 0 var(--padding);
+
+    label {
+      display: flex;
+      align-items: center;
+
+      span {
+        padding-right: 15px;
+        flex-basis: 70%;
+        width: 70%;
+      }
+
+      input {
+        min-width: 80px;
+        flex-basis: 30%;
+        width: 30%;
+      }
+    }
+
+    @include media-breakpoint-down(lg) {
+      margin: 0;
+    }
+  }
+
+  .manual {
+    flex-direction: column;
+
+    p {
+      line-height: 1.6;
+    }
+
+    code {
+      font-size: 12px;
+    }
+
+    @include media-breakpoint-down(lg) {
+      margin-top: var(--padding);
+    }
+
+    &-row {
+      display: flex;
+      flex-direction: column;
+
+      @include media-breakpoint-up(md) {
+        flex-direction: row;
+
+        > div {
+          padding-right: 15px;
+        }
+
+        > * {
+          flex-basis: 50%;
+          width: 50%;
+        }
+      }
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    input[type="submit"] {
+      margin-top: 30px;
+    }
+  }
+}

@@ -1,0 +1,48 @@
+name: Check Pipeline
+
+on:
+  pull_request:
+
+jobs:
+  build_server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache conda
+        uses: actions/cache@v2
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ hashFiles('conda.yml') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('conda.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Conda
+        uses: goanpeca/setup-miniconda@v1.7.0
+        with:
+          activate-environment: txmatching
+          environment-file: conda.yml
+          use-only-tar-bz2: true
+
+      - name: Verify Conda installation
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
+
+      - name: Run Linter
+        shell: bash -l {0}
+        run: |
+          pylint txmatching
+
+      - name: Execute tests
+        shell: bash -l {0}
+        run: |
+          cd tests; export PYTHONPATH=../; python -m unittest discover -s . -t .

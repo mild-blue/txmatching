@@ -1,0 +1,25 @@
+<div *ngIf="round" class="matching-round">
+  <div class="index">{{ roundIndex }}</div>
+  <div class="content">
+    <div *ngFor="let transplant of round.transplants"
+         [class.compatible]="isDonorBloodCompatible(transplant)"
+         [class.w-indicator]="configuration && !configuration.use_binary_scoring"
+         class="matching-round__transplant">
+
+      <ng-container *ngVar="donor(transplant) as donor">
+        <flag *ngIf="donor" [countryCode]="donor?.parameters.country_code"></flag>
+        {{ transplant.donor }}
+      </ng-container>
+      <fa-icon [icon]="arrowRight"></fa-icon>
+      <ng-container *ngVar="recipient(transplant) as recipient">
+        {{ transplant.recipient }}
+        <flag *ngIf="recipient" [countryCode]="recipient?.parameters.country_code"></flag>
+      </ng-container>
+
+      <div *ngIf="configuration && !configuration.use_binary_scoring"
+           [style.background-position.%]="percentageScore(transplant)"
+           class="indicator"></div>
+
+    </div>
+  </div>
+</div>

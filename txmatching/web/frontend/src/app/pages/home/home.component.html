@@ -1,0 +1,42 @@
+<app-header [user]="user"></app-header>
+
+<section class="home">
+  <app-container>
+    <div class="home-header">
+      <h1>
+        Matchings
+        <app-count *ngIf="!loading">{{matchings.length}}</app-count>
+      </h1>
+      <div *ngIf="!loading && configuration" class="config">
+        <button (click)="toggleConfiguration()" [class.opened]="configOpened">
+          <ng-container *ngIf="!configOpened">
+            Configure
+            <fa-icon [icon]="configIcon"></fa-icon>
+          </ng-container>
+          <ng-container *ngIf="configOpened">
+            Close configuration
+            <fa-icon [icon]="closeIcon"></fa-icon>
+          </ng-container>
+        </button>
+      </div>
+    </div>
+  </app-container>
+
+
+  <app-configuration (configSubmitted)="calculate($event)"
+                     *ngIf="configuration"
+                     [configuration]="configuration"
+                     [isOpened]="configOpened"></app-configuration>
+
+  <app-content>
+    <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>
+    <app-matchings-explorer *ngIf="!loading && matchings.length > 0"
+                            [matchings]="matchings"
+                            [configuration]="appConfiguration"
+                            [patients]="patients"></app-matchings-explorer>
+  </app-content>
+
+</section>
+
+<app-alert></app-alert>
+<app-loading [show]="loading"></app-loading>

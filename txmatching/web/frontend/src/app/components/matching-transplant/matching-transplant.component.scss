@@ -1,0 +1,138 @@
+.transplant {
+
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  margin: 0 auto 20px;
+
+  max-width: 960px;
+
+  &:not(:last-child) {
+    margin-bottom: 20px;
+  }
+
+  &-header {
+    background: var(--box-bg);
+    padding: 10px 15px;
+    font-weight: 700;
+
+    display: flex;
+
+    .pair {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+
+      fa-icon {
+        margin: 0 10px;
+      }
+
+      flag {
+        &:first-of-type {
+          margin-right: 5px;
+        }
+
+        &:last-of-type {
+          margin-left: 5px;
+        }
+      }
+    }
+
+    .score {
+      span {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  &-content {
+    flex-grow: 1;
+    padding: 30px 30px 10px;
+  }
+
+  .small {
+    font-size: 12px !important;
+    display: inline-block;
+    margin-left: 10px;
+    color: var(--brand-grey-darker);
+  }
+
+  table {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    border-collapse: collapse;
+  }
+
+  tr {
+    border-top: 1px solid var(--border-color);
+
+    &:first-child {
+      font-weight: 700;
+      border-top: none;
+    }
+
+    &:last-child {
+      border-top: none;
+    }
+
+    &.anti-header {
+      td {
+        background: #f9f9f9;
+        font-size: 12px;
+        padding: 2px;
+      }
+    }
+  }
+
+  td {
+
+    text-align: center;
+    padding: 10px;
+    border-right: 1px solid var(--border-color);
+    vertical-align: top;
+
+    &:not([colspan]) {
+      width: 21.6666%;
+    }
+
+    &:first-child {
+      width: 20%;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    &:last-child {
+      width: 15%;
+      background: #f9f9f9;
+      border-right: none;
+    }
+  }
+
+  .footer-score {
+
+    td {
+      text-align: right;
+      background: var(--brand-white) !important;
+
+      &:not(:last-child) {
+        border: none !important;
+      }
+
+      &:last-child {
+        border-top: 3px solid var(--color-primary);
+      }
+    }
+
+    span {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+  }
+}

@@ -3,3 +3,5 @@ Dockerfile
 README.md
 .gitignore
 local_config.py
+txmatching/web/frontend/dist
+txmatching/web/frontend/node_modules

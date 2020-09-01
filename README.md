@@ -55,6 +55,10 @@ For testing purposes the patient data can be loaded from `.xlsx` file using the 
 PATIENT_DATA_PATH=/home/user/path/to/your/patient_data.xlsx
 ```
 
+## Swagger
+We'have a swagger UI running on `/doc/` route (so for example, `localhost:8080/doc/`).
+How to use it and some useful info [here on doc](https://flask-restx.readthedocs.io/en/latest/swagger.html).
+
 ## Dependencies management
 We are using `conda` for managing dependencies as [graph-tool](https://graph-tool.skewed.de/)
 can be installed just from the `conda-forge` repository.
@@ -68,11 +72,12 @@ to switch to correct environment.
 This must be execute every time when you try to use new terminal.
 
 #### Adding new dependencies
-To add new package add the package to conda.yml and then run
- ```
-make conda-update
- ```
-to install the package in your environment. Try to always isnstall new things through the make conda-update
+To add new package put `<package>` to `conda.yml` and execute `make conda-update`.
+Please try to install specific version which you put to `conda.yml` in order to guarantee that whole team has same 
+packages versions.
+Try to put package to `dependencies` part of yaml, that are the packages installed from conda repository,
+if the package is not in the conda repo, put it in the `pip` part of yaml.
+
 #### Updating packages
 when someone updates and you pull new version from git do the following:
 ```
@@ -96,38 +101,29 @@ To obtain configuration in the code, one should call `get_application_configurat
  from [application_configuration.py](txmatching/web/app_configuration/application_configuration.py).
 
 ## Graph Tool
-Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't
-easily be installed via pip and you have to use for example conda to install it. For more info see the official website.
-```
-conda install -c conda-forge graph-tool
-```
+Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't 
+easily be installed via pip and you have to use for example conda to install it.
+This is the reason we're using Conda. There's also no package for Windows, thus we support only
+mac and linux.
 
 ### Testing
-To run tests that need database do the following:
+To run tests simply run them.
+
+### Experimenting
+It is useful to have non-empty db, for that run
 
 ```
-make setup-db-for-tests
+make setup-non-empty-db
 ```
 
 run tests
 
 ### Frontend
 
-Styles are located in `txmatching/web/static/scss` directory. Minor files located in subdirectories are imported to `app.scss` file. This file is compiled to `txmatching/web/static/css/app.css`, which is used on web.
+For detailed FE related stuff see [README.md](txmatching/web/frontend/README.md).
 
-#### Install SASS
-Install SASS preprocessor using `npm` by running:
-```
-npm install -g sass
-```
-#### Compile
-To compile `.scss` to `.css` open terminal in `txmatching/web/static/` folder and run:
-```
-sass scss/app.scss css/app.css
-```
-
-#### Watcher
-Run watcher to autocompile `.scss` to `.css` by executing:
-```
-sass --watch scss/app.scss css/app.css
-```
+#### Build FE for BE
+In order to build FE for the app one must run `make build-fe`. 
+One must do that ever time when something was changed in the FE code in order to have up to date FE.
+What this does is that it builds FE code to `txmatching/web/frontend/dist/frontend` directory, 
+where it is picked up by the Flask.

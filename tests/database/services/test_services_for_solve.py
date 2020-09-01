@@ -1,17 +1,12 @@
-import unittest
-
 from txmatching.database.services.config_service import get_config_models
 from txmatching.database.services.services_for_solve import get_patients_for_pairing_result
-from txmatching.web import create_app
+from tests.test_utilities.prepare_app import DbTests
 
 
-class TestSolveFromDbAndItsSupportFunctionality(unittest.TestCase):
+class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_caching_in_solve_from_db(self):
-        app = create_app()
-        with app.app_context():
-            self.assertLessEqual(3, len(list(get_config_models())),
-                                 "there should be at least 3 configs in the database")
+        self.assertEqual(1, len(list(get_config_models())),
+                         "there should be 1 config in the database")
 
-            self.assertEqual(2, len(get_patients_for_pairing_result(1)), "Incorrect patients returned for"
-                                                                         " pairing result id")
-
+        self.assertEqual(4, len(get_patients_for_pairing_result(1)), "Incorrect patients returned for"
+                                                                     " pairing result id")

@@ -1,0 +1,82 @@
+<div *ngIf="configuration && configForm"
+     [class.open]="isOpened"
+     class="configuration">
+  <form [formGroup]="configForm">
+    <div class="configuration__boxes">
+      <div>
+        <div class="configuration__box checkboxes">
+          <label>
+            <input [checked]="configuration.enforce_compatible_blood_group"
+                   formControlName="enforce_compatible_blood_group"
+                   type="checkbox">
+            Require compatible blood group
+          </label>
+
+          <label>
+            <input [checked]="configuration.require_new_donor_having_better_match_in_compatibility_index"
+                   formControlName="require_new_donor_having_better_match_in_compatibility_index"
+                   type="checkbox">
+            Require new donor having better CI match than original donor
+          </label>
+
+          <label>
+            <input [checked]="configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group"
+                   formControlName="require_new_donor_having_better_match_in_compatibility_index_or_blood_group"
+                   type="checkbox">
+            Require new donor having better CI match than original donor or blood group match
+          </label>
+
+          <label>
+            <input [checked]="configuration.use_binary_scoring"
+                   formControlName="use_binary_scoring"
+                   type="checkbox">
+            Use binary scoring
+          </label>
+        </div>
+
+        <div class="configuration__box inputs">
+          <label>
+            <span>Min transplant score</span>
+            <input [value]="configuration.minimum_total_score" formControlName="minimum_total_score" type="number"><br><br>
+          </label>
+
+          <label>
+            <span>Max cycle length</span>
+            <input [value]="configuration.max_cycle_length" formControlName="max_cycle_length" type="number"><br><br>
+          </label>
+
+          <label>
+            <span>Max sequence length</span>
+            <input [value]="configuration.max_sequence_length" formControlName="max_sequence_length" type="number"><br><br>
+          </label>
+
+          <label>
+            <span>Max countries in sequence</span>
+            <input [value]="configuration.max_number_of_distinct_countries_in_round" formControlName="max_number_of_distinct_countries_in_round"
+                   type="number">
+          </label>
+
+        </div>
+      </div>
+
+      <div class="configuration__box manual">
+        <b>Manual donor recipient scores</b>
+        <div class="manual-row">
+          <div>
+            <p>
+              Fill in a list of such manual settings. Format:
+              <code>[(donor_name,recipient_name,score)]</code>
+              Example:
+              <code>[("D1","R1",23), ("D1","R1",-1)]</code>
+              Use <strong>-1</strong> for forbidden exchanges.
+            </p>
+          </div>
+          <textarea cols="60" formControlName="manual_donor_recipient_scores_dto" rows="7">{{ configuration.manual_donor_recipient_scores_dto }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <app-button (click)="submitAction()">Recalculate</app-button>
+
+  </form>
+</div>

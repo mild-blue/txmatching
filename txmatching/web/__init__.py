@@ -2,19 +2,24 @@ import logging
 import sys
 from importlib import util as importing
 
-import flask_login
-from flask import Flask
+from flask import Flask, send_from_directory, request
+from flask_restx import Api
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from txmatching.database.db import db
-from txmatching.database.services.app_user_management import \
-    get_app_user_by_email
+from txmatching.web.api.configuration_api import configuration_api
+from txmatching.web.api.matching_api import matching_api
+from txmatching.web.api.namespaces import PATIENT_NAMESPACE, MATCHING_NAMESPACE, \
+    USER_NAMESPACE, SERVICE_NAMESPACE, CONFIGURATION_NAMESPACE
+from txmatching.web.api.patient_api import patient_api
+from txmatching.web.api.service_api import service_api
+from txmatching.web.api.user_api import user_api
 from txmatching.web.app_configuration.application_configuration import (
     ApplicationConfiguration, get_application_configuration)
-from txmatching.web.data_api import data_api
-from txmatching.web.functional_api import functional_api
-from txmatching.web.service_api import service_api
+from txmatching.web.auth import bcrypt
 
 LOGIN_MANAGER = None
+API_VERSION = '/v1'
 
 
 def create_app():
@@ -23,32 +28,17 @@ def create_app():
                         stream=sys.stdout)
 
     app = Flask(__name__)
-
-    # register blueprints
-    app.register_blueprint(service_api)
-    app.register_blueprint(functional_api)
-    app.register_blueprint(data_api)
+    # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_port=1, x_for=1, x_host=1, x_prefix=1)
 
     # For flask.flash (gives feedback when uploading files)
     app.secret_key = 'secret key'
-
-    # Add config
-    app.config['CSV_UPLOADS'] = 'txmatching/web/csv_uploads'
-    app.config['ALLOWED_FILE_EXTENSIONS'] = ['CSV', 'XLSX']
-
-    global LOGIN_MANAGER
-    LOGIN_MANAGER = flask_login.LoginManager()
-    LOGIN_MANAGER.init_app(app)
-    LOGIN_MANAGER.login_view = 'service.login'
-
-    @LOGIN_MANAGER.user_loader
-    def user_loader(user_id):
-        return get_app_user_by_email(user_id)
 
     def load_local_development_config():
         config_file = 'txmatching.web.local_config'
         if importing.find_spec(config_file):
             app.config.from_object(config_file)
+            app.config['IS_LOCAL_DEV'] = True
 
     def configure_db(application_config: ApplicationConfiguration):
         app.config['SQLALCHEMY_DATABASE_URI'] \
@@ -59,8 +49,61 @@ def create_app():
 
         db.init_app(app)
 
+    def configure_encryption():
+        bcrypt.init_app(app)
+
+    def configure_apis():
+        # Set up Swagger and API
+        authorizations = {
+            'bearer': {
+                'type': 'apiKey',
+                'in': 'header',
+                'name': 'Authorization'
+            }
+        }
+
+        api = Api(app, authorizations=authorizations, doc='/doc/')
+        api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
+        api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
+        api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
+        api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
+        api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
+
+    # pylint: disable=unused-variable
+    # routes registered in flask
+    def register_static_proxy():
+        # serving main html which then asks for all javascript
+        @app.route('/')
+        def index_html():
+            return send_from_directory('frontend/dist/frontend', 'index.html')
+
+        # used only if the there's no other endpoint registered
+        # we need it to load static resources for the frontend
+        @app.route('/<path:path>', methods=['GET'])
+        def static_proxy(path):
+            return send_from_directory('frontend/dist/frontend', path)
+
+    def enable_cors_for_local_dev():
+        @app.after_request
+        def add_headers(response):
+            # URL of testing FE, allowed only for API
+            if request.headers.get('origin') == 'http://localhost:4200' \
+                    and request.path.startswith(f'{API_VERSION}/'):
+                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:4200')
+                response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            return response
+
     with app.app_context():
         load_local_development_config()
         application_config = get_application_configuration()
+        # use configuration for app
         configure_db(application_config)
+        configure_encryption()
+        # must be registered before apis
+        register_static_proxy()
+        # enable cors only if running on localhost
+        if app.config.get('IS_LOCAL_DEV'):
+            enable_cors_for_local_dev()
+        # finish configuration
+        configure_apis()
         return app

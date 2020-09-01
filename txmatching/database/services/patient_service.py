@@ -1,10 +1,11 @@
 import dataclasses
 from typing import Dict, Iterable, List, Optional, Tuple
 
-from txmatching.data_transfer_objects.patients.donor_dto import DonorDTO
-from txmatching.data_transfer_objects.patients.patient_dto import \
-    PatientDTO
-from txmatching.data_transfer_objects.patients.recipient_dto import \
+from txmatching.data_transfer_objects.patients.donor_excel_dto import \
+    DonorDTO
+from txmatching.data_transfer_objects.patients.patient_excel_dto import \
+    PatientExcelDTO
+from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientDTO
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import (
@@ -13,8 +14,8 @@ from txmatching.database.sql_alchemy_schema import (
 from txmatching.patients.donor import Donor
 from txmatching.patients.patient import Patient, PatientType
 from txmatching.patients.patient_parameters import (HLAAntibodies,
-                                                         HLAAntigens,
-                                                         PatientParameters)
+                                                    HLAAntigens,
+                                                    PatientParameters)
 from txmatching.patients.recipient import Recipient
 
 
@@ -33,7 +34,7 @@ def db_id_to_medical_id(db_id: int) -> str:
     return PatientModel.query.get(db_id).medical_id
 
 
-def patient_dto_to_patient_model(patient: PatientDTO) -> PatientModel:
+def patient_dto_to_patient_model(patient: PatientExcelDTO) -> PatientModel:
     patient_model = PatientModel(
         medical_id=patient.medical_id,
         country=patient.parameters.country_code,
