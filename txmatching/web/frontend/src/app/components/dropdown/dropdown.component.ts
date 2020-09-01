@@ -1,38 +1,35 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import * as uuid from 'uuid';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-dropdown',
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.scss']
 })
-export class DropdownComponent implements OnInit {
+export class DropdownComponent {
 
-  @ViewChild('dropdown') dropdown?: ElementRef;
-  @Output() clickedOutside: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() clickedOutside: EventEmitter<string> = new EventEmitter<string>();
+
   @Input() open: boolean = false;
-
-  public id: string;
+  @Input() id: string = '';
+  @Input() trigger?: HTMLButtonElement;
 
   constructor(private _elementRef: ElementRef) {
-    this.id = uuid.v4();
   }
 
-  ngOnInit(): void {
-  }
+  @HostListener('document:click', ['$event'])
+  clickOut(event: MouseEvent) {
+    if (!this.trigger || !this.id) {
+      return;
+    }
 
-  // todo click outside
-  // @HostListener('document:click', ['$event'])
-  // clickOut(event: MouseEvent) {
-  //   if(!this.dropdown) {
-  //     return;
-  //   }
-  //   const inside = this._elementRef.nativeElement.contains(event.target);
-  //   console.log(event.currentTarget)
-  //   if(inside) {
-  //     console.log("clicked inside", this.id);
-  //   } else {
-  //     console.log("clicked outside", this.id);
-  //   }
-  // }
+    const clickedElement: Node = event.target as Node;
+    const currentDropdown = this._elementRef.nativeElement;
+
+    const insideDropdown = currentDropdown.contains(clickedElement);
+    const triggerClicked = this.trigger.contains(clickedElement);
+
+    if (!triggerClicked && !insideDropdown) {
+      this.clickedOutside.emit(this.id);
+    }
+  }
 }

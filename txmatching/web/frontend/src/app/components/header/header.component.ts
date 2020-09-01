@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { User } from '@app/model/User';
 import { faQuestionCircle, faUserAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -7,7 +7,7 @@ import { faQuestionCircle, faUserAlt } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
 
   @Input() user?: User;
 
@@ -15,12 +15,6 @@ export class HeaderComponent implements OnInit {
   public infoIcon = faQuestionCircle;
 
   public _openedDropdownId: string = '';
-
-  constructor() {
-  }
-
-  ngOnInit(): void {
-  }
 
   get userDropdownId(): string {
     return 'user-dropdown';
@@ -34,11 +28,13 @@ export class HeaderComponent implements OnInit {
     return this._openedDropdownId;
   }
 
-  closeDropdowns(): void {
-    this._openedDropdownId = '';
+  public openDropdown(id: string): void {
+    this._openedDropdownId = this._openedDropdownId === id ? '' : id;
   }
 
-  openDropdown(id: string): void {
-    this._openedDropdownId = this._openedDropdownId === id ? '' : id;
+  public closeDropdown(dropdownId: string): void {
+    if (this._openedDropdownId === dropdownId) {
+      this._openedDropdownId = '';
+    }
   }
 }
