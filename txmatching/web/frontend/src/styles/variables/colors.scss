@@ -1,0 +1,33 @@
+// === BRAND COLORS === //
+$brand-red: #e2001a;
+$brand-grey-dark: #ddd;
+$brand-grey-darker: #666666;
+
+// === APP COLORS === //
+$black: #000000;
+$white: #ffffff;
+$grey: $brand-grey-darker;
+
+$dark: $brand-grey-dark;
+
+$primary: $brand-red;
+$border-color: $brand-grey-dark;
+$text-color: $black;
+
+$box-shadow--color: rgba(0, 0, 0, .1);
+
+// === ANTIBODIES & ANTIGENS CODES === //
+// basic code
+$code-bg--basic: #e6e6e6;
+$code-border-color--basic: plum;
+$code-color--basic: rebeccapurple;
+
+// matching code
+$code-bg--matching: rgba(green, 0.2);
+$code-border-color--matching: green;
+$code-color--matching: green;
+
+// antibody code
+$code-bg--antibody: aliceblue;
+$code-border-color--antibody: lightskyblue;
+$code-color--antibody: darkblue;

@@ -1,3 +1,4 @@
+// todo: convert to sass variables
 :root {
   --font-family: 'Open Sans', sans-serif;
   --brand-red: #e2001a;
@@ -9,21 +10,31 @@
 
   --color-primary: var(--brand-red);
   --color-primary-rgb: 226, 0, 26;
-  --color-error: #dc3545;
-  --color-error-rgb: 220, 53, 69;
-  --color-success: #28a745;
-  --color-success-rgb: 40, 167, 69;
   --color-accent: #007bff;
   --color-accent-rgb: 0, 123, 255;
 
-  --text-color: #000000;
-  --box-bg: #f5f5f5;
+  --color-error: #dc3545;
+  --color-success: #28a745;
 
-  --padding-x: 50px;
+  --alert-error-color: #721c24;
+  --alert-error-bg: #f8d7da;
+  --alert-error-border-color: #f5c6cb;
+
+  --alert-success-color: #155724;
+  --alert-success-bg: #d4edda;
+  --alert-success-border-color: #c3e6cb;
+
+  --text-color: #000000;
+  --text-color-secondary: #d2d2d2;
+  --box-bg: #f5f5f5;
+  --body-bg: #f9f9f9;
+
   --border-color: var(--brand-grey-dark);
   --border-radius: 6px;
+  --border-radius--wide: 40px;
   --box-shadow: 0 3.2px 7.2px 0 rgba(0, 0, 0, .132),
   0 .6px 1.8px 0 rgba(0, 0, 0, .108);
+  --box-shadow--wide: 0 0 40px 0 rgba(0, 0, 0, .1);
 
   --button-bg: var(--color-primary);
   --button-hover-bg: var(--brand-red-darker);

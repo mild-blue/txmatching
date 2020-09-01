@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
-import { User } from '@app/model/User';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { PatientService } from '@app/services/patient/patient.service';
 import { AuthService } from '@app/services/auth/auth.service';
 
 @Component({
@@ -8,17 +7,24 @@ import { AuthService } from '@app/services/auth/auth.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  currentUser: User;
+export class AppComponent implements OnInit {
 
-  constructor(private _router: Router,
-              private _authService: AuthService
-  ) {
-    this._authService.currentUser.subscribe(x => this.currentUser = x);
+  constructor(private _authService: AuthService,
+              private _patientService: PatientService) {
   }
 
-  logout() {
-    this._authService.logout();
-    this._router.navigate(['/login']);
+  public ngOnInit(): void {
+    this._updatePatients();
+  }
+
+  /*
+  *   When logged in
+  *   update patients from server
+  *   after every page refresh
+  */
+  private async _updatePatients(): Promise<void> {
+    if (this._authService.isLoggedIn) {
+      await this._patientService.updatePatients();
+    }
   }
 }

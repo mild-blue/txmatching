@@ -1,0 +1,14 @@
+@import "../../../styles/variables/colors";
+@import "../../../styles/variables/sizes";
+
+.matching-detail {
+  padding: $padding-y $padding-x;
+
+  .round {
+    margin-bottom: 30px;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $border-color;
+    }
+  }
+}

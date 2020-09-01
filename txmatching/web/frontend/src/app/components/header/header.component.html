@@ -1,0 +1,42 @@
+<header>
+  <div class="logo">
+    <a routerLink="/">
+      <img alt="logo" src="assets/img/logo_ikem.svg"/>
+    </a>
+  </div>
+  <div class="menu">
+    <ul>
+      <li>
+        <a routerLink="/" routerLinkActive="active">Matchings</a>
+      </li>
+    </ul>
+  </div>
+  <div class="icons">
+    <div *ngIf="user" class="user">
+      <button #userDropdownTrigger (click)="openDropdown(userDropdownId)">
+        <fa-icon [icon]="userIcon"></fa-icon>
+      </button>
+      <app-dropdown (clickedOutside)="closeDropdown($event)"
+                    [id]="userDropdownId"
+                    [open]="userDropdownId === openedDropdownId"
+                    [trigger]="userDropdownTrigger">
+        <p>{{user.email}}</p>
+        <app-button routerLink="/login" size="sm">Log out</app-button>
+      </app-dropdown>
+    </div>
+    <div class="info">
+      <button #infoDropdownTrigger (click)="openDropdown(infoDropdownId)">
+        <fa-icon [icon]="infoIcon"></fa-icon>
+      </button>
+      <app-dropdown (clickedOutside)="closeDropdown($event)"
+                    [id]="infoDropdownId"
+                    [open]="infoDropdownId === openedDropdownId"
+                    [trigger]="infoDropdownTrigger">
+        <p>Not working? Questions?<br>Call +420 723 927 536.</p>
+        <div class="pdf-link">
+          <a href="assets/algorithm_description.pdf" target="_blank">Algorithm description</a>
+        </div>
+      </app-dropdown>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,67 @@
+@import "../../../styles/breakpoints";
+@import "../../../styles/variables/sizes";
+@import "../../../styles/variables/colors";
+@import "../../../styles/variables/properties";
+
+.matchings-explorer {
+  flex-grow: 1;
+  background: var(--brand-white);
+  border-radius: var(--border-radius--wide) var(--border-radius--wide) 0 0;
+
+  position: relative;
+
+  min-height: calc(50vh);
+  height: 100%;
+  display: flex;
+
+  @include media-breakpoint-down(md) {
+    flex-direction: column;
+  }
+
+  .list, .detail {
+    position: absolute;
+    height: 100%;
+    overflow-y: scroll;
+
+    @include media-breakpoint-down(md) {
+      position: relative;
+    }
+  }
+
+  .list {
+    width: calc(40vw);
+    max-width: 800px;
+    left: 0;
+    background: var(--box-bg);
+    scroll-behavior: smooth;
+
+    box-shadow: inset calc(-#{$box-shadow--wide-size}) 0 $box-shadow--wide-size calc(-#{$box-shadow--wide-size}) $box-shadow--color;
+
+    @include media-breakpoint-down(md) {
+      height: 600px;
+      width: 100%;
+      max-width: none;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  .detail {
+    width: calc(60vw);
+    min-width: calc(100vw - 800px);
+    right: 0;
+
+    @include media-breakpoint-down(md) {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+}
+
+:host {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}

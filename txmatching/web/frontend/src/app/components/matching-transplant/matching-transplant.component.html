@@ -1,0 +1,79 @@
+<div *ngIf="transplant && donor && recipient && matchingAntigens" class="transplant">
+  <div class="transplant-header">
+    <div class="pair">
+      <flag [countryCode]="donor.parameters.country_code"></flag>
+      {{ donor.medical_id }}
+      <fa-icon [icon]="arrowRight"></fa-icon>
+      {{ recipient.medical_id }}
+      <flag [countryCode]="recipient.parameters.country_code"></flag>
+    </div>
+
+    <div class="score">
+      Score: <span>{{ transplant.score }}</span>
+    </div>
+  </div>
+
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr>
+        <td></td>
+        <td>
+          <flag [countryCode]="donor.parameters.country_code"></flag>
+          {{ donor.medical_id }}
+        </td>
+        <td colspan="2">
+          <flag [countryCode]="recipient.parameters.country_code"></flag>
+          {{ recipient.medical_id }}
+        </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <app-code [class.matching]="isDonorBloodCompatible">{{ donor.parameters.blood_group }}</app-code>
+        </td>
+        <td colspan="2">
+          <app-code [class.matching]="isDonorBloodCompatible">{{ recipient.parameters.blood_group }}</app-code>
+          <div class="small">
+            Acceptable:
+            <app-code *ngFor="let bloodGroup of recipient.parameters.acceptable_blood_groups">{{ bloodGroup }}</app-code>
+          </div>
+        </td>
+        <td>
+
+        </td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td>Antibodies</td>
+        <td></td>
+      </tr>
+      <tr *ngFor="let antibody of antibodies">
+        <td>{{antibody}}</td>
+        <td>
+          <app-code *ngFor="let code of filterCodes(donor.parameters.hla_antigens.codes, antibody)"
+                    [class.matching]="matchingAntigens.includes(code)">{{ code }}</app-code>
+        </td>
+        <td>
+          <app-code *ngFor="let code of filterCodes(recipient.parameters.hla_antigens.codes, antibody)"
+                    [class.matching]="matchingAntigens.includes(code)">{{ code }}</app-code>
+        </td>
+        <td>
+          <app-code *ngFor="let code of filterCodes(recipient.parameters.hla_antibodies.codes, antibody)"
+                    [class]="'antibody'">{{ code }}</app-code>
+        </td>
+        <td>{{ antigenScore(antibody) }}</td>
+      </tr>
+      <tr class="footer-score">
+        <td colspan="4">
+          Final score:
+        </td>
+        <td><span>{{ transplant.score }}</span></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

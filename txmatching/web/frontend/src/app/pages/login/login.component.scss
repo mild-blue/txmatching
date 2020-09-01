@@ -7,13 +7,9 @@
   align-items: center;
   flex-direction: column;
 
-  h1 {
+  h2 {
     text-align: center;
     margin-top: 0;
-
-    &:after {
-      display: none;
-    }
   }
 
   &-content {
@@ -24,7 +20,7 @@
     padding: 30px;
     width: 350px;
     max-width: 100%;
-    border-radius: 6px;
+    border-radius: var(--border-radius--wide);
     box-shadow: var(--box-shadow);
     background: var(--brand-white);
 
@@ -42,12 +38,6 @@
         flex-grow: 2;
         flex-basis: calc(100% / 3 * 2);
       }
-    }
-
-    button {
-      margin: auto;
-      display: block;
-      margin-top: 30px;
     }
   }
 }
