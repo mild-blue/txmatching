@@ -10,6 +10,7 @@ from txmatching.database.db import db
 from txmatching.database.services.patient_service import save_patients
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
+from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import user_api
 from txmatching.web.auth.login_check import store_user_in_context
 
@@ -21,6 +22,9 @@ class DbTests(unittest.TestCase):
         """
         Creates a new database for the unit test to use
         """
+        # delete file from previous test run in case it was forgotten there
+        if os.path.exists(get_absolute_path(f'/tests/test_utilities/{self._database_name}')):
+            os.remove(get_absolute_path(f'/tests/test_utilities/{self._database_name}'))
 
         self.app = Flask(__name__)
         self.app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self._database_name}'
@@ -41,7 +45,7 @@ class DbTests(unittest.TestCase):
         solve_from_db()
 
     @staticmethod
-    def fill_db_with_patients(file='test_utilities/data.xlsx'):
+    def fill_db_with_patients(file=get_absolute_path('/tests/test_utilities/data.xlsx')):
         patients = parse_excel_data(file)
         save_patients(patients)
 
@@ -67,5 +71,5 @@ class DbTests(unittest.TestCase):
         with self.app.app_context():
             db.drop_all()
 
-        if os.path.exists(f'test_utilities/{self._database_name}'):
-            os.remove(f'test_utilities/{self._database_name}')
+        if os.path.exists(get_absolute_path(f'/tests/test_utilities/{self._database_name}')):
+            os.remove(get_absolute_path(f'/tests/test_utilities/{self._database_name}'))
