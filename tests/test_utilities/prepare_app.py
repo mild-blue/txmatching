@@ -5,11 +5,12 @@ from importlib import util as importing
 from flask import Flask
 from flask_restx import Api
 
-from tests.test_utilities.populate_db import add_users, ADMIN_USER
+from tests.test_utilities.populate_db import ADMIN_USER, add_users
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import save_patients
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
+from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import user_api
 from txmatching.web.auth.login_check import store_user_in_context
 
@@ -21,6 +22,9 @@ class DbTests(unittest.TestCase):
         """
         Creates a new database for the unit test to use
         """
+        # delete file from previous test run in case it was forgotten there
+        if os.path.exists(get_absolute_path(f'/tests/test_utilities/{self._database_name}')):
+            os.remove(get_absolute_path(f'/tests/test_utilities/{self._database_name}'))
 
         self.app = Flask(__name__)
         self.app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self._database_name}'
@@ -36,10 +40,14 @@ class DbTests(unittest.TestCase):
 
         self._set_bearer_token()
 
-        patients = parse_excel_data('test_utilities/data.xlsx')
-        save_patients(patients)
-
+    def fill_db_with_patients_and_results(self):
+        self.fill_db_with_patients()
         solve_from_db()
+
+    @staticmethod
+    def fill_db_with_patients(file=get_absolute_path('/tests/test_utilities/data.xlsx')):
+        patients = parse_excel_data(file)
+        save_patients(patients)
 
     def _set_bearer_token(self):
         self.api = Api(self.app)
@@ -63,5 +71,5 @@ class DbTests(unittest.TestCase):
         with self.app.app_context():
             db.drop_all()
 
-        if os.path.exists(f'test_utilities/{self._database_name}'):
-            os.remove(f'test_utilities/{self._database_name}')
+        if os.path.exists(get_absolute_path(f'/tests/test_utilities/{self._database_name}')):
+            os.remove(get_absolute_path(f'/tests/test_utilities/{self._database_name}'))

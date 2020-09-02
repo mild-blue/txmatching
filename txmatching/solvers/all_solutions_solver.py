@@ -11,10 +11,10 @@ from graph_tool.all import Graph
 from txmatching.config.configuration import Configuration
 from txmatching.patients.donor import Donor
 from txmatching.patients.recipient import Recipient
-from txmatching.scorers.additive_scorer import (
-    ORIGINAL_DONOR_RECIPIENT_TUPLE, TRANSPLANT_IMPOSSIBLE, AdditiveScorer)
-from txmatching.solvers.matching.matching_with_score import \
-    MatchingWithScore
+from txmatching.scorers.additive_scorer import (ORIGINAL_DONOR_RECIPIENT_TUPLE,
+                                                TRANSPLANT_IMPOSSIBLE,
+                                                AdditiveScorer)
+from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.solver_base import SolverBase
 
 logger = logging.getLogger(__name__)
@@ -22,9 +22,10 @@ logger = logging.getLogger(__name__)
 
 class AllSolutionsSolver(SolverBase):
     # TODO: This is legacy code, refactor, try to optimize speed https://trello.com/c/lKFXAQfE
-    def __init__(self, verbose: bool = True):
+    def __init__(self, max_number_of_distinct_countries_in_round: int, verbose: bool = True):
         super().__init__()
         self._verbose = verbose
+        self._max_number_of_distinct_countries_in_round = max_number_of_distinct_countries_in_round
 
     def solve(self, donors: List[Donor],
               recipients: List[Recipient], scorer: AdditiveScorer) -> Iterator[MatchingWithScore]:
@@ -38,6 +39,7 @@ class AllSolutionsSolver(SolverBase):
                     value = - np.inf
 
                 score_matrix_array[row_index, column_index] = value
+        proper_solutions = set()
 
         for solution in self._solve(score_matrix=score_matrix_array):
             donor_recipient_list = [(donors[i], recipients[j]) for i, j in solution
@@ -46,7 +48,24 @@ class AllSolutionsSolver(SolverBase):
                          if i < len(donors) and j < len(recipients)])
 
             matching = MatchingWithScore(donor_recipient_list, score)
-            yield matching
+            if max([transplant_round.country_count for transplant_round in
+                    matching.get_rounds()]) <= self._max_number_of_distinct_countries_in_round:
+                yield matching
+                proper_solutions.add(matching)
+            else:
+                proper_rounds = [transplant_round for transplant_round in
+                                 matching.get_rounds() if
+                                 transplant_round.country_count <= self._max_number_of_distinct_countries_in_round]
+                if len(proper_rounds) > 0:
+                    donor_recipient_list = [donor_recipient for transplant_round in proper_rounds for donor_recipient in
+                                            transplant_round.donor_recipient_list]
+                    score = sum(
+                        [score_matrix_array[donors.index(donor), recipients.index(recipient)] for donor, recipient in
+                         donor_recipient_list])
+                    proper_matching = MatchingWithScore(donor_recipient_list, score)
+                    if proper_matching not in proper_solutions:
+                        yield proper_matching
+                        proper_solutions.add(proper_matching)
 
     def _solve(self, score_matrix: np.ndarray) -> Iterator[List[Tuple[int, int]]]:
         """
@@ -174,7 +193,7 @@ class AllSolutionsSolver(SolverBase):
 
                 directed_graph.add_edge(source_vertex, target_vertex)
 
-        # Add recipient -> bridge donors edges
+        # Add recipient -> bridge donors edges, done differently now, not used anymore
         if add_fake_edges_for_bridge_donors:
             bridge_indices = self._get_bridge_indices(score_matrix)
             regular_indices = [i for i in range(n_donors) if i not in bridge_indices]
@@ -256,4 +275,4 @@ class AllSolutionsSolver(SolverBase):
 
     @classmethod
     def from_config(cls, configuration: Configuration) -> 'AllSolutionsSolver':
-        return AllSolutionsSolver()
+        return AllSolutionsSolver(configuration.max_number_of_distinct_countries_in_round)

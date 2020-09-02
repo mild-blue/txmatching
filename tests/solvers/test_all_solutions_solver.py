@@ -3,9 +3,9 @@ import unittest
 
 import numpy as np
 
+from tests.solvers.tabular_scorer import TabularScorer
 from txmatching.solvers.all_solutions_solver import AllSolutionsSolver
 from txmatching.utils.get_absolute_path import get_absolute_path
-from tests.solvers.tabular_scorer import TabularScorer
 
 
 class TestAllSolutionsSolver(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
     def test_solve(self):
         # TODO: Add more specific test https://trello.com/c/1Cdaujkx
         scorer = TabularScorer(score_matrix=self._score_matrix)
-        solver = AllSolutionsSolver()
+        solver = AllSolutionsSolver(max_number_of_distinct_countries_in_round=1)
         all_solutions = list(solver._solve(score_matrix=np.array(self._score_matrix)))
         all_scores = []
         for solution in all_solutions:
@@ -40,6 +40,6 @@ class TestAllSolutionsSolver(unittest.TestCase):
                                       [0.2, 0.4, np.NINF, 0.5],
                                       [0.2, np.NINF, np.NINF, 0.5]])
 
-        test_solver = AllSolutionsSolver()
+        test_solver = AllSolutionsSolver(max_number_of_distinct_countries_in_round=1)
         solutions = test_solver._solve(score_matrix_test)
         self.assertEqual(len(list(solutions)), 53)
