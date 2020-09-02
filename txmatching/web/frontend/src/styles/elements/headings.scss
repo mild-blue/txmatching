@@ -1,8 +1,10 @@
+@import "../variables";
+
 h1 {
   font-size: 48px;
   margin: 0 0 10px;
 }
 
 h3 {
-  color: var(--text-color-secondary);
+  color: $text-color--secondary;
 }

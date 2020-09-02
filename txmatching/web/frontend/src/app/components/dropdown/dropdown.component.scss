@@ -1,3 +1,5 @@
+@import "../../../styles/variables";
+
 :host {
   position: relative;
 }
@@ -11,9 +13,9 @@
   right: 0;
 
   width: 220px;
-  background: var(--brand-white);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  background: $white;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
 
   margin-top: 10px;
   padding: 10px 10px 20px;

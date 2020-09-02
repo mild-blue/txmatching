@@ -1,12 +1,10 @@
 @import "../../../styles/breakpoints";
-@import "../../../styles/variables/sizes";
-@import "../../../styles/variables/colors";
-@import "../../../styles/variables/properties";
+@import "../../../styles/variables";
 
 .matchings-explorer {
   flex-grow: 1;
-  background: var(--brand-white);
-  border-radius: var(--border-radius--wide) var(--border-radius--wide) 0 0;
+  background: $white;
+  border-radius: $border-radius--wide $border-radius--wide 0 0;
 
   position: relative;
 
@@ -32,7 +30,7 @@
     width: calc(40vw);
     max-width: 800px;
     left: 0;
-    background: var(--box-bg);
+    background: $gray-200;
     scroll-behavior: smooth;
 
     box-shadow: inset calc(-#{$box-shadow--wide-size}) 0 $box-shadow--wide-size calc(-#{$box-shadow--wide-size}) $box-shadow--color;

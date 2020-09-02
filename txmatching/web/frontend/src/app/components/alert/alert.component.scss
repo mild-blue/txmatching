@@ -1,22 +1,24 @@
+@import "../../../styles/variables";
+
 .alert {
   position: fixed;
-  top: var(--padding);
-  right: var(--padding);
+  top: $padding-y;
+  right: $padding-x;
 
   padding: .75rem 1.25rem;
   border: 1px solid transparent;
-  border-radius: var(--border-radius);
+  border-radius: $border-radius;
 
   &-success {
-    color: var(--alert-success-color);
-    background-color: var(--alert-success-bg);
-    border-color: var(--alert-success-border-color);
+    color: darken($success, 10%);
+    background-color: lighten($success, 40%);
+    border-color: lighten($success, 20%);
   }
 
   &-danger {
-    color: var(--alert-error-color);
-    background-color: var(--alert-error-bg);
-    border-color: var(--alert-error-border-color);
+    color: darken($danger, 10%);
+    background-color: lighten($danger, 40%);
+    border-color: lighten($danger, 20%);
   }
 
   .close {
@@ -24,9 +26,8 @@
     font-size: 1.5rem;
     font-weight: 700;
     line-height: 1;
-    color: #000;
-    text-shadow: 0 1px 0 #fff;
-    opacity: .5;
+    color: inherit;
+    text-shadow: 0 1px 0 $white;
     margin-left: 20px;
   }
 }

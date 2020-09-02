@@ -1,10 +1,11 @@
-.transplant {
+@import "../../../styles/variables";
 
+.transplant {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
   overflow: hidden;
   margin: 0 auto 20px;
 
@@ -15,7 +16,8 @@
   }
 
   &-header {
-    background: var(--box-bg);
+    background: $gray-100;
+    border-bottom: 1px solid $border-color;
     padding: 10px 15px;
     font-weight: 700;
 
@@ -45,7 +47,7 @@
       span {
         font-size: 22px;
         font-weight: 700;
-        color: var(--color-primary);
+        color: $primary;
       }
     }
   }
@@ -59,7 +61,6 @@
     font-size: 12px !important;
     display: inline-block;
     margin-left: 10px;
-    color: var(--brand-grey-darker);
   }
 
   table {
@@ -70,7 +71,7 @@
   }
 
   tr {
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid $border-color;
 
     &:first-child {
       font-weight: 700;
@@ -94,7 +95,7 @@
 
     text-align: center;
     padding: 10px;
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid $border-color;
     vertical-align: top;
 
     &:not([colspan]) {
@@ -109,7 +110,7 @@
 
     &:last-child {
       width: 15%;
-      background: #f9f9f9;
+      background: $gray-100;
       border-right: none;
     }
   }
@@ -118,21 +119,21 @@
 
     td {
       text-align: right;
-      background: var(--brand-white) !important;
+      background: $white !important;
 
       &:not(:last-child) {
         border: none !important;
       }
 
       &:last-child {
-        border-top: 3px solid var(--color-primary);
+        border-top: 3px solid $primary;
       }
     }
 
     span {
       font-size: 24px;
       font-weight: 700;
-      color: var(--color-primary);
+      color: $primary;
     }
   }
 }

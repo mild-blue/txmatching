@@ -1,5 +1,4 @@
-@import "../../../styles/variables/colors";
-@import "../../../styles/variables/sizes";
+@import "../../../styles/variables";
 
 .matching-round {
 
@@ -26,7 +25,7 @@
     border-radius: $border-radius;
     position: relative;
 
-    background-color: $grey;
+    background-color: $dark;
     color: $white;
 
     font-weight: 400;
@@ -36,7 +35,7 @@
     }
 
     &.compatible {
-      background-color: $dark;
+      background-color: $gray-300;
       color: $black;
     }
 
