@@ -85,6 +85,14 @@
       box-shadow: $box-shadow--wide;
       height: 100%;
       overflow-y: scroll;
+
+      &.aligned-top {
+        border-top-left-radius: 0;
+      }
+
+      &.aligned-bottom {
+        border-bottom-left-radius: 0;
+      }
     }
 
     @include media-breakpoint-down(md) {
