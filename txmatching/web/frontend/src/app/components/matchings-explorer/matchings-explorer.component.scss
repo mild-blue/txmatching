@@ -3,14 +3,15 @@
 
 .matchings-explorer {
   flex-grow: 1;
-  background: $white;
-  border-radius: $border-radius--wide $border-radius--wide 0 0;
-
   position: relative;
 
   min-height: calc(50vh);
   height: 100%;
   display: flex;
+
+  border-radius: $border-radius--wide;
+  overflow-y: hidden;
+  overflow-x: visible;
 
   @include media-breakpoint-down(md) {
     flex-direction: column;
@@ -19,7 +20,7 @@
   .list, .detail {
     position: absolute;
     height: 100%;
-    overflow-y: scroll;
+    padding: $border-radius--wide;
 
     @include media-breakpoint-down(md) {
       position: relative;
@@ -27,13 +28,38 @@
   }
 
   .list {
-    width: calc(40vw);
+    width: 40%;
     max-width: 800px;
     left: 0;
-    background: $gray-200;
-    scroll-behavior: smooth;
+    padding-left: 0;
+    padding-right: 0;
 
-    box-shadow: inset calc(-#{$box-shadow--wide-size}) 0 $box-shadow--wide-size calc(-#{$box-shadow--wide-size}) $box-shadow--color;
+    &-inner {
+      padding-left: $box-shadow--wide-size;
+      height: 100%;
+      overflow-y: scroll;
+      scroll-behavior: smooth;
+      position: relative;
+    }
+
+    &::before, &::after {
+      position: absolute;
+      content: '';
+      height: $box-shadow--wide-size;
+      width: 100%;
+      left: 0;
+      z-index: 1;
+    }
+
+    &::before {
+      top: $box-shadow--wide-size;
+      background: linear-gradient($body-bg, rgba($body-bg, 0));
+    }
+
+    &::after {
+      bottom: $box-shadow--wide-size;
+      background: linear-gradient(rgba($body-bg, 0), $body-bg);
+    }
 
     @include media-breakpoint-down(md) {
       height: 600px;
@@ -47,9 +73,19 @@
   }
 
   .detail {
-    width: calc(60vw);
-    min-width: calc(100vw - 800px);
+    width: 60%;
+    min-width: calc(100% - 800px);
     right: 0;
+    padding-left: 0;
+    z-index: 2;
+
+    &-inner {
+      background: $white;
+      border-radius: $border-radius--wide;
+      box-shadow: $box-shadow--wide;
+      height: 100%;
+      overflow-y: scroll;
+    }
 
     @include media-breakpoint-down(md) {
       width: 100%;
