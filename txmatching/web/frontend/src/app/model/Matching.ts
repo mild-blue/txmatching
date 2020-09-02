@@ -24,3 +24,5 @@ export interface MatchingCountry {
   donor_count: number;
   recipient_count: number;
 }
+
+export const matchingBatchSize = 10;

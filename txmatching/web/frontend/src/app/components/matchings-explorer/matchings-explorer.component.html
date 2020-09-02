@@ -1,8 +1,12 @@
 <app-content>
   <div class="matchings-explorer">
-    <div #list class="list">
+    <div #list
+         (scrolled)="onScrollDown()"
+         [scrollWindow]="false"
+         class="list"
+         infinite-scroll>
       <app-matching-item (click)="setActive(matching)"
-                         *ngFor="let matching of matchings"
+                         *ngFor="let matching of matchingsInView"
                          [isActive]="matching === activeMatching"
                          [configuration]="configuration"
                          [matching]="matching"
