@@ -5,7 +5,7 @@ from importlib import util as importing
 from flask import Flask
 from flask_restx import Api
 
-from tests.test_utilities.populate_db import add_users, ADMIN_USER
+from tests.test_utilities.populate_db import ADMIN_USER, add_users
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import save_patients
 from txmatching.solve_service.solve_from_db import solve_from_db
@@ -36,10 +36,14 @@ class DbTests(unittest.TestCase):
 
         self._set_bearer_token()
 
-        patients = parse_excel_data('test_utilities/data.xlsx')
-        save_patients(patients)
-
+    def fill_db_with_patients_and_results(self):
+        self.fill_db_with_patients()
         solve_from_db()
+
+    @staticmethod
+    def fill_db_with_patients(file='test_utilities/data.xlsx'):
+        patients = parse_excel_data(file)
+        save_patients(patients)
 
     def _set_bearer_token(self):
         self.api = Api(self.app)

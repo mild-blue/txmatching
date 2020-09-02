@@ -7,18 +7,15 @@ from typing import Dict, List, Tuple, Union
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
-from txmatching.data_transfer_objects.patients.donor_excel_dto import \
-    DonorDTO
+from txmatching.data_transfer_objects.patients.donor_excel_dto import DonorDTO
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientDTO
-from txmatching.patients.patient_parameters import (HLAAntibodies,
-                                                    HLAAntigens,
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntigens,
                                                     PatientParameters)
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
 from txmatching.utils.countries import AUT, CZE, IL
-from txmatching.utils.hla_system.hla_table import (HLA_A, HLA_A_BROAD,
-                                                   HLA_B, HLA_B_BROAD,
-                                                   HLA_BW, HLA_CW,
+from txmatching.utils.hla_system.hla_table import (HLA_A, HLA_A_BROAD, HLA_B,
+                                                   HLA_B_BROAD, HLA_BW, HLA_CW,
                                                    HLA_CW_BROAD, HLA_DQ,
                                                    HLA_DQ_BROAD, HLA_DR,
                                                    HLA_DR_BROAD, HLA_DRDR)
@@ -34,6 +31,8 @@ logger = logging.getLogger(__name__)
 
 
 def _parse_blood_group(blood_group_str: Union[str, int]) -> str:
+    if isinstance(blood_group_str, float) and blood_group_str == 0.0:
+        blood_group_str = '0'
     blood_group_str = str(blood_group_str).strip()
     if blood_group_str not in _valid_blood_groups:
         raise ValueError(f'Encountered invalid group in blood group string {blood_group_str}')

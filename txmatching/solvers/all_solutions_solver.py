@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class AllSolutionsSolver(SolverBase):
     # TODO: This is legacy code, refactor, try to optimize speed https://trello.com/c/lKFXAQfE
-    def __init__(self, verbose: bool = True):
+    def __init__(self, max_number_of_distinct_countries_in_round: int, verbose: bool = True):
         super().__init__()
         self._verbose = verbose
 
@@ -256,4 +256,4 @@ class AllSolutionsSolver(SolverBase):
 
     @classmethod
     def from_config(cls, configuration: Configuration) -> 'AllSolutionsSolver':
-        return AllSolutionsSolver()
+        return AllSolutionsSolver(configuration.max_number_of_distinct_countries_in_round)

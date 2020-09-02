@@ -2,12 +2,13 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.config.configuration import Configuration
 from txmatching.data_transfer_objects.configuration.configuration_to_dto import \
     configuration_to_dto
-from txmatching.web import patient_api, matching_api
+from txmatching.web import matching_api, patient_api
 
 
 class TestSaveAndGetConfiguration(DbTests):
 
     def test_get_matchings(self):
+        self.fill_db_with_patients_and_results()
         self.api.add_namespace(matching_api, path='/matching')
 
         with self.app.test_client() as client:
@@ -24,6 +25,7 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(expected, res.json)
 
     def test_get_patients(self):
+        self.fill_db_with_patients_and_results()
         self.api.add_namespace(patient_api, path='/pat')
         with self.app.test_client() as client:
             res = client.get('/pat/', headers=self.auth_headers)
