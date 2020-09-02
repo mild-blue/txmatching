@@ -86,13 +86,11 @@ def create_app():
     def enable_cors():
         @app.after_request
         def add_headers(response):
-            # URL of testing FE, allowed only for API
-            allowed_origins = [
+            allowed_origins = {
                 'http://localhost:4200',  # localhost development
-                'https://127.0.0.1:9090'  # proxy on staging
-            ]
-            if request.headers.get('origin') in allowed_origins \
-                    and request.path.startswith(f'{API_VERSION}/'):
+                'https://127.0.0.1:9090'  # proxy on staging, support for swagger
+            }
+            if request.headers.get('origin') in allowed_origins:
                 response.headers.add('Access-Control-Allow-Origin', '*')
                 response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
             return response
