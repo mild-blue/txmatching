@@ -87,8 +87,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(first())
     .subscribe(
       (matchings: Matching[]) => {
-        // todo: show only X at a time
-        this.matchings = matchings.slice(0, 10).map((m, key) => {
+        this.matchings = matchings.map((m, key) => {
           return { index: key + 1, ...m };
         });
         this._logger.log('Calculated matchings', [matchings]);
