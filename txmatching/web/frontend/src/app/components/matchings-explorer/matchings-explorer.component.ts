@@ -77,18 +77,18 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const style = getComputedStyle(activeItem);
-    const topOffset = Number(style.marginTop.replace(/\D+/g, ''));
-    const bottomOffset = Number(style.marginBottom.replace(/\D+/g, ''));
+    const { marginTop, marginBottom } = getComputedStyle(activeItem);
+    const topOffset = Number(marginTop.replace(/\D+/g, ''));
+    const bottomOffset = Number(marginBottom.replace(/\D+/g, ''));
 
     const detailClientRect = detailItem.getBoundingClientRect();
     const activeItemClientRect = activeItem.getBoundingClientRect();
 
-    const activeTop = activeItemClientRect.top - topOffset;
-    const activeBottom = activeItemClientRect.top + activeItem.offsetHeight + bottomOffset;
+    const activeTop = activeItemClientRect.top - topOffset * 2;
+    const activeBottom = activeItemClientRect.top + activeItem.offsetHeight + bottomOffset * 2;
 
-    const detailTop = detailClientRect.top + topOffset;
-    const detailBottom = detailClientRect.top + detailItem.offsetHeight - bottomOffset;
+    const detailTop = detailClientRect.top + topOffset * 2;
+    const detailBottom = detailClientRect.top + detailItem.offsetHeight - bottomOffset * 2;
 
     this.activeAlignedTop = activeTop <= detailTop;
     this.activeAlignedBottom = activeBottom >= detailBottom;

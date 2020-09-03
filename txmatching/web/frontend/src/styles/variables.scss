@@ -28,4 +28,4 @@ $body-bg: $gray-100;
 // SPACING
 $padding-x: 30px;
 $padding-y: 30px;
-$item-gap: $box-shadow--wide-size;
+$item-gap: calc(#{$box-shadow--wide-size} / 2);

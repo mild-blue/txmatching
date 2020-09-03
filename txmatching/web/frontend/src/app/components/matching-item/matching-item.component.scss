@@ -49,6 +49,8 @@
 
     margin-right: 0;
     margin-left: 0;
+    padding-right: calc(#{$padding-x} + #{$item-gap});
+    padding-left: calc(#{$padding-x} + #{$item-gap});
 
     z-index: 3;
 
