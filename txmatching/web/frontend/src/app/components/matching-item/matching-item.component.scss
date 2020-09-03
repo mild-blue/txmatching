@@ -56,6 +56,10 @@
 
     pointer-events: none;
 
+    ul {
+      margin-bottom: 20px;
+    }
+
     &.first {
       margin-top: 0;
 
@@ -90,7 +94,7 @@
   ul {
     list-style: none;
     padding: 0;
-    margin: 0 0 20px 0;
+    margin: 0;
     display: flex;
     flex-wrap: wrap;
 

@@ -3,7 +3,7 @@
 form {
   input, textarea {
     border: 1px solid $border-color;
-    border-radius: $border-radius;
+    border-radius: $border-radius--wide;
     padding: 10px 15px;
     overflow: hidden;
     font-family: $font-family;
@@ -17,6 +17,8 @@ form {
   }
 
   label {
+    color: $body-color;
+
     &.error {
       input {
         border-color: rgba($danger, 0.5);
@@ -36,9 +38,9 @@ form {
 button, input[type="submit"] {
   border: none;
   box-shadow: none;
-  font-size: inherit;
   background: none;
   cursor: pointer;
+  font: inherit;
 
   &:focus {
     outline: none;
