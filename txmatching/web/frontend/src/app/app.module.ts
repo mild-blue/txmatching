@@ -28,6 +28,7 @@ import { FlagComponent } from './components/flag/flag.component';
 import { MatchingItemComponent } from './components/matching-item/matching-item.component';
 import { VarDirective } from './directives/ng-var/var.directive';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { LogoComponent } from './components/logo/logo.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     CodeComponent,
     FlagComponent,
     MatchingItemComponent,
-    VarDirective
+    VarDirective,
+    LogoComponent
   ],
   imports: [
     BrowserModule,

@@ -9,28 +9,12 @@
   align-items: center;
   flex-direction: column;
 
-  .logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: $padding-y;
-
-    img {
-      width: 80px;
-    }
-
-    h2 {
-      margin: 0 0 0 $item-gap;
-      color: $primary;
-      line-height: 1;
-    }
-  }
-
   &-content {
     transform: translateY(-60px);
   }
 
   &-form {
+    margin-top: $padding-y;
     padding: $padding-y $padding-x;
     width: 380px;
     max-width: 100%;
