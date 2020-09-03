@@ -1,3 +1,5 @@
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { matchingBatchSize, MatchingView } from '@app/model/Matching';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MatchingView } from '@app/model/Matching';
 import { Patient } from '@app/model/Patient';
@@ -18,11 +20,14 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
   @Input() configuration?: AppConfiguration;
 
   public activeMatching?: MatchingView;
+  public matchingsInView: MatchingView[] = [];
+
   public activeAlignedTop: boolean = true;
   public activeAlignedBottom: boolean = false;
 
   ngOnInit(): void {
-    this.activeMatching = this.matchings[0] ?? this.activeMatching;
+    this._addMatchingsToView();
+    this.activeMatching = this.matchingsInView[0] ?? this.activeMatching;
   }
 
   ngAfterViewInit(): void {
@@ -35,6 +40,14 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
       this._scrollToElement(matching.index);
       this.activeAlignedTop = matching.index === 1;
     }
+  }
+
+  public onScrollDown(): void {
+    this._addMatchingsToView();
+  }
+
+  public trackMatchingItem(index: number, matching: MatchingView) {
+    return matching.index;
   }
 
   private _scrollToElement(id: number): void {
@@ -54,6 +67,13 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
     if (this.detail) {
       this.detail.nativeElement.scrollTop = 0;
     }
+  }
+
+  private _addMatchingsToView(): void {
+    const start = this.matchingsInView.length;
+    const end = start + matchingBatchSize;
+    const matchingsToPush = this.matchings.slice(start, end);
+    this.matchingsInView.push(...matchingsToPush);
   }
 
   private _initAdjustingStylesOnScroll(list?: ElementRef, detail?: ElementRef): void {

@@ -83,10 +83,18 @@ clean-db:
 lint:
 	pylint txmatching
 
-build-fe:
-	cd txmatching/web/frontend; npm install && npm run build
-
 test:
 	cd tests; export PYTHONPATH=../; python -m unittest discover -s . -t .
 
 check: lint test
+
+build-fe:
+	cd txmatching/web/frontend; npm install && npm run build
+
+build-fe-prod:
+	cd txmatching/web/frontend; npm install && npm run build-prod
+
+run-fe:
+	cd txmatching/web/frontend; npm run serve
+
+rebuild: conda-update build-fe

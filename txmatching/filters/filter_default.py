@@ -36,12 +36,6 @@ class FilterDefault(FilterBase):
                 max([sequence.length for sequence in sequences], default=0) > self._max_sequence_length:
             return False
 
-        # TODO update to get even non-maximal matchings, i.e. with 1 country only
-        #  https://trello.com/c/HL4xunKV/132-solver-does-not-return-trivial-matchings
-        if max([transplant_round.country_count for transplant_round in
-                sequences + cycles]) > self._max_number_of_distinct_countries_in_round:
-            return False
-
         for patient_db_id in self._required_patients:
             if not any([transplant_round.contains_patient_db_id(patient_db_id) for transplant_round in
                         sequences + cycles]):

@@ -27,6 +27,7 @@ import { CodeComponent } from './components/code/code.component';
 import { FlagComponent } from './components/flag/flag.component';
 import { MatchingItemComponent } from './components/matching-item/matching-item.component';
 import { VarDirective } from './directives/ng-var/var.directive';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { VarDirective } from './directives/ng-var/var.directive';
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    InfiniteScrollModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

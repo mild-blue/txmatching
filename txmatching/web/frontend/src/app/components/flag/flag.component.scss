@@ -6,8 +6,10 @@
   justify-content: flex-start;
   box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
 
-  height: 16px;
-  width: 16px;
+  img {
+    height: 16px;
+    width: 16px;
+  }
 }
 
 :host {

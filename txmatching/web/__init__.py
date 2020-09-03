@@ -83,13 +83,16 @@ def create_app():
         def static_proxy(path):
             return send_from_directory('frontend/dist/frontend', path)
 
-    def enable_cors_for_local_dev():
+    def enable_cors():
         @app.after_request
         def add_headers(response):
-            # URL of testing FE, allowed only for API
-            if request.headers.get('origin') == 'http://localhost:4200' \
-                    and request.path.startswith(f'{API_VERSION}/'):
-                response.headers.add('Access-Control-Allow-Origin', 'http://localhost:4200')
+            allowed_origins = {
+                'http://localhost:4200',  # localhost development
+                'https://127.0.0.1:9090'  # proxy on staging, support for swagger
+            }
+            origin = request.headers.get('origin')
+            if origin in allowed_origins:
+                response.headers.add('Access-Control-Allow-Origin', origin)
                 response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
             return response
 
@@ -101,9 +104,8 @@ def create_app():
         configure_encryption()
         # must be registered before apis
         register_static_proxy()
-        # enable cors only if running on localhost
-        if app.config.get('IS_LOCAL_DEV'):
-            enable_cors_for_local_dev()
+        # enable cors
+        enable_cors()
         # finish configuration
         configure_apis()
         return app

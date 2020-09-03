@@ -30,6 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public user?: User;
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
+  public patients: Patient[] = [];
 
   public configIcon = faCog;
   public closeIcon = faTimes;
@@ -41,6 +42,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               private _matchingService: MatchingService,
               private _patientService: PatientService,
               private _logger: LoggerService) {
+    this.patients = this._patientService.getPatients();
   }
 
   ngOnInit(): void {
@@ -52,10 +54,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._configSubscription?.unsubscribe();
     this._matchingSubscription?.unsubscribe();
     this._patientsSubscription?.unsubscribe();
-  }
-
-  get patients(): Patient[] {
-    return this._patientService.getPatients();
   }
 
   public toggleConfiguration(): void {
@@ -87,8 +85,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(first())
     .subscribe(
       (matchings: Matching[]) => {
-        // todo: show only X at a time
-        this.matchings = matchings.slice(0, 10).map((m, key) => {
+        this.matchings = matchings.map((m, key) => {
           return { index: key + 1, ...m };
         });
         this._logger.log('Calculated matchings', [matchings]);
