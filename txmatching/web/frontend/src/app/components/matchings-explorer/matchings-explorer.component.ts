@@ -63,27 +63,33 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const tolerance = 40;
     const listElement = list.nativeElement;
-    const detailHeight = detail.nativeElement.offsetHeight;
-    const detailRectangle = detail.nativeElement.getBoundingClientRect();
+    const detailElement = detail.nativeElement;
 
-    const detailTop = detailRectangle.top + tolerance;
-    const detailBottom = detailRectangle.top + detailHeight - tolerance;
+    this._setAlignment(listElement, detailElement);
 
-    listElement.addEventListener('scroll', (e) => {
-      const active = listElement.querySelector('.active');
-      if (!active) {
-        return;
-      }
-      const activeHeight = active.offsetHeight;
-      const activeRectangle = active.getBoundingClientRect();
-
-      const activeTop = activeRectangle.top - tolerance;
-      const activeBottom = activeRectangle.top + activeHeight + tolerance;
-
-      this.activeAlignedTop = activeTop <= detailTop;
-      this.activeAlignedBottom = activeBottom >= detailBottom;
+    listElement.addEventListener('scroll', () => {
+      this._setAlignment(listElement, detailElement);
     });
+  }
+
+  private _setAlignment(listElement: HTMLElement, detailItem: HTMLElement): void {
+    const activeItem: HTMLElement | null = listElement.querySelector('.active');
+    if (!activeItem) {
+      return;
+    }
+
+    const tolerance = 60;
+    const detailClientRect = detailItem.getBoundingClientRect();
+    const activeItemClientRect = activeItem.getBoundingClientRect();
+
+    const activeTop = activeItemClientRect.top - tolerance;
+    const activeBottom = activeItemClientRect.top + activeItem.offsetHeight + tolerance;
+
+    const detailTop = detailClientRect.top + tolerance;
+    const detailBottom = detailClientRect.top + detailItem.offsetHeight - tolerance;
+
+    this.activeAlignedTop = activeTop <= detailTop;
+    this.activeAlignedBottom = activeBottom >= detailBottom;
   }
 }
