@@ -3,10 +3,6 @@
 // CONTAINER
 $container-max-width: 1200px;
 
-// PADDING
-$padding-x: 30px;
-$padding-y: 30px;
-
 // BORDER
 $border-color: $brand-grey-dark;
 $border-radius: 6px;
@@ -28,3 +24,8 @@ $font-weight: 300;
 $body-color: $black;
 $body-color--secondary: $gray-400;
 $body-bg: $gray-100;
+
+// SPACING
+$padding-x: 30px;
+$padding-y: 30px;
+$item-gap: $box-shadow--wide-size;

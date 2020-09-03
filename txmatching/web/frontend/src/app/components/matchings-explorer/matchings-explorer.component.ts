@@ -30,10 +30,6 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this._initAdjustingStylesOnScroll(this.list, this.detail);
-
-    if (this.activeMatching) {
-      this._scrollToElement(this.activeMatching.index);
-    }
   }
 
   public setActive(matching: MatchingView | undefined): void {
@@ -44,9 +40,9 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
   }
 
   private _scrollToElement(id: number): void {
-    const focusedElement = document.getElementById(`matching-${id}`);
+    const activeElement = document.getElementById(`matching-${id}`);
 
-    if (!this.list || !focusedElement) {
+    if (!this.list || !activeElement) {
       return;
     }
 
@@ -54,7 +50,7 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
 
     // wait for element to have .active class
     setTimeout(() => {
-      scrollable.scrollTop = focusedElement.offsetTop;
+      scrollable.scrollTop = activeElement.offsetTop;
     }, 0); // lol yes, 0ms is enough
 
     if (this.detail) {
@@ -70,7 +66,7 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
     const listElement = list.nativeElement;
     const detailElement = detail.nativeElement;
 
-    listElement.addEventListener('scroll', () => {
+    listElement.addEventListener('scroll', (event: WheelEvent) => {
       this._setAlignment(listElement, detailElement);
     });
   }
@@ -81,15 +77,18 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const tolerance = 60;
+    const style = getComputedStyle(activeItem);
+    const topOffset = Number(style.marginTop.replace(/\D+/g, ''));
+    const bottomOffset = Number(style.marginBottom.replace(/\D+/g, ''));
+
     const detailClientRect = detailItem.getBoundingClientRect();
     const activeItemClientRect = activeItem.getBoundingClientRect();
 
-    const activeTop = activeItemClientRect.top - tolerance;
-    const activeBottom = activeItemClientRect.top + activeItem.offsetHeight + tolerance;
+    const activeTop = activeItemClientRect.top - topOffset;
+    const activeBottom = activeItemClientRect.top + activeItem.offsetHeight + bottomOffset;
 
-    const detailTop = detailClientRect.top + tolerance;
-    const detailBottom = detailClientRect.top + detailItem.offsetHeight - tolerance;
+    const detailTop = detailClientRect.top + topOffset;
+    const detailBottom = detailClientRect.top + detailItem.offsetHeight - bottomOffset;
 
     this.activeAlignedTop = activeTop <= detailTop;
     this.activeAlignedBottom = activeBottom >= detailBottom;

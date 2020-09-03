@@ -6,7 +6,7 @@
   padding: $padding-y $padding-x;
   position: relative;
   filter: drop-shadow(0 $box-shadow-size $box-shadow-color);
-  margin: $border-radius--wide $border-radius--wide $border-radius--wide 0;
+  margin: $item-gap;
 
   h2 {
     margin-top: 0;
@@ -48,9 +48,19 @@
     border-radius: $border-radius--wide 0 0 $border-radius--wide;
 
     margin-right: 0;
+    margin-left: 0;
+
     z-index: 3;
 
     pointer-events: none;
+
+    &.first {
+      margin-top: 0;
+
+      &::before {
+        display: none;
+      }
+    }
 
     &::after, &::before {
       content: "";

@@ -12,7 +12,6 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding: 0 0 calc(#{$padding-y} / 2) 0;
 
     .config {
       button {

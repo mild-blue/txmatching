@@ -1,5 +1,6 @@
 <div *ngIf="matching"
      [class.active]="isActive"
+     [class.first]="matching.index === 1"
      [id]="'matching-' + matching.index"
      class="matching-item">
 

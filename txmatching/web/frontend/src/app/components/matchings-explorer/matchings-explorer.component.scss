@@ -9,9 +9,11 @@
   height: 100%;
   display: flex;
 
-  border-radius: $border-radius--wide;
   overflow-y: hidden;
   overflow-x: visible;
+
+  border-radius: $border-radius--wide;
+  box-shadow: $box-shadow--wide;
 
   @include media-breakpoint-down(md) {
     flex-direction: column;
@@ -20,7 +22,6 @@
   .list, .detail {
     position: absolute;
     height: 100%;
-    padding: $border-radius--wide;
 
     @include media-breakpoint-down(md) {
       position: relative;
@@ -31,11 +32,8 @@
     width: 40%;
     max-width: 800px;
     left: 0;
-    padding-left: 0;
-    padding-right: 0;
 
     &-inner {
-      padding-left: $box-shadow--wide-size;
       height: 100%;
       overflow-y: scroll;
       scroll-behavior: smooth;
@@ -45,19 +43,19 @@
     &::before, &::after {
       position: absolute;
       content: '';
-      height: $box-shadow--wide-size;
+      height: $item-gap;
       width: 100%;
       left: 0;
       z-index: 1;
     }
 
     &::before {
-      top: $box-shadow--wide-size;
+      top: 0;
       background: linear-gradient($body-bg, rgba($body-bg, 0));
     }
 
     &::after {
-      bottom: $box-shadow--wide-size;
+      bottom: 0;
       background: linear-gradient(rgba($body-bg, 0), $body-bg);
     }
 
@@ -76,13 +74,15 @@
     width: 60%;
     min-width: calc(100% - 800px);
     right: 0;
-    padding-left: 0;
     z-index: 2;
 
     &-inner {
       background: $white;
-      border-radius: $border-radius--wide;
       box-shadow: $box-shadow--wide;
+
+      border-top-left-radius: $border-radius--wide;
+      border-bottom-left-radius: $border-radius--wide;
+
       height: 100%;
       overflow-y: scroll;
 
