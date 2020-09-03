@@ -1,31 +1,33 @@
+@import "../variables";
+
 form {
   input, textarea {
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
     padding: 10px 15px;
     overflow: hidden;
-    font-family: var(--font-family);
-    font-size: var(--font-size);
+    font-family: $font-family;
+    font-size: $font-size;
 
     &:focus {
       outline: none;
-      box-shadow: 0 0 5px rgba(var(--color-accent-rgb), 0.5);
-      border: 1px solid var(--color-accent);
+      box-shadow: 0 0 5px rgba($accent, 0.5);
+      border: 1px solid $accent;
     }
   }
 
   label {
     &.error {
       input {
-        border-color: var(--alert-error-border-color);
-        box-shadow: 0 0 5px var(--alert-error-bg);
+        border-color: rgba($danger, 0.5);
+        box-shadow: 0 0 5px rgba($danger, 0.5);
       }
     }
 
     &.success {
       input {
-        border-color: var(--alert-success-border-color);
-        box-shadow: 0 0 5px var(--alert-success-bg);
+        border-color: rgba($success, 0.5);
+        box-shadow: 0 0 5px rgba($success, 0.5);
       }
     }
   }

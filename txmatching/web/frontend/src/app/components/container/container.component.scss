@@ -1,6 +1,8 @@
+@import "../../../styles/variables";
+
 .container {
-  padding: 0 var(--padding);
+  padding: 0 $padding-x;
   width: 100%;
-  max-width: 1200px;
+  max-width: $container-max-width;
   margin: auto;
 }

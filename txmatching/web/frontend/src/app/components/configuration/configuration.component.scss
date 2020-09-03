@@ -1,4 +1,5 @@
 @import "../../../styles/breakpoints";
+@import "../../../styles/variables";
 
 .configuration {
   height: 0;
@@ -6,7 +7,7 @@
 
   &.open {
     height: auto;
-    margin-bottom: calc(var(--padding) * 2);
+    margin-bottom: calc(#{$padding-y} * 2);
 
     .configuration__box {
       opacity: 1;
@@ -25,7 +26,7 @@
   &__boxes {
     display: flex;
     width: 100%;
-    padding: var(--padding);
+    padding: $padding-y $padding-x;
 
     @include media-breakpoint-down(lg) {
       flex-direction: column;
@@ -48,9 +49,9 @@
   }
 
   &__box {
-    border-radius: var(--border-radius);
-    background: var(--brand-white);
-    box-shadow: var(--box-shadow);
+    border-radius: $border-radius;
+    background: $white;
+    box-shadow: $box-shadow;
     flex-grow: 1;
     flex-basis: 50%;
     padding: 20px;
@@ -67,17 +68,17 @@
   .checkboxes {
 
     @include media-breakpoint-down(lg) {
-      margin-right: var(--padding);
+      margin-right: $padding-x;
     }
 
     @include media-breakpoint-down(md) {
       margin-right: 0;
-      margin-bottom: var(--padding);
+      margin-bottom: $padding-y;
     }
   }
 
   .inputs {
-    margin: 0 var(--padding);
+    margin: 0 $padding-x;
 
     label {
       display: flex;
@@ -113,7 +114,7 @@
     }
 
     @include media-breakpoint-down(lg) {
-      margin-top: var(--padding);
+      margin-top: $padding-y;
     }
 
     &-row {

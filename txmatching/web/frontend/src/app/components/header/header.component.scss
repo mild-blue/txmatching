@@ -1,10 +1,11 @@
 @import "../../../styles/breakpoints";
+@import "../../../styles/variables";
 
 header {
   display: flex;
   align-items: center;
   height: 70px;
-  padding: 0 var(--padding);
+  padding: 0 $padding-x;
 
   @include media-breakpoint-down(sm) {
     height: auto;
@@ -35,10 +36,10 @@ header {
 
   .menu {
     flex-grow: 1;
-    padding: 0 calc(var(--padding) * 3);
+    padding: 0 calc(#{$padding-x} * 3);
 
     @include media-breakpoint-down(sm) {
-      padding: var(--padding-x) 0;
+      padding: $padding-x 0;
     }
 
     ul {
@@ -56,7 +57,7 @@ header {
         font-weight: 600;
 
         &.active {
-          color: var(--color-primary);
+          color: $primary;
         }
       }
     }
@@ -71,7 +72,7 @@ header {
     }
 
     button {
-      color: var(--text-color-secondary);
+      color: $text-color--secondary;
     }
 
     p {
@@ -88,24 +89,22 @@ header {
         text-align: center;
 
         a {
-          border-radius: var(--border-radius);
-          color: var(--brand-white);
-          background-color: var(--button-bg);
+          border-radius: $border-radius;
+          color: $white;
+          background-color: $primary;
 
           padding: 5px 10px;
           margin-top: 10px;
           font-size: 14px;
           font-weight: 600;
 
-          &:hover {
-            background-color: var(--button-hover-bg);
-          }
+          transition: background-color 0.5s ease;
 
+          &:hover {
+            background-color: darken($primary, 10%);
+          }
         }
       }
-
-
     }
   }
-
 }

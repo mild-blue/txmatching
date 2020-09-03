@@ -1,5 +1,7 @@
+@import "../../../styles/variables";
+
 .login {
-  padding: var(--padding);
+  padding: $padding-y $padding-x;
   height: 100vh;
 
   display: flex;
@@ -20,9 +22,9 @@
     padding: 30px;
     width: 350px;
     max-width: 100%;
-    border-radius: var(--border-radius--wide);
-    box-shadow: var(--box-shadow);
-    background: var(--brand-white);
+    border-radius: $border-radius--wide;
+    box-shadow: $box-shadow--wide;
+    background: $white;
 
     label {
       display: flex;

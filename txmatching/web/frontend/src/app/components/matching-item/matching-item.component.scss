@@ -1,10 +1,9 @@
-@import "../../../styles/variables/properties";
-@import "../../../styles/variables/colors";
+@import "../../../styles/variables";
 
 .matching-item {
 
   transition: background-color 0.5s ease;
-  padding: var(--padding);
+  padding: $padding-y $padding-x;
   position: relative;
   z-index: 1;
   filter: drop-shadow(0 $box-shadow-size $box-shadow--color);
@@ -22,16 +21,16 @@
     margin: 20px;
     cursor: pointer;
 
-    background-color: var(--brand-white);
-    border-radius: var(--border-radius--wide);
+    background-color: $white;
+    border-radius: $border-radius--wide;
 
     &::after {
       top: 0;
       left: 0;
       z-index: 2;
-      border-radius: var(--border-radius--wide);
+      border-radius: $border-radius--wide;
       overflow: hidden;
-      background: #fff;
+      background: $white;
       opacity: 0.5;
       width: 100%;
       height: 100%;
@@ -46,11 +45,11 @@
   }
 
   &.active {
-    background-color: var(--brand-white);
-    border-radius: var(--border-radius--wide) 0 0 var(--border-radius--wide);
+    background-color: $white;
+    border-radius: $border-radius--wide 0 0 $border-radius--wide;
 
     margin: 0;
-    padding: calc(var(--padding) + 20px);
+    padding: calc(#{$padding-x} + 20px);
 
     pointer-events: none;
 
@@ -60,25 +59,21 @@
       background-color: transparent;
       right: 0;
 
-      height: calc(var(--border-radius--wide) * 2);
-      width: var(--border-radius--wide);
+      height: calc(#{$border-radius--wide} * 2);
+      width: $border-radius--wide;
     }
 
     &::before {
-      top: calc(var(--border-radius--wide) * -2);
-      border-bottom-right-radius: var(--border-radius--wide);
-      box-shadow: 0 calc(var(--border-radius--wide)) 0 0 #ffffff;
+      top: calc(#{$border-radius--wide} * -2);
+      border-bottom-right-radius: $border-radius--wide;
+      box-shadow: 0 calc(#{$border-radius--wide}) 0 0 #ffffff;
     }
 
     &::after {
-      bottom: calc(var(--border-radius--wide) * -2);
-      border-top-right-radius: var(--border-radius--wide);
-      box-shadow: 0 calc(-1 * var(--border-radius--wide)) 0 0 #ffffff;
+      bottom: calc(#{$border-radius--wide} * -2);
+      border-top-right-radius: $border-radius--wide;
+      box-shadow: 0 calc(-1 * #{$border-radius--wide}) 0 0 #ffffff;
     }
-  }
-
-  app-matching-header {
-    font-size: 16px;
   }
 
   ul {
@@ -98,7 +93,7 @@
       &::before {
         content: '|';
         margin: 0 5px;
-        color: var(--text-color-secondary);
+        color: $text-color--secondary;
       }
     }
   }

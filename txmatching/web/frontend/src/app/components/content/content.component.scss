@@ -1,9 +1,11 @@
+@import "../../../styles/variables";
+
 .content {
   flex-grow: 1;
-  background: var(--brand-white);
-  border-radius: var(--border-radius--wide) var(--border-radius--wide) 0 0;
+  background: $white;
+  border-radius: $border-radius--wide $border-radius--wide 0 0;
   overflow: hidden;
-  box-shadow: var(--box-shadow--wide);
+  box-shadow: $box-shadow--wide;
 
   display: flex;
   flex-direction: column;

@@ -1,3 +1,5 @@
+@import "../../../styles/variables";
+
 :host {
   flex-grow: 1;
   display: flex;
@@ -10,11 +12,11 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding: 0 0 calc(var(--padding) / 2) 0;
+    padding: 0 0 calc(#{$padding-y} / 2) 0;
 
     .config {
       button {
-        color: var(--text-color);
+        color: $text-color;
         opacity: 0.5;
         transition: opacity 0.5s ease;
 
@@ -46,6 +48,6 @@
 
   h3 {
     text-align: center;
-    padding: var(--padding);
+    padding: $padding-y $padding-x;
   }
 }
