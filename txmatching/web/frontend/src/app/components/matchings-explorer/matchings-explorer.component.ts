@@ -21,9 +21,6 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
   public activeAlignedTop: boolean = true;
   public activeAlignedBottom: boolean = false;
 
-  constructor() {
-  }
-
   ngOnInit(): void {
     this.activeMatching = this.matchings[0] ?? this.activeMatching;
   }
@@ -36,6 +33,7 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
     this.activeMatching = matching;
     if (matching && matching.index) {
       this._scrollToElement(matching.index);
+      this.activeAlignedTop = matching.index === 1;
     }
   }
 
@@ -77,18 +75,24 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const { marginTop, marginBottom } = getComputedStyle(activeItem);
-    const topOffset = Number(marginTop.replace(/\D+/g, ''));
-    const bottomOffset = Number(marginBottom.replace(/\D+/g, ''));
+    const {
+      borderTopLeftRadius,
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+      borderTopRightRadius
+    } = getComputedStyle(activeItem);
+    const offsetValue = borderTopLeftRadius || borderBottomLeftRadius || borderBottomRightRadius || borderTopRightRadius;
+    const topOffset = Number(offsetValue.replace(/\D+/g, ''));
+    const bottomOffset = Number(offsetValue.replace(/\D+/g, ''));
 
     const detailClientRect = detailItem.getBoundingClientRect();
     const activeItemClientRect = activeItem.getBoundingClientRect();
 
-    const activeTop = activeItemClientRect.top - topOffset * 2;
-    const activeBottom = activeItemClientRect.top + activeItem.offsetHeight + bottomOffset * 2;
+    const activeTop = activeItemClientRect.top - topOffset;
+    const activeBottom = activeItemClientRect.top + activeItem.offsetHeight + bottomOffset;
 
-    const detailTop = detailClientRect.top + topOffset * 2;
-    const detailBottom = detailClientRect.top + detailItem.offsetHeight - bottomOffset * 2;
+    const detailTop = detailClientRect.top + topOffset;
+    const detailBottom = detailClientRect.top + detailItem.offsetHeight - bottomOffset;
 
     this.activeAlignedTop = activeTop <= detailTop;
     this.activeAlignedBottom = activeBottom >= detailBottom;
