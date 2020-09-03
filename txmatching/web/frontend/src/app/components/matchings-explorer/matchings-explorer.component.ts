@@ -1,9 +1,7 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { matchingBatchSize, MatchingView } from '@app/model/Matching';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { MatchingView } from '@app/model/Matching';
 import { Patient } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
+import { matchingBatchSize, MatchingView } from '@app/model/Matching';
 
 @Component({
   selector: 'app-matchings-explorer',
