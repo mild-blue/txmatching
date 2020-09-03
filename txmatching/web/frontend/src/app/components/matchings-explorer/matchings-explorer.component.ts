@@ -36,6 +36,10 @@ export class MatchingsExplorerComponent implements OnInit {
     this._addMatchingsToView();
   }
 
+  public trackMatchingItem(index: number, matching: MatchingView) {
+    return matching.index;
+  }
+
   private _scrollToElement(id: number): void {
     const focusedElement = document.getElementById(`matching-${id}`);
 

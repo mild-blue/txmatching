@@ -30,6 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public user?: User;
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
+  public patients: Patient[] = [];
 
   public configIcon = faCog;
   public closeIcon = faTimes;
@@ -41,6 +42,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               private _matchingService: MatchingService,
               private _patientService: PatientService,
               private _logger: LoggerService) {
+    this.patients = this._patientService.getPatients();
   }
 
   ngOnInit(): void {
@@ -52,10 +54,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._configSubscription?.unsubscribe();
     this._matchingSubscription?.unsubscribe();
     this._patientsSubscription?.unsubscribe();
-  }
-
-  get patients(): Patient[] {
-    return this._patientService.getPatients();
   }
 
   public toggleConfiguration(): void {
