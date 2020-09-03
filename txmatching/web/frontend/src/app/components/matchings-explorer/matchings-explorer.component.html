@@ -6,7 +6,7 @@
          class="list"
          infinite-scroll>
       <app-matching-item (click)="setActive(matching)"
-                         *ngFor="let matching of matchingsInView"
+                         *ngFor="let matching of matchingsInView; trackBy: trackMatchingItem"
                          [isActive]="matching === activeMatching"
                          [configuration]="configuration"
                          [matching]="matching"
