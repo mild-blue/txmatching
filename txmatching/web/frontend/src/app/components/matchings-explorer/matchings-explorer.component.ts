@@ -18,18 +18,22 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
   @Input() configuration?: AppConfiguration;
 
   public activeMatching?: MatchingView;
-  public activeAlignedTop: boolean = false;
+  public activeAlignedTop: boolean = true;
   public activeAlignedBottom: boolean = false;
 
   constructor() {
   }
 
   ngOnInit(): void {
-    this.setActive(this.matchings.length ? this.matchings[0] : undefined);
+    this.activeMatching = this.matchings[0] ?? this.activeMatching;
   }
 
   ngAfterViewInit(): void {
     this._initAdjustingStylesOnScroll(this.list, this.detail);
+
+    if (this.activeMatching) {
+      this._scrollToElement(this.activeMatching.index);
+    }
   }
 
   public setActive(matching: MatchingView | undefined): void {
@@ -65,8 +69,6 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
 
     const listElement = list.nativeElement;
     const detailElement = detail.nativeElement;
-
-    this._setAlignment(listElement, detailElement);
 
     listElement.addEventListener('scroll', () => {
       this._setAlignment(listElement, detailElement);
