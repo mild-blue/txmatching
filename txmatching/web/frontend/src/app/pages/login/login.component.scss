@@ -34,11 +34,13 @@
       span {
         flex-grow: 1;
         flex-basis: calc(100% / 3);
+        width: calc(100% / 3);
       }
 
       input {
         flex-grow: 2;
         flex-basis: calc(100% / 3 * 2);
+        width: calc(100% / 3 * 2);
       }
     }
   }
