@@ -48,7 +48,8 @@ $BODY$
     LANGUAGE plpgsql;
 
 
-CREATE TABLE app_user (
+CREATE TABLE app_user
+(
     id         BIGSERIAL   NOT NULL,
     email      TEXT        NOT NULL, -- serves as username
     pass_hash  TEXT        NOT NULL,
@@ -61,7 +62,8 @@ CREATE TABLE app_user (
 );
 
 
-CREATE TABLE patient (
+CREATE TABLE recipient
+(
     id             BIGSERIAL    NOT NULL,
     medical_id     TEXT         NOT NULL,
     country        COUNTRY      NOT NULL,
@@ -73,48 +75,56 @@ CREATE TABLE patient (
     created_at     TIMESTAMPTZ  NOT NULL,
     updated_at     TIMESTAMPTZ  NOT NULL,
     deleted_at     TIMESTAMPTZ,
-    CONSTRAINT pk_patient_id PRIMARY KEY (id),
-    CONSTRAINT uq_medical_id UNIQUE (medical_id)
+    CONSTRAINT pk_recipient_id PRIMARY KEY (id),
+    CONSTRAINT uq_recipient_medical_id UNIQUE (medical_id)
 );
 
-CREATE TABLE patient_acceptable_blood (
+CREATE TABLE donor
+(
+    id             BIGSERIAL    NOT NULL,
+    medical_id     TEXT         NOT NULL,
+    recipient_id   BIGINT,
+    country        COUNTRY      NOT NULL,
+    patient_type   PATIENT_TYPE NOT NULL,
+    blood          BLOOD_TYPE   NOT NULL,
+    hla_antigens   JSONB        NOT NULL, -- JSON
+    hla_antibodies JSONB        NOT NULL, -- JSON
+    active         BOOL         NOT NULL, -- assume some patients fall out of the set
+    created_at     TIMESTAMPTZ  NOT NULL,
+    updated_at     TIMESTAMPTZ  NOT NULL,
+    deleted_at     TIMESTAMPTZ,
+    CONSTRAINT pk_donor_id PRIMARY KEY (id),
+    CONSTRAINT uq_donor_medical_id UNIQUE (medical_id),
+    CONSTRAINT fk_donor_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient (id) ON DELETE CASCADE ON UPDATE CASCADE
+
+);
+
+CREATE TABLE recipient_acceptable_blood
+(
     id         BIGSERIAL   NOT NULL,
-    patient_id BIGINT      NOT NULL,
+    recipient_id BIGINT      NOT NULL,
     blood_type BLOOD_TYPE  NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
-    CONSTRAINT pk_patient_acceptable_blood_id PRIMARY KEY (id),
-    CONSTRAINT fk_patient_acceptable_blood_patient_id_patient_id FOREIGN KEY (patient_id) REFERENCES patient(id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT pk_recipient_acceptable_blood_id PRIMARY KEY (id),
+    CONSTRAINT fk_recipient_acceptable_blood_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-
-
-CREATE TABLE patient_pair (
-    id           BIGSERIAL   NOT NULL,
-    recipient_id BIGINT      NOT NULL,
-    donor_id     BIGINT      NOT NULL,
-    created_at   TIMESTAMPTZ NOT NULL,
-    updated_at   TIMESTAMPTZ NOT NULL,
-    deleted_at   TIMESTAMPTZ,
-    CONSTRAINT pk_patient_pair_id PRIMARY KEY (id),
-    CONSTRAINT fk_patient_pair_recipient_id_patient_id FOREIGN KEY (recipient_id) REFERENCES patient(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT fk_patient_pair_donor_id_patient_id FOREIGN KEY (donor_id) REFERENCES patient(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT uq_patient_pair_recipient_id_donor_id UNIQUE (recipient_id, donor_id)
-);
-
-CREATE TABLE config (
+CREATE TABLE config
+(
     id         BIGSERIAL   NOT NULL,
-    parameters JSONB       NOT NULL,                                                             -- JSON
+    parameters JSONB       NOT NULL,                                                              -- JSON
     created_by BIGINT      NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
     CONSTRAINT pk_config_id PRIMARY KEY (id),
-    CONSTRAINT fk_config_created_by_app_user_id FOREIGN KEY (created_by) REFERENCES app_user(id) -- this is also valid for pairing_result
+    CONSTRAINT fk_config_created_by_app_user_id FOREIGN KEY (created_by) REFERENCES app_user (id) -- this is also valid for pairing_result
 );
 
-CREATE TABLE pairing_result (
+CREATE TABLE pairing_result
+(
     id                   BIGSERIAL   NOT NULL,
     config_id            BIGINT      NOT NULL,
     calculated_matchings JSONB       NOT NULL, -- JSON
@@ -124,19 +134,7 @@ CREATE TABLE pairing_result (
     updated_at           TIMESTAMPTZ NOT NULL,
     deleted_at           TIMESTAMPTZ,
     CONSTRAINT pk_pairing_result_id PRIMARY KEY (id),
-    CONSTRAINT fk_pairing_result_config_id_config_id FOREIGN KEY (config_id) REFERENCES config(id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE pairing_result_patient (
-    id                BIGSERIAL   NOT NULL,
-    pairing_result_id BIGINT      NOT NULL,
-    patient_id        BIGINT      NOT NULL,
-    created_at        TIMESTAMPTZ NOT NULL,
-    updated_at        TIMESTAMPTZ NOT NULL,
-    deleted_at        TIMESTAMPTZ,
-    CONSTRAINT pk_pairing_result_patient_id PRIMARY KEY (id),
-    CONSTRAINT fk_pairing_result_patient_pairing_result_id FOREIGN KEY (pairing_result_id) REFERENCES pairing_result(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT fk_pairing_result_patient_patient_id FOREIGN KEY (patient_id) REFERENCES patient(id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT fk_pairing_result_config_id_config_id FOREIGN KEY (config_id) REFERENCES config (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DO

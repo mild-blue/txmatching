@@ -2,8 +2,7 @@ from typing import List, Optional, Union
 
 from txmatching.config.configuration import (Configuration,
                                              DonorRecipientScore)
-from txmatching.patients.donor import Donor
-from txmatching.patients.recipient import Recipient
+from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import (TRANSPLANT_IMPOSSIBLE,
                                                 AdditiveScorer)
 from txmatching.utils.blood_groups import blood_groups_compatible
@@ -63,7 +62,7 @@ class HLAAdditiveScorer(AdditiveScorer):
             return TRANSPLANT_IMPOSSIBLE
 
         # Donor must have blood group that is acceptable for recipient
-        if donor.parameters.blood_group not in recipient.parameters.acceptable_blood_groups:
+        if donor.parameters.blood_group not in recipient.acceptable_blood_groups:
             return TRANSPLANT_IMPOSSIBLE
 
         # Recipient can't have antibodies that donor has antigens for

@@ -1,8 +1,7 @@
 from typing import List, Union
 
 from txmatching.config.configuration import DonorRecipientScore, Configuration
-from txmatching.patients.donor import Donor
-from txmatching.patients.recipient import Recipient
+from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.scorer_base import ScorerBase
 from txmatching.solvers.matching.matching import Matching
 

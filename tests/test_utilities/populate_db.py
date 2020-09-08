@@ -1,5 +1,5 @@
 from txmatching.database.services.app_user_management import persist_user
-from txmatching.database.services.patient_service import save_patients
+from txmatching.database.services.patient_service import save_all_patients_from_excel
 from txmatching.database.sql_alchemy_schema import AppUser
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.web import create_app
@@ -26,5 +26,5 @@ if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         patients = parse_excel_data('data.xlsx')
-        save_patients(patients)
+        save_all_patients_from_excel(patients)
         add_users()
