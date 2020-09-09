@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 
 from txmatching.database.services.app_user_management import get_app_user_by_email, persist_user, \
     get_app_user_by_id, update_password_for_user
-from txmatching.database.sql_alchemy_schema import AppUser
+from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.web.auth.crypto import password_matches_hash, encode_auth_token, decode_auth_token, encode_password
 
 logger = logging.getLogger(__name__)
@@ -60,7 +60,7 @@ def register_user(email: str, password: str, role: str) -> Tuple[Optional[str], 
     if user:
         return None, 'The e-mail address is already in use.'
     try:
-        user = AppUser(
+        user = AppUserModel(
             email=email,
             pass_hash=encode_password(password),
             role=role

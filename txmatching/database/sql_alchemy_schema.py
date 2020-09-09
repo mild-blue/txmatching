@@ -85,7 +85,7 @@ class RecipientAcceptableBloodModel(db.Model):
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
 
-class AppUser(db.Model):
+class AppUserModel(db.Model):
     __tablename__ = 'app_user'
     __table_args__ = {'extend_existing': True}
 

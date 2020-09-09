@@ -16,7 +16,8 @@ from txmatching.patients.patient_parameters import (HLAAntibodies,
                                                     PatientParameters)
 
 
-def donor_excel_dto_to_donor_model(patient: PatientExcelDTO, recipient_id: Optional[int]) -> DonorModel:
+def donor_excel_dto_to_donor_model(patient: PatientExcelDTO, recipient: Optional[RecipientModel]) -> DonorModel:
+    maybe_recipient_id = recipient.id if recipient is not None else None
     donor_model = DonorModel(
         medical_id=patient.medical_id,
         country=patient.parameters.country_code,
@@ -24,7 +25,7 @@ def donor_excel_dto_to_donor_model(patient: PatientExcelDTO, recipient_id: Optio
         hla_antigens=dataclasses.asdict(patient.parameters.hla_antigens),
         hla_antibodies=dataclasses.asdict(patient.parameters.hla_antibodies),
         active=True,
-        recipient_id=recipient_id,
+        recipient_id=maybe_recipient_id,
         patient_type=PatientType.DONOR
     )
     return donor_model
@@ -50,13 +51,15 @@ def save_all_patients_from_excel(donors_recipients: Tuple[List[DonorExcelDTO], L
     DonorModel.query.delete()
     PairingResultModel.query.delete()
 
-    recipient_models = [recipient_excel_dto_to_recipient_model(recipient) if recipient is not None else None for
-                        recipient in donors_recipients[1]]
+    maybe_recipient_models = [recipient_excel_dto_to_recipient_model(recipient) if recipient is not None else None for
+                              recipient in donors_recipients[1]]
+    recipient_models = [recipient_model for recipient_model in maybe_recipient_models if
+                        recipient_model is not None]
     db.session.add_all(recipient_models)
     db.session.commit()
 
-    donor_models = [donor_excel_dto_to_donor_model(donor_dto, recipient_model.id) for donor_dto, recipient_model in
-                    zip(donors_recipients[0], recipient_models)]
+    donor_models = [donor_excel_dto_to_donor_model(donor_dto, maybe_recipient_model) for
+                    donor_dto, maybe_recipient_model in zip(donors_recipients[0], maybe_recipient_models)]
     db.session.add_all(donor_models)
     db.session.commit()
 
