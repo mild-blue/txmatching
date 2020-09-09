@@ -15,8 +15,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.fill_db_with_patients_and_results()
         configuration = Configuration(
             manual_donor_recipient_scores=[
-                ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=4, score=1.0)],
-            require_new_donor_having_better_match_in_compatibility_index=False)
+                ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=4, score=1.0)])
         save_configuration_as_current(configuration)
         self.assertEqual(1, len(list(solve_from_db())))
 

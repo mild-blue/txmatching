@@ -61,18 +61,20 @@ CREATE TABLE app_user
 );
 
 
+
 CREATE TABLE recipient
 (
-    id             BIGSERIAL   NOT NULL,
-    medical_id     TEXT        NOT NULL,
-    country        COUNTRY     NOT NULL,
-    blood          BLOOD_TYPE  NOT NULL,
-    hla_antigens   JSONB       NOT NULL, -- JSON
-    hla_antibodies JSONB       NOT NULL, -- JSON
-    active         BOOL        NOT NULL, -- assume some patients fall out of the set
-    created_at     TIMESTAMPTZ NOT NULL,
-    updated_at     TIMESTAMPTZ NOT NULL,
-    deleted_at     TIMESTAMPTZ,
+    id                     BIGSERIAL    NOT NULL,
+    medical_id             TEXT         NOT NULL,
+    country                COUNTRY      NOT NULL,
+    blood                  BLOOD_TYPE   NOT NULL,
+    hla_antigens           JSONB        NOT NULL, -- JSON
+    hla_antibodies         JSONB        NOT NULL, -- JSON
+    active                 BOOL         NOT NULL, -- assume some patients fall out of the set
+    recipient_requirements JSONB        NOT NULL, -- JSON
+    created_at             TIMESTAMPTZ  NOT NULL,
+    updated_at             TIMESTAMPTZ  NOT NULL,
+    deleted_at             TIMESTAMPTZ,
     CONSTRAINT pk_recipient_id PRIMARY KEY (id),
     CONSTRAINT uq_recipient_medical_id UNIQUE (medical_id)
 );
