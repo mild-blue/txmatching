@@ -28,6 +28,11 @@
             "aot": true,
             "assets": [
               "src/favicon.ico",
+              "src/apple-touch-icon.png",
+              "src/favicon-16x16.png",
+              "src/favicon-32x32.png",
+              "src/safari-pinned-tab.svg",
+              "src/site.webmanifest",
               "src/assets"
             ],
             "styles": [
