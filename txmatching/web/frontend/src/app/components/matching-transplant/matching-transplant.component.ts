@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
-import { antibodiesMultipliers, compatibleBloodGroups, Patient } from '@app/model/Patient';
+import { antibodiesMultipliers, compatibleBloodGroups, Patient, PatientList } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -16,7 +16,7 @@ export class MatchingTransplantComponent {
   private _matchingAntigens?: string[];
 
   @Input() transplant?: Transplant;
-  @Input() patients: Patient[] = [];
+  @Input() patients?: PatientList;
 
   public arrowRight = faAngleRight;
 
@@ -24,15 +24,15 @@ export class MatchingTransplantComponent {
   }
 
   get donor(): Patient | undefined {
-    if (!this._donor) {
-      this._donor = this.patients.find(p => p.medical_id === this.transplant?.donor);
+    if (!this._donor && this.patients && this.patients.donors) {
+      this._donor = this.patients.donors.find(p => p.medical_id === this.transplant?.donor);
     }
     return this._donor;
   }
 
   get recipient(): Patient | undefined {
-    if (!this._recipient) {
-      this._recipient = this.patients.find(p => p.medical_id === this.transplant?.recipient);
+    if (!this._recipient && this.patients && this.patients.recipients) {
+      this._recipient = this.patients.recipients.find(p => p.medical_id === this.transplant?.recipient);
     }
     return this._recipient;
   }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Patient, patientsLSKey } from '@app/model/Patient';
+import { PatientList, patientsLSKey } from '@app/model/Patient';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { first } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { LoggerService } from '@app/services/logger/logger.service';
 })
 export class PatientService {
 
-  private static _updateLocalStorage(patients: Patient[]) {
+  private static _updateLocalStorage(patients: PatientList) {
     sessionStorage.removeItem(patientsLSKey);
     sessionStorage.setItem(patientsLSKey, JSON.stringify(patients));
   }
@@ -19,8 +19,8 @@ export class PatientService {
               private _logger: LoggerService) {
   }
 
-  public async updatePatients(): Promise<Patient[]> {
-    const patients: Patient[] = await this._http.get<Patient[]>(
+  public async updatePatients(): Promise<PatientList> {
+    const patients: PatientList = await this._http.get<PatientList>(
       `${environment.apiUrl}/patients/`
     ).pipe(first()).toPromise();
 
@@ -28,7 +28,7 @@ export class PatientService {
     return patients;
   }
 
-  public getPatients(): Patient[] {
+  public getPatients(): PatientList {
     const localPatients = sessionStorage.getItem(patientsLSKey);
     return localPatients ? JSON.parse(localPatients) : [];
   }

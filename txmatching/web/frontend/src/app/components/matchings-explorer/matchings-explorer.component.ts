@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { Patient } from '@app/model/Patient';
+import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
 import { matchingBatchSize, MatchingView } from '@app/model/Matching';
 
@@ -14,7 +14,7 @@ export class MatchingsExplorerComponent implements OnInit, AfterViewInit {
   @ViewChild('detail') detail?: ElementRef;
 
   @Input() matchings: MatchingView[] = [];
-  @Input() patients: Patient[] = [];
+  @Input() patients?: PatientList;
   @Input() configuration?: AppConfiguration;
 
   public activeMatching?: MatchingView;

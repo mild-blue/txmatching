@@ -9,7 +9,7 @@ import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
 import { Matching, MatchingView } from '@app/model/Matching';
-import { Patient } from '@app/model/Patient';
+import { PatientList } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 
@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public user?: User;
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
-  public patients: Patient[] = [];
+  public patients: PatientList;
 
   public configIcon = faCog;
   public closeIcon = faTimes;

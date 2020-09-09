@@ -1,3 +1,8 @@
+export interface PatientList {
+  donors: Patient[];
+  recipients: Patient[];
+}
+
 export interface Patient {
   db_id: number;
   medical_id: string;
