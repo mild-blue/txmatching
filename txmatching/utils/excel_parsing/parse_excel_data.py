@@ -13,7 +13,7 @@ from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntigens,
                                                     PatientParameters)
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
-from txmatching.utils.countries import AUT, CZE, IL
+from txmatching.utils.country import Country
 from txmatching.utils.hla_system.hla_table import (HLA_A, HLA_A_BROAD, HLA_B,
                                                    HLA_B_BROAD, HLA_BW, HLA_CW,
                                                    HLA_CW_BROAD, HLA_DQ,
@@ -71,13 +71,13 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
 
 def _country_code_from_id(patient_id: str) -> str:
     if re.match('[PD][0-9]{4}', patient_id):
-        return IL
+        return Country.IL
 
     if re.match('[PD][0-9]{1,2}', patient_id):
-        return CZE
+        return Country.CZE
 
     if patient_id.startswith('W-'):
-        return AUT
+        return Country.AUT
 
     raise ValueError(f'Could not assign country code to {patient_id}')
 
