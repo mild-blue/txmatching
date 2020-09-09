@@ -12,13 +12,12 @@
   top: 100%;
   right: 0;
 
-  width: 220px;
+  min-width: 250px;
   background: $white;
-  border-radius: $border-radius;
   box-shadow: $box-shadow;
 
   margin-top: 10px;
-  padding: 10px 10px 20px;
+  padding: $padding-y $padding-x;
 
   &.open {
     display: block;

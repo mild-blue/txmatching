@@ -2,18 +2,13 @@
 
 .content {
   flex-grow: 1;
-  background: $white;
-  border-radius: $border-radius--wide $border-radius--wide 0 0;
-  overflow: hidden;
-  box-shadow: $box-shadow--wide;
-
   display: flex;
   flex-direction: column;
 
+  padding: $padding-y $padding-x;
 }
 
 :host {
   flex-grow: 1;
   display: flex;
-  flex-direction: column;
 }

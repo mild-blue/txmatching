@@ -1,0 +1,30 @@
+@import "../../../styles/variables";
+
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 80px;
+  }
+
+  h2 {
+    margin: 0 0 0 $item-gap;
+    padding-left: $item-gap;
+    color: $primary;
+    line-height: 1;
+    font-size: 22px;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 3px;
+      height: 100%;
+      background: $primary;
+    }
+  }
+}

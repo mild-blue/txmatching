@@ -13,12 +13,20 @@ header {
   }
 
   .logo {
-    width: 80px;
     height: 100%;
     padding: 10px 0;
 
-    img {
+    ::ng-deep .logo {
       height: 100%;
+
+      img {
+        width: auto;
+        height: 100%;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
     }
 
     @include media-breakpoint-down(sm) {
@@ -72,12 +80,13 @@ header {
     }
 
     button {
-      color: $text-color--secondary;
+      color: $body-color--secondary;
     }
 
     p {
       text-align: center;
       font-size: 14px;
+      margin-top: 0;
     }
 
     .info {
@@ -89,16 +98,21 @@ header {
         text-align: center;
 
         a {
-          border-radius: $border-radius;
+          border-radius: $border-radius--wide;
           color: $white;
           background-color: $primary;
 
-          padding: 5px 10px;
+          padding: 0 10px;
           margin-top: 10px;
           font-size: 14px;
           font-weight: 600;
 
           transition: background-color 0.5s ease;
+
+          height: 30px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
 
           &:hover {
             background-color: darken($primary, 10%);

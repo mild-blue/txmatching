@@ -1,10 +1,10 @@
-<app-content>
-  <div class="matchings-explorer">
+<div class="matchings-explorer">
+  <div class="list">
     <div #list
+         infinite-scroll
+         class="list-inner"
          (scrolled)="onScrollDown()"
-         [scrollWindow]="false"
-         class="list"
-         infinite-scroll>
+         [scrollWindow]="false">
       <app-matching-item (click)="setActive(matching)"
                          *ngFor="let matching of matchingsInView; trackBy: trackMatchingItem"
                          [isActive]="matching === activeMatching"
@@ -12,10 +12,13 @@
                          [matching]="matching"
                          [patients]="patients"></app-matching-item>
     </div>
-    <div #detail class="detail">
-      <div *ngIf="activeMatching">
-        <app-matching-detail [matching]="activeMatching" [patients]="patients"></app-matching-detail>
-      </div>
+  </div>
+  <div #detail class="detail">
+    <div *ngIf="activeMatching"
+         [class.aligned-bottom]="activeAlignedBottom"
+         [class.aligned-top]="activeAlignedTop"
+         class="detail-inner">
+      <app-matching-detail [matching]="activeMatching" [patients]="patients"></app-matching-detail>
     </div>
   </div>
-</app-content>
+</div>

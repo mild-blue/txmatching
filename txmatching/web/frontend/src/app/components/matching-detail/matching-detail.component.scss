@@ -4,7 +4,11 @@
   padding: $padding-y $padding-x;
 
   .round {
-    margin-bottom: 30px;
+    padding-bottom: $item-gap;
+
+    h3 {
+      text-transform: uppercase;
+    }
 
     &:not(:last-child) {
       border-bottom: 1px solid $border-color;

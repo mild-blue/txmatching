@@ -3,17 +3,7 @@ $brand-red: #e2001a;
 $brand-grey-dark: #dddddd;
 $brand-grey-darker: #666666;
 
-// === APP COLORS === //
-$black: #000000;
-$white: #ffffff;
-$dark: $brand-grey-darker;
-$light: #f9f9f9;
-$primary: $brand-red;
-$accent: #007bff;
-$success: #28a745;
-$danger: #dc3545;
-
-// grays
+// === GRAYS === //
 $gray-100: #f8f9fa;
 $gray-200: #e9ecef;
 $gray-300: #dee2e6;
@@ -24,14 +14,16 @@ $gray-700: #495057;
 $gray-800: #343a40;
 $gray-900: #212529;
 
-// === BODY === //
-$text-color: $black;
-$text-color--secondary: $gray-400;
-$body-bg: $light;
+// === APP COLORS === //
+$black: #000000;
+$white: #ffffff;
+$light: #f9f9f9;
+$dark: $brand-grey-darker;
+$primary: $brand-red;
+$accent: #007bff;
+$success: #28a745;
+$danger: #dc3545;
 
-// === BORDER & SHADOW === //
-$border-color: $brand-grey-dark;
-$box-shadow--color: rgba($black, .1);
 
 // === ANTIBODIES & ANTIGENS CODES === //
 // basic code

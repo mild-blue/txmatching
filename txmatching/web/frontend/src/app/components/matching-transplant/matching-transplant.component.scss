@@ -4,21 +4,18 @@
   display: flex;
   flex-direction: column;
   border: 1px solid $border-color;
-  border-radius: $border-radius;
+  border-top: none;
+  border-radius: $border-radius--wide;
   box-shadow: $box-shadow;
-  overflow: hidden;
-  margin: 0 auto 20px;
+  margin: 0 auto $item-gap;
 
   max-width: 960px;
 
-  &:not(:last-child) {
-    margin-bottom: 20px;
-  }
-
   &-header {
     background: $gray-100;
-    border-bottom: 1px solid $border-color;
-    padding: 10px 15px;
+    border: 1px solid $border-color;
+    border-radius: $border-radius--wide;
+    padding: calc(#{$padding-y} / 2) $padding-x;
     font-weight: 700;
 
     display: flex;

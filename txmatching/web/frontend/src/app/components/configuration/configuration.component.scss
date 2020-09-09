@@ -7,7 +7,7 @@
 
   &.open {
     height: auto;
-    margin-bottom: calc(#{$padding-y} * 2);
+    margin-bottom: $item-gap;
 
     .configuration__box {
       opacity: 1;
@@ -49,12 +49,13 @@
   }
 
   &__box {
-    border-radius: $border-radius;
+    border-radius: $border-radius--wide;
     background: $white;
-    box-shadow: $box-shadow;
+    box-shadow: $box-shadow--wide;
     flex-grow: 1;
     flex-basis: 50%;
-    padding: 20px;
+    width: 50%;
+    padding: $padding-y $padding-x;
 
     opacity: 0.5;
     transform: translateY(-10px);
@@ -62,6 +63,7 @@
 
     @include media-breakpoint-down(md) {
       flex-basis: 100%;
+      width: 100%;
     }
   }
 
