@@ -1,27 +1,27 @@
 import dataclasses
 import logging
-from typing import Iterator
+from typing import Iterator, Dict
+from dacite import from_dict, Config
 
-from txmatching.config.configuration import Configuration, DonorRecipientScore, MAN_DON_REC_SCORES
+from txmatching.config.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ConfigModel
+from txmatching.utils.country import Country
 from txmatching.utils.logged_user import get_current_user_id
 
 logger = logging.getLogger(__name__)
 
 
-def config_model_to_configuration(config_model: ConfigModel) -> Configuration:
-    configuration_dict = config_model.parameters.copy()
-    if MAN_DON_REC_SCORES in configuration_dict:
-        configuration_dict[MAN_DON_REC_SCORES] = [DonorRecipientScore(**recipient_donor_score) for
-                                                  recipient_donor_score in
-                                                  configuration_dict[MAN_DON_REC_SCORES]]
-    return Configuration(**configuration_dict)
+def configuration_from_dict(config_model: Dict) -> Configuration:
+    configuration = from_dict(data_class=Configuration,
+                              data=config_model,
+                              config=Config(cast=[Country]))
+    return configuration
 
 
 def get_configurations() -> Iterator[Configuration]:
     for config_model in get_config_models():
-        yield config_model_to_configuration(config_model)
+        yield configuration_from_dict(config_model.parameters)
 
 
 def get_current_configuration() -> Configuration:
@@ -30,7 +30,7 @@ def get_current_configuration() -> Configuration:
         save_configuration_as_current(Configuration())
         return Configuration()
     else:
-        return config_model_to_configuration(current_config_model)
+        return configuration_from_dict(current_config_model.parameters)
 
 
 def save_configuration_as_current(configuration: Configuration) -> int:

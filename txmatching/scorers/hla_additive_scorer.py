@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional
 
 from txmatching.config.configuration import (Configuration)
 from txmatching.patients.patient import Donor, Recipient
@@ -17,13 +17,13 @@ class HLAAdditiveScorer(AdditiveScorer):
 
     # pylint: disable=too-many-return-statements
     # it seems that it is reasonable to want many return statements here as it is still well readable
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> Union[float, str]:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> float:
         donor_recipient_ci = compatibility_index(donor.parameters, recipient.parameters)
         related_donor_recipient_ci = compatibility_index(recipient.related_donor.parameters, recipient.parameters)
 
         # We can't do exchanges between some countries
 
-        if (donor.parameters.country_code, recipient.parameters.country_code)\
+        if (donor.parameters.country_code, recipient.parameters.country_code) \
                 in self._configuration.forbidden_country_combinations:
             return TRANSPLANT_IMPOSSIBLE
 
@@ -32,7 +32,7 @@ class HLAAdditiveScorer(AdditiveScorer):
             return TRANSPLANT_IMPOSSIBLE
 
         # Recipient can't have antibodies that donor has antigens for
-        # TODO: Use allow_low_high_res_incompatible param here
+        # TODO: https://trello.com/c/ly8SDkhZ Use allow_low_high_res_incompatible param here
         #  that if set to True would not return TRANSPLANT_IMPOSSIBLE in some cases
         is_positive_hla_crossmatch = self._is_positive_hla_crossmatch(donor, recipient)
         if is_positive_hla_crossmatch is True or is_positive_hla_crossmatch is None:

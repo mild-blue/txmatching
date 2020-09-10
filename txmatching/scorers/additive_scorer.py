@@ -1,21 +1,21 @@
-from typing import List, Union
+from typing import List
 
-from txmatching.config.configuration import DonorRecipientScore, Configuration
+from txmatching.config.configuration import Configuration, ManualDonorRecipientScore
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.scorer_base import ScorerBase
 from txmatching.solvers.matching.matching import Matching
 
-ORIGINAL_DONOR_RECIPIENT_TUPLE = "Original Donor recipient tuple"
-TRANSPLANT_IMPOSSIBLE = "Transplant Impossible"
+ORIGINAL_DONOR_RECIPIENT_TUPLE = -2.0
+TRANSPLANT_IMPOSSIBLE = -1.0
 
-ScoreMatrix = List[List[Union[float, str]]]
+ScoreMatrix = List[List[float]]
 
 
 class AdditiveScorer(ScorerBase):
-    def __init__(self, manual_donor_recipient_scores: List[DonorRecipientScore] = None):
+    def __init__(self, manual_donor_recipient_scores: List[ManualDonorRecipientScore] = None):
         if manual_donor_recipient_scores is not None:
             self._manual_donor_recipient_scores = {
-                (don_rec_score.donor_id, don_rec_score.recipient_id): don_rec_score.score
+                (don_rec_score.donor_db_id, don_rec_score.recipient_db_id): don_rec_score.score
                 for don_rec_score in manual_donor_recipient_scores}
         else:
             self._manual_donor_recipient_scores = dict()
@@ -27,7 +27,7 @@ class AdditiveScorer(ScorerBase):
         else:
             return manual_score
 
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> Union[float, str]:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> float:
         raise NotImplementedError("Has to be overridden")
 
     def score(self, matching: Matching) -> float:
@@ -50,7 +50,7 @@ class AdditiveScorer(ScorerBase):
 
         return score_matrix
 
-    def _score_transplant_including_original_tuple(self, donor: Donor, recipient: Recipient) -> Union[float, str]:
+    def _score_transplant_including_original_tuple(self, donor: Donor, recipient: Recipient) -> float:
         if recipient.related_donor == donor:
             score = ORIGINAL_DONOR_RECIPIENT_TUPLE
         else:

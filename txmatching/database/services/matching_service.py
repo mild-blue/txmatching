@@ -5,7 +5,7 @@ from dacite import from_dict
 from txmatching.config.gives_superset_of_solutions import \
     gives_superset_of_solutions
 from txmatching.database.services.config_service import (
-    config_model_to_configuration, get_config_models)
+    configuration_from_dict, get_config_models)
 from txmatching.database.services.patient_service import (
     get_all_donors_recipients)
 from txmatching.database.services.services_for_solve import (
@@ -62,7 +62,7 @@ def load_matching_for_config_from_db(exchange_parameters: SolverInputParameters)
 
     compatible_config_models = list()
     for config_model in get_config_models():
-        config_from_model = config_model_to_configuration(config_model)
+        config_from_model = configuration_from_dict(config_model.parameters)
         if gives_superset_of_solutions(less_strict=config_from_model,
                                        more_strict=current_config):
             compatible_config_models.append(config_model)

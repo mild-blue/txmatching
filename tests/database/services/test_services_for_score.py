@@ -16,6 +16,6 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         )
         score_matrix = calculate_current_score_matrix()
         testing.assert_array_equal(
-            [['Original Donor recipient tuple', '18.0'],
-             ['18.0', 'Original Donor recipient tuple']],
+            [[-2.0, 18.0],
+             [18.0, -2.0]],
             score_matrix)

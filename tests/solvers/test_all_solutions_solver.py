@@ -33,12 +33,12 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
     def test_solve_specific(self):
 
-        score_matrix_test = np.array([[np.NAN, np.NINF, 10.2, 13.1],
-                                      [0.2, np.NAN, np.NINF, 1],
-                                      [0.1, 10.2, 10.3, np.NAN],
-                                      [np.NINF, np.NINF, np.NAN, 10],
-                                      [0.2, 0.4, np.NINF, 0.5],
-                                      [0.2, np.NINF, np.NINF, 0.5]])
+        score_matrix_test = np.array([[-2.0, -1.0, 10.2, 13.1],
+                                      [0.2, -2.0, -1.0, 1],
+                                      [0.1, 10.2, 10.3, -2.0],
+                                      [-1.0, -1.0, -2.0, 10],
+                                      [0.2, 0.4, -1.0, 0.5],
+                                      [0.2, -1.0, -1.0, 0.5]])
 
         test_solver = AllSolutionsSolver(max_number_of_distinct_countries_in_round=1)
         solutions = test_solver._solve(score_matrix_test)

@@ -38,6 +38,6 @@ def compatibility_index(patient_parameters_donor: PatientParameters,
         match_counts[gene_code] = match_count
 
     match_counts_tuple = tuple([match_counts[gene_code] for gene_code in compatibility_gene_codes])
-    hal_compatibility_index = IK_table.loc[match_counts_tuple, "IK"]
+    hal_compatibility_index = float(IK_table.loc[match_counts_tuple, "IK"])
 
     return hal_compatibility_index
