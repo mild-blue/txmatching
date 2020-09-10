@@ -34,7 +34,8 @@ def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], Sc
     donors_dict = {donor.db_id: donor for donor in patients.donors}
     recipients_dict = {recipient.db_id: recipient for recipient in patients.recipients}
 
-    calculated_matchings = from_dict(data_class=CalculatedMatchings, data=last_pairing_result_model.calculated_matchings)
+    calculated_matchings = from_dict(data_class=CalculatedMatchings,
+                                     data=last_pairing_result_model.calculated_matchings)
 
     all_matchings = db_matchings_to_matching_list(calculated_matchings, donors_dict,
                                                   recipients_dict)
