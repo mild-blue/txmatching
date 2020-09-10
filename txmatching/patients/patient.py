@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
+from typing import List, Optional, Dict
 
 from txmatching.patients.patient_parameters import PatientParameters
 
@@ -26,6 +26,7 @@ class Patient:
 
 @dataclass
 class Donor(Patient):
+    related_recipient_db_id: Optional[int] = None
     donor_type: DonorType = DonorType.DONOR
 
 
@@ -45,12 +46,12 @@ class RecipientRequirements:
 
 @dataclass
 class Recipient(Patient):
-    related_donor: Donor
+    related_donor_db_id: int
     acceptable_blood_groups: List[str]
     recipient_requirements: RecipientRequirements = RecipientRequirements()
 
 
 @dataclass
 class DonorsRecipients:
-    donors: List[Donor]
-    recipients: List[Recipient]
+    donors_dict: Dict[int, Donor]
+    recipients_dict: Dict[int, Recipient]

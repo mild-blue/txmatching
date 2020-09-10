@@ -78,14 +78,14 @@ class Matching:
         return cycles + sequences
 
     def _initialize(self):
-        recipients = [recipient for donor, recipient in self._donor_recipient_list]
-        donors = [donor for donor, recipient in self._donor_recipient_list]
+        recipients = [recipient for _, recipient in self._donor_recipient_list]
+        donor_ids = [donor.db_id for donor, _ in self._donor_recipient_list]
 
         # Construct graph with vertices indexed by transplants
         # Edges tell us which transplant will come next
         vertices = list(range(len(self._donor_recipient_list)))
-        edges = {recipient_index: donors.index(recipient.related_donor) for recipient_index, recipient
-                 in enumerate(recipients) if recipient.related_donor in donors}
+        edges = {recipient_index: donor_ids.index(recipient.related_donor_db_id) for recipient_index, recipient
+                 in enumerate(recipients) if recipient.related_donor_db_id in donor_ids}
         reverse_edges = {dest_vertex: source_vertex for source_vertex, dest_vertex in edges.items()}
 
         unprocessed_vertices = set(vertices)

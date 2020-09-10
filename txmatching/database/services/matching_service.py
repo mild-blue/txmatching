@@ -31,14 +31,11 @@ def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], Sc
 
     patients = get_all_donors_recipients()
 
-    donors_dict = {donor.db_id: donor for donor in patients.donors}
-    recipients_dict = {recipient.db_id: recipient for recipient in patients.recipients}
-
     calculated_matchings = from_dict(data_class=CalculatedMatchings,
                                      data=last_pairing_result_model.calculated_matchings)
 
-    all_matchings = db_matchings_to_matching_list(calculated_matchings, donors_dict,
-                                                  recipients_dict)
+    all_matchings = db_matchings_to_matching_list(calculated_matchings, patients.donors_dict,
+                                                  patients.recipients_dict)
 
     all_matchings.sort(key=lambda matching: len(matching.get_rounds()), reverse=True)
     all_matchings.sort(key=lambda matching: matching.score(), reverse=True)
@@ -46,12 +43,14 @@ def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], Sc
 
     score_matrix = last_pairing_result_model.score_matrix['score_matrix_dto']
     score_dict = {
-        (donor.db_id, recipient.db_id): score for donor, row in
-        zip(patients.donors, score_matrix) for recipient, score in zip(patients.recipients, row)
+        (donor_db_id, recipient_db_id): score for donor_db_id, row in
+        zip(patients.donors_dict, score_matrix) for recipient_db_id, score in zip(patients.recipients_dict, row)
     }
 
-    compatible_blood_dict = {(donor.db_id, recipient.db_id): blood_groups_compatible(donor, recipient) for donor in
-                             patients.donors for recipient in patients.recipients}
+    compatible_blood_dict = {(donor_db_id, recipient_db_id): blood_groups_compatible(donor, recipient)
+                             for donor_db_id, donor in patients.donors_dict.items()
+                             for recipient_db_id, recipient in patients.recipients_dict.items()
+                             }
 
     return all_matchings, score_dict, compatible_blood_dict
 
@@ -67,12 +66,10 @@ def load_matching_for_config_from_db(exchange_parameters: SolverInputParameters)
                                        more_strict=current_config):
             compatible_config_models.append(config_model)
 
-    donors_dict = {donor.db_id: donor for donor in exchange_parameters.donors}
-    recipients_dict = {recipient.db_id: recipient for recipient in exchange_parameters.recipients}
-
     for compatible_config in compatible_config_models:
         for pairing_result in get_pairing_result_for_config(compatible_config.id):
             calculated_matchings = from_dict(data_class=CalculatedMatchings, data=pairing_result.calculated_matchings)
-            return db_matchings_to_matching_list(calculated_matchings, donors_dict, recipients_dict)
+            return db_matchings_to_matching_list(calculated_matchings, exchange_parameters.donors_dict,
+                                                 exchange_parameters.recipients_dict)
 
     return None

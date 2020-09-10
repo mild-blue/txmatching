@@ -18,9 +18,9 @@ class HLAAdditiveScorer(AdditiveScorer):
 
     # pylint: disable=too-many-return-statements
     # it seems that it is reasonable to want many return statements here as it is still well readable
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> float:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Donor) -> float:
         donor_recipient_ci = compatibility_index(donor.parameters, recipient.parameters)
-        related_donor_recipient_ci = compatibility_index(recipient.related_donor.parameters, recipient.parameters)
+        related_donor_recipient_ci = compatibility_index(original_donor.parameters, recipient.parameters)
 
         # We can't do exchanges between some countries
 

@@ -1,12 +1,13 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Dict
 
 from txmatching.config.configuration import Configuration
 from txmatching.patients.patient import Donor, Recipient
+from txmatching.patients.patient_types import RecipientDbId, DonorDbId
 
 
 @dataclass
 class SolverInputParameters:
-    donors: List[Donor]
-    recipients: List[Recipient]
+    donors_dict: Dict[DonorDbId, Donor]
+    recipients_dict: Dict[RecipientDbId, Recipient]
     configuration: Configuration

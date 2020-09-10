@@ -21,5 +21,5 @@ def calculate_current_score_matrix() -> ScoreMatrix:
     configuration = get_current_configuration()
     scorer = scorer_from_configuration(configuration)
     patients = get_all_donors_recipients()
-    score_matrix = scorer.get_score_matrix(patients.donors, patients.recipients)
+    score_matrix = scorer.get_score_matrix(patients.donors_dict, patients.recipients_dict)
     return score_matrix
