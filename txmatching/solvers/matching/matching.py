@@ -2,7 +2,7 @@ from typing import List
 
 from txmatching.data_transfer_objects.matchings.matching_dto import \
     CountryDTO
-from txmatching.patients.patient import PatientType
+from txmatching.patients.patient import DonorType
 from txmatching.patients.patient_types import DonorRecipientTuple
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_round import TransplantRound
@@ -44,7 +44,7 @@ class Matching:
         return self._donor_recipient_list
 
     def get_altruist_count(self):
-        return len([donor for donor, _ in self._donor_recipient_list if donor.patient_type == PatientType.ALTRUIST])
+        return len([donor for donor, _ in self._donor_recipient_list if donor.donor_type == DonorType.ALTRUIST])
 
     def get_donors_for_country_count(self, country_code: str):
         return len([donor.parameters.country_code for donor, _ in self._donor_recipient_list if
@@ -64,7 +64,7 @@ class Matching:
 
     def get_bridging_donor_count(self):
         return len(
-            [donor for donor, _ in self._donor_recipient_list if donor.patient_type == PatientType.BRIDGING_DONOR])
+            [donor for donor, _ in self._donor_recipient_list if donor.donor_type == DonorType.BRIDGING_DONOR])
 
     def get_cycles(self) -> List[TransplantCycle]:
         return self._cycles

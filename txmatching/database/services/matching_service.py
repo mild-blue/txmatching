@@ -1,5 +1,7 @@
 from typing import Dict, Iterator, List, Optional, Tuple
 
+from dacite import from_dict
+
 from txmatching.config.gives_superset_of_solutions import \
     gives_superset_of_solutions
 from txmatching.database.services.config_service import (
@@ -9,6 +11,7 @@ from txmatching.database.services.patient_service import (
 from txmatching.database.services.services_for_solve import (
     db_matchings_to_matching_list, get_pairing_result_for_config)
 from txmatching.database.sql_alchemy_schema import PairingResultModel
+from txmatching.solve_service.data_objects.calculated_matchings import CalculatedMatchings
 from txmatching.solve_service.data_objects.solver_input_parameters import \
     SolverInputParameters
 from txmatching.solvers.matching.matching_with_score import \
@@ -31,7 +34,9 @@ def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], Sc
     donors_dict = {donor.db_id: donor for donor in patients.donors}
     recipients_dict = {recipient.db_id: recipient for recipient in patients.recipients}
 
-    all_matchings = db_matchings_to_matching_list(last_pairing_result_model.calculated_matchings, donors_dict,
+    calculated_matchings = from_dict(data_class=CalculatedMatchings, data=last_pairing_result_model.calculated_matchings)
+
+    all_matchings = db_matchings_to_matching_list(calculated_matchings, donors_dict,
                                                   recipients_dict)
 
     all_matchings.sort(key=lambda matching: len(matching.get_rounds()), reverse=True)
@@ -51,7 +56,7 @@ def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], Sc
 
 
 def load_matching_for_config_from_db(exchange_parameters: SolverInputParameters) -> Optional[
-        Iterator[MatchingWithScore]]:
+    Iterator[MatchingWithScore]]:
     current_config = exchange_parameters.configuration
 
     compatible_config_models = list()
@@ -66,6 +71,7 @@ def load_matching_for_config_from_db(exchange_parameters: SolverInputParameters)
 
     for compatible_config in compatible_config_models:
         for pairing_result in get_pairing_result_for_config(compatible_config.id):
-            return db_matchings_to_matching_list(pairing_result.calculated_matchings, donors_dict, recipients_dict)
+            calculated_matchings = from_dict(data_class=CalculatedMatchings, data=pairing_result.calculated_matchings)
+            return db_matchings_to_matching_list(calculated_matchings, donors_dict, recipients_dict)
 
     return None

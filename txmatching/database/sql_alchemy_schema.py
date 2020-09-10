@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from txmatching.database.db import db
-from txmatching.patients.patient import PatientType
+from txmatching.patients.patient import DonorType
 
 
 # pylint: disable=too-few-public-methods
@@ -43,7 +43,6 @@ class RecipientModel(db.Model):
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     medical_id = db.Column(db.TEXT, unique=False, nullable=False)
-    patient_type = db.Column(db.Enum(PatientType), unique=False, nullable=False)
     country = db.Column(db.TEXT, unique=False, nullable=False)
     blood = db.Column(db.TEXT, unique=False, nullable=False)
     hla_antigens = db.Column(db.JSON, unique=False, nullable=False)
@@ -66,7 +65,7 @@ class DonorModel(db.Model):
     hla_antigens = db.Column(db.JSON, unique=False, nullable=False)
     hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, nullable=False)
-    patient_type = db.Column(db.Enum(PatientType), unique=False, nullable=False)
+    donor_type = db.Column(db.Enum(DonorType), unique=False, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)

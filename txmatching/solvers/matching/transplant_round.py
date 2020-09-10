@@ -1,6 +1,6 @@
 from typing import List
 
-from txmatching.patients.patient import PatientType
+from txmatching.patients.patient import DonorType
 from txmatching.patients.patient_types import DonorRecipientTuple
 
 
@@ -46,10 +46,10 @@ class TransplantRound:
         return self._donor_recipient_list
 
     def briding_donor_altruist_or_nothing(self):
-        first_donor_type = self._donor_recipient_list[0][0].patient_type
-        if first_donor_type == PatientType.BRIDGING_DONOR:
+        first_donor_type = self._donor_recipient_list[0][0].donor_type
+        if first_donor_type == DonorType.BRIDGING_DONOR:
             return 'B'
-        elif first_donor_type == PatientType.ALTRUIST:
+        elif first_donor_type == DonorType.ALTRUIST:
             return 'A'
         else:
             return ''

@@ -5,17 +5,10 @@ from typing import List
 from txmatching.patients.patient_parameters import PatientParameters
 
 
-class PatientType(str, Enum):
-    RECIPIENT = 'RECIPIENT'
+class DonorType(str, Enum):
     DONOR = 'DONOR'
     BRIDGING_DONOR = 'BRIDGING_DONOR'
     ALTRUIST = 'ALTRUIST'
-
-    def is_donor_like(self):
-        return self in {PatientType.DONOR, PatientType.ALTRUIST, PatientType.BRIDGING_DONOR}
-
-    def is_recipient_like(self):
-        return self in {PatientType.RECIPIENT}
 
 
 @dataclass
@@ -23,7 +16,6 @@ class Patient:
     db_id: int
     medical_id: str
     parameters: PatientParameters
-    patient_type: PatientType
 
     def is_recipient(self) -> bool:
         return isinstance(self, Recipient)
@@ -34,19 +26,13 @@ class Patient:
 
 @dataclass
 class Donor(Patient):
-    def __post_init__(self):
-        if not self.patient_type.is_donor_like():
-            raise ValueError('Wrong patient type for donor')
+    donor_type: DonorType = DonorType.DONOR
 
 
 @dataclass
 class Recipient(Patient):
     related_donor: Donor
     acceptable_blood_groups: List[str]
-
-    def __post_init__(self):
-        if not self.patient_type.is_recipient_like():
-            raise ValueError('Wrong patient type for recipient')
 
 
 @dataclass

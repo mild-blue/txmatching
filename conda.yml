@@ -23,3 +23,4 @@ dependencies:
       - flask_restx==0.2.0
       - flask_bcrypt==0.7.1
       - pyjwt==1.7.1
+      - dacite==1.5.1

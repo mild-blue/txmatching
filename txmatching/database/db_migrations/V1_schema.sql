@@ -4,8 +4,7 @@ CREATE TYPE USER_ROLE AS ENUM (
     'ADMIN'
     );
 
-CREATE TYPE PATIENT_TYPE AS ENUM (
-    'RECIPIENT',
+CREATE TYPE DONOR_TYPE AS ENUM (
     'DONOR',
     'BRIDGING_DONOR',
     'ALTRUIST'
@@ -64,16 +63,15 @@ CREATE TABLE app_user
 
 CREATE TABLE recipient
 (
-    id             BIGSERIAL    NOT NULL,
-    medical_id     TEXT         NOT NULL,
-    country        COUNTRY      NOT NULL,
-    patient_type   PATIENT_TYPE NOT NULL,
-    blood          BLOOD_TYPE   NOT NULL,
-    hla_antigens   JSONB        NOT NULL, -- JSON
-    hla_antibodies JSONB        NOT NULL, -- JSON
-    active         BOOL         NOT NULL, -- assume some patients fall out of the set
-    created_at     TIMESTAMPTZ  NOT NULL,
-    updated_at     TIMESTAMPTZ  NOT NULL,
+    id             BIGSERIAL   NOT NULL,
+    medical_id     TEXT        NOT NULL,
+    country        COUNTRY     NOT NULL,
+    blood          BLOOD_TYPE  NOT NULL,
+    hla_antigens   JSONB       NOT NULL, -- JSON
+    hla_antibodies JSONB       NOT NULL, -- JSON
+    active         BOOL        NOT NULL, -- assume some patients fall out of the set
+    created_at     TIMESTAMPTZ NOT NULL,
+    updated_at     TIMESTAMPTZ NOT NULL,
     deleted_at     TIMESTAMPTZ,
     CONSTRAINT pk_recipient_id PRIMARY KEY (id),
     CONSTRAINT uq_recipient_medical_id UNIQUE (medical_id)
@@ -81,17 +79,17 @@ CREATE TABLE recipient
 
 CREATE TABLE donor
 (
-    id             BIGSERIAL    NOT NULL,
-    medical_id     TEXT         NOT NULL,
+    id             BIGSERIAL   NOT NULL,
+    medical_id     TEXT        NOT NULL,
     recipient_id   BIGINT,
-    country        COUNTRY      NOT NULL,
-    patient_type   PATIENT_TYPE NOT NULL,
-    blood          BLOOD_TYPE   NOT NULL,
-    hla_antigens   JSONB        NOT NULL, -- JSON
-    hla_antibodies JSONB        NOT NULL, -- JSON
-    active         BOOL         NOT NULL, -- assume some patients fall out of the set
-    created_at     TIMESTAMPTZ  NOT NULL,
-    updated_at     TIMESTAMPTZ  NOT NULL,
+    country        COUNTRY     NOT NULL,
+    donor_type     DONOR_TYPE  NOT NULL,
+    blood          BLOOD_TYPE  NOT NULL,
+    hla_antigens   JSONB       NOT NULL, -- JSON
+    hla_antibodies JSONB       NOT NULL, -- JSON
+    active         BOOL        NOT NULL, -- assume some patients fall out of the set
+    created_at     TIMESTAMPTZ NOT NULL,
+    updated_at     TIMESTAMPTZ NOT NULL,
     deleted_at     TIMESTAMPTZ,
     CONSTRAINT pk_donor_id PRIMARY KEY (id),
     CONSTRAINT uq_donor_medical_id UNIQUE (medical_id),
@@ -101,12 +99,12 @@ CREATE TABLE donor
 
 CREATE TABLE recipient_acceptable_blood
 (
-    id         BIGSERIAL   NOT NULL,
+    id           BIGSERIAL   NOT NULL,
     recipient_id BIGINT      NOT NULL,
-    blood_type BLOOD_TYPE  NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL,
-    updated_at TIMESTAMPTZ NOT NULL,
-    deleted_at TIMESTAMPTZ,
+    blood_type   BLOOD_TYPE  NOT NULL,
+    created_at   TIMESTAMPTZ NOT NULL,
+    updated_at   TIMESTAMPTZ NOT NULL,
+    deleted_at   TIMESTAMPTZ,
     CONSTRAINT pk_recipient_acceptable_blood_id PRIMARY KEY (id),
     CONSTRAINT fk_recipient_acceptable_blood_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient (id) ON DELETE CASCADE ON UPDATE CASCADE
 );

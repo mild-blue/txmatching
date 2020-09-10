@@ -1,6 +1,6 @@
 import ast
 import logging
-from typing import Dict, Union, Optional
+from typing import Dict, Union, Optional, List
 
 from txmatching.config.configuration import (BOOL_KEYS_IN_CONFIG,
                                              FLOAT_KEYS_IN_CONFIG,
@@ -27,22 +27,24 @@ def _score_from_dto(score: float) -> Union[float, str]:
         raise ValueError(f'Unexpected format of {score}')
 
 
-def validate_db_ids_and_return(patients_with_id, medical_id, patient_type):
-    if len(patients_with_id) == 1:
-        return patients_with_id[0].id
+def _validate_db_ids_and_return(patients_with_medical_id: List[Union[RecipientModel, DonorModel]],
+                                medical_id: str,
+                                patient_type: str):
+    if len(patients_with_medical_id) == 1:
+        return patients_with_medical_id[0].id
     else:
-        raise ValueError(f'There has to be 1 patient per medical id, but {len(patients_with_id)} '
+        raise ValueError(f'There has to be 1 patient per medical id, but {len(patients_with_medical_id)} '
                          f'were found for {patient_type} with medical id {medical_id}')
 
 
 def _donor_medical_id_to_db_id(medical_id: str) -> Optional[int]:
     patients_with_id = DonorModel.query.filter(DonorModel.medical_id == medical_id).all()
-    return validate_db_ids_and_return(patients_with_id, medical_id, "donor")
+    return _validate_db_ids_and_return(patients_with_id, medical_id, "donor")
 
 
 def _recipient_medical_id_to_db_id(medical_id: str) -> Optional[int]:
     patients_with_id = RecipientModel.query.filter(RecipientModel.medical_id == medical_id).all()
-    return validate_db_ids_and_return(patients_with_id, medical_id, "recipient")
+    return _validate_db_ids_and_return(patients_with_id, medical_id, "recipient")
 
 
 def configuration_from_dto(configuration_dto: Dict) -> Configuration:

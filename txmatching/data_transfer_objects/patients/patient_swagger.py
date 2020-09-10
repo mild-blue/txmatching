@@ -1,6 +1,6 @@
 from flask_restx import fields
 
-from txmatching.patients.patient import PatientType
+from txmatching.patients.patient import DonorType
 from txmatching.web.api.namespaces import patient_api
 
 PATIENT_PARAMETERS_MODEL = patient_api.model('Patient Parameters', {
@@ -15,7 +15,7 @@ DONOR_MODEL = patient_api.model('Donor', {
     "db_id": fields.Integer(required=True, description='Database id of the patient'),
     "medical_id": fields.String(required=True, description='Medical id of the patient'),
     "parameters": fields.Nested(required=True, model=PATIENT_PARAMETERS_MODEL),
-    "patient_type": fields.String(required=True, enum=[v.name for v in PatientType]),
+    "donor_type": fields.String(required=True, enum=[v.name for v in DonorType]),
 })
 
 RECIPIENT_MODEL = patient_api.model('Recipient', {
@@ -23,7 +23,6 @@ RECIPIENT_MODEL = patient_api.model('Recipient', {
     "acceptable_blood_groups": fields.List(required=False, cls_or_instance=fields.String),
     "medical_id": fields.String(required=True, description='Medical id of the patient'),
     "parameters": fields.Nested(required=True, model=PATIENT_PARAMETERS_MODEL),
-    "patient_type": fields.String(required=True, enum=[v.name for v in PatientType]),
     "related_donor": fields.Nested(DONOR_MODEL),
 })
 
