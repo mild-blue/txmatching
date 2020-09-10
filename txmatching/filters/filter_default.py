@@ -15,10 +15,10 @@ class FilterDefault(FilterBase):
                              required_patient_db_ids=configuration.required_patient_db_ids
                              )
 
-    def __init__(self, max_cycle_length: int = None,
-                 max_sequence_length: int = None,
-                 max_number_of_distinct_countries_in_round: int = None,
-                 required_patient_db_ids: List[int] = None):
+    def __init__(self, max_cycle_length: int,
+                 max_sequence_length: int,
+                 max_number_of_distinct_countries_in_round: int,
+                 required_patient_db_ids: List[int]):
         self._max_cycle_length = max_cycle_length
         self._max_sequence_length = max_sequence_length
         self._max_number_of_distinct_countries_in_round = max_number_of_distinct_countries_in_round
@@ -28,12 +28,10 @@ class FilterDefault(FilterBase):
         sequences = matching.get_sequences()
         cycles = matching.get_cycles()
 
-        if self._max_cycle_length is not None \
-                and max([cycle.length for cycle in cycles], default=0) > self._max_cycle_length:
+        if max([cycle.length for cycle in cycles], default=0) > self._max_cycle_length:
             return False
 
-        if self._max_sequence_length is not None and \
-                max([sequence.length for sequence in sequences], default=0) > self._max_sequence_length:
+        if max([sequence.length for sequence in sequences], default=0) > self._max_sequence_length:
             return False
 
         for patient_db_id in self._required_patients:
