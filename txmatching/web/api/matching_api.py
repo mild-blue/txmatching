@@ -37,7 +37,7 @@ class CalculateFromConfig(Resource):
         save_configuration_as_current(configuration)
         solve_from_db()
         matchings, score_dict, compatible_blood_dict = get_latest_matchings_and_score_matrix()
-
+        # TODO add here that just max X are sent when the user role is viewer.
         matching_dtos = [
             dataclasses.asdict(MatchingDTO(
                 rounds=[
