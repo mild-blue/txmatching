@@ -1,7 +1,6 @@
 from typing import Tuple
 
-from txmatching.patients.donor import Donor
-from txmatching.patients.recipient import Recipient
+from txmatching.patients.patient import Donor, Recipient
 
 DonorRecipientTuple = Tuple[Donor, Recipient]
 MedicalId = str

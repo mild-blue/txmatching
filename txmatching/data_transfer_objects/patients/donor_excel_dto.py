@@ -5,5 +5,5 @@ from txmatching.data_transfer_objects.patients.patient_excel_dto import \
 
 
 @dataclass
-class DonorDTO(PatientExcelDTO):
+class DonorExcelDTO(PatientExcelDTO):
     pass

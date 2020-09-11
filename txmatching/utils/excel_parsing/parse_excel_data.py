@@ -7,9 +7,9 @@ from typing import Dict, List, Tuple, Union
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
-from txmatching.data_transfer_objects.patients.donor_excel_dto import DonorDTO
+from txmatching.data_transfer_objects.patients.donor_excel_dto import DonorExcelDTO
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
-    RecipientDTO
+    RecipientExcelDTO
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntigens,
                                                     PatientParameters)
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
@@ -82,7 +82,7 @@ def _country_code_from_id(patient_id: str) -> str:
     raise ValueError(f'Could not assign country code to {patient_id}')
 
 
-def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorDTO], List[RecipientDTO]]:
+def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]]:
     logger.info('Parsing patient data from file')
     data = pd.read_excel(file_io, skiprows=1)
     donors = list()
@@ -92,13 +92,15 @@ def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorDTO], 
         donors.append(donor)
         recipient_id = row['RECIPIENT']
         if not pd.isna(recipient_id):
-            recipient = get_recipient_from_row(row, recipient_id, donor)
+            recipient = get_recipient_from_row(row, recipient_id)
             recipients.append(recipient)
+        else:
+            recipients.append(None)
 
     return donors, recipients
 
 
-def get_donor_from_row(row: Dict) -> DonorDTO:
+def get_donor_from_row(row: Dict) -> DonorExcelDTO:
     donor_id = row['DONOR']
     blood_group_donor = _parse_blood_group(row['BLOOD GROUP donor'])
     typization_donor = _parse_hla(row['TYPIZATION DONOR'])
@@ -106,10 +108,10 @@ def get_donor_from_row(row: Dict) -> DonorDTO:
     donor_params = PatientParameters(blood_group=blood_group_donor,
                                      hla_antigens=HLAAntigens(typization_donor),
                                      country_code=country_code_donor)
-    return DonorDTO(medical_id=donor_id, parameters=donor_params)
+    return DonorExcelDTO(medical_id=donor_id, parameters=donor_params)
 
 
-def get_recipient_from_row(row: Dict, recipient_id: str, donor: DonorDTO) -> RecipientDTO:
+def get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
     blood_group_recipient = _parse_blood_group(row['BLOOD GROUP recipient'])
     typization_recipient = _parse_hla(row['TYPIZATION RECIPIENT'])
     antibodies_recipient = _parse_hla(row['luminex  cut-off (2000 MFI) varianta 2'])
@@ -120,10 +122,9 @@ def get_recipient_from_row(row: Dict, recipient_id: str, donor: DonorDTO) -> Rec
     recipient_params = PatientParameters(blood_group=blood_group_recipient,
                                          hla_antigens=HLAAntigens(typization_recipient),
                                          hla_antibodies=HLAAntibodies(antibodies_recipient),
-                                         acceptable_blood_groups=acceptable_blood_groups_recipient,
                                          country_code=country_code_recipient)
-    return RecipientDTO(medical_id=recipient_id, parameters=recipient_params,
-                        related_donor=donor)
+    return RecipientExcelDTO(medical_id=recipient_id, parameters=recipient_params,
+                             acceptable_blood_groups=acceptable_blood_groups_recipient)
 
 
 if __name__ == '__main__':

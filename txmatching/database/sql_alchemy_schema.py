@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from txmatching.database.db import db
-from txmatching.patients.patient import PatientType
+from txmatching.patients.patient import DonorType
 
 
 # pylint: disable=too-few-public-methods
@@ -35,29 +35,15 @@ class PairingResultModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    patients = relationship('PairingResultPatientModel', backref='pairing_result')
 
 
-class PairingResultPatientModel(db.Model):
-    __tablename__ = 'pairing_result_patient'
-    __table_args__ = {'extend_existing': True}
-
-    id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    pairing_result_id = db.Column(db.Integer, ForeignKey('pairing_result.id'), unique=False, nullable=False)
-    patient_id = db.Column(db.Integer, ForeignKey('patient.id'), unique=False, nullable=False)
-    created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
-    updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
-    deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-
-
-class PatientModel(db.Model):
-    __tablename__ = 'patient'
+class RecipientModel(db.Model):
+    __tablename__ = 'recipient'
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     medical_id = db.Column(db.TEXT, unique=False, nullable=False)
     country = db.Column(db.TEXT, unique=False, nullable=False)
-    patient_type = db.Column(db.Enum(PatientType), unique=False, nullable=False)
     blood = db.Column(db.TEXT, unique=False, nullable=False)
     hla_antigens = db.Column(db.JSON, unique=False, nullable=False)
     hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
@@ -65,38 +51,40 @@ class PatientModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    acceptable_blood = relationship('PatientAcceptableBloodModel', backref='patient')
-    patient_pairs = relationship('PatientPairModel', backref='patient')
-    patient_results = relationship('PairingResultPatientModel', backref='patient')
+    acceptable_blood = relationship('RecipientAcceptableBloodModel', backref='recipient')
 
 
-class PatientAcceptableBloodModel(db.Model):
-    __tablename__ = 'patient_acceptable_blood'
+class DonorModel(db.Model):
+    __tablename__ = 'donor'
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    patient_id = db.Column(db.Integer, ForeignKey('patient.id'), unique=False, nullable=False)
+    medical_id = db.Column(db.TEXT, unique=False, nullable=False)
+    country = db.Column(db.TEXT, unique=False, nullable=False)
+    blood = db.Column(db.TEXT, unique=False, nullable=False)
+    hla_antigens = db.Column(db.JSON, unique=False, nullable=False)
+    hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
+    active = db.Column(db.BOOLEAN, unique=False, nullable=False)
+    donor_type = db.Column(db.Enum(DonorType), unique=False, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+    deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    recipient_id = db.Column(db.Integer, ForeignKey('recipient.id'), unique=False, nullable=True)
+
+
+class RecipientAcceptableBloodModel(db.Model):
+    __tablename__ = 'recipient_acceptable_blood'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    recipient_id = db.Column(db.Integer, ForeignKey('recipient.id'), unique=False, nullable=False)
     blood_type = db.Column(db.TEXT, unique=False, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
 
-class PatientPairModel(db.Model):
-    __tablename__ = 'patient_pair'
-    __table_args__ = {'extend_existing': True}
-
-    id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    recipient_id = db.Column(db.Integer, ForeignKey('patient.id'), unique=False, nullable=False)
-    # Add also Foreign key to donor ID below, as it will be two foreign keys to one table its a bit tricky to do
-    # but it should be possible, just not done for the time being. https://trello.com/c/KtNzIBJa
-    donor_id = db.Column(db.Integer, unique=False, nullable=False)
-    created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
-    updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
-    deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-
-
-class AppUser(db.Model):
+class AppUserModel(db.Model):
     __tablename__ = 'app_user'
     __table_args__ = {'extend_existing': True}
 

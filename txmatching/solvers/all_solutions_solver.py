@@ -9,8 +9,7 @@ from graph_tool import topology
 from graph_tool.all import Graph
 
 from txmatching.config.configuration import Configuration
-from txmatching.patients.donor import Donor
-from txmatching.patients.recipient import Recipient
+from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import (ORIGINAL_DONOR_RECIPIENT_TUPLE,
                                                 TRANSPLANT_IMPOSSIBLE,
                                                 AdditiveScorer)

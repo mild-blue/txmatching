@@ -1,132 +1,114 @@
 import dataclasses
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import List, Optional, Tuple, Union, Dict
 
 from txmatching.data_transfer_objects.patients.donor_excel_dto import \
-    DonorDTO
+    DonorExcelDTO
 from txmatching.data_transfer_objects.patients.patient_excel_dto import \
     PatientExcelDTO
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
-    RecipientDTO
+    RecipientExcelDTO
 from txmatching.database.db import db
-from txmatching.database.sql_alchemy_schema import (
-    PairingResultPatientModel, PatientAcceptableBloodModel, PatientModel,
-    PatientPairModel)
-from txmatching.patients.donor import Donor
-from txmatching.patients.patient import Patient, PatientType
+from txmatching.database.sql_alchemy_schema import RecipientAcceptableBloodModel, RecipientModel, DonorModel, \
+    PairingResultModel
+from txmatching.patients.patient import Patient, DonorType, DonorsRecipients, Recipient, Donor
 from txmatching.patients.patient_parameters import (HLAAntibodies,
                                                     HLAAntigens,
                                                     PatientParameters)
-from txmatching.patients.recipient import Recipient
 
 
-def medical_id_to_db_id(medical_id: str) -> Optional[int]:
-    patients_with_id = PatientModel.query.filter(PatientModel.medical_id == medical_id).all()
-    if len(patients_with_id) == 0:
-        return None
-    elif len(patients_with_id) == 1:
-        return patients_with_id[0].id
-    else:
-        raise ValueError(f'There has to be 1 patient per medical id, but {len(patients_with_id)} '
-                         f'were found for patient with medical id {medical_id}')
-
-
-def db_id_to_medical_id(db_id: int) -> str:
-    return PatientModel.query.get(db_id).medical_id
-
-
-def patient_dto_to_patient_model(patient: PatientExcelDTO) -> PatientModel:
-    patient_model = PatientModel(
+def donor_excel_dto_to_donor_model(patient: PatientExcelDTO, recipient: Optional[RecipientModel]) -> DonorModel:
+    maybe_recipient_id = recipient.id if recipient is not None else None
+    donor_type = DonorType.DONOR if recipient is not None else DonorType.ALTRUIST
+    donor_model = DonorModel(
         medical_id=patient.medical_id,
         country=patient.parameters.country_code,
         blood=patient.parameters.blood_group,
         hla_antigens=dataclasses.asdict(patient.parameters.hla_antigens),
         hla_antibodies=dataclasses.asdict(patient.parameters.hla_antibodies),
-        active=True
+        active=True,
+        recipient_id=maybe_recipient_id,
+        donor_type=donor_type
     )
-    if isinstance(patient, RecipientDTO):
-        patient_model.acceptable_blood = [PatientAcceptableBloodModel(blood_type=blood)
-                                          for blood in patient.parameters.acceptable_blood_groups]
-        patient_model.patient_type = PatientType.RECIPIENT
-        patient_model.patient_pairs = [
-            PatientPairModel(donor_id=medical_id_to_db_id(patient.related_donor.medical_id))]
+    return donor_model
 
-    elif isinstance(patient, DonorDTO):
-        patient_model.patient_type = PatientType.DONOR
-    else:
-        raise TypeError(f'Unexpected patient type {type(patient)}')
 
+def recipient_excel_dto_to_recipient_model(recipient: RecipientExcelDTO) -> RecipientModel:
+    patient_model = RecipientModel(
+        medical_id=recipient.medical_id,
+        country=recipient.parameters.country_code,
+        blood=recipient.parameters.blood_group,
+        hla_antigens=dataclasses.asdict(recipient.parameters.hla_antigens),
+        hla_antibodies=dataclasses.asdict(recipient.parameters.hla_antibodies),
+        active=True,
+        acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
+                          for blood in recipient.acceptable_blood_groups]
+    )
     return patient_model
 
 
-def save_patient_models(patient_models: List[PatientModel]):
-    existing_patient_ids = [medical_id_to_db_id(patient.medical_id) for patient in patient_models]
-    patients_to_add = []
-    for patient, maybe_patient_id in zip(patient_models, existing_patient_ids):
-        if maybe_patient_id is not None:
-            patient.id = maybe_patient_id
-            patient.patient_results = [PairingResultPatientModel(
-                patient_id=result.id,
-                pairing_result_id=result.pairing_result_id
-            ) for result in PatientModel.query.get(maybe_patient_id).patient_results]
-        patients_to_add.append(patient)
+def overwrite_patients_by_patients_from_excel(donors_recipients: Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]]):
+    RecipientModel.query.delete()
+    DonorModel.query.delete()
+    PairingResultModel.query.delete()
 
-    PatientModel.query.filter(PatientModel.id.in_(existing_patient_ids)).delete('fetch')
-    db.session.add_all(patients_to_add)
+    maybe_recipient_models = [recipient_excel_dto_to_recipient_model(recipient) if recipient is not None else None for
+                              recipient in donors_recipients[1]]
+    recipient_models = [recipient_model for recipient_model in maybe_recipient_models if
+                        recipient_model is not None]
+    db.session.add_all(recipient_models)
+    db.session.commit()
+
+    donor_models = [donor_excel_dto_to_donor_model(donor_dto, maybe_recipient_model) for
+                    donor_dto, maybe_recipient_model in zip(donors_recipients[0], maybe_recipient_models)]
+    db.session.add_all(donor_models)
     db.session.commit()
 
 
-def save_patients(donors_recipients: Tuple[List[DonorDTO], List[RecipientDTO]]):
-    donor_models = [patient_dto_to_patient_model(donor) for donor in donors_recipients[0]]
-    save_patient_models(donor_models)
-
-    recipient_models = [patient_dto_to_patient_model(recipient) for recipient in donors_recipients[1]]
-    save_patient_models(recipient_models)
-
-
-def _get_base_patient_from_patient_model(patient_model: PatientModel) -> Patient:
+def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> Patient:
     return Patient(
         db_id=patient_model.id,
         medical_id=patient_model.medical_id,
         parameters=PatientParameters(
             blood_group=patient_model.blood,
-            acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
-                                     patient_model.acceptable_blood],
             country_code=patient_model.country,
             hla_antigens=HLAAntigens(**patient_model.hla_antigens),
             hla_antibodies=HLAAntibodies(**patient_model.hla_antibodies)
         ))
 
 
-def _get_patient_from_patient_model(patient_model: PatientModel,
-                                    patient_models_dict: Dict[int, PatientModel]) -> Patient:
-    base_patient = _get_base_patient_from_patient_model(patient_model)
-    if patient_model.patient_type.is_recipient_like():
-        related_donors = patient_model.patient_pairs
-        if len(related_donors) == 1:
-            don_id = related_donors[0].donor_id
-        else:
-            raise ValueError(f'There has to be 1 donor per recipient, but {len(related_donors)} '
-                             f'were found for recipient with db_id {base_patient.db_id}'
-                             f' and medical id {base_patient.medical_id}')
-        return Recipient(base_patient.db_id, base_patient.medical_id, base_patient.parameters,
-                         related_donor=_get_patient_from_patient_model(patient_models_dict[don_id],
-                                                                       patient_models_dict),
-                         patient_type=patient_model.patient_type)
+def _get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
+    base_patient = _get_base_patient_from_patient_model(donor_model)
 
-    return Donor(base_patient.db_id, base_patient.medical_id, parameters=base_patient.parameters,
-                 patient_type=patient_model.patient_type)
+    return Donor(base_patient.db_id,
+                 base_patient.medical_id,
+                 parameters=base_patient.parameters,
+                 donor_type=donor_model.donor_type
+                 )
 
 
-def get_all_patients() -> Iterable[Patient]:
-    patient_models_dict = {patient_model.id: patient_model for patient_model in
-                           PatientModel.query.filter(PatientModel.active).order_by(PatientModel.id).all()}
-    patients = [_get_patient_from_patient_model(patient_model, patient_models_dict) for patient_model in
-                patient_models_dict.values()]
-    return patients
+def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
+                                        donors_for_recipients_dict: Dict[int, Donor]) -> Recipient:
+    base_patient = _get_base_patient_from_patient_model(recipient_model)
+
+    return Recipient(base_patient.db_id,
+                     base_patient.medical_id,
+                     parameters=base_patient.parameters,
+                     related_donor=donors_for_recipients_dict[base_patient.db_id],
+                     acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
+                                              recipient_model.acceptable_blood],
+                     )
 
 
-def get_donors_recipients_from_db() -> Tuple[List[Donor], List[Recipient]]:
-    patients = get_all_patients()
-    donors = [donor for donor in patients if isinstance(donor, Donor)]
-    recipients = [recipient for recipient in patients if isinstance(recipient, Recipient)]
-    return donors, recipients
+def get_all_donors_recipients() -> DonorsRecipients:
+    active_donors = DonorModel.query.filter(DonorModel.active)
+    donors_with_recipients = [(donor_model.recipient_id, _get_donor_from_donor_model(donor_model)) for donor_model
+                              in active_donors]
+
+    donors = [donor for _, donor in donors_with_recipients]
+    donors_with_recipients_dict = {k: v for k, v in donors_with_recipients if k is not None}
+
+    active_recipients = RecipientModel.query.filter(RecipientModel.active)
+    recipients = [_get_recipient_from_recipient_model(recipient_model, donors_with_recipients_dict) for recipient_model
+                  in active_recipients]
+
+    return DonorsRecipients(donors, recipients)

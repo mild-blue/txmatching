@@ -29,4 +29,5 @@ class TestSaveAndGetConfiguration(DbTests):
         self.api.add_namespace(patient_api, path='/pat')
         with self.app.test_client() as client:
             res = client.get('/pat/', headers=self.auth_headers)
-            self.assertEqual(4, len(res.json))
+            self.assertEqual(2, len(res.json["donors"]))
+            self.assertEqual(2, len(res.json["recipients"]))

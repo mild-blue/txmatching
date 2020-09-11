@@ -7,7 +7,7 @@ from flask_restx import Api
 
 from tests.test_utilities.populate_db import ADMIN_USER, add_users
 from txmatching.database.db import db
-from txmatching.database.services.patient_service import save_patients
+from txmatching.database.services.patient_service import overwrite_patients_by_patients_from_excel
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -47,7 +47,7 @@ class DbTests(unittest.TestCase):
     @staticmethod
     def fill_db_with_patients(file=get_absolute_path('/tests/test_utilities/data.xlsx')):
         patients = parse_excel_data(file)
-        save_patients(patients)
+        overwrite_patients_by_patients_from_excel(patients)
 
     def _set_bearer_token(self):
         self.api = Api(self.app)

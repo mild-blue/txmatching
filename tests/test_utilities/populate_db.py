@@ -1,6 +1,6 @@
 from txmatching.database.services.app_user_management import persist_user
-from txmatching.database.services.patient_service import save_patients
-from txmatching.database.sql_alchemy_schema import AppUser
+from txmatching.database.services.patient_service import overwrite_patients_by_patients_from_excel
+from txmatching.database.sql_alchemy_schema import AppUserModel, ConfigModel
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.web import create_app
 from txmatching.web.auth.crypto import encode_password
@@ -13,18 +13,20 @@ ADMIN_USER = {
 
 
 def add_users():
-    app_user = AppUser(
+    ConfigModel.query.delete()
+    AppUserModel.query.delete()
+    app_user = AppUserModel(
         email=ADMIN_USER['email'],
         pass_hash=encode_password(ADMIN_USER['password']),
         role='ADMIN')
     persist_user(app_user)
     ADMIN_USER['id'] = app_user.id
-    assert AppUser.query.get(1) is not None
+    assert len(AppUserModel.query.all()) == 1
 
 
 if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         patients = parse_excel_data('data.xlsx')
-        save_patients(patients)
+        overwrite_patients_by_patients_from_excel(patients)
         add_users()

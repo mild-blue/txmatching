@@ -4,7 +4,7 @@ from typing import Tuple, Optional
 
 import jwt
 
-from txmatching.database.sql_alchemy_schema import AppUser
+from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.web.app_configuration.application_configuration import get_application_configuration
 from txmatching.web.auth import bcrypt
 
@@ -26,7 +26,7 @@ def password_matches_hash(pwd_hash: str, password: str) -> bool:
     return bcrypt.check_password_hash(pwd_hash, password)
 
 
-def encode_auth_token(user: AppUser) -> bytearray:
+def encode_auth_token(user: AppUserModel) -> bytearray:
     """
     Generates the Auth Token
     """

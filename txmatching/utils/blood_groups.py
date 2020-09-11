@@ -1,5 +1,4 @@
-from txmatching.patients.donor import Donor
-from txmatching.patients.recipient import Recipient
+from txmatching.patients.patient import Recipient, Donor
 
 COMPATIBLE_BLOOD_GROUPS = {
     "0": {"0"},
