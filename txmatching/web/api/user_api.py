@@ -3,13 +3,14 @@
 
 import logging
 
-from flask import request
+from flask import request, jsonify
 from flask_restx import Resource, fields
 
+from txmatching.auth.data_types import BearerToken, UserRole, FailResponse
+from txmatching.auth.user_authentication import obtain_login_token, refresh_token, change_user_password, register_user
 from txmatching.web.api.namespaces import user_api
-from txmatching.web.auth.login_check import login_required, require_role, get_request_token
-from txmatching.web.auth.user_authentication import obtain_login_token, refresh_token, register_user, \
-    change_user_password
+from txmatching.auth.login_check import login_required, require_role, get_request_token
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +25,12 @@ class LoginApi(Resource):
     @user_api.doc(body=login_input_model, responses={200: 'Success', 401: 'Auth denied'})
     def post(self):
         post_data = request.get_json()
-        token, error = obtain_login_token(email=post_data.get('email'), password=post_data.get('password'))
+        maybe_token = obtain_login_token(email=post_data.get('email'), password=post_data.get('password'))
 
-        if error:
-            return auth_denied(error)
-        elif token:
-            return ok_token_status(token)
+        if isinstance(maybe_token, FailResponse):
+            return auth_denied(maybe_token.error)
         else:
-            return default_inconsistency()
+            return jsonify(maybe_token)
 
 
 @user_api.route('/refresh-token', methods=['GET'])
@@ -40,22 +39,18 @@ class RefreshTokenApi(Resource):
     @user_api.doc(security='bearer', responses={200: 'Success', 401: 'Auth denied'})
     @login_required()
     def get(self):
-        error, token = None, None
         try:
             # should always succeed as [login_required] annotation is used
             auth_token = request.headers.get('Authorization').split(" ")[1]
-            token, error = refresh_token(auth_token)
+            maybe_token = refresh_token(auth_token)
         # pylint: disable=broad-except
         # as this is authentication, we need to catch everything
         except Exception:
-            error = 'Bearer token malformed.'
+            maybe_token = FailResponse('Bearer token malformed.')
 
-        if error:
-            return auth_denied(error)
-        elif token:
-            return ok_token_status(token)
-        else:
-            return default_inconsistency()
+        if isinstance(maybe_token, FailResponse):
+            return auth_denied(maybe_token.error)
+        return jsonify(maybe_token)
 
 
 @user_api.route('/change-password', methods=['PUT'])
@@ -69,7 +64,7 @@ class PasswordChangeApi(Resource):
     def put(self):
         data = request.get_json()
         token = get_request_token()
-        if token:
+        if isinstance(token, BearerToken):
             change_user_password(user_id=token.user_id, new_password=data.get('new_password'))
             return {'status': 'ok'}
         else:
@@ -85,22 +80,16 @@ class RegistrationApi(Resource):
     })
 
     @user_api.doc(body=registration_model, security='bearer')
-    @require_role('ADMIN')
+    @require_role(UserRole.ADMIN)
     def post(self):
         post_data = request.get_json()
-        token, error = register_user(email=post_data.get('email'),
+        login_response = register_user(email=post_data.get('email'),
                                      password=post_data.get('password'),
                                      role=post_data.get('role'))
-        if error:
-            return {'status': 'error', 'message': error}, 400
-        elif token:
-            return ok_token_status(token)
+        if isinstance(login_response, FailResponse):
+            return {'status': 'error', 'message': login_response.error}, 400
         else:
-            return default_inconsistency()
-
-
-def ok_token_status(token: str):
-    return {'status': 'ok', 'auth_token': token}
+            return jsonify(login_response)
 
 
 def auth_denied(error: str):

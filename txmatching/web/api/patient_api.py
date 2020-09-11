@@ -13,7 +13,7 @@ from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.patients.patient import Recipient, Donor
 from txmatching.utils.country import Country
 from txmatching.web.api.namespaces import patient_api
-from txmatching.web.auth.login_check import login_required
+from txmatching.auth.login_check import login_required
 
 logger = logging.getLogger(__name__)
 

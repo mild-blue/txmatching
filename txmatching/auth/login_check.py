@@ -3,30 +3,40 @@
 
 import functools
 import logging
-from typing import Optional
+from typing import Union
 
 from flask import abort, g
 from flask import request
 
-from txmatching.web.auth.crypto import decode_auth_token, BearerToken
+from txmatching.auth.crypto import decode_auth_token
+from txmatching.auth.data_types import BearerToken, FailResponse, UserRole
 
 logger = logging.getLogger(__name__)
 
 
-def get_request_token() -> Optional[BearerToken]:
+def get_request_token() -> Union[BearerToken, FailResponse]:
     """
     Returns token of the currently logged in user.
 
     Token is present in the header Authorization: Bearer <real_token>
     """
     auth_header = request.headers.get('Authorization')
-    token = None
     try:
         auth_token = auth_header.split(' ')[1]
-        token, _ = decode_auth_token(auth_token)
+        return decode_auth_token(auth_token)
     except Exception:
-        logger.exception('Exception during token parsing.')
-    return token
+        return FailResponse('Exception during token parsing.')
+
+
+def _get_token(auth_header: str) -> Union[BearerToken, FailResponse]:
+    if auth_header:
+        try:
+            auth_token = auth_header.split(" ")[1]
+            return decode_auth_token(auth_token)
+        except Exception:
+            return FailResponse('Bearer token malformed.')
+    else:
+        return FailResponse('Access denied.')
 
 
 def login_required():
@@ -38,19 +48,11 @@ def login_required():
         @functools.wraps(original_route)
         def decorated_route(*args, **kwargs):
             auth_header = request.headers.get('Authorization')
-            if auth_header:
-                try:
-                    auth_token = auth_header.split(" ")[1]
-                    token, error = decode_auth_token(auth_token)
-                    store_user_in_context(token.user_id)
-                except Exception:
-                    error = 'Bearer token malformed.'
-            else:
-                error = 'Access denied.'
+            maybe_token = _get_token(auth_header)
 
-            if error:
+            if isinstance(maybe_token, FailResponse):
                 abort(401, description='Authentication denied.')
-
+            store_user_in_context(maybe_token.user_id)
             return original_route(*args, **kwargs)
 
         return decorated_route
@@ -58,7 +60,7 @@ def login_required():
     return decorator
 
 
-def require_role(*role_names):
+def require_role(*role_names: UserRole):
     """
     Checks logged user and whether he/she has correct role.
     """
@@ -67,21 +69,12 @@ def require_role(*role_names):
         @functools.wraps(original_route)
         def decorated_route(*args, **kwargs):
             auth_header = request.headers.get('Authorization')
-            token, error = None, None
-            if auth_header:
-                try:
-                    auth_token = auth_header.split(" ")[1]
-                    token, error = decode_auth_token(auth_token)
-                    store_user_in_context(token.user_id)
-                except Exception:
-                    error = 'Bearer token malformed.'
-            else:
-                error = 'Access denied.'
+            maybe_token = _get_token(auth_header)
 
-            if error or not token:
+            if isinstance(maybe_token, FailResponse):
                 abort(401, description='Authentication denied.')
 
-            if token.role not in role_names:
+            if maybe_token.role not in role_names:
                 abort(401, description='Authentication denied, role mismatch!')
 
             return original_route(*args, **kwargs)

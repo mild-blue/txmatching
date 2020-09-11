@@ -12,7 +12,7 @@ from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import user_api
-from txmatching.web.auth.login_check import store_user_in_context
+from txmatching.auth.login_check import store_user_in_context
 
 
 class DbTests(unittest.TestCase):

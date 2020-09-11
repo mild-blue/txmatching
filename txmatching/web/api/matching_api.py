@@ -18,7 +18,7 @@ from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.web.api.namespaces import matching_api
-from txmatching.web.auth.login_check import login_required
+from txmatching.auth.login_check import login_required
 
 logger = logging.getLogger(__name__)
 
