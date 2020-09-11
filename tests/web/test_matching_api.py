@@ -42,9 +42,9 @@ class TestSaveAndGetConfiguration(DbTests):
             "related_donor_db_id": 0
         }
         with self.app.test_client() as client:
-
             self.assertIsNotNone(ConfigModel.query.get(1))
-            val = client.put('/pat/recipient', headers=self.auth_headers, json=recipient).json["db_id"]
-            recipients = client.get('/pat/', headers=self.auth_headers).json["recipients_dict"]
-            self.assertEqual("str", recipients[str(val)]["medical_id"])
+            res = client.put('/pat/recipient', headers=self.auth_headers, json=recipient).json["db_id"]
+            self.assertEqual(1, res)
+            recipients = client.get('/pat/', headers=self.auth_headers).json["recipients"]
+            self.assertEqual("str", recipients[0]["medical_id"])
             self.assertIsNone(ConfigModel.query.get(1))
