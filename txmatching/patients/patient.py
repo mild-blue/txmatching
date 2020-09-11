@@ -55,3 +55,9 @@ class Recipient(Patient):
 class DonorsRecipients:
     donors_dict: Dict[int, Donor]
     recipients_dict: Dict[int, Recipient]
+
+    def to_lists_for_fe(self) -> Dict:
+        return {
+            "donors": list(self.donors_dict.values()),
+            "recipients": list(self.recipients_dict.values())
+        }

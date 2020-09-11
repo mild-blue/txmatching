@@ -27,7 +27,7 @@ class AllPatients(Resource):
     @login_required()
     def get(self) -> str:
         patients = get_all_donors_recipients()
-        return jsonify(patients)
+        return jsonify(patients.to_lists_for_fe())
 
 
 @patient_api.route('/recipient', methods=['PUT'])
