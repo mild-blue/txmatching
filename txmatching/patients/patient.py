@@ -31,17 +31,8 @@ class Donor(Patient):
 
 @dataclass
 class Recipient(Patient):
-    """
-    Attributes:
-        require_new_donor_having_better_match_in_compatibility_index: New donor for recipient needs to have
-        a better match in the compatibility index than (the best of) his original relative(s)
-        require_new_donor_having_better_match_in_compatibility_index_or_blood_group: New donor for recipient
-        has to have a better match in compatibility index or in blood group than (the best of) his original relative(s)
-    """
     related_donor: Donor
     acceptable_blood_groups: List[str]
-    require_new_donor_having_better_match_in_compatibility_index: bool = True
-    require_new_donor_having_better_match_in_compatibility_index_or_blood_group: bool = True
 
 
 @dataclass

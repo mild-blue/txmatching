@@ -3,6 +3,8 @@ from typing import List
 from txmatching.config.configuration import Configuration
 from txmatching.filters.filter_base import FilterBase
 from txmatching.solvers.matching.matching import Matching
+from txmatching.solvers.matching.transplant_cycle import TransplantCycle
+from txmatching.solvers.matching.transplant_sequence import TransplantSequence
 
 
 class FilterDefault(FilterBase):
@@ -28,10 +30,12 @@ class FilterDefault(FilterBase):
         sequences = matching.get_sequences()
         cycles = matching.get_cycles()
 
-        if max([cycle.length for cycle in cycles], default=0) > self._max_cycle_length:
+        if max(cycles, key=lambda cycle: cycle.length,
+               default=TransplantCycle([])).length > self._max_cycle_length:
             return False
 
-        if max([sequence.length for sequence in sequences], default=0) > self._max_sequence_length:
+        if max(sequences, key=lambda sequence: sequence.length,
+               default=TransplantSequence([])).length > self._max_sequence_length:
             return False
 
         for patient_db_id in self._required_patients:

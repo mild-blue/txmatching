@@ -2,8 +2,8 @@ from typing import Optional
 
 from txmatching.config.configuration import (Configuration)
 from txmatching.patients.patient import Donor, Recipient
-from txmatching.scorers.additive_scorer import (TRANSPLANT_IMPOSSIBLE,
-                                                AdditiveScorer)
+from txmatching.scorers.additive_scorer import AdditiveScorer
+from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.hla_system.compatibility_index import \
     compatibility_index
@@ -25,35 +25,35 @@ class HLAAdditiveScorer(AdditiveScorer):
 
         if (donor.parameters.country_code, recipient.parameters.country_code) \
                 in self._configuration.forbidden_country_combinations:
-            return TRANSPLANT_IMPOSSIBLE
+            return TRANSPLANT_IMPOSSIBLE_SCORE
 
         # Donor must have blood group that is acceptable for recipient
         if donor.parameters.blood_group not in recipient.acceptable_blood_groups:
-            return TRANSPLANT_IMPOSSIBLE
+            return TRANSPLANT_IMPOSSIBLE_SCORE
 
         # Recipient can't have antibodies that donor has antigens for
         # TODO: https://trello.com/c/ly8SDkhZ Use allow_low_high_res_incompatible param here
         #  that if set to True would not return TRANSPLANT_IMPOSSIBLE in some cases
         is_positive_hla_crossmatch = self._is_positive_hla_crossmatch(donor, recipient)
         if is_positive_hla_crossmatch is True or is_positive_hla_crossmatch is None:
-            return TRANSPLANT_IMPOSSIBLE
+            return TRANSPLANT_IMPOSSIBLE_SCORE
 
         # If required, donor must have either better match in blood group or better compatibility index than
         # the donor related to the recipient
         if self._configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group \
                 and (not blood_groups_compatible(donor, recipient)
                      and donor_recipient_ci <= related_donor_recipient_ci):
-            return TRANSPLANT_IMPOSSIBLE
+            return TRANSPLANT_IMPOSSIBLE_SCORE
 
         # If required, the donor must have the compatible blood group with recipient
         if self._configuration.enforce_compatible_blood_group and not blood_groups_compatible(donor, recipient):
-            return TRANSPLANT_IMPOSSIBLE
+            return TRANSPLANT_IMPOSSIBLE_SCORE
 
         # If required, the compatibility index between donor and recipient must be higher than
         # between recipient and the donor related to him
         if self._configuration.require_new_donor_having_better_match_in_compatibility_index \
                 and donor_recipient_ci <= related_donor_recipient_ci:
-            return TRANSPLANT_IMPOSSIBLE
+            return TRANSPLANT_IMPOSSIBLE_SCORE
 
         if self._configuration.use_binary_scoring:
             return 1.0
@@ -63,7 +63,7 @@ class HLAAdditiveScorer(AdditiveScorer):
 
             # The total score must be higher than the minimum required
             if total_score < self._configuration.minimum_total_score:
-                return TRANSPLANT_IMPOSSIBLE
+                return TRANSPLANT_IMPOSSIBLE_SCORE
             else:
                 return total_score
 

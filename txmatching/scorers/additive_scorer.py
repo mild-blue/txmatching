@@ -3,10 +3,8 @@ from typing import List
 from txmatching.config.configuration import Configuration, ManualDonorRecipientScore
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.scorer_base import ScorerBase
+from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
 from txmatching.solvers.matching.matching import Matching
-
-ORIGINAL_DONOR_RECIPIENT_TUPLE = -2.0
-TRANSPLANT_IMPOSSIBLE = -1.0
 
 ScoreMatrix = List[List[float]]
 
@@ -52,7 +50,7 @@ class AdditiveScorer(ScorerBase):
 
     def _score_transplant_including_original_tuple(self, donor: Donor, recipient: Recipient) -> float:
         if recipient.related_donor == donor:
-            score = ORIGINAL_DONOR_RECIPIENT_TUPLE
+            score = ORIGINAL_DONOR_RECIPIENT_SCORE
         else:
             score = self.score_transplant(donor, recipient)
         return score
