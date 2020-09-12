@@ -1,4 +1,4 @@
-from txmatching.config.configuration import Configuration, MAN_DON_REC_SCORES
+from txmatching.config.configuration import Configuration
 
 
 def _check_if_config_is_supported(configuration: Configuration):
@@ -24,7 +24,7 @@ def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configu
                            "minimum_total_score",
                            "require_new_donor_having_better_match_in_compatibility_index",
                            "require_new_donor_having_better_match_in_compatibility_index_or_blood_group",
-                           "max_number_of_distinct_countries_in_round", MAN_DON_REC_SCORES]
+                           "max_number_of_distinct_countries_in_round", "manual_donor_recipient_scores"]
 
     # TODO: There needs to be a better logic here https://trello.com/c/zseK1Zcf
     # For example for

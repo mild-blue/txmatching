@@ -10,9 +10,8 @@ from graph_tool.all import Graph
 
 from txmatching.config.configuration import Configuration
 from txmatching.patients.patient import Donor, Recipient
-from txmatching.scorers.additive_scorer import (ORIGINAL_DONOR_RECIPIENT_TUPLE,
-                                                TRANSPLANT_IMPOSSIBLE,
-                                                AdditiveScorer)
+from txmatching.scorers.additive_scorer import AdditiveScorer
+from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.solver_base import SolverBase
 
@@ -32,11 +31,6 @@ class AllSolutionsSolver(SolverBase):
         score_matrix_array = np.zeros((len(donors), len(recipients)))
         for row_index, row in enumerate(score_matrix):
             for column_index, value in enumerate(row):
-                if value == ORIGINAL_DONOR_RECIPIENT_TUPLE:
-                    value = np.NaN
-                elif value == TRANSPLANT_IMPOSSIBLE:
-                    value = - np.inf
-
                 score_matrix_array[row_index, column_index] = value
         proper_solutions = set()
 
@@ -166,14 +160,14 @@ class AllSolutionsSolver(SolverBase):
 
     @staticmethod
     def _find_acceptable_recipient_indices(score_matrix: np.ndarray, donor_index: int) -> List[int]:
-        return list(np.where(np.isfinite(score_matrix[donor_index]))[0])
+        return list(np.where((score_matrix[donor_index] >= 0))[0])
 
     def _graph_from_score_matrix(self, score_matrix: np.array,
                                  add_fake_edges_for_bridge_donors: bool = False) -> Tuple[Graph, Dict]:
         n_donors, _ = score_matrix.shape
 
         recipient_index_to_pair_index = {recipient_ix: donor_ix for donor_ix, recipient_ix in
-                                         zip(*np.where(np.isnan(score_matrix)))}
+                                         zip(*np.where(score_matrix == ORIGINAL_DONOR_RECIPIENT_SCORE))}
 
         directed_graph = Graph(directed=True)
         pair_index_to_vertex = {i: directed_graph.add_vertex() for i in range(n_donors)}
@@ -222,7 +216,7 @@ class AllSolutionsSolver(SolverBase):
 
     @staticmethod
     def _get_bridge_indices(score_matrix: np.ndarray) -> List[int]:
-        bridge_indices = np.where(np.sum(np.isnan(score_matrix), axis=1) == 0)[0]
+        bridge_indices = np.where(np.sum(score_matrix == ORIGINAL_DONOR_RECIPIENT_SCORE, axis=1) == 0)[0]
         return list(bridge_indices)
 
     def _get_donor_pair_index_to_recipient_pairs_indices(self, score_matrix: np.ndarray) -> Dict[int, List[int]]:
@@ -247,7 +241,7 @@ class AllSolutionsSolver(SolverBase):
         pair_index_to_recipient_index = dict()
         n_donor, _ = score_matrix.shape
         for pair_index in range(n_donor):
-            recipient_indices = np.where(np.isnan(score_matrix[pair_index, :]))[0]
+            recipient_indices = np.where(score_matrix[pair_index, :] == ORIGINAL_DONOR_RECIPIENT_SCORE)[0]
             if len(recipient_indices) > 0:
                 pair_index_to_recipient_index[pair_index] = recipient_indices[0]
 

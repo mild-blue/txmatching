@@ -1,7 +1,7 @@
+import dataclasses
+
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.config.configuration import Configuration
-from txmatching.data_transfer_objects.configuration.configuration_to_dto import \
-    configuration_to_dto
 from txmatching.web import matching_api, patient_api
 
 
@@ -12,7 +12,7 @@ class TestSaveAndGetConfiguration(DbTests):
         self.api.add_namespace(matching_api, path='/matching')
 
         with self.app.test_client() as client:
-            conf_dto = configuration_to_dto(Configuration(
+            conf_dto = dataclasses.asdict(Configuration(
                 enforce_compatible_blood_group=False,
                 require_new_donor_having_better_match_in_compatibility_index=False,
                 require_new_donor_having_better_match_in_compatibility_index_or_blood_group=False))
