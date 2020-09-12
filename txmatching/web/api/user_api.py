@@ -6,7 +6,7 @@ import logging
 from flask import request, jsonify
 from flask_restx import Resource, fields
 
-from txmatching.auth.data_types import BearerToken, UserRole, FailResponse
+from txmatching.auth.data_types import BearerToken, UserRole, FailResponse, LoginSuccessResponse
 from txmatching.auth.login_check import login_required, require_role, get_request_token
 from txmatching.auth.user_authentication import obtain_login_token, refresh_token, change_user_password, register_user
 from txmatching.web.api.namespaces import user_api
@@ -37,10 +37,9 @@ class LoginApi(Resource):
         post_data = request.get_json()
         maybe_token = obtain_login_token(email=post_data.get('email'), password=post_data.get('password'))
 
-        if isinstance(maybe_token, FailResponse):
-            return jsonify(maybe_token), 401
-        else:
+        if isinstance(maybe_token, LoginSuccessResponse):
             return jsonify(maybe_token)
+        return jsonify(maybe_token), 401
 
 
 @user_api.route('/refresh-token', methods=['GET'])
@@ -60,9 +59,9 @@ class RefreshTokenApi(Resource):
         except Exception:
             maybe_token = FailResponse('Bearer token malformed.')
 
-        if isinstance(maybe_token, FailResponse):
-            return jsonify(maybe_token), 401
-        return jsonify(maybe_token)
+        if isinstance(maybe_token, LoginSuccessResponse):
+            return jsonify(maybe_token)
+        return jsonify(maybe_token), 401
 
 
 @user_api.route('/change-password', methods=['PUT'])
@@ -71,16 +70,16 @@ class PasswordChangeApi(Resource):
         'new_password': fields.String(required=True, description='New password.')
     })
 
-    @user_api.doc(body=password_change_model, security='bearer')
+    @user_api.doc(body=password_change_model, security='bearer', responses={400: 'error', 200: "ok"})
     @login_required()
     def put(self):
         data = request.get_json()
         token = get_request_token()
         if isinstance(token, BearerToken):
             change_user_password(user_id=token.user_id, new_password=data.get('new_password'))
-            return {'status': 'ok'}
+            return 'ok'
         else:
-            return {'status': 'error'}, 400
+            return 'error', 400
 
 
 @user_api.route('/register', methods=['POST'])
@@ -100,7 +99,6 @@ class RegistrationApi(Resource):
         login_response = register_user(email=post_data.get('email'),
                                        password=post_data.get('password'),
                                        role=post_data.get('role'))
-        if isinstance(login_response, FailResponse):
-            return jsonify(login_response), 400
-        else:
+        if isinstance(login_response, LoginSuccessResponse):
             return jsonify(login_response)
+        return jsonify(login_response), 401
