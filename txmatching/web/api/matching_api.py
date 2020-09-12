@@ -7,7 +7,7 @@ import logging
 from flask import request, jsonify
 from flask_restx import Resource
 
-
+from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_JSON
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, Transplant)
@@ -18,7 +18,7 @@ from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.web.api.namespaces import matching_api
-from txmatching.auth.login_check import login_required
+from txmatching.auth.login_check import login_required, get_user_role
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +32,13 @@ class CalculateFromConfig(Resource):
     @matching_api.doc(body=CONFIGURATION_JSON, security='bearer')
     @matching_api.response(200, model=MATCHING_MODEL, description='')
     @login_required()
-    def post(self) -> str:
+    @get_user_role()
+    def post(self, user_role: UserRole) -> str:
         configuration = configuration_from_dict(request.json)
         save_configuration_as_current(configuration)
         solve_from_db()
         matchings, score_dict, compatible_blood_dict = get_latest_matchings_and_score_matrix()
-        # TODO add here that just max X are sent when the user role is viewer.
+
         matching_dtos = [
             dataclasses.asdict(MatchingDTO(
                 rounds=[
@@ -53,5 +54,7 @@ class CalculateFromConfig(Resource):
                 score=matching.score()
             )) for matching in matchings
         ]
+        if user_role == UserRole.VIEWER:
+            matching_dtos = matching_dtos[:configuration.max_matchings_to_show_to_viewer]
 
         return jsonify(matching_dtos)
