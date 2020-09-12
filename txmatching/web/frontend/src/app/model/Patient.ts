@@ -7,7 +7,7 @@ export interface Patient {
   db_id: number;
   medical_id: string;
   parameters: PatientParameters;
-  patient_type: PatientType;
+  donor_type: DonorType;
 }
 
 export interface PatientParameters {
@@ -22,9 +22,8 @@ export interface PatientParameters {
   country_code: string;
 }
 
-export enum PatientType {
+export enum DonorType {
   DONOR = 'DONOR',
-  RECIPIENT = 'RECIPIENT',
   BRIDGING_DONOR = 'BRIDGING_DONOR',
   ALTRUIST = 'ALTRUIST'
 }
