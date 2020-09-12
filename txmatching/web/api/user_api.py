@@ -3,22 +3,26 @@
 
 import logging
 
-from flask import request, jsonify
+from flask import jsonify, request
 from flask_restx import Resource, fields
 
-from txmatching.auth.data_types import BearerToken, UserRole, FailResponse, LoginSuccessResponse
-from txmatching.auth.login_check import login_required, require_role, get_request_token
-from txmatching.auth.user_authentication import obtain_login_token, refresh_token, change_user_password, register_user
+from txmatching.auth.data_types import (BearerToken, FailResponse,
+                                        LoginSuccessResponse, UserRole)
+from txmatching.auth.login_check import (get_request_token, login_required,
+                                         require_role)
+from txmatching.auth.user_authentication import (change_user_password,
+                                                 obtain_login_token,
+                                                 refresh_token, register_user)
 from txmatching.web.api.namespaces import user_api
 
 logger = logging.getLogger(__name__)
 
 LOGIN_SUCCESS_RESPONSE = user_api.model('LoginSuccessResponse', {
-    "auth_token": fields.String(required=True),
+    'auth_token': fields.String(required=True),
 })
 
 LOGIN_FAIL_RESPONSE = user_api.model('LoginFailResponse', {
-    "error": fields.String(required=True),
+    'error': fields.String(required=True),
 })
 
 
@@ -51,7 +55,7 @@ class RefreshTokenApi(Resource):
     def get(self):
         try:
             # should always succeed as [login_required] annotation is used
-            auth_token = request.headers.get('Authorization').split(" ")[1]
+            auth_token = request.headers.get('Authorization').split(' ')[1]
             maybe_token = refresh_token(auth_token)
         # pylint: disable=broad-except
         # as this is authentication, we need to catch everything
@@ -69,16 +73,17 @@ class PasswordChangeApi(Resource):
         'new_password': fields.String(required=True, description='New password.')
     })
 
-    @user_api.doc(body=password_change_model, security='bearer', responses={400: 'error', 200: "ok"})
+    @user_api.doc(body=password_change_model, security='bearer', responses={400: {'status': 'error'},
+                                                                            200: {'status': 'ok'}})
     @login_required()
     def put(self):
         data = request.get_json()
         token = get_request_token()
         if isinstance(token, BearerToken):
             change_user_password(user_id=token.user_id, new_password=data.get('new_password'))
-            return 'ok'
+            return {'status': 'ok'}
         else:
-            return 'error', 400
+            return {'status': 'error'}, 400
 
 
 @user_api.route('/register', methods=['POST'])
