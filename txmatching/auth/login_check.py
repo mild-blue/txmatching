@@ -75,7 +75,8 @@ def require_role(*role_names: UserRole):
                 abort(401, description='Authentication denied.')
 
             if maybe_token.role not in role_names:
-                abort(401, description='Authentication denied, role mismatch!')
+                abort(401, description='Access denied. You do not have privileges to view this page. If you believe'
+                                       ' you are seeing this message by error, contact your administrator.')
 
             return original_route(*args, **kwargs)
 

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 LOGIN_SUCCESS_RESPONSE = user_api.model('LoginSuccessResponse', {
     "auth_token": fields.String(required=True),
-    "role": fields.String(required=True, enum=[v.name for v in UserRole]),
+    "role": fields.String(required=True, enum=[user_role.name for user_role in UserRole]),
 })
 
 LOGIN_FAIL_RESPONSE = user_api.model('LoginFailResponse', {
