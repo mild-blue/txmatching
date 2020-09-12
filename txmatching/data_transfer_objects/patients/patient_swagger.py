@@ -22,7 +22,7 @@ DONOR_MODEL = patient_api.model('Donor', {
     "medical_id": fields.String(required=True, description='Medical id of the patient'),
     "parameters": fields.Nested(required=True, model=PATIENT_PARAMETERS_MODEL),
     "donor_type": fields.String(required=True, enum=[v.name for v in DonorType]),
-    "related_recipient_db_id": fields.Integer(required=False, description='Dabase id of the related recipient'),
+    "related_recipient_db_id": fields.Integer(required=False, description='Database id of the related recipient'),
 })
 
 RECIPIENT_MODEL = patient_api.model('Recipient', {
@@ -30,7 +30,7 @@ RECIPIENT_MODEL = patient_api.model('Recipient', {
     "acceptable_blood_groups": fields.List(required=False, cls_or_instance=fields.String),
     "medical_id": fields.String(required=True, description='Medical id of the patient'),
     "parameters": fields.Nested(required=True, model=PATIENT_PARAMETERS_MODEL),
-    "related_donor_db_id": fields.Integer(required=False, description='Dabase id of the related donor'),
+    "related_donor_db_id": fields.Integer(required=False, description='Database id of the related donor'),
     "recipient_requiremens": fields.Nested(RECIPIENT_REQUIREMENTS)
 })
 

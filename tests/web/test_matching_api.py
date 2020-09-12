@@ -47,4 +47,5 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(1, res)
             recipients = client.get('/pat/', headers=self.auth_headers).json["recipients"]
             self.assertEqual("str", recipients[0]["medical_id"])
+
             self.assertIsNone(ConfigModel.query.get(1))

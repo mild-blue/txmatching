@@ -39,22 +39,31 @@ class HLAAdditiveScorer(AdditiveScorer):
         if is_positive_hla_crossmatch is True or is_positive_hla_crossmatch is None:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
-        # If required, donor must have either better match in blood group or better compatibility index than
-        # the donor related to the recipient
-        if recipient.recipient_requirements.require_better_match_in_compatibility_index_or_blood_group \
-                and (not blood_groups_compatible(donor, recipient)
-                     and donor_recipient_ci <= related_donor_recipient_ci):
+        better_match_in_ci_or_br = \
+            recipient.recipient_requirements.require_better_match_in_compatibility_index_or_blood_group
+
+        better_match_in_ci_or_br = better_match_in_ci_or_br if better_match_in_ci_or_br is not None \
+            else self._configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group
+
+        if better_match_in_ci_or_br and (not blood_groups_compatible(donor, recipient)
+                                         and donor_recipient_ci <= related_donor_recipient_ci):
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
+        require_compatible_blood_group = recipient.recipient_requirements.require_compatible_blood_group
+        require_compatible_blood_group = require_compatible_blood_group if require_compatible_blood_group is not None \
+            else self._configuration.require_compatible_blood_group
+
         # If required, the donor must have the compatible blood group with recipient
-        if recipient.recipient_requirements.require_compatible_blood_group \
-                and not blood_groups_compatible(donor, recipient):
+        if require_compatible_blood_group and not blood_groups_compatible(donor, recipient):
             return TRANSPLANT_IMPOSSIBLE_SCORE
+
+        better_match_in_ci = recipient.recipient_requirements.require_better_match_in_compatibility_index
+        better_match_in_ci = better_match_in_ci if better_match_in_ci is not None \
+            else self._configuration.require_better_match_in_compatibility_index
 
         # If required, the compatibility index between donor and recipient must be higher than
         # between recipient and the donor related to him
-        if recipient.recipient_requirements.require_better_match_in_compatibility_index \
-                and donor_recipient_ci <= related_donor_recipient_ci:
+        if better_match_in_ci and donor_recipient_ci <= related_donor_recipient_ci:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
         if self._configuration.use_binary_scoring:
