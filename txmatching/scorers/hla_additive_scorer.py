@@ -18,9 +18,9 @@ class HLAAdditiveScorer(AdditiveScorer):
 
     # pylint: disable=too-many-return-statements
     # it seems that it is reasonable to want many return statements here as it is still well readable
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> float:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Donor) -> float:
         donor_recipient_ci = compatibility_index(donor.parameters, recipient.parameters)
-        related_donor_recipient_ci = compatibility_index(recipient.related_donor.parameters, recipient.parameters)
+        related_donor_recipient_ci = compatibility_index(original_donor.parameters, recipient.parameters)
 
         # We can't do exchanges between some countries
 
@@ -39,21 +39,26 @@ class HLAAdditiveScorer(AdditiveScorer):
         if is_positive_hla_crossmatch is True or is_positive_hla_crossmatch is None:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
-        # If required, donor must have either better match in blood group or better compatibility index than
-        # the donor related to the recipient
-        if self._configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group \
-                and (not blood_groups_compatible(donor, recipient)
-                     and donor_recipient_ci <= related_donor_recipient_ci):
+        better_match_in_ci_or_br = self._get_setting_from_config_or_recipient(
+            recipient,
+            "require_better_match_in_compatibility_index_or_blood_group"
+        )
+
+        if better_match_in_ci_or_br and (not blood_groups_compatible(donor, recipient)
+                                         and donor_recipient_ci <= related_donor_recipient_ci):
+            return TRANSPLANT_IMPOSSIBLE_SCORE
+        require_compatible_blood_group = self._get_setting_from_config_or_recipient(recipient,
+                                                                                    "require_compatible_blood_group")
+        # If required, the donor must have the compatible blood group with recipient
+        if require_compatible_blood_group and not blood_groups_compatible(donor, recipient):
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
-        # If required, the donor must have the compatible blood group with recipient
-        if self._configuration.enforce_compatible_blood_group and not blood_groups_compatible(donor, recipient):
-            return TRANSPLANT_IMPOSSIBLE_SCORE
+        better_match_in_ci = self._get_setting_from_config_or_recipient(recipient,
+                                                                        "require_better_match_in_compatibility_index")
 
         # If required, the compatibility index between donor and recipient must be higher than
         # between recipient and the donor related to him
-        if self._configuration.require_new_donor_having_better_match_in_compatibility_index \
-                and donor_recipient_ci <= related_donor_recipient_ci:
+        if better_match_in_ci and donor_recipient_ci <= related_donor_recipient_ci:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
         if self._configuration.use_binary_scoring:
@@ -129,3 +134,8 @@ class HLAAdditiveScorer(AdditiveScorer):
             return crossmatch_cant_be_determined
 
         return negative_crossmatch
+
+    def _get_setting_from_config_or_recipient(self, recipient: Recipient,
+                                              setting_name):
+        setting_val = getattr(recipient.recipient_requirements, setting_name)
+        return setting_val if setting_val is not None else getattr(self._configuration, setting_name)

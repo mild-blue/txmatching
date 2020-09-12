@@ -26,8 +26,8 @@ def solve_from_db() -> Iterable[Matching]:
 
     current_configuration = get_current_configuration()
     current_config_matchings, score_matrix = solve_from_config(SolverInputParameters(
-        donors=patients.donors,
-        recipients=patients.recipients,
+        donors_dict=patients.donors_dict,
+        recipients_dict=patients.recipients_dict,
         configuration=current_configuration
     ))
     current_config_matchings_model = dataclasses.asdict(

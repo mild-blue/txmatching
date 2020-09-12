@@ -1,9 +1,11 @@
+import dataclasses
+
 from sqlalchemy import ForeignKey, Integer
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from txmatching.database.db import db
-from txmatching.patients.patient import DonorType
+from txmatching.patients.patient import DonorType, RecipientRequirements
 
 
 # pylint: disable=too-few-public-methods
@@ -21,6 +23,7 @@ class ConfigModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    pairing_results = relationship('PairingResultModel', backref='config', cascade="all, delete")
 
 
 class PairingResultModel(db.Model):
@@ -28,7 +31,7 @@ class PairingResultModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    config_id = db.Column(db.Integer, unique=False, nullable=False)
+    config_id = db.Column(db.Integer, ForeignKey('config.id'), unique=False, nullable=False)
     calculated_matchings = db.Column(db.JSON, unique=False, nullable=False)
     score_matrix = db.Column(db.JSON, unique=False, nullable=False)
     valid = db.Column(db.BOOLEAN, unique=False, nullable=False)
@@ -48,6 +51,8 @@ class RecipientModel(db.Model):
     hla_antigens = db.Column(db.JSON, unique=False, nullable=False)
     hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, nullable=False)
+    recipient_requirements = db.Column(db.JSON, unique=False, nullable=False,
+                                       default=dataclasses.asdict(RecipientRequirements()))
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)

@@ -23,11 +23,11 @@ class Configuration:
     """
     scorer_constructor_name: str = "HLAAdditiveScorer"
     solver_constructor_name: str = "AllSolutionsSolver"
-    enforce_compatible_blood_group: bool = False
+    require_compatible_blood_group: bool = False
     minimum_total_score: float = 0.0
     maximum_total_score: float = 27.0
-    require_new_donor_having_better_match_in_compatibility_index: bool = False
-    require_new_donor_having_better_match_in_compatibility_index_or_blood_group: bool = False
+    require_better_match_in_compatibility_index: bool = False
+    require_better_match_in_compatibility_index_or_blood_group: bool = False
     blood_group_compatibility_bonus: float = 0.0
     use_binary_scoring: bool = False
     max_cycle_length: int = 100

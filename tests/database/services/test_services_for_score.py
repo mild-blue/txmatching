@@ -12,7 +12,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_caching_in_solve_from_db(self):
         self.fill_db_with_patients_and_results()
         save_configuration_as_current(
-            Configuration(require_new_donor_having_better_match_in_compatibility_index=False)
+            Configuration(max_cycle_length=90)
         )
         score_matrix = calculate_current_score_matrix()
         testing.assert_array_equal(

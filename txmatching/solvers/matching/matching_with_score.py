@@ -1,6 +1,7 @@
 from typing import List
 
-from txmatching.solvers.matching.matching import Matching, DonorRecipientTuple
+from txmatching.patients.donor_recipient_tuple import DonorRecipientTuple
+from txmatching.solvers.matching.matching import Matching
 
 
 class MatchingWithScore(Matching):

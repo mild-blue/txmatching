@@ -10,6 +10,7 @@ from graph_tool.all import Graph
 
 from txmatching.config.configuration import Configuration
 from txmatching.patients.patient import Donor, Recipient
+from txmatching.patients.patient_types import RecipientDbId, DonorDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
@@ -25,9 +26,11 @@ class AllSolutionsSolver(SolverBase):
         self._verbose = verbose
         self._max_number_of_distinct_countries_in_round = max_number_of_distinct_countries_in_round
 
-    def solve(self, donors: List[Donor],
-              recipients: List[Recipient], scorer: AdditiveScorer) -> Iterator[MatchingWithScore]:
-        score_matrix = scorer.get_score_matrix(donors, recipients)
+    def solve(self, donors_dict: Dict[DonorDbId, Donor],
+              recipients_dict: Dict[RecipientDbId, Recipient], scorer: AdditiveScorer) -> Iterator[MatchingWithScore]:
+        score_matrix = scorer.get_score_matrix(donors_dict, recipients_dict)
+        recipients = list(recipients_dict.values())
+        donors = list(donors_dict.values())
         score_matrix_array = np.zeros((len(donors), len(recipients)))
         for row_index, row in enumerate(score_matrix):
             for column_index, value in enumerate(row):
@@ -53,7 +56,8 @@ class AllSolutionsSolver(SolverBase):
                     donor_recipient_list = [donor_recipient for transplant_round in proper_rounds for donor_recipient in
                                             transplant_round.donor_recipient_list]
                     score = sum(
-                        [score_matrix_array[donors.index(donor), recipients.index(recipient)] for donor, recipient in
+                        [score_matrix_array[donors.index(donor), recipients.index(recipient)] for
+                         donor, recipient in
                          donor_recipient_list])
                     proper_matching = MatchingWithScore(donor_recipient_list, score)
                     if proper_matching not in proper_solutions:

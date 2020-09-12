@@ -10,7 +10,8 @@ class TabularScorer(AdditiveScorer):
     def from_config(cls, configuration: Configuration) -> 'AdditiveScorer':
         raise NotImplementedError('Will not be implemented for the moment as this class is just for testing')
 
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient) -> Union[float, str]:
+    def score_transplant_calculated(self, donor: Donor,
+                                    recipient: Recipient, original_donor: Donor) -> Union[float, str]:
         raise NotImplementedError('Will not be implemented for the moment as this class is just for testing')
 
     def __init__(self, score_matrix: List[List[float]], donors: List[Donor] = None, recipients: List[Recipient] = None):
@@ -25,7 +26,7 @@ class TabularScorer(AdditiveScorer):
         """
         return self._score_matrix[donor_index][recipient_index]
 
-    def score_transplant(self, donor: Donor, recipient: Recipient) -> float:
+    def score_transplant(self, donor: Donor, recipient: Recipient, original_donor: Donor) -> float:
         index_donor = self._donors.index(donor)
         index_recipient = self._recipients.index(recipient)
         return self.score_transplant_ij(index_donor, index_recipient)

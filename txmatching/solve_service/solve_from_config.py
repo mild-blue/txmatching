@@ -18,12 +18,12 @@ def solve_from_config(params: SolverInputParameters) -> Tuple[Iterable[MatchingW
     solver = solver_from_config(params.configuration)
     matchings_in_db = load_matching_for_config_from_db(params)
     score_matrix = scorer.get_score_matrix(
-        params.donors, params.recipients
+        params.donors_dict, params.recipients_dict
     )
     if matchings_in_db is not None:
         all_solutions = matchings_in_db
     else:
-        all_solutions = solver.solve(params.donors, params.recipients, scorer)
+        all_solutions = solver.solve(params.donors_dict, params.recipients_dict, scorer)
 
     matching_filter = filter_from_config(params.configuration)
     matchings_filtered = filter(matching_filter.keep, all_solutions)

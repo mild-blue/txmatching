@@ -19,11 +19,9 @@ class TestConfiguration(DbTests):
 
         dto_dict = {'scorer_constructor_name': 'HLAAdditiveScorer',
                     'solver_constructor_name': 'AllSolutionsSolver',
-                    'enforce_compatible_blood_group': False,
                     'minimum_total_score': 0.0,
                     'maximum_total_score': 27.0,
-                    'require_new_donor_having_better_match_in_compatibility_index': False,
-                    'require_new_donor_having_better_match_in_compatibility_index_or_blood_group': False,
+                    'enforce_compatible_blood_group': False,
                     'forbidden_country_combinations': [{"donor_country": 'AUT', "recipient_country": 'IL'}],
                     'use_binary_scoring': False,
                     'max_cycle_length': 100,

@@ -20,11 +20,9 @@ def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configu
     _check_if_config_is_supported(less_strict)
     _check_if_config_is_supported(more_strict)
 
-    breaking_parameters = ["enforce_compatible_blood_group",
-                           "minimum_total_score",
-                           "require_new_donor_having_better_match_in_compatibility_index",
-                           "require_new_donor_having_better_match_in_compatibility_index_or_blood_group",
-                           "max_number_of_distinct_countries_in_round", "manual_donor_recipient_scores"]
+    breaking_parameters = ["minimum_total_score",
+                           "max_number_of_distinct_countries_in_round",
+                           "manual_donor_recipient_scores"]
 
     # TODO: There needs to be a better logic here https://trello.com/c/zseK1Zcf
     # For example for

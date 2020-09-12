@@ -3,6 +3,7 @@ import dataclasses
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.config.configuration import Configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
+from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.web import matching_api, patient_api
 
 
@@ -14,9 +15,10 @@ class TestSaveAndGetConfiguration(DbTests):
 
         with self.app.test_client() as client:
             conf_dto = dataclasses.asdict(Configuration(
-                enforce_compatible_blood_group=False,
-                require_new_donor_having_better_match_in_compatibility_index=False,
-                require_new_donor_having_better_match_in_compatibility_index_or_blood_group=False))
+                require_compatible_blood_group=False,
+                require_better_match_in_compatibility_index=False,
+                require_better_match_in_compatibility_index_or_blood_group=False,
+                max_number_of_distinct_countries_in_round=10))
 
             res = client.post('/matching/calculate-for-config', json=conf_dto, headers=self.auth_headers)
             expected = [{'score': 36.0, 'rounds': [{'transplants': [
@@ -32,3 +34,22 @@ class TestSaveAndGetConfiguration(DbTests):
             res = client.get('/pat/', headers=self.auth_headers)
             self.assertEqual(2, len(res.json["donors"]))
             self.assertEqual(2, len(res.json["recipients"]))
+
+    def test_save_recipient(self):
+        self.fill_db_with_patients_and_results()
+        self.api.add_namespace(patient_api, path='/pat')
+        recipient = {
+            "db_id": 1,
+            "acceptable_blood_groups": ["A"],
+            "medical_id": "str",
+            "parameters": {"blood_group": "A", "country_code": "CZE"},
+            "related_donor_db_id": 0
+        }
+        with self.app.test_client() as client:
+            self.assertIsNotNone(ConfigModel.query.get(1))
+            res = client.put('/pat/recipient', headers=self.auth_headers, json=recipient).json["db_id"]
+            self.assertEqual(1, res)
+            recipients = client.get('/pat/', headers=self.auth_headers).json["recipients"]
+            self.assertEqual(recipient["medical_id"], recipients[0]["medical_id"])
+
+            self.assertIsNone(ConfigModel.query.get(1))
