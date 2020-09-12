@@ -43,7 +43,7 @@ class HLAAdditiveScorer(AdditiveScorer):
             recipient.recipient_requirements.require_better_match_in_compatibility_index_or_blood_group
 
         better_match_in_ci_or_br = better_match_in_ci_or_br if better_match_in_ci_or_br is not None \
-            else self._configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group
+            else self._configuration.require_better_match_in_compatibility_index_or_blood_group
 
         if better_match_in_ci_or_br and (not blood_groups_compatible(donor, recipient)
                                          and donor_recipient_ci <= related_donor_recipient_ci):

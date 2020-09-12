@@ -30,7 +30,7 @@ RECIPIENT_MODEL = patient_api.model('Recipient', {
     "acceptable_blood_groups": fields.List(required=False, cls_or_instance=fields.String),
     "medical_id": fields.String(required=True, description='Medical id of the patient'),
     "parameters": fields.Nested(required=True, model=PATIENT_PARAMETERS_MODEL),
-    "related_donor_db_id": fields.Integer(required=False, description='Database id of the related donor'),
+    "related_donor_db_id": fields.Integer(required=True, description='Database id of the related donor'),
     "recipient_requiremens": fields.Nested(RECIPIENT_REQUIREMENTS)
 })
 

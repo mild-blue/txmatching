@@ -142,7 +142,8 @@ def get_all_donors_recipients() -> DonorsRecipients:
                               in active_donors]
 
     donors_dict = {donor.db_id: donor for _, donor in donors_with_recipients}
-    donors_with_recipients_dict = {k: v for k, v in donors_with_recipients if k is not None}
+    donors_with_recipients_dict = {related_recipient_id: donor for related_recipient_id, donor in donors_with_recipients
+                                   if related_recipient_id is not None}
 
     active_recipients = RecipientModel.query.filter(RecipientModel.active)
     recipients_dict = {

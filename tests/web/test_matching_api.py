@@ -14,7 +14,11 @@ class TestSaveAndGetConfiguration(DbTests):
         self.api.add_namespace(matching_api, path='/matching')
 
         with self.app.test_client() as client:
-            conf_dto = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=10))
+            conf_dto = dataclasses.asdict(Configuration(
+                require_compatible_blood_group=False,
+                require_better_match_in_compatibility_index=False,
+                require_better_match_in_compatibility_index_or_blood_group=False,
+                max_number_of_distinct_countries_in_round=10))
 
             res = client.post('/matching/calculate-for-config', json=conf_dto, headers=self.auth_headers)
             expected = [{'score': 36.0, 'rounds': [{'transplants': [
