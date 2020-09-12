@@ -38,3 +38,4 @@ class Configuration:
     forbidden_country_combinations: List[ForbiddenCountryCombination] = field(
         default_factory=lambda: DEFAULT_FORBIDDEN_COUNTRY_LIST)
     manual_donor_recipient_scores: List[ManualDonorRecipientScore] = field(default_factory=list)
+    max_matchings_to_show_to_viewer: int = 10

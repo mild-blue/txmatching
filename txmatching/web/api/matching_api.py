@@ -7,7 +7,7 @@ import logging
 from flask import request, jsonify
 from flask_restx import Resource
 
-
+from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_JSON
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, Transplant)
@@ -18,7 +18,7 @@ from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.web.api.namespaces import matching_api
-from txmatching.web.auth.login_check import login_required
+from txmatching.auth.login_check import login_required, get_user_role
 
 logger = logging.getLogger(__name__)
 
@@ -53,5 +53,7 @@ class CalculateFromConfig(Resource):
                 score=matching.score()
             )) for matching in matchings
         ]
+        if get_user_role() == UserRole.VIEWER:
+            matching_dtos = matching_dtos[:configuration.max_matchings_to_show_to_viewer]
 
         return jsonify(matching_dtos)

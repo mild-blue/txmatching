@@ -10,7 +10,7 @@ from txmatching.config.configuration import Configuration
 from txmatching.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_JSON
 from txmatching.database.services.config_service import get_current_configuration, save_configuration_as_current
 from txmatching.web.api.namespaces import configuration_api
-from txmatching.web.auth.login_check import login_required
+from txmatching.auth.login_check import login_required
 
 logger = logging.getLogger(__name__)
 

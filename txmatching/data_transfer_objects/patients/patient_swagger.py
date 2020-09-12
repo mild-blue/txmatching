@@ -21,7 +21,7 @@ DONOR_MODEL = patient_api.model('Donor', {
     "db_id": fields.Integer(required=True, description='Database id of the patient'),
     "medical_id": fields.String(required=True, description='Medical id of the patient'),
     "parameters": fields.Nested(required=True, model=PATIENT_PARAMETERS_MODEL),
-    "donor_type": fields.String(required=True, enum=[v.name for v in DonorType]),
+    "donor_type": fields.String(required=True, enum=[donor_type.name for donor_type in DonorType]),
     "related_recipient_db_id": fields.Integer(required=False, description='Database id of the related recipient'),
 })
 

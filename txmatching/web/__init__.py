@@ -16,7 +16,7 @@ from txmatching.web.api.service_api import service_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.app_configuration.application_configuration import (
     ApplicationConfiguration, get_application_configuration)
-from txmatching.web.auth import bcrypt
+from txmatching.auth import bcrypt
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'

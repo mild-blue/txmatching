@@ -10,8 +10,8 @@ MANUAL_DONOR_RECIPIENT_SCORE_JSON = matching_api.model("Manual Recipient Donor S
 })
 
 FORBIDDEN_COUNTRY_COMBINATION = matching_api.model("Manual Recipient Donor Score", {
-    "donor_country": fields.String(required=True, enum=[v.name for v in Country]),
-    "recipient_country": fields.String(required=True, enum=[v.name for v in Country]),
+    "donor_country": fields.String(required=True, enum=[country.name for country in Country]),
+    "recipient_country": fields.String(required=True, enum=[country.name for country in Country]),
 })
 
 CONFIGURATION_JSON = matching_api.model(
@@ -34,6 +34,7 @@ CONFIGURATION_JSON = matching_api.model(
         "manual_donor_recipient_scores": fields.List(required=False, cls_or_instance=fields.Nested(
             MANUAL_DONOR_RECIPIENT_SCORE_JSON)),
         "forbidden_country_combinations": fields.List(required=False, cls_or_instance=fields.Nested(
-            FORBIDDEN_COUNTRY_COMBINATION))
+            FORBIDDEN_COUNTRY_COMBINATION)),
+        "max_matchings_to_show_to_viewer": fields.Integer(required=False)
     }
 )
