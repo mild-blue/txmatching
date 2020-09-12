@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from txmatching.utils.country import Country
 from txmatching.utils.hla_system.hla_table import hla_split_to_broad, is_valid_broad_code
 
 
@@ -20,7 +21,7 @@ class PatientParameters:
     acceptable_blood_groups: List[str] = field(default_factory=list)
     hla_antigens: HLAAntigens = HLAAntigens()
     hla_antibodies: HLAAntibodies = HLAAntibodies()
-    country_code: Optional[str] = None
+    country_code: Optional[Country] = None
 
     @property
     def hla_antigens_broad_resolution(self) -> List[str]:

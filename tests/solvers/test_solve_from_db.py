@@ -26,3 +26,10 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         save_configuration_as_current(configuration)
         solutions = list(solve_from_db())
         self.assertEqual(1, len(solutions))
+
+    def test_solve_from_db_forbidden_countries(self):
+        self.fill_db_with_patients(get_absolute_path('/tests/test_utilities/data3.xlsx'))
+        configuration = Configuration(max_number_of_distinct_countries_in_round=3)
+        save_configuration_as_current(configuration)
+        solutions = list(solve_from_db())
+        self.assertEqual(1, len(solutions))

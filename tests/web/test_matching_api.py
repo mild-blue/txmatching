@@ -2,13 +2,14 @@ import dataclasses
 
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.config.configuration import Configuration
+from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import matching_api, patient_api
 
 
 class TestSaveAndGetConfiguration(DbTests):
 
     def test_get_matchings(self):
-        self.fill_db_with_patients_and_results()
+        self.fill_db_with_patients(get_absolute_path('/tests/test_utilities/data.xlsx'))
         self.api.add_namespace(matching_api, path='/matching')
 
         with self.app.test_client() as client:

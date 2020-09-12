@@ -1,6 +1,7 @@
 from typing import Optional
 
 from txmatching.config.configuration import (Configuration)
+from txmatching.config.subclasses import ForbiddenCountryCombination
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
@@ -23,7 +24,7 @@ class HLAAdditiveScorer(AdditiveScorer):
 
         # We can't do exchanges between some countries
 
-        if (donor.parameters.country_code, recipient.parameters.country_code) \
+        if ForbiddenCountryCombination(donor.parameters.country_code, recipient.parameters.country_code) \
                 in self._configuration.forbidden_country_combinations:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
