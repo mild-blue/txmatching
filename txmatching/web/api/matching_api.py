@@ -32,8 +32,7 @@ class CalculateFromConfig(Resource):
     @matching_api.doc(body=CONFIGURATION_JSON, security='bearer')
     @matching_api.response(200, model=MATCHING_MODEL, description='')
     @login_required()
-    @get_user_role()
-    def post(self, user_role: UserRole) -> str:
+    def post(self) -> str:
         configuration = configuration_from_dict(request.json)
         save_configuration_as_current(configuration)
         solve_from_db()
@@ -54,7 +53,7 @@ class CalculateFromConfig(Resource):
                 score=matching.score()
             )) for matching in matchings
         ]
-        if user_role == UserRole.VIEWER:
+        if get_user_role() == UserRole.VIEWER:
             matching_dtos = matching_dtos[:configuration.max_matchings_to_show_to_viewer]
 
         return jsonify(matching_dtos)

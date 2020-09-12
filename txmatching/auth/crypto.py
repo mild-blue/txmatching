@@ -4,7 +4,7 @@ from typing import Union
 import jwt
 
 from txmatching.auth import bcrypt
-from txmatching.auth.data_types import BearerToken, FailResponse
+from txmatching.auth.data_types import BearerToken, FailResponse, UserRole
 from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.web.app_configuration.application_configuration import get_application_configuration
 
@@ -51,7 +51,7 @@ def decode_auth_token(auth_token: str) -> Union[BearerToken, FailResponse]:
     try:
         app_conf = get_application_configuration()
         payload = jwt.decode(auth_token, app_conf.jwt_secret, algorithms=['HS256'])
-        return BearerToken(int(payload['user_id']), payload['role'])
+        return BearerToken(int(payload['user_id']), UserRole(payload['role']))
     except jwt.ExpiredSignatureError:
         return FailResponse('Signature expired. Please log in again.')
     except jwt.InvalidTokenError:

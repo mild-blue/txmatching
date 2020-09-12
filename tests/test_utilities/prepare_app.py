@@ -6,6 +6,7 @@ from flask import Flask
 from flask_restx import Api
 
 from tests.test_utilities.populate_db import ADMIN_USER, add_users
+from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import overwrite_patients_by_patients_from_excel
 from txmatching.solve_service.solve_from_db import solve_from_db
@@ -57,7 +58,7 @@ class DbTests(unittest.TestCase):
                                json={'email': ADMIN_USER['email'], 'password': ADMIN_USER['password']}).json
             token = json['auth_token']
             self.auth_headers = {'Authorization': f'Bearer {token}'}
-            store_user_in_context(ADMIN_USER['id'])
+            store_user_in_context(ADMIN_USER['id'], UserRole.ADMIN)
 
     def _load_local_development_config(self):
         config_file = 'txmatching.web.local_config'

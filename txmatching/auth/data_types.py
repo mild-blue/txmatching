@@ -22,4 +22,4 @@ class FailResponse:
 @dataclass(frozen=True)
 class BearerToken:
     user_id: int
-    role: str
+    role: UserRole
