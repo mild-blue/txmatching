@@ -26,7 +26,7 @@ def obtain_login_token(email: str, password: str) -> LoginResponse:
             return FailResponse('Email password mismatch!')
 
         else:
-            return LoginSuccessResponse(encode_auth_token(user).decode(), user.role)
+            return LoginSuccessResponse(encode_auth_token(user).decode())
     except Exception:
         logger.exception('Exception during user login.')
         return FailResponse('It was not possible to verify user.')
@@ -43,7 +43,7 @@ def refresh_token(auth_token: str) -> LoginResponse:
     # if not, we have inconsistent database or leaked JWT secret
     else:
         user = get_app_user_by_id(maybe_bearer_token.user_id)
-        return LoginSuccessResponse(encode_auth_token(user).decode(), user.role)
+        return LoginSuccessResponse(encode_auth_token(user).decode())
 
 
 def register_user(email: str, password: str, role: UserRole) -> LoginResponse:
@@ -75,7 +75,7 @@ def register_user(email: str, password: str, role: UserRole) -> LoginResponse:
         return FailResponse('It was not possible to register user!')
 
     auth_token = encode_auth_token(user).decode()
-    return LoginSuccessResponse(auth_token, user.role)
+    return LoginSuccessResponse(auth_token)
 
 
 def change_user_password(user_id: int, new_password: str):

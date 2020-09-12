@@ -11,7 +11,6 @@ class UserRole(str, Enum):
 @dataclass
 class LoginSuccessResponse:
     auth_token: str
-    role: UserRole
 
 
 @dataclass
