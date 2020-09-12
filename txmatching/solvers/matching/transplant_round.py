@@ -1,7 +1,7 @@
 from typing import List
 
+from txmatching.patients.donor_recipient_tuple import DonorRecipientTuple
 from txmatching.patients.patient import DonorType
-from txmatching.patients.patient_types import DonorRecipientTuple
 
 
 class TransplantRound:

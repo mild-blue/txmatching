@@ -8,10 +8,6 @@ class ScorerBase:
     def score(self, matching: Matching, donors_dict: Dict, recipients_dict: Dict) -> float:
         """
         Higher score means better matching
-        :param donors_dict:
-        :param recipients_dict:
-        :param matching:
-        :return:
         """
         raise NotImplementedError("Has to be overridden")
 

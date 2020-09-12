@@ -3,6 +3,7 @@ from enum import Enum
 from typing import List, Optional, Dict
 
 from txmatching.patients.patient_parameters import PatientParameters
+from txmatching.patients.patient_types import RecipientDbId, DonorDbId
 
 
 class DonorType(str, Enum):
@@ -26,7 +27,7 @@ class Patient:
 
 @dataclass
 class Donor(Patient):
-    related_recipient_db_id: Optional[int] = None
+    related_recipient_db_id: Optional[RecipientDbId] = None
     donor_type: DonorType = DonorType.DONOR
 
 
@@ -46,15 +47,15 @@ class RecipientRequirements:
 
 @dataclass
 class Recipient(Patient):
-    related_donor_db_id: int
+    related_donor_db_id: DonorDbId
     acceptable_blood_groups: List[str]
     recipient_requirements: RecipientRequirements = RecipientRequirements()
 
 
 @dataclass
 class DonorsRecipients:
-    donors_dict: Dict[int, Donor]
-    recipients_dict: Dict[int, Recipient]
+    donors_dict: Dict[DonorDbId, Donor]
+    recipients_dict: Dict[RecipientDbId, Recipient]
 
     def to_lists_for_fe(self) -> Dict:
         return {

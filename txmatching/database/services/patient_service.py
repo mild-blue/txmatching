@@ -101,7 +101,7 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      )
 
 
-def save_recipient(recipient: Recipient) -> int:
+def update_recipient(recipient: Recipient) -> int:
     acceptable_blood_models = [RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient.db_id) for blood
                                in
                                recipient.acceptable_blood_groups]
@@ -120,7 +120,7 @@ def save_recipient(recipient: Recipient) -> int:
     return recipient.db_id
 
 
-def save_donor(donor: Donor) -> int:
+def update_donor(donor: Donor) -> int:
     DonorModel.query.filter(DonorModel.id == donor.db_id).update({
         "id": donor.db_id,
         "donor_type": donor.donor_type,

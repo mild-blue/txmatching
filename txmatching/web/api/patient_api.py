@@ -3,14 +3,15 @@
 
 import logging
 
-from dacite import from_dict
+from dacite import from_dict, Config
 from flask import jsonify, request
 from flask_restx import Resource
 
 from txmatching.data_transfer_objects.patients.patient_swagger import PATIENTS_MODEL, RECIPIENT_MODEL, DONOR_MODEL
-from txmatching.database.services.patient_service import get_all_donors_recipients, save_recipient, save_donor
+from txmatching.database.services.patient_service import get_all_donors_recipients, update_recipient, update_donor
 from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.patients.patient import Recipient, Donor
+from txmatching.utils.country import Country
 from txmatching.web.api.namespaces import patient_api
 from txmatching.web.auth.login_check import login_required
 
@@ -39,8 +40,8 @@ class AlterRecipient(Resource):
     def put(self):
         # TODO do not delete https://trello.com/c/zseK1Zcf
         ConfigModel.query.filter(ConfigModel.id > 0).delete()
-        recipient = from_dict(data_class=Recipient, data=request.json)
-        return jsonify({"db_id": save_recipient(recipient)})
+        recipient = from_dict(data_class=Recipient, data=request.json, config=Config(cast=[Country]))
+        return jsonify({"db_id": update_recipient(recipient)})
 
 
 @patient_api.route('/donor', methods=['PUT'])
@@ -52,4 +53,4 @@ class AlterDonor(Resource):
         # TODO do not delete https://trello.com/c/zseK1Zcf
         ConfigModel.query.filter(ConfigModel.id > 0).delete()
         donor = from_dict(data_class=Donor, data=request.json)
-        return jsonify({"db_id": save_donor(donor)})
+        return jsonify({"db_id": update_donor(donor)})

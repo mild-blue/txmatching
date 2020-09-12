@@ -29,13 +29,10 @@ class AdditiveScorer(ScorerBase):
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Donor) -> float:
         raise NotImplementedError("Has to be overridden")
 
-    def score(self, matching: Matching, donors_dict, recipients_dict) -> float:
+    def score(self, matching: Matching, donors_dict: Dict[DonorDbId, Donor],
+              recipients_dict: Dict[RecipientDbId, Recipient]) -> float:
         """
         Higher score means better matching
-        :param donors_dict:
-        :param recipients_dict:
-        :param matching:
-        :return:
         """
         total_score = 0
         for transplant in matching.donor_recipient_list:

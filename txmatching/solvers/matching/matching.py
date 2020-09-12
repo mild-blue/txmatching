@@ -2,8 +2,8 @@ from typing import List
 
 from txmatching.data_transfer_objects.matchings.matching_dto import \
     CountryDTO
+from txmatching.patients.donor_recipient_tuple import DonorRecipientTuple
 from txmatching.patients.patient import DonorType
-from txmatching.patients.patient_types import DonorRecipientTuple
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_round import TransplantRound
 from txmatching.solvers.matching.transplant_sequence import \
