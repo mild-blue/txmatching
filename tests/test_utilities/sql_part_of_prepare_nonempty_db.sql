@@ -25,7 +25,8 @@ VALUES (1, '{
         "donor": 1
       }
     ],
-    "score": 1.0
+    "score": 1.0,
+    "id": "00010203-0405-0607-0809-0a0b0c0d0e0f"
   }]
 }', '{"score_matrix_dto": [[1,2],[1,2]]}', true);
 INSERT INTO public.pairing_result (config_id, calculated_matchings, score_matrix, valid)
@@ -37,7 +38,8 @@ VALUES (2, '{
         "donor": 1
       }
     ],
-    "score": 1.0
+    "score": 1.0,
+    "id": "00010203-0405-0607-0809-0a0b0c0d0e0e"
   }]
 }', '{"score_matrix_dto": [[1,2],[1,2]]}', true);
 
