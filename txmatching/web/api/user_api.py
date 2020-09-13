@@ -89,9 +89,9 @@ class PasswordChangeApi(Resource):
 @user_api.route('/register', methods=['POST'])
 class RegistrationApi(Resource):
     registration_model = user_api.model('UserRegistration', {
-        'email': fields.String(required=True, description='Email used for authentication.'),
-        'password': fields.String(required=True, description='Users password.'),
-        'role': fields.String(required=True, description='Users role.'),
+        'email': fields.String(required=True, description='Email/username used for authentication.'),
+        'password': fields.String(required=True, description='User\'s password.'),
+        'role': fields.String(required=True, description='User\'s role.'),
     })
 
     @user_api.doc(body=registration_model, security='bearer')
