@@ -1,4 +1,5 @@
 import dataclasses
+import uuid
 from typing import Iterable
 
 from txmatching.database.db import db
@@ -50,11 +51,12 @@ def solve_from_db() -> Iterable[Matching]:
 def _current_config_matchings_to_model(config_matchings: Iterable[MatchingWithScore]) -> CalculatedMatchings:
     return CalculatedMatchings([
         CalculatedMatching(
-            [
+            donors_recipients=[
                 DonorRecipient(donor.db_id, recipient.db_id)
                 for donor, recipient in final_solution.donor_recipient_list
             ],
-            final_solution.score()
+            score=final_solution.score(),
+            id=str(uuid.uuid4())
         )
         for final_solution in config_matchings
     ])
