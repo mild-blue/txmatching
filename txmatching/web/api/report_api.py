@@ -3,8 +3,8 @@
 import datetime
 import logging
 import os
-
 import time
+
 import jinja2
 import pdfkit
 from flask import send_from_directory, request
@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TMP_DIR = "/tmp/txmatching_reports"
 MIN_MATCHING_SCORE = 48
+MATCHING_RANGE_LIMIT = 5
 
 
 # pylint: disable=no-self-use
@@ -39,8 +40,12 @@ class Report(Resource):
 
         requested_matching = list(filter(lambda x: x.id() == matching_id, all_matchings))
         matchings_over_score = list(
-            filter(lambda x: x.id() != matching_id and x.score() >= MIN_MATCHING_SCORE, all_matchings))
-        matchings = requested_matching + matchings_over_score
+            filter(lambda x: x.id() != matching_id and x.score() >= MIN_MATCHING_SCORE, all_matchings))[
+                               :MATCHING_RANGE_LIMIT]
+        matchings_under_score = list(
+            filter(lambda x: x.id() != matching_id and x.score() < MIN_MATCHING_SCORE, all_matchings))[
+                                :MATCHING_RANGE_LIMIT]
+        matchings = requested_matching + matchings_over_score + matchings_under_score
 
         configuration = get_current_configuration()
 
