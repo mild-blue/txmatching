@@ -36,6 +36,7 @@ export class ConfigurationComponent implements OnInit {
     const group: { [key: string]: AbstractControl; } = {};
 
     const names: string[] = Object.keys(this.configuration);
+    console.log(this.configuration);
     for (const name of names) {
       const value = this.configuration[name];
       group[name] = new FormControl(value);

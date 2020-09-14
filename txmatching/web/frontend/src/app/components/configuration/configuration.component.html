@@ -5,28 +5,28 @@
     <div class="configuration__boxes">
       <div>
         <div class="configuration__box checkboxes">
-          <label>
+          <label *ngIf="configuration.enforce_compatible_blood_group">
             <input [checked]="configuration.enforce_compatible_blood_group"
                    formControlName="enforce_compatible_blood_group"
                    type="checkbox">
             Require compatible blood group
           </label>
 
-          <label>
+          <label *ngIf="configuration.require_new_donor_having_better_match_in_compatibility_index">
             <input [checked]="configuration.require_new_donor_having_better_match_in_compatibility_index"
                    formControlName="require_new_donor_having_better_match_in_compatibility_index"
                    type="checkbox">
             Require new donor having better CI match than original donor
           </label>
 
-          <label>
+          <label *ngIf="configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group">
             <input [checked]="configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group"
                    formControlName="require_new_donor_having_better_match_in_compatibility_index_or_blood_group"
                    type="checkbox">
             Require new donor having better CI match than original donor or blood group match
           </label>
 
-          <label>
+          <label *ngIf="configuration.use_binary_scoring">
             <input [checked]="configuration.use_binary_scoring"
                    formControlName="use_binary_scoring"
                    type="checkbox">
@@ -35,22 +35,22 @@
         </div>
 
         <div class="configuration__box inputs">
-          <label>
+          <label *ngIf="configuration.minimum_total_score">
             <span>Min transplant score</span>
             <input [value]="configuration.minimum_total_score" formControlName="minimum_total_score" type="number"><br><br>
           </label>
 
-          <label>
+          <label *ngIf="configuration.max_cycle_length">
             <span>Max cycle length</span>
             <input [value]="configuration.max_cycle_length" formControlName="max_cycle_length" type="number"><br><br>
           </label>
 
-          <label>
+          <label *ngIf="configuration.max_sequence_length">
             <span>Max sequence length</span>
             <input [value]="configuration.max_sequence_length" formControlName="max_sequence_length" type="number"><br><br>
           </label>
 
-          <label>
+          <label *ngIf="configuration.max_number_of_distinct_countries_in_round">
             <span>Max countries in sequence</span>
             <input [value]="configuration.max_number_of_distinct_countries_in_round" formControlName="max_number_of_distinct_countries_in_round"
                    type="number">
@@ -59,7 +59,7 @@
         </div>
       </div>
 
-      <div class="configuration__box manual">
+      <div *ngIf="configuration.manual_donor_recipient_scores_dto" class="configuration__box manual">
         <b>Manual donor recipient scores</b>
         <div class="manual-row">
           <div>
