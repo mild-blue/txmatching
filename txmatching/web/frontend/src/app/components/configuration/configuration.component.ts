@@ -39,7 +39,11 @@ export class ConfigurationComponent implements OnInit {
     console.log(this.configuration);
     for (const name of names) {
       const value = this.configuration[name];
-      group[name] = new FormControl(value);
+      // check if value is primitive
+      if (value !== Object(value)) {
+        console.log('adding', name, value);
+        group[name] = new FormControl(value);
+      }
     }
 
     this.configForm = new FormGroup(group);

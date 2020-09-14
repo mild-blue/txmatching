@@ -68,13 +68,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.configOpened = false;
     this.loading = true;
 
-    const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids } = this.appConfiguration;
+    const { scorer_constructor_name, solver_constructor_name } = this.appConfiguration;
     const updatedConfig: AppConfiguration = {
       ...configuration,
       scorer_constructor_name,
-      solver_constructor_name,
-      maximum_total_score,
-      required_patient_db_ids
+      solver_constructor_name
     };
     this._logger.log('Calculating with config', [updatedConfig]);
 
@@ -105,7 +103,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       (config: AppConfiguration) => {
         this._logger.log('Got config from server', [config]);
         this.appConfiguration = config;
-        const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids, ...rest } = config;
+        const { scorer_constructor_name, solver_constructor_name, ...rest } = config;
         this.configuration = rest;
 
         this.calculate(this.configuration);

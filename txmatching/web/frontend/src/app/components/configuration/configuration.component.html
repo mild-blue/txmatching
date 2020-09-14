@@ -5,28 +5,35 @@
     <div class="configuration__boxes">
       <div>
         <div class="configuration__box checkboxes">
-          <label *ngIf="configuration.enforce_compatible_blood_group">
-            <input [checked]="configuration.enforce_compatible_blood_group"
-                   formControlName="enforce_compatible_blood_group"
+          <label *ngIf="configuration.allow_low_high_res_incompatible !== undefined">
+            <input [checked]="configuration.allow_low_high_res_incompatible"
+                   formControlName="allow_low_high_res_incompatible"
                    type="checkbox">
             Require compatible blood group
           </label>
 
-          <label *ngIf="configuration.require_new_donor_having_better_match_in_compatibility_index">
-            <input [checked]="configuration.require_new_donor_having_better_match_in_compatibility_index"
-                   formControlName="require_new_donor_having_better_match_in_compatibility_index"
+          <label *ngIf="configuration.require_compatible_blood_group !== undefined">
+            <input [checked]="configuration.require_compatible_blood_group"
+                   formControlName="require_compatible_blood_group"
+                   type="checkbox">
+            Require compatible blood group
+          </label>
+
+          <label *ngIf="configuration.require_better_match_in_compatibility_index !== undefined">
+            <input [checked]="configuration.require_better_match_in_compatibility_index"
+                   formControlName="require_better_match_in_compatibility_index"
                    type="checkbox">
             Require new donor having better CI match than original donor
           </label>
 
-          <label *ngIf="configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group">
-            <input [checked]="configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group"
-                   formControlName="require_new_donor_having_better_match_in_compatibility_index_or_blood_group"
+          <label *ngIf="configuration.require_better_match_in_compatibility_index_or_blood_group !== undefined">
+            <input [checked]="configuration.require_better_match_in_compatibility_index_or_blood_group"
+                   formControlName="require_better_match_in_compatibility_index_or_blood_group"
                    type="checkbox">
             Require new donor having better CI match than original donor or blood group match
           </label>
 
-          <label *ngIf="configuration.use_binary_scoring">
+          <label *ngIf="configuration.use_binary_scoring !== undefined">
             <input [checked]="configuration.use_binary_scoring"
                    formControlName="use_binary_scoring"
                    type="checkbox">
@@ -35,23 +42,33 @@
         </div>
 
         <div class="configuration__box inputs">
-          <label *ngIf="configuration.minimum_total_score">
-            <span>Min transplant score</span>
+          <label *ngIf="configuration.blood_group_compatibility_bonus !== undefined">
+            <span>Compatible blood group bonus</span>
+            <input [value]="configuration.blood_group_compatibility_bonus" formControlName="blood_group_compatibility_bonus" type="number"><br><br>
+          </label>
+
+          <label *ngIf="configuration.minimum_total_score !== undefined">
+            <span>Minimum transplant score</span>
             <input [value]="configuration.minimum_total_score" formControlName="minimum_total_score" type="number"><br><br>
           </label>
 
-          <label *ngIf="configuration.max_cycle_length">
+          <label *ngIf="configuration.maximum_total_score !== undefined">
+            <span>Maximum transplant score</span>
+            <input [value]="configuration.maximum_total_score" formControlName="maximum_total_score" type="number"><br><br>
+          </label>
+
+          <label *ngIf="configuration.max_cycle_length !== undefined">
             <span>Max cycle length</span>
             <input [value]="configuration.max_cycle_length" formControlName="max_cycle_length" type="number"><br><br>
           </label>
 
-          <label *ngIf="configuration.max_sequence_length">
+          <label *ngIf="configuration.max_sequence_length !== undefined">
             <span>Max sequence length</span>
             <input [value]="configuration.max_sequence_length" formControlName="max_sequence_length" type="number"><br><br>
           </label>
 
-          <label *ngIf="configuration.max_number_of_distinct_countries_in_round">
-            <span>Max countries in sequence</span>
+          <label *ngIf="configuration.max_number_of_distinct_countries_in_round !== undefined">
+            <span>Max countries in round</span>
             <input [value]="configuration.max_number_of_distinct_countries_in_round" formControlName="max_number_of_distinct_countries_in_round"
                    type="number">
           </label>
@@ -59,21 +76,21 @@
         </div>
       </div>
 
-      <div *ngIf="configuration.manual_donor_recipient_scores_dto" class="configuration__box manual">
-        <b>Manual donor recipient scores</b>
-        <div class="manual-row">
-          <div>
-            <p>
-              Fill in a list of such manual settings. Format:
-              <code>[(donor_name,recipient_name,score)]</code>
-              Example:
-              <code>[("D1","R1",23), ("D1","R1",-1)]</code>
-              Use <strong>-1</strong> for forbidden exchanges.
-            </p>
-          </div>
-          <textarea cols="60" formControlName="manual_donor_recipient_scores_dto" rows="7">{{ configuration.manual_donor_recipient_scores_dto }}</textarea>
-        </div>
-      </div>
+      <!--      <div *ngIf="configuration.manual_donor_recipient_scores" class="configuration__box manual">-->
+      <!--        <b>Manual donor recipient scores</b>-->
+      <!--        <div class="manual-row">-->
+      <!--          <div>-->
+      <!--            <p>-->
+      <!--              Fill in a list of such manual settings. Format:-->
+      <!--              <code>[(donor_name,recipient_name,score)]</code>-->
+      <!--              Example:-->
+      <!--              <code>[("D1","R1",23), ("D1","R1",-1)]</code>-->
+      <!--              Use <strong>-1</strong> for forbidden exchanges.-->
+      <!--            </p>-->
+      <!--          </div>-->
+      <!--          <textarea cols="60" formControlName="manual_donor_recipient_scores" rows="7">{{ configuration.manual_donor_recipient_scores }}</textarea>-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
 
     <app-button (click)="submitAction()">Recalculate</app-button>
