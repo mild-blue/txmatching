@@ -29,6 +29,8 @@ import { MatchingItemComponent } from './components/matching-item/matching-item.
 import { VarDirective } from './directives/ng-var/var.directive';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { LogoComponent } from './components/logo/logo.component';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { PatientSearchComponent } from './components/autocomplete/patient-search.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +54,8 @@ import { LogoComponent } from './components/logo/logo.component';
     FlagComponent,
     MatchingItemComponent,
     VarDirective,
-    LogoComponent
+    LogoComponent,
+    PatientSearchComponent
   ],
   imports: [
     BrowserModule,
@@ -60,7 +63,8 @@ import { LogoComponent } from './components/logo/logo.component';
     HttpClientModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    AutocompleteLibModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

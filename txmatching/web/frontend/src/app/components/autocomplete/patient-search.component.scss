@@ -1,0 +1,23 @@
+@import "../../../styles/variables";
+
+.patient-search {
+
+  ::ng-deep .autocomplete-container {
+    box-shadow: none;
+
+    input {
+      padding: 10px 15px;
+      box-shadow: none;
+      border: 1px solid $border-color;
+    }
+  }
+
+  ::ng-deep .suggestions-container {
+    width: calc(100% - #{$border-radius--wide});
+    margin: auto;
+    box-shadow: $box-shadow;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+

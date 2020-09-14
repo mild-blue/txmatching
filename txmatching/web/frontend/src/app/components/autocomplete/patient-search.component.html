@@ -1,0 +1,17 @@
+<div class="patient-search">
+  <ng-autocomplete
+    (selected)='selectEvent($event)'
+    [data]="patients"
+    [itemTemplate]="itemTemplate"
+    [notFoundTemplate]="notFoundTemplate"
+    [searchKeyword]="keyword">
+  </ng-autocomplete>
+
+  <ng-template #itemTemplate let-item>
+    <a [innerHTML]="item[keyword]"></a>
+  </ng-template>
+
+  <ng-template #notFoundTemplate let-notFound>
+    <div [innerHTML]="notFound"></div>
+  </ng-template>
+</div>

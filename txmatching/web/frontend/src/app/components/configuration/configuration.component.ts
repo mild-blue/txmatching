@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Configuration } from '@app/model/Configuration';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { PatientList } from '@app/model/Patient';
 
 @Component({
   selector: 'app-configuration',
@@ -12,6 +13,7 @@ export class ConfigurationComponent implements OnInit {
 
   @Input() isOpened: boolean = false;
   @Input() configuration?: Configuration;
+  @Input() patients?: PatientList;
   @Output() configSubmitted: EventEmitter<Configuration> = new EventEmitter<Configuration>();
   @Output() configClosed: EventEmitter<void> = new EventEmitter<void>();
 

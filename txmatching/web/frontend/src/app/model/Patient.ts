@@ -29,6 +29,7 @@ export enum DonorType {
 }
 
 export const patientsLSKey = 'patients';
+export const patientNameProperty = 'medical_id';
 
 // recipient: [possible donors]
 const compatibleBloodGroups: { [key: string]: string[]; } = {
