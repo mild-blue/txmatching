@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
-import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
 import { first } from 'rxjs/operators';
 import { AppConfiguration, Configuration } from '@app/model/Configuration';
@@ -33,7 +33,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   public patients: PatientList;
 
   public configIcon = faCog;
-  public closeIcon = faTimes;
   public configOpened: boolean = false;
 
   constructor(private _authService: AuthService,

@@ -14,33 +14,27 @@
     align-items: baseline;
 
     .config {
-      button {
-        color: $body-color;
-        opacity: 0.5;
-        transition: opacity 0.5s ease;
+      color: $body-color;
+      opacity: 0.5;
+      transition: opacity 0.5s ease;
 
-        display: flex;
-        justify-content: center;
+      display: flex;
+      justify-content: center;
 
-        padding: 5px 10px;
-        min-width: 200px;
+      padding: 5px 10px;
+      min-width: 200px;
 
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 300;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 300;
 
-        &:hover {
-          opacity: 1;
-        }
+      &:hover {
+        opacity: 1;
+      }
 
-        &.opened {
-          opacity: 1;
-        }
-
-        fa-icon {
-          margin-left: 5px;
-        }
+      fa-icon {
+        margin-left: 5px;
       }
     }
   }

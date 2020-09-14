@@ -7,22 +7,17 @@
         Matchings
         <app-count *ngIf="!loading">{{matchings.length}}</app-count>
       </h1>
-      <div *ngIf="!loading && configuration" class="config">
-        <button (click)="toggleConfiguration()" [class.opened]="configOpened">
-          <ng-container *ngIf="!configOpened">
-            Configure
-            <fa-icon [icon]="configIcon"></fa-icon>
-          </ng-container>
-          <ng-container *ngIf="configOpened">
-            Close configuration
-            <fa-icon [icon]="closeIcon"></fa-icon>
-          </ng-container>
-        </button>
-      </div>
+      <button (click)="toggleConfiguration()"
+              *ngIf="!loading && configuration"
+              class="config">
+        Configure
+        <fa-icon [icon]="configIcon"></fa-icon>
+      </button>
     </div>
   </app-container>
 
-  <app-configuration (configSubmitted)="calculate($event)"
+  <app-configuration (configClosed)="toggleConfiguration()"
+                     (configSubmitted)="calculate($event)"
                      *ngIf="configuration"
                      [configuration]="configuration"
                      [isOpened]="configOpened"></app-configuration>

@@ -1,17 +1,21 @@
 <div *ngIf="configuration && configForm"
      [class.open]="isOpened"
      class="configuration">
+
+  <app-container>
+    <div class="configuration__header">
+      <h1>Configuration</h1>
+      <button (click)="close()">
+        <fa-icon [icon]="closeIcon"></fa-icon>
+      </button>
+    </div>
+  </app-container>
+
   <form [formGroup]="configForm">
     <div class="configuration__boxes">
       <div>
         <div class="configuration__box checkboxes">
-          <label *ngIf="configuration.allow_low_high_res_incompatible !== undefined">
-            <input [checked]="configuration.allow_low_high_res_incompatible"
-                   formControlName="allow_low_high_res_incompatible"
-                   type="checkbox">
-            Require compatible blood group
-          </label>
-
+          <h3></h3>
           <label *ngIf="configuration.require_compatible_blood_group !== undefined">
             <input [checked]="configuration.require_compatible_blood_group"
                    formControlName="require_compatible_blood_group"
@@ -38,6 +42,13 @@
                    formControlName="use_binary_scoring"
                    type="checkbox">
             Use binary scoring
+          </label>
+
+          <label *ngIf="configuration.allow_low_high_res_incompatible !== undefined">
+            <input [checked]="configuration.allow_low_high_res_incompatible"
+                   formControlName="allow_low_high_res_incompatible"
+                   type="checkbox">
+            Use split resolution
           </label>
         </div>
 
