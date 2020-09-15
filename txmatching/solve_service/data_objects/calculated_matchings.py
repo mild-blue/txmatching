@@ -8,7 +8,7 @@ from txmatching.solve_service.data_objects.donor_recipient import DonorRecipient
 class CalculatedMatching:
     donors_recipients: List[DonorRecipient]
     score: float
-    id: str
+    db_id: int
 
 
 @dataclass

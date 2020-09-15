@@ -1,5 +1,4 @@
 import dataclasses
-import uuid
 from typing import Iterable
 
 from txmatching.database.db import db
@@ -56,7 +55,7 @@ def _current_config_matchings_to_model(config_matchings: Iterable[MatchingWithSc
                 for donor, recipient in final_solution.donor_recipient_list
             ],
             score=final_solution.score(),
-            id=str(uuid.uuid4())
+            db_id=final_solution.db_id()
         )
         for final_solution in config_matchings
     ])

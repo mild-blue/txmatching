@@ -19,4 +19,4 @@ def db_matchings_to_matching_list(
                                 recipients_dict[donor_recipient_ids.recipient])
                                for donor_recipient_ids in json_matching.donors_recipients
                                ], json_matching.score,
-                              json_matching.id) for json_matching in calculated_matchings.matchings]
+                              json_matching.db_id) for json_matching in calculated_matchings.matchings]

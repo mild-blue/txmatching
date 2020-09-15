@@ -9,13 +9,13 @@ class MatchingWithScore(Matching):
     Set of disjoint TransplantRound's
     """
 
-    def __init__(self, donor_recipient_list: List[DonorRecipientTuple], score: float, idd: str):
+    def __init__(self, donor_recipient_list: List[DonorRecipientTuple], score: float, db_id: int):
         super().__init__(donor_recipient_list)
         self._score = score
-        self._id = idd
+        self._db_id = db_id
 
     def score(self) -> float:
         return self._score
 
-    def id(self) -> str:
-        return self._id
+    def db_id(self) -> int:
+        return self._db_id
