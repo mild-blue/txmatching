@@ -18,8 +18,7 @@ from txmatching.data_transfer_objects.matchings.matching_dto import TransplantDT
     RoundReportDTO, MatchingReportDTO, CountryDTO
 from txmatching.database.services.config_service import get_current_configuration
 from txmatching.database.services.matching_service import get_latest_matchings_and_score_matrix
-from txmatching.patients.patient_types import DonorRecipientTuple
-from txmatching.utils.blood_groups import blood_groups_compatible, Antigens, ANTIBODIES_MULTIPLIERS_STR
+from txmatching.utils.blood_groups import Antigens, ANTIBODIES_MULTIPLIERS_STR
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -141,10 +140,6 @@ def matching_antigens_filter(transplant: TransplantDTO) -> List[str]:
     return list(set(donor_antigens) & set(recipient_antigens))
 
 
-def is_donor_blood_compatible_filter(donor_recipient: DonorRecipientTuple) -> bool:
-    return blood_groups_compatible(donor_recipient[0], donor_recipient[1])
-
-
 def antigen_score(donor_recipient: TransplantDTO, antigen: Antigens) -> int:
     filtered = list(filter(lambda x: x.upper().startswith(antigen.upper()), matching_antigens_filter(donor_recipient)))
     return len(filtered) * ANTIBODIES_MULTIPLIERS_STR[antigen.upper()]
@@ -172,7 +167,6 @@ jinja2.filters.FILTERS["antigen_a_filter"] = antigen_a_filter
 jinja2.filters.FILTERS["antigen_b_filter"] = antigen_b_filter
 jinja2.filters.FILTERS["antigen_dr_filter"] = antigen_dr_filter
 jinja2.filters.FILTERS["matching_antigens_filter"] = matching_antigens_filter
-jinja2.filters.FILTERS["is_donor_blood_compatible_filter"] = is_donor_blood_compatible_filter
 jinja2.filters.FILTERS["antigen_score_a_filter"] = antigen_score_a_filter
 jinja2.filters.FILTERS["antigen_score_b_filter"] = antigen_score_b_filter
 jinja2.filters.FILTERS["antigen_score_dr_filter"] = antigen_score_dr_filter
