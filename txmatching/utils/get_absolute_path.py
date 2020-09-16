@@ -14,7 +14,11 @@ def get_absolute_path(project_relative_path: str) -> str:
     if not project_relative_path.startswith('/'):
         project_relative_path = f'/{project_relative_path}'
 
-    python_path = os.environ['PYTHONPATH'].split(':')
+    python_path = os.environ.get('PYTHONPATH')
+    if python_path is None:
+        python_path = ["."]
+    else:
+        python_path = python_path.split(':')
     # case when running from Pycharm
     explicit_paths = [path for path in python_path if path.endswith('txmatching')]
     # use the top level path

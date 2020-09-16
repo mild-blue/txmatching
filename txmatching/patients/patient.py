@@ -53,7 +53,9 @@ class Recipient(Patient):
 
 
 @dataclass
-class DonorsRecipients:
+class TxSession:
+    db_id: int
+    name: str
     donors_dict: Dict[DonorDbId, Donor]
     recipients_dict: Dict[RecipientDbId, Recipient]
 

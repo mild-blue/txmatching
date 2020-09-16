@@ -24,3 +24,4 @@ dependencies:
       - flask_bcrypt==0.7.1
       - pyjwt==1.7.1
       - dacite==1.5.1
+      - autopep8==1.5.4

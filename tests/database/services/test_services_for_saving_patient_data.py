@@ -1,5 +1,5 @@
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.database.services.patient_service import overwrite_patients_by_patients_from_excel, update_recipient, \
+from txmatching.database.services.patient_service import save_patients_from_excel_to_empty_tx_session, update_recipient, \
     update_donor
 from txmatching.database.sql_alchemy_schema import RecipientModel, DonorModel
 from txmatching.patients.patient import Recipient, RecipientRequirements, Donor
@@ -7,12 +7,14 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.country import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
+from txmatching.database.services import tx_session_service
 
 
 class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_saving_patients_from_excel(self):
         patients = parse_excel_data(get_absolute_path("tests/test_utilities/data.xlsx"))
-        overwrite_patients_by_patients_from_excel(patients)
+        tx_session = tx_session_service.create_or_ovewrite_tx_session("test")
+        save_patients_from_excel_to_empty_tx_session(patients, tx_session.db_id)
         self.assertEqual(1, 1)
 
     def test_saving_patients(self):
