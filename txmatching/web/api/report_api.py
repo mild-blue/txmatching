@@ -10,9 +10,10 @@ import time
 import jinja2
 import pdfkit
 from flask import send_from_directory, request
-from flask_restx import Resource
+from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
 
+from txmatching.auth.login_check import login_required
 from txmatching.config.subclasses import ForbiddenCountryCombination, ManualDonorRecipientScore
 from txmatching.data_transfer_objects.matchings.matching_dto import TransplantDTO, \
     RoundReportDTO, MatchingReportDTO, CountryDTO
@@ -26,29 +27,44 @@ logger = logging.getLogger(__name__)
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TMP_DIR = "/tmp/txmatching_reports"
 
+
 # pylint: disable=no-self-use
 # Query params:
 #   - matchingRangeLimit
-#   - matchingScore
 @report_api.route('/<matching_id>', methods=['GET'])
 class Report(Resource):
 
-    @report_api.doc(security='bearer')
-    @report_api.response(code=200, description='')
-    # @login_required()
+    @report_api.doc(
+        security='bearer',
+        params={
+            'matchingRangeLimit': {
+                'description': 'Range limit over/under of requested matching score.',
+                'in': 'query',
+                'type': 'int'
+            }
+        }
+    )
+    @report_api.response(code=200, description='Returns matching report as PDF file.')
+    @login_required()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
         matching_id = request.view_args['matching_id']
         matching_range_limit = int(request.args.get('matchingRangeLimit'))
-        matching_score = int(request.args.get('matchingScore'))
         (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix()
 
-        requested_matching = list(filter(lambda x: x.db_id() == matching_id, all_matchings))
+        requested_matching = list(filter(lambda matching: matching.db_id() == matching_id, all_matchings))
+        if len(requested_matching) == 0:
+            abort(404, f"Matching with id {matching_id} not found.")
+
+        matching_score = requested_matching[0].score()
+
         matchings_over_score = list(
-            filter(lambda x: x.db_id() != matching_id and x.score() >= matching_score, all_matchings))[
+            filter(lambda matching: matching.db_id() != matching_id and matching.score() >= matching_score,
+                   all_matchings))[
                                :matching_range_limit]
         matchings_under_score = list(
-            filter(lambda x: x.db_id() != matching_id and x.score() < matching_score, all_matchings))[
+            filter(lambda matching: matching.db_id() != matching_id and matching.score() < matching_score,
+                   all_matchings))[
                                 :matching_range_limit]
         matchings = requested_matching + matchings_over_score + matchings_under_score
 
@@ -71,8 +87,8 @@ class Report(Resource):
 
         configuration = get_current_configuration()
 
-        self.prepare_tmp_dir()
-        self.prune_old_reports()
+        Report.prepare_tmp_dir()
+        Report.prune_old_reports()
 
         j2_env = Environment(loader=FileSystemLoader(os.path.join(THIS_DIR, "../templates")),
                              trim_blocks=True)
@@ -100,14 +116,16 @@ class Report(Resource):
 
         return send_from_directory(TMP_DIR, pdf_file_name, as_attachment=True)
 
-    def prepare_tmp_dir(self):
+    @staticmethod
+    def prepare_tmp_dir():
         if not os.path.exists(TMP_DIR):
             os.makedirs(TMP_DIR)
 
-    def prune_old_reports(self):
+    @staticmethod
+    def prune_old_reports():
         now = time.time()
         for filename in os.listdir(TMP_DIR):
-            if os.path.getmtime(os.path.join(TMP_DIR, filename)) < now - 1 * 86400:
+            if os.path.getmtime(os.path.join(TMP_DIR, filename)) < now - 1 * 86400:  # 1 day
                 if os.path.isfile(os.path.join(TMP_DIR, filename)):
                     print(filename)
                     os.remove(os.path.join(TMP_DIR, filename))
