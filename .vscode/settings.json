@@ -16,6 +16,7 @@
     "python.testing.unittestEnabled": true,
     "python.linting.pylintArgs": [
         "--rcfile=.pylintrc"
-    ]
+    ],
+    "editor.rulers": [120]
     
 }

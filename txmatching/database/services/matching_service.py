@@ -6,7 +6,7 @@ from txmatching.config.gives_superset_of_solutions import \
     gives_superset_of_solutions
 from txmatching.database.services.config_service import (
     configuration_from_dict, get_config_models)
-from txmatching.database.services.tx_session_service import (
+from txmatching.database.services.patient_service import (
     get_tx_session)
 from txmatching.database.services.services_for_solve import (
     db_matchings_to_matching_list, get_pairing_result_for_config)

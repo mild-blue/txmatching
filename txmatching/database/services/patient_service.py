@@ -4,17 +4,18 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
-
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.database.db import db
-from txmatching.database.sql_alchemy_schema import DonorModel, RecipientAcceptableBloodModel, RecipientModel
-from txmatching.patients.patient import (Donor, DonorType,
-                                         Patient, Recipient)
+from txmatching.database.services.tx_session_service import \
+    get_newest_tx_session
+from txmatching.database.sql_alchemy_schema import (
+    DonorModel, RecipientAcceptableBloodModel, RecipientModel, TxSessionModel)
+from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
+                                         TxSession)
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntigens,
                                                     PatientParameters)
 from txmatching.patients.patient_types import RecipientDbId
-from txmatching.database.services import tx_session_service
 
 logger = logging.getLogger(__name__)
 
@@ -54,12 +55,12 @@ def recipient_excel_dto_to_recipient_model(recipient: RecipientExcelDTO, tx_sess
 
 def save_patients_from_excel_to_empty_tx_session(donors_recipients: Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]],
                                                  tx_session_db_id: int):
-    tx_session = tx_session_service.get_tx_session(tx_session_db_id)
+    tx_session = get_tx_session(tx_session_db_id)
     if len(tx_session.donors_dict) > 0 or len(tx_session.recipients_dict) > 0:
         raise ValueError("Tx session not empty, cannot send patients to database")
 
-    maybe_recipient_models = [recipient_excel_dto_to_recipient_model(recipient, tx_session_db_id) if recipient is not None else None for
-                              recipient in donors_recipients[1]]
+    maybe_recipient_models = [recipient_excel_dto_to_recipient_model(recipient, tx_session_db_id)
+                              if recipient is not None else None for recipient in donors_recipients[1]]
     recipient_models = [recipient_model for recipient_model in maybe_recipient_models if
                         recipient_model is not None]
     db.session.add_all(recipient_models)
@@ -140,3 +141,27 @@ def update_donor(donor: Donor) -> int:
     })
     db.session.commit()
     return donor.db_id
+
+
+def get_tx_session(session_db_id: Optional[int] = None) -> TxSession:
+    if session_db_id is None:
+        tx_session = get_newest_tx_session()
+    else:
+        tx_session = TxSessionModel.query.get(session_db_id)
+
+    active_donors = tx_session.donors
+    active_recipients = tx_session.recipients
+    donors_with_recipients = [(donor_model.recipient_id, get_donor_from_donor_model(donor_model))
+                              for donor_model in active_donors]
+
+    donors_dict = {donor.db_id: donor for _, donor in donors_with_recipients}
+    donors_with_recipients_dict = {related_recipient_id: donor for related_recipient_id, donor in donors_with_recipients
+                                   if related_recipient_id is not None}
+
+    recipients_dict = {
+        recipient_model.id: get_recipient_from_recipient_model(
+            recipient_model, donors_with_recipients_dict)
+        for recipient_model in active_recipients}
+
+    return TxSession(db_id=tx_session.id, name=tx_session.name, donors_dict=donors_dict,
+                     recipients_dict=recipients_dict)

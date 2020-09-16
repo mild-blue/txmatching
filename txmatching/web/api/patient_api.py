@@ -8,8 +8,7 @@ from flask import jsonify, request
 from flask_restx import Resource
 
 from txmatching.data_transfer_objects.patients.patient_swagger import PATIENTS_MODEL, RECIPIENT_MODEL, DONOR_MODEL
-from txmatching.database.services.patient_service import update_recipient, update_donor
-from txmatching.database.services.tx_session_service import get_tx_session
+from txmatching.database.services.patient_service import update_recipient, update_donor, get_tx_session
 from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.patients.patient import Recipient, Donor
 from txmatching.utils.country import Country

@@ -3,10 +3,19 @@ from flask_restx import fields
 from txmatching.patients.patient import DonorType
 from txmatching.web.api.namespaces import patient_api
 
+# TODO this is not reflected in parameter model, do that in https://trello.com/c/uNwL34H1
+HLA_ANTIBODIES_MODEL = patient_api.model("Hla Antibodies", {
+    "MFI": fields.Integer(required=True, description='Mean fluorescence intensity'),
+    "name": fields.String(required=True, description='HLA antigen name'),
+}
+)
+
 PATIENT_PARAMETERS_MODEL = patient_api.model('Patient Parameters', {
     "blood_group": fields.String(required=False),
     "hla_antigens": fields.List(required=False, cls_or_instance=fields.String),
-    "hla_antibodies": fields.List(required=False, cls_or_instance=fields.String),
+    "hla_antibodies": fields.List(required=False, cls_or_instance=fields.Nested(
+        HLA_ANTIBODIES_MODEL
+    )),
     "country_code": fields.String(required=False),
 
 })

@@ -4,7 +4,7 @@ from typing import Iterable
 from txmatching.database.db import db
 from txmatching.database.services.config_service import (
     get_current_configuration, save_configuration_to_db)
-from txmatching.database.services.tx_session_service import get_tx_session
+from txmatching.database.services.patient_service import get_tx_session
 from txmatching.database.services.scorer_service import \
     score_matrix_to_dto
 from txmatching.database.sql_alchemy_schema import (

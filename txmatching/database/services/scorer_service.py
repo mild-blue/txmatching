@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import List, Dict
 
 from txmatching.database.services.config_service import get_current_configuration
-from txmatching.database.services.tx_session_service import get_tx_session
+from txmatching.database.services.patient_service import get_tx_session
 from txmatching.scorers.additive_scorer import ScoreMatrix
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 
