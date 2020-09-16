@@ -37,15 +37,13 @@ class AllSolutionsSolver(SolverBase):
                 score_matrix_array[row_index, column_index] = value
         proper_solutions = set()
 
-        db_id = 0
         for solution in self._solve(score_matrix=score_matrix_array):
-            db_id += 1
             donor_recipient_list = [(donors[i], recipients[j]) for i, j in solution
                                     if i < len(donors) and j < len(recipients)]
             score = sum([score_matrix_array[i, j] for i, j in solution
                          if i < len(donors) and j < len(recipients)])
 
-            matching = MatchingWithScore(donor_recipient_list, score, db_id)
+            matching = MatchingWithScore(donor_recipient_list, score, 0)
             if max([transplant_round.country_count for transplant_round in
                     matching.get_rounds()]) <= self._max_number_of_distinct_countries_in_round:
                 yield matching
@@ -61,7 +59,7 @@ class AllSolutionsSolver(SolverBase):
                         [score_matrix_array[donors.index(donor), recipients.index(recipient)] for
                          donor, recipient in
                          donor_recipient_list])
-                    proper_matching = MatchingWithScore(donor_recipient_list, score, db_id)
+                    proper_matching = MatchingWithScore(donor_recipient_list, score, 0)
                     if proper_matching not in proper_solutions:
                         yield proper_matching
                         proper_solutions.add(proper_matching)

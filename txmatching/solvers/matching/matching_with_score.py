@@ -19,3 +19,6 @@ class MatchingWithScore(Matching):
 
     def db_id(self) -> int:
         return self._db_id
+
+    def set_db_id(self, db_id: int):
+        self._db_id = db_id

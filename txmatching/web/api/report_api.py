@@ -40,7 +40,7 @@ class Report(Resource):
             'matchingRangeLimit': {
                 'description': 'Range limit over/under of requested matching score.',
                 'in': 'query',
-                'type': 'int',
+                'type': 'integer',
                 'required': 'true'
             }
         },
