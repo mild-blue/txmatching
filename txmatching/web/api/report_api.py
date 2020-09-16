@@ -42,9 +42,12 @@ class Report(Resource):
                 'in': 'query',
                 'type': 'int'
             }
+        },
+        responses={
+            200: 'Returns matching report as PDF file.',
+            404: 'Raised when matching with particular id was not found.'
         }
     )
-    @report_api.response(code=200, description='Returns matching report as PDF file.')
     @login_required()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
