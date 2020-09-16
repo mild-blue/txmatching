@@ -53,7 +53,7 @@ class Report(Resource):
     @login_required()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
-        matching_id = request.view_args['matching_id']
+        matching_id = int(request.view_args['matching_id'])
         if request.args.get('matchingRangeLimit') is None or request.args.get('matchingRangeLimit') == "":
             abort(400, "Query argument 'matchingRangeLimit' must be set.")
 
