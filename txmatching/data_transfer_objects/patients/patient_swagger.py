@@ -13,11 +13,8 @@ HLA_ANTIBODIES_MODEL = patient_api.model("Hla Antibodies", {
 PATIENT_PARAMETERS_MODEL = patient_api.model('Patient Parameters', {
     "blood_group": fields.String(required=False),
     "hla_antigens": fields.List(required=False, cls_or_instance=fields.String),
-    "hla_antibodies": fields.List(required=False, cls_or_instance=fields.Nested(
-        HLA_ANTIBODIES_MODEL
-    )),
-    "country_code": fields.String(required=False),
-
+    "hla_antibodies": fields.List(required=False, cls_or_instance=fields.String),
+    "country_code": fields.String(required=False)
 })
 
 RECIPIENT_REQUIREMENTS = patient_api.model('Recipient Requirements', {
