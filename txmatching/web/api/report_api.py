@@ -40,11 +40,13 @@ class Report(Resource):
             'matchingRangeLimit': {
                 'description': 'Range limit over/under of requested matching score.',
                 'in': 'query',
-                'type': 'int'
+                'type': 'int',
+                'required': 'true'
             }
         },
         responses={
             200: 'Returns matching report as PDF file.',
+            400: 'Raised in case of bad request.',
             404: 'Raised when matching with particular id was not found.'
         }
     )
@@ -52,6 +54,9 @@ class Report(Resource):
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
         matching_id = request.view_args['matching_id']
+        if request.args.get('matchingRangeLimit') is None or request.args.get('matchingRangeLimit') == "":
+            abort(400, "Query argument 'matchingRangeLimit' must be set.")
+
         matching_range_limit = int(request.args.get('matchingRangeLimit'))
         (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix()
 
