@@ -30,7 +30,6 @@ import { VarDirective } from './directives/ng-var/var.directive';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { LogoComponent } from './components/logo/logo.component';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
-import { PatientSearchComponent } from './components/patient-search/patient-search.component';
 
 @NgModule({
   declarations: [
@@ -54,8 +53,7 @@ import { PatientSearchComponent } from './components/patient-search/patient-sear
     FlagComponent,
     MatchingItemComponent,
     VarDirective,
-    LogoComponent,
-    PatientSearchComponent
+    LogoComponent
   ],
   imports: [
     BrowserModule,

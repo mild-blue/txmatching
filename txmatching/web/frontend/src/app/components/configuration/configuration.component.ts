@@ -46,6 +46,22 @@ export class ConfigurationComponent implements OnInit {
     return patientsExist && configPropertyExists;
   }
 
+  get donorCountries(): string[] {
+    if (!this.patients || !this.patients.donors) {
+      return [];
+    }
+    const countries = this.patients.donors.map(p => p.parameters.country_code);
+    return [...new Set(countries)]; // only unique
+  }
+
+  get recipientCountries(): string[] {
+    if (!this.patients || !this.patients.recipients) {
+      return [];
+    }
+    const countries = this.patients.recipients.map(p => p.parameters.country_code);
+    return [...new Set(countries)]; // only unique
+  }
+
   public addManualScore(): void {
     const controls = this.manualScoreForm.controls;
 
@@ -58,8 +74,8 @@ export class ConfigurationComponent implements OnInit {
     }
 
     this.configuration.manual_donor_recipient_scores.push({
-      donor,
-      recipient,
+      donor: donor.db_id,
+      recipient: donor.db_id,
       score
     });
 

@@ -100,15 +100,25 @@
         <form [formGroup]="manualScoreForm">
           <label *ngIf="patients && patients.donors">
             <span>Donor</span>
-            <app-patient-search (selected)="manualScoreForm.controls.donor.setValue($event)"
-                                [value]="getDonor(manualScoreForm.controls.donor.value)"
-                                [patients]="patients.donors"></app-patient-search>
+            <div class="autocomplete">
+              <ng-autocomplete [data]="patients.donors"
+                               [itemTemplate]="patientItemTemplate"
+                               [notFoundTemplate]="notFoundTemplate"
+                               [searchKeyword]="'medical_id'"
+                               formControlName="donor"
+                               notFoundText="Patient not found"></ng-autocomplete>
+            </div>
           </label>
           <label *ngIf="patients && patients.recipients">
             <span>Recipient</span>
-            <app-patient-search (selected)="manualScoreForm.controls.recipient.setValue($event)"
-                                [value]="getRecipient(manualScoreForm.controls.recipient.value)"
-                                [patients]="patients.recipients"></app-patient-search>
+            <div class="autocomplete">
+              <ng-autocomplete [data]="patients.recipients"
+                               [itemTemplate]="patientItemTemplate"
+                               [notFoundTemplate]="notFoundTemplate"
+                               [searchKeyword]="'medical_id'"
+                               formControlName="recipient"
+                               notFoundText="Patient not found"></ng-autocomplete>
+            </div>
           </label>
           <label>
             <span>Score</span>
@@ -133,17 +143,25 @@
       </div>
       <div class="add-new">
         <form [formGroup]="countriesForm">
-          <label *ngIf="patients && patients.donors">
+          <label>
             <span>Donor country</span>
-            <app-patient-search (selected)="countriesForm.controls.donorCountry.setValue($event)"
-                                [patients]="patients.donors"
-                                [value]="countriesForm.controls.donorCountry.value"></app-patient-search>
+            <div class="autocomplete">
+              <ng-autocomplete [data]="donorCountries"
+                               [itemTemplate]="countryItemTemplate"
+                               [notFoundTemplate]="notFoundTemplate"
+                               formControlName="donorCountry"
+                               notFoundText="Country is not present"></ng-autocomplete>
+            </div>
           </label>
-          <label *ngIf="patients && patients.recipients">
+          <label>
             <span>Recipient country</span>
-            <app-patient-search (selected)="countriesForm.controls.recipientCountry.setValue($event)"
-                                [patients]="patients.recipients"
-                                [value]="countriesForm.controls.recipientCountry.value"></app-patient-search>
+            <div class="autocomplete">
+              <ng-autocomplete [data]="recipientCountries"
+                               [itemTemplate]="countryItemTemplate"
+                               [notFoundTemplate]="notFoundTemplate"
+                               formControlName="recipientCountry"
+                               notFoundText="Country is not present"></ng-autocomplete>
+            </div>
           </label>
         </form>
         <div class="add-new__button">
@@ -198,4 +216,16 @@
 
 <ng-template #nothingFound>
   Continue by adding new entry
+</ng-template>
+
+<ng-template #patientItemTemplate let-item>
+  <a [innerHTML]="item['medical_id']"></a>
+</ng-template>
+
+<ng-template #countryItemTemplate let-item>
+  <a [innerHTML]="item"></a>
+</ng-template>
+
+<ng-template #notFoundTemplate let-notFound>
+  <div [innerHTML]="notFound"></div>
 </ng-template>
