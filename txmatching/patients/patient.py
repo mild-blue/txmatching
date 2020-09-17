@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 from txmatching.patients.patient_parameters import PatientParameters
-from txmatching.patients.patient_types import RecipientDbId, DonorDbId
+from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 
 
 class DonorType(str, Enum):
@@ -53,12 +53,14 @@ class Recipient(Patient):
 
 
 @dataclass
-class DonorsRecipients:
+class TxSession:
+    db_id: int
+    name: str
     donors_dict: Dict[DonorDbId, Donor]
     recipients_dict: Dict[RecipientDbId, Recipient]
 
     def to_lists_for_fe(self) -> Dict:
         return {
-            "donors": list(self.donors_dict.values()),
-            "recipients": list(self.recipients_dict.values())
+            'donors': list(self.donors_dict.values()),
+            'recipients': list(self.recipients_dict.values())
         }

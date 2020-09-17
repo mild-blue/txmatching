@@ -6,16 +6,15 @@ from txmatching.config.gives_superset_of_solutions import \
     gives_superset_of_solutions
 from txmatching.database.services.config_service import (
     configuration_from_dict, get_config_models)
-from txmatching.database.services.patient_service import (
-    get_all_donors_recipients)
+from txmatching.database.services.patient_service import get_tx_session
 from txmatching.database.services.services_for_solve import (
     db_matchings_to_matching_list, get_pairing_result_for_config)
 from txmatching.database.sql_alchemy_schema import PairingResultModel
-from txmatching.solve_service.data_objects.calculated_matchings import CalculatedMatchings
+from txmatching.solve_service.data_objects.calculated_matchings import \
+    CalculatedMatchings
 from txmatching.solve_service.data_objects.solver_input_parameters import \
     SolverInputParameters
-from txmatching.solvers.matching.matching_with_score import \
-    MatchingWithScore
+from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.utils.blood_groups import blood_groups_compatible
 
 ScoreDict = Dict[Tuple[int, int], float]
@@ -29,7 +28,7 @@ def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], Sc
         raise AssertionError('There are no latest matchings in the database, '
                              "didn't you forget to call solve_from_db()?")
 
-    patients = get_all_donors_recipients()
+    patients = get_tx_session()
 
     calculated_matchings = from_dict(data_class=CalculatedMatchings,
                                      data=last_pairing_result_model.calculated_matchings)

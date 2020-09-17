@@ -1,6 +1,8 @@
 from txmatching.auth.data_types import UserRole
+from txmatching.database.services import tx_session_service
 from txmatching.database.services.app_user_management import persist_user
-from txmatching.database.services.patient_service import overwrite_patients_by_patients_from_excel
+from txmatching.database.services.patient_service import \
+    save_patients_from_excel_to_empty_tx_session
 from txmatching.database.sql_alchemy_schema import AppUserModel, ConfigModel
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.web import create_app
@@ -29,5 +31,6 @@ if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         patients = parse_excel_data('data.xlsx')
-        overwrite_patients_by_patients_from_excel(patients)
+        tx_session = tx_session_service.create_or_ovewrite_tx_session(name='test')
+        save_patients_from_excel_to_empty_tx_session(patients, tx_session_db_id=tx_session.db_id)
         add_users()
