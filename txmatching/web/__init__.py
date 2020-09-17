@@ -4,13 +4,11 @@ from importlib import util as importing
 
 from flask import Flask, request, send_from_directory
 from flask_restx import Api
-from txmatching.web.api.report_api import report_api
-from txmatching.web.api.txm_event_api import txm_event_api
+from txmatching.configuration.app_configuration.application_configuration import ApplicationConfiguration, \
+    get_application_configuration
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from txmatching.auth import bcrypt
-from txmatching.configuration.app_configuration.application_configuration import ApplicationConfiguration, \
-    get_application_configuration
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
@@ -22,7 +20,9 @@ from txmatching.web.api.namespaces import (PATIENT_NAMESPACE,
                                            TXM_EVENT_NAMESPACE,
                                            REPORTS_NAMESPACE)
 from txmatching.web.api.patient_api import patient_api
+from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
+from txmatching.web.api.txm_event_api import txm_event_api
 from txmatching.web.api.user_api import user_api
 
 LOGIN_MANAGER = None
