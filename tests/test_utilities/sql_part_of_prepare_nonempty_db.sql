@@ -1,20 +1,20 @@
 TRUNCATE TABLE public.config RESTART IDENTITY CASCADE;
 TRUNCATE TABLE public.pairing_result RESTART IDENTITY CASCADE;
 
-INSERT INTO public.tx_session (name)
+INSERT INTO public.txm_event (name)
 VALUES ('initial_session');
 
-INSERT INTO public.config (parameters, created_by, tx_session_id)
+INSERT INTO public.config (parameters, created_by, txm_event_id)
 VALUES ('{
   "enforce_compatible_blood_group": false
 }', 1, 1);
 
-INSERT INTO public.config (parameters, created_by, tx_session_id)
+INSERT INTO public.config (parameters, created_by, txm_event_id)
 VALUES ('{
   "use_binary_scoring": true
 }', 1, 1);
 
-INSERT INTO public.config (parameters, created_by, tx_session_id)
+INSERT INTO public.config (parameters, created_by, txm_event_id)
 VALUES ('{
   "use_binary_scoring": false
 }', 1, 1);

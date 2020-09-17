@@ -53,7 +53,7 @@ class Recipient(Patient):
 
 
 @dataclass
-class TxSession:
+class TxmEvent:
     db_id: int
     name: str
     donors_dict: Dict[DonorDbId, Donor]

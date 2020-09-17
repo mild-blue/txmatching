@@ -6,7 +6,7 @@ from txmatching.config.gives_superset_of_solutions import \
     gives_superset_of_solutions
 from txmatching.database.services.config_service import (
     configuration_from_dict, get_config_models)
-from txmatching.database.services.patient_service import get_tx_session
+from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.services_for_solve import (
     db_matchings_to_matching_list, get_pairing_result_for_config)
 from txmatching.database.sql_alchemy_schema import PairingResultModel
@@ -28,23 +28,23 @@ def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], Sc
         raise AssertionError('There are no latest matchings in the database, '
                              "didn't you forget to call solve_from_db()?")
 
-    patients = get_tx_session()
+    txm_event = get_txm_event()
 
     calculated_matchings = from_dict(data_class=CalculatedMatchings,
                                      data=last_pairing_result_model.calculated_matchings)
 
-    all_matchings = db_matchings_to_matching_list(calculated_matchings, patients.donors_dict,
-                                                  patients.recipients_dict)
+    all_matchings = db_matchings_to_matching_list(calculated_matchings, txm_event.donors_dict,
+                                                  txm_event.recipients_dict)
 
     score_matrix = last_pairing_result_model.score_matrix['score_matrix_dto']
     score_dict = {
         (donor_db_id, recipient_db_id): score for donor_db_id, row in
-        zip(patients.donors_dict, score_matrix) for recipient_db_id, score in zip(patients.recipients_dict, row)
+        zip(txm_event.donors_dict, score_matrix) for recipient_db_id, score in zip(txm_event.recipients_dict, row)
     }
 
     compatible_blood_dict = {(donor_db_id, recipient_db_id): blood_groups_compatible(donor, recipient)
-                             for donor_db_id, donor in patients.donors_dict.items()
-                             for recipient_db_id, recipient in patients.recipients_dict.items()
+                             for donor_db_id, donor in txm_event.donors_dict.items()
+                             for recipient_db_id, recipient in txm_event.recipients_dict.items()
                              }
 
     return all_matchings, score_dict, compatible_blood_dict

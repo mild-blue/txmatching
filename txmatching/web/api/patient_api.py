@@ -10,7 +10,7 @@ from flask_restx import Resource
 from txmatching.auth.login_check import login_required
 from txmatching.data_transfer_objects.patients.patient_swagger import (
     DONOR_MODEL, PATIENTS_MODEL, RECIPIENT_MODEL)
-from txmatching.database.services.patient_service import (get_tx_session,
+from txmatching.database.services.patient_service import (get_txm_event,
                                                           update_donor,
                                                           update_recipient)
 from txmatching.database.sql_alchemy_schema import ConfigModel
@@ -30,7 +30,7 @@ class AllPatients(Resource):
     @patient_api.response(code=200, model=PATIENTS_MODEL, description='')
     @login_required()
     def get(self) -> str:
-        patients = get_tx_session()
+        patients = get_txm_event()
         return jsonify(patients.to_lists_for_fe())
 
 

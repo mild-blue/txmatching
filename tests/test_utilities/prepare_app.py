@@ -9,9 +9,9 @@ from tests.test_utilities.populate_db import ADMIN_USER, add_users
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.login_check import store_user_in_context
 from txmatching.database.db import db
-from txmatching.database.services import tx_session_service
+from txmatching.database.services import txm_event_service
 from txmatching.database.services.patient_service import \
-    save_patients_from_excel_to_empty_tx_session
+    save_patients_from_excel_to_empty_txm_event
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -50,8 +50,8 @@ class DbTests(unittest.TestCase):
     @staticmethod
     def fill_db_with_patients(file=get_absolute_path('/tests/test_utilities/data.xlsx')):
         patients = parse_excel_data(file)
-        tx_session = tx_session_service.create_or_ovewrite_tx_session(name='test')
-        save_patients_from_excel_to_empty_tx_session(patients, tx_session_db_id=tx_session.db_id)
+        tx_session = txm_event_service.create_or_overwrite_txm_event(name='test')
+        save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=tx_session.db_id)
 
     def _set_bearer_token(self):
         self.api = Api(self.app)
