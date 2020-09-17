@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Configuration } from '@app/model/Configuration';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { PatientList } from '@app/model/Patient';
 
 @Component({
@@ -19,6 +19,7 @@ export class ConfigurationComponent implements OnInit {
 
   public configForm?: FormGroup;
   public closeIcon = faTimes;
+  public plusIcon = faPlus;
 
   constructor(private _formBuilder: FormBuilder) {
   }
@@ -56,5 +57,11 @@ export class ConfigurationComponent implements OnInit {
     }
 
     this.configForm = new FormGroup(group);
+  }
+
+  get enableManualScore(): boolean {
+    const patientsExist = !!this.patients?.recipients && !!this.patients?.donors;
+    const configPropertyExists = !!this.configuration?.manual_donor_recipient_scores;
+    return patientsExist && configPropertyExists;
   }
 }

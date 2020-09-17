@@ -87,22 +87,38 @@
         </div>
       </div>
 
-      <ng-container *ngIf="patients && patients.donors && patients.recipients">
-        <label>
-          <span>Donor</span>
-          <app-patient-search [patients]="patients.donors"></app-patient-search>
-        </label>
-        <label>
-          <span>Recipient</span>
-          <app-patient-search [patients]="patients.recipients"></app-patient-search>
-        </label>
-        <label>
-          <span>Score</span>
-          <input [value]="configuration.max_number_of_distinct_countries_in_round" formControlName="max_number_of_distinct_countries_in_round"
-                 type="number">
-        </label>
-
-      </ng-container>
+      <div *ngIf="enableManualScore"
+           class="configuration__manual-score">
+        <h3>Manual scores for donor and recipient</h3>
+        <div class="configuration__box">
+          <div *ngFor="let manualScore of configuration.manual_donor_recipient_scores"
+               class="item">
+            <label>
+              <span>Donor</span>
+              <app-patient-search [patients]="patients.donors"></app-patient-search>
+            </label>
+            <label>
+              <span>Recipient</span>
+              <app-patient-search [patients]="patients.recipients"></app-patient-search>
+            </label>
+            <label>
+              <span>Score</span>
+              <input [value]="manualScore.score"
+                     formControlName="max_number_of_distinct_countries_in_round"
+                     type="number">
+            </label>
+            <div class="remove">
+              <fa-icon [icon]="closeIcon"></fa-icon>
+            </div>
+          </div>
+          <div class="add">
+            <button>
+              add
+              <fa-icon [icon]="plusIcon"></fa-icon>
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!--      <div *ngIf="configuration.manual_donor_recipient_scores" class="configuration__box manual">-->
       <!--        <b>Manual donor recipient scores</b>-->
