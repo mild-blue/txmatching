@@ -174,6 +174,9 @@
     </div>
   </div>
 
+  <app-configuration-patients [configuration]="configuration"
+                              [patients]="patients"></app-configuration-patients>
+
   <div class="configuration__interactive">
     <h3>Required patients</h3>
     <div class="configuration__box">
@@ -181,7 +184,7 @@
         <div *ngIf="configuration?.required_patient_db_ids?.length then patientsList else nothingFound"></div>
       </div>
       <div class="add-new">
-        <form [formGroup]="requiredPatientsForm" autofocus="false">
+        <form [formGroup]="requiredPatientsForm">
           <label>
             <span>Patient</span>
             <div class="autocomplete">
