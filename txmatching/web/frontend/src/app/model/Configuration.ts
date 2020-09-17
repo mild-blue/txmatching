@@ -16,9 +16,9 @@ export interface Configuration {
   max_matchings_to_show_to_viewer: number;
 
   // complex FE
+  manual_donor_recipient_scores: DonorRecipientScore[];
   required_patient_db_ids: number[];
   forbidden_country_combinations: CountryCombination[];
-  manual_donor_recipient_scores: DonorRecipientScore[];
 
   [key: string]: boolean | string | number | number[] | CountryCombination[] | DonorRecipientScore[];
 }
@@ -34,7 +34,7 @@ export interface DonorRecipientScore {
   score: number;
 }
 
-interface CountryCombination {
+export interface CountryCombination {
   donor_country: string;
   recipient_country: string;
 }

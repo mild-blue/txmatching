@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Configuration, DonorRecipientScore } from '@app/model/Configuration';
+import { Configuration, CountryCombination, DonorRecipientScore } from '@app/model/Configuration';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { PatientList } from '@app/model/Patient';
 
@@ -24,6 +24,10 @@ export class ConfigurationComponent implements OnInit {
     recipient: new FormControl('', Validators.required),
     score: new FormControl('', Validators.required)
   });
+  public countriesForm: FormGroup = new FormGroup({
+    donorCountry: new FormControl('', Validators.required),
+    recipientCountry: new FormControl('', Validators.required)
+  });
 
   // icons
   public closeIcon = faTimes;
@@ -43,16 +47,20 @@ export class ConfigurationComponent implements OnInit {
   }
 
   public addManualScore(): void {
-    const { donor, recipient, score } = this.manualScoreForm.controls;
+    const controls = this.manualScoreForm.controls;
+
+    const donor = controls.donor.value;
+    const recipient = controls.recipient.value;
+    const score = controls.score.value;
 
     if (!this.configuration || !donor || !recipient || !score) {
       return;
     }
 
     this.configuration.manual_donor_recipient_scores.push({
-      donor: donor.value,
-      recipient: recipient.value,
-      score: score.value
+      donor,
+      recipient,
+      score
     });
 
     this.manualScoreForm.reset();
@@ -67,8 +75,54 @@ export class ConfigurationComponent implements OnInit {
     scores.splice(index, 1);
   }
 
+  public addCountryCombination(): void {
+    const controls = this.countriesForm.controls;
+
+    const donorCountry = controls.donorCountry.value;
+    const recipientCountry = controls.recipientCountry.value;
+
+    if (!this.configuration || !donorCountry || !recipientCountry) {
+      return;
+    }
+
+    this.configuration.forbidden_country_combinations.push({
+      donor_country: donorCountry,
+      recipient_country: recipientCountry
+    });
+
+    this.countriesForm.reset();
+  }
+
+  public removeCountryCombination(item: CountryCombination): void {
+    if (!this.configuration) {
+      return;
+    }
+    const countries = this.configuration.forbidden_country_combinations;
+    const index = countries.indexOf(item);
+    countries.splice(index, 1);
+  }
+
   public close(): void {
     this.configClosed.emit();
+  }
+
+  public submitAction(): void {
+    if (this.configForm && this.configuration) {
+      this.configSubmitted.emit({
+        ...this.configForm.value,
+        manual_donor_recipient_scores: this.configuration.manual_donor_recipient_scores
+      });
+    }
+  }
+
+  public getDonor(id: number): string {
+    const donor = this.patients?.donors.find(p => p.db_id === id);
+    return donor ? donor.medical_id : '';
+  }
+
+  public getRecipient(id: number): string {
+    const recipient = this.patients?.recipients.find(p => p.db_id === id);
+    return recipient ? recipient.medical_id : '';
   }
 
   private _buildFormFromConfig(): void {
@@ -89,24 +143,5 @@ export class ConfigurationComponent implements OnInit {
     }
 
     this.configForm = new FormGroup(group);
-  }
-
-  public submitAction(): void {
-    if (this.configForm && this.configuration) {
-      this.configSubmitted.emit({
-        ...this.configForm.value,
-        manual_donor_recipient_scores: this.configuration.manual_donor_recipient_scores
-      });
-    }
-  }
-
-  getDonor(id: number): string {
-    const donor = this.patients?.donors.find(p => p.db_id === id);
-    return donor ? donor.medical_id : '';
-  }
-
-  getRecipient(id: number): string {
-    const recipient = this.patients?.recipients.find(p => p.db_id === id);
-    return recipient ? recipient.medical_id : '';
   }
 }

@@ -90,7 +90,7 @@
   </form>
 
   <div *ngIf="showManualScore"
-       class="configuration__manual-score">
+       class="configuration__interactive">
     <h3>Manual scores for donor and recipient</h3>
     <div class="configuration__box">
       <div class="list">
@@ -125,6 +125,37 @@
     </div>
   </div>
 
+  <div class="configuration__interactive">
+    <h3>Manual scores for donor and recipient</h3>
+    <div class="configuration__box">
+      <div class="list">
+        <div *ngIf="configuration?.forbidden_country_combinations?.length then countriesList else nothingFound"></div>
+      </div>
+      <div class="add-new">
+        <form [formGroup]="countriesForm">
+          <label *ngIf="patients && patients.donors">
+            <span>Donor country</span>
+            <app-patient-search (selected)="countriesForm.controls.donorCountry.setValue($event)"
+                                [patients]="patients.donors"
+                                [value]="countriesForm.controls.donorCountry.value"></app-patient-search>
+          </label>
+          <label *ngIf="patients && patients.recipients">
+            <span>Recipient country</span>
+            <app-patient-search (selected)="countriesForm.controls.recipientCountry.setValue($event)"
+                                [patients]="patients.recipients"
+                                [value]="countriesForm.controls.recipientCountry.value"></app-patient-search>
+          </label>
+        </form>
+        <div class="add-new__button">
+          <app-button (click)="addCountryCombination()" size="sm" variant="success">
+            Add
+            <fa-icon [icon]="plusIcon"></fa-icon>
+          </app-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <app-button (click)="submitAction()">Recalculate</app-button>
 </div>
 
@@ -148,6 +179,23 @@
   </div>
 </ng-template>
 
+<ng-template #countriesList>
+  <div *ngFor="let forbidden of configuration?.forbidden_country_combinations"
+       class="item">
+    <div class="donor">
+      {{ forbidden.donor_country }}
+    </div>
+    <div class="recipient">
+      {{ forbidden.recipient_country }}
+    </div>
+    <div class="remove">
+      <button (click)="removeCountryCombination(forbidden)">
+        <fa-icon [icon]="closeIcon"></fa-icon>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
 <ng-template #nothingFound>
-  Continue by adding new manual score
+  Continue by adding new entry
 </ng-template>
