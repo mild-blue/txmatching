@@ -5,7 +5,7 @@ from importlib import util as importing
 from flask import Flask, request, send_from_directory
 from flask_restx import Api
 from txmatching.web.api.report_api import report_api
-from txmatching.web.api.tx_session_api import tx_session_api
+from txmatching.web.api.txm_event_api import txm_event_api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from txmatching.auth import bcrypt
@@ -19,7 +19,7 @@ from txmatching.web.api.namespaces import (PATIENT_NAMESPACE,
                                            USER_NAMESPACE,
                                            SERVICE_NAMESPACE,
                                            CONFIGURATION_NAMESPACE,
-                                           TX_SESSION_NAMESPACE,
+                                           TXM_EVENT_NAMESPACE,
                                            REPORTS_NAMESPACE)
 from txmatching.web.api.patient_api import patient_api
 from txmatching.web.api.service_api import service_api
@@ -76,7 +76,7 @@ def create_app():
         api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
         api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
         api.add_namespace(report_api, path=f'{API_VERSION}/{REPORTS_NAMESPACE}')
-        api.add_namespace(tx_session_api, path=f'{API_VERSION}/{TX_SESSION_NAMESPACE}')
+        api.add_namespace(txm_event_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}')
 
     # pylint: disable=unused-variable
     # routes registered in flask

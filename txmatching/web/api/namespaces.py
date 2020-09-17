@@ -15,8 +15,8 @@ user_api = Namespace(USER_NAMESPACE)
 CONFIGURATION_NAMESPACE = 'configuration'
 configuration_api = Namespace(CONFIGURATION_NAMESPACE)
 
-TX_SESSION_NAMESPACE = 'tx_session'
-tx_session_api = Namespace(TX_SESSION_NAMESPACE)
+TXM_EVENT_NAMESPACE = 'txm_event'
+txm_event_api = Namespace(TXM_EVENT_NAMESPACE)
 
 REPORTS_NAMESPACE = 'reports'
 report_api = Namespace(REPORTS_NAMESPACE)

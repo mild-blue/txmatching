@@ -2,7 +2,7 @@ from flask_restx import fields
 
 from txmatching.patients.patient import DonorType
 from txmatching.utils.country import Country
-from txmatching.web.api.namespaces import tx_session_api
+from txmatching.web.api.namespaces import txm_event_api
 
 # remove in task https://trello.com/c/pKMqnv7X
 BLOOD_GROUPS = ['A', 'B', '0', 'AB']
@@ -11,22 +11,21 @@ MEDICAL_ID_DESCRIPTION = 'Medical ID of the patient. This ID is unique thorough 
 identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.'
 HLA_TYPING_DESCRIPTION = 'HLA typing of the patient. Use high resolution if available.'
 
-TX_SESSION_JSON_IN = tx_session_api.model('New TX session', {
+TxmEventJsonIn = txm_event_api.model('New TXM event', {
     'name': fields.String(required=True)
 })
 
-TX_SESSION_JSON_OUT = tx_session_api.model('TX session', {
+TxmEventJsonOut = txm_event_api.model('TXM event', {
     'name': fields.String(required=True),
     'db_id': fields.Integer(required=True),
 })
 
-HLA_ANTIBODIES_MODEL = tx_session_api.model('HLA Antibodies', {
+HlaAntibodiesJson = txm_event_api.model('HLA Antibodies', {
     'MFI': fields.Integer(required=True, description='Mean fluorescence intensity. Use exact value.', example=2350),
-    'name': fields.String(required=True, description='HLA name', example='A32'),
-}
-                                            )
+    'name': fields.String(required=True, description='HLA antibody name', example='A32'),
+})
 
-DONOR_MODEL = tx_session_api.model('Donor', {
+DonorJsonIn = txm_event_api.model('Donor', {
     'medical_id': fields.String(required=True, description=MEDICAL_ID_DESCRIPTION, example='D1037'),
     'blood_group': fields.String(required=True, enum=BLOOD_GROUPS),
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String, description=HLA_TYPING_DESCRIPTION,
@@ -37,7 +36,7 @@ DONOR_MODEL = tx_session_api.model('Donor', {
                                                               'donors and altruists'),
 })
 
-RECIPIENT_MODEL = tx_session_api.model('Recipient', {
+RecipientJsonIn = txm_event_api.model('Recipient', {
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(enum=BLOOD_GROUPS),
                                            description='Acceptable blood groups for the patient. Leave empty to use \
                                             compatible blood groups.'),
@@ -50,11 +49,11 @@ RECIPIENT_MODEL = tx_session_api.model('Recipient', {
                                   description='Detected HLA antibodies of the patient. Use high resolution \
                                   if available.',
                                   cls_or_instance=fields.Nested(
-                                      HLA_ANTIBODIES_MODEL
+                                      HlaAntibodiesJson
                                   ))
 })
 
-UPLOAD_PATIENTS_JSON = tx_session_api.model(
+UploadPatientsJson = txm_event_api.model(
     'Upload patients',
     {
         'country': fields.String(required=True, enum=[country.name for country in Country]),
@@ -62,10 +61,20 @@ UPLOAD_PATIENTS_JSON = tx_session_api.model(
                                          description='The name has to be provided by an ADMIN.',
                                          example='2020-10-CZE-IL-AUT'),
         'donors': fields.List(required=True, cls_or_instance=fields.Nested(
-            DONOR_MODEL
+            DonorJsonIn
         )),
         'recipients': fields.List(required=True, cls_or_instance=fields.Nested(
-            RECIPIENT_MODEL
+            RecipientJsonIn
         ))
     }
 )
+
+FailJson = txm_event_api.model('Fail Response', {
+    'error': fields.String(required=True),
+    'reason': fields.String(required=True),
+})
+
+PatientUploadSuccessJson = txm_event_api.model('Patient upload success Response', {
+    'recipients_uploaded': fields.Integer(required=True),
+    'donors_uploaded': fields.Integer(required=True),
+})
