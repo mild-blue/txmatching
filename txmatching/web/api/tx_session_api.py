@@ -12,8 +12,7 @@ from txmatching.web.api.namespaces import tx_session_api
 
 logger = logging.getLogger(__name__)
 
-
-TX_SESSION_FAIL_RESPONSE = tx_session_api.model('Tx session FailResponse', {
+TX_SESSION_FAIL_RESPONSE = tx_session_api.model('TX session FailResponse', {
     'error': fields.String(required=True),
 })
 
@@ -24,9 +23,10 @@ TX_SESSION_FAIL_RESPONSE = tx_session_api.model('Tx session FailResponse', {
 class TxSessionApi(Resource):
 
     @tx_session_api.doc(body=TX_SESSION_JSON_IN, security='bearer',
-                        description='Endpoint that lets an ADMIN to create a new tx session with provided name')
+                        description='Endpoint that lets an ADMIN create a new TX session. \
+                        The ADMIN should specify TX session name.')
     @tx_session_api.response(code=200, model=TX_SESSION_JSON_OUT,
-                             description='Returns the newly created tx session object')
+                             description='Returns the newly created TX session object.')
     @tx_session_api.response(code=500, model=TX_SESSION_FAIL_RESPONSE, description='')
     @login_required()
     def post(self):
@@ -36,9 +36,10 @@ class TxSessionApi(Resource):
 @tx_session_api.route('/upload_patients', methods=['PUT'])
 class TxSessionUploadPatients(Resource):
 
-    @tx_session_api.doc(body=UPLOAD_PATIENTS_JSON, security='bearer', description="""
-    Endpoint that lets user with rights to given country to upload patient data for given tx session.
-    The enpoints deletes all patients from respective country in case there were any.""".replace(r' +', ' '))
+    @tx_session_api.doc(body=UPLOAD_PATIENTS_JSON, security='bearer',
+                        description='This endpoint allows the country editor to upload patient data for given \
+                        TX session. TX session name has to be provided by an ADMIN. The endpoint removes all patients \
+                        from respective country in case there were any.')
     @tx_session_api.response(code=200, description='Success')
     @tx_session_api.response(code=500, description='Fail')
     # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
