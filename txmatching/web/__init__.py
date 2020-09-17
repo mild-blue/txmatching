@@ -2,8 +2,10 @@ import logging
 import sys
 from importlib import util as importing
 
-from flask import Flask, send_from_directory, request
+from flask import Flask, request, send_from_directory
 from flask_restx import Api
+from txmatching.web.api.report_api import report_api
+from txmatching.web.api.tx_session_api import tx_session_api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from txmatching.auth import bcrypt
@@ -12,10 +14,14 @@ from txmatching.configuration.app_configuration.application_configuration import
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
-from txmatching.web.api.namespaces import PATIENT_NAMESPACE, MATCHING_NAMESPACE, \
-    USER_NAMESPACE, SERVICE_NAMESPACE, CONFIGURATION_NAMESPACE, REPORTS_NAMESPACE
+from txmatching.web.api.namespaces import (PATIENT_NAMESPACE,
+                                           MATCHING_NAMESPACE,
+                                           USER_NAMESPACE,
+                                           SERVICE_NAMESPACE,
+                                           CONFIGURATION_NAMESPACE,
+                                           TX_SESSION_NAMESPACE,
+                                           REPORTS_NAMESPACE)
 from txmatching.web.api.patient_api import patient_api
-from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
 from txmatching.web.api.user_api import user_api
 
@@ -70,6 +76,7 @@ def create_app():
         api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
         api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
         api.add_namespace(report_api, path=f'{API_VERSION}/{REPORTS_NAMESPACE}')
+        api.add_namespace(tx_session_api, path=f'{API_VERSION}/{TX_SESSION_NAMESPACE}')
 
     # pylint: disable=unused-variable
     # routes registered in flask
