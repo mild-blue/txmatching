@@ -28,7 +28,7 @@ export interface AppConfiguration extends Configuration {
   solver_constructor_name: string;
 }
 
-interface DonorRecipientScore {
+export interface DonorRecipientScore {
   donor: number;
   recipient: number;
   score: number;

@@ -2,6 +2,7 @@
   <ng-autocomplete
     (selected)="selectEvent($event)"
     [data]="patients"
+    [(ngModel)]="value"
     [itemTemplate]="itemTemplate"
     [notFoundTemplate]="notFoundTemplate"
     [searchKeyword]="keyword">

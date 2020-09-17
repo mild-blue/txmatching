@@ -101,11 +101,13 @@
           <label *ngIf="patients && patients.donors">
             <span>Donor</span>
             <app-patient-search (selected)="manualScoreForm.controls.donor.setValue($event)"
+                                [value]="getDonor(manualScoreForm.controls.donor.value)"
                                 [patients]="patients.donors"></app-patient-search>
           </label>
           <label *ngIf="patients && patients.recipients">
             <span>Recipient</span>
             <app-patient-search (selected)="manualScoreForm.controls.recipient.setValue($event)"
+                                [value]="getRecipient(manualScoreForm.controls.recipient.value)"
                                 [patients]="patients.recipients"></app-patient-search>
           </label>
           <label>
@@ -130,25 +132,22 @@
   <div *ngFor="let manualScore of configuration?.manual_donor_recipient_scores"
        class="item">
     <div class="donor">
-      {{ getDonor(manualScore.donor)?.medical_id }}
+      {{ getDonor(manualScore.donor) }}
     </div>
     <div class="recipient">
-      {{ getRecipient(manualScore.recipient)?.medical_id }}
+      {{ getRecipient(manualScore.recipient) }}
     </div>
     <div class="score">
       {{manualScore.score}}
     </div>
     <div class="remove">
-      <fa-icon [icon]="closeIcon"></fa-icon>
+      <button (click)="removeManualScore(manualScore)">
+        <fa-icon [icon]="closeIcon"></fa-icon>
+      </button>
     </div>
   </div>
 </ng-template>
 
 <ng-template #nothingFound>
   Continue by adding new manual score
-</ng-template>
-
-<ng-template #itemTemplate let-donor let-recipient>
-  hehe
-
 </ng-template>

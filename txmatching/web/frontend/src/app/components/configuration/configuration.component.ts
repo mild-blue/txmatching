@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Configuration } from '@app/model/Configuration';
+import { Configuration, DonorRecipientScore } from '@app/model/Configuration';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Patient, PatientList } from '@app/model/Patient';
+import { PatientList } from '@app/model/Patient';
 
 @Component({
   selector: 'app-configuration',
@@ -54,6 +54,17 @@ export class ConfigurationComponent implements OnInit {
       recipient: recipient.value,
       score: score.value
     });
+
+    this.manualScoreForm.reset();
+  }
+
+  public removeManualScore(item: DonorRecipientScore): void {
+    if (!this.configuration) {
+      return;
+    }
+    const scores = this.configuration.manual_donor_recipient_scores;
+    const index = scores.indexOf(item);
+    scores.splice(index, 1);
   }
 
   public close(): void {
@@ -89,11 +100,13 @@ export class ConfigurationComponent implements OnInit {
     }
   }
 
-  getDonor(id: number): Patient | undefined {
-    return this.patients?.donors.find(p => p.db_id === id);
+  getDonor(id: number): string {
+    const donor = this.patients?.donors.find(p => p.db_id === id);
+    return donor ? donor.medical_id : '';
   }
 
-  getRecipient(id: number): Patient | undefined {
-    return this.patients?.recipients.find(p => p.db_id === id);
+  getRecipient(id: number): string {
+    const recipient = this.patients?.recipients.find(p => p.db_id === id);
+    return recipient ? recipient.medical_id : '';
   }
 }
