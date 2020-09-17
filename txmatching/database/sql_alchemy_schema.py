@@ -8,7 +8,6 @@ from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.patients.patient import DonorType, RecipientRequirements
 
-
 # pylint: disable=too-few-public-methods
 # disable because sqlalchemy needs classes without public methods
 
@@ -17,7 +16,7 @@ class ConfigModel(db.Model):
     __tablename__ = 'config'
     __table_args__ = {'extend_existing': True}
     # Here and below I am using Integer instead of BigInt because it seems that there is a bug and BigInteger is not
-    # transfered to BigSerial with autoincrement True, but to BigInt only.
+    # transferred to BigSerial with autoincrement True, but to BigInt only.
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     parameters = db.Column(db.JSON, unique=False, nullable=False)
     created_by = db.Column(db.Integer, unique=False, nullable=False)
@@ -26,7 +25,7 @@ class ConfigModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    pairing_results = relationship('PairingResultModel', backref='config', cascade="all, delete")
+    pairing_results = relationship('PairingResultModel', backref='config', cascade='all, delete')
 
 
 class PairingResultModel(db.Model):
