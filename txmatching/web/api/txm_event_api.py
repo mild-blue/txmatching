@@ -6,7 +6,7 @@ import logging
 from flask_restx import Resource
 
 from txmatching.auth.login_check import login_required
-from txmatching.data_transfer_objects.tx_session.txm_event_swagger import (
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     TxmEventJsonIn, TxmEventJsonOut, UploadPatientsJson, FailJson, PatientUploadSuccessJson)
 from txmatching.web.api.namespaces import txm_event_api
 

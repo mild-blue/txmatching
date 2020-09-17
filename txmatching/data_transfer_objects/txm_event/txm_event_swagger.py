@@ -57,9 +57,9 @@ UploadPatientsJson = txm_event_api.model(
     'Upload patients',
     {
         'country': fields.String(required=True, enum=[country.name for country in Country]),
-        'tx_session_name': fields.String(required=True,
-                                         description='The name has to be provided by an ADMIN.',
-                                         example='2020-10-CZE-IL-AUT'),
+        'txm_event_name': fields.String(required=True,
+                                        description='The TXM event name has to be provided by an ADMIN.',
+                                        example='2020-10-CZE-IL-AUT'),
         'donors': fields.List(required=True, cls_or_instance=fields.Nested(
             DonorJsonIn
         )),
