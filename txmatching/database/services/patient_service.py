@@ -83,7 +83,7 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
         ))
 
 
-def get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
+def _get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
     base_patient = _get_base_patient_from_patient_model(donor_model)
 
     return Donor(base_patient.db_id,
@@ -94,8 +94,8 @@ def get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
                  )
 
 
-def get_recipient_from_recipient_model(recipient_model: RecipientModel,
-                                       donors_for_recipients_dict: Dict[RecipientDbId, Donor]) -> Recipient:
+def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
+                                        donors_for_recipients_dict: Dict[RecipientDbId, Donor]) -> Recipient:
     base_patient = _get_base_patient_from_patient_model(recipient_model)
 
     return Recipient(base_patient.db_id,
@@ -149,7 +149,7 @@ def get_txm_event(txm_event_db_id: Optional[int] = None) -> TxmEvent:
 
     active_donors = txm_event_model.donors
     active_recipients = txm_event_model.recipients
-    donors_with_recipients = [(donor_model.recipient_id, get_donor_from_donor_model(donor_model))
+    donors_with_recipients = [(donor_model.recipient_id, _get_donor_from_donor_model(donor_model))
                               for donor_model in active_donors]
 
     donors_dict = {donor.db_id: donor for _, donor in donors_with_recipients}
@@ -157,7 +157,7 @@ def get_txm_event(txm_event_db_id: Optional[int] = None) -> TxmEvent:
                                    if related_recipient_id}
 
     recipients_dict = {
-        recipient_model.id: get_recipient_from_recipient_model(
+        recipient_model.id: _get_recipient_from_recipient_model(
             recipient_model, donors_with_recipients_dict)
         for recipient_model in active_recipients}
 
