@@ -13,7 +13,9 @@ RUN apt-get update --fix-missing && \
      git mercurial subversion \
      # conda-forge dependencies
      libxi6 libxfixes3 libxcursor1 libxdamage1 libxcomposite1 \
-     libxrandr2 libxinerama1 libx11-6 && \
+     libxrandr2 libxinerama1 libx11-6 \
+     # PDF generation stuff
+     wkhtmltopdf && \
     apt-get clean
 
 # copy local installation of miniconda

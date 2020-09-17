@@ -50,11 +50,12 @@ def solve_from_db() -> Iterable[Matching]:
 def _current_config_matchings_to_model(config_matchings: Iterable[MatchingWithScore]) -> CalculatedMatchings:
     return CalculatedMatchings([
         CalculatedMatching(
-            [
+            donors_recipients=[
                 DonorRecipient(donor.db_id, recipient.db_id)
                 for donor, recipient in final_solution.donor_recipient_list
             ],
-            final_solution.score()
+            score=final_solution.score(),
+            db_id=final_solution.db_id()
         )
         for final_solution in config_matchings
     ])

@@ -14,3 +14,6 @@ user_api = Namespace(USER_NAMESPACE)
 
 CONFIGURATION_NAMESPACE = 'configuration'
 configuration_api = Namespace(CONFIGURATION_NAMESPACE)
+
+REPORTS_NAMESPACE = 'reports'
+report_api = Namespace(REPORTS_NAMESPACE)

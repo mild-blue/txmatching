@@ -50,7 +50,8 @@ class CalculateFromConfig(Resource):
                                 recipient.medical_id) for donor, recipient in matching_round.donor_recipient_list])
                     for matching_round in matching.get_rounds()],
                 countries=matching.get_country_codes_counts(),
-                score=matching.score()
+                score=matching.score(),
+                db_id=matching.db_id()
             )) for matching in matchings
         ]
         if get_user_role() == UserRole.VIEWER:

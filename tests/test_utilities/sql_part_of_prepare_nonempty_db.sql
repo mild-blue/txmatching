@@ -25,7 +25,8 @@ VALUES (1, '{
         "donor": 1
       }
     ],
-    "score": 1.0
+    "score": 1.0,
+    "db_id": 1
   }]
 }', '{"score_matrix_dto": [[1,2],[1,2]]}', true);
 INSERT INTO public.pairing_result (config_id, calculated_matchings, score_matrix, valid)
@@ -37,7 +38,8 @@ VALUES (2, '{
         "donor": 1
       }
     ],
-    "score": 1.0
+    "score": 1.0,
+    "db_id": 3
   }]
 }', '{"score_matrix_dto": [[1,2],[1,2]]}', true);
 

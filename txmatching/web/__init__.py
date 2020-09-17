@@ -1,7 +1,7 @@
 import logging
-import sys
 from importlib import util as importing
 
+import sys
 from flask import Flask, send_from_directory, request
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -10,8 +10,9 @@ from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
 from txmatching.web.api.namespaces import PATIENT_NAMESPACE, MATCHING_NAMESPACE, \
-    USER_NAMESPACE, SERVICE_NAMESPACE, CONFIGURATION_NAMESPACE
+    USER_NAMESPACE, SERVICE_NAMESPACE, CONFIGURATION_NAMESPACE, REPORTS_NAMESPACE
 from txmatching.web.api.patient_api import patient_api
+from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.app_configuration.application_configuration import (
@@ -68,6 +69,7 @@ def create_app():
         api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
         api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
         api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
+        api.add_namespace(report_api, path=f'{API_VERSION}/{REPORTS_NAMESPACE}')
 
     # pylint: disable=unused-variable
     # routes registered in flask

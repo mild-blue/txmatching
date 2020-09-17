@@ -37,10 +37,6 @@ def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], Sc
     all_matchings = db_matchings_to_matching_list(calculated_matchings, patients.donors_dict,
                                                   patients.recipients_dict)
 
-    all_matchings.sort(key=lambda matching: len(matching.get_rounds()), reverse=True)
-    all_matchings.sort(key=lambda matching: matching.score(), reverse=True)
-    all_matchings.sort(key=lambda matching: len(matching.donor_recipient_list), reverse=True)
-
     score_matrix = last_pairing_result_model.score_matrix['score_matrix_dto']
     score_dict = {
         (donor_db_id, recipient_db_id): score for donor_db_id, row in
