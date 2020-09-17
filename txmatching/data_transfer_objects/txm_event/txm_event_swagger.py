@@ -11,16 +11,16 @@ MEDICAL_ID_DESCRIPTION = 'Medical ID of the patient. This ID is unique thorough 
 identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.'
 HLA_TYPING_DESCRIPTION = 'HLA typing of the patient. Use high resolution if available.'
 
-TxmEventJsonIn = txm_event_api.model('New TXM event', {
+TxmEventJsonIn = txm_event_api.model('NewTxmEvent', {
     'name': fields.String(required=True)
 })
 
-TxmEventJsonOut = txm_event_api.model('TXM event', {
+TxmEventJsonOut = txm_event_api.model('TxmEvent', {
     'name': fields.String(required=True),
     'db_id': fields.Integer(required=True),
 })
 
-HlaAntibodiesJson = txm_event_api.model('HLA Antibodies', {
+HlaAntibodiesJson = txm_event_api.model('HLAAntibodies', {
     'MFI': fields.Integer(required=True, description='Mean fluorescence intensity. Use exact value.', example=2350),
     'name': fields.String(required=True, description='HLA antibody name', example='A32'),
 })
@@ -69,12 +69,12 @@ UploadPatientsJson = txm_event_api.model(
     }
 )
 
-FailJson = txm_event_api.model('Fail Response', {
+FailJson = txm_event_api.model('FailResponse', {
     'error': fields.String(required=True),
     'reason': fields.String(required=True),
 })
 
-PatientUploadSuccessJson = txm_event_api.model('Patient upload success Response', {
+PatientUploadSuccessJson = txm_event_api.model('PatientUploadSuccessResponse', {
     'recipients_uploaded': fields.Integer(required=True),
     'donors_uploaded': fields.Integer(required=True),
 })
