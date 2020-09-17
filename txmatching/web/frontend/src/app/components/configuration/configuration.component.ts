@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Configuration, CountryCombination, DonorRecipientScore } from '@app/model/Configuration';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { PatientList } from '@app/model/Patient';
+import { Patient, PatientList } from '@app/model/Patient';
 
 @Component({
   selector: 'app-configuration',
@@ -27,6 +27,9 @@ export class ConfigurationComponent implements OnInit {
   public countriesForm: FormGroup = new FormGroup({
     donorCountry: new FormControl('', Validators.required),
     recipientCountry: new FormControl('', Validators.required)
+  });
+  public requiredPatientsForm: FormGroup = new FormGroup({
+    patient: new FormControl('', Validators.required)
   });
 
   // icons
@@ -60,6 +63,14 @@ export class ConfigurationComponent implements OnInit {
     }
     const countries = this.patients.recipients.map(p => p.parameters.country_code);
     return [...new Set(countries)]; // only unique
+  }
+
+  get allPatients(): Patient[] {
+    if (!this.patients) {
+      return [];
+    }
+    const patients = [...this.patients.donors, ...this.patients.recipients];
+    return [...new Set(patients)]; // only unique
   }
 
   public addManualScore(): void {
@@ -116,6 +127,29 @@ export class ConfigurationComponent implements OnInit {
     const countries = this.configuration.forbidden_country_combinations;
     const index = countries.indexOf(item);
     countries.splice(index, 1);
+  }
+
+  public addRequiredPatient(): void {
+    const controls = this.requiredPatientsForm.controls;
+
+    const patient = controls.patient.value;
+
+    if (!this.configuration || !patient) {
+      return;
+    }
+
+    this.configuration.required_patient_db_ids.push(patient.db_id);
+
+    this.requiredPatientsForm.reset();
+  }
+
+  public removePatient(id: number): void {
+    if (!this.configuration) {
+      return;
+    }
+    const ids = this.configuration.required_patient_db_ids;
+    const index = ids.indexOf(id);
+    ids.splice(index, 1);
   }
 
   public close(): void {

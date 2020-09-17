@@ -136,7 +136,7 @@
   </div>
 
   <div class="configuration__interactive">
-    <h3>Manual scores for donor and recipient</h3>
+    <h3>Forbidden country combinations</h3>
     <div class="configuration__box">
       <div class="list">
         <div *ngIf="configuration?.forbidden_country_combinations?.length then countriesList else nothingFound"></div>
@@ -166,6 +166,36 @@
         </form>
         <div class="add-new__button">
           <app-button (click)="addCountryCombination()" size="sm" variant="success">
+            Add
+            <fa-icon [icon]="plusIcon"></fa-icon>
+          </app-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="configuration__interactive">
+    <h3>Required patients</h3>
+    <div class="configuration__box">
+      <div class="list">
+        <div *ngIf="configuration?.required_patient_db_ids?.length then patientsList else nothingFound"></div>
+      </div>
+      <div class="add-new">
+        <form [formGroup]="requiredPatientsForm" autofocus="false">
+          <label>
+            <span>Patient</span>
+            <div class="autocomplete">
+              <ng-autocomplete [data]="allPatients"
+                               [itemTemplate]="patientItemTemplate"
+                               [notFoundTemplate]="notFoundTemplate"
+                               [searchKeyword]="'medical_id'"
+                               formControlName="patient"
+                               notFoundText="Patient not found"></ng-autocomplete>
+            </div>
+          </label>
+        </form>
+        <div class="add-new__button">
+          <app-button (click)="addRequiredPatient()" size="sm" variant="success">
             Add
             <fa-icon [icon]="plusIcon"></fa-icon>
           </app-button>
@@ -208,6 +238,20 @@
     </div>
     <div class="remove">
       <button (click)="removeCountryCombination(forbidden)">
+        <fa-icon [icon]="closeIcon"></fa-icon>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #patientsList>
+  <div *ngFor="let id of configuration?.required_patient_db_ids"
+       class="item">
+    <div class="patient">
+      {{ id }}
+    </div>
+    <div class="remove">
+      <button (click)="removePatient(id)">
         <fa-icon [icon]="closeIcon"></fa-icon>
       </button>
     </div>
