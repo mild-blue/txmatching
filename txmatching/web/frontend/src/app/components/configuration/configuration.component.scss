@@ -161,7 +161,7 @@
     }
   }
 
-  form {
+  > form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -171,7 +171,33 @@
     }
   }
 
-  .item {
-    display: flex;
+  &__manual-score {
+    .add-new {
+      display: flex;
+
+      form {
+        display: flex;
+        flex-grow: 1;
+
+        label {
+          display: flex;
+          flex-direction: column;
+          padding: 0 10px;
+        }
+      }
+
+      &__button {
+        display: flex;
+        align-items: center;
+
+        fa-icon {
+          margin-left: 10px;
+        }
+      }
+    }
+
+    .item {
+      display: flex;
+    }
   }
 }

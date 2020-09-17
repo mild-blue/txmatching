@@ -10,6 +10,7 @@ export class ButtonComponent {
 
   @Input() loading: boolean = false;
   @Input() size: 'sm' | '' = '';
+  @Input() variant: 'primary' | 'success' | 'danger' = 'primary';
 
   public icon = faSpinner;
 }

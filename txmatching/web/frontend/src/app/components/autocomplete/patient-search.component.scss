@@ -9,15 +9,25 @@
       padding: 10px 15px;
       box-shadow: none;
       border: 1px solid $border-color;
+      font-size: $font-size;
+      height: auto;
+      line-height: normal;
     }
-  }
 
-  ::ng-deep .suggestions-container {
-    width: calc(100% - #{$border-radius--wide});
-    margin: auto;
-    box-shadow: $box-shadow;
-    left: 50%;
-    transform: translateX(-50%);
+    .suggestions-container {
+      margin: auto;
+      border-radius: $input-border-radius;
+      overflow: hidden;
+    }
+
+    &.active {
+      .suggestions-container {
+        &.is-visible {
+          box-shadow: $box-shadow;
+          border: 1px solid $border-color;
+        }
+      }
+    }
   }
 }
 

@@ -3,7 +3,7 @@
 form {
   input, textarea {
     border: 1px solid $border-color;
-    border-radius: $border-radius--wide;
+    border-radius: $input-border-radius;
     padding: 10px 15px;
     overflow: hidden;
     font-family: $font-family;

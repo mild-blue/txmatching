@@ -1,6 +1,6 @@
 <div class="patient-search">
   <ng-autocomplete
-    (selected)='selectEvent($event)'
+    (selected)="selectEvent($event)"
     [data]="patients"
     [itemTemplate]="itemTemplate"
     [notFoundTemplate]="notFoundTemplate"

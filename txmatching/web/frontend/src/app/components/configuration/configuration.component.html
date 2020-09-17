@@ -86,58 +86,71 @@
 
         </div>
       </div>
+    </div>
+  </form>
 
-      <div *ngIf="enableManualScore"
-           class="configuration__manual-score">
-        <h3>Manual scores for donor and recipient</h3>
-        <div class="configuration__box">
-          <div *ngFor="let manualScore of configuration.manual_donor_recipient_scores"
-               class="item">
-            <label>
-              <span>Donor</span>
-              <app-patient-search [patients]="patients.donors"></app-patient-search>
-            </label>
-            <label>
-              <span>Recipient</span>
-              <app-patient-search [patients]="patients.recipients"></app-patient-search>
-            </label>
-            <label>
-              <span>Score</span>
-              <input [value]="manualScore.score"
-                     formControlName="max_number_of_distinct_countries_in_round"
-                     type="number">
-            </label>
-            <div class="remove">
-              <fa-icon [icon]="closeIcon"></fa-icon>
-            </div>
-          </div>
-          <div class="add">
-            <button>
-              add
-              <fa-icon [icon]="plusIcon"></fa-icon>
-            </button>
-          </div>
+  <div *ngIf="enableManualScore"
+       class="configuration__manual-score">
+    <h3>Manual scores for donor and recipient</h3>
+    <div class="configuration__box">
+      <div *ngFor="let manualScore of configuration.manual_donor_recipient_scores"
+           class="item">
+        <div class="donor">
+          {{manualScore.donor}}
+        </div>
+        <div class="recipient">
+          {{manualScore.recipient}}
+        </div>
+        <div class="score">
+          {{manualScore.score}}
+        </div>
+        <div class="remove">
+          <fa-icon [icon]="closeIcon"></fa-icon>
         </div>
       </div>
-
-      <!--      <div *ngIf="configuration.manual_donor_recipient_scores" class="configuration__box manual">-->
-      <!--        <b>Manual donor recipient scores</b>-->
-      <!--        <div class="manual-row">-->
-      <!--          <div>-->
-      <!--            <p>-->
-      <!--              Fill in a list of such manual settings. Format:-->
-      <!--              <code>[(donor_name,recipient_name,score)]</code>-->
-      <!--              Example:-->
-      <!--              <code>[("D1","R1",23), ("D1","R1",-1)]</code>-->
-      <!--              Use <strong>-1</strong> for forbidden exchanges.-->
-      <!--            </p>-->
-      <!--          </div>-->
-      <!--          <textarea cols="60" formControlName="manual_donor_recipient_scores" rows="7">{{ configuration.manual_donor_recipient_scores }}</textarea>-->
-      <!--        </div>-->
-      <!--      </div>-->
+      <div class="add-new">
+        <form [formGroup]="manualScoreForm">
+          <label *ngIf="patients && patients.donors">
+            <span>Donor</span>
+            <app-patient-search (selected)="manualScoreForm.controls.donor.setValue($event)"
+                                [patients]="patients.donors"></app-patient-search>
+          </label>
+          <label *ngIf="patients && patients.recipients">
+            <span>Recipient</span>
+            <app-patient-search (selected)="manualScoreForm.controls.recipient.setValue($event)"
+                                [patients]="patients.recipients"></app-patient-search>
+          </label>
+          <label>
+            <span>Score</span>
+            <input formControlName="score" type="number">
+          </label>
+        </form>
+        <div class="add-new__button">
+          <app-button (click)="addManualScore()" size="sm" variant="success">
+            Add
+            <fa-icon [icon]="plusIcon"></fa-icon>
+          </app-button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <app-button (click)="submitAction()">Recalculate</app-button>
+  <!--      <div *ngIf="configuration.manual_donor_recipient_scores" class="configuration__box manual">-->
+  <!--        <b>Manual donor recipient scores</b>-->
+  <!--        <div class="manual-row">-->
+  <!--          <div>-->
+  <!--            <p>-->
+  <!--              Fill in a list of such manual settings. Format:-->
+  <!--              <code>[(donor_name,recipient_name,score)]</code>-->
+  <!--              Example:-->
+  <!--              <code>[("D1","R1",23), ("D1","R1",-1)]</code>-->
+  <!--              Use <strong>-1</strong> for forbidden exchanges.-->
+  <!--            </p>-->
+  <!--          </div>-->
+  <!--          <textarea cols="60" formControlName="manual_donor_recipient_scores" rows="7">{{ configuration.manual_donor_recipient_scores }}</textarea>-->
+  <!--        </div>-->
+  <!--      </div>-->
 
-  </form>
+
+  <app-button (click)="submitAction()">Recalculate</app-button>
 </div>

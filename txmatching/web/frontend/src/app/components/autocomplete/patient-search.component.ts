@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Patient, patientNameProperty } from '@app/model/Patient';
 
 @Component({
@@ -9,6 +9,7 @@ import { Patient, patientNameProperty } from '@app/model/Patient';
 export class PatientSearchComponent implements OnInit {
 
   @Input() patients: Patient[] = [];
+  @Output() selected: EventEmitter<number> = new EventEmitter<number>();
 
   public keyword = patientNameProperty;
 
@@ -19,7 +20,6 @@ export class PatientSearchComponent implements OnInit {
   }
 
   selectEvent(item: Patient) {
-    console.log('selected', item);
-    // do something with selected item
+    this.selected.emit(item.db_id);
   }
 }
