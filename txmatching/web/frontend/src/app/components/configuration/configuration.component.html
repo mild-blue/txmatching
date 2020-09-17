@@ -89,24 +89,12 @@
     </div>
   </form>
 
-  <div *ngIf="enableManualScore"
+  <div *ngIf="showManualScore"
        class="configuration__manual-score">
     <h3>Manual scores for donor and recipient</h3>
     <div class="configuration__box">
-      <div *ngFor="let manualScore of configuration.manual_donor_recipient_scores"
-           class="item">
-        <div class="donor">
-          {{manualScore.donor}}
-        </div>
-        <div class="recipient">
-          {{manualScore.recipient}}
-        </div>
-        <div class="score">
-          {{manualScore.score}}
-        </div>
-        <div class="remove">
-          <fa-icon [icon]="closeIcon"></fa-icon>
-        </div>
+      <div class="list">
+        <div *ngIf="configuration?.manual_donor_recipient_scores?.length then manualScoresList else nothingFound"></div>
       </div>
       <div class="add-new">
         <form [formGroup]="manualScoreForm">
@@ -135,22 +123,32 @@
     </div>
   </div>
 
-  <!--      <div *ngIf="configuration.manual_donor_recipient_scores" class="configuration__box manual">-->
-  <!--        <b>Manual donor recipient scores</b>-->
-  <!--        <div class="manual-row">-->
-  <!--          <div>-->
-  <!--            <p>-->
-  <!--              Fill in a list of such manual settings. Format:-->
-  <!--              <code>[(donor_name,recipient_name,score)]</code>-->
-  <!--              Example:-->
-  <!--              <code>[("D1","R1",23), ("D1","R1",-1)]</code>-->
-  <!--              Use <strong>-1</strong> for forbidden exchanges.-->
-  <!--            </p>-->
-  <!--          </div>-->
-  <!--          <textarea cols="60" formControlName="manual_donor_recipient_scores" rows="7">{{ configuration.manual_donor_recipient_scores }}</textarea>-->
-  <!--        </div>-->
-  <!--      </div>-->
-
-
   <app-button (click)="submitAction()">Recalculate</app-button>
 </div>
+
+<ng-template #manualScoresList>
+  <div *ngFor="let manualScore of configuration?.manual_donor_recipient_scores"
+       class="item">
+    <div class="donor">
+      {{ getDonor(manualScore.donor)?.medical_id }}
+    </div>
+    <div class="recipient">
+      {{ getRecipient(manualScore.recipient)?.medical_id }}
+    </div>
+    <div class="score">
+      {{manualScore.score}}
+    </div>
+    <div class="remove">
+      <fa-icon [icon]="closeIcon"></fa-icon>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #nothingFound>
+  Continue by adding new manual score
+</ng-template>
+
+<ng-template #itemTemplate let-donor let-recipient>
+  hehe
+
+</ng-template>
