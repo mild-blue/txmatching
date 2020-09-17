@@ -13,8 +13,6 @@ from txmatching.web.api.namespaces import txm_event_api
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=no-self-use
-# the methods here need self due to the annotations
 @txm_event_api.route('/tx_session', methods=['POST'])
 class TxSessionApi(Resource):
 
