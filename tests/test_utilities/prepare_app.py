@@ -50,8 +50,8 @@ class DbTests(unittest.TestCase):
     @staticmethod
     def fill_db_with_patients(file=get_absolute_path('/tests/test_utilities/data.xlsx')):
         patients = parse_excel_data(file)
-        tx_session = txm_event_service.create_or_overwrite_txm_event(name='test')
-        save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=tx_session.db_id)
+        txm_event = txm_event_service.create_or_overwrite_txm_event(name='test')
+        save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=txm_event.db_id)
 
     def _set_bearer_token(self):
         self.api = Api(self.app)

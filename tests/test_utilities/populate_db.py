@@ -31,6 +31,6 @@ if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         patients = parse_excel_data('data.xlsx')
-        tx_session = txm_event_service.create_or_overwrite_txm_event(name='test')
-        save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=tx_session.db_id)
+        txm_event = txm_event_service.create_or_overwrite_txm_event(name='test')
+        save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=txm_event.db_id)
         add_users()

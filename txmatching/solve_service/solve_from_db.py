@@ -19,19 +19,19 @@ from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 
 
 def solve_from_db() -> Iterable[Matching]:
-    tx_session = get_txm_event()
+    txm_event = get_txm_event()
 
     current_configuration = get_current_configuration()
     current_config_matchings, score_matrix = solve_from_config(SolverInputParameters(
-        donors_dict=tx_session.donors_dict,
-        recipients_dict=tx_session.recipients_dict,
+        donors_dict=txm_event.donors_dict,
+        recipients_dict=txm_event.recipients_dict,
         configuration=current_configuration
     ))
     current_config_matchings_model = dataclasses.asdict(
         _current_config_matchings_to_model(current_config_matchings)
     )
 
-    config_id = _save_configuration_to_db(current_configuration, tx_session.db_id)
+    config_id = _save_configuration_to_db(current_configuration, txm_event.db_id)
     pairing_result_model = PairingResultModel(
         score_matrix=score_matrix_to_dto(score_matrix),
         calculated_matchings=current_config_matchings_model,

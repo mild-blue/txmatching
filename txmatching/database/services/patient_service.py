@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def donor_excel_dto_to_donor_model(donor: DonorExcelDTO, recipient: Optional[RecipientModel],
-                                   tx_session_db_id: int) -> DonorModel:
+                                   txm_event_db_id: int) -> DonorModel:
     maybe_recipient_id = recipient.id if recipient else None
     donor_type = DonorType.DONOR if recipient else DonorType.ALTRUIST
     donor_model = DonorModel(
@@ -33,12 +33,12 @@ def donor_excel_dto_to_donor_model(donor: DonorExcelDTO, recipient: Optional[Rec
         active=True,
         recipient_id=maybe_recipient_id,
         donor_type=donor_type,
-        txm_event_id=tx_session_db_id
+        txm_event_id=txm_event_db_id
     )
     return donor_model
 
 
-def recipient_excel_dto_to_recipient_model(recipient: RecipientExcelDTO, tx_session_db_id: int) -> RecipientModel:
+def recipient_excel_dto_to_recipient_model(recipient: RecipientExcelDTO, txm_event_db_id: int) -> RecipientModel:
     patient_model = RecipientModel(
         medical_id=recipient.medical_id,
         country=recipient.parameters.country_code,
@@ -48,7 +48,7 @@ def recipient_excel_dto_to_recipient_model(recipient: RecipientExcelDTO, tx_sess
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in recipient.acceptable_blood_groups],
-        txm_event_id=tx_session_db_id
+        txm_event_id=txm_event_db_id
     )
     return patient_model
 
@@ -57,7 +57,7 @@ def save_patients_from_excel_to_empty_txm_event(donors_recipients: Tuple[List[Do
                                                 txm_event_db_id: int):
     txm_event = get_txm_event(txm_event_db_id)
     if len(txm_event.donors_dict) > 0 or len(txm_event.recipients_dict) > 0:
-        raise ValueError('Tx session not empty, cannot send patients to database')
+        raise ValueError('Txm event not empty, cannot send patients to database')
 
     maybe_recipient_models = [recipient_excel_dto_to_recipient_model(recipient, txm_event_db_id)
                               if recipient else None for recipient in donors_recipients[1]]
