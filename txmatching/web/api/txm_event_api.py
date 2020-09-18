@@ -13,14 +13,14 @@ from txmatching.web.api.namespaces import txm_event_api
 logger = logging.getLogger(__name__)
 
 
-@txm_event_api.route('/tx_session', methods=['POST'])
-class TxSessionApi(Resource):
+@txm_event_api.route('/txm_event', methods=['POST'])
+class TxmEventApi(Resource):
 
     @txm_event_api.doc(body=TxmEventJsonIn, security='bearer',
-                       description='Endpoint that lets an ADMIN create a new TX session. \
-                        The ADMIN should specify TX session name.')
+                       description='Endpoint that lets an ADMIN create a new TXM event. \
+                        The ADMIN should specify TXM event name.')
     @txm_event_api.response(code=200, model=TxmEventJsonOut,
-                            description='Returns the newly created TX session object.')
+                            description='Returns the newly created TXM event object.')
     @txm_event_api.response(code=400, model=FailJson, description='Wrong data format')
     @txm_event_api.response(code=401, model=FailJson, description='Authentication Denied')
     @txm_event_api.response(code=409, model=FailJson, description='Non-unique patients provided')
@@ -31,11 +31,11 @@ class TxSessionApi(Resource):
 
 
 @txm_event_api.route('/upload_patients', methods=['PUT'])
-class TxSessionUploadPatients(Resource):
+class TxmEventUploadPatients(Resource):
 
     @txm_event_api.doc(body=UploadPatientsJson, security='bearer',
                        description='This endpoint allows the country editor to upload patient data for given \
-                        TX session. TX session name has to be provided by an ADMIN. The endpoint removes all patients \
+                        TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients \
                         from respective country in case there were any.')
     @txm_event_api.response(code=200, description='Success', model=PatientUploadSuccessJson)
     @txm_event_api.response(code=400, model=FailJson, description='Wrong data format')
