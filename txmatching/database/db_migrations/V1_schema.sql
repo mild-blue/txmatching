@@ -61,9 +61,10 @@ CREATE TABLE app_user
 );
 
 
-CREATE TABLE txm_event (
-    id BIGSERIAL NOT NULL,
-    name TEXT NOT NULL,
+CREATE TABLE txm_event
+(
+    id         BIGSERIAL   NOT NULL,
+    name       TEXT        NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
@@ -73,17 +74,17 @@ CREATE TABLE txm_event (
 
 CREATE TABLE recipient
 (
-    id                     BIGSERIAL    NOT NULL,
-    medical_id             TEXT         NOT NULL,
-    txm_event_id          BIGINT       NOT NULL,
-    country                COUNTRY      NOT NULL,
-    blood                  BLOOD_TYPE   NOT NULL,
-    hla_antigens           JSONB        NOT NULL, -- JSON
-    hla_antibodies         JSONB        NOT NULL, -- JSON
-    active                 BOOL         NOT NULL, -- assume some patients fall out of the set
-    recipient_requirements JSONB        NOT NULL, -- JSON
-    created_at             TIMESTAMPTZ  NOT NULL,
-    updated_at             TIMESTAMPTZ  NOT NULL,
+    id                     BIGSERIAL   NOT NULL,
+    medical_id             TEXT        NOT NULL,
+    txm_event_id           BIGINT      NOT NULL,
+    country                COUNTRY     NOT NULL,
+    blood                  BLOOD_TYPE  NOT NULL,
+    hla_antigens           JSONB       NOT NULL, -- JSON
+    hla_antibodies         JSONB       NOT NULL, -- JSON
+    active                 BOOL        NOT NULL, -- assume some patients fall out of the set
+    recipient_requirements JSONB       NOT NULL, -- JSON
+    created_at             TIMESTAMPTZ NOT NULL,
+    updated_at             TIMESTAMPTZ NOT NULL,
     deleted_at             TIMESTAMPTZ,
     CONSTRAINT pk_recipient_id PRIMARY KEY (id),
     CONSTRAINT uq_recipient_medical_id UNIQUE (medical_id, txm_event_id),
@@ -127,13 +128,13 @@ CREATE TABLE recipient_acceptable_blood
 
 CREATE TABLE config
 (
-    id               BIGSERIAL   NOT NULL,
-    txm_event_id    BIGINT      NOT NULL,
-    parameters       JSONB       NOT NULL,                                                              -- JSON
-    created_by       BIGINT      NOT NULL,
-    created_at       TIMESTAMPTZ NOT NULL,
-    updated_at       TIMESTAMPTZ NOT NULL,
-    deleted_at       TIMESTAMPTZ,
+    id           BIGSERIAL   NOT NULL,
+    txm_event_id BIGINT      NOT NULL,
+    parameters   JSONB       NOT NULL,                                                             -- JSON
+    created_by   BIGINT      NOT NULL,
+    created_at   TIMESTAMPTZ NOT NULL,
+    updated_at   TIMESTAMPTZ NOT NULL,
+    deleted_at   TIMESTAMPTZ,
     CONSTRAINT pk_config_id PRIMARY KEY (id),
     CONSTRAINT fk_config_created_by_app_user_id FOREIGN KEY (created_by) REFERENCES app_user (id), -- this is also valid for pairing_result
     CONSTRAINT fk_config_txm_event_id_txm_event_id FOREIGN KEY (txm_event_id) REFERENCES txm_event (id) ON DELETE CASCADE ON UPDATE CASCADE

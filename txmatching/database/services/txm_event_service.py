@@ -7,7 +7,7 @@ from txmatching.patients.patient import TxmEvent
 
 
 def get_newest_txm_event_db_id() -> int:
-    txm_event_model = TxmEventModel.query.order_by(TxmEventModel.id).first()
+    txm_event_model = TxmEventModel.query.order_by(TxmEventModel.id.desc()).first()
     if txm_event_model:
         return txm_event_model.id
     else:
