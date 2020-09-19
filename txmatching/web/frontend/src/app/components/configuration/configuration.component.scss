@@ -21,13 +21,13 @@
     width: 100vw;
     overflow-y: scroll;
     background: $white;
-    padding: $padding-y $padding-x;
+    padding: $padding-y $padding-x calc(#{$padding-y} * 4);
   }
 
   &__content {
     width: 100%;
     max-width: 1600px;
-    margin: auto;
+    margin: 0 auto calc(#{$padding-y} * 2);
   }
 
   &__header {
@@ -94,22 +94,9 @@
     }
   }
 
-  .toggles {
-
-    //@include media-breakpoint-down(lg) {
-    //  margin-right: $padding-x;
-    //}
-    //
-    //@include media-breakpoint-down(md) {
-    //  margin-right: 0;
-    //  margin-bottom: $padding-y;
-    //}
-  }
-
   .inputs {
     display: flex;
     flex-wrap: wrap;
-    //margin: calc(#{$item-gap} * 2) calc(-1 * #{$item-gap});
 
     .mat-form-field {
       flex-basis: 50%;

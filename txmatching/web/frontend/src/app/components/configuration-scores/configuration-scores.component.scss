@@ -11,18 +11,17 @@
     font-style: italic;
     width: 100%;
     text-align: center;
-    color: $gray-400;
+    color: $gray-500;
   }
 
   $field-gap: calc(#{$item-gap} / 2);
 
   &-item {
     display: flex;
-    background: $gray-100;
+    background: rgba(0, 0, 0, .04);
     padding: 15px $item-gap 5px $padding-x;
-    border-radius: $border-radius--wide;
+    border-radius: 4px 4px 0 0;
     margin: $field-gap;
-    box-shadow: $box-shadow;
 
     form {
 
@@ -54,7 +53,13 @@
 
     button {
       margin-left: $item-gap;
-      color: $danger;
+      color: $body-color;
+      opacity: 0.2;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 0.5;
+      }
     }
   }
 }

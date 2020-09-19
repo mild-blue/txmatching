@@ -1,9 +1,15 @@
 <div class="configuration__interactive">
-  <h3>Required recipients</h3>
+  <div class="configuration__box-heading">
+    <h4>
+      Required recipients
+      <app-count>{{selectedPatients.length}}</app-count>
+    </h4>
+  </div>
+
   <div class="configuration__box">
     <form>
-      <mat-form-field>
-        <mat-label>Required recipients</mat-label>
+      <mat-form-field appearance="fill">
+        <mat-label>Recipients to require</mat-label>
         <mat-chip-list #chipList>
           <mat-chip (removed)="remove(patient)"
                     *ngFor="let patient of selectedPatients"
@@ -24,6 +30,7 @@
             {{option.medical_id}}
           </mat-option>
         </mat-autocomplete>
+        <mat-hint>Search and select multiple patients from {{allPatients.length}} recipients</mat-hint>
       </mat-form-field>
     </form>
   </div>
