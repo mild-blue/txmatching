@@ -1,5 +1,15 @@
-<div class="configuration__interactive">
-  <h3>Forbidden country combinations</h3>
+<div class="configuration__countries">
+  <div class="configuration__box-heading">
+    <h4>
+      Forbidden country combinations
+      <app-count>{{selectedCombinations.length}}</app-count>
+    </h4>
+    <app-button (click)="addCombination()" size="sm" variant="success">
+      Add
+      <mat-icon>add</mat-icon>
+    </app-button>
+  </div>
+
   <div class="configuration__box">
     <div *ngFor="let combination of selectedCombinations"
          class="combination">
@@ -19,7 +29,6 @@
                    [matAutocomplete]="donorAuto"
                    [matChipInputFor]="donorChipList"
                    matInput
-                   placeholder="Search country"
                    type="text">
           </mat-chip-list>
           <mat-autocomplete #donorAuto="matAutocomplete"
@@ -46,7 +55,6 @@
                    [matChipInputFor]="recipientChipList"
                    class="no-style"
                    matInput
-                   placeholder="Search country"
                    type="text">
           </mat-chip-list>
           <mat-autocomplete #recipientAuto="matAutocomplete"
@@ -60,13 +68,6 @@
       <button (click)="removeCombination(combination)">
         <mat-icon>cancel</mat-icon>
       </button>
-    </div>
-
-    <div class="add-new">
-      <app-button (click)="addCombination()" size="sm" variant="success">
-        Add
-        <mat-icon>add</mat-icon>
-      </app-button>
     </div>
   </div>
 </div>

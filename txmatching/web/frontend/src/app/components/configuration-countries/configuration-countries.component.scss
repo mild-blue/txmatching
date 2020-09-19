@@ -1,0 +1,48 @@
+@import "../../../styles/variables";
+
+.configuration__countries {
+
+  .configuration__box {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  $field-gap: calc(#{$item-gap} / 2);
+
+  .combination {
+    display: flex;
+    background: $gray-100;
+    padding: 15px $item-gap 5px $padding-x;
+    border-radius: $border-radius--wide;
+    margin: $field-gap;
+    box-shadow: $box-shadow;
+
+    form {
+
+      flex: 1;
+      display: flex;
+      margin: 0 calc(-1 * #{$field-gap});
+
+      .mat-form-field {
+        flex: 1;
+        padding: 0 $field-gap;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      ::ng-deep .mat-chip-list-wrapper {
+        flex-wrap: nowrap;
+      }
+
+      ::ng-deep .mat-form-field-infix {
+        width: 120px;
+      }
+    }
+
+    button {
+      margin-left: $item-gap;
+      color: $danger;
+    }
+  }
+}

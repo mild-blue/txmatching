@@ -80,6 +80,18 @@
     background: $white;
     box-shadow: $box-shadow--wide;
     padding: $padding-y $padding-x;
+
+    &-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $padding-y $border-radius--wide calc(#{$item-gap} / 2);
+
+      h4 {
+        margin: 0;
+        color: $gray-500;
+      }
+    }
   }
 
   .toggles {
