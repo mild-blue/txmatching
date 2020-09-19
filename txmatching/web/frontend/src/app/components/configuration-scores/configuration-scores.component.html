@@ -1,8 +1,21 @@
-<div class="configuration__interactive">
-  <h3>Manual score for donor and recipient</h3>
+<div class="configuration__scores">
+  <div class="configuration__box-heading">
+    <h4>
+      Manual score for donor and recipient
+      <app-count>{{selectedScores.length}}</app-count>
+    </h4>
+    <app-button (click)="addScore()" size="sm" variant="success">
+      Add
+      <mat-icon>add</mat-icon>
+    </app-button>
+  </div>
+
   <div class="configuration__box">
+    <div class="placeholder" *ngIf="selectedScores.length === 0">
+      No score configuration yet
+    </div>
     <div *ngFor="let score of selectedScores"
-         class="combination">
+         class="configuration__scores-item">
       <form>
         <!-- Donor -->
         <mat-form-field>
@@ -19,7 +32,6 @@
                    [matAutocomplete]="donorAuto"
                    [matChipInputFor]="donorChipList"
                    matInput
-                   placeholder="Search by medical ID"
                    type="text">
           </mat-chip-list>
           <mat-autocomplete #donorAuto="matAutocomplete"
@@ -46,7 +58,6 @@
                    [matAutocomplete]="recipientAuto"
                    [matChipInputFor]="recipientChipList"
                    matInput
-                   placeholder="Search by medical ID"
                    type="text">
           </mat-chip-list>
           <mat-autocomplete #recipientAuto="matAutocomplete"
@@ -70,13 +81,6 @@
       <button (click)="removeScore(score)">
         <mat-icon>cancel</mat-icon>
       </button>
-    </div>
-
-    <div class="add-new">
-      <app-button (click)="addScore()" size="sm" variant="success">
-        Add
-        <mat-icon>add</mat-icon>
-      </app-button>
     </div>
   </div>
 </div>

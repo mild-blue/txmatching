@@ -7,9 +7,16 @@
     flex-wrap: wrap;
   }
 
+  .placeholder {
+    font-style: italic;
+    width: 100%;
+    text-align: center;
+    color: $gray-400;
+  }
+
   $field-gap: calc(#{$item-gap} / 2);
 
-  .combination {
+  &-item {
     display: flex;
     background: $gray-100;
     padding: 15px $item-gap 5px $padding-x;
@@ -37,6 +44,11 @@
 
       ::ng-deep .mat-form-field-infix {
         width: 120px;
+        min-height: 58px;
+
+        input {
+          margin-top: 12px;
+        }
       }
     }
 

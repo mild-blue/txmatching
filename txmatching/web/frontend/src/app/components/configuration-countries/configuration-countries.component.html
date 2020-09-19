@@ -11,8 +11,11 @@
   </div>
 
   <div class="configuration__box">
+    <div class="placeholder" *ngIf="selectedCombinations.length === 0">
+      No countries configuration yet
+    </div>
     <div *ngFor="let combination of selectedCombinations"
-         class="combination">
+         class="configuration__countries-item">
       <form>
         <!-- Donor country -->
         <mat-form-field>
