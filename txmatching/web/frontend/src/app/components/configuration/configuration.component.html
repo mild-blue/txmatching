@@ -135,77 +135,11 @@
     </div>
   </div>
 
-  <div class="configuration__interactive">
-    <h3>Forbidden country combinations</h3>
-    <div class="configuration__box">
-      <div class="list">
-        <div *ngIf="configuration?.forbidden_country_combinations?.length then countriesList else nothingFound"></div>
-      </div>
-      <div class="add-new">
-        <form [formGroup]="countriesForm">
-          <label>
-            <span>Donor country</span>
-            <div class="autocomplete">
-              <ng-autocomplete [data]="donorCountries"
-                               [itemTemplate]="countryItemTemplate"
-                               [notFoundTemplate]="notFoundTemplate"
-                               formControlName="donorCountry"
-                               notFoundText="Country is not present"></ng-autocomplete>
-            </div>
-          </label>
-          <label>
-            <span>Recipient country</span>
-            <div class="autocomplete">
-              <ng-autocomplete [data]="recipientCountries"
-                               [itemTemplate]="countryItemTemplate"
-                               [notFoundTemplate]="notFoundTemplate"
-                               formControlName="recipientCountry"
-                               notFoundText="Country is not present"></ng-autocomplete>
-            </div>
-          </label>
-        </form>
-        <div class="add-new__button">
-          <app-button (click)="addCountryCombination()" size="sm" variant="success">
-            Add
-            <fa-icon [icon]="plusIcon"></fa-icon>
-          </app-button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-configuration-countries [configuration]="configuration"
+                               [patients]="patients"></app-configuration-countries>
 
   <app-configuration-patients [configuration]="configuration"
                               [patients]="patients"></app-configuration-patients>
-
-  <div class="configuration__interactive">
-    <h3>Required patients</h3>
-    <div class="configuration__box">
-      <div class="list">
-        <div *ngIf="configuration?.required_patient_db_ids?.length then patientsList else nothingFound"></div>
-      </div>
-      <div class="add-new">
-        <form [formGroup]="requiredPatientsForm">
-          <label>
-            <span>Patient</span>
-            <div class="autocomplete">
-              <ng-autocomplete [data]="allPatients"
-                               [itemTemplate]="patientItemTemplate"
-                               [notFoundTemplate]="notFoundTemplate"
-                               [searchKeyword]="'medical_id'"
-                               formControlName="patient"
-                               notFoundText="Patient not found"></ng-autocomplete>
-            </div>
-          </label>
-        </form>
-        <div class="add-new__button">
-          <app-button (click)="addRequiredPatient()" size="sm" variant="success">
-            Add
-            <fa-icon [icon]="plusIcon"></fa-icon>
-          </app-button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <app-button (click)="submitAction()">Recalculate</app-button>
 </div>

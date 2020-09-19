@@ -1,34 +1,31 @@
 <div class="configuration__interactive">
   <h3>Required patients</h3>
   <div class="configuration__box">
-    <div class="list">
-    </div>
-    <div class="add-new">
-      <form class="example-form">
-        <mat-form-field class="example-full-width">
-          <mat-chip-list #chipList>
-            <mat-chip (removed)="remove(patient)"
-                      *ngFor="let patient of selectedPatients"
-                      [removable]="true">
-              {{patient.medical_id}}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-            <input #patientInput
-                   [formControl]="formControl"
-                   [matAutocomplete]="auto"
-                   [matChipInputFor]="chipList"
-                   class="no-style"
-                   matInput
-                   type="text">
-          </mat-chip-list>
-          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event)" [displayWith]="displayFn">
-            <mat-option *ngFor="let option of filteredPatients | async" [value]="option">
-              {{option?.medical_id}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-      </form>
-    </div>
+    <form>
+      <mat-form-field>
+        <mat-chip-list #chipList>
+          <mat-chip (removed)="remove(patient)"
+                    *ngFor="let patient of selectedPatients"
+                    [removable]="true">
+            {{patient.medical_id}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+          <input #patientInput
+                 [formControl]="formControl"
+                 [matAutocomplete]="auto"
+                 [matChipInputFor]="chipList"
+                 class="no-style"
+                 matInput
+                 placeholder="Required patients"
+                 type="text">
+        </mat-chip-list>
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event)" [displayWith]="displayFn">
+          <mat-option *ngFor="let option of filteredPatients | async" [value]="option">
+            {{option.medical_id}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </form>
   </div>
 </div>
 

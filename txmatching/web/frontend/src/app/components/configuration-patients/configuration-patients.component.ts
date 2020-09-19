@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Patient, PatientList } from '@app/model/Patient';
 import { Configuration } from '@app/model/Configuration';
@@ -11,7 +11,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
   templateUrl: './configuration-patients.component.html',
   styleUrls: ['./configuration-patients.component.scss']
 })
-export class ConfigurationPatientsComponent implements OnInit {
+export class ConfigurationPatientsComponent {
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
@@ -31,10 +31,7 @@ export class ConfigurationPatientsComponent implements OnInit {
   }
 
   get allPatients(): Patient[] {
-    if (this.patients) {
-      return [...this.patients.donors, ...this.patients.recipients];
-    }
-    return [];
+    return this.patients ? this.patients.recipients : [];
   }
 
   get availablePatients(): Patient[] {
@@ -46,12 +43,7 @@ export class ConfigurationPatientsComponent implements OnInit {
       return [];
     }
     const requiredPatientsIds = this.configuration.required_patient_db_ids;
-    const selected = this.allPatients.filter(p => requiredPatientsIds.includes(p.db_id));
-    // todo: handle donor and recipient with the same id
-    return selected.length > 1 ? [selected[0]] : selected;
-  }
-
-  ngOnInit() {
+    return this.allPatients.filter(p => requiredPatientsIds.includes(p.db_id));
   }
 
   public displayFn(user: Patient): string {
@@ -81,10 +73,10 @@ export class ConfigurationPatientsComponent implements OnInit {
     }
   }
 
+  // todo fulltext
   // filter while typing
   private _filter(name: string): Patient[] {
     const filterValue = name.toLowerCase();
     return this.availablePatients.filter(option => option.medical_id.toLowerCase().indexOf(filterValue) === 0);
   }
-
 }

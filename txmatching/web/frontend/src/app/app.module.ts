@@ -37,6 +37,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
+import { ConfigurationCountriesComponent } from './components/configuration-countries/configuration-countries.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { MatInputModule } from '@angular/material/input';
     MatchingItemComponent,
     VarDirective,
     LogoComponent,
-    ConfigurationPatientsComponent
+    ConfigurationPatientsComponent,
+    ConfigurationCountriesComponent
   ],
   imports: [
     BrowserModule,

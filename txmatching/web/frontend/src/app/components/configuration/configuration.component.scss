@@ -75,7 +75,7 @@
     }
   }
 
-  &__box {
+  &__box, ::ng-deep &__box {
     border-radius: $border-radius--wide;
     background: $white;
     box-shadow: $box-shadow--wide;

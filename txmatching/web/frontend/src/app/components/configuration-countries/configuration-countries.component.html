@@ -1,0 +1,70 @@
+<div class="configuration__interactive">
+  <h3>Forbidden country combinations</h3>
+  <div class="configuration__box">
+    <div *ngFor="let combination of selectedCombinations"
+         class="combination">
+      <form>
+        <!-- Donor country -->
+        <mat-form-field>
+          <mat-chip-list #donorChipList>
+            <mat-chip (removed)="combination.donor_country = ''"
+                      *ngIf="combination.donor_country !== ''"
+                      [removable]="true">
+              {{ combination.donor_country }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input #donorCountryInput
+                   [formControl]="donorFormControl"
+                   [matAutocomplete]="donorAuto"
+                   [matChipInputFor]="donorChipList"
+                   class="no-style"
+                   matInput
+                   placeholder="Donor country"
+                   type="text">
+          </mat-chip-list>
+          <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="combination.donor_country = $event.option.value">
+            <mat-option *ngFor="let country of filteredDonorCountries | async" [value]="country">
+              {{ country }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <!-- Recipient country -->
+        <mat-form-field>
+          <mat-chip-list #recipientChipList>
+            <mat-chip (removed)="combination.recipient_country = ''"
+                      *ngIf="combination.recipient_country !== ''"
+                      [removable]="true">
+              {{ combination.recipient_country }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input #recipientCountryInput
+                   [formControl]="recipientFormControl"
+                   [matAutocomplete]="recipientAuto"
+                   [matChipInputFor]="recipientChipList"
+                   class="no-style"
+                   matInput
+                   placeholder="Recipient country"
+                   type="text">
+          </mat-chip-list>
+          <mat-autocomplete #recipientAuto="matAutocomplete" (optionSelected)="combination.recipient_country = $event.option.value">
+            <mat-option *ngFor="let country of filteredRecipientCountries | async" [value]="country">
+              {{ country }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </form>
+      <button (click)="removeCombination(combination)">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </div>
+
+    <div class="add-new">
+      <app-button (click)="addCombination()" size="sm" variant="success">
+        Add
+        <mat-icon>add</mat-icon>
+      </app-button>
+    </div>
+  </div>
+</div>
+

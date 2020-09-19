@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Configuration, CountryCombination, DonorRecipientScore } from '@app/model/Configuration';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Patient, PatientList } from '@app/model/Patient';
+import { PatientList } from '@app/model/Patient';
 
 @Component({
   selector: 'app-configuration',
@@ -65,14 +65,6 @@ export class ConfigurationComponent implements OnInit {
     return [...new Set(countries)]; // only unique
   }
 
-  get allPatients(): Patient[] {
-    if (!this.patients) {
-      return [];
-    }
-    const patients = [...this.patients.donors, ...this.patients.recipients];
-    return [...new Set(patients)]; // only unique
-  }
-
   public addManualScore(): void {
     const controls = this.manualScoreForm.controls;
 
@@ -126,7 +118,10 @@ export class ConfigurationComponent implements OnInit {
     }
     const countries = this.configuration.forbidden_country_combinations;
     const index = countries.indexOf(item);
-    countries.splice(index, 1);
+
+    if (index >= 0) {
+      countries.splice(index, 1);
+    }
   }
 
   public addRequiredPatient(): void {
@@ -159,8 +154,9 @@ export class ConfigurationComponent implements OnInit {
   public submitAction(): void {
     if (this.configForm && this.configuration) {
       this.configSubmitted.emit({
-        ...this.configForm.value,
-        manual_donor_recipient_scores: this.configuration.manual_donor_recipient_scores
+        ...this.configForm.value
+        // todo add complex UI values, check if valid
+        // manual_donor_recipient_scores: this.configuration.manual_donor_recipient_scores
       });
     }
   }
