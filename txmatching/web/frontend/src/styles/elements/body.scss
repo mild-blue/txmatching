@@ -16,4 +16,9 @@ body {
   &, * {
     box-sizing: border-box;
   }
+
+  &.config-opened {
+    max-height: 100vh;
+    overflow: hidden;
+  }
 }

@@ -57,6 +57,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public toggleConfiguration(): void {
     this.configOpened = !this.configOpened;
+    document.querySelector('body')?.classList.toggle('config-opened');
   }
 
   public calculate(configuration: Configuration): void {
