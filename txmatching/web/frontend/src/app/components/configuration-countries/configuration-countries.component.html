@@ -22,7 +22,8 @@
                    placeholder="Donor country"
                    type="text">
           </mat-chip-list>
-          <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="combination.donor_country = $event.option.value">
+          <mat-autocomplete #donorAuto="matAutocomplete"
+                            (optionSelected)="setDonorCountry(combination, $event.option.value, donorCountryInput)">
             <mat-option *ngFor="let country of filteredDonorCountries | async" [value]="country">
               {{ country }}
             </mat-option>
@@ -47,7 +48,8 @@
                    placeholder="Recipient country"
                    type="text">
           </mat-chip-list>
-          <mat-autocomplete #recipientAuto="matAutocomplete" (optionSelected)="combination.recipient_country = $event.option.value">
+          <mat-autocomplete #recipientAuto="matAutocomplete"
+                            (optionSelected)="setRecipientCountry(combination, $event.option.value, recipientCountryInput)">
             <mat-option *ngFor="let country of filteredRecipientCountries | async" [value]="country">
               {{ country }}
             </mat-option>

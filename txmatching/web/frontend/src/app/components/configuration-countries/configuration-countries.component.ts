@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { PatientList } from '@app/model/Patient';
 import { Configuration, CountryCombination } from '@app/model/Configuration';
 import { FormControl } from '@angular/forms';
@@ -10,18 +10,18 @@ import { map, startWith } from 'rxjs/operators';
   templateUrl: './configuration-countries.component.html',
   styleUrls: ['./configuration-countries.component.scss']
 })
-export class ConfigurationCountriesComponent implements OnInit {
+export class ConfigurationCountriesComponent {
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
-
-  @ViewChild('donorCountryInput') donorCountryInput?: ElementRef<HTMLInputElement>;
-  @ViewChild('recipientCountryInput') recipientCountryInput?: ElementRef<HTMLInputElement>;
 
   public donorFormControl = new FormControl('');
   public recipientFormControl = new FormControl('');
 
   public filteredDonorCountries: Observable<string[]>;
   public filteredRecipientCountries: Observable<string[]>;
+
+  private _donorCountries: string[] = [];
+  private _recipientCountries: string[] = [];
 
   constructor() {
     this.filteredDonorCountries = this.donorFormControl.valueChanges.pipe(
@@ -32,8 +32,6 @@ export class ConfigurationCountriesComponent implements OnInit {
       startWith(null),
       map((country: string | null) => country ? this._filter(this.recipientCountries, country) : this.recipientCountries.slice()));
   }
-
-  private _donorCountries: string[] = [];
 
   get donorCountries(): string[] {
     if (!this.patients || !this.patients.donors) {
@@ -47,8 +45,6 @@ export class ConfigurationCountriesComponent implements OnInit {
 
     return this._donorCountries;
   }
-
-  private _recipientCountries: string[] = [];
 
   get recipientCountries(): string[] {
     if (!this.patients || !this.patients.recipients) {
@@ -67,7 +63,20 @@ export class ConfigurationCountriesComponent implements OnInit {
     return this.configuration ? this.configuration.forbidden_country_combinations : [];
   }
 
-  ngOnInit(): void {
+  public setDonorCountry(c: CountryCombination, country: string, input: HTMLInputElement): void {
+    c.donor_country = country;
+
+    // Reset input
+    this.donorFormControl.setValue('');
+    input.value = '';
+  }
+
+  public setRecipientCountry(c: CountryCombination, country: string, input: HTMLInputElement): void {
+    c.recipient_country = country;
+
+    // Reset input
+    this.recipientFormControl.setValue('');
+    input.value = '';
   }
 
   public addCombination(): void {
