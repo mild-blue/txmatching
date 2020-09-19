@@ -39,6 +39,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
 import { ConfigurationCountriesComponent } from './components/configuration-countries/configuration-countries.component';
 import { ConfigurationScoresComponent } from './components/configuration-scores/configuration-scores.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ import { ConfigurationScoresComponent } from './components/configuration-scores/
     MatFormFieldModule,
     MatIconModule,
     BrowserAnimationsModule,
-    MatInputModule
+    MatInputModule,
+    MatSlideToggleModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

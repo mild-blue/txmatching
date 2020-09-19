@@ -21,28 +21,28 @@
     width: 100vw;
     overflow-y: scroll;
     background: $white;
-    padding: calc(#{$padding-y} * 2) $padding-x;
+    padding: $padding-y $padding-x;
   }
 
-  label {
-    display: block;
-
-    &:not(:last-child) {
-      margin-bottom: 20px;
-    }
+  &__content {
+    width: 100%;
+    max-width: 1600px;
+    margin: auto;
   }
 
   &__header {
     display: flex;
     justify-content: space-between;
+    margin-bottom: $padding-y;
 
     h1 {
       margin: 0;
     }
 
-    button {
+    .close {
       font-size: 24px;
       transition: color 0.2s ease;
+      margin-right: $padding-x;
 
       &:hover {
         color: $primary;
@@ -79,157 +79,71 @@
     border-radius: $border-radius--wide;
     background: $white;
     box-shadow: $box-shadow--wide;
-    flex-grow: 1;
-    flex-basis: 50%;
-    width: 50%;
     padding: $padding-y $padding-x;
-
-    @include media-breakpoint-down(md) {
-      flex-basis: 100%;
-      width: 100%;
-    }
   }
 
-  .checkboxes {
+  .toggles {
 
-    @include media-breakpoint-down(lg) {
-      margin-right: $padding-x;
-    }
-
-    @include media-breakpoint-down(md) {
-      margin-right: 0;
-      margin-bottom: $padding-y;
-    }
+    //@include media-breakpoint-down(lg) {
+    //  margin-right: $padding-x;
+    //}
+    //
+    //@include media-breakpoint-down(md) {
+    //  margin-right: 0;
+    //  margin-bottom: $padding-y;
+    //}
   }
 
   .inputs {
-    margin: 0 $padding-x;
-
-    label {
-      display: flex;
-      align-items: center;
-
-      span {
-        padding-right: 15px;
-        flex-basis: 70%;
-        width: 70%;
-      }
-
-      input {
-        min-width: 80px;
-        flex-basis: 30%;
-        width: 30%;
-      }
-    }
-
-    @include media-breakpoint-down(lg) {
-      margin: 0;
-    }
-  }
-
-  .manual {
-    flex-direction: column;
-
-    p {
-      line-height: 1.6;
-    }
-
-    code {
-      font-size: 12px;
-    }
-
-    @include media-breakpoint-down(lg) {
-      margin-top: $padding-y;
-    }
-
-    &-row {
-      display: flex;
-      flex-direction: column;
-
-      @include media-breakpoint-up(md) {
-        flex-direction: row;
-
-        > div {
-          padding-right: 15px;
-        }
-
-        > * {
-          flex-basis: 50%;
-          width: 50%;
-        }
-      }
-    }
-  }
-
-  > form {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
+    //margin: calc(#{$item-gap} * 2) calc(-1 * #{$item-gap});
 
-    input[type="submit"] {
-      margin-top: 30px;
+    .mat-form-field {
+      flex-basis: 50%;
+      width: 50%;
+
+      padding: 0 $item-gap;
     }
   }
 
-  &__interactive {
-    .add-new {
-      display: flex;
+  .config-form {
+    width: 100%;
+    display: flex;
+    margin: 0 calc(-1 * #{$item-gap});
 
-      form {
-        display: flex;
-        flex-grow: 1;
+    .configuration__box {
+      flex-basis: calc(50% - 2 * #{$item-gap});
+      width: calc(50% - 2 * #{$item-gap});
 
-        label {
-          display: flex;
-          flex-direction: column;
-          padding: 0 10px;
-        }
-      }
-
-      &__button {
-        display: flex;
-        align-items: center;
-
-        fa-icon {
-          margin-left: 10px;
-        }
-      }
-    }
-
-    .item {
-      display: flex;
+      margin: 0 $item-gap;
     }
   }
 
-  .autocomplete {
+  .mat-slide-toggle {
+    width: 100%;
+    display: block;
+    height: auto;
 
-    ::ng-deep .autocomplete-container {
-      box-shadow: none;
+    ::ng-deep &-label {
+      align-items: flex-start;
+      flex-direction: row-reverse;
+      justify-content: flex-start;
+    }
 
-      input {
-        padding: 10px 15px;
-        box-shadow: none;
-        border: 1px solid $border-color;
-        font-size: $font-size;
-        height: auto;
-        line-height: normal;
-      }
+    ::ng-deep &-bar {
+      margin-top: 7px;
+    }
 
-      .suggestions-container {
-        margin: auto;
-        border-radius: $input-border-radius;
-        overflow: hidden;
-      }
+    ::ng-deep &-content {
+      font-family: $font-family;
+      font-weight: $font-weight;
+      white-space: normal;
+      flex: 1;
+    }
 
-      &.active {
-        .suggestions-container {
-          &.is-visible {
-            box-shadow: $box-shadow;
-            border: 1px solid $border-color;
-          }
-        }
-      }
+    &:not(last-child) {
+      margin-bottom: calc(#{$item-gap} / 2);
     }
   }
-
 }

@@ -2,101 +2,102 @@
      [class.open]="isOpened"
      class="configuration">
 
-  <app-container>
-    <div class="configuration__header">
-      <h1>Configuration</h1>
-      <button (click)="close()">
-        <fa-icon [icon]="closeIcon"></fa-icon>
-      </button>
-    </div>
-  </app-container>
+  <div class="configuration__header">
+    <h2>Configuration</h2>
+    <button class="close" (click)="close()">
+      <fa-icon [icon]="closeIcon"></fa-icon>
+    </button>
+  </div>
 
-  <form [formGroup]="configForm">
-    <div class="configuration__boxes">
-      <div>
-        <div class="configuration__box checkboxes">
-          <h3></h3>
-          <label *ngIf="configuration.require_compatible_blood_group !== undefined">
-            <input [checked]="configuration.require_compatible_blood_group"
-                   formControlName="require_compatible_blood_group"
-                   type="checkbox">
-            Require compatible blood group
-          </label>
+  <div class="configuration__content">
 
-          <label *ngIf="configuration.require_better_match_in_compatibility_index !== undefined">
-            <input [checked]="configuration.require_better_match_in_compatibility_index"
-                   formControlName="require_better_match_in_compatibility_index"
-                   type="checkbox">
-            Require new donor having better CI match than original donor
-          </label>
+    <form [formGroup]="configForm" class="config-form">
+      <div class="configuration__box toggles">
+        <mat-slide-toggle *ngIf="configuration.require_compatible_blood_group !== undefined"
+                          formControlName="require_compatible_blood_group"
+                          [checked]="configuration.require_compatible_blood_group">
+          Require compatible blood group
+        </mat-slide-toggle>
 
-          <label *ngIf="configuration.require_better_match_in_compatibility_index_or_blood_group !== undefined">
-            <input [checked]="configuration.require_better_match_in_compatibility_index_or_blood_group"
-                   formControlName="require_better_match_in_compatibility_index_or_blood_group"
-                   type="checkbox">
-            Require new donor having better CI match than original donor or blood group match
-          </label>
+        <mat-slide-toggle *ngIf="configuration.require_better_match_in_compatibility_index !== undefined"
+                          formControlName="require_better_match_in_compatibility_index"
+                          [checked]="configuration.require_better_match_in_compatibility_index">
+          Require new donor having better CI match than original donor
+        </mat-slide-toggle>
 
-          <label *ngIf="configuration.use_binary_scoring !== undefined">
-            <input [checked]="configuration.use_binary_scoring"
-                   formControlName="use_binary_scoring"
-                   type="checkbox">
-            Use binary scoring
-          </label>
+        <mat-slide-toggle *ngIf="configuration.require_better_match_in_compatibility_index_or_blood_group !== undefined"
+                          formControlName="require_better_match_in_compatibility_index_or_blood_group"
+                          [checked]="configuration.require_better_match_in_compatibility_index_or_blood_group">
+          Require new donor having better CI match than original donor or blood group match
+        </mat-slide-toggle>
 
-          <label *ngIf="configuration.allow_low_high_res_incompatible !== undefined">
-            <input [checked]="configuration.allow_low_high_res_incompatible"
-                   formControlName="allow_low_high_res_incompatible"
-                   type="checkbox">
-            Use split resolution
-          </label>
-        </div>
+        <mat-slide-toggle *ngIf="configuration.use_binary_scoring !== undefined"
+                          formControlName="use_binary_scoring"
+                          [checked]="configuration.use_binary_scoring">
+          Use binary scoring
+        </mat-slide-toggle>
 
-        <div class="configuration__box inputs">
-          <label *ngIf="configuration.blood_group_compatibility_bonus !== undefined">
-            <span>Compatible blood group bonus</span>
-            <input [value]="configuration.blood_group_compatibility_bonus" formControlName="blood_group_compatibility_bonus" type="number"><br><br>
-          </label>
-
-          <label *ngIf="configuration.minimum_total_score !== undefined">
-            <span>Minimum transplant score</span>
-            <input [value]="configuration.minimum_total_score" formControlName="minimum_total_score" type="number"><br><br>
-          </label>
-
-          <label *ngIf="configuration.maximum_total_score !== undefined">
-            <span>Maximum transplant score</span>
-            <input [value]="configuration.maximum_total_score" formControlName="maximum_total_score" type="number"><br><br>
-          </label>
-
-          <label *ngIf="configuration.max_cycle_length !== undefined">
-            <span>Max cycle length</span>
-            <input [value]="configuration.max_cycle_length" formControlName="max_cycle_length" type="number"><br><br>
-          </label>
-
-          <label *ngIf="configuration.max_sequence_length !== undefined">
-            <span>Max sequence length</span>
-            <input [value]="configuration.max_sequence_length" formControlName="max_sequence_length" type="number"><br><br>
-          </label>
-
-          <label *ngIf="configuration.max_number_of_distinct_countries_in_round !== undefined">
-            <span>Max countries in round</span>
-            <input [value]="configuration.max_number_of_distinct_countries_in_round" formControlName="max_number_of_distinct_countries_in_round"
-                   type="number">
-          </label>
-
-        </div>
+        <mat-slide-toggle *ngIf="configuration.allow_low_high_res_incompatible !== undefined"
+                          formControlName="allow_low_high_res_incompatible"
+                          [checked]="configuration.allow_low_high_res_incompatible">
+          Use split resolution
+        </mat-slide-toggle>
       </div>
-    </div>
-  </form>
 
-  <app-configuration-scores [configuration]="configuration"
-                            [patients]="patients"></app-configuration-scores>
+      <div class="configuration__box inputs">
+        <mat-form-field *ngIf="configuration.blood_group_compatibility_bonus !== undefined">
+          <mat-label>Compatible blood group bonus</mat-label>
+          <input value="{{ configuration.blood_group_compatibility_bonus }}"
+                 formControlName="blood_group_compatibility_bonus"
+                 matInput type="number">
+        </mat-form-field>
 
-  <app-configuration-countries [configuration]="configuration"
-                               [patients]="patients"></app-configuration-countries>
+        <mat-form-field *ngIf="configuration.max_number_of_distinct_countries_in_round !== undefined">
+          <mat-label>Max countries in round</mat-label>
+          <input value="{{ configuration.max_number_of_distinct_countries_in_round }}"
+                 formControlName="max_number_of_distinct_countries_in_round"
+                 matInput type="number">
+        </mat-form-field>
 
-  <app-configuration-patients [configuration]="configuration"
-                              [patients]="patients"></app-configuration-patients>
+        <mat-form-field *ngIf="configuration.minimum_total_score !== undefined">
+          <mat-label>Minimum transplant score</mat-label>
+          <input value="{{ configuration.minimum_total_score }}"
+                 formControlName="minimum_total_score"
+                 matInput type="number">
+        </mat-form-field>
 
-  <app-button (click)="submitAction()">Recalculate</app-button>
+        <mat-form-field *ngIf="configuration.maximum_total_score !== undefined">
+          <mat-label>Maximum transplant score</mat-label>
+          <input value="{{ configuration.maximum_total_score }}"
+                 formControlName="maximum_total_score"
+                 matInput type="number">
+        </mat-form-field>
+
+        <mat-form-field *ngIf="configuration.max_cycle_length !== undefined">
+          <mat-label>Max cycle length</mat-label>
+          <input value="{{ configuration.max_cycle_length }}"
+                 formControlName="max_cycle_length"
+                 matInput type="number">
+        </mat-form-field>
+
+        <mat-form-field *ngIf="configuration.max_sequence_length !== undefined">
+          <mat-label>Max sequence length</mat-label>
+          <input value="{{ configuration.max_sequence_length }}"
+                 formControlName="max_sequence_length"
+                 matInput type="number">
+        </mat-form-field>
+      </div>
+    </form>
+
+    <app-configuration-scores [configuration]="configuration"
+                              [patients]="patients"></app-configuration-scores>
+
+    <app-configuration-countries [configuration]="configuration"
+                                 [patients]="patients"></app-configuration-countries>
+
+    <app-configuration-patients [configuration]="configuration"
+                                [patients]="patients"></app-configuration-patients>
+
+    <app-button (click)="submitAction()">Recalculate</app-button>
+  </div>
 </div>

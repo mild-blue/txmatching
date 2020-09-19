@@ -65,7 +65,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.configOpened = false;
+    if (this.configOpened) {
+      this.toggleConfiguration();
+    }
     this.loading = true;
 
     const { scorer_constructor_name, solver_constructor_name } = this.appConfiguration;
