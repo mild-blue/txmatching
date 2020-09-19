@@ -2,57 +2,33 @@
   <h3>Required patients</h3>
   <div class="configuration__box">
     <div class="list">
-      <div *ngIf="configuration?.required_patient_db_ids?.length then patientsList else nothingFound"></div>
     </div>
-    <pre>{{ requiredPatientsForm.value | json }}</pre>
     <div class="add-new">
-      <form (ngSubmit)="addRequiredPatient()"
-            [formGroup]="requiredPatientsForm"
-            autocomplete="off" novalidate>
-        <label>Patient</label>
-        <ng-autocomplete [data]="availablePatients"
-                         [initialValue]=""
-                         [itemTemplate]="itemTemplate"
-                         [notFoundTemplate]="notFoundTemplate"
-                         [placeHolder]="placeholder"
-                         [searchKeyword]="keyword"
-                         formControlName="patient"
-                         notFoundText="Patient not found">
-        </ng-autocomplete>
+      <form class="example-form">
+        <mat-form-field class="example-full-width">
+          <mat-chip-list #chipList>
+            <mat-chip (removed)="remove(patient)"
+                      *ngFor="let patient of selectedPatients"
+                      [removable]="true">
+              {{patient.medical_id}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input #patientInput
+                   [formControl]="formControl"
+                   [matAutocomplete]="auto"
+                   [matChipInputFor]="chipList"
+                   class="no-style"
+                   matInput
+                   type="text">
+          </mat-chip-list>
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event)" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of filteredPatients | async" [value]="option">
+              {{option?.medical_id}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
       </form>
-      <div class="add-new__button">
-        <app-button (click)="addRequiredPatient()" size="sm" variant="success">
-          Add
-          <fa-icon [icon]="plusIcon"></fa-icon>
-        </app-button>
-      </div>
     </div>
   </div>
 </div>
-
-<ng-template #itemTemplate let-item>
-  <a [innerHTML]="item[keyword]"></a>
-</ng-template>
-
-<ng-template #notFoundTemplate let-notFound>
-  <div [innerHTML]="notFound"></div>
-</ng-template>
-
-<ng-template #patientsList>
-  <div *ngFor="let id of configuration?.required_patient_db_ids"
-       class="item">
-    <div class="patient">
-      {{ id }}
-    </div>
-    <div class="remove">
-      <button (click)="removePatient(id)">
-        <fa-icon [icon]="closeIcon"></fa-icon>
-      </button>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #nothingFound>
-  Continue by adding new entry
-</ng-template>
 

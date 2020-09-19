@@ -31,6 +31,12 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { LogoComponent } from './components/logo/logo.component';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { ConfigurationPatientsComponent } from './components/configuration-patients/configuration-patients.component';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -65,7 +71,13 @@ import { ConfigurationPatientsComponent } from './components/configuration-patie
     FontAwesomeModule,
     InfiniteScrollModule,
     AutocompleteLibModule,
-    FormsModule
+    FormsModule,
+    MatChipsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatIconModule,
+    BrowserAnimationsModule,
+    MatInputModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

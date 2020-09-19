@@ -1,7 +1,7 @@
 @import "../variables";
 
 form {
-  input, textarea {
+  input:not(.no-style), textarea {
     border: 1px solid $border-color;
     border-radius: $input-border-radius;
     padding: 10px 15px;

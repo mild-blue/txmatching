@@ -1,58 +1,90 @@
-import { Component, Input } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Patient, PatientList } from '@app/model/Patient';
-import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Configuration } from '@app/model/Configuration';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-configuration-patients',
   templateUrl: './configuration-patients.component.html',
   styleUrls: ['./configuration-patients.component.scss']
 })
-export class ConfigurationPatientsComponent {
+export class ConfigurationPatientsComponent implements OnInit {
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
-  public plusIcon = faPlus;
-  public closeIcon = faTimes;
+  @ViewChild('patientInput') patientInput?: ElementRef<HTMLInputElement>;
 
-  public placeholder: string = 'Search patient';
-  public keyword = 'medical_id';
+  public formControl = new FormControl('');
+  public filteredPatients: Observable<Patient[]>;
 
-  public requiredPatientsForm: FormGroup = new FormGroup({
-    patient: new FormControl('', Validators.required)
-  });
+  constructor() {
+    this.filteredPatients = this.formControl.valueChanges.pipe(
+      startWith(''),
+      map((value: string | Patient) => {
+        return typeof value === 'string' ? value : value.medical_id;
+      }),
+      map(name => name ? this._filter(name) : this.availablePatients.slice())
+    );
+  }
+
+  get allPatients(): Patient[] {
+    if (this.patients) {
+      return [...this.patients.donors, ...this.patients.recipients];
+    }
+    return [];
+  }
 
   get availablePatients(): Patient[] {
-    if (!this.patients || !this.configuration) {
+    return this.allPatients.filter(p => !this.selectedPatients.includes(p));
+  }
+
+  get selectedPatients(): Patient[] {
+    if (!this.configuration) {
       return [];
     }
-    const requiredIds = this.configuration?.required_patient_db_ids;
-    const allPatients = [...this.patients.donors, ...this.patients.recipients];
-    const uniquePatients = [...new Set(allPatients)]; // only unique
-    return uniquePatients.filter(p => !requiredIds.includes(p.db_id)); // not already in config
+    const requiredPatientsIds = this.configuration.required_patient_db_ids;
+    const selected = this.allPatients.filter(p => requiredPatientsIds.includes(p.db_id));
+    // todo: handle donor and recipient with the same id
+    return selected.length > 1 ? [selected[0]] : selected;
   }
 
-  public addRequiredPatient(): void {
-    const controls = this.requiredPatientsForm.controls;
+  ngOnInit() {
+  }
 
-    const patient = controls.patient.value;
+  public displayFn(user: Patient): string {
+    return user && user.medical_id ? user.medical_id : '';
+  }
 
-    if (!this.configuration || !patient || !patient.db_id) {
-      return;
+  public add(event: MatAutocompleteSelectedEvent): void {
+    const patient: Patient = event.option.value;
+    this.configuration?.required_patient_db_ids.push(patient.db_id);
+
+    // Reset input
+    this.formControl.setValue('');
+    if (this.patientInput) {
+      this.patientInput.nativeElement.value = '';
     }
-
-    this.configuration.required_patient_db_ids.push(patient.db_id);
-
-    this.requiredPatientsForm.reset();
   }
 
-  public removePatient(id: number): void {
+  public remove(patient: Patient): void {
     if (!this.configuration) {
       return;
     }
-    const ids = this.configuration.required_patient_db_ids;
-    const index = ids.indexOf(id);
-    ids.splice(index, 1);
+
+    const index = this.configuration.required_patient_db_ids.indexOf(patient.db_id);
+
+    if (index >= 0) {
+      this.configuration.required_patient_db_ids.splice(index, 1);
+    }
   }
+
+  // filter while typing
+  private _filter(name: string): Patient[] {
+    const filterValue = name.toLowerCase();
+    return this.availablePatients.filter(option => option.medical_id.toLowerCase().indexOf(filterValue) === 0);
+  }
+
 }
