@@ -1,0 +1,83 @@
+<div class="configuration__interactive">
+  <h3>Manual score for donor and recipient</h3>
+  <div class="configuration__box">
+    <div *ngFor="let score of selectedScores"
+         class="combination">
+      <form>
+        <!-- Donor -->
+        <mat-form-field>
+          <mat-label>Donor</mat-label>
+          <mat-chip-list #donorChipList>
+            <mat-chip *ngIf="score.donor"
+                      [removable]="true"
+                      (removed)="score.donor = undefined">
+              {{ getDonorByDbId(score.donor) }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input #donorCountryInput
+                   [formControl]="donorFormControl"
+                   [matAutocomplete]="donorAuto"
+                   [matChipInputFor]="donorChipList"
+                   matInput
+                   placeholder="Search by medical ID"
+                   type="text">
+          </mat-chip-list>
+          <mat-autocomplete #donorAuto="matAutocomplete"
+                            [displayWith]="displayFn"
+                            (optionSelected)="setDonor(score, $event.option.value, donorCountryInput)">
+            <mat-option *ngFor="let patient of filteredDonors | async" [value]="patient">
+              {{ patient.medical_id }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <!-- Recipient -->
+        <mat-form-field>
+          <mat-label>Recipient</mat-label>
+          <mat-chip-list #recipientChipList>
+            <mat-chip *ngIf="score.recipient"
+                      [removable]="true"
+                      (removed)="score.recipient = undefined">
+              {{ getRecipientByDbId(score.recipient) }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input #recipientCountryInput
+                   [formControl]="recipientFormControl"
+                   [matAutocomplete]="recipientAuto"
+                   [matChipInputFor]="recipientChipList"
+                   matInput
+                   placeholder="Search by medical ID"
+                   type="text">
+          </mat-chip-list>
+          <mat-autocomplete #recipientAuto="matAutocomplete"
+                            [displayWith]="displayFn"
+                            (optionSelected)="setRecipient(score, $event.option.value, recipientCountryInput)">
+            <mat-option *ngFor="let patient of filteredRecipients | async" [value]="patient">
+              {{ patient.medical_id }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field>
+          <!-- Score -->
+          <mat-label>Score</mat-label>
+          <input matInput
+                 placeholder="Enter score"
+                 type="number"
+                 (input)="setScore(score, $event)">
+        </mat-form-field>
+      </form>
+      <button (click)="removeScore(score)">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </div>
+
+    <div class="add-new">
+      <app-button (click)="addScore()" size="sm" variant="success">
+        Add
+        <mat-icon>add</mat-icon>
+      </app-button>
+    </div>
+  </div>
+</div>
+

@@ -6,6 +6,7 @@
       <form>
         <!-- Donor country -->
         <mat-form-field>
+          <mat-label>Donor country</mat-label>
           <mat-chip-list #donorChipList>
             <mat-chip (removed)="combination.donor_country = ''"
                       *ngIf="combination.donor_country !== ''"
@@ -17,9 +18,8 @@
                    [formControl]="donorFormControl"
                    [matAutocomplete]="donorAuto"
                    [matChipInputFor]="donorChipList"
-                   class="no-style"
                    matInput
-                   placeholder="Donor country"
+                   placeholder="Search country"
                    type="text">
           </mat-chip-list>
           <mat-autocomplete #donorAuto="matAutocomplete"
@@ -32,6 +32,7 @@
 
         <!-- Recipient country -->
         <mat-form-field>
+          <mat-label>Recipient country</mat-label>
           <mat-chip-list #recipientChipList>
             <mat-chip (removed)="combination.recipient_country = ''"
                       *ngIf="combination.recipient_country !== ''"
@@ -45,7 +46,7 @@
                    [matChipInputFor]="recipientChipList"
                    class="no-style"
                    matInput
-                   placeholder="Recipient country"
+                   placeholder="Search country"
                    type="text">
           </mat-chip-list>
           <mat-autocomplete #recipientAuto="matAutocomplete"

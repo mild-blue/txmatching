@@ -89,51 +89,8 @@
     </div>
   </form>
 
-  <div *ngIf="showManualScore"
-       class="configuration__interactive">
-    <h3>Manual scores for donor and recipient</h3>
-    <div class="configuration__box">
-      <div class="list">
-        <div *ngIf="configuration?.manual_donor_recipient_scores?.length then manualScoresList else nothingFound"></div>
-      </div>
-      <div class="add-new">
-        <form [formGroup]="manualScoreForm">
-          <label *ngIf="patients && patients.donors">
-            <span>Donor</span>
-            <div class="autocomplete">
-              <ng-autocomplete [data]="patients.donors"
-                               [itemTemplate]="patientItemTemplate"
-                               [notFoundTemplate]="notFoundTemplate"
-                               [searchKeyword]="'medical_id'"
-                               formControlName="donor"
-                               notFoundText="Patient not found"></ng-autocomplete>
-            </div>
-          </label>
-          <label *ngIf="patients && patients.recipients">
-            <span>Recipient</span>
-            <div class="autocomplete">
-              <ng-autocomplete [data]="patients.recipients"
-                               [itemTemplate]="patientItemTemplate"
-                               [notFoundTemplate]="notFoundTemplate"
-                               [searchKeyword]="'medical_id'"
-                               formControlName="recipient"
-                               notFoundText="Patient not found"></ng-autocomplete>
-            </div>
-          </label>
-          <label>
-            <span>Score</span>
-            <input formControlName="score" type="number">
-          </label>
-        </form>
-        <div class="add-new__button">
-          <app-button (click)="addManualScore()" size="sm" variant="success">
-            Add
-            <fa-icon [icon]="plusIcon"></fa-icon>
-          </app-button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-configuration-scores [configuration]="configuration"
+                            [patients]="patients"></app-configuration-scores>
 
   <app-configuration-countries [configuration]="configuration"
                                [patients]="patients"></app-configuration-countries>
@@ -143,70 +100,3 @@
 
   <app-button (click)="submitAction()">Recalculate</app-button>
 </div>
-
-<ng-template #manualScoresList>
-  <div *ngFor="let manualScore of configuration?.manual_donor_recipient_scores"
-       class="item">
-    <div class="donor">
-      {{ getDonor(manualScore.donor) }}
-    </div>
-    <div class="recipient">
-      {{ getRecipient(manualScore.recipient) }}
-    </div>
-    <div class="score">
-      {{manualScore.score}}
-    </div>
-    <div class="remove">
-      <button (click)="removeManualScore(manualScore)">
-        <fa-icon [icon]="closeIcon"></fa-icon>
-      </button>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #countriesList>
-  <div *ngFor="let forbidden of configuration?.forbidden_country_combinations"
-       class="item">
-    <div class="donor">
-      {{ forbidden.donor_country }}
-    </div>
-    <div class="recipient">
-      {{ forbidden.recipient_country }}
-    </div>
-    <div class="remove">
-      <button (click)="removeCountryCombination(forbidden)">
-        <fa-icon [icon]="closeIcon"></fa-icon>
-      </button>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #patientsList>
-  <div *ngFor="let id of configuration?.required_patient_db_ids"
-       class="item">
-    <div class="patient">
-      {{ id }}
-    </div>
-    <div class="remove">
-      <button (click)="removePatient(id)">
-        <fa-icon [icon]="closeIcon"></fa-icon>
-      </button>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #nothingFound>
-  Continue by adding new entry
-</ng-template>
-
-<ng-template #patientItemTemplate let-item>
-  <a [innerHTML]="item['medical_id']"></a>
-</ng-template>
-
-<ng-template #countryItemTemplate let-item>
-  <a [innerHTML]="item"></a>
-</ng-template>
-
-<ng-template #notFoundTemplate let-notFound>
-  <div [innerHTML]="notFound"></div>
-</ng-template>

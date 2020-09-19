@@ -1,8 +1,9 @@
 <div class="configuration__interactive">
-  <h3>Required patients</h3>
+  <h3>Required recipients</h3>
   <div class="configuration__box">
     <form>
       <mat-form-field>
+        <mat-label>Required recipients</mat-label>
         <mat-chip-list #chipList>
           <mat-chip (removed)="remove(patient)"
                     *ngFor="let patient of selectedPatients"
@@ -14,9 +15,8 @@
                  [formControl]="formControl"
                  [matAutocomplete]="auto"
                  [matChipInputFor]="chipList"
-                 class="no-style"
                  matInput
-                 placeholder="Required patients"
+                 placeholder="Search by medical ID"
                  type="text">
         </mat-chip-list>
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event)" [displayWith]="displayFn">

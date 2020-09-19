@@ -38,6 +38,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
 import { ConfigurationCountriesComponent } from './components/configuration-countries/configuration-countries.component';
+import { ConfigurationScoresComponent } from './components/configuration-scores/configuration-scores.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { ConfigurationCountriesComponent } from './components/configuration-coun
     VarDirective,
     LogoComponent,
     ConfigurationPatientsComponent,
-    ConfigurationCountriesComponent
+    ConfigurationCountriesComponent,
+    ConfigurationScoresComponent
   ],
   imports: [
     BrowserModule,
