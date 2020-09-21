@@ -1,10 +1,10 @@
 from typing import Optional
 
-from txmatching.patients.patient_parameters import HLAAntigens, HLAAntibodies
+from txmatching.patients.patient_parameters import HLATyping, HLAAntibodies
 from txmatching.utils.hla_system.hla_table import broad_to_split, split_to_broad, is_split
 
 
-def is_positive_hla_crossmatch(donor_antigens: HLAAntigens,
+def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
                                recipient_antibodies: HLAAntibodies,
                                use_split_resolution: bool) -> bool:
     """
@@ -15,27 +15,27 @@ def is_positive_hla_crossmatch(donor_antigens: HLAAntigens,
          A23 -> A24 False if use_split_resolution else True
          A9 -> A23 True
          A9 broad <=> A23, A24 split
-    :param donor_antigens: donor antigens to crossmatch
+    :param donor_hla_typing: donor hla_typing to crossmatch
     :param recipient_antibodies: recipient antibodies to crossmatch
     :param use_split_resolution: setting whether to use split resolution for crossmatch determination
     :return:
     """
     if use_split_resolution:
         # in case some code is in broad resolution we treat is as if both split resolution codes were present
-        donor_antigens_set = {split_code for code in donor_antigens.codes for split_code in
+        donor_hla_typing_set = {split_code for code in donor_hla_typing.codes for split_code in
                               broad_to_split.get(code, [code])}
         recipient_antibodies_set = {split_code for code in recipient_antibodies.codes for split_code in
                                     broad_to_split.get(code, [code])}
     else:
-        donor_antigens_set = {split_to_broad.get(code, code) for code in donor_antigens.codes}
+        donor_hla_typing_set = {split_to_broad.get(code, code) for code in donor_hla_typing.codes}
         recipient_antibodies_set = {split_to_broad.get(code, code) for code in recipient_antibodies.codes}
 
-    common_codes = recipient_antibodies_set.intersection(donor_antigens_set)
+    common_codes = recipient_antibodies_set.intersection(donor_hla_typing_set)
     # if there are any common codes, positive crossmatch is found
     return len(common_codes) > 0
 
 
-def is_positive_hla_crossmatch_obsolete(donor_antigens: HLAAntigens,
+def is_positive_hla_crossmatch_obsolete(donor_hla_typing: HLATyping,
                                         recipient_antibodies: HLAAntibodies) -> Optional[bool]:
     """
     Do donor and recipient have positive crossmatch in HLA system?
@@ -44,8 +44,8 @@ def is_positive_hla_crossmatch_obsolete(donor_antigens: HLAAntigens,
          A9 -> A9  True -- A9 in antibodies indicates wider range of antibodies, in this case A23, A24
          A23 -> A9 True
          A23 -> A24 False
-         A9 -> A23 None -- A9 in antigens indicates incomplete information
-    :param donor_antigens:
+         A9 -> A23 None -- A9 in hla_typing indicates incomplete information
+    :param donor_hla_typing:
     :param recipient_antibodies:
     :return:
     """
@@ -63,7 +63,7 @@ def is_positive_hla_crossmatch_obsolete(donor_antigens: HLAAntigens,
 
     crossmatch_cant_be_determined_so_far = False
 
-    for antigen_code in donor_antigens.codes:
+    for antigen_code in donor_hla_typing.codes:
         code_is_split = is_split(antigen_code)
 
         if code_is_split is True or code_is_split is None:  # Code is split or we don't know

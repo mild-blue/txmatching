@@ -10,7 +10,7 @@ from werkzeug.datastructures import FileStorage
 from txmatching.data_transfer_objects.patients.donor_excel_dto import DonorExcelDTO
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntigens,
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLATyping,
                                                     PatientParameters)
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
 from txmatching.utils.country import Country
@@ -69,7 +69,7 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
     return allele_codes
 
 
-def _country_code_from_id(patient_id: str) -> str:
+def _country_code_from_id(patient_id: str) -> Country:
     if re.match('[PD][0-9]{4}', patient_id):
         return Country.IL
 
@@ -106,7 +106,7 @@ def get_donor_from_row(row: Dict) -> DonorExcelDTO:
     typization_donor = _parse_hla(row['TYPIZATION DONOR'])
     country_code_donor = _country_code_from_id(donor_id)
     donor_params = PatientParameters(blood_group=blood_group_donor,
-                                     hla_antigens=HLAAntigens(typization_donor),
+                                     hla_typing=HLATyping(typization_donor),
                                      country_code=country_code_donor)
     return DonorExcelDTO(medical_id=donor_id, parameters=donor_params)
 
@@ -120,22 +120,8 @@ def get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
     country_code_recipient = _country_code_from_id(recipient_id)
 
     recipient_params = PatientParameters(blood_group=blood_group_recipient,
-                                         hla_antigens=HLAAntigens(typization_recipient),
-                                         hla_antibodies=HLAAntibodies(antibodies_recipient),
+                                         hla_typing=HLATyping(typization_recipient),
                                          country_code=country_code_recipient)
     return RecipientExcelDTO(medical_id=recipient_id, parameters=recipient_params,
+                             hla_antibodies=HLAAntibodies(antibodies_recipient),
                              acceptable_blood_groups=acceptable_blood_groups_recipient)
-
-
-if __name__ == '__main__':
-    patient_data_path = os.getenv('PATIENT_DATA_PATH')
-    final_donors, final_recipients = parse_excel_data(patient_data_path)
-    logger.info('\nDonors: \n' + '-' * 50 + '\n')
-    for final_donor in final_donors:
-        logger.info(final_donor)
-
-    logger.info('\nRecipients: \n' + '-' * 50 + '\n')
-    for final_recipient in final_recipients:
-        logger.info(final_recipient)
-
-    logger.info(f'\nUnknown allele codes: {sorted(_unknown_allele_codes)}')

@@ -5,8 +5,7 @@ from txmatching.web.api.namespaces import patient_api
 
 PATIENT_PARAMETERS_MODEL = patient_api.model('Patient Parameters', {
     'blood_group': fields.String(required=False),
-    'hla_antigens': fields.List(required=False, cls_or_instance=fields.String),
-    'hla_antibodies': fields.List(required=False, cls_or_instance=fields.String),
+    'hla_typing': fields.List(required=False, cls_or_instance=fields.String),
     'country_code': fields.String(required=False)
 })
 
@@ -28,6 +27,7 @@ RECIPIENT_MODEL = patient_api.model('Recipient', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
+    'hla_antibodies': fields.List(required=False, cls_or_instance=fields.String),
     'parameters': fields.Nested(required=True, model=PATIENT_PARAMETERS_MODEL),
     'related_donor_db_id': fields.Integer(required=True, description='Database id of the related donor'),
     'recipient_requiremens': fields.Nested(RECIPIENT_REQUIREMENTS)

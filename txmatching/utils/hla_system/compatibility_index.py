@@ -1,6 +1,6 @@
 import pandas as pd
 
-from txmatching.patients.patient_parameters import PatientParameters
+from txmatching.patients.patient_parameters import HLATyping
 from txmatching.utils.hla_system.get_genotype import get_antigen_genotype
 
 compatibility_gene_codes = ["A", "B", "DR"]
@@ -18,8 +18,8 @@ IK_table = pd.DataFrame({"A": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1
 IK_table.set_index(keys=compatibility_gene_codes, inplace=True, verify_integrity=True)
 
 
-def compatibility_index(patient_parameters_donor: PatientParameters,
-                        patient_parameters_recipient: PatientParameters) -> float:
+def compatibility_index(donor_hla_typing: HLATyping,
+                        recipient_hla_typing: HLATyping) -> float:
     """
     The "compatibility index" is terminus technicus defined by the IK_table dataframe.
     This function thus should not be modified unless after consulting with immunologists.
@@ -27,8 +27,8 @@ def compatibility_index(patient_parameters_donor: PatientParameters,
     match_counts = {code: 0 for code in compatibility_gene_codes}
 
     for gene_code in compatibility_gene_codes:
-        donor_genotype = get_antigen_genotype(patient_parameters_donor.hla_antigens_broad_resolution, gene_code)
-        recipient_genotype = get_antigen_genotype(patient_parameters_recipient.hla_antigens_broad_resolution, gene_code)
+        donor_genotype = get_antigen_genotype(donor_hla_typing.hla_typing_broad_resolution, gene_code)
+        recipient_genotype = get_antigen_genotype(recipient_hla_typing.hla_typing_broad_resolution, gene_code)
         common_allele_codes = set(donor_genotype.keys()).intersection(set(recipient_genotype.keys()))
 
         match_count = 0

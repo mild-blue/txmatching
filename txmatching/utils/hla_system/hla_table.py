@@ -1,10 +1,10 @@
 # HLA system (https://en.wikipedia.org/wiki/Human_leukocyte_antigen)
-# Has some of the antigens similar, these similar ones seem like a one when using broad resolution detection techniques.
+# Has some of the hla_typing similar, these similar ones seem like a one when using broad resolution detection techniques.
 #
 # For more info, see: https://en.wikipedia.org/wiki/History_and_naming_of_human_leukocyte_antigens
 
 # TODO: Confirm this table with some immunologist https://trello.com/c/MtiTnNYG
-# TODO: ask what exact antigens should I count in the matches - for example what about DR52, DR53 - what do those mean
+# TODO: ask what exact hla_typing should I count in the matches - for example what about DR52, DR53 - what do those mean
 #  https://trello.com/c/08MZVRCk
 # TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9) https://trello.com/c/UIo23mPb
 import logging

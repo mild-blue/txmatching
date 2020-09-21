@@ -13,7 +13,7 @@ from txmatching.database.sql_alchemy_schema import (
     DonorModel, RecipientAcceptableBloodModel, RecipientModel, TxmEventModel)
 from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
                                          TxmEvent)
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntigens,
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLATyping,
                                                     PatientParameters)
 from txmatching.patients.patient_types import RecipientDbId
 
@@ -29,8 +29,7 @@ def donor_excel_dto_to_donor_model(donor: DonorExcelDTO,
         medical_id=donor.medical_id,
         country=donor.parameters.country_code,
         blood=donor.parameters.blood_group,
-        hla_antigens=dataclasses.asdict(donor.parameters.hla_antigens),
-        hla_antibodies=dataclasses.asdict(donor.parameters.hla_antibodies),
+        hla_typing=dataclasses.asdict(donor.parameters.hla_typing),
         active=True,
         recipient_id=maybe_recipient_id,
         donor_type=donor_type,
@@ -44,8 +43,8 @@ def recipient_excel_dto_to_recipient_model(recipient: RecipientExcelDTO, txm_eve
         medical_id=recipient.medical_id,
         country=recipient.parameters.country_code,
         blood=recipient.parameters.blood_group,
-        hla_antigens=dataclasses.asdict(recipient.parameters.hla_antigens),
-        hla_antibodies=dataclasses.asdict(recipient.parameters.hla_antibodies),
+        hla_typing=dataclasses.asdict(recipient.parameters.hla_typing),
+        hla_antibodies=dataclasses.asdict(recipient.hla_antibodies),
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in recipient.acceptable_blood_groups],
@@ -79,8 +78,7 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
         parameters=PatientParameters(
             blood_group=patient_model.blood,
             country_code=patient_model.country,
-            hla_antigens=HLAAntigens(**patient_model.hla_antigens),
-            hla_antibodies=HLAAntibodies(**patient_model.hla_antibodies)
+            hla_typing=HLATyping(**patient_model.hla_typing),
         ))
 
 
@@ -103,6 +101,7 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      base_patient.medical_id,
                      parameters=base_patient.parameters,
                      related_donor_db_id=donors_for_recipients_dict[base_patient.db_id].db_id,
+                     hla_antibodies=HLAAntibodies(**recipient_model.hla_antibodies),
                      acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
                                               recipient_model.acceptable_blood],
                      )
@@ -117,8 +116,8 @@ def update_recipient(recipient: Recipient) -> int:
     RecipientModel.query.filter(RecipientModel.id == recipient.db_id).update({
         'active': True,
         'country': recipient.parameters.country_code,
-        'hla_antigens': dataclasses.asdict(recipient.parameters.hla_antigens),
-        'hla_antibodies': dataclasses.asdict(recipient.parameters.hla_antibodies),
+        'hla_typing': dataclasses.asdict(recipient.parameters.hla_typing),
+        'hla_antibodies': dataclasses.asdict(recipient.hla_antibodies),
         'medical_id': recipient.medical_id,
         'blood': recipient.parameters.blood_group,
         'recipient_requirements': dataclasses.asdict(recipient.recipient_requirements)
@@ -133,8 +132,7 @@ def update_donor(donor: Donor) -> int:
         'donor_type': donor.donor_type,
         'country': donor.parameters.country_code,
         'active': True,
-        'hla_antigens': dataclasses.asdict(donor.parameters.hla_antigens),
-        'hla_antibodies': dataclasses.asdict(donor.parameters.hla_antibodies),
+        'hla_typing': dataclasses.asdict(donor.parameters.hla_typing),
         'medical_id': donor.medical_id,
         'blood': donor.parameters.blood_group,
         'recipient_id': donor.related_recipient_db_id
