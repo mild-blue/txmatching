@@ -21,14 +21,3 @@ def create_txm_event(name: str) -> Union[TxmEvent, FailResponse]:
     db.session.add(txm_event_model)
     db.session.commit()
     return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict={}, recipients_dict={})
-
-
-def create_or_overwrite_txm_event(name: str) -> TxmEvent:
-    previous_txm_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
-    if previous_txm_model:
-        db.session.delete(previous_txm_model)
-        db.session.commit()
-    txm_event_model = TxmEventModel(name=name)
-    db.session.add(txm_event_model)
-    db.session.commit()
-    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict={}, recipients_dict={})

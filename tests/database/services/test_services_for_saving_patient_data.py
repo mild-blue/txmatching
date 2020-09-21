@@ -1,5 +1,5 @@
+from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.database.services import txm_event_service
 from txmatching.database.services.patient_service import (
     save_patients_from_excel_to_empty_txm_event, update_donor,
     update_recipient)
@@ -14,7 +14,7 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_saving_patients_from_excel(self):
         patients = parse_excel_data(get_absolute_path('tests/test_utilities/data.xlsx'))
-        txm_event = txm_event_service.create_or_overwrite_txm_event('test')
+        txm_event = create_or_overwrite_txm_event('test')
         save_patients_from_excel_to_empty_txm_event(patients, txm_event.db_id)
         self.assertEqual(1, 1)
 
