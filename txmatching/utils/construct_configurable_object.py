@@ -1,6 +1,6 @@
 from typing import List, Callable
 
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 
 
 def construct_configurable_object(object_name: str, supported_objects: List[Callable], configuration: Configuration):

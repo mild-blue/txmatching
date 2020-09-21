@@ -6,7 +6,7 @@ import logging
 from flask import jsonify, request
 from flask_restx import Resource
 
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_JSON
 from txmatching.database.services.config_service import get_current_configuration, save_configuration_as_current
 from txmatching.web.api.namespaces import configuration_api

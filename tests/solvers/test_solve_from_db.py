@@ -1,5 +1,5 @@
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.config.configuration import Configuration, ManualDonorRecipientScore
+from txmatching.configuration.configuration import Configuration, ManualDonorRecipientScore
 from txmatching.database.services.config_service import \
     save_configuration_as_current
 from txmatching.solve_service.solve_from_db import solve_from_db

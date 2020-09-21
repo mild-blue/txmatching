@@ -1,4 +1,4 @@
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.filters.filter_base import FilterBase
 from txmatching.filters.filter_default import FilterDefault
 from txmatching.utils.construct_configurable_object import construct_configurable_object

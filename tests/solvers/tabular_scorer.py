@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 

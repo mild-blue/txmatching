@@ -14,7 +14,7 @@ from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
 
 from txmatching.auth.login_check import login_required
-from txmatching.config.subclasses import ForbiddenCountryCombination, ManualDonorRecipientScore
+from txmatching.configuration.subclasses import ForbiddenCountryCombination, ManualDonorRecipientScore
 from txmatching.data_transfer_objects.matchings.matching_dto import TransplantDTO, \
     RoundReportDTO, MatchingReportDTO, CountryDTO
 from txmatching.database.services.config_service import get_current_configuration

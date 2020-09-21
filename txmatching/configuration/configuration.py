@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from txmatching.config.subclasses import ForbiddenCountryCombination, PatientDbId, ManualDonorRecipientScore
+from txmatching.configuration.subclasses import ForbiddenCountryCombination, PatientDbId, ManualDonorRecipientScore
 from txmatching.utils.country import Country
 
 DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Country.IL),

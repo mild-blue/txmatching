@@ -1,5 +1,5 @@
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.config.configuration import Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore
+from txmatching.configuration.configuration import Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore
 from txmatching.database.services.config_service import \
     save_configuration_as_current, get_current_configuration, configuration_from_dict
 from txmatching.utils.country import Country

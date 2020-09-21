@@ -2,7 +2,7 @@ from typing import Dict, Iterator, List, Optional, Tuple
 
 from dacite import from_dict
 
-from txmatching.config.gives_superset_of_solutions import \
+from txmatching.configuration.gives_superset_of_solutions import \
     gives_superset_of_solutions
 from txmatching.database.services.config_service import (
     configuration_from_dict, get_config_models)

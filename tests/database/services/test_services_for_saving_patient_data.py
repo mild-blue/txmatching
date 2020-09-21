@@ -1,4 +1,4 @@
-from tests.test_utilities.populate_db import create_or_overwrite_txm_event
+
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.services.patient_service import (
     save_patients_from_excel_to_empty_txm_event, update_donor,
@@ -9,6 +9,7 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.country import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
+from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 
 
 class TestSolveFromDbAndItsSupportFunctionality(DbTests):

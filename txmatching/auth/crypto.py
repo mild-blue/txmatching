@@ -5,8 +5,8 @@ import jwt
 
 from txmatching.auth import bcrypt
 from txmatching.auth.data_types import BearerToken, FailResponse, UserRole
+from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
 from txmatching.database.sql_alchemy_schema import AppUserModel
-from txmatching.web.app_configuration.application_configuration import get_application_configuration
 
 
 def encode_password(password: str) -> str:

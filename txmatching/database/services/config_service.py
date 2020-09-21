@@ -4,7 +4,7 @@ from typing import Dict, Iterator
 
 from dacite import Config, from_dict
 
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.services import txm_event_service
 from txmatching.database.sql_alchemy_schema import ConfigModel

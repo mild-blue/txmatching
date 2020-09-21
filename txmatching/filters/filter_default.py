@@ -1,6 +1,6 @@
 from typing import List
 
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.filters.filter_base import FilterBase
 from txmatching.solvers.matching.matching import Matching
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle

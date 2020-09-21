@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from flask import current_app as app
 
-from txmatching.web.app_configuration.context import get_or_set
+from txmatching.configuration.app_configuration.context import get_or_set
 
 logger = logging.getLogger(__name__)
 
