@@ -1,5 +1,6 @@
 # HLA system (https://en.wikipedia.org/wiki/Human_leukocyte_antigen)
-# Has some of the hla_typing similar, these similar ones seem like a one when using broad resolution detection techniques.
+# Has some of the hla_typing similar, these similar ones seem like a one when using broad resolution detection
+# techniques.
 #
 # For more info, see: https://en.wikipedia.org/wiki/History_and_naming_of_human_leukocyte_antigens
 

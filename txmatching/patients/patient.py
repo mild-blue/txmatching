@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Optional
 
-from txmatching.patients.patient_parameters import PatientParameters, HLATyping, HLAAntibodies
+from txmatching.patients.patient_parameters import PatientParameters, HLAAntibodies
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 
 

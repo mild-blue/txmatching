@@ -4,9 +4,9 @@ import dataclasses
 import datetime
 import logging
 import os
+import time
 from typing import List
 
-import time
 import jinja2
 import pdfkit
 from flask import send_from_directory, request
@@ -167,7 +167,8 @@ def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:
 
 
 def antigen_score(donor_recipient: TransplantDTO, antigen: HLATypes) -> int:
-    filtered = list(filter(lambda x: x.upper().startswith(antigen.upper()), matching_hla_typing_filter(donor_recipient)))
+    filtered = list(
+        filter(lambda x: x.upper().startswith(antigen.upper()), matching_hla_typing_filter(donor_recipient)))
     return len(filtered) * ANTIBODIES_MULTIPLIERS_STR[antigen.upper()]
 
 
