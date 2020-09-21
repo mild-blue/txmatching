@@ -76,8 +76,7 @@ class Report(Resource):
                                 :matching_range_limit]
         matchings = requested_matching + matchings_over_score + matchings_under_score
 
-        matching_dtos = [
-            dataclasses.asdict(MatchingReportDTO(
+        matching_dtos = [MatchingReportDTO(
                 rounds=[
                     RoundReportDTO(
                         transplants=[
@@ -90,7 +89,7 @@ class Report(Resource):
                 countries=matching.get_country_codes_counts(),
                 score=matching.score(),
                 db_id=matching.db_id()
-            )) for matching in matchings
+            ) for matching in matchings
         ]
 
         configuration = get_current_configuration()
@@ -185,7 +184,7 @@ def antigen_score_dr_filter(transplant: TransplantDTO) -> int:
 
 
 def code_from_country_filter(countries: List[CountryDTO]) -> List[str]:
-    return [country["country_code"] for country in countries]
+    return [country.country_code for country in countries]
 
 
 jinja2.filters.FILTERS["country_combination_filter"] = country_combination_filter
