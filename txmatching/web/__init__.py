@@ -4,11 +4,11 @@ from importlib import util as importing
 
 from flask import Flask, request, send_from_directory
 from flask_restx import Api
-from txmatching.configuration.app_configuration.application_configuration import ApplicationConfiguration, \
-    get_application_configuration
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from txmatching.auth import bcrypt
+from txmatching.configuration.app_configuration.application_configuration import ApplicationConfiguration, \
+    get_application_configuration
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
@@ -47,11 +47,11 @@ def create_app():
             app.config.from_object(config_file)
             app.config['IS_LOCAL_DEV'] = True
 
-    def configure_db(application_config: ApplicationConfiguration):
+    def configure_db(application_configuration: ApplicationConfiguration):
         app.config['SQLALCHEMY_DATABASE_URI'] \
             = f'postgresql+psycopg2://' \
-              f'{application_config.postgres_user}:{application_config.postgres_password}@' \
-              f'{application_config.postgres_url}/{application_config.postgres_db}'
+              f'{application_configuration.postgres_user}:{application_configuration.postgres_password}@' \
+              f'{application_configuration.postgres_url}/{application_configuration.postgres_db}'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
         db.init_app(app)
