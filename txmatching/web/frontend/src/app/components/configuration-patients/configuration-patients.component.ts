@@ -31,7 +31,7 @@ export class ConfigurationPatientsComponent {
   }
 
   get allPatients(): Patient[] {
-    return this.patients ? this.patients.recipients : [];
+    return this.patients ? this.patients.recipients ?? [] : [];
   }
 
   get availablePatients(): Patient[] {

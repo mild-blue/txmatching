@@ -5,7 +5,7 @@
     <div class="home-header">
       <h1>
         Matchings
-        <app-count *ngIf="!loading">{{matchings.length}}</app-count>
+        <app-count *ngIf="!loading" [count]="matchings.length"></app-count>
       </h1>
       <button (click)="toggleConfiguration()"
               *ngIf="!loading && configuration"

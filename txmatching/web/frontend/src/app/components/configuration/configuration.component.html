@@ -89,14 +89,17 @@
       </div>
     </form>
 
-    <app-configuration-countries [configuration]="configuration"
-                                 [patients]="patients"></app-configuration-countries>
+    <ng-container *ngIf="patients !== undefined">
+      <app-configuration-countries [configuration]="configuration"
+                                   [patients]="patients"></app-configuration-countries>
 
-    <app-configuration-scores [configuration]="configuration"
-                              [patients]="patients"></app-configuration-scores>
+      <app-configuration-scores [configuration]="configuration"
+                                [patients]="patients"></app-configuration-scores>
 
-    <app-configuration-patients [configuration]="configuration"
-                                [patients]="patients"></app-configuration-patients>
+      <app-configuration-patients [configuration]="configuration"
+                                  [patients]="patients"></app-configuration-patients>
+    </ng-container>
+
   </div>
 
   <app-button (click)="submitAction()">Recalculate</app-button>

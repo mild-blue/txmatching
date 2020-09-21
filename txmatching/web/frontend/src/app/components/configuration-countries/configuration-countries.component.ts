@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { PatientList } from '@app/model/Patient';
 import { Configuration, CountryCombination } from '@app/model/Configuration';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
@@ -11,25 +11,27 @@ import { map, startWith } from 'rxjs/operators';
   styleUrls: ['./configuration-countries.component.scss']
 })
 export class ConfigurationCountriesComponent {
+  private _donorCountries: string[] = [];
+  private _recipientCountries: string[] = [];
+
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
-  public donorFormControl = new FormControl('');
-  public recipientFormControl = new FormControl('');
+  public form: FormGroup = new FormGroup({
+    donorCountry: new FormControl(''),
+    recipientCountry: new FormControl('')
+  });
 
   public filteredDonorCountries: Observable<string[]>;
   public filteredRecipientCountries: Observable<string[]>;
 
-  private _donorCountries: string[] = [];
-  private _recipientCountries: string[] = [];
-
   constructor() {
-    this.filteredDonorCountries = this.donorFormControl.valueChanges.pipe(
-      startWith(null),
+    this.filteredDonorCountries = this.form.controls.donorCountry?.valueChanges.pipe(
+      startWith(undefined),
       map((country: string | null) => country ? this._filter(this.donorCountries, country) : this.donorCountries.slice()));
 
-    this.filteredRecipientCountries = this.donorFormControl.valueChanges.pipe(
-      startWith(null),
+    this.filteredRecipientCountries = this.form.controls.recipientCountry?.valueChanges.pipe(
+      startWith(undefined),
       map((country: string | null) => country ? this._filter(this.recipientCountries, country) : this.recipientCountries.slice()));
   }
 
@@ -63,27 +65,15 @@ export class ConfigurationCountriesComponent {
     return this.configuration ? this.configuration.forbidden_country_combinations : [];
   }
 
-  public setDonorCountry(c: CountryCombination, country: string, input: HTMLInputElement): void {
-    c.donor_country = country;
-
-    // Reset input
-    this.donorFormControl.setValue('');
-    input.value = '';
-  }
-
-  public setRecipientCountry(c: CountryCombination, country: string, input: HTMLInputElement): void {
-    c.recipient_country = country;
-
-    // Reset input
-    this.recipientFormControl.setValue('');
-    input.value = '';
-  }
-
   public addCombination(): void {
+    const { donorCountry, recipientCountry } = this.form.value;
+
     this.configuration?.forbidden_country_combinations.push({
-      donor_country: '',
-      recipient_country: ''
+      donor_country: donorCountry,
+      recipient_country: recipientCountry
     });
+
+    this.form.reset();
   }
 
   public removeCombination(c: CountryCombination): void {

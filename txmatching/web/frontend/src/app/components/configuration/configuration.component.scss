@@ -80,18 +80,8 @@
     background: $white;
     box-shadow: $box-shadow--wide;
     padding: $padding-y $padding-x;
-
-    &-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: $padding-y $border-radius--wide calc(#{$item-gap} / 2);
-
-      h4 {
-        margin: 0;
-        color: $gray-500;
-      }
-    }
+    margin-bottom: $item-gap;
+    overflow: hidden;
   }
 
   .inputs {
@@ -115,7 +105,8 @@
       flex-basis: calc(50% - 2 * #{$item-gap});
       width: calc(50% - 2 * #{$item-gap});
 
-      margin: 0 $item-gap;
+      margin-left: $item-gap;
+      margin-right: $item-gap;
     }
   }
 

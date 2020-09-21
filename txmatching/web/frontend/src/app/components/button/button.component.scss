@@ -69,4 +69,8 @@
       animation: rotate 0.5s linear infinite;
     }
   }
+
+  ::ng-deep mat-icon {
+    margin-left: 10px;
+  }
 }

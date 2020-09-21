@@ -2,9 +2,87 @@
 
 .configuration__countries {
 
-  .configuration__box {
-    display: flex;
-    flex-wrap: wrap;
+  padding: 0;
+
+  .list {
+    padding: $padding-y $padding-x $box-shadow--wide-size;
+
+    h4 {
+      margin: 0 0 $box-shadow--wide-size;
+      color: $body-color;
+    }
+
+    .country {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+
+      flag {
+        margin-right: 10px;
+      }
+    }
+
+    .arrow {
+      margin: 0 2px;
+    }
+
+    .cancel {
+      margin-left: 15px;
+    }
+
+    .mat-chip.mat-standard-chip {
+      background-color: $gray-200;
+    }
+  }
+
+  .add {
+    padding: 1.25em $padding-x;
+    border-radius: $border-radius--wide;
+    background: $gray-100;
+
+    &__heading {
+      color: $gray-600;
+      display: block;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    &__content {
+      max-width: $container-max-width;
+      margin: auto;
+    }
+
+    &__form {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+
+      form {
+        $field-gap: calc(#{$item-gap} / 2);
+
+        flex: 1;
+        display: flex;
+        align-items: center;
+        margin: 0 calc(-1 * #{$field-gap});
+
+        .mat-form-field {
+          flex: 1;
+          padding: 0 $field-gap;
+        }
+
+        mat-icon {
+          margin: 0 $field-gap;
+        }
+      }
+
+      app-button {
+        margin-left: $item-gap;
+        padding-bottom: 1.25em;
+      }
+    }
   }
 
   .placeholder {
@@ -12,54 +90,5 @@
     width: 100%;
     text-align: center;
     color: $gray-500;
-  }
-
-  $field-gap: calc(#{$item-gap} / 2);
-
-  &-item {
-    display: flex;
-    background: rgba(0, 0, 0, .04);
-    padding: 15px $item-gap 5px $padding-x;
-    border-radius: 4px 4px 0 0;
-    margin: $field-gap;
-
-    form {
-
-      flex: 1;
-      display: flex;
-      margin: 0 calc(-1 * #{$field-gap});
-
-      .mat-form-field {
-        flex: 1;
-        padding: 0 $field-gap;
-        overflow: hidden;
-        display: flex;
-        align-items: flex-end;
-      }
-
-      ::ng-deep .mat-chip-list-wrapper {
-        flex-wrap: nowrap;
-      }
-
-      ::ng-deep .mat-form-field-infix {
-        width: 120px;
-        min-height: 58px;
-
-        input {
-          margin-top: 12px;
-        }
-      }
-    }
-
-    button {
-      margin-left: $item-gap;
-      color: $body-color;
-      opacity: 0.2;
-      transition: opacity 0.2s ease;
-
-      &:hover {
-        opacity: 0.5;
-      }
-    }
   }
 }

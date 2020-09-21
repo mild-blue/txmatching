@@ -2,7 +2,7 @@
   <div class="configuration__box-heading">
     <h4>
       Manual score for donor and recipient
-      <app-count>{{selectedScores.length}}</app-count>
+      <app-count [count]="selectedScores.length"></app-count>
     </h4>
     <app-button (click)="addScore()" size="sm" variant="success">
       Add
