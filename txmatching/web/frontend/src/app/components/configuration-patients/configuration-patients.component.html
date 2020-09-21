@@ -3,6 +3,9 @@
     Required recipients
     <app-count [count]="selectedPatients.length"></app-count>
   </h4>
+  <div class="hint">
+    Only matchings containing these recipients will be shown.
+  </div>
   <form>
     <mat-form-field>
       <mat-label>Required recipients</mat-label>
@@ -27,7 +30,7 @@
         </mat-option>
       </mat-autocomplete>
       <mat-hint>
-        Search and select multiple patients from {{allPatients.length}} recipients. Only matchings containing these recipients will be shown.
+        Search and select multiple patients from {{allPatients.length}} recipients.
       </mat-hint>
     </mat-form-field>
   </form>

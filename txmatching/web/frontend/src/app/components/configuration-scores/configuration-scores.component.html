@@ -39,6 +39,7 @@
           <mat-label>Donor</mat-label>
           <input formControlName="donor"
                  [matAutocomplete]="donorAuto"
+                 placeholder="Search by medical ID"
                  matInput
                  type="text">
           <mat-autocomplete #donorAuto="matAutocomplete"
@@ -56,6 +57,7 @@
           <mat-label>Recipient</mat-label>
           <input formControlName="recipient"
                  [matAutocomplete]="recipientAuto"
+                 placeholder="Search by medical ID"
                  matInput
                  type="text">
           <mat-autocomplete #recipientAuto="matAutocomplete"

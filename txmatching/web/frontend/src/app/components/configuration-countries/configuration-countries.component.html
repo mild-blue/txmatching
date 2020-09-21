@@ -34,6 +34,7 @@
           <mat-label>Donor country</mat-label>
           <input formControlName="donorCountry"
                  [matAutocomplete]="donorAuto"
+                 placeholder="Search by country code"
                  matInput
                  type="text">
           <mat-autocomplete #donorAuto="matAutocomplete">
@@ -53,6 +54,7 @@
           <mat-label>Recipient country</mat-label>
           <input formControlName="recipientCountry"
                  [matAutocomplete]="recipientAuto"
+                 placeholder="Search by country code"
                  matInput
                  type="text">
           <mat-autocomplete #recipientAuto="matAutocomplete">
