@@ -145,6 +145,8 @@ $$
         FOR t IN
             SELECT table_name FROM information_schema.columns WHERE column_name = 'created_at'
             LOOP
+                EXECUTE format('DROP TRIGGER IF EXISTS trg_%I_set_created_at ON %I', t, t);
+                COMMIT;
                 EXECUTE format('CREATE TRIGGER trg_%I_set_created_at
                     BEFORE INSERT ON %I
                     FOR EACH ROW EXECUTE PROCEDURE set_created_at()', t, t);
@@ -162,6 +164,8 @@ $$
         FOR t IN
             SELECT table_name FROM information_schema.columns WHERE column_name = 'updated_at'
             LOOP
+                EXECUTE format('DROP TRIGGER IF EXISTS trg_%I_set_updated_at ON %I', t, t);
+                COMMIT;
                 EXECUTE format('CREATE TRIGGER trg_%I_set_updated_at
                     BEFORE UPDATE ON %I
                     FOR EACH ROW EXECUTE PROCEDURE set_updated_at()', t, t);

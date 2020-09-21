@@ -1,9 +1,11 @@
-from typing import Dict, Iterator, List, Optional, Tuple
+import dataclasses
+from typing import Dict, Iterator, List, Optional, Tuple, Union
 
 from dacite import from_dict
 
 from txmatching.config.gives_superset_of_solutions import \
     gives_superset_of_solutions
+from txmatching.data_transfer_objects.matchings.matching_dto import MatchingDTO, RoundDTO, Transplant
 from txmatching.database.services.config_service import (
     configuration_from_dict, get_config_models)
 from txmatching.database.services.patient_service import (
@@ -69,3 +71,26 @@ def load_matching_for_config_from_db(exchange_parameters: SolverInputParameters)
                                                  exchange_parameters.recipients_dict)
 
     return None
+
+
+def get_matching_dtos(
+        matchings: List[MatchingWithScore],
+        score_dict: ScoreDict,
+        compatible_blood_dict: BloodCompatibleDict
+) -> List[Union[Tuple, dict]]:
+    return [
+        dataclasses.asdict(MatchingDTO(
+            rounds=[
+                RoundDTO(
+                    transplants=[
+                        Transplant(
+                            score_dict[(donor.db_id, recipient.db_id)],
+                            compatible_blood_dict[(donor.db_id, recipient.db_id)],
+                            donor.medical_id,
+                            recipient.medical_id) for donor, recipient in matching_round.donor_recipient_list])
+                for matching_round in matching.get_rounds()],
+            countries=matching.get_country_codes_counts(),
+            score=matching.score(),
+            db_id=matching.db_id()
+        )) for matching in matchings
+    ]

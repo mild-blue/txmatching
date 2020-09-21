@@ -17,3 +17,6 @@ configuration_api = Namespace(CONFIGURATION_NAMESPACE)
 
 REPORTS_NAMESPACE = 'reports'
 report_api = Namespace(REPORTS_NAMESPACE)
+
+DUMMY_MATCHING_NAMESPACE = 'dummy-matching'
+dummy_matching_api = Namespace(DUMMY_MATCHING_NAMESPACE)

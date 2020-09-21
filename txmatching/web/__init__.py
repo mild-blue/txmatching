@@ -1,26 +1,58 @@
 import logging
+from enum import Enum
 from importlib import util as importing
 
 import sys
-from flask import Flask, send_from_directory, request
+from flask import Flask, send_from_directory, request, abort
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from txmatching.auth import bcrypt
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
+from txmatching.web.api.dummy_matching_api import dummy_matching_api
 from txmatching.web.api.matching_api import matching_api
 from txmatching.web.api.namespaces import PATIENT_NAMESPACE, MATCHING_NAMESPACE, \
-    USER_NAMESPACE, SERVICE_NAMESPACE, CONFIGURATION_NAMESPACE, REPORTS_NAMESPACE
+    USER_NAMESPACE, SERVICE_NAMESPACE, CONFIGURATION_NAMESPACE, REPORTS_NAMESPACE, DUMMY_MATCHING_NAMESPACE
 from txmatching.web.api.patient_api import patient_api
 from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.app_configuration.application_configuration import (
-    ApplicationConfiguration, get_application_configuration)
-from txmatching.auth import bcrypt
+    ApplicationConfiguration, get_application_configuration, get_prop)
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'
+DOC_ROUTE = '/doc'
+ALWAYS_ALLOWED_ROUTES = [DOC_ROUTE, '/swaggerui', '/swagger.json']
+ALLOWED_DUMMY_ROUTES = ALWAYS_ALLOWED_ROUTES + [f'{API_VERSION}/{DUMMY_MATCHING_NAMESPACE}']
+
+
+class DeploymentType(Enum):
+    NORMAL = 'normal'
+    DUMMY = 'dummy'
+
+
+def validate_dummy_routes(route: str):
+    """
+    Validates route path for dummy configuration.
+    If path is not found in dummy paths, error 404 is returned.
+    :param route: Route path
+    """
+    for valid_route in ALLOWED_DUMMY_ROUTES:
+        if route.lower().startswith(valid_route.lower()):
+            return
+    abort(404, 'Not found 3.')
+
+
+def validate_normal_routes(route: str):
+    """
+    Validates route path for normal configuration.
+    If path is dummy route, error 404 is returned.
+    :param route: Route path
+    """
+    if route.lower().startswith(f'/{DUMMY_MATCHING_NAMESPACE}'.lower()):
+        abort(404, 'Not found 1.')
 
 
 def create_app():
@@ -70,6 +102,7 @@ def create_app():
         api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
         api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
         api.add_namespace(report_api, path=f'{API_VERSION}/{REPORTS_NAMESPACE}')
+        api.add_namespace(dummy_matching_api, path=f'{API_VERSION}/{DUMMY_MATCHING_NAMESPACE}')
 
     # pylint: disable=unused-variable
     # routes registered in flask
@@ -84,6 +117,18 @@ def create_app():
         @app.route('/<path:path>', methods=['GET'])
         def static_proxy(path):
             return send_from_directory('frontend/dist/frontend', path)
+
+    def enable_route_suppress(deployment_type: str):
+        """
+        Enables route suppress, i.e., handling of allowed routes by configuration.
+        :param deployment_type: Deployment type
+        """
+        @app.before_request
+        def before_request_func():
+            if deployment_type == DeploymentType.DUMMY.value:
+                validate_dummy_routes(request.path)
+            elif deployment_type == DeploymentType.NORMAL.value:
+                validate_normal_routes(request.path)
 
     def enable_cors():
         @app.after_request
@@ -106,6 +151,8 @@ def create_app():
         configure_encryption()
         # must be registered before apis
         register_static_proxy()
+        # enable route suppressing for dummy API
+        enable_route_suppress(get_prop('DEPLOYMENT_TYPE'))
         # enable cors
         enable_cors()
         # finish configuration
