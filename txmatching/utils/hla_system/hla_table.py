@@ -43,67 +43,67 @@ HLA_DQ = ['DQ2', 'DQ4', 'DQ5', 'DQ6', 'DQ7', 'DQ8', 'DQ9']
 
 HLA_DQ_BROAD = ['DQ1', 'DQ3']
 
-split_to_broad = {'A23': 'A9',
-                  'A24': 'A9',
-                  'A25': 'A10',
-                  'A26': 'A10',
-                  'A29': 'A19',
-                  'A30': 'A19',
-                  'A31': 'A19',
-                  'A32': 'A19',
-                  'A33': 'A19',
-                  'A34': 'A10',
-                  'A66': 'A10',
-                  'A68': 'A28',
-                  'A69': 'A28',
-                  'A74': 'A19',
-                  'B38': 'B16',
-                  'B39': 'B16',
-                  'B44': 'B12',
-                  'B45': 'B12',
-                  'B49': 'B21',
-                  'B50': 'B21',
-                  'B51': 'B5',
-                  'B52': 'B5',
-                  'B54': 'B22',
-                  'B55': 'B22',
-                  'B56': 'B22',
-                  'B57': 'B17',
-                  'B58': 'B17',
-                  'B60': 'B40',
-                  'B61': 'B40',
-                  'B62': 'B15',
-                  'B63': 'B15',
-                  'B64': 'B14',
-                  'B65': 'B14',
-                  'B71': 'B70',
-                  'B72': 'B70',
-                  'B75': 'B15',
-                  'B76': 'B15',
-                  'B77': 'B15',
-                  'Cw9': 'Cw3',
-                  'Cw10': 'Cw3',
-                  'DR11': 'DR5',
-                  'DR12': 'DR5',
-                  'DR13': 'DR6',
-                  'DR14': 'DR6',
-                  'DR15': 'DR2',
-                  'DR16': 'DR2',
-                  'DR17': 'DR3',
-                  'DR18': 'DR3',
-                  'DQ5': 'DQ1',
-                  'DQ6': 'DQ1',
-                  'DQ7': 'DQ3',
-                  'DQ8': 'DQ3',
-                  'DQ9': 'DQ3'
-                  }
+broad_for_split = {'A23': 'A9',
+                   'A24': 'A9',
+                   'A25': 'A10',
+                   'A26': 'A10',
+                   'A29': 'A19',
+                   'A30': 'A19',
+                   'A31': 'A19',
+                   'A32': 'A19',
+                   'A33': 'A19',
+                   'A34': 'A10',
+                   'A66': 'A10',
+                   'A68': 'A28',
+                   'A69': 'A28',
+                   'A74': 'A19',
+                   'B38': 'B16',
+                   'B39': 'B16',
+                   'B44': 'B12',
+                   'B45': 'B12',
+                   'B49': 'B21',
+                   'B50': 'B21',
+                   'B51': 'B5',
+                   'B52': 'B5',
+                   'B54': 'B22',
+                   'B55': 'B22',
+                   'B56': 'B22',
+                   'B57': 'B17',
+                   'B58': 'B17',
+                   'B60': 'B40',
+                   'B61': 'B40',
+                   'B62': 'B15',
+                   'B63': 'B15',
+                   'B64': 'B14',
+                   'B65': 'B14',
+                   'B71': 'B70',
+                   'B72': 'B70',
+                   'B75': 'B15',
+                   'B76': 'B15',
+                   'B77': 'B15',
+                   'Cw9': 'Cw3',
+                   'Cw10': 'Cw3',
+                   'DR11': 'DR5',
+                   'DR12': 'DR5',
+                   'DR13': 'DR6',
+                   'DR14': 'DR6',
+                   'DR15': 'DR2',
+                   'DR16': 'DR2',
+                   'DR17': 'DR3',
+                   'DR18': 'DR3',
+                   'DQ5': 'DQ1',
+                   'DQ6': 'DQ1',
+                   'DQ7': 'DQ3',
+                   'DQ8': 'DQ3',
+                   'DQ9': 'DQ3'
+                   }
 
-broad_to_split = dict()
-for split, broad in split_to_broad.items():
-    if broad not in broad_to_split:
-        broad_to_split[broad] = list()
+all_splits_for_broad = dict()
+for split, broad in broad_for_split.items():
+    if broad not in all_splits_for_broad:
+        all_splits_for_broad[broad] = list()
 
-    broad_to_split[broad].append(split)
+    all_splits_for_broad[broad].append(split)
 
 
 def is_split(antigen_code: str) -> Optional[bool]:
@@ -125,7 +125,7 @@ def is_split(antigen_code: str) -> Optional[bool]:
 
 
 def hla_split_to_broad(split_code: str) -> str:
-    return split_to_broad.get(split_code) or split_code
+    return broad_for_split.get(split_code) or split_code
 
 
 HLA_A_broad = list(map(hla_split_to_broad, HLA_A))
