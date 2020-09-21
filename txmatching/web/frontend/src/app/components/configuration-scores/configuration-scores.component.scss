@@ -4,27 +4,23 @@
 
   padding: 0;
 
+  .hint {
+    font-size: 12px;
+    color: $gray-600;
+    margin-bottom: $box-shadow--wide-size;
+  }
+
   .list {
     padding: $padding-y $padding-x $box-shadow--wide-size;
 
     h4 {
-      margin: 0 0 $box-shadow--wide-size;
+      margin: 0;
       color: $body-color;
     }
 
     .item {
       display: flex;
       align-items: center;
-
-      .patient {
-        display: flex;
-        align-items: center;
-        font-weight: 700;
-
-        flag {
-          margin-right: 10px;
-        }
-      }
 
       .arrow {
         margin: 0 2px;

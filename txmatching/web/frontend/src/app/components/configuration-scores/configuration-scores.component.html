@@ -6,17 +6,19 @@
       <app-count [count]="selectedScores.length"></app-count>
     </h4>
 
+    <div class="hint">Manually set score for particular pair of patients.</div>
+
     <div class="placeholder" *ngIf="selectedScores.length === 0">
-      No manual scores yet
+      No manual scores were set yet.
     </div>
 
     <mat-chip-list *ngIf="selectedScores.length > 0">
       <mat-chip *ngFor="let score of selectedScores"
                 (removed)="removeScore(score)">
         <div class="item">
-          <ng-container *ngTemplateOutlet="patientTemplate; context: { patient: getDonorByDbId(score.donor_db_id) }"></ng-container>
+          <patient [patient]="getDonorByDbId(score.donor_db_id)"></patient>
           <mat-icon class="arrow">chevron_right</mat-icon>
-          <ng-container *ngTemplateOutlet="patientTemplate; context: { patient: getRecipientByDbId(score.recipient_db_id) }"></ng-container>
+          <patient [patient]="getRecipientByDbId(score.recipient_db_id)"></patient>
 
           <div class="score">score: <strong>{{score.score}}</strong></div>
         </div>
@@ -42,7 +44,7 @@
           <mat-autocomplete #donorAuto="matAutocomplete"
                             [displayWith]="displayFn">
             <mat-option *ngFor="let patient of filteredDonors | async" [value]="patient">
-              {{ patient.medical_id }}
+              <patient [patient]="patient"></patient>
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -59,7 +61,7 @@
           <mat-autocomplete #recipientAuto="matAutocomplete"
                             [displayWith]="displayFn">
             <mat-option *ngFor="let patient of filteredRecipients | async" [value]="patient">
-              {{ patient.medical_id }}
+              <patient [patient]="patient"></patient>
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -83,12 +85,3 @@
     </div>
   </div>
 </div>
-
-<ng-template #patientTemplate let-patient="patient">
-  <ng-container *ngIf="patient">
-    <div class="patient">
-      <flag [countryCode]="patient.parameters.country_code"></flag>
-      {{patient.medical_id}}
-    </div>
-  </ng-container>
-</ng-template>

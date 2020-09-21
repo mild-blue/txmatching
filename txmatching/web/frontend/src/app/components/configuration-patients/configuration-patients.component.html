@@ -5,12 +5,12 @@
   </h4>
   <form>
     <mat-form-field>
-      <mat-label>Recipients to require</mat-label>
+      <mat-label>Required recipients</mat-label>
       <mat-chip-list #chipList>
         <mat-chip (removed)="remove(patient)"
                   *ngFor="let patient of selectedPatients"
                   [removable]="true">
-          <ng-container *ngTemplateOutlet="patientTemplate; context: { patient: patient }"></ng-container>
+          <patient [patient]="patient"></patient>
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input #patientInput
@@ -23,20 +23,12 @@
       </mat-chip-list>
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event)" [displayWith]="displayFn">
         <mat-option *ngFor="let patient of filteredPatients | async" [value]="patient">
-          <ng-container *ngTemplateOutlet="patientTemplate; context: { patient: patient }"></ng-container>
+          <patient [patient]="patient"></patient>
         </mat-option>
       </mat-autocomplete>
-      <mat-hint>Search and select multiple patients from {{allPatients.length}} recipients</mat-hint>
+      <mat-hint>
+        Search and select multiple patients from {{allPatients.length}} recipients. Only matchings containing these recipients will be shown.
+      </mat-hint>
     </mat-form-field>
   </form>
 </div>
-
-
-<ng-template #patientTemplate let-patient="patient">
-  <ng-container *ngIf="patient">
-    <div class="patient">
-      <flag [countryCode]="patient.parameters.country_code"></flag>
-      {{patient.medical_id}}
-    </div>
-  </ng-container>
-</ng-template>

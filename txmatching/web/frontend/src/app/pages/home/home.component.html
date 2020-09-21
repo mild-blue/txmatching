@@ -8,7 +8,7 @@
         <app-count *ngIf="!loading" [count]="matchings.length"></app-count>
       </h1>
       <button (click)="toggleConfiguration()"
-              *ngIf="!loading && configuration"
+              *ngIf="!loading && configuration && patients"
               class="config">
         Configure
         <fa-icon [icon]="configIcon"></fa-icon>

@@ -38,27 +38,14 @@
           Use binary scoring
         </mat-slide-toggle>
 
-        <mat-slide-toggle *ngIf="configuration.allow_low_high_res_incompatible !== undefined"
+        <mat-slide-toggle *ngIf="configuration.use_split_resolution !== undefined"
                           formControlName="allow_low_high_res_incompatible"
-                          [checked]="configuration.allow_low_high_res_incompatible">
+                          [checked]="configuration.use_split_resolution">
           Use split resolution
         </mat-slide-toggle>
       </div>
 
       <div class="configuration__box inputs">
-        <mat-form-field *ngIf="configuration.blood_group_compatibility_bonus !== undefined">
-          <mat-label>Compatible blood group bonus</mat-label>
-          <input value="{{ configuration.blood_group_compatibility_bonus }}"
-                 formControlName="blood_group_compatibility_bonus"
-                 matInput type="number">
-        </mat-form-field>
-
-        <mat-form-field *ngIf="configuration.max_number_of_distinct_countries_in_round !== undefined">
-          <mat-label>Max countries in round</mat-label>
-          <input value="{{ configuration.max_number_of_distinct_countries_in_round }}"
-                 formControlName="max_number_of_distinct_countries_in_round"
-                 matInput type="number">
-        </mat-form-field>
 
         <mat-form-field *ngIf="configuration.minimum_total_score !== undefined">
           <mat-label>Minimum transplant score</mat-label>
@@ -67,10 +54,10 @@
                  matInput type="number">
         </mat-form-field>
 
-        <mat-form-field *ngIf="configuration.maximum_total_score !== undefined">
-          <mat-label>Maximum transplant score</mat-label>
-          <input value="{{ configuration.maximum_total_score }}"
-                 formControlName="maximum_total_score"
+        <mat-form-field *ngIf="configuration.max_number_of_distinct_countries_in_round !== undefined">
+          <mat-label>Max countries in round</mat-label>
+          <input value="{{ configuration.max_number_of_distinct_countries_in_round }}"
+                 formControlName="max_number_of_distinct_countries_in_round"
                  matInput type="number">
         </mat-form-field>
 
@@ -85,6 +72,20 @@
           <mat-label>Max sequence length</mat-label>
           <input value="{{ configuration.max_sequence_length }}"
                  formControlName="max_sequence_length"
+                 matInput type="number">
+        </mat-form-field>
+
+        <mat-form-field *ngIf="configuration.blood_group_compatibility_bonus !== undefined">
+          <mat-label>Compatible blood group bonus</mat-label>
+          <input value="{{ configuration.blood_group_compatibility_bonus }}"
+                 formControlName="blood_group_compatibility_bonus"
+                 matInput type="number">
+        </mat-form-field>
+
+        <mat-form-field *ngIf="configuration.max_matchings_to_show_to_viewer !== undefined">
+          <mat-label>Maximum matchings to show to viewer</mat-label>
+          <input value="{{ configuration.max_matchings_to_show_to_viewer }}"
+                 formControlName="max_matchings_to_show_to_viewer"
                  matInput type="number">
         </mat-form-field>
       </div>

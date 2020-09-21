@@ -1,5 +1,5 @@
 export interface Configuration {
-  allow_low_high_res_incompatible: boolean;
+  use_split_resolution: boolean;
   require_compatible_blood_group: boolean;
   require_better_match_in_compatibility_index: boolean;
   require_better_match_in_compatibility_index_or_blood_group: boolean;
@@ -11,8 +11,6 @@ export interface Configuration {
   max_cycle_length: number;
   max_sequence_length: number;
   max_number_of_distinct_countries_in_round: number;
-
-  // No need?
   max_matchings_to_show_to_viewer: number;
 
   // complex FE

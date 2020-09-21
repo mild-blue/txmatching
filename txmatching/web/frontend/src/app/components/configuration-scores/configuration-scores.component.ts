@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Patient, PatientList } from '@app/model/Patient';
 import { Configuration, DonorRecipientScore } from '@app/model/Configuration';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
@@ -15,9 +15,9 @@ export class ConfigurationScoresComponent {
   @Input() configuration?: Configuration;
 
   public form: FormGroup = new FormGroup({
-    donor: new FormControl('', Validators.required),
-    recipient: new FormControl('', Validators.required),
-    score: new FormControl('', Validators.required)
+    donor: new FormControl(''),
+    recipient: new FormControl(''),
+    score: new FormControl('')
   });
 
   public filteredDonors: Observable<Patient[]>;
@@ -54,11 +54,11 @@ export class ConfigurationScoresComponent {
   }
 
   public addScore(): void {
-    if (this.form.invalid) {
+    const { donor, recipient, score } = this.form.value;
+
+    if (!donor || !recipient || !score) {
       return;
     }
-
-    const { donor, recipient, score } = this.form.value;
 
     this.configuration?.manual_donor_recipient_scores.push({
       donor_db_id: donor.db_id,
@@ -66,12 +66,7 @@ export class ConfigurationScoresComponent {
       score
     });
 
-    Object.keys(this.form.controls).forEach(key => {
-      const control = this.form.controls[key];
-      control.reset();
-      control.markAsPristine();
-      control.setErrors(null);
-    });
+    this.form.reset();
   }
 
   public removeScore(s: DonorRecipientScore): void {
