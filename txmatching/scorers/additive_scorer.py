@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from txmatching.config.configuration import Configuration, ManualDonorRecipientScore
+from txmatching.configuration.configuration import Configuration, ManualDonorRecipientScore
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import RecipientDbId, DonorDbId
 from txmatching.scorers.scorer_base import ScorerBase

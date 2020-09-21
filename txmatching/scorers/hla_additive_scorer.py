@@ -1,7 +1,7 @@
 from typing import Optional
 
-from txmatching.config.configuration import (Configuration)
-from txmatching.config.subclasses import ForbiddenCountryCombination
+from txmatching.configuration.configuration import (Configuration)
+from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE

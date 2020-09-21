@@ -1,4 +1,4 @@
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 
 
 def _check_if_config_is_supported(configuration: Configuration):

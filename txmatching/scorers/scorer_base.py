@@ -1,6 +1,6 @@
 from typing import Dict
 
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.solvers.matching.matching import Matching
 
 
