@@ -30,7 +30,7 @@ CONFIGURATION_JSON = matching_api.model(
         "max_sequence_length": fields.Integer(required=False),
         "max_number_of_distinct_countries_in_round": fields.Integer(required=False),
         "required_patient_db_ids": fields.List(required=False, cls_or_instance=fields.Integer),
-        "crossmatch_in_split_resolution": fields.Boolean(required=False),
+        "use_split_resolution": fields.Boolean(required=False),
         "manual_donor_recipient_scores": fields.List(required=False, cls_or_instance=fields.Nested(
             MANUAL_DONOR_RECIPIENT_SCORE_JSON)),
         "forbidden_country_combinations": fields.List(required=False, cls_or_instance=fields.Nested(

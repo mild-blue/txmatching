@@ -6,20 +6,21 @@ from txmatching.utils.hla_system.hla_table import broad_to_split, split_to_broad
 
 def is_positive_hla_crossmatch(donor_antigens: HLAAntigens,
                                recipient_antibodies: HLAAntibodies,
-                               crossmatch_in_split_resolution: bool) -> bool:
+                               use_split_resolution: bool) -> bool:
     """
     Do donor and recipient have positive crossmatch in HLA system?
     e.g. A23 -> A23 True
          A9 -> A9  True
          A23 -> A9 True
-         A23 -> A24 False
+         A23 -> A24 False if use_split_resolution else True
          A9 -> A23 True
+         A9 broad <=> A23, A24 split
     :param donor_antigens: donor antigens to crossmatch
     :param recipient_antibodies: recipient antibodies to crossmatch
-    :param crossmatch_in_split_resolution: setting whether to use split resolution for crossmatch determination
+    :param use_split_resolution: setting whether to use split resolution for crossmatch determination
     :return:
     """
-    if crossmatch_in_split_resolution:
+    if use_split_resolution:
         # in case some code is in broad resolution we treat is as if both split resolution codes were present
         donor_antigens_set = {split_code for code in donor_antigens.codes for split_code in
                               broad_to_split.get(code, [code])}
