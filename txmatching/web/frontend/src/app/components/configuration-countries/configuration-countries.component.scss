@@ -43,22 +43,19 @@
     &__heading {
       color: $gray-600;
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
       text-transform: uppercase;
       letter-spacing: 1px;
       font-size: 14px;
       font-weight: 700;
     }
 
-    &__content {
-      max-width: $container-max-width;
-      margin: auto;
-    }
-
     &__form {
       display: flex;
       align-items: flex-end;
       justify-content: center;
+      max-width: $container-max-width;
+      margin: auto;
 
       form {
         $field-gap: calc(#{$item-gap} / 2);

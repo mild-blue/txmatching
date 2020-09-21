@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { PatientList } from '@app/model/Patient';
 import { Configuration, CountryCombination } from '@app/model/Configuration';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
@@ -18,8 +18,8 @@ export class ConfigurationCountriesComponent {
   @Input() configuration?: Configuration;
 
   public form: FormGroup = new FormGroup({
-    donorCountry: new FormControl(''),
-    recipientCountry: new FormControl('')
+    donorCountry: new FormControl('', Validators.required),
+    recipientCountry: new FormControl('', Validators.required)
   });
 
   public filteredDonorCountries: Observable<string[]>;
@@ -66,6 +66,10 @@ export class ConfigurationCountriesComponent {
   }
 
   public addCombination(): void {
+    if (this.form.invalid) {
+      return;
+    }
+
     const { donorCountry, recipientCountry } = this.form.value;
 
     this.configuration?.forbidden_country_combinations.push({
@@ -73,7 +77,12 @@ export class ConfigurationCountriesComponent {
       recipient_country: recipientCountry
     });
 
-    this.form.reset();
+    Object.keys(this.form.controls).forEach(key => {
+      const control = this.form.controls[key];
+      control.reset();
+      control.markAsPristine();
+      control.setErrors(null);
+    });
   }
 
   public removeCombination(c: CountryCombination): void {

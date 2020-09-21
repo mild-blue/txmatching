@@ -30,51 +30,47 @@
 
   <div class="add">
     <div class="add__heading">Add new combination</div>
-    <div class="add__content">
+    <div class="add__form">
+      <form [formGroup]="form"
+            (ngSubmit)="addCombination()">
+        <!-- Donor country -->
+        <mat-form-field>
+          <mat-label>Donor country</mat-label>
+          <input formControlName="donorCountry"
+                 [matAutocomplete]="donorAuto"
+                 matInput
+                 type="text">
+          <mat-autocomplete #donorAuto="matAutocomplete">
+            <mat-option *ngFor="let country of filteredDonorCountries | async" [value]="country">
+              {{ country }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
 
+        <mat-icon>chevron_right</mat-icon>
 
-      <div class="add__form">
-        <form [formGroup]="form"
-              (ngSubmit)="addCombination()">
-          <!-- Donor country -->
-          <mat-form-field>
-            <mat-label>Donor country</mat-label>
-            <input formControlName="donorCountry"
-                   [matAutocomplete]="donorAuto"
-                   matInput
-                   type="text">
-            <mat-autocomplete #donorAuto="matAutocomplete">
-              <mat-option *ngFor="let country of filteredDonorCountries | async" [value]="country">
-                {{ country }}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
+        <!-- Recipient country -->
+        <mat-form-field>
+          <mat-label>Recipient country</mat-label>
+          <input formControlName="recipientCountry"
+                 [matAutocomplete]="recipientAuto"
+                 matInput
+                 type="text">
+          <mat-autocomplete #recipientAuto="matAutocomplete">
+            <mat-option *ngFor="let country of filteredRecipientCountries | async" [value]="country">
+              {{ country }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
 
-          <mat-icon>chevron_right</mat-icon>
+        <button style="display: none;" type="submit"></button>
+      </form>
 
-          <!-- Recipient country -->
-          <mat-form-field>
-            <mat-label>Recipient country</mat-label>
-            <input formControlName="recipientCountry"
-                   [matAutocomplete]="recipientAuto"
-                   matInput
-                   type="text">
-            <mat-autocomplete #recipientAuto="matAutocomplete">
-              <mat-option *ngFor="let country of filteredRecipientCountries | async" [value]="country">
-                {{ country }}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-        </form>
-
-        <app-button (click)="addCombination()" size="sm" variant="success">
-          Add
-          <mat-icon>add</mat-icon>
-        </app-button>
-      </div>
+      <app-button (click)="addCombination()" size="sm" variant="success">
+        Add
+        <mat-icon>add</mat-icon>
+      </app-button>
     </div>
-
-
   </div>
 </div>
 

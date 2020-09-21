@@ -29,9 +29,9 @@ export interface AppConfiguration extends Configuration {
 }
 
 export interface DonorRecipientScore {
-  donor?: number;
-  recipient?: number;
-  score?: number;
+  donor_db_id: number;
+  recipient_db_id: number;
+  score: number;
 }
 
 export interface CountryCombination {
