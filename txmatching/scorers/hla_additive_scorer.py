@@ -33,7 +33,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         # Recipient can't have antibodies that donor has antigens for
         positive_crossmatch = is_positive_hla_crossmatch(donor.parameters.hla_antigens,
                                                          recipient.parameters.hla_antibodies,
-                                                         self._configuration.crossmatch_in_split_resolution)
+                                                         self._configuration.use_split_resolution)
         if positive_crossmatch:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
