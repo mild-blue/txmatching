@@ -33,15 +33,13 @@ export class ConfigurationComponent implements OnInit {
 
   public submitAction(): void {
     if (this.configForm && this.configuration) {
-      // send only valid data
-      const scores = this.configuration.manual_donor_recipient_scores.filter(score => !!score.donor && !!score.recipient && !!score.score);
-      const countries = this.configuration.forbidden_country_combinations.filter(cc => cc.donor_country !== '' && cc.recipient_country !== '');
+      const { manual_donor_recipient_scores, forbidden_country_combinations, required_patient_db_ids } = this.configuration;
 
       this.configSubmitted.emit({
         ...this.configForm.value,
-        manual_donor_recipient_scores: scores,
-        forbidden_country_combinations: countries,
-        required_patient_db_ids: this.configuration.required_patient_db_ids
+        manual_donor_recipient_scores,
+        forbidden_country_combinations,
+        required_patient_db_ids
       });
     }
   }
