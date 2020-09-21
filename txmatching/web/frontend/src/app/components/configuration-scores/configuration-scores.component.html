@@ -2,12 +2,12 @@
 
   <div class="list">
     <h4>
-      Manual score for donor and recipient
+      Manual scores for donors and recipients
       <app-count [count]="selectedScores.length"></app-count>
     </h4>
 
     <div class="placeholder" *ngIf="selectedScores.length === 0">
-      No countries configuration yet
+      No manual scores yet
     </div>
 
     <mat-chip-list *ngIf="selectedScores.length > 0">

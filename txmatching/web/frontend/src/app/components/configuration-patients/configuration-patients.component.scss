@@ -1,3 +1,22 @@
-form, .mat-form-field {
-  width: 100%;
+@import "../../../styles/variables";
+
+.configuration__patients {
+  form, .mat-form-field {
+    width: 100%;
+  }
+
+  h4 {
+    margin: 0 0 $box-shadow--wide-size;
+    color: $body-color;
+  }
+
+  .patient {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+
+    flag {
+      margin-right: 10px;
+    }
+  }
 }

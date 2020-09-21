@@ -1,38 +1,42 @@
-<div class="configuration__interactive">
-  <div class="configuration__box-heading">
-    <h4>
-      Required recipients
-      <app-count [count]="selectedPatients.length"></app-count>
-    </h4>
-  </div>
-
-  <div class="configuration__box">
-    <form>
-      <mat-form-field appearance="fill">
-        <mat-label>Recipients to require</mat-label>
-        <mat-chip-list #chipList>
-          <mat-chip (removed)="remove(patient)"
-                    *ngFor="let patient of selectedPatients"
-                    [removable]="true">
-            {{patient.medical_id}}
-            <mat-icon matChipRemove>cancel</mat-icon>
-          </mat-chip>
-          <input #patientInput
-                 [formControl]="formControl"
-                 [matAutocomplete]="auto"
-                 [matChipInputFor]="chipList"
-                 matInput
-                 placeholder="Search by medical ID"
-                 type="text">
-        </mat-chip-list>
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event)" [displayWith]="displayFn">
-          <mat-option *ngFor="let option of filteredPatients | async" [value]="option">
-            {{option.medical_id}}
-          </mat-option>
-        </mat-autocomplete>
-        <mat-hint>Search and select multiple patients from {{allPatients.length}} recipients</mat-hint>
-      </mat-form-field>
-    </form>
-  </div>
+<div class="configuration__patients configuration__box">
+  <h4>
+    Required recipients
+    <app-count [count]="selectedPatients.length"></app-count>
+  </h4>
+  <form>
+    <mat-form-field>
+      <mat-label>Recipients to require</mat-label>
+      <mat-chip-list #chipList>
+        <mat-chip (removed)="remove(patient)"
+                  *ngFor="let patient of selectedPatients"
+                  [removable]="true">
+          <ng-container *ngTemplateOutlet="patientTemplate; context: { patient: patient }"></ng-container>
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input #patientInput
+               [formControl]="formControl"
+               [matAutocomplete]="auto"
+               [matChipInputFor]="chipList"
+               matInput
+               placeholder="Search by medical ID"
+               type="text">
+      </mat-chip-list>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event)" [displayWith]="displayFn">
+        <mat-option *ngFor="let patient of filteredPatients | async" [value]="patient">
+          <ng-container *ngTemplateOutlet="patientTemplate; context: { patient: patient }"></ng-container>
+        </mat-option>
+      </mat-autocomplete>
+      <mat-hint>Search and select multiple patients from {{allPatients.length}} recipients</mat-hint>
+    </mat-form-field>
+  </form>
 </div>
 
+
+<ng-template #patientTemplate let-patient="patient">
+  <ng-container *ngIf="patient">
+    <div class="patient">
+      <flag [countryCode]="patient.parameters.country_code"></flag>
+      {{patient.medical_id}}
+    </div>
+  </ng-container>
+</ng-template>

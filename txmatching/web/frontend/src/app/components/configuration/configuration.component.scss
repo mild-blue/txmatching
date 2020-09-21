@@ -80,8 +80,11 @@
     background: $white;
     box-shadow: $box-shadow--wide;
     padding: $padding-y $padding-x;
-    margin-bottom: $item-gap;
+    margin-bottom: $box-shadow--wide-size;
     overflow: hidden;
+
+    margin-left: $item-gap;
+    margin-right: $item-gap;
   }
 
   .inputs {
@@ -99,14 +102,10 @@
   .config-form {
     width: 100%;
     display: flex;
-    margin: 0 calc(-1 * #{$item-gap});
 
     .configuration__box {
       flex-basis: calc(50% - 2 * #{$item-gap});
       width: calc(50% - 2 * #{$item-gap});
-
-      margin-left: $item-gap;
-      margin-right: $item-gap;
     }
   }
 
