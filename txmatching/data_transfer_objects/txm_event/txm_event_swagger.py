@@ -6,6 +6,7 @@ from txmatching.web.api.namespaces import txm_event_api
 
 # remove in task https://trello.com/c/pKMqnv7X
 BLOOD_GROUPS = ['A', 'B', '0', 'AB']
+SEXES = ['M', 'F']
 ANTIGENS_EXAMPLE = ['A1', 'A32', 'B7', 'B51', 'DR11', 'DR15']
 MEDICAL_ID_DESCRIPTION = 'Medical ID of the patient. This ID is unique thorough the system and can be used for the \
 identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.'
@@ -23,6 +24,9 @@ TxmEventJsonOut = txm_event_api.model('TxmEvent', {
 HlaAntibodiesJson = txm_event_api.model('HLAAntibodies', {
     'MFI': fields.Integer(required=True, description='Mean fluorescence intensity. Use exact value.', example=2350),
     'name': fields.String(required=True, description='HLA antibody name', example='A32'),
+    'Cutoff': fields.Integer(required=True,
+                             description='Default cutoff value for the specific patient and HLA antibody.',
+                             example=2000),
 })
 
 DonorJsonIn = txm_event_api.model('Donor', {
@@ -34,6 +38,10 @@ DonorJsonIn = txm_event_api.model('Donor', {
     'related_recipient_medical_id': fields.String(required=False, example='RelatedRecipientId',
                                                   description='Medical ID of the related recipient, empty for bridging '
                                                               'donors and altruists'),
+    'sex': fields.String(required=True, description='Sex of patient', enum=SEXES),
+    'height': fields.Integer(required=True, description='Height of the patient in centimeters.', example=182),
+    'weight': fields.Float(required=True, description='Weight of the patient in kilograms.', example=82.5),
+    'yob': fields.Integer(required=True, description='Year of birth of the patient.', example=1985),
 })
 
 RecipientJsonIn = txm_event_api.model('Recipient', {
@@ -50,7 +58,17 @@ RecipientJsonIn = txm_event_api.model('Recipient', {
                                   if available.',
                                   cls_or_instance=fields.Nested(
                                       HlaAntibodiesJson
-                                  ))
+                                  )),
+    'sex': fields.String(required=True, description='Sex of patient', enum=SEXES),
+    'height': fields.Integer(required=True, description='Height of the patient in centimeters.', example=182),
+    'weight': fields.Float(required=True, description='Weight of the patient in kilograms.', example=82.5),
+    'yob': fields.Integer(required=True, description='Year of birth of the patient.', example=1985),
+    'days_waiting': fields.Integer(required=True,
+                                   description='How many days has the patient been on waiting list.',
+                                   example=1485),
+    'previous_transplants': fields.Integer(required=True,
+                                           description='Number of previous kidney transplants.',
+                                           example=0),
 })
 
 UploadPatientsJson = txm_event_api.model(
