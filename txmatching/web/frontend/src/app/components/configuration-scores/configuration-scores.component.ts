@@ -42,11 +42,11 @@ export class ConfigurationScoresComponent {
   }
 
   get donors(): Patient[] {
-    return this.patients ? this.patients.donors : [];
+    return this.patients ? this.patients.donors ?? [] : [];
   }
 
   get recipients(): Patient[] {
-    return this.patients ? this.patients.recipients : [];
+    return this.patients ? this.patients.recipients ?? [] : [];
   }
 
   get selectedScores(): DonorRecipientScore[] {
