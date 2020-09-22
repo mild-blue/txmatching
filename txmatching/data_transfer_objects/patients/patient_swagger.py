@@ -27,8 +27,8 @@ RECIPIENT_MODEL = patient_api.model('Recipient', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
-    'hla_antibodies': fields.List(required=False, cls_or_instance=fields.String),
     'parameters': fields.Nested(required=True, model=PATIENT_PARAMETERS_MODEL),
+    'hla_antibodies': fields.List(required=True, cls_or_instance=fields.String),
     'related_donor_db_id': fields.Integer(required=True, description='Database id of the related donor'),
     'recipient_requiremens': fields.Nested(RECIPIENT_REQUIREMENTS)
 })
