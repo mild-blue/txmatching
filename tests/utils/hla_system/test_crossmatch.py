@@ -2,8 +2,9 @@ import logging
 import unittest
 
 from txmatching.patients.patient_parameters import HLAAntibodies, HLATyping
-from txmatching.utils.hla_system.hla_crossmatch import is_positive_hla_crossmatch, is_positive_hla_crossmatch_obsolete
-from txmatching.utils.hla_system.hla_table import split_to_broad
+from txmatching.utils.hla_system.hla_crossmatch import \
+    is_positive_hla_crossmatch
+from txmatching.utils.hla_system.hla_table import SPLIT_TO_BROAD
 
 logger = logging.getLogger(__name__)
 
@@ -11,8 +12,8 @@ logger = logging.getLogger(__name__)
 class TestCrossmatch(unittest.TestCase):
 
     def test_crossmatch(self):
-        self.assertEqual('A9', split_to_broad['A23'])
-        self.assertEqual('A9', split_to_broad['A24'])
+        self.assertEqual('A9', SPLIT_TO_BROAD['A23'])
+        self.assertEqual('A9', SPLIT_TO_BROAD['A24'])
         self.assertTrue(is_positive_hla_crossmatch(HLATyping(codes=['A23']),
                                                    HLAAntibodies(codes=['A24']),
                                                    False))
@@ -31,10 +32,3 @@ class TestCrossmatch(unittest.TestCase):
         self.assertTrue(is_positive_hla_crossmatch(HLATyping(codes=['A9']),
                                                    HLAAntibodies(codes=['A23']),
                                                    True))
-
-        self.assertFalse(is_positive_hla_crossmatch_obsolete(HLATyping(codes=['A23']),
-                                                             HLAAntibodies(codes=['A24'])))
-        self.assertTrue(is_positive_hla_crossmatch_obsolete(HLATyping(codes=['A9']),
-                                                            HLAAntibodies(codes=['A9'])))
-        self.assertIsNone(is_positive_hla_crossmatch_obsolete(HLATyping(codes=['A9']),
-                                                              HLAAntibodies(codes=['A23'])))

@@ -1,7 +1,9 @@
 from typing import Dict, List
 
+from txmatching.utils.hla_system.hla_table import CompatibilityGeneCode
 
-def get_antigen_genotype(patient_allele_codes: List[str], gene_code: str = 'A') -> Dict[str, int]:
+
+def get_antigen_genotype(patient_allele_codes: List[str], gene_code: CompatibilityGeneCode) -> Dict[str, int]:
     """
     Returns the genotype for specific antigen
     for example for A it can be (A9, A10), or (A9, A9) etc. (In case we see only one genotype we assume it means that

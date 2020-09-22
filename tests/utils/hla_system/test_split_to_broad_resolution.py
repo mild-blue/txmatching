@@ -1,8 +1,9 @@
 import logging
 import unittest
 
-from txmatching.utils.hla_system.hla_table import hla_split_to_broad
-from tests.patients.test_patient_parameters import donor_parameters_Joe, recipient_parameters_Jack
+from tests.patients.test_patient_parameters import (donor_parameters_Joe,
+                                                    recipient_parameters_Jack)
+from txmatching.utils.hla_system.hla_table import split_to_broad
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +20,8 @@ class TestSplitToBroadResolution(unittest.TestCase):
                                                         )]
 
     def test_hla_split_to_broad_res(self):
-        logger.info("Testing hla_split_to_broad_res")
+        logger.info('Testing hla_split_to_broad_res')
         for split_res_codes, expected_broad_res_codes in self._original_split_and_expected_broad_res:
-            calculated_broad_res_codes = [hla_split_to_broad(code) for code in split_res_codes.codes]
+            calculated_broad_res_codes = [split_to_broad(code) for code in split_res_codes.codes]
             self.assertEqual(calculated_broad_res_codes, expected_broad_res_codes)
-        logger.info("    -- done\n")
+        logger.info('    -- done\n')
