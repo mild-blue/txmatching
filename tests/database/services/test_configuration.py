@@ -1,5 +1,5 @@
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.config.configuration import Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore
+from txmatching.configuration.configuration import Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore
 from txmatching.database.services.config_service import \
     save_configuration_as_current, get_current_configuration, configuration_from_dict
 from txmatching.utils.country import Country
@@ -28,7 +28,7 @@ class TestConfiguration(DbTests):
                     'max_sequence_length': 100,
                     'max_number_of_distinct_countries_in_round': 100,
                     'required_patient_db_ids': [1, 3, 5],
-                    'allow_low_high_res_incompatible': False,
+                    'use_split_resolution': False,
                     'manual_donor_recipient_scores': [{"donor_db_id": 1, "recipient_db_id": 0, "score": 0.0}]}
 
         config = configuration_from_dict(dto_dict)

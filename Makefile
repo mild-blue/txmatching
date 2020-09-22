@@ -95,6 +95,6 @@ build-fe-prod:
 	cd txmatching/web/frontend; npm install && npm run build-prod
 
 run-fe:
-	cd txmatching/web/frontend; npm run serve
+	cd txmatching/web/frontend; npm run start
 
 rebuild: conda-update build-fe

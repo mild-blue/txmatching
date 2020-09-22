@@ -81,4 +81,7 @@ def store_user_in_context(user_id: int, user_role: UserRole):
 
 
 def get_user_role():
+    """
+    Retrieves role from the request context.
+    """
     return g.user_role

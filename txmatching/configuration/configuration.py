@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from txmatching.config.subclasses import ForbiddenCountryCombination, PatientDbId, ManualDonorRecipientScore
+from txmatching.configuration.subclasses import ForbiddenCountryCombination, PatientDbId, ManualDonorRecipientScore
 from txmatching.utils.country import Country
 
 DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Country.IL),
@@ -34,7 +34,7 @@ class Configuration:
     max_sequence_length: int = 100
     max_number_of_distinct_countries_in_round: int = 100
     required_patient_db_ids: List[PatientDbId] = field(default_factory=list)
-    allow_low_high_res_incompatible: bool = False
+    use_split_resolution: bool = False
     forbidden_country_combinations: List[ForbiddenCountryCombination] = field(
         default_factory=lambda: DEFAULT_FORBIDDEN_COUNTRY_LIST)
     manual_donor_recipient_scores: List[ManualDonorRecipientScore] = field(default_factory=list)

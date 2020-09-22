@@ -1,4 +1,4 @@
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.solvers.all_solutions_solver import AllSolutionsSolver
 from txmatching.solvers.solver_base import SolverBase
 from txmatching.utils.construct_configurable_object import construct_configurable_object

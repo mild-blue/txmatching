@@ -8,7 +8,7 @@ import numpy as np
 from graph_tool import topology
 from graph_tool.all import Graph
 
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import RecipientDbId, DonorDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
@@ -43,7 +43,7 @@ class AllSolutionsSolver(SolverBase):
             score = sum([score_matrix_array[i, j] for i, j in solution
                          if i < len(donors) and j < len(recipients)])
 
-            matching = MatchingWithScore(donor_recipient_list, score)
+            matching = MatchingWithScore(donor_recipient_list, score, 0)
             if max([transplant_round.country_count for transplant_round in
                     matching.get_rounds()]) <= self._max_number_of_distinct_countries_in_round:
                 yield matching
@@ -59,7 +59,7 @@ class AllSolutionsSolver(SolverBase):
                         [score_matrix_array[donors.index(donor), recipients.index(recipient)] for
                          donor, recipient in
                          donor_recipient_list])
-                    proper_matching = MatchingWithScore(donor_recipient_list, score)
+                    proper_matching = MatchingWithScore(donor_recipient_list, score, 0)
                     if proper_matching not in proper_solutions:
                         yield proper_matching
                         proper_solutions.add(proper_matching)

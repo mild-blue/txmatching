@@ -27,4 +27,12 @@ def solve_from_config(params: SolverInputParameters) -> Tuple[Iterable[MatchingW
 
     matching_filter = filter_from_config(params.configuration)
     matchings_filtered = filter(matching_filter.keep, all_solutions)
-    return list(matchings_filtered), score_matrix
+
+    matchings = list(matchings_filtered)
+    matchings.sort(key=lambda matching: len(matching.get_rounds()), reverse=True)
+    matchings.sort(key=lambda matching: matching.score(), reverse=True)
+    matchings.sort(key=lambda matching: len(matching.donor_recipient_list), reverse=True)
+    for idx, matching in enumerate(matchings):
+        matching.set_db_id(idx + 1)
+
+    return matchings, score_matrix

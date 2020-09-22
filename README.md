@@ -59,11 +59,11 @@ PATIENT_DATA_PATH=/home/user/path/to/your/patient_data.xlsx
 We'have a swagger UI running on `/doc/` route (so for example, `localhost:8080/doc/`).
 How to use it and some useful info [here on doc](https://flask-restx.readthedocs.io/en/latest/swagger.html).
 
-## Dependencies management
+## Dependencies Management
 We are using `conda` for managing dependencies as [graph-tool](https://graph-tool.skewed.de/)
 can be installed just from the `conda-forge` repository.
 
-#### Project installation
+#### Project Installation
 After you cloned the repository, execute `make conda-create` which creates Conda env for you.
 
 #### Development
@@ -71,20 +71,24 @@ One must switch to `conda` env before development - use `conda activate txmatchi
 to switch to correct environment.
 This must be execute every time when you try to use new terminal.
 
-#### Adding new dependencies
+#### Adding New dependencies
 To add new package put `<package>` to `conda.yml` and execute `make conda-update`.
 Please try to install specific version which you put to `conda.yml` in order to guarantee that whole team has same 
 packages versions.
 Try to put package to `dependencies` part of yaml, that are the packages installed from conda repository,
 if the package is not in the conda repo, put it in the `pip` part of yaml.
 
-#### Updating packages
+#### Updating Packages
 when someone updates and you pull new version from git do the following:
 ```
 make conda-update
 ```
 
-## Git hooks
+#### Required Libraries
+
+For pdf generation, a [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) is required to be installed.
+
+## Git Hooks
 there are some githooks in this project. It is advised to use them. After installing dependecies in conda it should be enough to run
 ```
 pre-commit install
@@ -93,12 +97,12 @@ then everytime you commit it first fails in case there were some changes done by
 If you recommit it will pass, because all the needed changes were done. Its especially so we do not push notebooks
 that would contain data to git.
 
-## Application configuration
+## Application Configuration
 Right now Flask web server tries to load configuration from the environment
 with fallback to loading from [`local_config.py`](txmatching/web/local_config.py).
-All current configuration can be found [here](txmatching/web/app_configuration/application_configuration.py).
+All current configuration can be found [here](txmatching/configuration/app_configuration/application_configuration.py).
 To obtain configuration in the code, one should call `get_application_configuration()`
- from [application_configuration.py](txmatching/web/app_configuration/application_configuration.py).
+ from [application_configuration.py](txmatching/configuration/app_configuration/application_configuration.py).
 
 ## Graph Tool
 Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't 

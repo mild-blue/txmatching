@@ -5,15 +5,16 @@ from importlib import util as importing
 from flask import Flask
 from flask_restx import Api
 
-from tests.test_utilities.populate_db import ADMIN_USER, add_users
+from tests.test_utilities.populate_db import ADMIN_USER, add_users, create_or_overwrite_txm_event
 from txmatching.auth.data_types import UserRole
+from txmatching.auth.login_check import store_user_in_context
 from txmatching.database.db import db
-from txmatching.database.services.patient_service import overwrite_patients_by_patients_from_excel
+from txmatching.database.services.patient_service import \
+    save_patients_from_excel_to_empty_txm_event
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import user_api
-from txmatching.auth.login_check import store_user_in_context
 
 
 class DbTests(unittest.TestCase):
@@ -48,7 +49,8 @@ class DbTests(unittest.TestCase):
     @staticmethod
     def fill_db_with_patients(file=get_absolute_path('/tests/test_utilities/data.xlsx')):
         patients = parse_excel_data(file)
-        overwrite_patients_by_patients_from_excel(patients)
+        txm_event = create_or_overwrite_txm_event(name='test')
+        save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=txm_event.db_id)
 
     def _set_bearer_token(self):
         self.api = Api(self.app)

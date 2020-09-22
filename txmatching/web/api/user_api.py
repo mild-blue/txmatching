@@ -1,18 +1,20 @@
 # pylint: disable=no-self-use
 # can not, they are used for generating swagger which needs class
-
+import dataclasses
 import logging
+from typing import Tuple
 
-from flask import jsonify, request
+from flask import request
 from flask_restx import Resource, fields
 
-from txmatching.auth.data_types import (BearerToken, FailResponse,
+from txmatching.auth.data_types import (FailResponse,
                                         LoginSuccessResponse, UserRole)
-from txmatching.auth.login_check import (get_request_token, login_required,
+from txmatching.auth.login_check import (login_required,
                                          require_role)
 from txmatching.auth.user_authentication import (change_user_password,
                                                  obtain_login_token,
                                                  refresh_token, register_user)
+from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import user_api
 
 logger = logging.getLogger(__name__)
@@ -38,11 +40,8 @@ class LoginApi(Resource):
     @user_api.response(code=401, model=LOGIN_FAIL_RESPONSE, description='')
     def post(self):
         post_data = request.get_json()
-        maybe_token = obtain_login_token(email=post_data.get('email'), password=post_data.get('password'))
-
-        if isinstance(maybe_token, LoginSuccessResponse):
-            return jsonify(maybe_token)
-        return jsonify(maybe_token), 401
+        auth_response = obtain_login_token(email=post_data.get('email'), password=post_data.get('password'))
+        return _respond(auth_response)
 
 
 @user_api.route('/refresh-token', methods=['GET'])
@@ -62,28 +61,27 @@ class RefreshTokenApi(Resource):
         except Exception:
             maybe_token = FailResponse('Bearer token malformed.')
 
-        if isinstance(maybe_token, LoginSuccessResponse):
-            return jsonify(maybe_token)
-        return jsonify(maybe_token), 401
+        return _respond(maybe_token)
 
 
 @user_api.route('/change-password', methods=['PUT'])
 class PasswordChangeApi(Resource):
-    password_change_model = user_api.model('PasswordChange', {
+    input = user_api.model('PasswordChange', {
         'new_password': fields.String(required=True, description='New password.')
     })
 
-    @user_api.doc(body=password_change_model, security='bearer', responses={400: {'status': 'error'},
-                                                                            200: {'status': 'ok'}})
+    response = user_api.model('PasswordChangedResponse', {
+        'status': fields.String(required=True)
+    })
+
+    @user_api.doc(body=input, security='bearer')
+    @user_api.response(code=200, model=response, description='Password changed successfully.')
     @login_required()
     def put(self):
         data = request.get_json()
-        token = get_request_token()
-        if isinstance(token, BearerToken):
-            change_user_password(user_id=token.user_id, new_password=data.get('new_password'))
-            return {'status': 'ok'}
-        else:
-            return {'status': 'error'}, 400
+        user_id = get_current_user_id()
+        change_user_password(user_id=user_id, new_password=data.get('new_password'))
+        return {'status': 'ok'}
 
 
 @user_api.route('/register', methods=['POST'])
@@ -103,6 +101,9 @@ class RegistrationApi(Resource):
         login_response = register_user(email=post_data.get('email'),
                                        password=post_data.get('password'),
                                        role=post_data.get('role'))
-        if isinstance(login_response, LoginSuccessResponse):
-            return jsonify(login_response)
-        return jsonify(login_response), 401
+        return _respond(login_response)
+
+
+def _respond(response) -> Tuple[dict, int]:
+    status = 200 if isinstance(response, LoginSuccessResponse) else 401
+    return dataclasses.asdict(response), status
