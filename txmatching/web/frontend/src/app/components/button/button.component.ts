@@ -9,8 +9,10 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 export class ButtonComponent {
 
   @Input() loading: boolean = false;
+  @Input() disabled?: boolean = false;
   @Input() size: 'sm' | '' = '';
   @Input() variant: 'primary' | 'success' | 'danger' = 'primary';
+  @Input() type?: 'submit' | 'button' | 'reset' = 'button';
 
   public icon = faSpinner;
 }

@@ -9,8 +9,9 @@
   border-radius: $border-radius--wide;
   color: $white;
   padding: 0 15px;
+  opacity: 1;
 
-  transition: background-color 0.5s ease;
+  transition: background-color 0.5s ease, opacity 0.5s ease;
 
   height: 50px;
   display: flex;
@@ -72,5 +73,10 @@
 
   ::ng-deep mat-icon {
     margin-left: 10px;
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
   }
 }

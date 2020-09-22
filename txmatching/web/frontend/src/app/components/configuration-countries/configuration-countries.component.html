@@ -5,7 +5,7 @@
       <app-count [count]="selectedCombinations.length"></app-count>
     </h4>
 
-    <div class="hint">Patients from selected countries will not be matched as donors and recipients.</div>
+    <div class="hint">Patients from selected countries will not be paired as donors and recipients.</div>
 
     <div class="placeholder" *ngIf="selectedCombinations.length === 0">
       No countries configuration yet.
@@ -27,12 +27,15 @@
   <div class="add">
     <div class="add__heading">Add new combination</div>
     <div class="add__form">
-      <form [formGroup]="form"
+      <form #viewForm="ngForm"
+            [formGroup]="form"
             (ngSubmit)="addCombination()">
+
         <!-- Donor country -->
         <mat-form-field>
           <mat-label>Donor country</mat-label>
           <input formControlName="donorCountry"
+                 [errorStateMatcher]="errorMatcher"
                  [matAutocomplete]="donorAuto"
                  placeholder="Search by country code"
                  matInput
@@ -47,12 +50,13 @@
           </mat-hint>
         </mat-form-field>
 
-        <mat-icon>chevron_right</mat-icon>
+        <mat-icon class="arrow">chevron_right</mat-icon>
 
         <!-- Recipient country -->
         <mat-form-field>
           <mat-label>Recipient country</mat-label>
           <input formControlName="recipientCountry"
+                 [errorStateMatcher]="errorMatcher"
                  [matAutocomplete]="recipientAuto"
                  placeholder="Search by country code"
                  matInput
@@ -67,13 +71,11 @@
           </mat-hint>
         </mat-form-field>
 
-        <button style="display: none;" type="submit"></button>
+        <app-button size="sm" variant="success" type="submit" [disabled]="form.invalid">
+          Add
+          <mat-icon>add</mat-icon>
+        </app-button>
       </form>
-
-      <app-button (click)="addCombination()" size="sm" variant="success">
-        Add
-        <mat-icon>add</mat-icon>
-      </app-button>
     </div>
   </div>
 </div>

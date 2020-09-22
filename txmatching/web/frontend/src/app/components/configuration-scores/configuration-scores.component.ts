@@ -1,27 +1,32 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Patient, PatientList } from '@app/model/Patient';
 import { Configuration, DonorRecipientScore } from '@app/model/Configuration';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { ConfigErrorStateMatcher, patientNameValidator } from '@app/directives/validators/configForm.directive';
 
 @Component({
   selector: 'app-configuration-scores',
   templateUrl: './configuration-scores.component.html',
   styleUrls: ['./configuration-scores.component.scss']
 })
-export class ConfigurationScoresComponent {
+export class ConfigurationScoresComponent implements OnInit {
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
+  @ViewChild('viewForm') viewForm?: NgForm;
+
   public form: FormGroup = new FormGroup({
-    donor: new FormControl(''),
-    recipient: new FormControl(''),
-    score: new FormControl('')
+    donor: new FormControl('', Validators.required),
+    recipient: new FormControl('', Validators.required),
+    score: new FormControl('', Validators.required)
   });
 
   public filteredDonors: Observable<Patient[]>;
   public filteredRecipients: Observable<Patient[]>;
+
+  public errorMatcher = new ConfigErrorStateMatcher();
 
   constructor() {
     this.filteredDonors = this.form.controls.donor.valueChanges.pipe(
@@ -41,6 +46,11 @@ export class ConfigurationScoresComponent {
     );
   }
 
+  ngOnInit() {
+    this.form.controls.donor.setValidators(patientNameValidator(this.donors));
+    this.form.controls.recipient.setValidators(patientNameValidator(this.recipients));
+  }
+
   get donors(): Patient[] {
     return this.patients ? this.patients.donors ?? [] : [];
   }
@@ -54,11 +64,11 @@ export class ConfigurationScoresComponent {
   }
 
   public addScore(): void {
-    const { donor, recipient, score } = this.form.value;
-
-    if (!donor || !recipient || !score) {
+    if (this.form.pristine || this.form.untouched || !this.form.valid) {
       return;
     }
+
+    const { donor, recipient, score } = this.form.value;
 
     this.configuration?.manual_donor_recipient_scores.push({
       donor_db_id: donor.db_id,
@@ -66,7 +76,9 @@ export class ConfigurationScoresComponent {
       score
     });
 
+    // reset form
     this.form.reset();
+    this.viewForm?.resetForm('');
   }
 
   public removeScore(s: DonorRecipientScore): void {

@@ -31,7 +31,8 @@
   <div class="add">
     <div class="add__heading">Add new manual score</div>
     <div class="add__form">
-      <form [formGroup]="form"
+      <form #viewForm="ngForm"
+            [formGroup]="form"
             (ngSubmit)="addScore()">
 
         <!-- Donor -->
@@ -39,6 +40,7 @@
           <mat-label>Donor</mat-label>
           <input formControlName="donor"
                  [matAutocomplete]="donorAuto"
+                 [errorStateMatcher]="errorMatcher"
                  placeholder="Search by medical ID"
                  matInput
                  type="text">
@@ -50,12 +52,13 @@
           </mat-autocomplete>
         </mat-form-field>
 
-        <mat-icon>chevron_right</mat-icon>
+        <mat-icon class="arrow">chevron_right</mat-icon>
 
         <!-- Recipient -->
         <mat-form-field>
           <mat-label>Recipient</mat-label>
           <input formControlName="recipient"
+                 [errorStateMatcher]="errorMatcher"
                  [matAutocomplete]="recipientAuto"
                  placeholder="Search by medical ID"
                  matInput
@@ -72,18 +75,17 @@
         <mat-form-field>
           <mat-label>Score</mat-label>
           <input matInput
+                 [errorStateMatcher]="errorMatcher"
                  formControlName="score"
                  placeholder="Enter score"
                  type="number">
         </mat-form-field>
 
-        <button style="display: none;" type="submit"></button>
+        <app-button size="sm" variant="success" type="submit" [disabled]="form.invalid">
+          Add
+          <mat-icon>add</mat-icon>
+        </app-button>
       </form>
-
-      <app-button (click)="addScore()" size="sm" variant="success">
-        Add
-        <mat-icon>add</mat-icon>
-      </app-button>
     </div>
   </div>
 </div>

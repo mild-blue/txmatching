@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { PatientList } from '@app/model/Patient';
 import { Configuration, CountryCombination } from '@app/model/Configuration';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { ConfigErrorStateMatcher, countryNameValidator } from '@app/directives/validators/configForm.directive';
 
 @Component({
   selector: 'app-configuration-countries',
@@ -17,13 +18,17 @@ export class ConfigurationCountriesComponent {
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
+  @ViewChild('viewForm') viewForm?: NgForm;
+
   public form: FormGroup = new FormGroup({
-    donorCountry: new FormControl(''),
-    recipientCountry: new FormControl('')
+    donorCountry: new FormControl('', Validators.required),
+    recipientCountry: new FormControl('', Validators.required)
   });
 
   public filteredDonorCountries: Observable<string[]>;
   public filteredRecipientCountries: Observable<string[]>;
+
+  public errorMatcher = new ConfigErrorStateMatcher();
 
   constructor() {
     this.filteredDonorCountries = this.form.controls.donorCountry?.valueChanges.pipe(
@@ -33,6 +38,11 @@ export class ConfigurationCountriesComponent {
     this.filteredRecipientCountries = this.form.controls.recipientCountry?.valueChanges.pipe(
       startWith(undefined),
       map((country: string | null) => country ? this._filter(this.recipientCountries, country) : this.recipientCountries.slice()));
+  }
+
+  ngOnInit() {
+    this.form.controls.donorCountry.setValidators(countryNameValidator(this.donorCountries));
+    this.form.controls.recipientCountry.setValidators(countryNameValidator(this.recipientCountries));
   }
 
   get donorCountries(): string[] {
@@ -66,19 +76,20 @@ export class ConfigurationCountriesComponent {
   }
 
   public addCombination(): void {
-
-    const { donorCountry, recipientCountry } = this.form.value;
-
-    if (!donorCountry || !recipientCountry) {
+    if (this.form.pristine || this.form.untouched || !this.form.valid) {
       return;
     }
+
+    const { donorCountry, recipientCountry } = this.form.value;
 
     this.configuration?.forbidden_country_combinations.push({
       donor_country: donorCountry,
       recipient_country: recipientCountry
     });
 
+    // reset form
     this.form.reset();
+    this.viewForm?.resetForm('');
   }
 
   public removeCombination(c: CountryCombination): void {
