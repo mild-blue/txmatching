@@ -38,13 +38,24 @@
         <!-- Donor -->
         <mat-form-field>
           <mat-label>Donor</mat-label>
-          <input formControlName="donor"
-                 [matAutocomplete]="donorAuto"
-                 [errorStateMatcher]="errorMatcher"
-                 placeholder="Search by medical ID"
-                 matInput
-                 type="text">
+          <mat-chip-list #donorChip>
+            <mat-chip *ngIf="donor && form.controls.donor.valid"
+                      [removable]="true"
+                      (removed)="handleRemove('donor', viewDonor)">
+              <patient [patient]="donor"></patient>
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input formControlName="donor"
+                   [matAutocomplete]="donorAuto"
+                   [matChipInputFor]="donorChip"
+                   [errorStateMatcher]="errorMatcher"
+                   placeholder="Search by medical ID"
+                   matInput
+                   #viewDonor
+                   type="text">
+          </mat-chip-list>
           <mat-autocomplete #donorAuto="matAutocomplete"
+                            (optionSelected)="handleSelect(viewDonor)"
                             [displayWith]="displayFn">
             <mat-option *ngFor="let patient of filteredDonors | async" [value]="patient">
               <patient [patient]="patient"></patient>
@@ -57,13 +68,26 @@
         <!-- Recipient -->
         <mat-form-field>
           <mat-label>Recipient</mat-label>
-          <input formControlName="recipient"
-                 [errorStateMatcher]="errorMatcher"
-                 [matAutocomplete]="recipientAuto"
-                 placeholder="Search by medical ID"
-                 matInput
-                 type="text">
+
+          <mat-chip-list #recipientChip>
+            <mat-chip *ngIf="recipient && form.controls.recipient.valid"
+                      [removable]="true"
+                      (removed)="handleRemove('recipient', viewRecipient)">
+              <patient [patient]="recipient"></patient>
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input formControlName="recipient"
+                   [errorStateMatcher]="errorMatcher"
+                   [matAutocomplete]="recipientAuto"
+                   [matChipInputFor]="recipientChip"
+                   placeholder="Search by medical ID"
+                   matInput
+                   #viewRecipient
+                   type="text">
+          </mat-chip-list>
+
           <mat-autocomplete #recipientAuto="matAutocomplete"
+                            (optionSelected)="handleSelect(viewRecipient)"
                             [displayWith]="displayFn">
             <mat-option *ngFor="let patient of filteredRecipients | async" [value]="patient">
               <patient [patient]="patient"></patient>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Patient, PatientList } from '@app/model/Patient';
 import { Configuration, DonorRecipientScore } from '@app/model/Configuration';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
@@ -16,6 +16,8 @@ export class ConfigurationScoresComponent implements OnInit {
   @Input() configuration?: Configuration;
 
   @ViewChild('viewForm') viewForm?: NgForm;
+  @ViewChild('viewDonor') viewDonor?: ElementRef<HTMLInputElement>;
+  @ViewChild('viewRecipient') viewRecipient?: ElementRef<HTMLInputElement>;
 
   public form: FormGroup = new FormGroup({
     donor: new FormControl('', Validators.required),
@@ -79,6 +81,14 @@ export class ConfigurationScoresComponent implements OnInit {
     // reset form
     this.form.reset();
     this.viewForm?.resetForm('');
+
+    // enable inputs
+    if (this.viewDonor) {
+      this.viewDonor.nativeElement.disabled = false;
+    }
+    if (this.viewRecipient) {
+      this.viewRecipient.nativeElement.disabled = false;
+    }
   }
 
   public removeScore(s: DonorRecipientScore): void {
@@ -99,6 +109,31 @@ export class ConfigurationScoresComponent implements OnInit {
 
   public getRecipientByDbId(id: number): Patient | undefined {
     return this.patients?.recipients.find(p => p.db_id === id);
+  }
+
+  get donor(): Patient | undefined {
+    return this.form.controls.donor.value;
+  }
+
+  get recipient(): Patient | undefined {
+    return this.form.controls.recipient.value;
+  }
+
+  public handleSelect(control: HTMLInputElement): void {
+    if (!control) {
+      return;
+    }
+    control.value = '';
+    control.disabled = true;
+  }
+
+  public handleRemove(controlName: string, control: HTMLInputElement): void {
+    const formControl = this.form.controls[controlName];
+    if (!formControl || !control) {
+      return;
+    }
+    formControl.setValue('');
+    control.disabled = false;
   }
 
   public displayFn(user: Patient): string {

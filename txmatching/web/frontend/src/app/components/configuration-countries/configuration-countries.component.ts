@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { PatientList } from '@app/model/Patient';
 import { Configuration, CountryCombination } from '@app/model/Configuration';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
@@ -19,6 +19,8 @@ export class ConfigurationCountriesComponent {
   @Input() configuration?: Configuration;
 
   @ViewChild('viewForm') viewForm?: NgForm;
+  @ViewChild('viewDonorCountry') viewDonorCountry?: ElementRef<HTMLInputElement>;
+  @ViewChild('viewRecipientCountry') viewRecipientCountry?: ElementRef<HTMLInputElement>;
 
   public form: FormGroup = new FormGroup({
     donorCountry: new FormControl('', Validators.required),
@@ -75,6 +77,31 @@ export class ConfigurationCountriesComponent {
     return this.configuration ? this.configuration.forbidden_country_combinations : [];
   }
 
+  get donorCountry(): string {
+    return this.form.controls.donorCountry.value ?? '';
+  }
+
+  get recipientCountry(): string {
+    return this.form.controls.recipientCountry.value ?? '';
+  }
+
+  public handleSelect(control: HTMLInputElement): void {
+    if (!control) {
+      return;
+    }
+    control.value = '';
+    control.disabled = true;
+  }
+
+  public handleRemove(controlName: string, control: HTMLInputElement): void {
+    const formControl = this.form.controls[controlName];
+    if (!formControl || !control) {
+      return;
+    }
+    formControl.setValue('');
+    control.disabled = false;
+  }
+
   public addCombination(): void {
     if (this.form.pristine || this.form.untouched || !this.form.valid) {
       return;
@@ -90,6 +117,14 @@ export class ConfigurationCountriesComponent {
     // reset form
     this.form.reset();
     this.viewForm?.resetForm('');
+
+    // enable inputs
+    if (this.viewDonorCountry) {
+      this.viewDonorCountry.nativeElement.disabled = false;
+    }
+    if (this.viewRecipientCountry) {
+      this.viewRecipientCountry.nativeElement.disabled = false;
+    }
   }
 
   public removeCombination(c: CountryCombination): void {
