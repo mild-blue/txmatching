@@ -11,12 +11,14 @@ import { PatientList } from '@app/model/Patient';
 export class AppComponent implements OnInit {
 
   public patients?: PatientList;
+  public loggedIn: boolean = false;
 
   constructor(private _authService: AuthService,
               private _patientService: PatientService) {
   }
 
   public ngOnInit(): void {
+    this.loggedIn = this._authService.isLoggedIn;
     this._updatePatients();
   }
 
@@ -26,7 +28,7 @@ export class AppComponent implements OnInit {
   *   after every page refresh
   */
   private async _updatePatients(): Promise<void> {
-    if (this._authService.isLoggedIn) {
+    if (this.loggedIn) {
       this.patients = await this._patientService.updatePatients();
     }
   }
