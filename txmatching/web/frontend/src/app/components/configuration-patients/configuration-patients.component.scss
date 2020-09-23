@@ -5,6 +5,12 @@
     width: 100%;
   }
 
+  form {
+    min-height: 80px;
+    display: flex;
+    align-items: flex-end;
+  }
+
   h4 {
     margin: 0;
     color: $body-color;
