@@ -55,7 +55,7 @@ def load_matching_for_config_from_db(exchange_parameters: SolverInputParameters)
     current_config = exchange_parameters.configuration
 
     compatible_config_models = list()
-    for config_model in get_config_models():
+    for config_model in get_config_models(exchange_parameters.txm_event.db_id):
         config_from_model = configuration_from_dict(config_model.parameters)
         if gives_superset_of_solutions(less_strict=config_from_model,
                                        more_strict=current_config):
@@ -64,7 +64,7 @@ def load_matching_for_config_from_db(exchange_parameters: SolverInputParameters)
     for compatible_config in compatible_config_models:
         for pairing_result in get_pairing_result_for_config(compatible_config.id):
             calculated_matchings = from_dict(data_class=CalculatedMatchings, data=pairing_result.calculated_matchings)
-            return db_matchings_to_matching_list(calculated_matchings, exchange_parameters.donors_dict,
-                                                 exchange_parameters.recipients_dict)
+            return db_matchings_to_matching_list(calculated_matchings, exchange_parameters.txm_event.donors_dict,
+                                                 exchange_parameters.txm_event.recipients_dict)
 
     return None

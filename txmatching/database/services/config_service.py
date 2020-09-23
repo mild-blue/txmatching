@@ -3,6 +3,7 @@ import logging
 from typing import Dict, Iterator
 
 from dacite import Config, from_dict
+from sqlalchemy import and_
 
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
@@ -19,11 +20,6 @@ def configuration_from_dict(config_model: Dict) -> Configuration:
                               data=config_model,
                               config=Config(cast=[Country]))
     return configuration
-
-
-def get_configurations() -> Iterator[Configuration]:
-    for config_model in get_config_models():
-        yield configuration_from_dict(config_model.parameters)
 
 
 def get_current_configuration() -> Configuration:
@@ -50,7 +46,7 @@ def save_configuration_as_current(configuration: Configuration) -> int:
 
 def _save_configuration_to_db(configuration: Configuration, txm_event_db_id: int) -> int:
     config_model = _configuration_to_config_model(configuration, txm_event_db_id)
-    for existing_config in get_config_models():
+    for existing_config in get_config_models(txm_event_db_id):
         if existing_config.parameters == config_model.parameters:
             return existing_config.id
 
@@ -59,8 +55,8 @@ def _save_configuration_to_db(configuration: Configuration, txm_event_db_id: int
     return config_model.id
 
 
-def get_config_models() -> Iterator[ConfigModel]:
-    configs = ConfigModel.query.filter(ConfigModel.id > 0).all()
+def get_config_models(txm_event_db_id: int) -> Iterator[ConfigModel]:
+    configs = ConfigModel.query.filter(and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).all()
     return configs
 
 

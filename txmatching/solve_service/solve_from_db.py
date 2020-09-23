@@ -3,7 +3,7 @@ from typing import Iterable
 
 from txmatching.database.db import db
 from txmatching.database.services.config_service import (
-    get_current_configuration, _save_configuration_to_db)
+    _save_configuration_to_db, get_current_configuration)
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.scorer_service import score_matrix_to_dto
 from txmatching.database.sql_alchemy_schema import PairingResultModel
@@ -23,8 +23,7 @@ def solve_from_db() -> Iterable[Matching]:
 
     current_configuration = get_current_configuration()
     current_config_matchings, score_matrix = solve_from_config(SolverInputParameters(
-        donors_dict=txm_event.donors_dict,
-        recipients_dict=txm_event.recipients_dict,
+        txm_event=txm_event,
         configuration=current_configuration
     ))
     current_config_matchings_model = dataclasses.asdict(
