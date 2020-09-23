@@ -49,7 +49,7 @@
                    [matAutocomplete]="donorAuto"
                    [matChipInputFor]="donorChip"
                    [errorStateMatcher]="errorMatcher"
-                   placeholder="Search by medical ID"
+                   [placeholder]="!donor ? 'Search by medical ID' : ''"
                    matInput
                    #viewDonor
                    type="text">
@@ -82,7 +82,7 @@
                    [errorStateMatcher]="errorMatcher"
                    [matAutocomplete]="recipientAuto"
                    [matChipInputFor]="recipientChip"
-                   placeholder="Search by medical ID"
+                   [placeholder]="!recipient ? 'Search by medical ID' : ''"
                    matInput
                    #viewRecipient
                    type="text">

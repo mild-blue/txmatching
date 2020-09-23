@@ -46,7 +46,7 @@
                    [matChipInputFor]="donorChip"
                    [errorStateMatcher]="errorMatcher"
                    [matAutocomplete]="donorAuto"
-                   placeholder="Search by country code"
+                   [placeholder]="!donorCountry ? 'Search by country code' : ''"
                    matInput
                    #viewDonorCountry
                    type="text">
@@ -82,7 +82,7 @@
                    [errorStateMatcher]="errorMatcher"
                    [matAutocomplete]="recipientAuto"
                    [matChipInputFor]="recipientChip"
-                   placeholder="Search by country code"
+                   [placeholder]="recipientCountry ? 'Search by country code' : ''"
                    matInput
                    #viewRecipientCountry
                    type="text">
