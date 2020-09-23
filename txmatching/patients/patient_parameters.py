@@ -26,8 +26,8 @@ class HLAAntibodies:
     codes: List[HLAAntibody] = field(default_factory=list)
 
     @property
-    def compatibility_broad_resolution_codes(self) -> List[str]:
-        return get_compatibility_broad_codes([code.code for code in self.codes])
+    def filtered_codes(self) -> List[HLAAntibody]:
+        return list(filter(lambda code: code.value >= code.cut_off, self.codes))
 
 
 @dataclass

@@ -18,7 +18,7 @@ from txmatching.data_transfer_objects.matchings.matching_dto import TransplantDT
     RoundReportDTO, MatchingReportDTO, CountryDTO
 from txmatching.database.services.config_service import get_current_configuration
 from txmatching.database.services.matching_service import get_latest_matchings_and_score_matrix
-from txmatching.patients.patient_parameters import HLAAntibody
+from txmatching.patients.patient_parameters import HLAAntibodies
 from txmatching.utils.blood_groups import HLATypes, ANTIBODIES_MULTIPLIERS_STR
 from txmatching.web.api.namespaces import report_api
 
@@ -159,16 +159,19 @@ def antigen_dr_filter(codes: List[str]) -> List[str]:
     return list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), codes))
 
 
-def antibody_a_filter(codes: List[HLAAntibody]) -> List[str]:
-    return [code.code for code in list(filter(lambda x: x.code.upper().startswith(HLATypes.A.value), codes))]
+def antibody_a_filter(antibodies: HLAAntibodies) -> List[str]:
+    return [code.code for code in
+            list(filter(lambda x: x.code.upper().startswith(HLATypes.A.value), antibodies.filtered_codes))]
 
 
-def antibody_b_filter(codes: List[HLAAntibody]) -> List[str]:
-    return [code.code for code in list(filter(lambda x: x.code.upper().startswith(HLATypes.B.value), codes))]
+def antibody_b_filter(antibodies: HLAAntibodies) -> List[str]:
+    return [code.code for code in
+            list(filter(lambda x: x.code.upper().startswith(HLATypes.B.value), antibodies.filtered_codes))]
 
 
-def antibody_dr_filter(codes: List[HLAAntibody]) -> List[str]:
-    return [code.code for code in list(filter(lambda x: x.code.upper().startswith(HLATypes.DR.value), codes))]
+def antibody_dr_filter(antibodies: HLAAntibodies) -> List[str]:
+    return [code.code for code in
+            list(filter(lambda x: x.code.upper().startswith(HLATypes.DR.value), antibodies.filtered_codes))]
 
 
 def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:
