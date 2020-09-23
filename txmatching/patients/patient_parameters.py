@@ -15,12 +15,19 @@ class HLATyping:
 
 
 @dataclass
+class HLAAntibody:
+    code: str
+    value: int
+    cut_off: int
+
+
+@dataclass
 class HLAAntibodies:
-    codes: List[str] = field(default_factory=list)
+    codes: List[HLAAntibody] = field(default_factory=list)
 
     @property
     def compatibility_broad_resolution_codes(self) -> List[str]:
-        return get_compatibility_broad_codes(self.codes)
+        return get_compatibility_broad_codes([code.code for code in self.codes])
 
 
 @dataclass

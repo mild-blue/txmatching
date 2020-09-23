@@ -18,6 +18,7 @@ from txmatching.data_transfer_objects.matchings.matching_dto import TransplantDT
     RoundReportDTO, MatchingReportDTO, CountryDTO
 from txmatching.database.services.config_service import get_current_configuration
 from txmatching.database.services.matching_service import get_latest_matchings_and_score_matrix
+from txmatching.patients.patient_parameters import HLAAntibody
 from txmatching.utils.blood_groups import HLATypes, ANTIBODIES_MULTIPLIERS_STR
 from txmatching.web.api.namespaces import report_api
 
@@ -76,19 +77,19 @@ class Report(Resource):
         matchings = requested_matching + matchings_over_score + matchings_under_score
 
         matching_dtos = [MatchingReportDTO(
-                rounds=[
-                    RoundReportDTO(
-                        transplants=[
-                            TransplantDTO(
-                                score_dict[(donor.db_id, recipient.db_id)],
-                                compatible_blood_dict[(donor.db_id, recipient.db_id)],
-                                donor,
-                                recipient) for donor, recipient in matching_round.donor_recipient_list])
-                    for matching_round in matching.get_rounds()],
-                countries=matching.get_country_codes_counts(),
-                score=matching.score(),
-                db_id=matching.db_id()
-            ) for matching in matchings
+            rounds=[
+                RoundReportDTO(
+                    transplants=[
+                        TransplantDTO(
+                            score_dict[(donor.db_id, recipient.db_id)],
+                            compatible_blood_dict[(donor.db_id, recipient.db_id)],
+                            donor,
+                            recipient) for donor, recipient in matching_round.donor_recipient_list])
+                for matching_round in matching.get_rounds()],
+            countries=matching.get_country_codes_counts(),
+            score=matching.score(),
+            db_id=matching.db_id()
+        ) for matching in matchings
         ]
 
         configuration = get_current_configuration()
@@ -158,6 +159,18 @@ def antigen_dr_filter(codes: List[str]) -> List[str]:
     return list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), codes))
 
 
+def antibody_a_filter(codes: List[HLAAntibody]) -> List[str]:
+    return [code.code for code in list(filter(lambda x: x.code.upper().startswith(HLATypes.A.value), codes))]
+
+
+def antibody_b_filter(codes: List[HLAAntibody]) -> List[str]:
+    return [code.code for code in list(filter(lambda x: x.code.upper().startswith(HLATypes.B.value), codes))]
+
+
+def antibody_dr_filter(codes: List[HLAAntibody]) -> List[str]:
+    return [code.code for code in list(filter(lambda x: x.code.upper().startswith(HLATypes.DR.value), codes))]
+
+
 def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:
     donor_hla_typing = transplant.donor.parameters.hla_typing.codes
     recipient_hla_typing = transplant.recipient.parameters.hla_typing.codes
@@ -196,3 +209,6 @@ jinja2.filters.FILTERS["antigen_score_a_filter"] = antigen_score_a_filter
 jinja2.filters.FILTERS["antigen_score_b_filter"] = antigen_score_b_filter
 jinja2.filters.FILTERS["antigen_score_dr_filter"] = antigen_score_dr_filter
 jinja2.filters.FILTERS["code_from_country_filter"] = code_from_country_filter
+jinja2.filters.FILTERS["antibody_a_filter"] = antibody_a_filter
+jinja2.filters.FILTERS["antibody_b_filter"] = antibody_b_filter
+jinja2.filters.FILTERS["antibody_dr_filter"] = antibody_dr_filter
