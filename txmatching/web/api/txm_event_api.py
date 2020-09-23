@@ -13,7 +13,7 @@ from txmatching.web.api.namespaces import txm_event_api
 logger = logging.getLogger(__name__)
 
 
-@txm_event_api.route('/txm_event', methods=['POST'])
+@txm_event_api.route('', methods=['PUT'])
 class TxmEventApi(Resource):
 
     @txm_event_api.doc(body=TxmEventJsonIn, security='bearer',
@@ -26,11 +26,11 @@ class TxmEventApi(Resource):
     @txm_event_api.response(code=409, model=FailJson, description='Non-unique patients provided')
     @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details')
     @login_required()
-    def post(self):
+    def put(self):
         pass
 
 
-@txm_event_api.route('/upload_patients', methods=['PUT'])
+@txm_event_api.route('/patients', methods=['PUT'])
 class TxmEventUploadPatients(Resource):
 
     @txm_event_api.doc(body=UploadPatientsJson, security='bearer',
