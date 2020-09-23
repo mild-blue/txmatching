@@ -82,7 +82,7 @@
                    [errorStateMatcher]="errorMatcher"
                    [matAutocomplete]="recipientAuto"
                    [matChipInputFor]="recipientChip"
-                   [placeholder]="recipientCountry ? 'Search by country code' : ''"
+                   [placeholder]="!recipientCountry ? 'Search by country code' : ''"
                    matInput
                    #viewRecipientCountry
                    type="text">
