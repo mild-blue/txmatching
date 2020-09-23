@@ -9,7 +9,8 @@
 #  https://trello.com/c/08MZVRCk
 # TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9) https://trello.com/c/UIo23mPb
 import logging
-from typing import Optional
+from enum import Enum
+from typing import List
 
 logger = logging.getLogger(__name__)
 HLA_A = ['A1', 'A2', 'A203', 'A210', 'A3', 'A11', 'A23', 'A24', 'A2403',
@@ -44,7 +45,7 @@ HLA_DQ = ['DQ2', 'DQ4', 'DQ5', 'DQ6', 'DQ7', 'DQ8', 'DQ9']
 
 HLA_DQ_BROAD = ['DQ1', 'DQ3']
 
-split_to_broad = {'A23': 'A9',
+SPLIT_TO_BROAD = {'A23': 'A9',
                   'A24': 'A9',
                   'A25': 'A10',
                   'A26': 'A10',
@@ -99,44 +100,45 @@ split_to_broad = {'A23': 'A9',
                   'DQ9': 'DQ3'
                   }
 
-broad_to_split = dict()
-for split, broad in split_to_broad.items():
-    if broad not in broad_to_split:
-        broad_to_split[broad] = list()
+# for some reason before here was the code below (see the HLA_DQ_BROAD that is in split and not broad and missing
+# HL_DQ usage this was probably a bug
+# split_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DR + HLA_DRDR + HLA_DQ_BROAD
+# broad_codes = HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DR_BROAD
 
-    broad_to_split[broad].append(split)
-
-
-def is_split(antigen_code: str) -> Optional[bool]:
-    """
-    Return if antigen code is split, broad or we don't know = None
-    :param antigen_code:
-    :return:
-    """
-    split_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DR + HLA_DRDR + HLA_DQ_BROAD
-    broad_codes = HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DR_BROAD
-
-    if antigen_code in split_codes:
-        return True
-
-    if antigen_code in broad_codes:
-        return False
-
-    return None
+SPLIT_CODES = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DR + HLA_DRDR + HLA_DQ
+BROAD_CODES = HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DR_BROAD + HLA_DQ_BROAD
 
 
-def hla_split_to_broad(split_code: str) -> str:
-    return split_to_broad.get(split_code) or split_code
+def broad_to_split(hla_code: str) -> List[str]:
+    if hla_code not in SPLIT_CODES + BROAD_CODES:
+        logger.warning(f'Unexpected hla_code: {hla_code}')
+        return [hla_code]
+    splits = [split for split, broad in SPLIT_TO_BROAD.items() if broad == hla_code]
+    if not splits:
+        return [hla_code]
+    else:
+        return splits
 
 
-HLA_A_broad = list(map(hla_split_to_broad, HLA_A))
-HLA_B_broad = list(map(hla_split_to_broad, HLA_B))
-HLA_DR_broad = list(map(hla_split_to_broad, HLA_DR))
+def split_to_broad(hla_code: str) -> str:
+    if hla_code not in SPLIT_CODES + BROAD_CODES:
+        logger.warning(f'Unexpected hla_code: {hla_code}')
+        return hla_code
+    return SPLIT_TO_BROAD.get(hla_code, hla_code)
 
 
-def is_valid_broad_code(code: str) -> bool:
-    for code_list in [HLA_A_broad, HLA_B_broad, HLA_DR_broad]:
-        if code in code_list:
-            return True
+class CompatibilityGeneCode(str, Enum):
+    A = 'A'
+    B = 'B'
+    DR = 'DR'
 
-    return False
+
+# Compatibility (my name, no real term) broad codes were used before without the distinction of normal broad codes,
+# but this distinction seems to be important as the code implies we do not want to include non-proper codes to
+# compatibility index computation
+COMPATIBILITY_BROAD_CODES = [split_to_broad(hla_code) for hla_code in HLA_A + HLA_B + HLA_DR]
+
+
+def get_compatibility_broad_codes(hla_codes: List[str]) -> List[str]:
+    return [split_to_broad(hla_code) for hla_code in hla_codes if
+            split_to_broad(hla_code) in COMPATIBILITY_BROAD_CODES]

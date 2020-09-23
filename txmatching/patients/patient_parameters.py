@@ -2,32 +2,25 @@ from dataclasses import dataclass, field
 from typing import List
 
 from txmatching.utils.country import Country
-from txmatching.utils.hla_system.hla_table import (hla_split_to_broad,
-                                                   is_valid_broad_code)
+from txmatching.utils.hla_system.hla_table import get_compatibility_broad_codes
 
 
 @dataclass
 class HLATyping:
     codes: List[str] = field(default_factory=list)
 
-    # TODO check and simplify https://trello.com/c/HNrtsIxj
     @property
-    def hla_typing_broad_resolution(self) -> List[str]:
-        broad_res_codes = [hla_split_to_broad(antigen) for antigen in self.codes]
-        broad_res_codes = [code for code in broad_res_codes if is_valid_broad_code(code)]
-        return broad_res_codes
+    def compatibility_broad_resolution_codes(self) -> List[str]:
+        return get_compatibility_broad_codes(self.codes)
 
 
 @dataclass
 class HLAAntibodies:
     codes: List[str] = field(default_factory=list)
 
-    # TODO check and simplify https://trello.com/c/HNrtsIxj
     @property
-    def hla_antibodies_broad_resolution(self) -> List[str]:
-        broad_res_codes = [hla_split_to_broad(antibody) for antibody in self.codes]
-        broad_res_codes = [code for code in broad_res_codes if is_valid_broad_code(code)]
-        return broad_res_codes
+    def compatibility_broad_resolution_codes(self) -> List[str]:
+        return get_compatibility_broad_codes(self.codes)
 
 
 @dataclass
