@@ -1,5 +1,6 @@
 from txmatching.patients.patient_parameters import HLAAntibodies, HLATyping
-from txmatching.utils.hla_system.hla_table import (broad_to_split, split_to_broad)
+from txmatching.utils.hla_system.hla_transformations import (broad_to_split,
+                                                             split_to_broad)
 
 
 def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,

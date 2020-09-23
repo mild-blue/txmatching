@@ -35,7 +35,7 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType, HLATyping,
                                                     PatientParameters)
 from txmatching.utils.enums import Country
-from txmatching.utils.hla_system.hla_table import parse_code
+from txmatching.utils.hla_system.hla_transformations import parse_code
 
 logger = logging.getLogger(__name__)
 
