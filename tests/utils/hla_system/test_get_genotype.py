@@ -22,10 +22,11 @@ class TestGetGenotype(unittest.TestCase):
         logger.info('Testing get_genotype')
         for patient_params, genotypes in self._patient_params_genotypes:
             logger.info(f'Original HLA typing: {str(patient_params.hla_typing)}')
-            logger.info(f'Broad HLA typing: {str(patient_params.hla_typing.hla_typing_broad_resolution)}')
+            logger.info(f'Broad HLA typing: {str(patient_params.hla_typing.compatibility_broad_resolution_codes)}')
             for gene_code in CompatibilityGeneCode:
-                calculated_genotype = get_antigen_genotype(patient_params.hla_typing.hla_typing_broad_resolution,
-                                                           gene_code)
+                calculated_genotype = get_antigen_genotype(
+                    patient_params.hla_typing.compatibility_broad_resolution_codes,
+                    gene_code)
                 expected_genotype = genotypes[gene_code]
                 self.assertEqual(calculated_genotype, expected_genotype)
                 logger.info(f'{gene_code} genotype: {str(calculated_genotype)}')

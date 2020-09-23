@@ -20,7 +20,7 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
     :return:
     """
     if use_split_resolution:
-        # in case some code is in broad resolution we treat is as if both split resolution codes were present
+        # in case some code is in broad resolution we treat it is as if both split resolution codes were present
         donor_hla_typing_set = {split_code for code in donor_hla_typing.codes for split_code in
                                 broad_to_split(code)}
         recipient_antibodies_set = {split_code for code in recipient_antibodies.codes for split_code in

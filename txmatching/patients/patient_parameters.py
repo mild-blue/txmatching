@@ -10,7 +10,7 @@ class HLATyping:
     codes: List[str] = field(default_factory=list)
 
     @property
-    def hla_typing_broad_resolution(self) -> List[str]:
+    def compatibility_broad_resolution_codes(self) -> List[str]:
         return get_compatibility_broad_codes(self.codes)
 
 
@@ -19,7 +19,7 @@ class HLAAntibodies:
     codes: List[str] = field(default_factory=list)
 
     @property
-    def hla_antibodies_broad_resolution(self) -> List[str]:
+    def compatibility_broad_resolution_codes(self) -> List[str]:
         return get_compatibility_broad_codes(self.codes)
 
 
