@@ -10,11 +10,13 @@ from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.web import create_app
 
 ADMIN_USER = {
-    'id': 1,
     'email': 'admin@example.com',
     'password': 'admin'
 }
-
+VIEWER_USER = {
+    'email': 'viewer@example.com',
+    'password': 'admin'
+}
 
 def create_or_overwrite_txm_event(name: str) -> TxmEvent:
     previous_txm_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
@@ -35,8 +37,12 @@ def add_users():
         pass_hash=encode_password(ADMIN_USER['password']),
         role=UserRole.ADMIN)
     persist_user(app_user)
-    ADMIN_USER['id'] = app_user.id
-    assert len(AppUserModel.query.all()) == 1
+    app_user = AppUserModel(
+        email=VIEWER_USER['email'],
+        pass_hash=encode_password(VIEWER_USER['password']),
+        role=UserRole.VIEWER)
+    persist_user(app_user)
+    assert len(AppUserModel.query.all()) == 2
 
 
 if __name__ == '__main__':
