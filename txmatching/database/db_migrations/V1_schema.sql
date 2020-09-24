@@ -79,7 +79,7 @@ CREATE TABLE recipient
     txm_event_id           BIGINT      NOT NULL,
     country                COUNTRY     NOT NULL,
     blood                  BLOOD_TYPE  NOT NULL,
-    hla_antigens           JSONB       NOT NULL, -- JSON
+    hla_typing             JSONB       NOT NULL, -- JSON
     hla_antibodies         JSONB       NOT NULL, -- JSON
     active                 BOOL        NOT NULL, -- assume some patients fall out of the set
     recipient_requirements JSONB       NOT NULL, -- JSON
@@ -93,19 +93,18 @@ CREATE TABLE recipient
 
 CREATE TABLE donor
 (
-    id             BIGSERIAL   NOT NULL,
-    medical_id     TEXT        NOT NULL,
-    txm_event_id   BIGINT      NOT NULL,
-    recipient_id   BIGINT,
-    country        COUNTRY     NOT NULL,
-    donor_type     DONOR_TYPE  NOT NULL,
-    blood          BLOOD_TYPE  NOT NULL,
-    hla_antigens   JSONB       NOT NULL, -- JSON
-    hla_antibodies JSONB       NOT NULL, -- JSON
-    active         BOOL        NOT NULL, -- assume some patients fall out of the set
-    created_at     TIMESTAMPTZ NOT NULL,
-    updated_at     TIMESTAMPTZ NOT NULL,
-    deleted_at     TIMESTAMPTZ,
+    id           BIGSERIAL   NOT NULL,
+    medical_id   TEXT        NOT NULL,
+    txm_event_id BIGINT      NOT NULL,
+    recipient_id BIGINT,
+    country      COUNTRY     NOT NULL,
+    donor_type   DONOR_TYPE  NOT NULL,
+    blood        BLOOD_TYPE  NOT NULL,
+    hla_typing   JSONB       NOT NULL, -- JSON
+    active       BOOL        NOT NULL, -- assume some patients fall out of the set
+    created_at   TIMESTAMPTZ NOT NULL,
+    updated_at   TIMESTAMPTZ NOT NULL,
+    deleted_at   TIMESTAMPTZ,
     CONSTRAINT pk_donor_id PRIMARY KEY (id),
     CONSTRAINT uq_donor_medical_id UNIQUE (medical_id, txm_event_id),
     CONSTRAINT fk_donor_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient (id) ON DELETE CASCADE ON UPDATE CASCADE,

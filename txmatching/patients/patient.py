@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Optional
 
-from txmatching.patients.patient_parameters import PatientParameters
+from txmatching.patients.patient_parameters import PatientParameters, HLAAntibodies
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 
 
@@ -49,6 +49,7 @@ class RecipientRequirements:
 class Recipient(Patient):
     related_donor_db_id: DonorDbId
     acceptable_blood_groups: List[str]
+    hla_antibodies: HLAAntibodies = HLAAntibodies()
     recipient_requirements: RecipientRequirements = RecipientRequirements()
 
 

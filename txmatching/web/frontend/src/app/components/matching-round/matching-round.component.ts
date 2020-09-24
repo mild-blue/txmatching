@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Round, Transplant } from '@app/model/Matching';
-import { compatibleBloodGroups, DonorType, Patient, PatientList } from '@app/model/Patient';
+import { compatibleBloodGroups, Patient, PatientList, DonorType } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { AppConfiguration } from '@app/model/Configuration';
 
