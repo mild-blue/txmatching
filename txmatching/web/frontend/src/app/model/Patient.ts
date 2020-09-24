@@ -3,25 +3,23 @@ export interface PatientList {
   recipients: Recipient[];
 }
 
-export interface Recipient {
+interface Patient {
   db_id: number;
   medical_id: string;
   parameters: PatientParameters;
+}
+
+export interface Recipient extends Patient {
   acceptable_blood_groups: string[];
   hla_antibodies: {
     codes: string[];
   };
 }
 
-
-export interface Donor {
+export interface Donor extends Patient {
   donor_type: DonorType;
   related_donor_db_id: number;
-  db_id: number;
-  medical_id: string;
-  parameters: PatientParameters;
 }
-
 
 export interface PatientParameters {
   blood_group: string;
