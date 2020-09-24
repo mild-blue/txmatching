@@ -13,7 +13,8 @@ from txmatching.database.sql_alchemy_schema import (
     DonorModel, RecipientAcceptableBloodModel, RecipientModel, TxmEventModel)
 from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
                                          TxmEvent)
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLATyping,
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
+                                                    HLATyping,
                                                     PatientParameters)
 from txmatching.patients.patient_types import RecipientDbId
 
@@ -101,7 +102,10 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      base_patient.medical_id,
                      parameters=base_patient.parameters,
                      related_donor_db_id=donors_for_recipients_dict[base_patient.db_id].db_id,
-                     hla_antibodies=HLAAntibodies(**recipient_model.hla_antibodies),
+                     hla_antibodies=HLAAntibodies(
+                         [HLAAntibody(code=code['code'], mfi=code['mfi'], cutoff=code['cutoff'])
+                          for code in recipient_model.hla_antibodies['hla_antibodies']]
+                     ),
                      acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
                                               recipient_model.acceptable_blood],
                      )

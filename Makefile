@@ -70,7 +70,7 @@ logs:
 setup-non-empty-db:
 	docker-compose stop db || true
 	docker-compose rm -f db || true
-	docker volume rm  txmatching_txmatching-postgres || true
+	docker volume rm txmatching_txmatching-postgres || true
 	docker-compose up -d db
 	sleep 2
 	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./txmatching/database/db_migrations/V1_schema.sql

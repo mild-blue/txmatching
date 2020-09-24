@@ -6,10 +6,12 @@ from typing import Dict, List, Tuple, Union
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
-from txmatching.data_transfer_objects.patients.donor_excel_dto import DonorExcelDTO
+from txmatching.data_transfer_objects.patients.donor_excel_dto import \
+    DonorExcelDTO
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLATyping,
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
+                                                    HLATyping,
                                                     PatientParameters)
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
 from txmatching.utils.country import Country
@@ -68,6 +70,12 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
     return allele_codes
 
 
+def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
+    allele_codes = _parse_hla(hla_allele_str)
+    # value and cut_off are just temporary values for now
+    return HLAAntibodies([HLAAntibody(code=code, mfi=2100, cutoff=2000) for code in allele_codes])
+
+
 def _country_code_from_id(patient_id: str) -> Country:
     if re.match('[PD][0-9]{4}', patient_id):
         return Country.IL
@@ -113,7 +121,7 @@ def get_donor_from_row(row: Dict) -> DonorExcelDTO:
 def get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
     blood_group_recipient = _parse_blood_group(row['BLOOD GROUP recipient'])
     typization_recipient = _parse_hla(row['TYPIZATION RECIPIENT'])
-    antibodies_recipient = _parse_hla(row['luminex  cut-off (2000 MFI) varianta 2'])
+    antibodies_recipient = _parse_hla_antibodies(row['luminex  cut-off (2000 MFI) varianta 2'])
     acceptable_blood_groups_recipient = _parse_acceptable_blood_groups(row['Acceptable blood group'],
                                                                        blood_group_recipient)
     country_code_recipient = _country_code_from_id(recipient_id)
@@ -122,5 +130,5 @@ def get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
                                          hla_typing=HLATyping(typization_recipient),
                                          country_code=country_code_recipient)
     return RecipientExcelDTO(medical_id=recipient_id, parameters=recipient_params,
-                             hla_antibodies=HLAAntibodies(antibodies_recipient),
+                             hla_antibodies=antibodies_recipient,
                              acceptable_blood_groups=acceptable_blood_groups_recipient)

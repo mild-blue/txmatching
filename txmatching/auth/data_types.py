@@ -3,9 +3,10 @@ from enum import Enum
 
 
 class UserRole(str, Enum):
-    ADMIN = "ADMIN"
-    VIEWER = "VIEWER"
-    EDITOR = "EDITOR"
+    ADMIN = 'ADMIN'
+    VIEWER = 'VIEWER'
+    EDITOR = 'EDITOR'
+    SERVICE = 'SERVICE'
 
 
 @dataclass
