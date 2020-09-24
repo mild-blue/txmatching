@@ -31,17 +31,29 @@ def encode_auth_token(user: AppUserModel) -> bytearray:
     Generates the Auth Token
     """
     app_conf = get_application_configuration()
+    iat = datetime.datetime.utcnow()
     payload = {
         'user_id': user.id,
         'role': user.role,
-        'iat': datetime.datetime.utcnow(),
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=app_conf.jwt_expiration_days)
+        'iat': iat,
+        'exp': _get_expiration_for_role(app_conf.jwt_expiration_days, iat, user.role)
     }
     return jwt.encode(
         payload,
         app_conf.jwt_secret,
         algorithm='HS256'
     )
+
+
+def _get_expiration_for_role(
+        default_expiration_days: int,
+        iat: datetime.datetime,
+        role: UserRole) -> datetime.datetime:
+    if role == UserRole.SERVICE:
+        # TODO https://trello.com/c/sRq4nFRv specify with the customer
+        return iat + datetime.timedelta(minutes=2)
+
+    return iat + datetime.timedelta(days=default_expiration_days)
 
 
 def decode_auth_token(auth_token: str) -> Union[BearerToken, FailResponse]:

@@ -1,7 +1,8 @@
 CREATE TYPE USER_ROLE AS ENUM (
     'VIEWER',
     'EDITOR',
-    'ADMIN'
+    'ADMIN',
+    'SERVICE'
     );
 
 CREATE TYPE DONOR_TYPE AS ENUM (
