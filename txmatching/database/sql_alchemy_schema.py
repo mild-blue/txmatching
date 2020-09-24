@@ -115,7 +115,7 @@ class RecipientHLAAntibodyModel(db.Model):
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     recipient_id = db.Column(db.Integer, ForeignKey('recipient.id'), unique=False, nullable=False)
-    hla_antibody = db.Column(db.TEXT, unique=False, nullable=False)
+    code = db.Column(db.TEXT, unique=False, nullable=False)
     mfi = db.Column(db.Integer, unique=False, nullable=False)
     cutoff = db.Column(db.Integer, unique=False, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())

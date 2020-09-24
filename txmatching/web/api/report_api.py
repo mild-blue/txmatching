@@ -164,17 +164,17 @@ def antigen_dr_filter(codes: List[str]) -> List[str]:
 
 def antibody_a_filter(antibodies: HLAAntibodies) -> List[str]:
     return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.A.value), antibodies.antibodies_over_cutoff))]
+            list(filter(lambda x: x.upper().startswith(HLATypes.A.value), antibodies.hla_codes_over_cutoff))]
 
 
 def antibody_b_filter(antibodies: HLAAntibodies) -> List[str]:
     return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.B.value), antibodies.antibodies_over_cutoff))]
+            list(filter(lambda x: x.upper().startswith(HLATypes.B.value), antibodies.hla_codes_over_cutoff))]
 
 
 def antibody_dr_filter(antibodies: HLAAntibodies) -> List[str]:
     return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), antibodies.antibodies_over_cutoff))]
+            list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), antibodies.hla_codes_over_cutoff))]
 
 
 def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:

@@ -51,10 +51,10 @@ def recipient_excel_dto_to_recipient_model(recipient: RecipientExcelDTO, txm_eve
         blood=recipient.parameters.blood_group,
         hla_typing=dataclasses.asdict(recipient.parameters.hla_typing),
         hla_antibodies=[RecipientHLAAntibodyModel(
-            hla_antibody=hla_antibody.code,
+            code=hla_antibody.code,
             cutoff=hla_antibody.cutoff,
             mfi=hla_antibody.mfi
-        ) for hla_antibody in recipient.hla_antibodies.hla_antibodies],
+        ) for hla_antibody in recipient.hla_antibodies.antibodies_list],
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in recipient.acceptable_blood_groups],
@@ -112,7 +112,7 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      parameters=base_patient.parameters,
                      related_donor_db_id=donors_for_recipients_dict[base_patient.db_id].db_id,
                      hla_antibodies=HLAAntibodies(
-                         [HLAAntibody(code=hla_antibody.hla_antibody,
+                         [HLAAntibody(code=hla_antibody.code,
                                       mfi=hla_antibody.mfi,
                                       cutoff=hla_antibody.cutoff)
                           for hla_antibody in recipient_model.hla_antibodies]
@@ -133,17 +133,17 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> int:
             RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
         db.session.add_all(acceptable_blood_models)
     if recipient_update_dto.hla_antibodies:
-        acceptable_blood_models = [
+        hla_antibodies = [
             RecipientHLAAntibodyModel(recipient_id=recipient_update_dto.db_id,
-                                      hla_antibody=hla_antibody.code,
+                                      code=hla_antibody.code,
                                       mfi=hla_antibody.mfi,
                                       cutoff=hla_antibody.cutoff) for hla_antibody
             in
-            recipient_update_dto.hla_antibodies.hla_antibodies]
+            recipient_update_dto.hla_antibodies.antibodies_list]
 
         RecipientHLAAntibodyModel.query.filter(
             RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id).delete()
-        db.session.add_all(acceptable_blood_models)
+        db.session.add_all(hla_antibodies)
     if recipient_update_dto.hla_typing:
         recipient_update_dict['hla_typing'] = dataclasses.asdict(recipient_update_dto.hla_typing)
     if recipient_update_dto.recipient_requirements:

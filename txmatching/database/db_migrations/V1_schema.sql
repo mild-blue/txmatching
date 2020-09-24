@@ -130,7 +130,7 @@ CREATE TABLE recipient_hla_antibodies
 (
     id           BIGSERIAL   NOT NULL,
     recipient_id BIGINT      NOT NULL,
-    hla_antibody TEXT        NOT NULL,
+    code         TEXT        NOT NULL,
     mfi          INT         NOT NULL,
     cutoff       INT         NOT NULL,
     created_at   TIMESTAMPTZ NOT NULL,

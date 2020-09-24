@@ -27,7 +27,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
 
         self.assertSetEqual({'0', 'A'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
         self.assertSetEqual({'B7', 'DQ6', 'DQ5'},
-                            {code.hla_antibody for code in RecipientModel.query.get(1).hla_antibodies})
+                            {hla_antibody.code for hla_antibody in RecipientModel.query.get(1).hla_antibodies})
         self.assertFalse(
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
         update_recipient(RecipientUpdateDTO(
@@ -38,7 +38,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         ))
 
         self.assertSetEqual({'AB'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
-        self.assertSetEqual({'B43'}, {code.hla_antibody for code in RecipientModel.query.get(1).hla_antibodies})
+        self.assertSetEqual({'B43'}, {code.code for code in RecipientModel.query.get(1).hla_antibodies})
         self.assertTrue(
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
 
