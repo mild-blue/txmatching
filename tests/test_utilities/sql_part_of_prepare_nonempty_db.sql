@@ -1,9 +1,6 @@
 TRUNCATE TABLE public.config RESTART IDENTITY CASCADE;
 TRUNCATE TABLE public.pairing_result RESTART IDENTITY CASCADE;
 
-INSERT INTO public.txm_event (name)
-VALUES ('initial_txm_event');
-
 INSERT INTO public.config (parameters, created_by, txm_event_id)
 VALUES ('{
   "enforce_compatible_blood_group": false

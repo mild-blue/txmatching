@@ -1,12 +1,12 @@
 from txmatching.configuration.configuration import (Configuration)
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
-from txmatching.utils.hla_system.hla_crossmatch import is_positive_hla_crossmatch
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.hla_system.compatibility_index import \
     compatibility_index
+from txmatching.utils.hla_system.hla_crossmatch import is_positive_hla_crossmatch
 
 
 class HLAAdditiveScorer(AdditiveScorer):
@@ -17,8 +17,9 @@ class HLAAdditiveScorer(AdditiveScorer):
     # pylint: disable=too-many-return-statements
     # it seems that it is reasonable to want many return statements here as it is still well readable
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Donor) -> float:
-        donor_recipient_ci = compatibility_index(donor.parameters, recipient.parameters)
-        related_donor_recipient_ci = compatibility_index(original_donor.parameters, recipient.parameters)
+        donor_recipient_ci = compatibility_index(donor.parameters.hla_typing, recipient.parameters.hla_typing)
+        related_donor_recipient_ci = compatibility_index(original_donor.parameters.hla_typing,
+                                                         recipient.parameters.hla_typing)
 
         # We can't do exchanges between some countries
 
@@ -30,9 +31,9 @@ class HLAAdditiveScorer(AdditiveScorer):
         if donor.parameters.blood_group not in recipient.acceptable_blood_groups:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
-        # Recipient can't have antibodies that donor has antigens for
-        positive_crossmatch = is_positive_hla_crossmatch(donor.parameters.hla_antigens,
-                                                         recipient.parameters.hla_antibodies,
+        # Recipient can't have antibodies that donor has hla_typing for
+        positive_crossmatch = is_positive_hla_crossmatch(donor.parameters.hla_typing,
+                                                         recipient.hla_antibodies,
                                                          self._configuration.use_split_resolution)
         if positive_crossmatch:
             return TRANSPLANT_IMPOSSIBLE_SCORE

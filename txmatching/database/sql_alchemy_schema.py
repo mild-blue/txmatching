@@ -66,7 +66,7 @@ class RecipientModel(db.Model):
     medical_id = db.Column(db.TEXT, unique=False, nullable=False)
     country = db.Column(db.Enum(Country), unique=False, nullable=False)
     blood = db.Column(db.TEXT, unique=False, nullable=False)
-    hla_antigens = db.Column(db.JSON, unique=False, nullable=False)
+    hla_typing = db.Column(db.JSON, unique=False, nullable=False)
     hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, nullable=False)
     recipient_requirements = db.Column(db.JSON, unique=False, nullable=False,
@@ -87,8 +87,7 @@ class DonorModel(db.Model):
     medical_id = db.Column(db.TEXT, unique=False, nullable=False)
     country = db.Column(db.Enum(Country), unique=False, nullable=False)
     blood = db.Column(db.TEXT, unique=False, nullable=False)
-    hla_antigens = db.Column(db.JSON, unique=False, nullable=False)
-    hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
+    hla_typing = db.Column(db.JSON, unique=False, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, nullable=False)
     donor_type = db.Column(db.Enum(DonorType), unique=False, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())

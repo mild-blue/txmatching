@@ -1,12 +1,11 @@
 # pylint: disable=no-self-use
 # can not, they are used for generating swagger which needs class
-import dataclasses
 import datetime
 import logging
 import os
+import time
 from typing import List
 
-import time
 import jinja2
 import pdfkit
 from flask import send_from_directory, request
@@ -19,7 +18,7 @@ from txmatching.data_transfer_objects.matchings.matching_dto import TransplantDT
     RoundReportDTO, MatchingReportDTO, CountryDTO
 from txmatching.database.services.config_service import get_current_configuration
 from txmatching.database.services.matching_service import get_latest_matchings_and_score_matrix
-from txmatching.utils.blood_groups import Antigens, ANTIBODIES_MULTIPLIERS_STR
+from txmatching.utils.blood_groups import HLATypes, ANTIBODIES_MULTIPLIERS_STR
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -76,8 +75,7 @@ class Report(Resource):
                                 :matching_range_limit]
         matchings = requested_matching + matchings_over_score + matchings_under_score
 
-        matching_dtos = [
-            dataclasses.asdict(MatchingReportDTO(
+        matching_dtos = [MatchingReportDTO(
                 rounds=[
                     RoundReportDTO(
                         transplants=[
@@ -90,7 +88,7 @@ class Report(Resource):
                 countries=matching.get_country_codes_counts(),
                 score=matching.score(),
                 db_id=matching.db_id()
-            )) for matching in matchings
+            ) for matching in matchings
         ]
 
         configuration = get_current_configuration()
@@ -149,42 +147,43 @@ def donor_recipient_score_filter(donor_recipient_score: ManualDonorRecipientScor
 
 
 def antigen_a_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: x.upper().startswith(Antigens.A.value), codes))
+    return list(filter(lambda x: x.upper().startswith(HLATypes.A.value), codes))
 
 
 def antigen_b_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: x.upper().startswith(Antigens.B.value), codes))
+    return list(filter(lambda x: x.upper().startswith(HLATypes.B.value), codes))
 
 
 def antigen_dr_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: x.upper().startswith(Antigens.DR.value), codes))
+    return list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), codes))
 
 
-def matching_antigens_filter(transplant: TransplantDTO) -> List[str]:
-    donor_antigens = transplant["donor"]["parameters"]["hla_antigens"]["codes"]
-    recipient_antigens = transplant["recipient"]["parameters"]["hla_antigens"]["codes"]
-    return list(set(donor_antigens) & set(recipient_antigens))
+def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:
+    donor_hla_typing = transplant.donor.parameters.hla_typing.codes
+    recipient_hla_typing = transplant.recipient.parameters.hla_typing.codes
+    return list(set(donor_hla_typing) & set(recipient_hla_typing))
 
 
-def antigen_score(donor_recipient: TransplantDTO, antigen: Antigens) -> int:
-    filtered = list(filter(lambda x: x.upper().startswith(antigen.upper()), matching_antigens_filter(donor_recipient)))
+def antigen_score(donor_recipient: TransplantDTO, antigen: HLATypes) -> int:
+    filtered = list(
+        filter(lambda x: x.upper().startswith(antigen.upper()), matching_hla_typing_filter(donor_recipient)))
     return len(filtered) * ANTIBODIES_MULTIPLIERS_STR[antigen.upper()]
 
 
 def antigen_score_a_filter(transplant: TransplantDTO) -> int:
-    return antigen_score(transplant, Antigens.A.value)
+    return antigen_score(transplant, HLATypes.A.value)
 
 
 def antigen_score_b_filter(transplant: TransplantDTO) -> int:
-    return antigen_score(transplant, Antigens.B.value)
+    return antigen_score(transplant, HLATypes.B.value)
 
 
 def antigen_score_dr_filter(transplant: TransplantDTO) -> int:
-    return antigen_score(transplant, Antigens.DR.value)
+    return antigen_score(transplant, HLATypes.DR.value)
 
 
 def code_from_country_filter(countries: List[CountryDTO]) -> List[str]:
-    return [country["country_code"] for country in countries]
+    return [country.country_code for country in countries]
 
 
 jinja2.filters.FILTERS["country_combination_filter"] = country_combination_filter
@@ -192,7 +191,7 @@ jinja2.filters.FILTERS["donor_recipient_score_filter"] = donor_recipient_score_f
 jinja2.filters.FILTERS["antigen_a_filter"] = antigen_a_filter
 jinja2.filters.FILTERS["antigen_b_filter"] = antigen_b_filter
 jinja2.filters.FILTERS["antigen_dr_filter"] = antigen_dr_filter
-jinja2.filters.FILTERS["matching_antigens_filter"] = matching_antigens_filter
+jinja2.filters.FILTERS["matching_hla_typing_filter"] = matching_hla_typing_filter
 jinja2.filters.FILTERS["antigen_score_a_filter"] = antigen_score_a_filter
 jinja2.filters.FILTERS["antigen_score_b_filter"] = antigen_score_b_filter
 jinja2.filters.FILTERS["antigen_score_dr_filter"] = antigen_score_dr_filter
