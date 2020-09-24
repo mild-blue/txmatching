@@ -6,11 +6,13 @@ from typing import Dict, List, Tuple, Union
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
-from txmatching.data_transfer_objects.patients.donor_excel_dto import DonorExcelDTO
+from txmatching.data_transfer_objects.patients.donor_excel_dto import \
+    DonorExcelDTO
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLATyping,
-                                                    PatientParameters, HLAAntibody)
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
+                                                    HLATyping,
+                                                    PatientParameters)
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
 from txmatching.utils.country import Country
 from txmatching.utils.hla_system.hla_table import (HLA_A, HLA_A_BROAD, HLA_B,
@@ -71,7 +73,7 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
 def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
     allele_codes = _parse_hla(hla_allele_str)
     # value and cut_off are just temporary values for now
-    return HLAAntibodies([HLAAntibody(code=code, value=2100, cut_off=2000) for code in allele_codes])
+    return HLAAntibodies([HLAAntibody(code=code, mfi=2100, cutoff=2000) for code in allele_codes])
 
 
 def _country_code_from_id(patient_id: str) -> Country:

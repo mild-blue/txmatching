@@ -8,24 +8,27 @@ from typing import List
 
 import jinja2
 import pdfkit
-from flask import send_from_directory, request
+from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
 
 from txmatching.auth.login_check import login_required
-from txmatching.configuration.subclasses import ForbiddenCountryCombination, ManualDonorRecipientScore
-from txmatching.data_transfer_objects.matchings.matching_dto import TransplantDTO, \
-    RoundReportDTO, MatchingReportDTO, CountryDTO
-from txmatching.database.services.config_service import get_current_configuration
-from txmatching.database.services.matching_service import get_latest_matchings_and_score_matrix
+from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
+                                                 ManualDonorRecipientScore)
+from txmatching.data_transfer_objects.matchings.matching_dto import (
+    CountryDTO, MatchingReportDTO, RoundReportDTO, TransplantDTO)
+from txmatching.database.services.config_service import \
+    get_current_configuration
+from txmatching.database.services.matching_service import \
+    get_latest_matchings_and_score_matrix
 from txmatching.patients.patient_parameters import HLAAntibodies
-from txmatching.utils.blood_groups import HLATypes, ANTIBODIES_MULTIPLIERS_STR
+from txmatching.utils.blood_groups import ANTIBODIES_MULTIPLIERS_STR, HLATypes
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-TMP_DIR = "/tmp/txmatching_reports"
+TMP_DIR = '/tmp/txmatching_reports'
 
 
 # pylint: disable=no-self-use
@@ -54,7 +57,7 @@ class Report(Resource):
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
         matching_id = int(request.view_args['matching_id'])
-        if request.args.get('matchingRangeLimit') is None or request.args.get('matchingRangeLimit') == "":
+        if request.args.get('matchingRangeLimit') is None or request.args.get('matchingRangeLimit') == '':
             abort(400, "Query argument 'matchingRangeLimit' must be set.")
 
         matching_range_limit = int(request.args.get('matchingRangeLimit'))
@@ -62,7 +65,7 @@ class Report(Resource):
 
         requested_matching = list(filter(lambda matching: matching.db_id() == matching_id, all_matchings))
         if len(requested_matching) == 0:
-            abort(404, f"Matching with id {matching_id} not found.")
+            abort(404, f'Matching with id {matching_id} not found.')
 
         matching_score = requested_matching[0].score()
 
@@ -97,24 +100,24 @@ class Report(Resource):
         Report.prepare_tmp_dir()
         Report.prune_old_reports()
 
-        j2_env = Environment(loader=FileSystemLoader(os.path.join(THIS_DIR, "../templates")),
+        j2_env = Environment(loader=FileSystemLoader(os.path.join(THIS_DIR, '../templates')),
                              trim_blocks=True)
 
         now = datetime.datetime.now()
-        now_formatted = now.strftime("%Y_%m_%d_%H_%M_%S")
+        now_formatted = now.strftime('%Y_%m_%d_%H_%M_%S')
 
         html = (j2_env.get_template('report.html').render(
-            title="Matching Report",
-            date=now.strftime("%d.%m.%Y %H:%M:%S"),
+            title='Matching Report',
+            date=now.strftime('%d.%m.%Y %H:%M:%S'),
             configuration=configuration,
             matchings=matching_dtos
         ))
 
-        html_file_full_path = os.path.join(TMP_DIR, f"report_{now_formatted}.html")
-        pdf_file_name = f"report_{now_formatted}.pdf"
+        html_file_full_path = os.path.join(TMP_DIR, f'report_{now_formatted}.html')
+        pdf_file_name = f'report_{now_formatted}.pdf'
         pdf_file_full_path = os.path.join(TMP_DIR, pdf_file_name)
 
-        with open(html_file_full_path, "w") as text_file:
+        with open(html_file_full_path, 'w') as text_file:
             text_file.write(html)
 
         pdfkit.from_file(html_file_full_path, pdf_file_full_path)
@@ -139,12 +142,12 @@ class Report(Resource):
 
 
 def country_combination_filter(country_combination: ForbiddenCountryCombination) -> str:
-    return f"{country_combination.donor_country} - {country_combination.recipient_country}"
+    return f'{country_combination.donor_country} - {country_combination.recipient_country}'
 
 
 def donor_recipient_score_filter(donor_recipient_score: ManualDonorRecipientScore) -> str:
-    return f"Donor ({donor_recipient_score.donor_db_id}) - " \
-           f"Recipient ({donor_recipient_score.recipient_db_id}) : {donor_recipient_score.score}"
+    return f'Donor ({donor_recipient_score.donor_db_id}) - ' \
+           f'Recipient ({donor_recipient_score.recipient_db_id}) : {donor_recipient_score.score}'
 
 
 def antigen_a_filter(codes: List[str]) -> List[str]:
@@ -160,18 +163,18 @@ def antigen_dr_filter(codes: List[str]) -> List[str]:
 
 
 def antibody_a_filter(antibodies: HLAAntibodies) -> List[str]:
-    return [code.code for code in
-            list(filter(lambda x: x.code.upper().startswith(HLATypes.A.value), antibodies.filtered_codes))]
+    return [code for code in
+            list(filter(lambda x: x.upper().startswith(HLATypes.A.value), antibodies.antibodies_over_cutoff))]
 
 
 def antibody_b_filter(antibodies: HLAAntibodies) -> List[str]:
-    return [code.code for code in
-            list(filter(lambda x: x.code.upper().startswith(HLATypes.B.value), antibodies.filtered_codes))]
+    return [code for code in
+            list(filter(lambda x: x.upper().startswith(HLATypes.B.value), antibodies.antibodies_over_cutoff))]
 
 
 def antibody_dr_filter(antibodies: HLAAntibodies) -> List[str]:
-    return [code.code for code in
-            list(filter(lambda x: x.code.upper().startswith(HLATypes.DR.value), antibodies.filtered_codes))]
+    return [code for code in
+            list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), antibodies.antibodies_over_cutoff))]
 
 
 def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:
@@ -202,16 +205,16 @@ def code_from_country_filter(countries: List[CountryDTO]) -> List[str]:
     return [country.country_code for country in countries]
 
 
-jinja2.filters.FILTERS["country_combination_filter"] = country_combination_filter
-jinja2.filters.FILTERS["donor_recipient_score_filter"] = donor_recipient_score_filter
-jinja2.filters.FILTERS["antigen_a_filter"] = antigen_a_filter
-jinja2.filters.FILTERS["antigen_b_filter"] = antigen_b_filter
-jinja2.filters.FILTERS["antigen_dr_filter"] = antigen_dr_filter
-jinja2.filters.FILTERS["matching_hla_typing_filter"] = matching_hla_typing_filter
-jinja2.filters.FILTERS["antigen_score_a_filter"] = antigen_score_a_filter
-jinja2.filters.FILTERS["antigen_score_b_filter"] = antigen_score_b_filter
-jinja2.filters.FILTERS["antigen_score_dr_filter"] = antigen_score_dr_filter
-jinja2.filters.FILTERS["code_from_country_filter"] = code_from_country_filter
-jinja2.filters.FILTERS["antibody_a_filter"] = antibody_a_filter
-jinja2.filters.FILTERS["antibody_b_filter"] = antibody_b_filter
-jinja2.filters.FILTERS["antibody_dr_filter"] = antibody_dr_filter
+jinja2.filters.FILTERS['country_combination_filter'] = country_combination_filter
+jinja2.filters.FILTERS['donor_recipient_score_filter'] = donor_recipient_score_filter
+jinja2.filters.FILTERS['antigen_a_filter'] = antigen_a_filter
+jinja2.filters.FILTERS['antigen_b_filter'] = antigen_b_filter
+jinja2.filters.FILTERS['antigen_dr_filter'] = antigen_dr_filter
+jinja2.filters.FILTERS['matching_hla_typing_filter'] = matching_hla_typing_filter
+jinja2.filters.FILTERS['antigen_score_a_filter'] = antigen_score_a_filter
+jinja2.filters.FILTERS['antigen_score_b_filter'] = antigen_score_b_filter
+jinja2.filters.FILTERS['antigen_score_dr_filter'] = antigen_score_dr_filter
+jinja2.filters.FILTERS['code_from_country_filter'] = code_from_country_filter
+jinja2.filters.FILTERS['antibody_a_filter'] = antibody_a_filter
+jinja2.filters.FILTERS['antibody_b_filter'] = antibody_b_filter
+jinja2.filters.FILTERS['antibody_dr_filter'] = antibody_dr_filter
