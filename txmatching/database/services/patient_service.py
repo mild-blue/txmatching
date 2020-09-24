@@ -4,13 +4,18 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
+from txmatching.data_transfer_objects.patients.donor_update_dto import \
+    DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
+from txmatching.data_transfer_objects.patients.recipient_update_dto import \
+    RecipientUpdateDTO
 from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import \
     get_newest_txm_event_db_id
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, RecipientAcceptableBloodModel, RecipientModel, TxmEventModel)
+    DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
+    RecipientModel, TxmEventModel)
 from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
                                          TxmEvent)
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
@@ -45,7 +50,11 @@ def recipient_excel_dto_to_recipient_model(recipient: RecipientExcelDTO, txm_eve
         country=recipient.parameters.country_code,
         blood=recipient.parameters.blood_group,
         hla_typing=dataclasses.asdict(recipient.parameters.hla_typing),
-        hla_antibodies=dataclasses.asdict(recipient.hla_antibodies),
+        hla_antibodies=[RecipientHLAAntibodyModel(
+            hla_antibody=hla_antibody.code,
+            cutoff=hla_antibody.cutoff,
+            mfi=hla_antibody.mfi
+        ) for hla_antibody in recipient.hla_antibodies.hla_antibodies],
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in recipient.acceptable_blood_groups],
@@ -103,46 +112,56 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      parameters=base_patient.parameters,
                      related_donor_db_id=donors_for_recipients_dict[base_patient.db_id].db_id,
                      hla_antibodies=HLAAntibodies(
-                         [HLAAntibody(code=code['code'], mfi=code['mfi'], cutoff=code['cutoff'])
-                          for code in recipient_model.hla_antibodies['hla_antibodies']]
+                         [HLAAntibody(code=hla_antibody.hla_antibody,
+                                      mfi=hla_antibody.mfi,
+                                      cutoff=hla_antibody.cutoff)
+                          for hla_antibody in recipient_model.hla_antibodies]
                      ),
                      acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
                                               recipient_model.acceptable_blood],
                      )
 
 
-def update_recipient(recipient: Recipient) -> int:
-    acceptable_blood_models = [RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient.db_id) for blood
-                               in
-                               recipient.acceptable_blood_groups]
-    RecipientAcceptableBloodModel.query.filter(RecipientAcceptableBloodModel.recipient_id == recipient.db_id).delete()
-    db.session.add_all(acceptable_blood_models)
-    RecipientModel.query.filter(RecipientModel.id == recipient.db_id).update({
-        'active': True,
-        'country': recipient.parameters.country_code,
-        'hla_typing': dataclasses.asdict(recipient.parameters.hla_typing),
-        'hla_antibodies': dataclasses.asdict(recipient.hla_antibodies),
-        'medical_id': recipient.medical_id,
-        'blood': recipient.parameters.blood_group,
-        'recipient_requirements': dataclasses.asdict(recipient.recipient_requirements)
-    })
+def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> int:
+    recipient_update_dict = {}
+    if recipient_update_dto.acceptable_blood_groups:
+        acceptable_blood_models = [
+            RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient_update_dto.db_id) for blood
+            in
+            recipient_update_dto.acceptable_blood_groups]
+        RecipientAcceptableBloodModel.query.filter(
+            RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
+        db.session.add_all(acceptable_blood_models)
+    if recipient_update_dto.hla_antibodies:
+        acceptable_blood_models = [
+            RecipientHLAAntibodyModel(recipient_id=recipient_update_dto.db_id,
+                                      hla_antibody=hla_antibody.code,
+                                      mfi=hla_antibody.mfi,
+                                      cutoff=hla_antibody.cutoff) for hla_antibody
+            in
+            recipient_update_dto.hla_antibodies.hla_antibodies]
+
+        RecipientHLAAntibodyModel.query.filter(
+            RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id).delete()
+        db.session.add_all(acceptable_blood_models)
+    if recipient_update_dto.hla_typing:
+        recipient_update_dict['hla_typing'] = dataclasses.asdict(recipient_update_dto.hla_typing)
+    if recipient_update_dto.recipient_requirements:
+        recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
+            recipient_update_dto.recipient_requirements)
+
+    RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
     db.session.commit()
-    return recipient.db_id
+    return recipient_update_dto.db_id
 
 
-def update_donor(donor: Donor) -> int:
-    DonorModel.query.filter(DonorModel.id == donor.db_id).update({
-        'id': donor.db_id,
-        'donor_type': donor.donor_type,
-        'country': donor.parameters.country_code,
-        'active': True,
-        'hla_typing': dataclasses.asdict(donor.parameters.hla_typing),
-        'medical_id': donor.medical_id,
-        'blood': donor.parameters.blood_group,
-        'recipient_id': donor.related_recipient_db_id
-    })
+def update_donor(donor_update_dto: DonorUpdateDTO) -> int:
+    donor_update_dict = {}
+    if donor_update_dto.hla_typing:
+        donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing)
+    DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
     db.session.commit()
-    return donor.db_id
+    return donor_update_dto.db_id
 
 
 def get_txm_event(txm_event_db_id: Optional[int] = None) -> TxmEvent:
