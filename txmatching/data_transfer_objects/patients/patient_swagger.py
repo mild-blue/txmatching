@@ -40,7 +40,7 @@ DONOR_MODEL = patient_api.model('Donor', {
 
 DONOR_MODEL_TO_UPDATE = patient_api.model('DonorModelToUpdate', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
-    'hla_typing': fields.List(required=False, cls_or_instance=fields.String),
+    'hla_typing': fields.Nested(HLA_TYPING),
 })
 
 RECIPIENT_MODEL = patient_api.model('Recipient', {
@@ -56,8 +56,8 @@ RECIPIENT_MODEL = patient_api.model('Recipient', {
 RECIPIENT_MODEL_TO_UPDATE = patient_api.model('RecipientModelToUpdate', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String),
-    'hla_typing': fields.List(required=False, cls_or_instance=fields.String),
-    'hla_antibodies': fields.List(required=True, cls_or_instance=fields.String),
+    'hla_typing': fields.Nested(HLA_TYPING),
+    'hla_antibodies': fields.Nested(HLA_ANTIBODY),
     'recipient_requirements': fields.Nested(RECIPIENT_REQUIREMENTS)
 })
 
