@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { Patient, PatientList } from '@app/model/Patient';
+import { Donor, Patient, PatientList, Recipient } from '@app/model/Patient';
 import { Configuration, DonorRecipientScore } from '@app/model/Configuration';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -33,7 +33,7 @@ export class ConfigurationScoresComponent implements OnInit {
   constructor() {
     this.filteredDonors = this.form.controls.donor.valueChanges.pipe(
       startWith(''),
-      map((value: string | Patient | null) => {
+      map((value: string | Donor | Recipient | null) => {
         return !value || typeof value === 'string' ? value : value.medical_id;
       }),
       map(name => name ? this._filter(this.donors, name) : this.donors.slice())
@@ -41,7 +41,7 @@ export class ConfigurationScoresComponent implements OnInit {
 
     this.filteredRecipients = this.form.controls.recipient.valueChanges.pipe(
       startWith(''),
-      map((value: string | Patient) => {
+      map((value: string | Donor | Recipient) => {
         return !value || typeof value === 'string' ? value : value.medical_id;
       }),
       map(name => name ? this._filter(this.recipients, name) : this.recipients.slice())
@@ -103,19 +103,19 @@ export class ConfigurationScoresComponent implements OnInit {
     }
   }
 
-  public getDonorByDbId(id: number): Patient | undefined {
+  public getDonorByDbId(id: number): Donor | undefined {
     return this.patients?.donors.find(p => p.db_id === id);
   }
 
-  public getRecipientByDbId(id: number): Patient | undefined {
+  public getRecipientByDbId(id: number): Recipient | undefined {
     return this.patients?.recipients.find(p => p.db_id === id);
   }
 
-  get donor(): Patient | undefined {
+  get donor(): Donor | undefined {
     return this.form.controls.donor.value;
   }
 
-  get recipient(): Patient | undefined {
+  get recipient(): Recipient | undefined {
     return this.form.controls.recipient.value;
   }
 
@@ -136,7 +136,7 @@ export class ConfigurationScoresComponent implements OnInit {
     control.disabled = false;
   }
 
-  public displayFn(user: Patient): string {
+  public displayFn(user: Donor | Recipient): string {
     return user && user.medical_id ? user.medical_id : '';
   }
 

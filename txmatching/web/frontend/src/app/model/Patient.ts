@@ -3,7 +3,7 @@ export interface PatientList {
   recipients: Recipient[];
 }
 
-interface Patient {
+export interface Patient {
   db_id: number;
   medical_id: string;
   parameters: PatientParameters;
@@ -36,7 +36,6 @@ export enum DonorType {
 }
 
 export const patientsLSKey = 'patients';
-export const patientNameProperty = 'medical_id';
 
 // recipient: [possible donors]
 const compatibleBloodGroups: { [key: string]: string[]; } = {
