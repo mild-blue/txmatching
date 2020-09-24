@@ -16,6 +16,20 @@ export function countryNameValidator(countries: string[]): ValidatorFn {
   };
 }
 
+export function patientFullTextSearch(patients: Patient[], searchPhrase: string): Patient[] {
+  const filterValue = searchPhrase.toLowerCase();
+  const searchPattern = new RegExp(`(?=.*${filterValue})`);
+
+  return patients.filter(patient => patient.medical_id.toLocaleLowerCase().match(searchPattern));
+}
+
+export function countryFullTextSearch(countries: string[], searchPhrase: string): string[] {
+  const filterValue = searchPhrase.toLowerCase();
+  const searchPattern = new RegExp(`(?=.*${filterValue})`);
+
+  return countries.filter(c => c.toLocaleLowerCase().match(searchPattern));
+}
+
 export class ConfigErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;

@@ -4,7 +4,7 @@ import { Configuration, CountryCombination } from '@app/model/Configuration';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { ConfigErrorStateMatcher, countryNameValidator } from '@app/directives/validators/configForm.directive';
+import { ConfigErrorStateMatcher, countryFullTextSearch, countryNameValidator } from '@app/directives/validators/configForm.directive';
 
 @Component({
   selector: 'app-configuration-countries',
@@ -35,11 +35,11 @@ export class ConfigurationCountriesComponent {
   constructor() {
     this.filteredDonorCountries = this.form.controls.donorCountry?.valueChanges.pipe(
       startWith(undefined),
-      map((country: string | null) => country ? this._filter(this.donorCountries, country) : this.donorCountries.slice()));
+      map((country: string | null) => country ? countryFullTextSearch(this.donorCountries, country) : this.donorCountries.slice()));
 
     this.filteredRecipientCountries = this.form.controls.recipientCountry?.valueChanges.pipe(
       startWith(undefined),
-      map((country: string | null) => country ? this._filter(this.recipientCountries, country) : this.recipientCountries.slice()));
+      map((country: string | null) => country ? countryFullTextSearch(this.recipientCountries, country) : this.recipientCountries.slice()));
   }
 
   ngOnInit() {
@@ -137,13 +137,5 @@ export class ConfigurationCountriesComponent {
     if (index >= 0) {
       countries.splice(index, 1);
     }
-  }
-
-  // filter while typing
-  private _filter(list: string[], value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const searchPattern = new RegExp(`(?=.*${filterValue})`);
-
-    return list.filter(c => c.toLocaleLowerCase().match(searchPattern));
   }
 }

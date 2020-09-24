@@ -5,6 +5,7 @@ import { Configuration } from '@app/model/Configuration';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { patientFullTextSearch } from '@app/directives/validators/configForm.directive';
 
 @Component({
   selector: 'app-configuration-patients',
@@ -26,7 +27,7 @@ export class ConfigurationPatientsComponent {
       map((value: string | Patient) => {
         return typeof value === 'string' ? value : value.medical_id;
       }),
-      map(name => name ? this._filter(name) : this.availablePatients.slice())
+      map(name => name ? patientFullTextSearch(this.availablePatients, name) : this.availablePatients.slice())
     );
   }
 
@@ -71,12 +72,5 @@ export class ConfigurationPatientsComponent {
     if (index >= 0) {
       this.configuration.required_patient_db_ids.splice(index, 1);
     }
-  }
-
-  // todo fulltext
-  // filter while typing
-  private _filter(name: string): Patient[] {
-    const filterValue = name.toLowerCase();
-    return this.availablePatients.filter(option => option.medical_id.toLowerCase().indexOf(filterValue) === 0);
   }
 }

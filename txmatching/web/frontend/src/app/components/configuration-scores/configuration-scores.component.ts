@@ -4,7 +4,7 @@ import { Configuration, DonorRecipientScore } from '@app/model/Configuration';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { ConfigErrorStateMatcher, patientNameValidator } from '@app/directives/validators/configForm.directive';
+import { ConfigErrorStateMatcher, patientFullTextSearch, patientNameValidator } from '@app/directives/validators/configForm.directive';
 
 @Component({
   selector: 'app-configuration-scores',
@@ -36,7 +36,7 @@ export class ConfigurationScoresComponent implements OnInit {
       map((value: string | Donor | Recipient | null) => {
         return !value || typeof value === 'string' ? value : value.medical_id;
       }),
-      map(name => name ? this._filter(this.donors, name) : this.donors.slice())
+      map(name => name ? patientFullTextSearch(this.donors, name) : this.donors.slice())
     );
 
     this.filteredRecipients = this.form.controls.recipient.valueChanges.pipe(
@@ -44,7 +44,7 @@ export class ConfigurationScoresComponent implements OnInit {
       map((value: string | Donor | Recipient) => {
         return !value || typeof value === 'string' ? value : value.medical_id;
       }),
-      map(name => name ? this._filter(this.recipients, name) : this.recipients.slice())
+      map(name => name ? patientFullTextSearch(this.recipients, name) : this.recipients.slice())
     );
   }
 
@@ -138,13 +138,5 @@ export class ConfigurationScoresComponent implements OnInit {
 
   public displayFn(user: Donor | Recipient): string {
     return user && user.medical_id ? user.medical_id : '';
-  }
-
-  // filter while typing
-  private _filter(list: Patient[], name: string): Patient[] {
-    const filterValue = name.toLowerCase();
-    const searchPattern = new RegExp(`(?=.*${filterValue})`);
-
-    return list.filter(patient => patient.medical_id.toLocaleLowerCase().match(searchPattern));
   }
 }
