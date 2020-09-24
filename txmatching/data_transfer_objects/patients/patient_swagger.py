@@ -15,7 +15,7 @@ HLA_TYPING = patient_api.model('HlaTyping', {
 
 HLA_ANTIBODIES = patient_api.model('HlaAntibodies', {
     'hla_antibodies': fields.List(required=True, cls_or_instance=fields.Nested(HLA_ANTIBODY)),
-    'antibodies_over_cutoff': fields.List(required=True, cls_or_instance=fields.String),
+    'hla_codes_over_cutoff': fields.List(required=True, cls_or_instance=fields.String),
 })
 
 PATIENT_PARAMETERS_MODEL = patient_api.model('PatientParameters', {
@@ -38,6 +38,11 @@ DONOR_MODEL = patient_api.model('Donor', {
     'related_recipient_db_id': fields.Integer(required=False, description='Database id of the related recipient'),
 })
 
+DONOR_MODEL_TO_UPDATE = patient_api.model('DonorModelToUpdate', {
+    'db_id': fields.Integer(required=True, description='Database id of the patient'),
+    'hla_typing': fields.Nested(HLA_TYPING),
+})
+
 RECIPIENT_MODEL = patient_api.model('Recipient', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String),
@@ -45,6 +50,14 @@ RECIPIENT_MODEL = patient_api.model('Recipient', {
     'parameters': fields.Nested(required=True, model=PATIENT_PARAMETERS_MODEL),
     'hla_antibodies': fields.Nested(required=True, model=HLA_ANTIBODIES),
     'related_donor_db_id': fields.Integer(required=True, description='Database id of the related donor'),
+    'recipient_requirements': fields.Nested(RECIPIENT_REQUIREMENTS)
+})
+
+RECIPIENT_MODEL_TO_UPDATE = patient_api.model('RecipientModelToUpdate', {
+    'db_id': fields.Integer(required=True, description='Database id of the patient'),
+    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String),
+    'hla_typing': fields.Nested(HLA_TYPING),
+    'hla_antibodies': fields.Nested(HLA_ANTIBODY),
     'recipient_requirements': fields.Nested(RECIPIENT_REQUIREMENTS)
 })
 

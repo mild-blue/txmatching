@@ -67,7 +67,6 @@ class RecipientModel(db.Model):
     country = db.Column(db.Enum(Country), unique=False, nullable=False)
     blood = db.Column(db.TEXT, unique=False, nullable=False)
     hla_typing = db.Column(db.JSON, unique=False, nullable=False)
-    hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, nullable=False)
     recipient_requirements = db.Column(db.JSON, unique=False, nullable=False,
                                        default=dataclasses.asdict(RecipientRequirements()))
@@ -75,6 +74,7 @@ class RecipientModel(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
     acceptable_blood = relationship('RecipientAcceptableBloodModel', backref='recipient', cascade='all, delete')
+    hla_antibodies = relationship('RecipientHLAAntibodyModel', backref='recipient', cascade='all, delete')
     UniqueConstraint('medical_id', 'txm_event_id')
 
 
@@ -104,6 +104,20 @@ class RecipientAcceptableBloodModel(db.Model):
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     recipient_id = db.Column(db.Integer, ForeignKey('recipient.id'), unique=False, nullable=False)
     blood_type = db.Column(db.TEXT, unique=False, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+    deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+
+class RecipientHLAAntibodyModel(db.Model):
+    __tablename__ = 'recipient_hla_antibodies'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    recipient_id = db.Column(db.Integer, ForeignKey('recipient.id'), unique=False, nullable=False)
+    code = db.Column(db.TEXT, unique=False, nullable=False)
+    mfi = db.Column(db.Integer, unique=False, nullable=False)
+    cutoff = db.Column(db.Integer, unique=False, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)

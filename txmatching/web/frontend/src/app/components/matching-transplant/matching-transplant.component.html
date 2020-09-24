@@ -62,7 +62,7 @@
                     [class.matching]="matchingAntigens.includes(code)">{{ code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterCodes(recipient.hla_antibodies.antibodies_over_cutoff, antibody)"
+          <app-code *ngFor="let code of filterCodes(recipient.hla_antibodies.hla_codes_over_cutoff, antibody)"
                     [class]="'antibody'">{{ code }}</app-code>
         </td>
         <td>{{ antigenScore(antibody) }}</td>
