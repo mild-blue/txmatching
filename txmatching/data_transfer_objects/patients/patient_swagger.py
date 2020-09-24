@@ -15,7 +15,7 @@ HLA_TYPING = patient_api.model('HlaTyping', {
 
 HLA_ANTIBODIES = patient_api.model('HlaAntibodies', {
     'hla_antibodies': fields.List(required=True, cls_or_instance=fields.Nested(HLA_ANTIBODY)),
-    'antibodies_over_cutoff': fields.List(required=True, cls_or_instance=fields.String),
+    'hla_codes_over_cutoff': fields.List(required=True, cls_or_instance=fields.String),
 })
 
 PATIENT_PARAMETERS_MODEL = patient_api.model('PatientParameters', {

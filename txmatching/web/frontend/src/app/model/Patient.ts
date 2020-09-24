@@ -12,7 +12,7 @@ export interface Patient {
 export interface Recipient extends Patient {
   acceptable_blood_groups: string[];
   hla_antibodies: {
-    antibodies_over_cutoff: string[];
+    hla_codes_over_cutoff: string[];
   };
 }
 
