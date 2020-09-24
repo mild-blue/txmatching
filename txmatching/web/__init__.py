@@ -1,11 +1,14 @@
 import logging
+import sys
 from importlib import util as importing
 
-import sys
 from flask import Flask, send_from_directory, request
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from txmatching.auth import bcrypt
+from txmatching.configuration.app_configuration.application_configuration import ApplicationConfiguration, \
+    get_application_configuration
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
@@ -15,9 +18,6 @@ from txmatching.web.api.patient_api import patient_api
 from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
 from txmatching.web.api.user_api import user_api
-from txmatching.web.app_configuration.application_configuration import (
-    ApplicationConfiguration, get_application_configuration)
-from txmatching.auth import bcrypt
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'

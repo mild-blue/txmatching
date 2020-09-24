@@ -146,7 +146,7 @@
     </tr>
     <tr>
       <td class="table-header">Allow low high res incompatible</td>
-      <td>{{ configuration.allow_low_high_res_incompatible }}</td>
+      <td>{{ configuration.use_split_resolution }}</td>
     </tr>
     <tr>
       <td class="table-header">Forbidden country combinations</td>
@@ -224,23 +224,23 @@
                       </tr>
                       <tr>
                         <td class="table-header">A</td>
-                        <td>{{ transplant.donor.parameters.hla_antigens.codes|antigen_a_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.parameters.hla_antigens.codes|antigen_a_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.parameters.hla_antibodies.codes|antigen_a_filter|join(', ') }}</td>
+                        <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_a_filter|join(', ') }}</td>
+                        <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_a_filter|join(', ') }}</td>
+                        <td>{{ transplant.recipient.hla_antibodies|antibody_a_filter|join(', ') }}</td>
                         <td>{{ transplant|antigen_score_a_filter }}</td>
                       </tr>
                       <tr>
                         <td class="table-header">B</td>
-                        <td>{{ transplant.donor.parameters.hla_antigens.codes|antigen_b_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.parameters.hla_antigens.codes|antigen_b_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.parameters.hla_antibodies.codes|antigen_b_filter|join(', ') }}</td>
+                        <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_b_filter|join(', ') }}</td>
+                        <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_b_filter|join(', ') }}</td>
+                        <td>{{ transplant.recipient.hla_antibodies|antibody_b_filter|join(', ') }}</td>
                         <td>{{ transplant|antigen_score_b_filter }}</td>
                       </tr>
                       <tr>
                         <td class="table-header">DR</td>
-                        <td>{{ transplant.donor.parameters.hla_antigens.codes|antigen_dr_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.parameters.hla_antigens.codes|antigen_dr_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.parameters.hla_antibodies.codes|antigen_dr_filter|join(', ') }}</td>
+                        <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_dr_filter|join(', ') }}</td>
+                        <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_dr_filter|join(', ') }}</td>
+                        <td>{{ transplant.recipient.hla_antibodies|antibody_dr_filter|join(', ') }}</td>
                         <td>{{ transplant|antigen_score_dr_filter }}</td>
                       </tr>
                       <tr>

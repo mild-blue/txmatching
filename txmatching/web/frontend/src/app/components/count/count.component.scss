@@ -6,7 +6,7 @@
 
 .count {
   position: absolute;
-  top: 0;
+  bottom: 70%;
   left: 100%;
 
   color: white;
@@ -21,4 +21,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  &.zero {
+    background: $gray-400;
+    color: $gray-600;
+  }
 }

@@ -23,6 +23,7 @@ export class PatientService {
     const patients: PatientList = await this._http.get<PatientList>(
       `${environment.apiUrl}/patients/`
     ).pipe(first()).toPromise();
+    this._logger.log('Got patients from server', [patients]);
 
     PatientService._updateLocalStorage(patients);
     return patients;
@@ -30,6 +31,7 @@ export class PatientService {
 
   public getPatients(): PatientList {
     const localPatients = sessionStorage.getItem(patientsLSKey);
+    this._logger.log('Got patients from localhost', [localPatients]);
     return localPatients ? JSON.parse(localPatients) : [];
   }
 }

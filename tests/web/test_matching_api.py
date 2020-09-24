@@ -1,7 +1,7 @@
 import dataclasses
 
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.web import matching_api, patient_api

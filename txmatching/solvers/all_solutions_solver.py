@@ -8,7 +8,7 @@ import numpy as np
 from graph_tool import topology
 from graph_tool.all import Graph
 
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import RecipientDbId, DonorDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer

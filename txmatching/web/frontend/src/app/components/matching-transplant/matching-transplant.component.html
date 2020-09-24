@@ -37,7 +37,7 @@
           <app-code [class.matching]="isDonorBloodCompatible">{{ recipient.parameters.blood_group }}</app-code>
           <div class="small">
             Acceptable:
-            <app-code *ngFor="let bloodGroup of recipient.parameters.acceptable_blood_groups">{{ bloodGroup }}</app-code>
+            <app-code *ngFor="let bloodGroup of recipient.acceptable_blood_groups">{{ bloodGroup }}</app-code>
           </div>
         </td>
         <td>
@@ -54,15 +54,15 @@
       <tr *ngFor="let antibody of antibodies">
         <td>{{antibody}}</td>
         <td>
-          <app-code *ngFor="let code of filterCodes(donor.parameters.hla_antigens.codes, antibody)"
+          <app-code *ngFor="let code of filterCodes(donor.parameters.hla_typing.codes, antibody)"
                     [class.matching]="matchingAntigens.includes(code)">{{ code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterCodes(recipient.parameters.hla_antigens.codes, antibody)"
+          <app-code *ngFor="let code of filterCodes(recipient.parameters.hla_typing.codes, antibody)"
                     [class.matching]="matchingAntigens.includes(code)">{{ code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterCodes(recipient.parameters.hla_antibodies.codes, antibody)"
+          <app-code *ngFor="let code of filterCodes(recipient.hla_antibodies.antibodies_over_cutoff, antibody)"
                     [class]="'antibody'">{{ code }}</app-code>
         </td>
         <td>{{ antigenScore(antibody) }}</td>

@@ -1,4 +1,4 @@
-from txmatching.config.configuration import Configuration
+from txmatching.configuration.configuration import Configuration
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
 from txmatching.utils.construct_configurable_object import construct_configurable_object

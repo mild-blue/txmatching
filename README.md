@@ -100,9 +100,9 @@ that would contain data to git.
 ## Application Configuration
 Right now Flask web server tries to load configuration from the environment
 with fallback to loading from [`local_config.py`](txmatching/web/local_config.py).
-All current configuration can be found [here](txmatching/web/app_configuration/application_configuration.py).
+All current configuration can be found [here](txmatching/configuration/app_configuration/application_configuration.py).
 To obtain configuration in the code, one should call `get_application_configuration()`
- from [application_configuration.py](txmatching/web/app_configuration/application_configuration.py).
+ from [application_configuration.py](txmatching/configuration/app_configuration/application_configuration.py).
 
 ## Graph Tool
 Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't 

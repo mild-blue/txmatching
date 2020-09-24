@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
-import { antibodiesMultipliers, compatibleBloodGroups, Patient, PatientList } from '@app/model/Patient';
+import { antibodiesMultipliers, compatibleBloodGroups, Donor, Recipient, PatientList } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -11,8 +11,8 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 })
 export class MatchingTransplantComponent {
 
-  private _donor?: Patient;
-  private _recipient?: Patient;
+  private _donor?: Donor;
+  private _recipient?: Recipient;
   private _matchingAntigens?: string[];
 
   @Input() transplant?: Transplant;
@@ -23,14 +23,14 @@ export class MatchingTransplantComponent {
   constructor(private _patientService: PatientService) {
   }
 
-  get donor(): Patient | undefined {
+  get donor(): Donor | undefined {
     if (!this._donor && this.patients && this.patients.donors) {
       this._donor = this.patients.donors.find(p => p.medical_id === this.transplant?.donor);
     }
     return this._donor;
   }
 
-  get recipient(): Patient | undefined {
+  get recipient(): Recipient | undefined {
     if (!this._recipient && this.patients && this.patients.recipients) {
       this._recipient = this.patients.recipients.find(p => p.medical_id === this.transplant?.recipient);
     }
@@ -39,8 +39,8 @@ export class MatchingTransplantComponent {
 
   get matchingAntigens(): string[] | undefined {
     if (this.donor && this.recipient && this._matchingAntigens === undefined) {
-      const donorAntigens = this.donor.parameters.hla_antigens.codes;
-      const recipientAntigens = this.recipient.parameters.hla_antigens.codes;
+      const donorAntigens = this.donor.parameters.hla_typing.codes;
+      const recipientAntigens = this.recipient.parameters.hla_typing.codes;
       this._matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
     }
     return this._matchingAntigens;
