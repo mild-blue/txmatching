@@ -140,10 +140,11 @@ export class ConfigurationScoresComponent implements OnInit {
     return user && user.medical_id ? user.medical_id : '';
   }
 
-  // todo fulltext
   // filter while typing
   private _filter(list: Patient[], name: string): Patient[] {
     const filterValue = name.toLowerCase();
-    return list.filter(option => option.medical_id.toLowerCase().indexOf(filterValue) === 0);
+    const searchPattern = new RegExp(`(?=.*${filterValue})`);
+
+    return list.filter(patient => patient.medical_id.toLocaleLowerCase().match(searchPattern));
   }
 }

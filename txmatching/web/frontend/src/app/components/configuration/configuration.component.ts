@@ -71,7 +71,6 @@ export class ConfigurationComponent implements OnInit, OnChanges {
     const group: { [key: string]: AbstractControl; } = {};
 
     const names: string[] = Object.keys(this.configuration);
-    console.log(this.configuration);
     for (const name of names) {
       const value = this.configuration[name];
       // check if value is primitive

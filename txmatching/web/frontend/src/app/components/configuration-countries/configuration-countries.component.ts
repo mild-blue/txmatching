@@ -142,6 +142,8 @@ export class ConfigurationCountriesComponent {
   // filter while typing
   private _filter(list: string[], value: string): string[] {
     const filterValue = value.toLowerCase();
-    return list.filter(c => c.toLowerCase().indexOf(filterValue) === 0);
+    const searchPattern = new RegExp(`(?=.*${filterValue})`);
+
+    return list.filter(c => c.toLocaleLowerCase().match(searchPattern));
   }
 }
