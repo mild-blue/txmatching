@@ -37,6 +37,8 @@ def add_users():
         pass_hash=encode_password(ADMIN_USER['password']),
         role=UserRole.ADMIN)
     persist_user(app_user)
+    ADMIN_USER['id'] = app_user.id
+    assert len(AppUserModel.query.all()) == 1
     app_user = AppUserModel(
         email=VIEWER_USER['email'],
         pass_hash=encode_password(VIEWER_USER['password']),
