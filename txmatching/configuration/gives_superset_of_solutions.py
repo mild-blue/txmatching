@@ -2,11 +2,11 @@ from txmatching.configuration.configuration import Configuration
 
 
 def _check_if_config_is_supported(configuration: Configuration):
-    if not (configuration.solver_constructor_name == "AllSolutionsSolver"
-            and configuration.scorer_constructor_name == "HLAAdditiveScorer"):
-        raise ValueError(f"Unsupported combination "
-                         f"({configuration.scorer_constructor_name}, {configuration.solver_constructor_name}) "
-                         f"of (scorer, solver)")
+    if not (configuration.solver_constructor_name == 'AllSolutionsSolver'
+            and configuration.scorer_constructor_name == 'HLAAdditiveScorer'):
+        raise ValueError(f'Unsupported combination '
+                         f'({configuration.scorer_constructor_name}, {configuration.solver_constructor_name}) '
+                         f'of (scorer, solver)')
 
 
 def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configuration) -> bool:
@@ -20,9 +20,15 @@ def gives_superset_of_solutions(less_strict: Configuration, more_strict: Configu
     _check_if_config_is_supported(less_strict)
     _check_if_config_is_supported(more_strict)
 
-    breaking_parameters = ["minimum_total_score",
-                           "max_number_of_distinct_countries_in_round",
-                           "manual_donor_recipient_scores"]
+    breaking_parameters = ['minimum_total_score',
+                           'minimum_total_score',
+                           'max_number_of_distinct_countries_in_round',
+                           'manual_donor_recipient_scores',
+                           'require_better_match_in_compatibility_index',
+                           'require_better_match_in_compatibility_index_or_blood_group',
+                           'use_split_resolution',
+                           'forbidden_country_combinations',
+                           'manual_donor_recipient_scores']
 
     # TODO: There needs to be a better logic here https://trello.com/c/zseK1Zcf
     # For example for
