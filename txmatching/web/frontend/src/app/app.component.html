@@ -1,4 +1,3 @@
-<main>
+<main *ngIf="!isLoggedIn || isLoggedIn && patients">
   <router-outlet></router-outlet>
 </main>
-

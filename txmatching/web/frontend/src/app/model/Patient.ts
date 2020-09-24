@@ -3,7 +3,7 @@ export interface PatientList {
   recipients: Recipient[];
 }
 
-interface Patient {
+export interface Patient {
   db_id: number;
   medical_id: string;
   parameters: PatientParameters;

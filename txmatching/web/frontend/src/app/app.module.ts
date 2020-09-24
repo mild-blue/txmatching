@@ -8,7 +8,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ErrorInterceptor } from '@app/interceptors/error/error.interceptor';
 import { AuthInterceptor } from '@app/interceptors/auth/auth.interceptor';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertComponent } from './components/alert/alert.component';
 import { ButtonComponent } from './components/button/button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -29,6 +29,20 @@ import { MatchingItemComponent } from './components/matching-item/matching-item.
 import { VarDirective } from './directives/ng-var/var.directive';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { LogoComponent } from './components/logo/logo.component';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { ConfigurationPatientsComponent } from './components/configuration-patients/configuration-patients.component';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatInputModule } from '@angular/material/input';
+import { ConfigurationCountriesComponent } from './components/configuration-countries/configuration-countries.component';
+import { ConfigurationScoresComponent } from './components/configuration-scores/configuration-scores.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatBadgeModule } from '@angular/material/badge';
+import { PatientComponent } from './components/patient/patient.component';
+import { CountryComponent } from './components/country/country.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +66,12 @@ import { LogoComponent } from './components/logo/logo.component';
     FlagComponent,
     MatchingItemComponent,
     VarDirective,
-    LogoComponent
+    LogoComponent,
+    ConfigurationPatientsComponent,
+    ConfigurationCountriesComponent,
+    ConfigurationScoresComponent,
+    PatientComponent,
+    CountryComponent
   ],
   imports: [
     BrowserModule,
@@ -60,7 +79,17 @@ import { LogoComponent } from './components/logo/logo.component';
     HttpClientModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    AutocompleteLibModule,
+    FormsModule,
+    MatChipsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatIconModule,
+    BrowserAnimationsModule,
+    MatInputModule,
+    MatSlideToggleModule,
+    MatBadgeModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

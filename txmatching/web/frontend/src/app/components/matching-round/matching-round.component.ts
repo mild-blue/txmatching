@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Round, Transplant } from '@app/model/Matching';
-import { compatibleBloodGroups, Donor, Recipient, PatientList, DonorType } from '@app/model/Patient';
+import { compatibleBloodGroups, Donor, DonorType, PatientList, Recipient } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { AppConfiguration } from '@app/model/Configuration';
 
@@ -60,11 +60,11 @@ export class MatchingRoundComponent implements OnInit {
   }
 
   public donor(transplant: Transplant): Donor | undefined {
-    return this.patients?.donors.find(p => p.medical_id === transplant.donor);
+    return this.patients?.donors?.find(p => p.medical_id === transplant.donor);
   }
 
   public recipient(transplant: Transplant): Recipient | undefined {
-    return this.patients?.recipients.find(p => p.medical_id === transplant.recipient);
+    return this.patients?.recipients?.find(p => p.medical_id === transplant.recipient);
   }
 
   public percentageScore(transplant: Transplant): number {

@@ -1,0 +1,107 @@
+@import "../../../styles/variables";
+
+.configuration__scores {
+
+  padding: 0;
+
+  .hint {
+    font-size: 12px;
+    color: $gray-600;
+    margin-bottom: $box-shadow--wide-size;
+  }
+
+  .list {
+    padding: $padding-y $padding-x $box-shadow--wide-size;
+
+    h4 {
+      margin: 0;
+      color: $body-color;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+
+      .arrow {
+        margin: 0 2px;
+      }
+
+      .score {
+        margin-left: 15px;
+
+        background: $gray-600;
+        color: $white;
+        border-radius: 6px;
+        padding: 2px 5px;
+        font-size: 12px;
+      }
+    }
+
+    .cancel {
+      margin-left: 15px;
+    }
+
+    .mat-chip.mat-standard-chip {
+      background-color: $gray-200;
+    }
+  }
+
+  .add {
+    padding: 1.25em $padding-x;
+    border-radius: $border-radius--wide;
+    background: $gray-100;
+
+    &__heading {
+      color: $gray-600;
+      display: block;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    &__form {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      max-width: $container-max-width;
+      margin: auto;
+
+      form {
+        $field-gap: calc(#{$item-gap} / 2);
+
+        flex: 1;
+        display: flex;
+        align-items: flex-end;
+        margin: 0 calc(-1 * #{$field-gap});
+        min-height: 80px;
+
+        .mat-form-field {
+          flex: 1;
+          padding: 0 $field-gap;
+        }
+
+        .arrow {
+          margin: 0 $field-gap;
+          height: 100%;
+          min-height: 80px;
+          display: flex;
+          align-items: center;
+        }
+      }
+
+      app-button {
+        margin-left: $item-gap;
+        padding-bottom: 1.25em;
+      }
+    }
+  }
+
+  .placeholder {
+    font-style: italic;
+    width: 100%;
+    text-align: center;
+    color: $gray-500;
+  }
+}
