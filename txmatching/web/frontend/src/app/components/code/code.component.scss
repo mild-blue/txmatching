@@ -23,4 +23,10 @@
     border-color: $code-border-color--matching;
     color: $code-color--matching;
   }
+
+  &.bad-matching > .code {
+    background: $code-bg--bad-matching;
+    border-color: $code-border-color--bad-matching;
+    color: $code-color--bad-matching;
+  }
 }

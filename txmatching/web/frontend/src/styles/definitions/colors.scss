@@ -40,3 +40,8 @@ $code-color--matching: green;
 $code-bg--antibody: aliceblue;
 $code-border-color--antibody: lightskyblue;
 $code-color--antibody: darkblue;
+
+// bad matching code
+$code-bg--bad-matching: rgba($danger, 0.2);
+$code-border-color--bad-matching: $danger;
+$code-color--bad-matching: $danger;
