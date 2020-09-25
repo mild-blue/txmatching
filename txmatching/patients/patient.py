@@ -7,6 +7,8 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     PatientParameters)
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 
+DEFAULT_CUTOFF = 2000
+
 
 class DonorType(str, Enum):
     DONOR = 'DONOR'
@@ -59,9 +61,9 @@ class Recipient(Patient):
 
     def __post_init__(self):
         if self.recipient_cutoff is None:
-            self.recipient_cutoff = max(self.hla_antibodies.antibodies_list,
+            self.recipient_cutoff = max(self.hla_antibodies.hla_antibodies_list,
                                         key=lambda antibody: antibody.cutoff,
-                                        default=HLAAntibody('Default', 0, 0)).cutoff
+                                        default=HLAAntibody('Default', mfi=0, cutoff=DEFAULT_CUTOFF)).cutoff
 
 
 @dataclass

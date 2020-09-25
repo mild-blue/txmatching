@@ -4,7 +4,8 @@ from txmatching.database.db import db
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_service import \
     save_patients_from_excel_to_empty_txm_event
-from txmatching.database.sql_alchemy_schema import AppUserModel, ConfigModel, TxmEventModel
+from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
+                                                    TxmEventModel)
 from txmatching.patients.patient import TxmEvent
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.web import create_app
@@ -50,7 +51,7 @@ def add_users():
 if __name__ == '__main__':
     app = create_app()
     with app.app_context():
-        patients = parse_excel_data('data.xlsx')
+        patients = parse_excel_data('~/Documents/datavid/patient_data_2020_07.xlsx')
         txm_event = create_or_overwrite_txm_event(name='test')
         save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=txm_event.db_id)
-        add_users()
+        # add_users()

@@ -47,7 +47,7 @@ class AlterRecipient(Resource):
         # TODO do not delete https://trello.com/c/zseK1Zcf
         ConfigModel.query.filter(ConfigModel.id > 0).delete()
         recipient = from_dict(data_class=RecipientUpdateDTO, data=request.json)
-        return jsonify({'db_id': update_recipient(recipient)})
+        return jsonify(update_recipient(recipient))
 
 
 @patient_api.route('/donor', methods=['PUT'])
@@ -59,4 +59,4 @@ class AlterDonor(Resource):
         # TODO do not delete https://trello.com/c/zseK1Zcf
         ConfigModel.query.filter(ConfigModel.id > 0).delete()
         donor = from_dict(data_class=DonorUpdateDTO, data=request.json)
-        return jsonify({'db_id': update_donor(donor)})
+        return jsonify(update_donor(donor))

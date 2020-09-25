@@ -91,7 +91,7 @@ CREATE TABLE recipient
     recipient_cutoff       INT         NOT NULL,
     sex                    SEX,
     height                 INT,
-    weight                 INT,
+    weight                 NUMERIC,
     yob                    INT,
     waiting_since          timestamptz,
     previous_transplants   INT,
@@ -116,7 +116,7 @@ CREATE TABLE donor
     active       BOOL        NOT NULL, -- assume some patients fall out of the set
     sex          SEX,
     height       INT,
-    weight       INT,
+    weight       NUMERIC,
     yob          INT,
     created_at   TIMESTAMPTZ NOT NULL,
     updated_at   TIMESTAMPTZ NOT NULL,
@@ -146,14 +146,14 @@ CREATE TABLE recipient_hla_antibodies
 (
     id           BIGSERIAL   NOT NULL,
     recipient_id BIGINT      NOT NULL,
-    code         TEXT        NOT NULL,
+    raw_code     TEXT        NOT NULL,
     mfi          INT         NOT NULL,
     cutoff       INT         NOT NULL,
-    split_code   TEXT,
+    code         TEXT,
     created_at   TIMESTAMPTZ NOT NULL,
     updated_at   TIMESTAMPTZ NOT NULL,
     deleted_at   TIMESTAMPTZ,
-    CONSTRAINT uq_recipient_hla_antibodies_code_recipient_id UNIQUE (code, recipient_id),
+    CONSTRAINT uq_recipient_hla_antibodies_code_recipient_id UNIQUE (raw_code, recipient_id),
     CONSTRAINT pk_recipient_hla_antibodies_id PRIMARY KEY (id),
     CONSTRAINT fk_recipient_hla_antibodies_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
