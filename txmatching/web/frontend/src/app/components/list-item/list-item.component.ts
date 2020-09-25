@@ -1,4 +1,14 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ComponentFactoryResolver,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import { matchingBatchSize } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
@@ -10,7 +20,7 @@ import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-i
   templateUrl: './list-item.component.html',
   styleUrls: ['./list-item.component.scss']
 })
-export class ListItemComponent implements OnInit, AfterViewInit {
+export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
 
   @ViewChild('list') list?: ElementRef;
   @ViewChild('detail') detail?: ElementRef;
@@ -36,7 +46,13 @@ export class ListItemComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this._addMatchingsToView();
     this.activeItem = this.displayedItems[0] ?? this.activeItem;
-    this._loadDetailComponent(this.activeItem);
+    this._loadDetailComponent();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.listItemDetailComponent) {
+      this._loadDetailComponent();
+    }
   }
 
   ngAfterViewInit(): void {
@@ -46,7 +62,7 @@ export class ListItemComponent implements OnInit, AfterViewInit {
   public setActive(item: ListItem | undefined): void {
     this.activeItem = item;
     if (item && item.index) {
-      this._loadDetailComponent(item);
+      this._loadDetailComponent();
       this._scrollToElement(item.index);
       this.activeAlignedTop = item.index === 1;
     }
@@ -128,7 +144,8 @@ export class ListItemComponent implements OnInit, AfterViewInit {
     this.activeAlignedBottom = activeBottom >= detailBottom;
   }
 
-  private _loadDetailComponent(activeItem: ListItem): void {
+  private _loadDetailComponent(): void {
+    const activeItem = this.activeItem;
     if (!this.listItemDetailComponent || !activeItem) {
       return;
     }

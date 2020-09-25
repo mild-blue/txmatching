@@ -25,9 +25,9 @@ export class PatientService {
     sessionStorage.setItem(patientsLSKey, JSON.stringify(patients));
   }
 
-  public getLocalPatients(): PatientList {
+  public getLocalPatients(): PatientList | undefined {
     const localPatients = sessionStorage.getItem(patientsLSKey);
     this._logger.log('Got patients from localhost', [localPatients]);
-    return localPatients ? JSON.parse(localPatients) : [];
+    return localPatients ? JSON.parse(localPatients) : undefined;
   }
 }

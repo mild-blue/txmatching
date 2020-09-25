@@ -6,10 +6,23 @@
     </h1>
   </app-container>
 
-  <app-content>
-    <app-item-list *ngIf="patientsCount > 0"
-                   [listItemDetailComponent]="listItemDetailComponent"
-                   [listItemComponent]="listItemComponent"
+  <div class="patients__filter">
+    <ul class="switch">
+      <li>
+        <button (click)="setActiveFilter(listFilterTypes.Pairs)">Pairs</button>
+      </li>
+      <li>
+        <button (click)="setActiveFilter(listFilterTypes.Donors)">Donors</button>
+      </li>
+      <li>
+        <button (click)="setActiveFilter(listFilterTypes.Recipients)">Recipients</button>
+      </li>
+    </ul>
+  </div>
+
+  <app-content *ngIf="activeListFilter">
+    <app-item-list [listItemDetailComponent]="activeListFilter.detailComponent"
+                   [listItemComponent]="activeListFilter.itemComponent"
                    [items]="pairs"
                    [configuration]="undefined"
                    [patients]="patients"></app-item-list>

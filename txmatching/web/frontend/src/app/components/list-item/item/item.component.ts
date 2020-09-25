@@ -25,16 +25,21 @@ export class ItemComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this._loadItemComponent(this.item);
+    this._loadItemComponent();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.isActive !== undefined && this._componentRef) {
       this._componentRef.instance.isActive = changes.isActive.currentValue;
     }
+
+    if (changes.listItemComponent) {
+      this._loadItemComponent();
+    }
   }
 
-  private _loadItemComponent(item?: ListItem): void {
+  private _loadItemComponent(): void {
+    const item = this.item;
     if (!this.listItemComponent || !item) {
       return;
     }
