@@ -44,6 +44,9 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { PatientComponent } from './components/patient/patient.component';
 import { CountryComponent } from './components/country/country.component';
 import { PatientsComponent } from './pages/patients/patients.component';
+import { ItemListComponent } from './components/item-list/item-list.component';
+import { PatientPairItemComponent } from './components/patient-pair-item/patient-pair-item.component';
+import { PatientPairDetailComponent } from './components/patient-pair-detail/patient-pair-detail.component';
 
 @NgModule({
   declarations: [
@@ -73,7 +76,10 @@ import { PatientsComponent } from './pages/patients/patients.component';
     ConfigurationScoresComponent,
     PatientComponent,
     CountryComponent,
-    PatientsComponent
+    PatientsComponent,
+    ItemListComponent,
+    PatientPairItemComponent,
+    PatientPairDetailComponent
   ],
   imports: [
     BrowserModule,

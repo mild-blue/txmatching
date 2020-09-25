@@ -29,6 +29,11 @@ export interface PatientParameters {
   country_code: string;
 }
 
+export interface PatientPair {
+  donor: Donor;
+  recipient: Recipient;
+}
+
 export enum DonorType {
   DONOR = 'DONOR',
   BRIDGING_DONOR = 'BRIDGING_DONOR',
