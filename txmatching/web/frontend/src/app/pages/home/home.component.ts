@@ -28,9 +28,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public matchings: MatchingView[] = [];
   public user?: User;
+  public patients?: PatientList;
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
-  public patients: PatientList;
 
   public configIcon = faCog;
   public configOpened: boolean = false;
@@ -41,11 +41,11 @@ export class HomeComponent implements OnInit, OnDestroy {
               private _matchingService: MatchingService,
               private _patientService: PatientService,
               private _logger: LoggerService) {
-    this.patients = this._patientService.getPatients();
   }
 
   ngOnInit(): void {
     this._initUser();
+    this._initPatients();
     this._getResultsWithInitConfig();
   }
 
@@ -130,6 +130,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private _initUser(): void {
     this.user = this._authService.currentUserValue;
+  }
+
+  private _initPatients(): void {
+    this.patients = this._patientService.getLocalPatients();
   }
 
 }
