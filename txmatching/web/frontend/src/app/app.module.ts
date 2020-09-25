@@ -17,7 +17,6 @@ import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { ConfigurationComponent } from './components/configuration/configuration.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { CountComponent } from './components/count/count.component';
-import { MatchingsExplorerComponent } from './components/matchings-explorer/matchings-explorer.component';
 import { ContainerComponent } from './components/container/container.component';
 import { ContentComponent } from './components/content/content.component';
 import { MatchingDetailComponent } from './components/matching-detail/matching-detail.component';
@@ -63,7 +62,6 @@ import { ItemListSingleComponent } from './components/item-list-single/item-list
     ConfigurationComponent,
     LoadingComponent,
     CountComponent,
-    MatchingsExplorerComponent,
     ContainerComponent,
     ContentComponent,
     MatchingDetailComponent,
