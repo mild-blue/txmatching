@@ -1,4 +1,4 @@
-import { Component, ComponentFactoryResolver, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ComponentFactoryResolver, ComponentRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { ListItemDirective } from '@app/directives/list-item/list-item.directive';
 import { ListItem, ListItemAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { PatientList } from '@app/model/Patient';
@@ -9,7 +9,9 @@ import { Configuration } from '@app/model/Configuration';
   templateUrl: './item.component.html',
   styleUrls: ['./item.component.scss']
 })
-export class ItemComponent implements OnInit {
+export class ItemComponent implements OnInit, OnChanges {
+
+  private _componentRef?: ComponentRef<ListItemAbstractComponent>;
 
   @ViewChild(ListItemDirective, { static: true }) listItemHost?: ListItemDirective;
 
@@ -26,6 +28,12 @@ export class ItemComponent implements OnInit {
     this._loadItemComponent(this.item);
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.isActive !== undefined && this._componentRef) {
+      this._componentRef.instance.isActive = changes.isActive.currentValue;
+    }
+  }
+
   private _loadItemComponent(item?: ListItem): void {
     if (!this.listItemComponent || !item) {
       return;
@@ -36,11 +44,11 @@ export class ItemComponent implements OnInit {
     if (this.listItemHost) {
       const viewContainerRef = this.listItemHost.viewContainerRef;
       viewContainerRef.clear();
-      const componentRef = viewContainerRef.createComponent<ListItemAbstractComponent>(componentFactory);
-      componentRef.instance.item = item;
-      componentRef.instance.patients = this.patients;
-      componentRef.instance.configuration = this.configuration;
-      componentRef.instance.isActive = this.isActive;
+      this._componentRef = viewContainerRef.createComponent<ListItemAbstractComponent>(componentFactory);
+      this._componentRef.instance.item = item;
+      this._componentRef.instance.patients = this.patients;
+      this._componentRef.instance.configuration = this.configuration;
+      this._componentRef.instance.isActive = this.isActive;
     }
   }
 
