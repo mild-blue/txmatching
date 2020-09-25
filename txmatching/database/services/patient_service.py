@@ -3,6 +3,7 @@ import logging
 from typing import List, Optional, Tuple, Union
 
 import dacite
+from sqlalchemy import and_
 
 from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
@@ -16,13 +17,14 @@ from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import \
     get_newest_txm_event_db_id
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
-    RecipientModel, TxmEventModel)
+    ConfigModel, DonorModel, RecipientAcceptableBloodModel,
+    RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
 from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLATyping,
                                                     PatientParameters)
+from txmatching.utils.hla_system.hla_table import parse_code
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +140,12 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
 
 
 def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> Recipient:
+    # TODO do not delete https://trello.com/c/zseK1Zcf
+    old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
+    txm_event_db_id = old_recipient_model.txm_event_id
+    ConfigModel.query.filter(
+        and_(ConfigModel.id > 0), ConfigModel.txm_event_id == txm_event_db_id).delete()
+
     recipient_update_dict = {}
     if recipient_update_dto.acceptable_blood_groups:
         acceptable_blood_models = [
@@ -148,12 +156,18 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> Recipient:
             RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
         db.session.add_all(acceptable_blood_models)
     if recipient_update_dto.hla_antibodies:
+        # not the best approach: in case cutoff was different per antibody before it will be unified now, but
+        # but good for the moment
+        old_recipient = _get_recipient_from_recipient_model(old_recipient_model)
+        cutoff = recipient_update_dto.cutoff if recipient_update_dto.cutoff is not None \
+            else old_recipient.recipient_cutoff
+
         hla_antibodies = [
             RecipientHLAAntibodyModel(recipient_id=recipient_update_dto.db_id,
-                                      raw_code=hla_antibody.raw_code,
-                                      mfi=hla_antibody.mfi,
-                                      cutoff=hla_antibody.cutoff,
-                                      code=hla_antibody.code) for hla_antibody
+                                      raw_code=hla_antibody_dto.raw_code,
+                                      mfi=hla_antibody_dto.mfi,
+                                      cutoff=cutoff,
+                                      code=parse_code(hla_antibody_dto.raw_code)) for hla_antibody_dto
             in
             recipient_update_dto.hla_antibodies.hla_antibodies_list]
 
@@ -165,6 +179,8 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> Recipient:
     if recipient_update_dto.recipient_requirements:
         recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
             recipient_update_dto.recipient_requirements)
+    if recipient_update_dto.cutoff:
+        recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
 
     RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
     db.session.commit()
@@ -172,6 +188,11 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> Recipient:
 
 
 def update_donor(donor_update_dto: DonorUpdateDTO) -> Donor:
+    # TODO do not delete https://trello.com/c/zseK1Zcf
+    old_donor = DonorModel.query.get(donor_update_dto.db_id)
+    ConfigModel.query.filter(
+        and_(ConfigModel.id > 0), ConfigModel.txm_event_id == old_donor.txm_event_id).delete()
+
     donor_update_dict = {}
     if donor_update_dto.hla_typing:
         donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing)

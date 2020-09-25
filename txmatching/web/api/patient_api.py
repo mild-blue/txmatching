@@ -18,7 +18,6 @@ from txmatching.data_transfer_objects.patients.recipient_update_dto import \
 from txmatching.database.services.patient_service import (get_txm_event,
                                                           update_donor,
                                                           update_recipient)
-from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.web.api.namespaces import patient_api
 
 logger = logging.getLogger(__name__)
@@ -44,10 +43,9 @@ class AlterRecipient(Resource):
     @patient_api.response(code=200, model=RECIPIENT_MODEL, description='')
     @login_required()
     def put(self):
-        # TODO do not delete https://trello.com/c/zseK1Zcf
-        ConfigModel.query.filter(ConfigModel.id > 0).delete()
-        recipient = from_dict(data_class=RecipientUpdateDTO, data=request.json)
-        return jsonify(update_recipient(recipient))
+        recipient_update_dto = from_dict(data_class=RecipientUpdateDTO, data=request.json)
+
+        return jsonify(update_recipient(recipient_update_dto))
 
 
 @patient_api.route('/donor', methods=['PUT'])
@@ -56,7 +54,6 @@ class AlterDonor(Resource):
     @patient_api.response(code=200, model=DONOR_MODEL, description='')
     @login_required()
     def put(self):
-        # TODO do not delete https://trello.com/c/zseK1Zcf
-        ConfigModel.query.filter(ConfigModel.id > 0).delete()
-        donor = from_dict(data_class=DonorUpdateDTO, data=request.json)
-        return jsonify(update_donor(donor))
+        donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
+
+        return jsonify(update_donor(donor_update_dto))

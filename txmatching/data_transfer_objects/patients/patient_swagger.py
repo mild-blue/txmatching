@@ -72,7 +72,6 @@ PATIENTS_MODEL = patient_api.model('Patients', {
 HLA_ANTIBODY_TO_UPDATE = patient_api.model('HlaAntibodyToUpdate', {
     'raw_code': fields.String(required=True),
     'mfi': fields.Integer(required=True),
-    'cutoff': fields.Integer(required=True),
 })
 
 HLA_TYPE_TO_UPDATE = patient_api.model('HlaTypeToUpdate', {
@@ -92,7 +91,8 @@ RECIPIENT_MODEL_TO_UPDATE = patient_api.model('RecipientModelToUpdate', {
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(enum=BLOOD_TYPES)),
     'hla_typing': fields.Nested(HLA_TYPING_TO_UPDATE),
     'hla_antibodies': fields.Nested(HLA_ANTIBODIES_TO_UPDATE),
-    'recipient_requirements': fields.Nested(RECIPIENT_REQUIREMENTS)
+    'recipient_requirements': fields.Nested(RECIPIENT_REQUIREMENTS),
+    'cutoff': fields.Integer(required=False)
 })
 
 DONOR_MODEL_TO_UPDATE = patient_api.model('DonorModelToUpdate', {
