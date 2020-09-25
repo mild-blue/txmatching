@@ -44,21 +44,23 @@ def donor_excel_dto_to_donor_model(donor: DonorExcelDTO,
     return donor_model
 
 
-def recipient_excel_dto_to_recipient_model(recipient: RecipientExcelDTO, txm_event_db_id: int) -> RecipientModel:
+def recipient_excel_dto_to_recipient_model(recipient_excel_dto: RecipientExcelDTO,
+                                           txm_event_db_id: int) -> RecipientModel:
     patient_model = RecipientModel(
-        medical_id=recipient.medical_id,
-        country=recipient.parameters.country_code,
-        blood=recipient.parameters.blood_group,
-        hla_typing=dataclasses.asdict(recipient.parameters.hla_typing),
+        medical_id=recipient_excel_dto.medical_id,
+        country=recipient_excel_dto.parameters.country_code,
+        blood=recipient_excel_dto.parameters.blood_group,
+        hla_typing=dataclasses.asdict(recipient_excel_dto.parameters.hla_typing),
         hla_antibodies=[RecipientHLAAntibodyModel(
             code=hla_antibody.code,
             cutoff=hla_antibody.cutoff,
             mfi=hla_antibody.mfi
-        ) for hla_antibody in recipient.hla_antibodies.antibodies_list],
+        ) for hla_antibody in recipient_excel_dto.hla_antibodies.antibodies_list],
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
-                          for blood in recipient.acceptable_blood_groups],
-        txm_event_id=txm_event_db_id
+                          for blood in recipient_excel_dto.acceptable_blood_groups],
+        txm_event_id=txm_event_db_id,
+        recipient_cutoff=recipient_excel_dto.recipient_cutoff
     )
     return patient_model
 

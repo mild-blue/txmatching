@@ -32,7 +32,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
         update_recipient(RecipientUpdateDTO(
             acceptable_blood_groups=['AB'],
-            hla_antibodies=HLAAntibodies([HLAAntibody(mfi=20, cutoff=10, code='B43')]),
+            hla_antibodies=HLAAntibodies([HLAAntibody(mfi=20, cutoff=10, code='B43', split_code='B43')]),
             recipient_requirements=RecipientRequirements(require_better_match_in_compatibility_index=True),
             db_id=1
         ))

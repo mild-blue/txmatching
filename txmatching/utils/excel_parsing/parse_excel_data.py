@@ -14,7 +14,7 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLATyping,
                                                     PatientParameters)
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
-from txmatching.utils.country import Country
+from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.hla_table import (HLA_A, HLA_A_BROAD, HLA_B,
                                                    HLA_B_BROAD, HLA_BW, HLA_CW,
                                                    HLA_CW_BROAD, HLA_DQ,
@@ -27,6 +27,9 @@ _valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DR
                       HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DQ_BROAD + HLA_DR_BROAD
 
 _unknown_allele_codes = set()
+
+DEFAULT_CUTOFF = 2000
+DEFAULT_MFI = 4000
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +76,8 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
 def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
     allele_codes = _parse_hla(hla_allele_str)
     # value and cut_off are just temporary values for now
-    return HLAAntibodies([HLAAntibody(code=code, mfi=2100, cutoff=2000) for code in allele_codes])
+    return HLAAntibodies(
+        [HLAAntibody(code=code, mfi=DEFAULT_MFI, cutoff=DEFAULT_CUTOFF, split_code=code) for code in allele_codes])
 
 
 def _country_code_from_id(patient_id: str) -> Country:
@@ -131,4 +135,5 @@ def get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
                                          country_code=country_code_recipient)
     return RecipientExcelDTO(medical_id=recipient_id, parameters=recipient_params,
                              hla_antibodies=antibodies_recipient,
-                             acceptable_blood_groups=acceptable_blood_groups_recipient)
+                             acceptable_blood_groups=acceptable_blood_groups_recipient,
+                             recipient_cutoff=DEFAULT_CUTOFF)

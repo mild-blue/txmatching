@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
-from txmatching.utils.country import Country
+from txmatching.utils.enums import Country, Sex
 from txmatching.utils.hla_system.hla_table import get_compatibility_broad_codes
 
 
@@ -19,6 +19,7 @@ class HLAAntibody:
     code: str
     mfi: int
     cutoff: int
+    split_code: Optional[str] = None
 
 
 @dataclass
@@ -30,8 +31,8 @@ class HLAAntibodies:
         if antibodies_list is None:
             antibodies_list = []
         object.__setattr__(self, 'antibodies_list', antibodies_list)
-        hla_codes_over_cutoff = [hla_antibody.code for hla_antibody in antibodies_list if
-                                 hla_antibody.mfi >= hla_antibody.cutoff]
+        hla_codes_over_cutoff = [hla_antibody.split_code for hla_antibody in antibodies_list if
+                                 hla_antibody.mfi >= hla_antibody.cutoff and hla_antibody.split_code]
         object.__setattr__(self, 'hla_codes_over_cutoff', hla_codes_over_cutoff)
 
 
@@ -40,3 +41,7 @@ class PatientParameters:
     blood_group: str
     country_code: Country
     hla_typing: HLATyping = HLATyping()
+    sex: Optional[Sex] = None
+    height: Optional[int] = None
+    weight: Optional[int] = None
+    yob: Optional[int] = None
