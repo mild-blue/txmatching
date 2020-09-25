@@ -43,12 +43,12 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { PatientComponent } from './components/patient/patient.component';
 import { CountryComponent } from './components/country/country.component';
 import { PatientsComponent } from './pages/patients/patients.component';
-import { ItemListComponent } from './components/item-list/item-list.component';
+import { ListItemComponent } from './components/list-item/list-item.component';
 import { PatientPairItemComponent } from './components/patient-pair-item/patient-pair-item.component';
 import { PatientPairDetailComponent } from './components/patient-pair-detail/patient-pair-detail.component';
 import { ListItemDirective } from './directives/list-item/list-item.directive';
 import { ListItemDetailDirective } from './directives/list-item-detail/list-item-detail.directive';
-import { ItemListSingleComponent } from './components/item-list-single/item-list-single.component';
+import { ItemComponent } from './components/list-item/item/item.component';
 
 @NgModule({
   declarations: [
@@ -78,12 +78,12 @@ import { ItemListSingleComponent } from './components/item-list-single/item-list
     PatientComponent,
     CountryComponent,
     PatientsComponent,
-    ItemListComponent,
+    ListItemComponent,
     PatientPairItemComponent,
     PatientPairDetailComponent,
     ListItemDirective,
     ListItemDetailDirective,
-    ItemListSingleComponent
+    ItemComponent
   ],
   imports: [
     BrowserModule,

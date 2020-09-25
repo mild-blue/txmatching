@@ -5,25 +5,14 @@ export interface ListItem {
   index: number;
 }
 
-export class ListItemView {
-  constructor(public itemData: any,
-              public detailData: any) {
-  }
-}
-
-export class ListItemDetailView {
-  constructor(public data: any) {
-  }
-}
-
-export class ListItemComponent {
+export class ListItemAbstractComponent {
   data?: any;
   isActive?: boolean;
   patients?: PatientList;
   configuration?: Configuration;
 }
 
-export class ListItemDetailComponent {
+export class ListItemDetailAbstractComponent {
   data?: any;
   patients?: PatientList;
 }

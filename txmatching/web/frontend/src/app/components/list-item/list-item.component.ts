@@ -2,15 +2,15 @@ import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, 
 import { matchingBatchSize } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
-import { ListItem, ListItemComponent, ListItemDetailComponent } from '@app/components/item-list/item-list.interface';
+import { ListItem, ListItemAbstractComponent, ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
 
 @Component({
   selector: 'app-item-list',
-  templateUrl: './item-list.component.html',
-  styleUrls: ['./item-list.component.scss']
+  templateUrl: './list-item.component.html',
+  styleUrls: ['./list-item.component.scss']
 })
-export class ItemListComponent implements OnInit, AfterViewInit {
+export class ListItemComponent implements OnInit, AfterViewInit {
 
   @ViewChild('list') list?: ElementRef;
   @ViewChild('detail') detail?: ElementRef;
@@ -21,8 +21,8 @@ export class ItemListComponent implements OnInit, AfterViewInit {
   @Input() patients?: PatientList;
   @Input() configuration?: AppConfiguration;
 
-  @Input() listItemComponent?: typeof ListItemComponent;
-  @Input() listItemDetailComponent?: typeof ListItemDetailComponent;
+  @Input() listItemComponent?: typeof ListItemAbstractComponent;
+  @Input() listItemDetailComponent?: typeof ListItemDetailAbstractComponent;
 
   public activeItem?: ListItem;
   public displayedItems: ListItem[] = [];
@@ -138,7 +138,7 @@ export class ItemListComponent implements OnInit, AfterViewInit {
     if (this.listItemDetailHost) {
       const detailViewContainerRef = this.listItemDetailHost.viewContainerRef;
       detailViewContainerRef.clear();
-      const detailComponentRef = detailViewContainerRef.createComponent<ListItemDetailComponent>(detailComponentFactory);
+      const detailComponentRef = detailViewContainerRef.createComponent<ListItemDetailAbstractComponent>(detailComponentFactory);
       detailComponentRef.instance.data = activeItem;
       detailComponentRef.instance.patients = this.patients;
     }

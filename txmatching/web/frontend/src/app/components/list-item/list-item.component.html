@@ -5,13 +5,13 @@
          class="list-inner"
          (scrolled)="onScrollDown()"
          [scrollWindow]="false">
-      <app-item-list-single *ngFor="let item of displayedItems; trackBy: trackListItem"
-                            [listItemComponent]="listItemComponent"
-                            [isActive]="item === activeItem"
-                            [item]="item"
-                            [patients]="patients"
-                            [configuration]="configuration"
-                            (click)="setActive(item)"></app-item-list-single>
+      <app-item *ngFor="let item of displayedItems; trackBy: trackListItem"
+                [listItemComponent]="listItemComponent"
+                [isActive]="item === activeItem"
+                [item]="item"
+                [patients]="patients"
+                [configuration]="configuration"
+                (click)="setActive(item)"></app-item>
     </div>
   </div>
   <div #detail class="detail">

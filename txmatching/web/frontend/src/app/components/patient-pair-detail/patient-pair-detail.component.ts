@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ListItemDetailComponent } from '@app/components/item-list/item-list.interface';
+import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { PatientList, PatientPair } from '@app/model/Patient';
 
 @Component({
@@ -7,7 +7,7 @@ import { PatientList, PatientPair } from '@app/model/Patient';
   templateUrl: './patient-pair-detail.component.html',
   styleUrls: ['./patient-pair-detail.component.scss']
 })
-export class PatientPairDetailComponent extends ListItemDetailComponent implements OnInit {
+export class PatientPairDetailComponent extends ListItemDetailAbstractComponent implements OnInit {
 
   @Input() data?: PatientPair;
   @Input() patients?: PatientList;

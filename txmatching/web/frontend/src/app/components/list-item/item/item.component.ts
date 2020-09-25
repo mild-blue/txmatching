@@ -1,19 +1,19 @@
 import { Component, ComponentFactoryResolver, Input, OnInit, ViewChild } from '@angular/core';
 import { ListItemDirective } from '@app/directives/list-item/list-item.directive';
-import { ListItem, ListItemComponent } from '@app/components/item-list/item-list.interface';
+import { ListItem, ListItemAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { PatientList } from '@app/model/Patient';
 import { Configuration } from '@app/model/Configuration';
 
 @Component({
-  selector: 'app-item-list-single',
-  templateUrl: './item-list-single.component.html',
-  styleUrls: ['./item-list-single.component.scss']
+  selector: 'app-item',
+  templateUrl: './item.component.html',
+  styleUrls: ['./item.component.scss']
 })
-export class ItemListSingleComponent implements OnInit {
+export class ItemComponent implements OnInit {
 
   @ViewChild(ListItemDirective, { static: true }) listItemHost?: ListItemDirective;
 
-  @Input() listItemComponent?: typeof ListItemComponent;
+  @Input() listItemComponent?: typeof ListItemAbstractComponent;
   @Input() isActive: boolean = false;
   @Input() item?: ListItem;
   @Input() patients?: PatientList;
@@ -36,7 +36,7 @@ export class ItemListSingleComponent implements OnInit {
     if (this.listItemHost) {
       const viewContainerRef = this.listItemHost.viewContainerRef;
       viewContainerRef.clear();
-      const componentRef = viewContainerRef.createComponent<ListItemComponent>(componentFactory);
+      const componentRef = viewContainerRef.createComponent<ListItemAbstractComponent>(componentFactory);
       componentRef.instance.data = item;
       componentRef.instance.patients = this.patients;
       componentRef.instance.configuration = this.configuration;
