@@ -22,7 +22,7 @@
                     [open]="userDropdownId === openedDropdownId"
                     [trigger]="userDropdownTrigger">
         <p>{{user.email}}</p>
-        <app-button routerLink="/login" size="sm">Log out</app-button>
+        <app-button (click)="logOut()" size="sm">Log out</app-button>
       </app-dropdown>
     </div>
     <div class="info">

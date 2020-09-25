@@ -28,8 +28,10 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this._authService.logout();
+  ngOnInit() {
+    if (this._authService.isLoggedIn) {
+      this._router.navigate(['/']);
+    }
   }
 
   public onSubmit() {

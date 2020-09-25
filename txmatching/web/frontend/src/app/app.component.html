@@ -1,7 +1,8 @@
 <main>
-  <app-header [user]="user"></app-header>
+  <app-header *ngIf="showHeader" [user]="user"></app-header>
   <ng-container *ngIf="shouldLoadContent">
     <router-outlet></router-outlet>
   </ng-container>
 
+  <app-loading [show]="loading"></app-loading>
 </main>
