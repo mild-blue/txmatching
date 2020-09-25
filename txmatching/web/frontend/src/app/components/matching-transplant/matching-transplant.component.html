@@ -1,4 +1,4 @@
-<div *ngIf="transplant && donor && recipient && matchingAntigens" class="transplant">
+<div *ngIf="transplant && donor && recipient" class="transplant">
   <div class="transplant-header">
     <div class="pair">
       <flag [countryCode]="donor.parameters.country_code"></flag>
@@ -53,15 +53,15 @@
         <td>{{prefix}}</td>
         <td>
           <app-code *ngFor="let code of filterCodes(donor.parameters.hla_typing.codes, prefix)"
-                    [class.matching]="matchingAntigens.includes(code)">{{ code }}</app-code>
+                    [class]="getDonorAntigenClass(code)">{{ code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let code of filterCodes(recipient.parameters.hla_typing.codes, prefix)"
-                    [class.matching]="matchingAntigens.includes(code)">{{ code }}</app-code>
+                    [class]="getRecipientAntigenClass(code)">{{ code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let code of filterCodes(recipient.hla_antibodies.hla_codes_over_cutoff, prefix)"
-                    [class]="'antibody'">{{ code }}</app-code>
+                    [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
         </td>
         <td>{{ antigenScore(prefix) }}</td>
       </tr>
@@ -69,15 +69,15 @@
         <td>Other</td>
         <td>
           <app-code *ngFor="let code of otherHLA(donor.parameters.hla_typing.codes)"
-                    [class.matching]="otherMatchingHLA.includes(code)">{{ code }}</app-code>
+                    [class]="getDonorAntigenClass(code)">{{ code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let code of otherHLA(recipient.parameters.hla_typing.codes)"
-                    [class.matching]="otherMatchingHLA.includes(code)">{{ code }}</app-code>
+                    [class]="getRecipientAntigenClass(code)">{{ code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let code of otherHLA(recipient.hla_antibodies.hla_codes_over_cutoff)"
-                    [class]="'antibody'" [class.bad-matching]="isAntibodyMatching(code)">{{ code }}</app-code>
+                    [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
         </td>
         <td>-</td>
       </tr>

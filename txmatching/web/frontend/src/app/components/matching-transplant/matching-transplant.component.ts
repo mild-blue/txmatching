@@ -13,8 +13,6 @@ export class MatchingTransplantComponent {
 
   private _donor?: Donor;
   private _recipient?: Recipient;
-  private _matchingAntigens: string[] = [];
-  private _otherMatchingHLA: string[] = [];
 
   @Input() transplant?: Transplant;
   @Input() patients?: PatientList;
@@ -38,15 +36,6 @@ export class MatchingTransplantComponent {
     return this._recipient;
   }
 
-  get matchingAntigens(): string[] {
-    if (!this._matchingAntigens.length && this.donor && this.recipient) {
-      const donorAntigens = this.donor.parameters.hla_typing.codes;
-      const recipientAntigens = this.recipient.parameters.hla_typing.codes;
-      this._matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
-    }
-    return this._matchingAntigens;
-  }
-
   get isDonorBloodCompatible(): boolean {
     if (!this.donor || !this.recipient) {
       return false;
@@ -61,7 +50,16 @@ export class MatchingTransplantComponent {
   }
 
   public antigenScore(prefix: string): number {
-    return this.matchingAntigens ? this.matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix] : 0;
+    if (this.donor && this.recipient) {
+      const donorAntigens = this.donor.parameters.hla_typing.codes;
+      const recipientAntigens = this.recipient.parameters.hla_typing.codes;
+      const matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
+
+      if (matchingAntigens.length) {
+        return matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix];
+      }
+    }
+    return 0;
   }
 
   public filterCodes(codes: string[], prefix: string): string[] {
@@ -80,21 +78,39 @@ export class MatchingTransplantComponent {
     });
   }
 
-  public isAntibodyMatching(code: string): boolean {
-    if (this.donor) {
-      return this.donor.parameters.hla_typing.codes.includes(code);
+  public getDonorAntigenClass(code: string): string {
+    if (this.recipient) {
+      if (this.recipient.hla_antibodies.hla_codes_over_cutoff.includes(code)) {
+        // donor antigen matches some recipient antibody
+        return 'bad-matching';
+      }
+
+      if (this.recipient.parameters.hla_typing.codes.includes(code)) {
+        // donor antigen matches some recipient antigen
+        return 'matching';
+      }
     }
-    return false;
+    return '';
   }
 
-  get otherMatchingHLA(): string[] {
-    if (!this._otherMatchingHLA.length && this.donor && this.recipient) {
-      const otherDonorHLA = this.otherHLA(this.donor.parameters.hla_typing.codes);
-      const otherRecipientHLA = this.otherHLA(this.recipient.parameters.hla_typing.codes);
-
-      this._otherMatchingHLA = otherDonorHLA.filter(a => otherRecipientHLA.includes(a));
+  public getRecipientAntigenClass(code: string): string {
+    if (this.donor && this.recipient) {
+      if (this.donor.parameters.hla_typing.codes.includes(code) && !this.recipient.hla_antibodies.hla_codes_over_cutoff.includes(code)) {
+        // recipient antigen matches some donor antigen
+        // and code is not recipient antibody
+        return 'matching';
+      }
     }
+    return '';
+  }
 
-    return this._otherMatchingHLA;
+  public getRecipientAntibodyClass(code: string): string {
+    if (this.donor) {
+      if (this.donor.parameters.hla_typing.codes.includes(code)) {
+        // recipient antibody matches some donor antigen
+        return 'bad-matching';
+      }
+    }
+    return '';
   }
 }
