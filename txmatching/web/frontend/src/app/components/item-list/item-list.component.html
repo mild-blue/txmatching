@@ -6,19 +6,18 @@
          (scrolled)="onScrollDown()"
          [scrollWindow]="false">
       <!--      <app-matching-item (click)="setActive(matching)"-->
-      <!--                         *ngFor="let matching of displayedItems; trackBy: trackMatchingItem"-->
-      <!--                         [isActive]="matching === activeItem"-->
-      <!--                         [configuration]="configuration"-->
-      <!--                         [matching]="matching"-->
-      <!--                         [patients]="patients"></app-matching-item>-->
+      <!--                     *ngFor="let matching of displayedItems; trackBy: trackMatchingItem"-->
+      <!--                     [isActive]="matching === activeItem"-->
+      <!--                     [configuration]="configuration"-->
+      <!--                     [matching]="matching"-->
+      <!--                     [patients]="patients"></app-matching-item>-->
     </div>
   </div>
   <div #detail class="detail">
-    <div *ngIf="activeItem"
-         [class.aligned-bottom]="activeAlignedBottom"
+    <div [class.aligned-bottom]="activeAlignedBottom"
          [class.aligned-top]="activeAlignedTop"
          class="detail-inner">
-      <!--      <app-matching-detail [matching]="activeItem" [patients]="patients"></app-matching-detail>-->
+      <ng-template listItemDetail></ng-template>
     </div>
   </div>
 </div>

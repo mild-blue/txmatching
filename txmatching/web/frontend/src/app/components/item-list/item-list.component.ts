@@ -1,8 +1,12 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { matchingBatchSize, MatchingView } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
-import { ListItem } from '@app/components/item-list/item-list.interface';
+import { ListItem, ListItemDetailComponent, ListItemView } from '@app/components/item-list/item-list.interface';
+import { ListItemDirective } from '@app/directives/list-item/list-item.directive';
+import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
+import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
+import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
 
 @Component({
   selector: 'app-item-list',
@@ -14,9 +18,15 @@ export class ItemListComponent implements OnInit, AfterViewInit {
   @ViewChild('list') list?: ElementRef;
   @ViewChild('detail') detail?: ElementRef;
 
+  @ViewChild(ListItemDirective, { static: true }) listItemHost?: ListItemDirective;
+  @ViewChild(ListItemDetailDirective, { static: true }) listItemDetailHost?: ListItemDetailDirective;
+
   @Input() items: ListItem[] = [];
   @Input() patients?: PatientList;
   @Input() configuration?: AppConfiguration;
+
+  @Input() listItemComponent?: typeof MatchingItemComponent;
+  @Input() listItemDetailComponent?: typeof MatchingDetailComponent;
 
   public activeItem?: ListItem;
   public displayedItems: ListItem[] = [];
@@ -24,9 +34,13 @@ export class ItemListComponent implements OnInit, AfterViewInit {
   public activeAlignedTop: boolean = true;
   public activeAlignedBottom: boolean = false;
 
+  constructor(private _componentFactoryResolver: ComponentFactoryResolver) {
+  }
+
   ngOnInit(): void {
     this._addMatchingsToView();
     this.activeItem = this.displayedItems[0] ?? this.activeItem;
+    this._loadDetailComponent(this.activeItem);
   }
 
   ngAfterViewInit(): void {
@@ -36,6 +50,7 @@ export class ItemListComponent implements OnInit, AfterViewInit {
   public setActive(item: ListItem | undefined): void {
     this.activeItem = item;
     if (item && item.index) {
+      this._loadDetailComponent(item);
       this._scrollToElement(item.index);
       this.activeAlignedTop = item.index === 1;
     }
@@ -117,4 +132,43 @@ export class ItemListComponent implements OnInit, AfterViewInit {
     this.activeAlignedBottom = activeBottom >= detailBottom;
   }
 
+  private _loadComponents(): void {
+    // const componentFactory = this._componentFactoryResolver.resolveComponentFactory(adItem.component);
+
+  }
+
+  private _loadDetailComponent(activeItem: ListItem): void {
+    if (!this.listItemDetailComponent) {
+      return;
+    }
+
+    const detailComponentFactory = this._componentFactoryResolver.resolveComponentFactory(this.listItemDetailComponent);
+
+    if (this.listItemDetailHost) {
+      const detailViewContainerRef = this.listItemDetailHost.viewContainerRef;
+      detailViewContainerRef.clear();
+      const detailComponentRef = detailViewContainerRef.createComponent<ListItemDetailComponent>(detailComponentFactory);
+      detailComponentRef.instance.data = activeItem;
+      detailComponentRef.instance.patients = this.patients;
+    }
+  }
+
+  private _loadComponent(item: ListItemView): void {
+    // const itemComponentFactory = this._componentFactoryResolver.resolveComponentFactory(item.itemComponent);
+    // const detailComponentFactory = this._componentFactoryResolver.resolveComponentFactory(item.detailComponent);
+
+    // if(this.listItemHost) {
+    //   const itemViewContainerRef = this.listItemHost.viewContainerRef;
+    //   itemViewContainerRef.clear();
+    //   const itemComponentRef = itemViewContainerRef.createComponent<ListItemComponent>(itemComponentFactory);
+    //   itemComponentRef.instance.data = item.itemData;
+    // }
+    //
+    // if(this.listItemDetailHost) {
+    //   const detailViewContainerRef = this.listItemDetailHost.viewContainerRef;
+    //   detailViewContainerRef.clear();
+    //   const detailComponentRef = detailViewContainerRef.createComponent<ListItemDetailComponent>(detailComponentFactory);
+    //   detailComponentRef.instance.data = item.detailData;
+    // }
+  }
 }

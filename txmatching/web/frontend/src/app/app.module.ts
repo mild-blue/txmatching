@@ -47,6 +47,8 @@ import { PatientsComponent } from './pages/patients/patients.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
 import { PatientPairItemComponent } from './components/patient-pair-item/patient-pair-item.component';
 import { PatientPairDetailComponent } from './components/patient-pair-detail/patient-pair-detail.component';
+import { ListItemDirective } from './directives/list-item/list-item.directive';
+import { ListItemDetailDirective } from './directives/list-item-detail/list-item-detail.directive';
 
 @NgModule({
   declarations: [
@@ -79,7 +81,9 @@ import { PatientPairDetailComponent } from './components/patient-pair-detail/pat
     PatientsComponent,
     ItemListComponent,
     PatientPairItemComponent,
-    PatientPairDetailComponent
+    PatientPairDetailComponent,
+    ListItemDirective,
+    ListItemDetailDirective
   ],
   imports: [
     BrowserModule,

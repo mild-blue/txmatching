@@ -12,6 +12,8 @@ import { Matching, MatchingView } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
+import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
+import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
 
 @Component({
   selector: 'app-home',
@@ -34,6 +36,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public configIcon = faCog;
   public configOpened: boolean = false;
+
+  public listItemComponent: typeof MatchingItemComponent = MatchingItemComponent;
+  public listItemDetailComponent: typeof MatchingDetailComponent = MatchingDetailComponent;
 
   constructor(private _authService: AuthService,
               private _configService: ConfigurationService,
