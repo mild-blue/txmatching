@@ -1,1 +1,23 @@
-<p>patient-pair-detail works!</p>
+<div class="pair-detail">
+
+  <ul class="switch">
+    <li>
+      <button (click)="setActiveTab(tabs.Pair)">Pairs</button>
+    </li>
+    <li>
+      <button (click)="setActiveTab(tabs.Donor)">Donors</button>
+    </li>
+    <li>
+      <button (click)="setActiveTab(tabs.Recipient)">Recipients</button>
+    </li>
+  </ul>
+
+  <div [ngSwitch]="activeTab">
+    <div *ngSwitchCase="tabs.Pair"
+         class="pair-detail__content">
+      pair detail
+    </div>
+    <app-patient-detail-donor *ngSwitchCase="tabs.Donor"></app-patient-detail-donor>
+    <app-patient-detail-recipient *ngSwitchCase="tabs.Recipient"></app-patient-detail-recipient>
+  </div>
+</div>
