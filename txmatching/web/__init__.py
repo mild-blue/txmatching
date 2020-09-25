@@ -6,7 +6,7 @@ from flask import Flask, send_from_directory, request
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from txmatching.auth import bcrypt
+from txmatching.auth.crypto import bcrypt
 from txmatching.configuration.app_configuration.application_configuration import ApplicationConfiguration, \
     get_application_configuration
 from txmatching.database.db import db

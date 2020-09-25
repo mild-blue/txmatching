@@ -1,4 +1,5 @@
 import dataclasses
+from typing import Optional
 
 from sqlalchemy import ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -7,7 +8,7 @@ from sqlalchemy.sql import func
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.patients.patient import DonorType, RecipientRequirements
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
 from txmatching.utils.enums import Country, Sex
 
@@ -144,29 +145,16 @@ class AppUserModel(db.Model):
     email = db.Column(db.TEXT, unique=True, nullable=False)
     pass_hash = db.Column(db.TEXT, unique=False, nullable=False)
     role = db.Column(db.Enum(UserRole), unique=False, nullable=False)
+    second_factor_material = db.Column(db.TEXT, unique=True, nullable=False)
+    phone_number = db.Column(db.TEXT, unique=False, nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
-    def __init__(self, email: str, pass_hash: str, role: UserRole):
+    def __init__(self, email: str, pass_hash: str, role: UserRole, second_factor_material: str,
+                 phone_number: Optional[str] = None):
         self.email = email
         self.pass_hash = pass_hash
         self.role = role
-        self._is_authenticated = False
-
-    @staticmethod
-    def is_active():
-        return True
-
-    def is_authenticated(self):
-        return self._is_authenticated
-
-    @staticmethod
-    def is_anonymous():
-        return False
-
-    def get_id(self):
-        return self.email
-
-    def set_authenticated(self, authenticated: bool):
-        self._is_authenticated = authenticated
+        self.second_factor_material = second_factor_material
+        self.phone_number = phone_number

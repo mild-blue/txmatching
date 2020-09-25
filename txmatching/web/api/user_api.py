@@ -1,20 +1,17 @@
 # pylint: disable=no-self-use
 # can not, they are used for generating swagger which needs class
-import dataclasses
 import logging
 from typing import Tuple
 
 from flask import request
 from flask_restx import Resource, fields
 
-from txmatching.auth.data_types import (FailResponse,
-                                        LoginSuccessResponse, UserRole)
-from txmatching.auth.login_check import (login_required,
-                                         require_role)
-from txmatching.auth.user_authentication import (change_user_password,
-                                                 obtain_login_token,
-                                                 refresh_token, register_user)
-from txmatching.utils.logged_user import get_current_user_id
+from txmatching.auth.auth_check import (require_role)
+from txmatching.auth.crud import register, change_password
+from txmatching.auth.data_types import (UserRole)
+from txmatching.auth.login_flow import credentials_login, refresh_token, otp_login
+from txmatching.auth.user.topt_auth_check import allow_otp_request
+from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.web.api.namespaces import user_api
 
 logger = logging.getLogger(__name__)
@@ -23,8 +20,8 @@ LOGIN_SUCCESS_RESPONSE = user_api.model('LoginSuccessResponse', {
     'auth_token': fields.String(required=True),
 })
 
-LOGIN_FAIL_RESPONSE = user_api.model('LoginFailResponse', {
-    'error': fields.String(required=True),
+STATUS_RESPONSE = user_api.model('StatusResponse', {
+    'status': fields.String(required=True)
 })
 
 
@@ -37,11 +34,25 @@ class LoginApi(Resource):
 
     @user_api.doc(body=login_input_model)
     @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE, description='')
-    @user_api.response(code=401, model=LOGIN_FAIL_RESPONSE, description='')
     def post(self):
         post_data = request.get_json()
-        auth_response = obtain_login_token(email=post_data.get('email'), password=post_data.get('password'))
-        return _respond(auth_response)
+        auth_response = credentials_login(email=post_data.get('email'), password=post_data.get('password'))
+        return _respond_token(auth_response)
+
+
+@user_api.route('/otp', methods=['POST'])
+class OtpLoginApi(Resource):
+    login_input_model = user_api.model('OtpLogin', {
+        'otp': fields.String(required=True, description='OTP for this login.'),
+    })
+
+    @user_api.doc(body=login_input_model)
+    @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE, description='')
+    @allow_otp_request()
+    def post(self):
+        post_data = request.get_json()
+        auth_response = otp_login(post_data.get('otp'))
+        return _respond_token(auth_response)
 
 
 @user_api.route('/refresh-token', methods=['GET'])
@@ -49,19 +60,9 @@ class RefreshTokenApi(Resource):
 
     @user_api.doc(security='bearer')
     @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE, description='')
-    @user_api.response(code=401, model=LOGIN_FAIL_RESPONSE, description='')
-    @login_required()
+    @require_user_login()
     def get(self):
-        try:
-            # should always succeed as [login_required] annotation is used
-            auth_token = request.headers.get('Authorization').split(' ')[1]
-            maybe_token = refresh_token(auth_token)
-        # pylint: disable=broad-except
-        # as this is authentication, we need to catch everything
-        except Exception:
-            maybe_token = FailResponse('Bearer token malformed.')
-
-        return _respond(maybe_token)
+        return _respond_token(refresh_token())
 
 
 @user_api.route('/change-password', methods=['PUT'])
@@ -70,17 +71,12 @@ class PasswordChangeApi(Resource):
         'new_password': fields.String(required=True, description='New password.')
     })
 
-    response = user_api.model('PasswordChangedResponse', {
-        'status': fields.String(required=True)
-    })
-
     @user_api.doc(body=input, security='bearer')
-    @user_api.response(code=200, model=response, description='Password changed successfully.')
-    @login_required()
+    @user_api.response(code=200, model=STATUS_RESPONSE, description='Password changed successfully.')
+    @require_user_login()
     def put(self):
         data = request.get_json()
-        user_id = get_current_user_id()
-        change_user_password(user_id=user_id, new_password=data.get('new_password'))
+        change_password(new_password=data.get('new_password'))
         return {'status': 'ok'}
 
 
@@ -89,21 +85,22 @@ class RegistrationApi(Resource):
     registration_model = user_api.model('UserRegistration', {
         'email': fields.String(required=True, description='Email/username used for authentication.'),
         'password': fields.String(required=True, description='User\'s password.'),
-        'role': fields.String(required=True, description='User\'s role.'),
+        'role': fields.String(required=True, enum=[r.name for r in UserRole], description='User\'s role.'),
+        'second_factor': fields.String(required=True,
+                                       description='2FA - for user phone number, for SERVICE role IP address.')
     })
 
     @user_api.doc(body=registration_model, security='bearer')
-    @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE, description='')
-    @user_api.response(code=400, model=LOGIN_FAIL_RESPONSE, description='')
+    @user_api.response(code=200, model=STATUS_RESPONSE, description='')
     @require_role(UserRole.ADMIN)
     def post(self):
         post_data = request.get_json()
-        login_response = register_user(email=post_data.get('email'),
-                                       password=post_data.get('password'),
-                                       role=post_data.get('role'))
-        return _respond(login_response)
+        register(email=post_data.get('email'),
+                 password=post_data.get('password'),
+                 role=UserRole(post_data.get('role')),
+                 second_factor=post_data.get('second_factor'))
+        return {'status', 'ok'}
 
 
-def _respond(response) -> Tuple[dict, int]:
-    status = 200 if isinstance(response, LoginSuccessResponse) else 401
-    return dataclasses.asdict(response), status
+def _respond_token(token: str) -> Tuple[dict, int]:
+    return {'auth_token': token}, 200

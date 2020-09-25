@@ -1,0 +1,44 @@
+import pyotp
+
+from txmatching.auth.data_types import UserRole
+from txmatching.database.sql_alchemy_schema import AppUserModel
+
+# TODO consider putting this to the configuration instead of the code
+
+
+OTP_LIVENESS_MINUTES = 10
+"""
+How long is one single OTP considered valid.
+"""
+
+OTP_REFRESH_INTERVAL_MINUTES = 1
+"""
+How often should be new OTP generated.
+"""
+
+
+def generate_totp_seed() -> str:
+    """
+    Generates seed for the OTP algorithm, seed should be stored per user.
+    """
+    return pyotp.random_base32()
+
+
+def generate_otp_for_user(user: AppUserModel) -> str:
+    """
+    Generates OTP for given user.
+    """
+    return _topt(user).now()
+
+
+def verify_otp_for_user(user: AppUserModel, otp: str) -> bool:
+    """
+    Validates the OTP for the given user.
+    Sliding window is determined by the OTP_LIVENESS_MINUTES and OTP_REFRESH_INTERVAL_MINUTES
+    """
+    return _topt(user).verify(otp, valid_window=int(OTP_LIVENESS_MINUTES / OTP_REFRESH_INTERVAL_MINUTES))
+
+
+def _topt(user: AppUserModel) -> pyotp.TOTP:
+    assert user.role != UserRole.SERVICE
+    return pyotp.TOTP(user.second_factor_material, interval=OTP_REFRESH_INTERVAL_MINUTES * 60)

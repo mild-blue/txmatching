@@ -1,5 +1,6 @@
-from txmatching.auth.crypto import encode_password
+from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
+from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.database.db import db
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_service import \
@@ -37,14 +38,17 @@ def add_users():
     app_user = AppUserModel(
         email=ADMIN_USER['email'],
         pass_hash=encode_password(ADMIN_USER['password']),
-        role=UserRole.ADMIN)
+        role=UserRole.ADMIN,
+        second_factor_material=generate_totp_seed()
+    )
     persist_user(app_user)
     ADMIN_USER['id'] = app_user.id
     assert len(AppUserModel.query.all()) == 1
     app_user = AppUserModel(
         email=VIEWER_USER['email'],
         pass_hash=encode_password(VIEWER_USER['password']),
-        role=UserRole.VIEWER)
+        role=UserRole.VIEWER,
+        second_factor_material=generate_totp_seed())
     persist_user(app_user)
     assert len(AppUserModel.query.all()) == 2
 
