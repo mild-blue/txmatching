@@ -37,7 +37,7 @@ export class ItemComponent implements OnInit {
       const viewContainerRef = this.listItemHost.viewContainerRef;
       viewContainerRef.clear();
       const componentRef = viewContainerRef.createComponent<ListItemAbstractComponent>(componentFactory);
-      componentRef.instance.data = item;
+      componentRef.instance.item = item;
       componentRef.instance.patients = this.patients;
       componentRef.instance.configuration = this.configuration;
       componentRef.instance.isActive = this.isActive;

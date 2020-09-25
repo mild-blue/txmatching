@@ -1,7 +1,7 @@
-<div *ngIf="data && patients" class="matching-detail">
+<div *ngIf="item && patients" class="matching-detail">
 
-  <div *ngFor="let round of data.rounds; let i = index" class="round">
-    <h4>Round {{ i + 1 }}/{{data.rounds.length}}</h4>
+  <div *ngFor="let round of item.rounds; let i = index" class="round">
+    <h4>Round {{ i + 1 }}/{{item.rounds.length}}</h4>
     <app-matching-transplant *ngFor="let transplant of round.transplants"
                              [patients]="patients"
                              [transplant]="transplant"></app-matching-transplant>

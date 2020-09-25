@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatchingView } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
@@ -9,18 +9,15 @@ import { ListItemAbstractComponent } from '@app/components/list-item/list-item.i
   templateUrl: './matching-item.component.html',
   styleUrls: ['./matching-item.component.scss']
 })
-export class MatchingItemComponent extends ListItemAbstractComponent implements OnInit {
+export class MatchingItemComponent extends ListItemAbstractComponent {
 
-  @Input() data?: MatchingView;
+  @Input() item?: MatchingView;
   @Input() isActive: boolean = false;
   @Input() configuration?: AppConfiguration;
   @Input() patients?: PatientList;
 
   constructor() {
     super();
-  }
-
-  ngOnInit(): void {
   }
 
   public getTransplantsCount(matching: MatchingView): number {

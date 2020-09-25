@@ -6,14 +6,14 @@ export interface ListItem {
 }
 
 export class ListItemAbstractComponent {
-  data?: any;
+  item?: ListItem;
   isActive?: boolean;
   patients?: PatientList;
   configuration?: Configuration;
 }
 
 export class ListItemDetailAbstractComponent {
-  data?: any;
+  item?: ListItem;
   patients?: PatientList;
 }
 

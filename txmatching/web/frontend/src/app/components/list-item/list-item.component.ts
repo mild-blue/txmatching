@@ -129,7 +129,7 @@ export class ListItemComponent implements OnInit, AfterViewInit {
   }
 
   private _loadDetailComponent(activeItem: ListItem): void {
-    if (!this.listItemDetailComponent) {
+    if (!this.listItemDetailComponent || !activeItem) {
       return;
     }
 
@@ -139,7 +139,7 @@ export class ListItemComponent implements OnInit, AfterViewInit {
       const detailViewContainerRef = this.listItemDetailHost.viewContainerRef;
       detailViewContainerRef.clear();
       const detailComponentRef = detailViewContainerRef.createComponent<ListItemDetailAbstractComponent>(detailComponentFactory);
-      detailComponentRef.instance.data = activeItem;
+      detailComponentRef.instance.item = activeItem;
       detailComponentRef.instance.patients = this.patients;
     }
   }

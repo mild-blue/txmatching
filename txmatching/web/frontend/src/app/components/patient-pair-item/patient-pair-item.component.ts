@@ -10,7 +10,7 @@ import { PatientList, PatientPair } from '@app/model/Patient';
 })
 export class PatientPairItemComponent extends ListItemAbstractComponent implements OnInit {
 
-  @Input() data?: PatientPair;
+  @Input() item?: PatientPair;
   @Input() isActive: boolean = false;
   @Input() configuration?: AppConfiguration;
   @Input() patients?: PatientList;
