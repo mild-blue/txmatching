@@ -1,16 +1,16 @@
-<div *ngIf="matching"
+<div *ngIf="data"
      [class.active]="isActive"
-     [class.first]="matching.index === 1"
-     [id]="'matching-' + matching.index"
+     [class.first]="data.index === 1"
+     [id]="'matching-' + data.index"
      class="matching-item">
 
-  <h3>Matching #{{matching.index}}</h3>
+  <h3>Matching #{{data.index}}</h3>
 
   <ul class="description">
-    <li>Score: <strong>{{ matching.score }}</strong></li>
-    <li>Rounds: <strong>{{ matching.rounds.length }}</strong></li>
-    <li>Transplants: <strong>{{ getTransplantsCount(matching) }}</strong></li>
-    <li *ngFor="let country of matching.countries">
+    <li>Score: <strong>{{ data.score }}</strong></li>
+    <li>Rounds: <strong>{{ data.rounds.length }}</strong></li>
+    <li>Transplants: <strong>{{ getTransplantsCount(data) }}</strong></li>
+    <li *ngFor="let country of data.countries">
       <flag [countryCode]="country.country_code"></flag>
       :
       <app-code>{{country.donor_count}}/{{country.recipient_count}}</app-code>
@@ -18,7 +18,7 @@
   </ul>
 
   <ng-container *ngIf="isActive">
-    <app-matching-round *ngFor="let round of matching.rounds; let i = index"
+    <app-matching-round *ngFor="let round of data.rounds; let i = index"
                         [configuration]="configuration"
                         [index]="i + 1"
                         [patients]="patients"

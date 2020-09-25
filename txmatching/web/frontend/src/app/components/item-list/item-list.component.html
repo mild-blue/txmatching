@@ -5,12 +5,13 @@
          class="list-inner"
          (scrolled)="onScrollDown()"
          [scrollWindow]="false">
-      <!--      <app-matching-item (click)="setActive(matching)"-->
-      <!--                     *ngFor="let matching of displayedItems; trackBy: trackMatchingItem"-->
-      <!--                     [isActive]="matching === activeItem"-->
-      <!--                     [configuration]="configuration"-->
-      <!--                     [matching]="matching"-->
-      <!--                     [patients]="patients"></app-matching-item>-->
+      <app-item-list-single *ngFor="let item of displayedItems; trackBy: trackListItem"
+                            [listItemComponent]="listItemComponent"
+                            [isActive]="item === activeItem"
+                            [item]="item"
+                            [patients]="patients"
+                            [configuration]="configuration"
+                            (click)="setActive(item)"></app-item-list-single>
     </div>
   </div>
   <div #detail class="detail">

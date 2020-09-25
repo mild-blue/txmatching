@@ -1,9 +1,8 @@
 import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { matchingBatchSize, MatchingView } from '@app/model/Matching';
+import { matchingBatchSize } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
-import { ListItem, ListItemDetailComponent, ListItemView } from '@app/components/item-list/item-list.interface';
-import { ListItemDirective } from '@app/directives/list-item/list-item.directive';
+import { ListItem, ListItemDetailComponent } from '@app/components/item-list/item-list.interface';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
 import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
 import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
@@ -18,7 +17,6 @@ export class ItemListComponent implements OnInit, AfterViewInit {
   @ViewChild('list') list?: ElementRef;
   @ViewChild('detail') detail?: ElementRef;
 
-  @ViewChild(ListItemDirective, { static: true }) listItemHost?: ListItemDirective;
   @ViewChild(ListItemDetailDirective, { static: true }) listItemDetailHost?: ListItemDetailDirective;
 
   @Input() items: ListItem[] = [];
@@ -60,8 +58,8 @@ export class ItemListComponent implements OnInit, AfterViewInit {
     this._addMatchingsToView();
   }
 
-  public trackMatchingItem(index: number, matching: MatchingView) {
-    return matching.index;
+  public trackListItem(index: number, item: ListItem) {
+    return item.index;
   }
 
   private _scrollToElement(id: number): void {
@@ -132,11 +130,6 @@ export class ItemListComponent implements OnInit, AfterViewInit {
     this.activeAlignedBottom = activeBottom >= detailBottom;
   }
 
-  private _loadComponents(): void {
-    // const componentFactory = this._componentFactoryResolver.resolveComponentFactory(adItem.component);
-
-  }
-
   private _loadDetailComponent(activeItem: ListItem): void {
     if (!this.listItemDetailComponent) {
       return;
@@ -151,24 +144,5 @@ export class ItemListComponent implements OnInit, AfterViewInit {
       detailComponentRef.instance.data = activeItem;
       detailComponentRef.instance.patients = this.patients;
     }
-  }
-
-  private _loadComponent(item: ListItemView): void {
-    // const itemComponentFactory = this._componentFactoryResolver.resolveComponentFactory(item.itemComponent);
-    // const detailComponentFactory = this._componentFactoryResolver.resolveComponentFactory(item.detailComponent);
-
-    // if(this.listItemHost) {
-    //   const itemViewContainerRef = this.listItemHost.viewContainerRef;
-    //   itemViewContainerRef.clear();
-    //   const itemComponentRef = itemViewContainerRef.createComponent<ListItemComponent>(itemComponentFactory);
-    //   itemComponentRef.instance.data = item.itemData;
-    // }
-    //
-    // if(this.listItemDetailHost) {
-    //   const detailViewContainerRef = this.listItemDetailHost.viewContainerRef;
-    //   detailViewContainerRef.clear();
-    //   const detailComponentRef = detailViewContainerRef.createComponent<ListItemDetailComponent>(detailComponentFactory);
-    //   detailComponentRef.instance.data = item.detailData;
-    // }
   }
 }
