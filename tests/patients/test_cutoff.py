@@ -1,0 +1,9 @@
+import unittest
+
+from txmatching.patients.patient_parameters import HLAAntibodies, HLAAntibody
+
+
+class TestSolveFromDbAndItsSupportFunctionality(unittest.TestCase):
+    def test_cutoff_works(self):
+        hla_antibodies = HLAAntibodies(antibodies_list=[HLAAntibody('A1', 10, 20),HLAAntibody('A2', 10, 5)])
+        self.assertListEqual(['A2'], hla_antibodies.hla_codes_over_cutoff)

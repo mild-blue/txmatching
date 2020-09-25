@@ -10,22 +10,22 @@ COMPATIBLE_BLOOD_GROUPS = {
 }
 
 
-class Antigens(Enum):
+class HLATypes(Enum):
     A = "A"
     B = "B"
     DR = "DR"
 
 
 ANTIBODIES_MULTIPLIERS = {
-    Antigens.A: 1,
-    Antigens.B: 2,
-    Antigens.DR: 9
+    HLATypes.A: 1,
+    HLATypes.B: 2,
+    HLATypes.DR: 9
 }
 
 ANTIBODIES_MULTIPLIERS_STR = {
-    Antigens.A.value: 1,
-    Antigens.B.value: 2,
-    Antigens.DR.value: 9
+    HLATypes.A.value: 1,
+    HLATypes.B.value: 2,
+    HLATypes.DR.value: 9
 }
 
 

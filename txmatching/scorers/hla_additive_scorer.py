@@ -1,5 +1,3 @@
-from typing import Optional
-
 from txmatching.configuration.configuration import (Configuration)
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.patients.patient import Donor, Recipient
@@ -8,7 +6,7 @@ from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.hla_system.compatibility_index import \
     compatibility_index
-from txmatching.utils.hla_system.hla_table import broad_to_split, is_split
+from txmatching.utils.hla_system.hla_crossmatch import is_positive_hla_crossmatch
 
 
 class HLAAdditiveScorer(AdditiveScorer):
@@ -19,8 +17,9 @@ class HLAAdditiveScorer(AdditiveScorer):
     # pylint: disable=too-many-return-statements
     # it seems that it is reasonable to want many return statements here as it is still well readable
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Donor) -> float:
-        donor_recipient_ci = compatibility_index(donor.parameters, recipient.parameters)
-        related_donor_recipient_ci = compatibility_index(original_donor.parameters, recipient.parameters)
+        donor_recipient_ci = compatibility_index(donor.parameters.hla_typing, recipient.parameters.hla_typing)
+        related_donor_recipient_ci = compatibility_index(original_donor.parameters.hla_typing,
+                                                         recipient.parameters.hla_typing)
 
         # We can't do exchanges between some countries
 
@@ -32,11 +31,11 @@ class HLAAdditiveScorer(AdditiveScorer):
         if donor.parameters.blood_group not in recipient.acceptable_blood_groups:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
-        # Recipient can't have antibodies that donor has antigens for
-        # TODO: https://trello.com/c/ly8SDkhZ Use allow_low_high_res_incompatible param here
-        #  that if set to True would not return TRANSPLANT_IMPOSSIBLE in some cases
-        is_positive_hla_crossmatch = self._is_positive_hla_crossmatch(donor, recipient)
-        if is_positive_hla_crossmatch is True or is_positive_hla_crossmatch is None:
+        # Recipient can't have antibodies that donor has hla_typing for
+        positive_crossmatch = is_positive_hla_crossmatch(donor.parameters.hla_typing,
+                                                         recipient.hla_antibodies,
+                                                         self._configuration.use_split_resolution)
+        if positive_crossmatch:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
         better_match_in_ci_or_br = self._get_setting_from_config_or_recipient(
@@ -85,55 +84,6 @@ class HLAAdditiveScorer(AdditiveScorer):
             return self._configuration.blood_group_compatibility_bonus
         else:
             return 0.0
-
-    @staticmethod
-    def _is_positive_hla_crossmatch(donor: Donor, recipient: Recipient) -> Optional[bool]:
-        """
-        Do donor and recipient have positive crossmatch in HLA system?
-        If this can't be determined, return None
-        e.g. A23 -> A23 True
-             A9 -> A9  True -- A9 in antibodies indicates wider range of antibodies, in this case A23, A24
-             A23 -> A9 True
-             A23 -> A24 False
-             A9 -> A23 None -- A9 in antigens indicates incomplete information
-        :param donor:
-        :param recipient:
-        :return:
-        """
-        positive_crossmatch = True
-        negative_crossmatch = False
-        crossmatch_cant_be_determined = None
-
-        recipient_antibodies = recipient.parameters.hla_antibodies.codes
-        recipient_antibodies_with_splits = list(recipient_antibodies)
-
-        for antibody_code in recipient_antibodies:
-            split_codes = broad_to_split.get(antibody_code)
-            if split_codes is not None:
-                recipient_antibodies_with_splits.extend(split_codes)
-
-        crossmatch_cant_be_determined_so_far = False
-
-        for antigen_code in donor.parameters.hla_antigens.codes:
-            code_is_split = is_split(antigen_code)
-
-            if code_is_split is True or code_is_split is None:  # Code is split or we don't know
-                if antigen_code in recipient_antibodies_with_splits:
-                    return positive_crossmatch
-            else:  # Code is broad
-                if antigen_code in recipient_antibodies:
-                    return positive_crossmatch
-
-                antigen_splits = broad_to_split.get(antigen_code)
-                if antigen_splits is not None:
-                    for antigen_split in antigen_splits:
-                        if antigen_split in recipient_antibodies:
-                            crossmatch_cant_be_determined_so_far = True
-
-        if crossmatch_cant_be_determined_so_far is True:
-            return crossmatch_cant_be_determined
-
-        return negative_crossmatch
 
     def _get_setting_from_config_or_recipient(self, recipient: Recipient,
                                               setting_name):

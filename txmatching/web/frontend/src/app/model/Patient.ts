@@ -1,22 +1,29 @@
 export interface PatientList {
-  donors: Patient[];
-  recipients: Patient[];
+  donors: Donor[];
+  recipients: Recipient[];
 }
 
 export interface Patient {
   db_id: number;
   medical_id: string;
   parameters: PatientParameters;
+}
+
+export interface Recipient extends Patient {
+  acceptable_blood_groups: string[];
+  hla_antibodies: {
+    hla_codes_over_cutoff: string[];
+  };
+}
+
+export interface Donor extends Patient {
   donor_type: DonorType;
+  related_donor_db_id: number;
 }
 
 export interface PatientParameters {
   blood_group: string;
-  acceptable_blood_groups: string[];
-  hla_antigens: {
-    codes: string[];
-  };
-  hla_antibodies: {
+  hla_typing: {
     codes: string[];
   };
   country_code: string;

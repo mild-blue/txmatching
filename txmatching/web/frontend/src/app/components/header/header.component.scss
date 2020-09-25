@@ -89,6 +89,12 @@ header {
       margin-top: 0;
     }
 
+    .info, .user {
+      ::ng-deep button {
+        margin: 10px auto 0;
+      }
+    }
+
     .info {
       button {
         font-size: 16px;

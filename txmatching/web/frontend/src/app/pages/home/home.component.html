@@ -5,28 +5,24 @@
     <div class="home-header">
       <h1>
         Matchings
-        <app-count *ngIf="!loading">{{matchings.length}}</app-count>
+        <app-count *ngIf="!loading" [count]="matchings.length"></app-count>
       </h1>
-      <div *ngIf="!loading && configuration" class="config">
-        <button (click)="toggleConfiguration()" [class.opened]="configOpened">
-          <ng-container *ngIf="!configOpened">
-            Configure
-            <fa-icon [icon]="configIcon"></fa-icon>
-          </ng-container>
-          <ng-container *ngIf="configOpened">
-            Close configuration
-            <fa-icon [icon]="closeIcon"></fa-icon>
-          </ng-container>
-        </button>
-      </div>
+      <button (click)="toggleConfiguration()"
+              *ngIf="showConfiguration"
+              class="config">
+        Configure
+        <fa-icon [icon]="configIcon"></fa-icon>
+      </button>
     </div>
   </app-container>
 
-
-  <app-configuration (configSubmitted)="calculate($event)"
-                     *ngIf="configuration"
+  <app-configuration (configClosed)="toggleConfiguration()"
+                     *ngIf="showConfiguration"
                      [configuration]="configuration"
-                     [isOpened]="configOpened"></app-configuration>
+                     [isOpened]="configOpened"
+                     [patients]="patients"
+                     (configSubmitted)="calculate($event)"
+  ></app-configuration>
 
   <app-content>
     <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>

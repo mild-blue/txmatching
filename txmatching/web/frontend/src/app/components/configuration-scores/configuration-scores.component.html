@@ -1,0 +1,117 @@
+<div class="configuration__scores configuration__box">
+
+  <div class="list">
+    <h4>
+      Manual scores for donors and recipients
+      <app-count [count]="selectedScores.length"></app-count>
+    </h4>
+
+    <div class="hint">Manually set score for particular pair of patients.</div>
+
+    <div class="placeholder" *ngIf="selectedScores.length === 0">
+      No manual scores were set yet.
+    </div>
+
+    <mat-chip-list *ngIf="selectedScores.length > 0">
+      <mat-chip *ngFor="let score of selectedScores"
+                (removed)="removeScore(score)">
+        <div class="item">
+          <patient [patient]="getDonorByDbId(score.donor_db_id)"></patient>
+          <mat-icon class="arrow">chevron_right</mat-icon>
+          <patient [patient]="getRecipientByDbId(score.recipient_db_id)"></patient>
+
+          <div class="score">score: <strong>{{score.score}}</strong></div>
+        </div>
+
+        <mat-icon class="cancel" matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+
+  <div class="add">
+    <div class="add__heading">Add new manual score</div>
+    <div class="add__form">
+      <form #viewForm="ngForm"
+            [formGroup]="form"
+            (ngSubmit)="addScore()">
+
+        <!-- Donor -->
+        <mat-form-field>
+          <mat-label>Donor</mat-label>
+          <mat-chip-list #donorChip>
+            <mat-chip *ngIf="donor && form.controls.donor.valid"
+                      [removable]="true"
+                      (removed)="handleRemove('donor', viewDonor)">
+              <patient [patient]="donor"></patient>
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input formControlName="donor"
+                   [matAutocomplete]="donorAuto"
+                   [matChipInputFor]="donorChip"
+                   [errorStateMatcher]="errorMatcher"
+                   [placeholder]="!donor ? 'Search by medical ID' : ''"
+                   matInput
+                   #viewDonor
+                   type="text">
+          </mat-chip-list>
+          <mat-autocomplete #donorAuto="matAutocomplete"
+                            (optionSelected)="handleSelect(viewDonor)"
+                            [displayWith]="displayFn">
+            <mat-option *ngFor="let patient of filteredDonors | async" [value]="patient">
+              <patient [patient]="patient"></patient>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <div class="arrow">
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+
+        <!-- Recipient -->
+        <mat-form-field>
+          <mat-label>Recipient</mat-label>
+
+          <mat-chip-list #recipientChip>
+            <mat-chip *ngIf="recipient && form.controls.recipient.valid"
+                      [removable]="true"
+                      (removed)="handleRemove('recipient', viewRecipient)">
+              <patient [patient]="recipient"></patient>
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input formControlName="recipient"
+                   [errorStateMatcher]="errorMatcher"
+                   [matAutocomplete]="recipientAuto"
+                   [matChipInputFor]="recipientChip"
+                   [placeholder]="!recipient ? 'Search by medical ID' : ''"
+                   matInput
+                   #viewRecipient
+                   type="text">
+          </mat-chip-list>
+
+          <mat-autocomplete #recipientAuto="matAutocomplete"
+                            (optionSelected)="handleSelect(viewRecipient)"
+                            [displayWith]="displayFn">
+            <mat-option *ngFor="let patient of filteredRecipients | async" [value]="patient">
+              <patient [patient]="patient"></patient>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <!-- Score -->
+        <mat-form-field>
+          <mat-label>Score</mat-label>
+          <input matInput
+                 [errorStateMatcher]="errorMatcher"
+                 formControlName="score"
+                 placeholder="Enter score"
+                 type="number">
+        </mat-form-field>
+
+        <app-button size="sm" variant="success" type="submit" [disabled]="form.invalid">
+          Add
+          <mat-icon>add</mat-icon>
+        </app-button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { User } from '@app/model/User';
+import { DecodedToken, User } from '@app/model/User';
 import { environment } from '@environments/environment';
 import { map } from 'rxjs/operators';
-import { AuthResponse, DecodedToken } from '@app/services/auth/auth.interface';
+import { AuthResponse } from '@app/services/auth/auth.interface';
 import * as jwt_decode from 'jwt-decode';
 
 @Injectable({
@@ -26,13 +26,12 @@ export class AuthService {
   get isLoggedIn(): boolean {
     // check if user exists
     const user = this.currentUserValue;
-    if (!user) {
+    if (!user || !user.decoded) {
       return false;
     }
 
     // check if token is valid
-    const decoded = jwt_decode(user.token) as DecodedToken;
-    return decoded.exp >= Date.now() / 1000;
+    return user.decoded.exp >= Date.now() / 1000;
   }
 
   public login(email: string, password: string): Observable<User> {
@@ -43,7 +42,8 @@ export class AuthService {
       map((r: Object) => {
         const response = r as AuthResponse;
         const token = response.auth_token;
-        const user: User = { email, token };
+        const decoded = jwt_decode(token) as DecodedToken;
+        const user: User = { email, token, decoded };
         localStorage.setItem('user', JSON.stringify(user));
         this._currentUserSubject.next(user);
         return user;

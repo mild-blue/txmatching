@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { User } from '@app/model/User';
+import { Role, User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
-import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
 import { first } from 'rxjs/operators';
 import { AppConfiguration, Configuration } from '@app/model/Configuration';
@@ -33,7 +33,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   public patients: PatientList;
 
   public configIcon = faCog;
-  public closeIcon = faTimes;
   public configOpened: boolean = false;
 
   constructor(private _authService: AuthService,
@@ -56,8 +55,19 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._patientsSubscription?.unsubscribe();
   }
 
+  get isViewer(): boolean {
+    return this.user ? this.user.decoded.role === Role.VIEWER : false;
+  }
+
+  get showConfiguration(): boolean {
+    const configDefined = !!this.configuration;
+    const patientsDefined = !!this.patients;
+    return !this.isViewer && !this.loading && configDefined && patientsDefined;
+  }
+
   public toggleConfiguration(): void {
     this.configOpened = !this.configOpened;
+    document.querySelector('body')?.classList.toggle('config-opened');
   }
 
   public calculate(configuration: Configuration): void {
@@ -65,16 +75,16 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.configOpened = false;
+    if (this.configOpened) {
+      this.toggleConfiguration();
+    }
     this.loading = true;
 
-    const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids } = this.appConfiguration;
+    const { scorer_constructor_name, solver_constructor_name } = this.appConfiguration;
     const updatedConfig: AppConfiguration = {
       ...configuration,
       scorer_constructor_name,
-      solver_constructor_name,
-      maximum_total_score,
-      required_patient_db_ids
+      solver_constructor_name
     };
     this._logger.log('Calculating with config', [updatedConfig]);
 
@@ -85,9 +95,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(first())
     .subscribe(
       (matchings: Matching[]) => {
+
         this.matchings = matchings.map((m, key) => {
           return { index: key + 1, ...m };
         });
+
         this._logger.log('Calculated matchings', [matchings]);
         this.loading = false;
       },
@@ -105,7 +117,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       (config: AppConfiguration) => {
         this._logger.log('Got config from server', [config]);
         this.appConfiguration = config;
-        const { scorer_constructor_name, solver_constructor_name, maximum_total_score, required_patient_db_ids, ...rest } = config;
+        const { scorer_constructor_name, solver_constructor_name, ...rest } = config;
         this.configuration = rest;
 
         this.calculate(this.configuration);

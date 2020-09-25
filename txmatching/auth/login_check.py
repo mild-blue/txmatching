@@ -30,7 +30,8 @@ def get_request_token() -> Union[BearerToken, FailResponse]:
 
 def login_required():
     """
-    Verifies, that user is logged in.
+    Verifies, that the user (not service) is logged in.
+    If the bearer is issued for the service, the request is aborted with 403.
     """
 
     def decorator(original_route):
@@ -40,6 +41,9 @@ def login_required():
 
             if isinstance(maybe_token, FailResponse):
                 abort(401, description='Authentication denied.')
+            elif maybe_token.role == UserRole.SERVICE:
+                abort(403, description='SERVICE role does not have access to the API.')
+
             store_user_in_context(maybe_token.user_id, user_role=maybe_token.role)
             return original_route(*args, **kwargs)
 

@@ -1,4 +1,6 @@
-<button class="button"
+<button class="button {{variant}}"
+        [disabled]="disabled"
+        [type]="type"
         [class.sm]="size === 'sm'"
         [class.loading]="loading">
   <ng-content></ng-content>

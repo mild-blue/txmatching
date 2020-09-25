@@ -14,6 +14,7 @@ class TestCompatibilityIndex(unittest.TestCase):
     def test_compatibility_index(self):
         logger.info("Testing compatibility index")
         for donor_params, recipient_params, expected_compatibility_index in self._donor_recipient_index:
-            calculated_compatibility_index = compatibility_index(donor_params, recipient_params)
+            calculated_compatibility_index = compatibility_index(donor_params.hla_typing,
+                                                                 recipient_params.hla_typing)
             self.assertEqual(calculated_compatibility_index, expected_compatibility_index)
         logger.info("    -- done\n")
