@@ -1,3 +1,7 @@
-<main *ngIf="shouldLoadContent">
-  <router-outlet></router-outlet>
+<main>
+  <app-header [user]="user"></app-header>
+  <ng-container *ngIf="shouldLoadContent">
+    <router-outlet></router-outlet>
+  </ng-container>
+
 </main>
