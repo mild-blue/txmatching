@@ -26,4 +26,3 @@ export interface MatchingCountry {
 }
 
 export const matchingBatchSize = 10;
-export const defaultViewerMatchingCount = 10;

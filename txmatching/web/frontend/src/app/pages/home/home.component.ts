@@ -8,7 +8,7 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { defaultViewerMatchingCount, Matching, MatchingView } from '@app/model/Matching';
+import { Matching, MatchingView } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
@@ -95,10 +95,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(first())
     .subscribe(
       (matchings: Matching[]) => {
-
-        if (this.isViewer) {
-          matchings = matchings.slice(0, configuration.max_matchings_to_show_to_viewer ?? defaultViewerMatchingCount);
-        }
 
         this.matchings = matchings.map((m, key) => {
           return { index: key + 1, ...m };
