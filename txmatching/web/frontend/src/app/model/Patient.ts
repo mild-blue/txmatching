@@ -18,7 +18,7 @@ export interface Recipient extends Patient {
 
 export interface Donor extends Patient {
   donor_type: DonorType;
-  related_donor_db_id: number;
+  related_recipient_db_id: number;
 }
 
 export interface PatientParameters {
@@ -30,6 +30,7 @@ export interface PatientParameters {
 }
 
 export interface PatientPair {
+  index: number;
   donor: Donor;
   recipient: Recipient;
 }

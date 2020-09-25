@@ -7,6 +7,11 @@
   </app-container>
 
   <app-content>
-    <!--    <app-item-list [items]="patients"></app-item-list>-->
+    <app-item-list *ngIf="patientsCount > 0"
+                   [listItemDetailComponent]="listItemDetailComponent"
+                   [listItemComponent]="listItemComponent"
+                   [items]="pairs"
+                   [configuration]="undefined"
+                   [patients]="patients"></app-item-list>
   </app-content>
 </section>

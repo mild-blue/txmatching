@@ -1,5 +1,4 @@
 import { Component, ComponentFactoryResolver, Input, OnInit, ViewChild } from '@angular/core';
-import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
 import { ListItemDirective } from '@app/directives/list-item/list-item.directive';
 import { ListItem, ListItemComponent } from '@app/components/item-list/item-list.interface';
 import { PatientList } from '@app/model/Patient';
@@ -14,7 +13,7 @@ export class ItemListSingleComponent implements OnInit {
 
   @ViewChild(ListItemDirective, { static: true }) listItemHost?: ListItemDirective;
 
-  @Input() listItemComponent?: typeof MatchingItemComponent;
+  @Input() listItemComponent?: typeof ListItemComponent;
   @Input() isActive: boolean = false;
   @Input() item?: ListItem;
   @Input() patients?: PatientList;

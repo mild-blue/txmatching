@@ -2,10 +2,8 @@ import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, 
 import { matchingBatchSize } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
-import { ListItem, ListItemDetailComponent } from '@app/components/item-list/item-list.interface';
-import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
+import { ListItem, ListItemComponent, ListItemDetailComponent } from '@app/components/item-list/item-list.interface';
 import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
-import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
 
 @Component({
   selector: 'app-item-list',
@@ -23,8 +21,8 @@ export class ItemListComponent implements OnInit, AfterViewInit {
   @Input() patients?: PatientList;
   @Input() configuration?: AppConfiguration;
 
-  @Input() listItemComponent?: typeof MatchingItemComponent;
-  @Input() listItemDetailComponent?: typeof MatchingDetailComponent;
+  @Input() listItemComponent?: typeof ListItemComponent;
+  @Input() listItemDetailComponent?: typeof ListItemDetailComponent;
 
   public activeItem?: ListItem;
   public displayedItems: ListItem[] = [];

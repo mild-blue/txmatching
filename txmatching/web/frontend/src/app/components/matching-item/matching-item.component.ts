@@ -9,7 +9,7 @@ import { ListItemComponent } from '@app/components/item-list/item-list.interface
   templateUrl: './matching-item.component.html',
   styleUrls: ['./matching-item.component.scss']
 })
-export class MatchingItemComponent implements OnInit, ListItemComponent {
+export class MatchingItemComponent extends ListItemComponent implements OnInit {
 
   @Input() data?: MatchingView;
   @Input() isActive: boolean = false;
@@ -17,6 +17,7 @@ export class MatchingItemComponent implements OnInit, ListItemComponent {
   @Input() patients?: PatientList;
 
   constructor() {
+    super();
   }
 
   ngOnInit(): void {

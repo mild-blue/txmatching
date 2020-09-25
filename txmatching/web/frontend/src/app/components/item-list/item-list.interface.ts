@@ -16,14 +16,14 @@ export class ListItemDetailView {
   }
 }
 
-export interface ListItemComponent {
+export class ListItemComponent {
   data?: any;
   isActive?: boolean;
   patients?: PatientList;
   configuration?: Configuration;
 }
 
-export interface ListItemDetailComponent {
+export class ListItemDetailComponent {
   data?: any;
   patients?: PatientList;
 }

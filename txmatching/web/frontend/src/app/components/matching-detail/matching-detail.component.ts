@@ -8,12 +8,13 @@ import { ListItemDetailComponent } from '@app/components/item-list/item-list.int
   templateUrl: './matching-detail.component.html',
   styleUrls: ['./matching-detail.component.scss']
 })
-export class MatchingDetailComponent implements OnInit, ListItemDetailComponent {
+export class MatchingDetailComponent extends ListItemDetailComponent implements OnInit {
 
   @Input() data?: MatchingView;
   @Input() patients?: PatientList;
 
   constructor() {
+    super();
   }
 
   ngOnInit(): void {
