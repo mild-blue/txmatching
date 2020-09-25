@@ -43,6 +43,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatBadgeModule } from '@angular/material/badge';
 import { PatientComponent } from './components/patient/patient.component';
 import { CountryComponent } from './components/country/country.component';
+import { PatientsComponent } from './pages/patients/patients.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +72,8 @@ import { CountryComponent } from './components/country/country.component';
     ConfigurationCountriesComponent,
     ConfigurationScoresComponent,
     PatientComponent,
-    CountryComponent
+    CountryComponent,
+    PatientsComponent
   ],
   imports: [
     BrowserModule,
