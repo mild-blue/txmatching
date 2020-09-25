@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { User } from '@app/model/User';
+import { Role, User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
@@ -55,6 +55,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._patientsSubscription?.unsubscribe();
   }
 
+  get isViewer(): boolean {
+    return this.user ? this.user.decoded.role === Role.VIEWER : false;
+  }
+
+  get showConfiguration(): boolean {
+    const configDefined = !!this.configuration;
+    const patientsDefined = !!this.patients;
+    return !this.isViewer && !this.loading && configDefined && patientsDefined;
+  }
+
   public toggleConfiguration(): void {
     this.configOpened = !this.configOpened;
     document.querySelector('body')?.classList.toggle('config-opened');
@@ -85,9 +95,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(first())
     .subscribe(
       (matchings: Matching[]) => {
+
         this.matchings = matchings.map((m, key) => {
           return { index: key + 1, ...m };
         });
+
         this._logger.log('Calculated matchings', [matchings]);
         this.loading = false;
       },
