@@ -20,6 +20,7 @@ export class AppComponent implements OnDestroy {
   public user?: User;
 
   public loading: boolean = false;
+  public error: boolean = false;
 
   constructor(private _authService: AuthService,
               private _logger: LoggerService,
@@ -58,9 +59,9 @@ export class AppComponent implements OnDestroy {
       this.patients = patients;
       this._patientService.setLocalPatients(patients);
     })
-    .catch(error => {
+    .catch(() => {
       this.loading = false;
-      console.log(error);
+      this.error = true;
     });
   }
 }
