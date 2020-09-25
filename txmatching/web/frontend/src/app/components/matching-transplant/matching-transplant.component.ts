@@ -13,8 +13,8 @@ export class MatchingTransplantComponent {
 
   private _donor?: Donor;
   private _recipient?: Recipient;
-  private _matchingAntigens?: string[];
-  private _otherMatchingHLA?: string[];
+  private _matchingAntigens: string[] = [];
+  private _otherMatchingHLA: string[] = [];
 
   @Input() transplant?: Transplant;
   @Input() patients?: PatientList;
@@ -38,8 +38,8 @@ export class MatchingTransplantComponent {
     return this._recipient;
   }
 
-  get matchingAntigens(): string[] | undefined {
-    if (this._matchingAntigens === undefined && this.donor && this.recipient) {
+  get matchingAntigens(): string[] {
+    if (!this._matchingAntigens.length && this.donor && this.recipient) {
       const donorAntigens = this.donor.parameters.hla_typing.codes;
       const recipientAntigens = this.recipient.parameters.hla_typing.codes;
       this._matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
@@ -87,8 +87,8 @@ export class MatchingTransplantComponent {
     return false;
   }
 
-  get otherMatchingHLA(): string[] | undefined {
-    if (this._otherMatchingHLA === undefined && this.donor && this.recipient) {
+  get otherMatchingHLA(): string[] {
+    if (!this._otherMatchingHLA.length && this.donor && this.recipient) {
       const otherDonorHLA = this.otherHLA(this.donor.parameters.hla_typing.codes);
       const otherRecipientHLA = this.otherHLA(this.recipient.parameters.hla_typing.codes);
 
