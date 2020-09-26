@@ -1,4 +1,11 @@
 .patients {
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
   ::ng-deep .list-item {
     .list {
       width: 30% !important;

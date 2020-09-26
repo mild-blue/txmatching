@@ -13,6 +13,7 @@ export class PatientsComponent implements OnInit {
 
   public activeListFilter?: PatientListFilter;
   public listFilterTypes: typeof PatientListFilterType = PatientListFilterType;
+  public tabs: string[] = Object.values(PatientListFilterType);
 
   public patients?: PatientList;
   public pairs: PatientPair[] = [];
@@ -29,8 +30,8 @@ export class PatientsComponent implements OnInit {
     return this.patients ? this.patients.donors.length + this.patients.recipients.length : 0;
   }
 
-  public setActiveFilter(type: PatientListFilterType): void {
-    this.activeListFilter = patientListFilters.find(f => f.type === type);
+  public setActiveFilter(type: string): void {
+    this.activeListFilter = patientListFilters.find(f => String(f.type) === type);
   }
 
   public getFilteredItems(): ListItem[] {

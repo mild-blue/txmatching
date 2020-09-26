@@ -1,16 +1,8 @@
 <div class="pair-detail">
 
-  <ul class="switch">
-    <li>
-      <button (click)="setActiveTab(tabs.Pair)">Pairs</button>
-    </li>
-    <li>
-      <button (click)="setActiveTab(tabs.Donor)">Donors</button>
-    </li>
-    <li>
-      <button (click)="setActiveTab(tabs.Recipient)">Recipients</button>
-    </li>
-  </ul>
+  <app-tab-switch [tabs]="tabNames"
+                  [activeTab]="activeTab ? activeTab : ''"
+                  (tabClicked)="setActiveTab($event)"></app-tab-switch>
 
   <div [ngSwitch]="activeTab">
     <div *ngSwitchCase="tabs.Pair"

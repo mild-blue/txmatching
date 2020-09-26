@@ -15,6 +15,7 @@ export class PatientPairDetailComponent extends ListItemDetailAbstractComponent 
 
   public activeTab: PatientPairTab = PatientPairTab.Pair;
   public tabs: typeof PatientPairTab = PatientPairTab;
+  public tabNames: string[] = Object.values(PatientPairTab);
 
   constructor() {
     super();
@@ -23,8 +24,8 @@ export class PatientPairDetailComponent extends ListItemDetailAbstractComponent 
   ngOnInit(): void {
   }
 
-  public setActiveTab(tab: PatientPairTab): void {
-    this.activeTab = tab;
+  public setActiveTab(tab: string): void {
+    this.activeTab = Object.values(this.tabs).find(t => t === tab) as PatientPairTab;
   }
 
 }

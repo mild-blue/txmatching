@@ -1,0 +1,59 @@
+@import "../../../styles/variables";
+
+.tab-switch {
+  ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: calc(-1 * #{$item-gap});
+
+    li {
+      padding: 0 $item-gap;
+
+      button {
+        text-transform: capitalize;
+        font-weight: 600;
+        color: $body-color--secondary;
+        transition: color 0.5s ease;
+
+        position: relative;
+
+        &:hover {
+          &::after {
+            opacity: 1;
+          }
+        }
+
+        &::after {
+          content: '';
+          width: 5px;
+          height: 5px;
+          background: $body-color--secondary;
+          border-radius: 50%;
+          top: 100%;
+          left: 50%;
+          margin-left: -2.5px;
+          margin-top: 2px;
+          position: absolute;
+
+          opacity: 0;
+          transition: opacity 0.5s ease;
+        }
+      }
+
+      &.active {
+        button {
+          color: $primary;
+
+          &::after {
+            background: $primary;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
