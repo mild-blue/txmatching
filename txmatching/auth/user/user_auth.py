@@ -69,5 +69,5 @@ def refresh_user_token(token: EncodedBearerToken, jwt_expiration_days: int) -> B
 def _send_sms_otp(otp: str, user: AppUserModel):
     assert user.phone_number is not None
     assert otp
-    # TODO send the OTP to the user
+    # TODO https://trello.com/c/6Z8wJENk send the OTP to the user
     logger.info(f'OTP issued: "{otp}" for user {user.email}')

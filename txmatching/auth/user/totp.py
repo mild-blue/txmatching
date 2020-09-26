@@ -3,7 +3,7 @@ import pyotp
 from txmatching.auth.data_types import UserRole
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
-# TODO consider putting this to the configuration instead of the code
+# TODO https://trello.com/c/3RtDcOlt consider putting this to the configuration instead of the code
 
 
 OTP_LIVENESS_MINUTES = 10

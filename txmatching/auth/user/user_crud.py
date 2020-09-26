@@ -48,12 +48,12 @@ def _assert_user_registration(email: str, password: str, role: Optional[UserRole
 
 
 def _assert_phone_number_validity(phone_number: str):
-    # TODO verify that this is phone number
+    # TODO https://trello.com/c/0vOWw2Ua verify that this is phone number
     if not phone_number:
         raise UserUpdateException('Invalid phone number.')
 
 
 def _assert_user_password_validity(password: str):
-    # TODO define our password policies for the users
+    # TODO https://trello.com/c/ivSt018y define our password policies for the users
     if not password:
         raise UserUpdateException('Invalid password.')

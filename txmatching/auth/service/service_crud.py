@@ -45,7 +45,7 @@ def _assert_service_registration(email: str, password: str, whitelisted_ip: str)
 
 
 def _assert_service_password_validity(password: str):
-    # TODO define our password policies for the services
+    # TODO https://trello.com/c/ivSt018y define our password policies for the services
     if not password:
         raise UserUpdateException('Invalid password.')
 
