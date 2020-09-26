@@ -14,7 +14,10 @@ def service_login_flow(user: AppUserModel, request_ip: str) -> BearerTokenReques
      only whitelisted IPs are allowed.
     """
     assert user.role == UserRole.SERVICE
-    _assert_second_factor_material(user, request_ip)
+
+    if user.require_2fa:
+        _assert_second_factor_material(user, request_ip)
+
     return BearerTokenRequest(
         user_id=user.id,
         role=UserRole.SERVICE,
