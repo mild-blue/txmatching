@@ -14,9 +14,10 @@
                 (click)="setActive(item)"></app-item>
     </div>
   </div>
-  <div #detail class="detail">
+  <div class="detail">
     <div [class.aligned-bottom]="activeAlignedBottom"
          [class.aligned-top]="activeAlignedTop"
+         #detail
          class="detail-inner">
       <ng-template listItemDetail></ng-template>
     </div>
