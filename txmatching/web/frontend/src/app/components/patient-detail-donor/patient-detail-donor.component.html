@@ -1,1 +1,32 @@
-<p>patient-detail-donor works!</p>
+<div *ngIf="item" class="detail-donor">
+
+  <patient [patient]="item"></patient>
+
+  <form>
+    <mat-form-field>
+      <mat-label>Antigens</mat-label>
+      <mat-chip-list #chipList>
+        <mat-chip *ngFor="let code of selectedCodes"
+                  (removed)="remove(code)"
+                  [removable]="true">
+          {{code}}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input [formControl]="inputControl"
+               [matAutocomplete]="auto"
+               [matChipInputFor]="chipList"
+               matInput
+               placeholder="Search by antigen code"
+               type="text">
+      </mat-chip-list>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event.option.value)">
+        <mat-option *ngFor="let code of filteredCodes | async" [value]="code">
+          {{code}}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-hint>
+        Search and select multiple antigens from {{availableCodes.length}} available antigens.
+      </mat-hint>
+    </mat-form-field>
+  </form>
+</div>

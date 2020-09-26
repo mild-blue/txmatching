@@ -6,12 +6,14 @@
                     (tabClicked)="setActiveTab($event)"></app-tab-switch>
   </div>
 
-  <div [ngSwitch]="activeTab">
+  <div *ngIf="item" [ngSwitch]="activeTab">
     <div *ngSwitchCase="tabs.Pair"
          class="pair-detail__content">
       pair detail
     </div>
-    <app-patient-detail-donor *ngSwitchCase="tabs.Donor"></app-patient-detail-donor>
+    <app-patient-detail-donor *ngSwitchCase="tabs.Donor"
+                              [item]="item.donor"
+                              [patients]="patients"></app-patient-detail-donor>
     <app-patient-detail-recipient *ngSwitchCase="tabs.Recipient"></app-patient-detail-recipient>
   </div>
 </div>

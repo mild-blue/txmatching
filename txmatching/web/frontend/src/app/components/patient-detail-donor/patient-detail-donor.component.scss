@@ -1,0 +1,13 @@
+@import "../../../styles/variables";
+
+.detail-donor {
+  padding: $padding-y $padding-x;
+
+  form, mat-form-field {
+    width: 100%;
+  }
+
+  form {
+    margin-top: $padding-y;
+  }
+}

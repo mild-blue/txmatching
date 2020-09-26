@@ -9,6 +9,7 @@
     margin-top: 0;
     margin-bottom: 0;
     margin-left: calc(-1 * #{$item-gap});
+    margin-right: calc(-1 * #{$item-gap});
 
     li {
       padding: 0 $item-gap;
