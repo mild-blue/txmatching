@@ -144,7 +144,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> Recipient:
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     txm_event_db_id = old_recipient_model.txm_event_id
     ConfigModel.query.filter(
-        and_(ConfigModel.id > 0), ConfigModel.txm_event_id == txm_event_db_id).delete()
+        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
 
     recipient_update_dict = {}
     if recipient_update_dto.acceptable_blood_groups:
@@ -191,7 +191,7 @@ def update_donor(donor_update_dto: DonorUpdateDTO) -> Donor:
     # TODO do not delete https://trello.com/c/zseK1Zcf
     old_donor = DonorModel.query.get(donor_update_dto.db_id)
     ConfigModel.query.filter(
-        and_(ConfigModel.id > 0), ConfigModel.txm_event_id == old_donor.txm_event_id).delete()
+        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == old_donor.txm_event_id)).delete()
 
     donor_update_dict = {}
     if donor_update_dto.hla_typing:

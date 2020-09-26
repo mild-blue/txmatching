@@ -89,13 +89,19 @@ HLA_ANTIBODIES_TO_UPDATE = patient_api.model('HlaAntibodies', {
 RECIPIENT_MODEL_TO_UPDATE = patient_api.model('RecipientModelToUpdate', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(enum=BLOOD_TYPES)),
-    'hla_typing': fields.Nested(HLA_TYPING_TO_UPDATE),
-    'hla_antibodies': fields.Nested(HLA_ANTIBODIES_TO_UPDATE),
+    'hla_typing': fields.Nested(HLA_TYPING_TO_UPDATE,
+                                description='Provide full list of all the HLA types of the patient, not just '
+                                            'the change set'),
+    'hla_antibodies': fields.Nested(HLA_ANTIBODIES_TO_UPDATE,
+                                    description='Provide full list of all the HLA antibodies of the patient, not just '
+                                                'the change set'),
     'recipient_requirements': fields.Nested(RECIPIENT_REQUIREMENTS),
     'cutoff': fields.Integer(required=False)
 })
 
 DONOR_MODEL_TO_UPDATE = patient_api.model('DonorModelToUpdate', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
-    'hla_typing': fields.Nested(HLA_TYPING_TO_UPDATE),
+    'hla_typing': fields.Nested(HLA_TYPING_TO_UPDATE,
+                                description='Provide full list of all the HLA types of the patient, not just '
+                                            'the change set'),
 })
