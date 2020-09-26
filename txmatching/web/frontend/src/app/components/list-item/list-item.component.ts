@@ -77,7 +77,7 @@ export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   private _scrollToElement(id: number): void {
-    const activeElement = document.getElementById(`matching-${id}`);
+    const activeElement = document.getElementById(`list-item-${id}`);
 
     if (!this.list || !activeElement) {
       return;
