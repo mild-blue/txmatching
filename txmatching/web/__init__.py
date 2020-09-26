@@ -96,6 +96,7 @@ def create_app():
             if origin in allowed_origins:
                 response.headers.add('Access-Control-Allow-Origin', origin)
                 response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+                response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT')
             return response
 
     with app.app_context():
