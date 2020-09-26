@@ -150,7 +150,7 @@ export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
   private _reloadItems(): void {
     this.displayedItems = [];
     this._addItemsBatchToView();
-    this.activeItem = this.displayedItems[0] ?? this.activeItem;
+    this.setActive(this.displayedItems[0]);
     this._loadDetailComponent();
   }
 
