@@ -2,7 +2,7 @@
 
   <patient [patient]="item"></patient>
 
-  <form>
+  <form (ngSubmit)="handleSubmit()">
     <mat-form-field>
       <mat-label>Antigens</mat-label>
       <mat-chip-list #chipList>
@@ -28,5 +28,11 @@
         Search and select multiple antigens from {{availableCodes.length}} available antigens.
       </mat-hint>
     </mat-form-field>
+
+    <app-button [type]="'submit'"
+                [loading]="loading"
+                [disabled]="!inputValueChanged || loading"
+                [variant]="'success'">Save changes
+    </app-button>
   </form>
 </div>

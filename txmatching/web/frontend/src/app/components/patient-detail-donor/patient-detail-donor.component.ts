@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { countryFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { Donor, PatientList } from '@app/model/Patient';
+import { PatientService } from '@app/services/patient/patient.service';
 
 @Component({
   selector: 'app-patient-detail-donor',
@@ -17,12 +18,15 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
   @Input() item?: Donor;
 
   public inputControl: FormControl = new FormControl('');
-
   public allCodes: string[] = [];
+
   public filteredCodes: Observable<string[]>;
 
-  constructor() {
-    super();
+  public inputValueChanged: boolean = false;
+  public loading: boolean = false;
+
+  constructor(private _patientService: PatientService) {
+    super(_patientService);
 
     this.filteredCodes = this.inputControl.valueChanges.pipe(
       startWith(undefined),
@@ -47,6 +51,7 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
     }
 
     this.item.parameters.hla_typing.codes.push(code);
+    this.inputValueChanged = true;
   }
 
   public remove(code: string): void {
@@ -58,11 +63,22 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
 
     if (index >= 0) {
       this.item.parameters.hla_typing.codes.splice(index, 1);
+      this.inputValueChanged = true;
     }
   }
 
+  public handleSubmit(): void {
+    if (!this.item) {
+      return;
+    }
+
+    this.loading = true;
+    this._patientService.saveDonor(this.item)
+    .then(() => this.loading = false)
+    .catch(() => this.loading = false);
+  }
+
   private _initAvailableCodes(): void {
-    console.log('init av codes', this.patients);
     if (!this.patients || !this.patients.donors) {
       return;
     }
