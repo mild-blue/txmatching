@@ -1,3 +1,5 @@
+# pylint: disable=unused-variable
+# because they are registered using annotation
 import logging
 
 from flask_restx import Api
@@ -57,7 +59,7 @@ def _default_error_handlers(api: Api):
         return {'error': error.name, 'detail': error.description}, getattr(error, 'code', 500)
 
     @api.errorhandler(Exception)
-    def default_error_handler(error: Exception):
+    def default_exception_error_handler(error: Exception):
         logger.exception(error)
         return {'error': 'Internal server error', 'detail': str(error)}, getattr(error, 'code', 500)
 
