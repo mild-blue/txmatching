@@ -18,4 +18,5 @@ export class PatientItemComponent extends ListItemAbstractComponent implements O
   ngOnInit(): void {
   }
 
+
 }

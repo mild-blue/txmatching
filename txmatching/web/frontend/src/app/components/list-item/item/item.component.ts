@@ -32,6 +32,10 @@ export class ItemComponent implements OnInit, OnChanges {
     if (changes.listItemComponent) {
       this._loadItemComponent();
     }
+    if (changes.item) {
+      this.item = changes.item.currentValue;
+      this._loadItemComponent();
+    }
   }
 
   private _loadItemComponent(): void {

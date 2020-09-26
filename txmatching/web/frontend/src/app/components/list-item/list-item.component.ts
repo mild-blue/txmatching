@@ -44,14 +44,17 @@ export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this._addMatchingsToView();
-    this.activeItem = this.displayedItems[0] ?? this.activeItem;
-    this._loadDetailComponent();
+    this._reloadItems();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.listItemDetailComponent) {
       this._loadDetailComponent();
+    }
+
+    if (changes.items) {
+      this.items = changes.items.currentValue;
+      this._reloadItems();
     }
   }
 
@@ -69,7 +72,7 @@ export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   public onScrollDown(): void {
-    this._addMatchingsToView();
+    this._addItemsBatchToView();
   }
 
   public trackListItem(index: number, item: ListItem) {
@@ -95,7 +98,7 @@ export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  private _addMatchingsToView(): void {
+  private _addItemsBatchToView(): void {
     const start = this.displayedItems.length;
     const end = start + matchingBatchSize;
     const matchingsToPush = this.items.slice(start, end);
@@ -142,6 +145,13 @@ export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
 
     this.activeAlignedTop = activeTop <= detailTop;
     this.activeAlignedBottom = activeBottom >= detailBottom;
+  }
+
+  private _reloadItems(): void {
+    this.displayedItems = [];
+    this._addItemsBatchToView();
+    this.activeItem = this.displayedItems[0] ?? this.activeItem;
+    this._loadDetailComponent();
   }
 
   private _loadDetailComponent(): void {

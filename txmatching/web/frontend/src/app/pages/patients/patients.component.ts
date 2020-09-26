@@ -66,5 +66,16 @@ export class PatientsComponent implements OnInit {
         recipient
       });
     }
+
+    // add indexes for list rendering
+    this.patients.donors.map((d, key) => {
+      d.index = key + 1;
+      return d;
+    });
+
+    this.patients.recipients.map((r, key) => {
+      r.index = key + 1;
+      return r;
+    });
   }
 }
