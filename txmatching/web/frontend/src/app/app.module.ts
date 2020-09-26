@@ -52,6 +52,7 @@ import { ItemComponent } from './components/list-item/item/item.component';
 import { PatientItemComponent } from './components/patient-item/patient-item.component';
 import { PatientDetailDonorComponent } from './components/patient-detail-donor/patient-detail-donor.component';
 import { PatientDetailRecipientComponent } from './components/patient-detail-recipient/patient-detail-recipient.component';
+import { PatientPairComponent } from './components/patient-pair/patient-pair.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +90,8 @@ import { PatientDetailRecipientComponent } from './components/patient-detail-rec
     ItemComponent,
     PatientItemComponent,
     PatientDetailDonorComponent,
-    PatientDetailRecipientComponent
+    PatientDetailRecipientComponent,
+    PatientPairComponent
   ],
   imports: [
     BrowserModule,

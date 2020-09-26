@@ -7,7 +7,6 @@ export interface ListItem {
 
 export class ListItemAbstractComponent {
   item?: ListItem;
-  isActive?: boolean;
   patients?: PatientList;
   configuration?: Configuration;
 }

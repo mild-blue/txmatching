@@ -1,9 +1,4 @@
 <div *ngIf="item"
-     [class.active]="isActive"
-     [class.first]="item.index === 1"
-     [id]="'list-item-' + item.index"
      class="patient-pair-item">
-  <patient [patient]="item.donor"></patient>
-  <mat-icon>chevron_right</mat-icon>
-  <patient [patient]="item.recipient"></patient>
+  <app-patient-pair [pair]="item"></app-patient-pair>
 </div>

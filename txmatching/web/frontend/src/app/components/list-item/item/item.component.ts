@@ -29,10 +29,6 @@ export class ItemComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.isActive !== undefined && this._componentRef) {
-      this._componentRef.instance.isActive = changes.isActive.currentValue;
-    }
-
     if (changes.listItemComponent) {
       this._loadItemComponent();
     }
@@ -53,7 +49,6 @@ export class ItemComponent implements OnInit, OnChanges {
       this._componentRef.instance.item = item;
       this._componentRef.instance.patients = this.patients;
       this._componentRef.instance.configuration = this.configuration;
-      this._componentRef.instance.isActive = this.isActive;
     }
   }
 
