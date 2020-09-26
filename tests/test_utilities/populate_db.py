@@ -19,6 +19,7 @@ VIEWER_USER = {
     'password': 'admin'
 }
 
+
 def create_or_overwrite_txm_event(name: str) -> TxmEvent:
     previous_txm_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
     if previous_txm_model:
@@ -51,7 +52,7 @@ def add_users():
 if __name__ == '__main__':
     app = create_app()
     with app.app_context():
-        patients = parse_excel_data('~/Documents/datavid/patient_data_2020_07.xlsx')
+        patients = parse_excel_data('data.xlsx')
         txm_event = create_or_overwrite_txm_event(name='test')
         save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=txm_event.db_id)
-        # add_users()
+        add_users()
