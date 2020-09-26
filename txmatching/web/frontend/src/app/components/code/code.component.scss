@@ -9,18 +9,21 @@
 
   background: $code-bg--basic;
   color: $code-color--basic;
+
+  font-weight: 600;
 }
 
 :host {
-  &.antibody > .code {
-    background: $code-bg--antibody;
-    border-color: $code-border-color--antibody;
-    color: $code-color--antibody;
-  }
 
   &.matching > .code {
     background: $code-bg--matching;
     border-color: $code-border-color--matching;
     color: $code-color--matching;
+  }
+
+  &.bad-matching > .code {
+    background: $code-bg--bad-matching !important;
+    border-color: $code-border-color--bad-matching !important;
+    color: $code-color--bad-matching !important;
   }
 }
