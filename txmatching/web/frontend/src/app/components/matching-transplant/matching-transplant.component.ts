@@ -94,22 +94,18 @@ export class MatchingTransplantComponent {
   }
 
   public getRecipientAntigenClass(code: string): string {
-    if (this.donor && this.recipient) {
-      if (this.donor.parameters.hla_typing.codes.includes(code) && !this.recipient.hla_antibodies.hla_codes_over_cutoff.includes(code)) {
-        // recipient antigen matches some donor antigen
-        // and code is not recipient antibody
-        return 'matching';
-      }
+    if (this.donor && this.recipient && this.donor.parameters.hla_typing.codes.includes(code) && !this.recipient.hla_antibodies.hla_codes_over_cutoff.includes(code)) {
+      // recipient antigen matches some donor antigen
+      // and code is not recipient antibody
+      return 'matching';
     }
     return '';
   }
 
   public getRecipientAntibodyClass(code: string): string {
-    if (this.donor) {
-      if (this.donor.parameters.hla_typing.codes.includes(code)) {
-        // recipient antibody matches some donor antigen
-        return 'bad-matching';
-      }
+    if (this.donor && this.donor.parameters.hla_typing.codes.includes(code)) {
+      // recipient antibody matches some donor antigen
+      return 'bad-matching';
     }
     return '';
   }
