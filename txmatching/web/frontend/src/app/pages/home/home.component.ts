@@ -8,7 +8,7 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { Matching, MatchingView } from '@app/model/Matching';
+import { Matching } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
@@ -28,7 +28,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public loading: boolean = false;
 
-  public matchings: MatchingView[] = [];
+  public matchings: Matching[] = [];
   public user?: User;
   public patients?: PatientList;
   public appConfiguration?: AppConfiguration;
@@ -102,7 +102,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       (matchings: Matching[]) => {
 
         this.matchings = matchings.map((m, key) => {
-          return { index: key + 1, ...m };
+          m.index = key + 1;
+          return m;
         });
 
         this._logger.log('Calculated matchings', [matchings]);

@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PatientList, PatientPair } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
-import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
-import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
-import { ListItemAbstractComponent, ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
+import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientListFilter, patientListFilters, PatientListFilterType } from '@app/pages/patients/patients.interface';
 
 @Component({
@@ -17,11 +15,7 @@ export class PatientsComponent implements OnInit {
   public listFilterTypes: typeof PatientListFilterType = PatientListFilterType;
 
   public patients?: PatientList;
-
   public pairs: PatientPair[] = [];
-
-  private _listItemComponent: typeof ListItemAbstractComponent = PatientPairItemComponent;
-  private _listItemDetailComponent: typeof ListItemDetailAbstractComponent = PatientPairDetailComponent;
 
   constructor(private _patientService: PatientService) {
     this.activeListFilter = patientListFilters[0];
@@ -35,16 +29,21 @@ export class PatientsComponent implements OnInit {
     return this.patients ? this.patients.donors.length + this.patients.recipients.length : 0;
   }
 
-  get listItemComponent(): typeof ListItemAbstractComponent {
-    return this._listItemComponent;
-  }
-
-  get listItemDetailComponent(): typeof ListItemDetailAbstractComponent {
-    return this._listItemDetailComponent;
-  }
-
   public setActiveFilter(type: PatientListFilterType): void {
     this.activeListFilter = patientListFilters.find(f => f.type === type);
+  }
+
+  public getFilteredItems(): ListItem[] {
+    if (this.activeListFilter && this.patients) {
+      if (this.activeListFilter.type === PatientListFilterType.Donors) {
+        return this.patients.donors;
+      }
+      if (this.activeListFilter.type === PatientListFilterType.Recipients) {
+        return this.patients.recipients;
+      }
+    }
+
+    return this.pairs;
   }
 
   private _initPatients(): void {

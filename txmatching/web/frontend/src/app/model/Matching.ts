@@ -1,11 +1,9 @@
-export interface Matching {
+import { ListItem } from '@app/components/list-item/list-item.interface';
+
+export interface Matching extends ListItem {
   score: number;
   rounds: Round[];
   countries: MatchingCountry[];
-}
-
-export interface MatchingView extends Matching {
-  index: number;
 }
 
 export interface Round {

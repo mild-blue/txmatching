@@ -23,7 +23,7 @@
   <app-content *ngIf="activeListFilter">
     <app-item-list [listItemDetailComponent]="activeListFilter.detailComponent"
                    [listItemComponent]="activeListFilter.itemComponent"
-                   [items]="pairs"
+                   [items]="getFilteredItems()"
                    [configuration]="undefined"
                    [patients]="patients"></app-item-list>
   </app-content>

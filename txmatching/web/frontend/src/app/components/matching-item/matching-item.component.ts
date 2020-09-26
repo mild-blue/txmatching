@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { MatchingView } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
 import { ListItemAbstractComponent } from '@app/components/list-item/list-item.interface';
+import { Matching } from '@app/model/Matching';
 
 @Component({
   selector: 'app-matching-item',
@@ -11,7 +11,7 @@ import { ListItemAbstractComponent } from '@app/components/list-item/list-item.i
 })
 export class MatchingItemComponent extends ListItemAbstractComponent {
 
-  @Input() item?: MatchingView;
+  @Input() item?: Matching;
   @Input() isActive: boolean = false;
   @Input() configuration?: AppConfiguration;
   @Input() patients?: PatientList;
@@ -20,7 +20,7 @@ export class MatchingItemComponent extends ListItemAbstractComponent {
     super();
   }
 
-  public getTransplantsCount(matching: MatchingView): number {
+  public getTransplantsCount(matching: Matching): number {
     let sum = 0;
     for (const round of matching.rounds) {
       sum += round.transplants.length;

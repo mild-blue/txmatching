@@ -1,9 +1,16 @@
+import { ListItem } from '@app/components/list-item/list-item.interface';
+
 export interface PatientList {
   donors: Donor[];
   recipients: Recipient[];
 }
 
-export interface Patient {
+export interface PatientPair extends ListItem {
+  donor: Donor;
+  recipient: Recipient;
+}
+
+export interface Patient extends ListItem {
   db_id: number;
   medical_id: string;
   parameters: PatientParameters;
@@ -27,12 +34,6 @@ export interface PatientParameters {
     codes: string[];
   };
   country_code: string;
-}
-
-export interface PatientPair {
-  index: number;
-  donor: Donor;
-  recipient: Recipient;
 }
 
 export enum DonorType {
