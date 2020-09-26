@@ -18,6 +18,7 @@ from txmatching.web.api.patient_api import patient_api
 from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
 from txmatching.web.api.user_api import user_api
+from txmatching.web.error_handler import register_error_handlers
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'
@@ -54,6 +55,9 @@ def create_app():
         bcrypt.init_app(app)
 
     def configure_apis():
+        # disable default error handling
+        app.config['ERROR_INCLUDE_MESSAGE'] = False
+
         # Set up Swagger and API
         authorizations = {
             'bearer': {
@@ -70,6 +74,8 @@ def create_app():
         api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
         api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
         api.add_namespace(report_api, path=f'{API_VERSION}/{REPORTS_NAMESPACE}')
+
+        register_error_handlers(api)
 
     # pylint: disable=unused-variable
     # routes registered in flask

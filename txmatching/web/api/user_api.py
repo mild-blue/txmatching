@@ -42,11 +42,12 @@ class LoginApi(Resource):
 
 @user_api.route('/otp', methods=['POST'])
 class OtpLoginApi(Resource):
-    login_input_model = user_api.model('OtpLogin', {
+    otp_input_model = user_api.model('OtpLogin', {
         'otp': fields.String(required=True, description='OTP for this login.'),
     })
 
-    @user_api.doc(body=login_input_model)
+    @user_api.doc(security='bearer')
+    @user_api.doc(body=otp_input_model)
     @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE, description='')
     @allow_otp_request()
     def post(self):

@@ -1,3 +1,5 @@
+from typing import List
+
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.user.totp import generate_totp_seed
@@ -20,6 +22,16 @@ VIEWER_USER = {
     'password': 'admin'
 }
 
+OTP_USER = {
+    'email': 'otp@example.com',
+    'password': 'admin'
+}
+
+SERVICE_USER = {
+    'email': 'service@example.com',
+    'password': 'admin'
+}
+
 
 def create_or_overwrite_txm_event(name: str) -> TxmEvent:
     previous_txm_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
@@ -35,25 +47,46 @@ def create_or_overwrite_txm_event(name: str) -> TxmEvent:
 def add_users():
     ConfigModel.query.delete()
     AppUserModel.query.delete()
-    app_user = AppUserModel(
+    admin = AppUserModel(
         email=ADMIN_USER['email'],
         pass_hash=encode_password(ADMIN_USER['password']),
         role=UserRole.ADMIN,
         second_factor_material=generate_totp_seed(),
         require_2fa=False
     )
-    persist_user(app_user)
-    ADMIN_USER['id'] = app_user.id
-    assert len(AppUserModel.query.all()) == 1
-    app_user = AppUserModel(
+    viewer = AppUserModel(
         email=VIEWER_USER['email'],
         pass_hash=encode_password(VIEWER_USER['password']),
         role=UserRole.VIEWER,
         second_factor_material=generate_totp_seed(),
         require_2fa=False
     )
-    persist_user(app_user)
-    assert len(AppUserModel.query.all()) == 2
+    otp = AppUserModel(
+        email=OTP_USER['email'],
+        pass_hash=encode_password(OTP_USER['password']),
+        role=UserRole.ADMIN,
+        second_factor_material=generate_totp_seed(),
+        phone_number='123456789',
+        require_2fa=True
+    )
+    service = AppUserModel(
+        email=SERVICE_USER['email'],
+        pass_hash=encode_password(SERVICE_USER['password']),
+        role=UserRole.SERVICE,
+        second_factor_material=generate_totp_seed(),
+        require_2fa=False
+    )
+    _add_users([admin, viewer, otp, service])
+    ADMIN_USER['id'] = admin.id
+    VIEWER_USER['id'] = viewer.id
+    OTP_USER['id'] = otp.id
+    SERVICE_USER['id'] = service.id
+
+
+def _add_users(users: List[AppUserModel]):
+    for u in users:
+        persist_user(u)
+    assert len(AppUserModel.query.all()) == len(users)
 
 
 if __name__ == '__main__':

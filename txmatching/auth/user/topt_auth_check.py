@@ -18,10 +18,12 @@ def allow_otp_request() -> Callable:
             token = get_request_token()
 
             if token.type != TokenType.OTP:
-                abort(400, description='OTP validation can be called only with OTP token.')
+                abort(403, error='Wrong token used.',
+                      description='OTP validation can be called only with OTP token.')
             # this case should never happen, but we must be careful
             elif token.role == UserRole.SERVICE:
-                abort(400, description='OTP validation is only for user accounts.')
+                abort(403, error='Wrong token used.',
+                      description='OTP validation is only for user accounts.')
 
             return original_route(*args, **kwargs)
 
