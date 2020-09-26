@@ -1,8 +1,10 @@
 <div class="pair-detail">
 
-  <app-tab-switch [tabs]="tabNames"
-                  [activeTab]="activeTab ? activeTab : ''"
-                  (tabClicked)="setActiveTab($event)"></app-tab-switch>
+  <div class="pair-detail__nav">
+    <app-tab-switch [tabs]="tabNames"
+                    [activeTab]="activeTab ? activeTab : ''"
+                    (tabClicked)="setActiveTab($event)"></app-tab-switch>
+  </div>
 
   <div [ngSwitch]="activeTab">
     <div *ngSwitchCase="tabs.Pair"
