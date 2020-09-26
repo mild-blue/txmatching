@@ -12,6 +12,7 @@ from txmatching.auth.service.service_crud import register_service
 from txmatching.auth.user.totp import generate_otp_for_user
 from txmatching.auth.user.user_crud import register_user
 from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
+from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
@@ -47,10 +48,10 @@ class Test(DbTests):
             self.assertRaises(InvalidIpAddressAccessException,
                               lambda: credentials_login(usr.email, pwd))
 
-    def test_credentials_login_user(self):
+    def test_credentials_login_user_without_2fa(self):
         jwt_sec = get_application_configuration().jwt_secret
         self.assertTrue(bool(jwt_sec))
-        usr, pwd = self._create_user()
+        usr, pwd = self._create_user(require_2fa=False)
 
         expected = EncodedBearerToken(usr.id, usr.role, TokenType.ACCESS)
         encoded = credentials_login(usr.email, pwd)
@@ -58,11 +59,10 @@ class Test(DbTests):
         self.assertEqual(expected, decoded)
 
     def test_credentials_login_user_2fa(self):
-        usr, pwd = self._create_user()
+        usr, pwd = self._create_user(require_2fa=True)
         expected = EncodedBearerToken(usr.id, usr.role, TokenType.OTP)
 
         conf = mock.MagicMock()
-        conf.require_2fa = True
         conf.jwt_expiration_days = get_application_configuration().jwt_expiration_days
         conf.jwt_secret = get_application_configuration().jwt_secret
 
@@ -114,13 +114,15 @@ class Test(DbTests):
 
         self.assertRaises(InvalidOtpException, lambda: _otp_login(wrong_otp, otp_token, conf))
 
-    def _create_user(self, role: UserRole = UserRole.ADMIN) -> Tuple[AppUserModel, str]:
+    def _create_user(self, role: UserRole = UserRole.ADMIN, require_2fa: bool = True) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())
         email = str(uuid4())
         register_user(email, pwd, role, '456 678 645')
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
         self.assertIsNotNone(db_usr)
         self.assertNotEqual(pwd, db_usr.pass_hash)
+        db_usr.require_2fa = require_2fa
+        db.session.commit()
         return db_usr, pwd
 
     def _create_service(self) -> Tuple[AppUserModel, str]:

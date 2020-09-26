@@ -34,7 +34,7 @@ def credentials_login(email: str, password: str) -> str:
     if user.role == UserRole.SERVICE:
         token = service_login_flow(user, request.remote_addr)
     else:
-        token = user_login_flow(user, conf)
+        token = user_login_flow(user, conf.jwt_expiration_days)
 
     return _encode_auth_token(token, conf.jwt_secret)
 
@@ -50,7 +50,7 @@ def _refresh_token(request_token: EncodedBearerToken, conf: ApplicationConfigura
     assert request_token.role != UserRole.SERVICE
     assert request_token.type != TokenType.OTP
 
-    new_token = refresh_user_token(request_token, conf)
+    new_token = refresh_user_token(request_token, conf.jwt_expiration_days)
     return _encode_auth_token(new_token, conf.jwt_secret)
 
 
@@ -68,7 +68,7 @@ def _otp_login(otp: str, request_token: EncodedBearerToken, conf: ApplicationCon
     user = get_app_user_by_id(request_token.user_id)
     assert user is not None
 
-    access_token = user_otp_login(user, otp, conf)
+    access_token = user_otp_login(user, otp, conf.jwt_expiration_days)
     return _encode_auth_token(access_token, conf.jwt_secret)
 
 

@@ -24,8 +24,6 @@ class ApplicationConfiguration:
     jwt_secret: str
     jwt_expiration_days: int
 
-    require_2fa: bool
-
 
 def get_application_configuration() -> ApplicationConfiguration:
     """
@@ -45,8 +43,7 @@ def build_application_configuration() -> ApplicationConfiguration:
         postgres_db=get_prop('POSTGRES_DB'),
         postgres_url=get_prop('POSTGRES_URL'),
         jwt_secret=get_prop('JWT_SECRET'),
-        jwt_expiration_days=int(get_prop('JWT_EXPIRATION_DAYS')),
-        require_2fa=get_prop('REQUIRE_2FA', True) != 'False'
+        jwt_expiration_days=int(get_prop('JWT_EXPIRATION_DAYS'))
     )
     return config
 

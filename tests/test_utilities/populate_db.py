@@ -39,7 +39,8 @@ def add_users():
         email=ADMIN_USER['email'],
         pass_hash=encode_password(ADMIN_USER['password']),
         role=UserRole.ADMIN,
-        second_factor_material=generate_totp_seed()
+        second_factor_material=generate_totp_seed(),
+        require_2fa=False
     )
     persist_user(app_user)
     ADMIN_USER['id'] = app_user.id
@@ -48,7 +49,9 @@ def add_users():
         email=VIEWER_USER['email'],
         pass_hash=encode_password(VIEWER_USER['password']),
         role=UserRole.VIEWER,
-        second_factor_material=generate_totp_seed())
+        second_factor_material=generate_totp_seed(),
+        require_2fa=False
+    )
     persist_user(app_user)
     assert len(AppUserModel.query.all()) == 2
 

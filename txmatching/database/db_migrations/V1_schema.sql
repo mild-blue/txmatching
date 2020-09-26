@@ -61,6 +61,7 @@ CREATE TABLE app_user
     role                   USER_ROLE   NOT NULL,
     second_factor_material TEXT        NOT NULL,
     phone_number           TEXT,
+    require_2fa            BOOLEAN     NOT NULL,
     created_at             TIMESTAMPTZ NOT NULL,
     updated_at             TIMESTAMPTZ NOT NULL,
     deleted_at             TIMESTAMPTZ,

@@ -31,7 +31,6 @@ class DbTests(unittest.TestCase):
         self.app = Flask(__name__)
         self.app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self._database_name}'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        self.app.config['REQUIRE_2FA'] = False
         db.init_app(self.app)
 
         self.app.app_context().push()
