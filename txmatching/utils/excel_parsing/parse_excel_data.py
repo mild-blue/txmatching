@@ -29,7 +29,7 @@ _valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DR
 
 _unknown_allele_codes = set()
 
-DEFAULT_CUTOFF = 2000
+DEFAULT_CUTOFF_FOR_EXCEL = 2000
 DEFAULT_MFI = 10000
 
 logger = logging.getLogger(__name__)
@@ -78,7 +78,7 @@ def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
     allele_codes = _parse_hla(hla_allele_str)
     # value and cut_off are just temporary values for now
     return HLAAntibodies(
-        [HLAAntibody(mfi=DEFAULT_MFI, cutoff=DEFAULT_CUTOFF, raw_code=allele_code.raw_code) for
+        [HLAAntibody(mfi=DEFAULT_MFI, cutoff=DEFAULT_CUTOFF_FOR_EXCEL, raw_code=allele_code.raw_code) for
          allele_code in allele_codes])
 
 
@@ -138,4 +138,4 @@ def get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
     return RecipientExcelDTO(medical_id=recipient_id, parameters=recipient_params,
                              hla_antibodies=antibodies_recipient,
                              acceptable_blood_groups=acceptable_blood_groups_recipient,
-                             recipient_cutoff=DEFAULT_CUTOFF)
+                             recipient_cutoff=DEFAULT_CUTOFF_FOR_EXCEL)
