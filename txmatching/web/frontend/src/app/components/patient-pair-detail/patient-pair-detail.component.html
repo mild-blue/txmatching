@@ -14,6 +14,8 @@
     <app-patient-detail-donor *ngSwitchCase="tabs.Donor"
                               [item]="item.donor"
                               [patients]="patients"></app-patient-detail-donor>
-    <app-patient-detail-recipient *ngSwitchCase="tabs.Recipient"></app-patient-detail-recipient>
+    <app-patient-detail-recipient *ngSwitchCase="tabs.Recipient"
+                                  [item]="item.recipient"
+                                  [patients]="patients"></app-patient-detail-recipient>
   </div>
 </div>
