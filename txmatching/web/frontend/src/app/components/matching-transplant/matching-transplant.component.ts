@@ -50,15 +50,18 @@ export class MatchingTransplantComponent {
   }
 
   public antigenScore(prefix: string): number {
-    if (this.donor && this.recipient) {
-      const donorAntigens = this.donor.parameters.hla_typing.codes;
-      const recipientAntigens = this.recipient.parameters.hla_typing.codes;
-      const matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
-
-      if (matchingAntigens.length) {
-        return matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix];
-      }
+    if (!this.donor || !this.recipient) {
+      return 0;
     }
+
+    const donorAntigens = this.donor.parameters.hla_typing.codes;
+    const recipientAntigens = this.recipient.parameters.hla_typing.codes;
+    const matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
+
+    if (matchingAntigens.length) {
+      return matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix];
+    }
+
     return 0;
   }
 
