@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from txmatching.patients.patient_parameters import HLATyping
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
+    HLATypingDTO
 
 
 @dataclass
 class DonorUpdateDTO:
     db_id: int
-    hla_typing: Optional[HLATyping] = None
+    hla_typing: Optional[HLATypingDTO] = None

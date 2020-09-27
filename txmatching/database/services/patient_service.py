@@ -1,6 +1,9 @@
 import dataclasses
 import logging
-from typing import Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
+
+import dacite
+from sqlalchemy import and_
 
 from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
@@ -14,14 +17,14 @@ from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import \
     get_newest_txm_event_db_id
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
-    RecipientModel, TxmEventModel)
+    ConfigModel, DonorModel, RecipientAcceptableBloodModel,
+    RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
 from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
-                                         TxmEvent)
+                                         RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLATyping,
                                                     PatientParameters)
-from txmatching.patients.patient_types import RecipientDbId
+from txmatching.utils.hla_system.hla_table import parse_code
 
 logger = logging.getLogger(__name__)
 
@@ -44,21 +47,24 @@ def donor_excel_dto_to_donor_model(donor: DonorExcelDTO,
     return donor_model
 
 
-def recipient_excel_dto_to_recipient_model(recipient: RecipientExcelDTO, txm_event_db_id: int) -> RecipientModel:
+def recipient_excel_dto_to_recipient_model(recipient_excel_dto: RecipientExcelDTO,
+                                           txm_event_db_id: int) -> RecipientModel:
     patient_model = RecipientModel(
-        medical_id=recipient.medical_id,
-        country=recipient.parameters.country_code,
-        blood=recipient.parameters.blood_group,
-        hla_typing=dataclasses.asdict(recipient.parameters.hla_typing),
+        medical_id=recipient_excel_dto.medical_id,
+        country=recipient_excel_dto.parameters.country_code,
+        blood=recipient_excel_dto.parameters.blood_group,
+        hla_typing=dataclasses.asdict(recipient_excel_dto.parameters.hla_typing),
         hla_antibodies=[RecipientHLAAntibodyModel(
+            raw_code=hla_antibody.raw_code,
             code=hla_antibody.code,
             cutoff=hla_antibody.cutoff,
             mfi=hla_antibody.mfi
-        ) for hla_antibody in recipient.hla_antibodies.antibodies_list],
+        ) for hla_antibody in recipient_excel_dto.hla_antibodies.hla_antibodies_list],
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
-                          for blood in recipient.acceptable_blood_groups],
-        txm_event_id=txm_event_db_id
+                          for blood in recipient_excel_dto.acceptable_blood_groups],
+        txm_event_id=txm_event_db_id,
+        recipient_cutoff=recipient_excel_dto.recipient_cutoff
     )
     return patient_model
 
@@ -88,7 +94,11 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
         parameters=PatientParameters(
             blood_group=patient_model.blood,
             country_code=patient_model.country,
-            hla_typing=HLATyping(**patient_model.hla_typing),
+            hla_typing=dacite.from_dict(data_class=HLATyping, data=patient_model.hla_typing),
+            height=patient_model.height,
+            weight=patient_model.weight,
+            yob=patient_model.yob,
+            sex=patient_model.sex
         ))
 
 
@@ -104,25 +114,38 @@ def _get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
 
 
 def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
-                                        donors_for_recipients_dict: Dict[RecipientDbId, Donor]) -> Recipient:
+                                        related_donor_db_id: Optional[int] = None) -> Recipient:
+    if not related_donor_db_id:
+        related_donor_db_id = DonorModel.query.filter(DonorModel.recipient_id == recipient_model.id).one().id
     base_patient = _get_base_patient_from_patient_model(recipient_model)
 
     return Recipient(base_patient.db_id,
                      base_patient.medical_id,
                      parameters=base_patient.parameters,
-                     related_donor_db_id=donors_for_recipients_dict[base_patient.db_id].db_id,
+                     related_donor_db_id=related_donor_db_id,
                      hla_antibodies=HLAAntibodies(
                          [HLAAntibody(code=hla_antibody.code,
                                       mfi=hla_antibody.mfi,
-                                      cutoff=hla_antibody.cutoff)
+                                      cutoff=hla_antibody.cutoff,
+                                      raw_code=hla_antibody.raw_code)
                           for hla_antibody in recipient_model.hla_antibodies]
                      ),
                      acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
                                               recipient_model.acceptable_blood],
+                     recipient_cutoff=recipient_model.recipient_cutoff,
+                     recipient_requirements=RecipientRequirements(**recipient_model.recipient_requirements),
+                     waiting_since=recipient_model.waiting_since,
+                     previous_transplants=recipient_model.previous_transplants
                      )
 
 
-def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> int:
+def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> Recipient:
+    # TODO do not delete https://trello.com/c/zseK1Zcf
+    old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
+    txm_event_db_id = old_recipient_model.txm_event_id
+    ConfigModel.query.filter(
+        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
+
     recipient_update_dict = {}
     if recipient_update_dto.acceptable_blood_groups:
         acceptable_blood_models = [
@@ -133,13 +156,20 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> int:
             RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
         db.session.add_all(acceptable_blood_models)
     if recipient_update_dto.hla_antibodies:
+        # not the best approach: in case cutoff was different per antibody before it will be unified now, but
+        # but good for the moment
+        old_recipient = _get_recipient_from_recipient_model(old_recipient_model)
+        cutoff = recipient_update_dto.cutoff if recipient_update_dto.cutoff is not None \
+            else old_recipient.recipient_cutoff
+
         hla_antibodies = [
             RecipientHLAAntibodyModel(recipient_id=recipient_update_dto.db_id,
-                                      code=hla_antibody.code,
-                                      mfi=hla_antibody.mfi,
-                                      cutoff=hla_antibody.cutoff) for hla_antibody
+                                      raw_code=hla_antibody_dto.raw_code,
+                                      mfi=hla_antibody_dto.mfi,
+                                      cutoff=cutoff,
+                                      code=parse_code(hla_antibody_dto.raw_code)) for hla_antibody_dto
             in
-            recipient_update_dto.hla_antibodies.antibodies_list]
+            recipient_update_dto.hla_antibodies.hla_antibodies_list]
 
         RecipientHLAAntibodyModel.query.filter(
             RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id).delete()
@@ -149,19 +179,26 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> int:
     if recipient_update_dto.recipient_requirements:
         recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
             recipient_update_dto.recipient_requirements)
+    if recipient_update_dto.cutoff:
+        recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
 
     RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
     db.session.commit()
-    return recipient_update_dto.db_id
+    return _get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id))
 
 
-def update_donor(donor_update_dto: DonorUpdateDTO) -> int:
+def update_donor(donor_update_dto: DonorUpdateDTO) -> Donor:
+    # TODO do not delete https://trello.com/c/zseK1Zcf
+    old_donor = DonorModel.query.get(donor_update_dto.db_id)
+    ConfigModel.query.filter(
+        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == old_donor.txm_event_id)).delete()
+
     donor_update_dict = {}
     if donor_update_dto.hla_typing:
         donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing)
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
     db.session.commit()
-    return donor_update_dto.db_id
+    return _get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
 
 
 def get_txm_event(txm_event_db_id: Optional[int] = None) -> TxmEvent:
@@ -175,12 +212,12 @@ def get_txm_event(txm_event_db_id: Optional[int] = None) -> TxmEvent:
                               for donor_model in active_donors]
 
     donors_dict = {donor.db_id: donor for _, donor in donors_with_recipients}
-    donors_with_recipients_dict = {related_recipient_id: donor for related_recipient_id, donor in donors_with_recipients
-                                   if related_recipient_id}
+    donors_with_recipients_dict = {related_recipient_id: donor.db_id for related_recipient_id, donor in
+                                   donors_with_recipients if related_recipient_id}
 
     recipients_dict = {
         recipient_model.id: _get_recipient_from_recipient_model(
-            recipient_model, donors_with_recipients_dict)
+            recipient_model, donors_with_recipients_dict[recipient_model.id])
         for recipient_model in active_recipients}
 
     return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict=donors_dict,

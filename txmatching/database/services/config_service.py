@@ -9,7 +9,7 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.services import txm_event_service
 from txmatching.database.sql_alchemy_schema import ConfigModel
-from txmatching.utils.country import Country
+from txmatching.utils.enums import Country
 from txmatching.utils.logged_user import get_current_user_id
 
 logger = logging.getLogger(__name__)

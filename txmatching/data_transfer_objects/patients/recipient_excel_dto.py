@@ -10,3 +10,4 @@ from txmatching.patients.patient_parameters import HLAAntibodies
 class RecipientExcelDTO(PatientExcelDTO):
     hla_antibodies: HLAAntibodies
     acceptable_blood_groups: List[str]
+    recipient_cutoff: int

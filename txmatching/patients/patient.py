@@ -1,9 +1,13 @@
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 
-from txmatching.patients.patient_parameters import PatientParameters, HLAAntibodies
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
+                                                    PatientParameters)
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
+
+DEFAULT_CUTOFF = 2000
 
 
 class DonorType(str, Enum):
@@ -49,8 +53,17 @@ class RecipientRequirements:
 class Recipient(Patient):
     related_donor_db_id: DonorDbId
     acceptable_blood_groups: List[str]
+    recipient_cutoff: Optional[int] = None
     hla_antibodies: HLAAntibodies = HLAAntibodies()
     recipient_requirements: RecipientRequirements = RecipientRequirements()
+    waiting_since: Optional[datetime] = None
+    previous_transplants: Optional[int] = None
+
+    def __post_init__(self):
+        if self.recipient_cutoff is None:
+            self.recipient_cutoff = max(self.hla_antibodies.hla_antibodies_list,
+                                        key=lambda antibody: antibody.cutoff,
+                                        default=HLAAntibody('Default', mfi=0, cutoff=DEFAULT_CUTOFF)).cutoff
 
 
 @dataclass
