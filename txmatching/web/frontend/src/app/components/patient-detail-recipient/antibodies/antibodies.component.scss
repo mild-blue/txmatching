@@ -20,10 +20,8 @@
   }
 
   &__list {
-    padding: $padding-y $padding-x $box-shadow--wide-size;
-
     &-content {
-      margin-top: $padding-y;
+      margin: $padding-y 0;
     }
   }
 

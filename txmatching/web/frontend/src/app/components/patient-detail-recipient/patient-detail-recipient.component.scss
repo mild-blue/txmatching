@@ -3,7 +3,7 @@
 .detail-recipient {
   padding: $padding-y calc(#{$padding-x} * 2);
 
-  h4 {
+  h4, ::ng-deep h4 {
     color: $body-color;
     margin: 0;
   }
@@ -24,20 +24,11 @@
     }
   }
 
-  .box, ::ng-deep .box {
-    border-radius: $border-radius--wide;
-    background: $white;
-    box-shadow: $box-shadow--wide;
-    padding: $padding-y $padding-x;
-    margin-bottom: $box-shadow--wide-size;
-    overflow: hidden;
-  }
-
   .checkboxes {
     margin: $item-gap 0 $padding-y;
   }
 
-  .placeholder {
+  .placeholder, ::ng-deep .placeholder {
     font-style: italic;
     width: 100%;
     text-align: center;
