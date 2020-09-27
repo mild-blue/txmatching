@@ -27,10 +27,10 @@
       <tr>
         <td>Blood type</td>
         <td>
-          <app-code [class.matching]="transplant.compatible_blood">{{ transplant.d.parameters.blood_group }}</app-code>
+          <app-code [class.matching]="transplant.compatible_blood || pairBloodCompatible">{{ transplant.d.parameters.blood_group }}</app-code>
         </td>
         <td colspan="2">
-          <app-code [class.matching]="transplant.compatible_blood">{{ transplant.r.parameters.blood_group }}</app-code>
+          <app-code [class.matching]="transplant.compatible_blood || pairBloodCompatible">{{ transplant.r.parameters.blood_group }}</app-code>
           <div class="small">
             Acceptable:
             <app-code *ngFor="let bloodGroup of transplant.r.acceptable_blood_groups">{{ bloodGroup }}</app-code>

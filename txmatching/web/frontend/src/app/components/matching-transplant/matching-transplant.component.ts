@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
-import { antibodiesMultipliers, PatientList } from '@app/model/Patient';
+import { antibodiesMultipliers, compatibleBloodGroups, PatientList } from '@app/model/Patient';
 
 @Component({
   selector: 'app-matching-transplant',
@@ -25,6 +25,14 @@ export class MatchingTransplantComponent implements OnInit {
 
   get prefixes(): string[] {
     return Object.keys(antibodiesMultipliers);
+  }
+
+  get pairBloodCompatible(): boolean {
+    if (!this.transplant) {
+      return false;
+    }
+
+    return compatibleBloodGroups[this.transplant.r.parameters.blood_group].includes(this.transplant.d.parameters.blood_group);
   }
 
   public filterCodes(codes: string[], prefix: string): string[] {
