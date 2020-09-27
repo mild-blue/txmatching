@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { antibodiesMultipliers, PatientList } from '@app/model/Patient';
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-matching-transplant',
@@ -14,32 +13,18 @@ export class MatchingTransplantComponent implements OnInit {
   @Input() transplant?: Transplant;
   @Input() patients?: PatientList;
 
-  public arrowRight = faAngleRight;
+  public hlaScores?: Map<string, number>;
+  public hlaScoresTotal: number = 0;
 
   constructor(private _patientService: PatientService) {
   }
 
   ngOnInit() {
+    this._initHLAScores();
   }
 
   get prefixes(): string[] {
     return Object.keys(antibodiesMultipliers);
-  }
-
-  public antigenScore(prefix: string): number {
-    if (!this.transplant || !this.transplant.d || !this.transplant.r) {
-      return 0;
-    }
-
-    const donorAntigens = this.transplant.d.parameters.hla_typing.codes;
-    const recipientAntigens = this.transplant.r.parameters.hla_typing.codes;
-    const matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
-
-    if (matchingAntigens.length) {
-      return matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix];
-    }
-
-    return 0;
   }
 
   public filterCodes(codes: string[], prefix: string): string[] {
@@ -93,5 +78,29 @@ export class MatchingTransplantComponent implements OnInit {
       return 'bad-matching';
     }
     return '';
+  }
+
+  private _initHLAScores(): void {
+
+    if (!this.transplant || !this.transplant.d || !this.transplant.r) {
+      return;
+    }
+
+    const donorAntigens = this.transplant.d.parameters.hla_typing.codes;
+    const recipientAntigens = this.transplant.r.parameters.hla_typing.codes;
+    const matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
+
+    if (!matchingAntigens.length) {
+      return;
+    }
+
+    const map: Map<string, number> = new Map<string, number>();
+    for (const prefix of this.prefixes) {
+      const score = matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix];
+      map.set(prefix, score);
+    }
+
+    this.hlaScores = map;
+    this.hlaScoresTotal = [...this.hlaScores.values()].reduce((a, b) => a + b, 0);
   }
 }

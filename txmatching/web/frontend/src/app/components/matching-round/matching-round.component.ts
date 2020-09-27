@@ -45,6 +45,6 @@ export class MatchingRoundComponent {
     }
 
     const maxScore = this.configuration.maximum_total_score;
-    return 100 * transplant.score / maxScore;
+    return 100 * (transplant.score ?? 0) / maxScore;
   }
 }

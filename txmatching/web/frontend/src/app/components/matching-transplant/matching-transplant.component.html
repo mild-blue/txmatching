@@ -3,7 +3,7 @@
     <app-patient-pair [pair]="transplant"></app-patient-pair>
 
     <div class="score">
-      Score: <span>{{ transplant.score }}</span>
+      Score: <span>{{ transplant.score !== undefined ? transplant.score : hlaScoresTotal }}</span>
     </div>
   </div>
 
@@ -59,7 +59,7 @@
           <app-code *ngFor="let code of filterCodes(transplant.r.hla_antibodies.hla_codes_over_cutoff, prefix)"
                     [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
         </td>
-        <td>{{ antigenScore(prefix) }}</td>
+        <td>{{ hlaScores ? hlaScores.get(prefix) : 0 }}</td>
       </tr>
       <tr>
         <td>Other</td>
@@ -81,7 +81,7 @@
         <td colspan="4">
           Final score:
         </td>
-        <td><span>{{ transplant.score }}</span></td>
+        <td><span>{{ transplant.score !== undefined ? transplant.score : hlaScoresTotal }}</span></td>
       </tr>
       </tbody>
     </table>

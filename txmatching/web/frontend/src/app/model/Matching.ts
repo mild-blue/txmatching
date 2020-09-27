@@ -12,10 +12,10 @@ export interface Round {
 }
 
 export interface Transplant extends PatientPair {
-  score: number;
-  compatible_blood: boolean;
-  donor: string;
-  recipient: string;
+  score?: number;
+  compatible_blood?: boolean;
+  donor?: string;
+  recipient?: string;
 }
 
 export interface MatchingCountry {
