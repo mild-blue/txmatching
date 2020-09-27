@@ -53,7 +53,6 @@ export interface Antigen extends Hla {
 }
 
 export interface Antibody extends Hla {
-  raw_code: string;
   mfi: number;
 }
 

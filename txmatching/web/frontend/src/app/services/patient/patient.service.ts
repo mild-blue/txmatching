@@ -41,7 +41,17 @@ export class PatientService {
   public async saveRecipient(recipient: Recipient): Promise<Recipient> {
     return this._http.put<Recipient>(
       `${environment.apiUrl}/patients/recipient`,
-      { ...recipient }
+      {
+        db_id: recipient.db_id,
+        acceptable_blood_groups: recipient.acceptable_blood_groups,
+        hla_typing: {
+          hla_types_list: recipient.parameters.hla_typing.hla_types_list
+        },
+        hla_antibodies: {
+          hla_antibodies_list: recipient.hla_antibodies.hla_antibodies_list
+        },
+        recipient_requirements: recipient.recipient_requirements
+      }
     ).pipe(first()).toPromise();
   }
 }
