@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
-import { antibodiesMultipliers, compatibleBloodGroups, PatientList } from '@app/model/Patient';
+import { antibodiesMultipliers, compatibleBloodGroups, Hla, PatientList } from '@app/model/Patient';
 
 @Component({
   selector: 'app-matching-transplant',
@@ -35,15 +35,15 @@ export class MatchingTransplantComponent implements OnInit {
     return compatibleBloodGroups[this.transplant.r.parameters.blood_group].includes(this.transplant.d.parameters.blood_group);
   }
 
-  public filterCodes(codes: string[], prefix: string): string[] {
-    return codes.filter(code => code.startsWith(prefix));
+  public filterCodes(codes: Hla[], prefix: string): Hla[] {
+    return codes.filter(code => code.raw_code.startsWith(prefix));
   }
 
-  public otherHLA(codes: string[]): string[] {
+  public otherHLA(codes: Hla[]): Hla[] {
     // return codes that do not start with any of prefixes
     return codes.filter(i => {
       for (const prefix of this.prefixes) {
-        if (i.startsWith(prefix)) {
+        if (i.raw_code.startsWith(prefix)) {
           return false;
         }
       }
@@ -56,12 +56,12 @@ export class MatchingTransplantComponent implements OnInit {
       return '';
     }
 
-    if (this.transplant.r.hla_antibodies.hla_codes_over_cutoff.includes(code)) {
+    if (this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.raw_code === code)) {
       // donor antigen matches some recipient antibody
       return 'bad-matching';
     }
 
-    if (this.transplant.r.parameters.hla_typing.codes.includes(code)) {
+    if (this.transplant.r.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)) {
       // donor antigen matches some recipient antigen
       return 'matching';
     }
@@ -71,8 +71,8 @@ export class MatchingTransplantComponent implements OnInit {
 
   public getRecipientAntigenClass(code: string): string {
     if (this.transplant && this.transplant.d && this.transplant.r
-      && this.transplant.d.parameters.hla_typing.codes.includes(code)
-      && !this.transplant.r.hla_antibodies.hla_codes_over_cutoff.includes(code)) {
+      && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)
+      && !this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.raw_code === code)) {
       // recipient antigen matches some donor antigen
       // and code is not recipient antibody
       return 'matching';
@@ -81,7 +81,7 @@ export class MatchingTransplantComponent implements OnInit {
   }
 
   public getRecipientAntibodyClass(code: string): string {
-    if (this.transplant && this.transplant.d && this.transplant.d.parameters.hla_typing.codes.includes(code)) {
+    if (this.transplant && this.transplant.d && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)) {
       // recipient antibody matches some donor antigen
       return 'bad-matching';
     }
@@ -94,8 +94,8 @@ export class MatchingTransplantComponent implements OnInit {
       return;
     }
 
-    const donorAntigens = this.transplant.d.parameters.hla_typing.codes;
-    const recipientAntigens = this.transplant.r.parameters.hla_typing.codes;
+    const donorAntigens = this.transplant.d.parameters.hla_typing.hla_types_list;
+    const recipientAntigens = this.transplant.r.parameters.hla_typing.hla_types_list;
     const matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
 
     if (!matchingAntigens.length) {
@@ -104,7 +104,7 @@ export class MatchingTransplantComponent implements OnInit {
 
     const map: Map<string, number> = new Map<string, number>();
     for (const prefix of this.prefixes) {
-      const score = matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix];
+      const score = matchingAntigens.filter(a => a.raw_code.startsWith(prefix)).length * antibodiesMultipliers[prefix];
       map.set(prefix, score);
     }
 

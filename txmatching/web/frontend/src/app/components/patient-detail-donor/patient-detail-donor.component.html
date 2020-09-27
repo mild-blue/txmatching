@@ -30,12 +30,12 @@
                [matAutocomplete]="auto"
                [matChipInputFor]="antigensChipList"
                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               (matChipInputTokenEnd)="add($event.value, antigensInput)"
+               (matChipInputTokenEnd)="addNewAntigen($event.value, antigensInput)"
                matInput
                placeholder="Search by antigen code"
                type="text">
       </mat-chip-list>
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event.option.value, antigensInput)">
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addNewAntigen($event.option.value, antigensInput)">
         <mat-option *ngFor="let code of filteredCodes | async" [value]="code">
           {{code}}
         </mat-option>

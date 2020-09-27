@@ -20,7 +20,6 @@ export interface Recipient extends Patient {
   acceptable_blood_groups: string[];
   hla_antibodies: {
     hla_antibodies_list: Antibody[];
-    hla_codes_over_cutoff: string[];
   };
   recipient_requirements: RecipientRequirements;
 }
@@ -33,7 +32,7 @@ export interface Donor extends Patient {
 export interface PatientParameters {
   blood_group: string;
   hla_typing: {
-    codes: string[];
+    hla_types_list: Antigen[];
   };
   country_code: string;
 }
@@ -46,8 +45,15 @@ export interface RecipientRequirements {
   [key: string]: boolean;
 }
 
-export interface Antibody {
-  code: string;
+export interface Hla {
+  raw_code: string;
+}
+
+export interface Antigen extends Hla {
+}
+
+export interface Antibody extends Hla {
+  raw_code: string;
   mfi: number;
 }
 

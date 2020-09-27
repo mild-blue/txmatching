@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
-import { PatientList, Recipient } from '@app/model/Patient';
+import { Antigen, PatientList, Recipient } from '@app/model/Patient';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { PatientService } from '@app/services/patient/patient.service';
 import { map, startWith } from 'rxjs/operators';
-import { countryFullTextSearch } from '@app/directives/validators/configForm.directive';
+import { hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { ENTER, SPACE } from '@angular/cdk/keycodes';
 
 @Component({
@@ -24,8 +24,8 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     antigens: new FormControl('')
   });
 
-  public allAntigensCodes: string[] = [];
-  public filteredAntigensCodes: Observable<string[]>;
+  public allAntigensCodes: Antigen[] = [];
+  public filteredAntigensCodes: Observable<Antigen[]>;
 
   public loading: boolean = false;
 
@@ -35,44 +35,60 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     super(_patientService);
 
     this.filteredAntigensCodes = this.form.controls.antigens.valueChanges.pipe(
-      startWith(undefined),
-      map((code: string | null) => code ? countryFullTextSearch(this.availableAntigensCodes, code) : this.availableAntigensCodes.slice()));
+      startWith(''),
+      map((value: string | Antigen) => {
+        return !value || typeof value === 'string' ? value : value.raw_code;
+      }),
+      map(code => code ? hlaFullTextSearch(this.availableAntigens, code) : this.availableAntigens.slice())
+    );
   }
 
   ngOnInit(): void {
     this._initAntigensCodes();
   }
 
-  get selectedAntigens(): string[] {
-    return this.item ? this.item.parameters.hla_typing.codes : [];
+  get selectedAntigens(): Antigen[] {
+    return this.item ? this.item.parameters.hla_typing.hla_types_list : [];
   }
 
-  get availableAntigensCodes(): string[] {
+  get availableAntigens(): Antigen[] {
     return this.allAntigensCodes.filter(code => !this.selectedAntigens.includes(code));
   }
 
-  public addAntigen(code: string, control: HTMLInputElement): void {
-    if (!this.item || !code.length) {
+  public addAntigen(a: Antigen, control: HTMLInputElement): void {
+    if (!this.item || !a) {
       return;
     }
 
-    const formattedCode = code.trim().toUpperCase();
-    this.item.parameters.hla_typing.codes.push(formattedCode);
+    this.item.parameters.hla_typing.hla_types_list.push(a);
 
     // reset input
     this.form.controls.antigens.reset();
     control.value = '';
   }
 
-  public removeAntigen(code: string): void {
+  public addNewAntigen(code: string, control: HTMLInputElement): void {
+    if (!this.item || !code) {
+      return;
+    }
+
+    const formattedCode = code.trim().toUpperCase();
+    this.item.parameters.hla_typing.hla_types_list.push({ raw_code: formattedCode });
+
+    // reset input
+    this.form.controls.antigens.reset();
+    control.value = '';
+  }
+
+  public removeAntigen(antigen: Antigen): void {
     if (!this.item) {
       return;
     }
 
-    const index = this.item.parameters.hla_typing.codes.indexOf(code);
+    const index = this.item.parameters.hla_typing.hla_types_list.indexOf(antigen);
 
     if (index >= 0) {
-      this.item.parameters.hla_typing.codes.splice(index, 1);
+      this.item.parameters.hla_typing.hla_types_list.splice(index, 1);
     }
   }
 
@@ -104,7 +120,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
 
     const allAntigens = [];
     for (const r of this.patients.recipients) {
-      allAntigens.push(...r.parameters.hla_typing.codes);
+      allAntigens.push(...r.parameters.hla_typing.hla_types_list);
     }
 
     this.allAntigensCodes = [...new Set(allAntigens)]; // only unique

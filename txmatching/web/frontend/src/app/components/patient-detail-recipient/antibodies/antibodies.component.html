@@ -13,7 +13,7 @@
                   (removed)="removeAntibody(a)">
 
           <div class="antibody-chip">
-            {{a.code}}
+            {{a.raw_code}}
             <div class="mfi">MFI: <strong>{{a.mfi}}</strong></div>
           </div>
 
@@ -51,7 +51,7 @@
                             (optionSelected)="handleNewAntibodySelect($event.option.value, antibody)"
                             [displayWith]="displayFn">
             <mat-option *ngFor="let a of filteredAntibodies | async" [value]="a">
-              {{a.code}}
+              {{a.raw_code}}
             </mat-option>
           </mat-autocomplete>
           <mat-hint>

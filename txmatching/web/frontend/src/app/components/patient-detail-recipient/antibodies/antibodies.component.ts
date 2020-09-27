@@ -1,9 +1,9 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
-import { Antibody, PatientList, Recipient } from '@app/model/Patient';
+import { Antibody, Hla, PatientList, Recipient } from '@app/model/Patient';
 import { Observable } from 'rxjs';
 import { ENTER } from '@angular/cdk/keycodes';
-import { antibodiesFullTextSearch, ConfigErrorStateMatcher } from '@app/directives/validators/configForm.directive';
+import { ConfigErrorStateMatcher, hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { map, startWith } from 'rxjs/operators';
 
 @Component({
@@ -24,7 +24,7 @@ export class AntibodiesComponent implements OnInit {
   });
 
   public allAntibodies: Antibody[] = [];
-  public filteredAntibodies: Observable<Antibody[]>;
+  public filteredAntibodies: Observable<Hla[]>;
 
   public separatorKeysCodes: number[] = [ENTER];
   public errorMatcher = new ConfigErrorStateMatcher();
@@ -35,9 +35,9 @@ export class AntibodiesComponent implements OnInit {
     this.filteredAntibodies = this.form.controls.antibody.valueChanges.pipe(
       startWith(''),
       map((value: string | Antibody) => {
-        return !value || typeof value === 'string' ? value : value.code;
+        return !value || typeof value === 'string' ? value : value.raw_code;
       }),
-      map(code => code ? antibodiesFullTextSearch(this.availableAntibodies, code) : this.availableAntibodies.slice())
+      map(code => code ? hlaFullTextSearch(this.availableAntibodies, code) : this.availableAntibodies.slice())
     );
   }
 
@@ -50,7 +50,7 @@ export class AntibodiesComponent implements OnInit {
   }
 
   get availableAntibodies(): Antibody[] {
-    return this.allAntibodies.filter(a => !this.selectedAntibodies.map(i => i.code).includes(a.code));
+    return this.allAntibodies.filter(a => !this.selectedAntibodies.map(i => i.raw_code).includes(a.raw_code));
   }
 
   public addAntibody(control: HTMLInputElement): void {
@@ -62,7 +62,7 @@ export class AntibodiesComponent implements OnInit {
     const code = antibody instanceof Object ? antibody.code : antibody;
 
     this.recipient.hla_antibodies.hla_antibodies_list.push({
-      code,
+      raw_code: code,
       mfi
     });
 
@@ -94,7 +94,7 @@ export class AntibodiesComponent implements OnInit {
     if (!control) {
       return;
     }
-    this.antibodyValue = antibody.code;
+    this.antibodyValue = antibody.raw_code;
     control.value = '';
     control.disabled = true;
   }
@@ -119,7 +119,7 @@ export class AntibodiesComponent implements OnInit {
   }
 
   public displayFn(a: Antibody): string {
-    return a && a.code ? a.code : '';
+    return a && a.raw_code ? a.raw_code : '';
   }
 
   private _initAntibodies(): void {

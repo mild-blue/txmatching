@@ -41,10 +41,10 @@
     <mat-form-field>
       <mat-label>Recipient's antigens</mat-label>
       <mat-chip-list #antigensChipList>
-        <mat-chip *ngFor="let code of selectedAntigens"
-                  (removed)="removeAntigen(code)"
+        <mat-chip *ngFor="let a of selectedAntigens"
+                  (removed)="removeAntigen(a)"
                   [removable]="true">
-          {{code}}
+          {{a.raw_code}}
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input #antigensInput
@@ -52,18 +52,18 @@
                [matAutocomplete]="auto"
                [matChipInputFor]="antigensChipList"
                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               (matChipInputTokenEnd)="addAntigen($event.value, antigensInput)"
+               (matChipInputTokenEnd)="addNewAntigen($event.value, antigensInput)"
                matInput
                placeholder="Search by antigen code"
                type="text">
       </mat-chip-list>
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addAntigen($event.option.value, antigensInput)">
-        <mat-option *ngFor="let code of filteredAntigensCodes | async" [value]="code">
-          {{code}}
+        <mat-option *ngFor="let a of filteredAntigensCodes | async" [value]="a">
+          {{a.raw_code}}
         </mat-option>
       </mat-autocomplete>
       <mat-hint>
-        Search and select multiple antigens from {{availableAntigensCodes.length}} available antigens.
+        Search and select multiple antigens from {{availableAntigens.length}} available antigens.
       </mat-hint>
     </mat-form-field>
   </form>
