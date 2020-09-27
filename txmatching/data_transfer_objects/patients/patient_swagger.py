@@ -88,20 +88,24 @@ HLA_ANTIBODIES_TO_UPDATE = patient_api.model('HlaAntibodies', {
 
 RECIPIENT_MODEL_TO_UPDATE = patient_api.model('RecipientModelToUpdate', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
-    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(enum=BLOOD_TYPES)),
-    'hla_typing': fields.Nested(HLA_TYPING_TO_UPDATE,
+    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(enum=BLOOD_TYPES),
+                                           description='Provide full list of all the acceptable blood groups of the '
+                                                       'patient, not just the change set'),
+    'hla_typing': fields.Nested(HLA_TYPING_TO_UPDATE, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
                                             'the change set'),
-    'hla_antibodies': fields.Nested(HLA_ANTIBODIES_TO_UPDATE,
+    'hla_antibodies': fields.Nested(HLA_ANTIBODIES_TO_UPDATE, required=False,
                                     description='Provide full list of all the HLA antibodies of the patient, not just '
                                                 'the change set'),
-    'recipient_requirements': fields.Nested(RECIPIENT_REQUIREMENTS),
+    'recipient_requirements': fields.Nested(RECIPIENT_REQUIREMENTS, required=False,
+                                            description='Provide the whole recipients requirements object, it will be'
+                                                        ' overwritten'),
     'cutoff': fields.Integer(required=False)
 })
 
 DONOR_MODEL_TO_UPDATE = patient_api.model('DonorModelToUpdate', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
-    'hla_typing': fields.Nested(HLA_TYPING_TO_UPDATE,
+    'hla_typing': fields.Nested(HLA_TYPING_TO_UPDATE, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
                                             'the change set'),
 })
