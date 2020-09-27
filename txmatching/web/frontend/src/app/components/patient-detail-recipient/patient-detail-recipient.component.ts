@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
-import { Antibody, PatientList, Recipient } from '@app/model/Patient';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { PatientList, Recipient } from '@app/model/Patient';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { PatientService } from '@app/services/patient/patient.service';
 import { map, startWith } from 'rxjs/operators';
-import { antibodiesFullTextSearch, ConfigErrorStateMatcher, countryFullTextSearch } from '@app/directives/validators/configForm.directive';
+import { countryFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { ENTER } from '@angular/cdk/keycodes';
 
 @Component({
@@ -25,24 +25,13 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     require_compatible_blood_group: new FormControl(false)
   });
 
-  public antibodiesForm: FormGroup = new FormGroup({
-    antibody: new FormControl('', Validators.required),
-    mfi: new FormControl('', Validators.required)
-  });
-
   public allAntigensCodes: string[] = [];
   public filteredAntigensCodes: Observable<string[]>;
-
-  public allAntibodies: Antibody[] = [];
-  public filteredAntibodies: Observable<Antibody[]>;
 
   public enableSave: boolean = false;
   public loading: boolean = false;
 
   public separatorKeysCodes: number[] = [ENTER];
-  public errorMatcher = new ConfigErrorStateMatcher();
-
-  public antibodyValue: string = '';
 
   constructor(private _patientService: PatientService) {
     super(_patientService);
@@ -50,19 +39,10 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     this.filteredAntigensCodes = this.form.controls.antigens.valueChanges.pipe(
       startWith(undefined),
       map((code: string | null) => code ? countryFullTextSearch(this.availableAntigensCodes, code) : this.availableAntigensCodes.slice()));
-
-    this.filteredAntibodies = this.antibodiesForm.controls.antibody.valueChanges.pipe(
-      startWith(''),
-      map((value: string | Antibody) => {
-        return typeof value === 'string' ? value : value.code;
-      }),
-      map(code => code ? antibodiesFullTextSearch(this.availableAntibodies, code) : this.availableAntibodies.slice())
-    );
   }
 
   ngOnInit(): void {
     this._initAntigensCodes();
-    this._initAntibodies();
   }
 
   get selectedAntigens(): string[] {
@@ -71,14 +51,6 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
 
   get availableAntigensCodes(): string[] {
     return this.allAntigensCodes.filter(code => !this.selectedAntigens.includes(code));
-  }
-
-  get selectedAntibodies(): Antibody[] {
-    return this.item ? this.item.hla_antibodies.antibodies_list : [];
-  }
-
-  get availableAntibodies(): Antibody[] {
-    return this.allAntibodies.filter(a => !this.selectedAntibodies.map(i => i.code).includes(a.code));
   }
 
   public addAntigen(code: string, control: HTMLInputElement): void {
@@ -108,33 +80,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     }
   }
 
-  public addAntibody(): void {
-    if (!this.item) {
-      return;
-    }
-
-    const { antibody, mfi } = this.antibodiesForm.value;
-
-    console.log('add', antibody, mfi);
-
-    // this.item.hla_antibodies.antibodies_list.push(a);
-    // this.enableSave = true;
-  }
-
-  public removeAntibody(a: Antibody): void {
-    if (!this.item) {
-      return;
-    }
-
-    const index = this.item.hla_antibodies.antibodies_list.indexOf(a);
-
-    if (index >= 0) {
-      this.item.hla_antibodies.antibodies_list.splice(index, 1);
-      this.enableSave = true;
-    }
-  }
-
-  public handleSubmit(): void {
+  public handleSave(): void {
     if (!this.item) {
       return;
     }
@@ -144,39 +90,6 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     this._patientService.saveRecipient(this.item)
     .then(() => this.loading = false)
     .catch(() => this.loading = false);
-  }
-
-  public handleNewAntibodySelect(antibody: Antibody, control: HTMLInputElement): void {
-    console.log('selected', antibody);
-    if (!control) {
-      return;
-    }
-    this.antibodyValue = antibody.code;
-    control.value = '';
-    control.disabled = true;
-  }
-
-  public handleNewAntibodyRemove(control: HTMLInputElement): void {
-    const formControl = this.antibodiesForm.controls.antibody;
-    if (!formControl || !control) {
-      return;
-    }
-    this.antibodyValue = '';
-    formControl.setValue('');
-    control.disabled = false;
-  }
-
-  public handleNewAntibodyInputEnd(value: string, control: HTMLInputElement): void {
-    if (!value.length) {
-      return;
-    }
-    this.antibodyValue = value;
-    control.value = '';
-    control.disabled = true;
-  }
-
-  public displayFn(a: Antibody): string {
-    return a && a.code ? a.code : '';
   }
 
   private _initAntigensCodes(): void {
@@ -191,19 +104,4 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
 
     this.allAntigensCodes = [...new Set(allAntigens)]; // only unique
   }
-
-  private _initAntibodies(): void {
-    if (!this.patients || !this.patients.recipients) {
-      return;
-    }
-
-    const allAntibodies = [];
-    for (const r of this.patients.recipients) {
-      allAntibodies.push(...r.hla_antibodies.antibodies_list);
-    }
-
-    this.allAntibodies = [...new Set(allAntibodies)]; // only unique
-    console.log(this.allAntibodies);
-  }
-
 }

@@ -46,7 +46,6 @@ export interface RecipientRequirements {
 
 export interface Antibody {
   code: string;
-  cutoff: number;
   mfi: number;
 }
 

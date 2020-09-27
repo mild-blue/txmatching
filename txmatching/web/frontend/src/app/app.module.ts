@@ -54,6 +54,7 @@ import { PatientDetailDonorComponent } from './components/patient-detail-donor/p
 import { PatientDetailRecipientComponent } from './components/patient-detail-recipient/patient-detail-recipient.component';
 import { PatientPairComponent } from './components/patient-pair/patient-pair.component';
 import { TabSwitchComponent } from './components/tab-switch/tab-switch.component';
+import { AntibodiesComponent } from './components/patient-detail-recipient/antibodies/antibodies.component';
 
 @NgModule({
   declarations: [
@@ -93,7 +94,8 @@ import { TabSwitchComponent } from './components/tab-switch/tab-switch.component
     PatientDetailDonorComponent,
     PatientDetailRecipientComponent,
     PatientPairComponent,
-    TabSwitchComponent
+    TabSwitchComponent,
+    AntibodiesComponent
   ],
   imports: [
     BrowserModule,

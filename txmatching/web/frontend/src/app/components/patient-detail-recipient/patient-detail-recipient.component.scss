@@ -13,6 +13,26 @@
     margin: $padding-y 0;
   }
 
+  .detail__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $box-shadow--wide-size;
+
+    ::ng-deep .patient {
+      font-size: 32px;
+    }
+  }
+
+  .box, ::ng-deep .box {
+    border-radius: $border-radius--wide;
+    background: $white;
+    box-shadow: $box-shadow--wide;
+    padding: $padding-y $padding-x;
+    margin-bottom: $box-shadow--wide-size;
+    overflow: hidden;
+  }
+
   .checkboxes {
     margin: $item-gap 0 $padding-y;
   }
@@ -22,72 +42,5 @@
     width: 100%;
     text-align: center;
     color: $gray-500;
-  }
-
-  .antibodies {
-    .antibody-chip {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .mfi {
-        margin-left: 15px;
-
-        background: $gray-600;
-        color: $white;
-        border-radius: 6px;
-        padding: 2px 5px;
-        font-size: 12px;
-      }
-    }
-
-    &__list {
-      margin: $padding-y 0 $item-gap;
-    }
-
-    &__add {
-      padding: 1.25em $padding-x;
-      border-radius: $border-radius--wide;
-      background: $gray-100;
-
-      &-heading {
-        color: $gray-600;
-        display: block;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: 14px;
-        font-weight: 700;
-      }
-
-      &-form {
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        max-width: $container-max-width;
-        margin: auto;
-
-        app-button {
-          margin-left: $item-gap;
-          padding-bottom: 1.25em;
-        }
-
-        form {
-          $field-gap: calc(#{$item-gap} / 2);
-
-          flex: 1;
-          display: flex;
-          align-items: flex-end;
-          margin: 0 calc(-1 * #{$field-gap});
-          min-height: 80px;
-
-          .mat-form-field {
-            flex: 1;
-            padding: 0 $field-gap;
-            margin: 0;
-          }
-        }
-      }
-    }
   }
 }
