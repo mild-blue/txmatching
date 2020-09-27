@@ -1,9 +1,39 @@
 {
   "swagger": "2.0",
+  "info": {
+    "version": "0.3",
+    "title": "TXM_upload_patients"
+  },
   "basePath": "/",
+  "tags": [
+    {
+      "name": "txm-event"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
     "/v1/txm-event/patients": {
       "put": {
+        "tags": [
+          "txm-event"
+        ],
+        "description": "This endpoint allows the country editor to upload patient data for given                         TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients                         from respective country in case there were any.",
+        "operationId": "put_txm_event_upload_patients",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UploadPatients"
+            }
+          }
+        ],
         "responses": {
           "500": {
             "description": "Unexpected, see contents for details",
@@ -30,39 +60,14 @@
             }
           }
         },
-        "description": "This endpoint allows the country editor to upload patient data for given                         TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients                         from respective country in case there were any.",
-        "operationId": "put_txm_event_upload_patients",
-        "parameters": [
-          {
-            "name": "payload",
-            "required": true,
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/UploadPatients"
-            }
-          }
-        ],
         "security": [
           {
             "bearer": []
           }
-        ],
-        "tags": [
-          "txm-event"
         ]
       }
     }
   },
-  "info": {
-    "title": "TXM_upload_patients",
-    "version": "0.3"
-  },
-  "produces": [
-    "application/json"
-  ],
-  "consumes": [
-    "application/json"
-  ],
   "securityDefinitions": {
     "bearer": {
       "type": "apiKey",
@@ -70,12 +75,132 @@
       "name": "Authorization"
     }
   },
-  "tags": [
-    {
-      "name": "txm-event"
-    }
-  ],
   "definitions": {
+    "UploadPatients": {
+      "required": [
+        "TXM_event_name",
+        "country",
+        "donors",
+        "recipients"
+      ],
+      "properties": {
+        "country": {
+          "type": "string",
+          "example": "CZE",
+          "enum": [
+            "CZE",
+            "IL",
+            "AUT"
+          ]
+        },
+        "TXM_event_name": {
+          "type": "string",
+          "description": "The TXM event name has to be provided by an ADMIN.",
+          "example": "2020-10-CZE-IL-AUT"
+        },
+        "donors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Donor"
+          }
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Recipient"
+          }
+        }
+      },
+      "type": "object"
+    },
+    "Donor": {
+      "required": [
+        "HLA_typing",
+        "YOB",
+        "blood_group",
+        "donor_type",
+        "height",
+        "medical_id",
+        "sex",
+        "weight"
+      ],
+      "properties": {
+        "medical_id": {
+          "type": "string",
+          "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
+          "example": "D1037"
+        },
+        "blood_group": {
+          "type": "string",
+          "example": "A",
+          "enum": [
+            "A",
+            "B",
+            "0",
+            "AB"
+          ]
+        },
+        "HLA_typing": {
+          "type": "array",
+          "description": "HLA typing of the patient. Use high resolution if available.",
+          "example": [
+            "A1",
+            "A32",
+            "B7",
+            "B51",
+            "DR11",
+            "DR15",
+            "A*02:03",
+            "A*11:01:35",
+            "DPA1*01:07",
+            "DRB4*01:01",
+            "DQB1*02:01:01:01"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "donor_type": {
+          "type": "string",
+          "example": "DONOR",
+          "enum": [
+            "DONOR",
+            "BRIDGING_DONOR",
+            "NON_DIRECTED"
+          ]
+        },
+        "related_recipient_medical_id": {
+          "type": "string",
+          "description": "Medical ID of the related recipient, empty for bridging and non-directed donors.",
+          "example": "R1037"
+        },
+        "sex": {
+          "type": "string",
+          "description": "Sex of the patient.",
+          "example": "F",
+          "enum": [
+            "F",
+            "M"
+          ]
+        },
+        "height": {
+          "type": "integer",
+          "description": "Height of the patient in centimeters.",
+          "example": 178
+        },
+        "weight": {
+          "type": "number",
+          "description": "Weight of the patient in kilograms.",
+          "example": 78.4
+        },
+        "YOB": {
+          "type": "integer",
+          "description": "Year of birth of the patient.",
+          "example": 1945
+        }
+      },
+      "type": "object"
+    },
     "Recipient": {
       "required": [
         "HLA_antibodies",
@@ -207,94 +332,6 @@
       },
       "type": "object"
     },
-    "Donor": {
-      "required": [
-        "HLA_typing",
-        "YOB",
-        "blood_group",
-        "donor_type",
-        "height",
-        "medical_id",
-        "sex",
-        "weight"
-      ],
-      "properties": {
-        "medical_id": {
-          "type": "string",
-          "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
-          "example": "D1037"
-        },
-        "blood_group": {
-          "type": "string",
-          "example": "A",
-          "enum": [
-            "A",
-            "B",
-            "0",
-            "AB"
-          ]
-        },
-        "HLA_typing": {
-          "type": "array",
-          "description": "HLA typing of the patient. Use high resolution if available.",
-          "example": [
-            "A1",
-            "A32",
-            "B7",
-            "B51",
-            "DR11",
-            "DR15",
-            "A*02:03",
-            "A*11:01:35",
-            "DPA1*01:07",
-            "DRB4*01:01",
-            "DQB1*02:01:01:01"
-          ],
-          "items": {
-            "type": "string"
-          }
-        },
-        "donor_type": {
-          "type": "string",
-          "example": "DONOR",
-          "enum": [
-            "DONOR",
-            "BRIDGING_DONOR",
-            "NON_DIRECTED"
-          ]
-        },
-        "related_recipient_medical_id": {
-          "type": "string",
-          "description": "Medical ID of the related recipient, empty for bridging and non-directed donors.",
-          "example": "R1037"
-        },
-        "sex": {
-          "type": "string",
-          "description": "Sex of the patient.",
-          "example": "F",
-          "enum": [
-            "F",
-            "M"
-          ]
-        },
-        "height": {
-          "type": "integer",
-          "description": "Height of the patient in centimeters.",
-          "example": 178
-        },
-        "weight": {
-          "type": "number",
-          "description": "Weight of the patient in kilograms.",
-          "example": 78.4
-        },
-        "YOB": {
-          "type": "integer",
-          "description": "Year of birth of the patient.",
-          "example": 1945
-        }
-      },
-      "type": "object"
-    },
     "FailResponse": {
       "required": [
         "error"
@@ -305,43 +342,6 @@
         },
         "reason": {
           "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "UploadPatients": {
-      "required": [
-        "TXM_event_name",
-        "country",
-        "donors",
-        "recipients"
-      ],
-      "properties": {
-        "country": {
-          "type": "string",
-          "example": "CZE",
-          "enum": [
-            "CZE",
-            "IL",
-            "AUT"
-          ]
-        },
-        "TXM_event_name": {
-          "type": "string",
-          "description": "The TXM event name has to be provided by an ADMIN.",
-          "example": "2020-10-CZE-IL-AUT"
-        },
-        "donors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Donor"
-          }
-        },
-        "recipients": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Recipient"
-          }
         }
       },
       "type": "object"
