@@ -5,7 +5,7 @@ from txmatching.auth.user.totp import generate_totp_seed, generate_otp_for_user,
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
-class Test(TestCase):
+class TestTotp(TestCase):
 
     def test_generate_otp_for_user(self):
         seed = generate_totp_seed()

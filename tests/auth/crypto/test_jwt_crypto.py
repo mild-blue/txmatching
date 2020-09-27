@@ -6,7 +6,7 @@ from txmatching.auth.data_types import EncodedBearerToken, UserRole, TokenType
 from txmatching.auth.exceptions import InvalidJWTException
 
 
-class Test(TestCase):
+class TestJwtCrypto(TestCase):
     # generated token, will start failing after 1917 years
     token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2Vy' \
             'X2lkIjoxLCJyb2xlIjoiQURNSU4iLCJ0eXBlIjoiQUNDR' \

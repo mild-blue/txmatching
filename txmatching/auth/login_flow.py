@@ -25,7 +25,7 @@ def credentials_login(email: str, password: str) -> str:
     Starts login flow for the given credentials. Returns valid JWT,
     if verification fails, some AuthenticationException is raised.
     """
-    user = get_app_user_by_email(email)
+    user = get_app_user_by_email(email.lower())
     if not user or not password_matches_hash(user.pass_hash, password):
         raise CredentialsMismatchException()
 

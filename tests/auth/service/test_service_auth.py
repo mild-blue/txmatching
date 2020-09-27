@@ -7,7 +7,7 @@ from txmatching.auth.service.service_auth import service_login_flow, SERVICE_JWT
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
-class Test(TestCase):
+class TestServiceAuth(TestCase):
     @staticmethod
     def _get_service(require_2fa: bool) -> AppUserModel:
         service = AppUserModel('email', 'hash', UserRole.SERVICE, '0.0.0.0', require_2fa=require_2fa)

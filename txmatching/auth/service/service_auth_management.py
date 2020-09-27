@@ -12,9 +12,10 @@ def register_service(email: str, password: str, whitelisted_ip: str) -> AppUserM
     """
     Registers new service for given email, password and whitelisted_ip.
     """
-    _assert_service_registration(email, password, whitelisted_ip)
+    normalized_email = email.lower()
+    _assert_service_registration(normalized_email, password, whitelisted_ip)
     user = AppUserModel(
-        email=email,
+        email=normalized_email,
         pass_hash=encode_password(password),
         role=UserRole.SERVICE,
         second_factor_material=whitelisted_ip
@@ -32,12 +33,12 @@ def change_service_password(user_id: int, new_password: str):
     update_password_for_user(user_id=user_id, new_password_hash=pwd_hash)
 
 
-def _assert_service_registration(email: str, password: str, whitelisted_ip: str):
-    if not email:
+def _assert_service_registration(normalized_email: str, password: str, whitelisted_ip: str):
+    if not normalized_email:
         raise UserUpdateException('Invalid email address.')
     if not whitelisted_ip:
-        raise UserUpdateException('Missing IP Address')
-    if get_app_user_by_email(email):
+        raise UserUpdateException('Missing IP Address.')
+    if get_app_user_by_email(normalized_email):
         raise UserUpdateException('The e-mail address is already in use.')
 
     _assert_service_password_validity(password)

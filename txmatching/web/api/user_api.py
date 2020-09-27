@@ -7,7 +7,7 @@ from flask import request
 from flask_restx import Resource, fields
 
 from txmatching.auth.auth_check import (require_role)
-from txmatching.auth.crud import register, change_password
+from txmatching.auth.auth_management import register, change_password
 from txmatching.auth.data_types import (UserRole)
 from txmatching.auth.login_flow import credentials_login, refresh_token, otp_login
 from txmatching.auth.user.topt_auth_check import allow_otp_request
@@ -33,7 +33,7 @@ class LoginApi(Resource):
     })
 
     @user_api.doc(body=login_input_model)
-    @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE, description='')
+    @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE, description='Login successful. JWT generated.')
     def post(self):
         post_data = request.get_json()
         auth_response = credentials_login(email=post_data.get('email'), password=post_data.get('password'))
@@ -48,7 +48,8 @@ class OtpLoginApi(Resource):
 
     @user_api.doc(security='bearer')
     @user_api.doc(body=otp_input_model)
-    @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE, description='')
+    @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE,
+                       description='OTP validation was successful. JWT generated.')
     @allow_otp_request()
     def post(self):
         post_data = request.get_json()
@@ -60,7 +61,7 @@ class OtpLoginApi(Resource):
 class RefreshTokenApi(Resource):
 
     @user_api.doc(security='bearer')
-    @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE, description='')
+    @user_api.response(code=200, model=LOGIN_SUCCESS_RESPONSE, description='Token successfully refreshed.')
     @require_user_login()
     def get(self):
         return _respond_token(refresh_token())
@@ -92,7 +93,7 @@ class RegistrationApi(Resource):
     })
 
     @user_api.doc(body=registration_model, security='bearer')
-    @user_api.response(code=200, model=STATUS_RESPONSE, description='')
+    @user_api.response(code=200, model=STATUS_RESPONSE, description='User registered successfully.')
     @require_role(UserRole.ADMIN)
     def post(self):
         post_data = request.get_json()

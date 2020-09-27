@@ -5,6 +5,13 @@ import jwt
 from txmatching.auth.data_types import TokenType, UserRole, EncodedBearerToken
 from txmatching.auth.exceptions import InvalidJWTException
 
+JWT_SIGN_ALGORITHM = 'HS256'
+"""
+Algorithm used for signing JWT. 
+
+HS256 symmetric based on the HMAC.
+"""
+
 
 def parse_request_token(auth_header: str, jwt_secret: str) -> EncodedBearerToken:
     """
@@ -30,7 +37,7 @@ def decode_auth_token(auth_token: str, jwt_secret: str) -> EncodedBearerToken:
     Validates the auth token, returns user mail on success, raises exception on failure.
     """
     try:
-        payload = jwt.decode(auth_token, jwt_secret, algorithms=['HS256'])
+        payload = jwt.decode(auth_token, jwt_secret, algorithms=[JWT_SIGN_ALGORITHM])
         return EncodedBearerToken(
             user_id=int(payload['user_id']),
             role=UserRole(payload['role']),
@@ -65,5 +72,5 @@ def encode_auth_token(
     return jwt.encode(
         payload,
         jwt_secret,
-        algorithm='HS256'
+        algorithm=JWT_SIGN_ALGORITHM
     ).decode()

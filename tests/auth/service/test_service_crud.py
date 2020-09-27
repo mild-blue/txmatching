@@ -4,11 +4,11 @@ from uuid import uuid4
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.exceptions import UserUpdateException
-from txmatching.auth.service.service_crud import register_service, change_service_password
+from txmatching.auth.service.service_auth_management import register_service, change_service_password
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
-class TestWithDb(DbTests):
+class TestServiceCrudWithDb(DbTests):
 
     def _create_and_get(self) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())

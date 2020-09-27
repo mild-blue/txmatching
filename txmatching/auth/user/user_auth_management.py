@@ -14,10 +14,11 @@ def register_user(email: str, password: str, role: UserRole, phone_number: str) 
     Registers new user for given email, password and role.
     """
     assert role != UserRole.SERVICE
+    normalized_email = email.lower()
+    _assert_user_registration(normalized_email, password, role, phone_number)
 
-    _assert_user_registration(email, password, role, phone_number)
     user = AppUserModel(
-        email=email,
+        email=normalized_email,
         pass_hash=encode_password(password),
         role=role,
         second_factor_material=generate_totp_seed(),
@@ -36,12 +37,12 @@ def change_user_password(user_id: int, new_password: str):
     update_password_for_user(user_id=user_id, new_password_hash=pwd_hash)
 
 
-def _assert_user_registration(email: str, password: str, role: Optional[UserRole], phone_number: str):
-    if not email:
+def _assert_user_registration(normalized_email: str, password: str, role: Optional[UserRole], phone_number: str):
+    if not normalized_email:
         raise UserUpdateException('Invalid email address.')
     if not role:
         raise UserUpdateException('Invalid user role.')
-    if get_app_user_by_email(email):
+    if get_app_user_by_email(normalized_email):
         raise UserUpdateException('The e-mail address is already in use.')
     _assert_user_password_validity(password)
     _assert_phone_number_validity(phone_number)

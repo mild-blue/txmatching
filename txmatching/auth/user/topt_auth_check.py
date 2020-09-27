@@ -19,7 +19,7 @@ def allow_otp_request() -> Callable:
 
             if token.type != TokenType.OTP:
                 abort(403, error='Wrong token used.',
-                      description='OTP validation can be called only with OTP token.')
+                      description=f'{TokenType.OTP} token required, but {token.type} received!')
             # this case should never happen, but we must be careful
             elif token.role == UserRole.SERVICE:
                 abort(403, error='Wrong token used.',

@@ -9,7 +9,7 @@ from txmatching.auth.user.user_auth import user_login_flow, user_otp_login, refr
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
-class Test(TestCase):
+class TestUserAuth(TestCase):
 
     def test_user_login_flow_service(self):
         usr = AppUserModel('', '', UserRole.SERVICE, '')

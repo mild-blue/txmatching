@@ -8,15 +8,15 @@ from txmatching.auth.data_types import UserRole, EncodedBearerToken, TokenType
 from txmatching.auth.exceptions import CredentialsMismatchException, InvalidIpAddressAccessException, \
     InvalidOtpException
 from txmatching.auth.login_flow import credentials_login, _refresh_token, _otp_login
-from txmatching.auth.service.service_crud import register_service
+from txmatching.auth.service.service_auth_management import register_service
 from txmatching.auth.user.totp import generate_otp_for_user
-from txmatching.auth.user.user_crud import register_user
+from txmatching.auth.user.user_auth_management import register_user
 from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
-class Test(DbTests):
+class TestLoginFlow(DbTests):
     def test_credentials_login_credentials_mismatch(self):
         usr, pwd = self._create_user()
         self.assertRaises(CredentialsMismatchException,

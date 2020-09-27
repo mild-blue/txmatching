@@ -5,15 +5,16 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import UserUpdateException
-from txmatching.auth.user.user_crud import register_user, change_user_password
+from txmatching.auth.user.user_auth_management import register_user, change_user_password
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
-class Test(DbTests):
+class TestUserCrudWithDb(DbTests):
     def _create_and_get(self, role: UserRole = UserRole.ADMIN) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())
-        email = str(uuid4())
-        register_user(email, pwd, role, '456 678 645')
+        email = str(uuid4()) + "abc"
+        # check that we normalize email to lower
+        register_user(email.upper(), pwd, role, '456 678 645')
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
         self.assertIsNotNone(db_usr)
         self.assertNotEqual(pwd, db_usr.pass_hash)
@@ -36,7 +37,7 @@ class Test(DbTests):
         self.assertTrue(password_matches_hash(usr.pass_hash, new_pwd))
         self.assertFalse(password_matches_hash(usr.pass_hash, old_pwd))
 
-    def test_create_without_pohone(self):
+    def test_create_without_phone(self):
         self.assertRaises(UserUpdateException,
                           lambda: register_user(str(uuid4()), str(uuid4()), UserRole.ADMIN, ''))
 
