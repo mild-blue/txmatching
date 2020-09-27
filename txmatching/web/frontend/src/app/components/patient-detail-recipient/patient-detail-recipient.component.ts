@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { Antibody, PatientList, Recipient } from '@app/model/Patient';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { PatientService } from '@app/services/patient/patient.service';
 import { map, startWith } from 'rxjs/operators';
-import { antibodiesFullTextSearch, countryFullTextSearch } from '@app/directives/validators/configForm.directive';
+import { antibodiesFullTextSearch, ConfigErrorStateMatcher, countryFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { ENTER } from '@angular/cdk/keycodes';
 
 @Component({
@@ -26,8 +26,8 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   });
 
   public antibodiesForm: FormGroup = new FormGroup({
-    antibody: new FormControl(''),
-    mfi: new FormControl('')
+    antibody: new FormControl('', Validators.required),
+    mfi: new FormControl('', Validators.required)
   });
 
   public allAntigensCodes: string[] = [];
@@ -40,6 +40,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   public loading: boolean = false;
 
   public separatorKeysCodes: number[] = [ENTER];
+  public errorMatcher = new ConfigErrorStateMatcher();
 
   public antibodyValue: string = '';
 

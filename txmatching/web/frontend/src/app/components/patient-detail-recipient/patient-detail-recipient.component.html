@@ -63,50 +63,54 @@
     </mat-form-field>
   </form>
 
-  <form [formGroup]="antibodiesForm">
-    <!-- Antibodies -->
-    <div class="antibodies">
-      <h4>
-        Antibodies
-        <app-count [count]="selectedAntibodies.length"></app-count>
-      </h4>
-      <div class="antibodies__list">
-        <div class="placeholder" *ngIf="selectedAntibodies.length === 0">
-          Recipient has no antibodies yet.
-        </div>
-        <mat-chip-list *ngIf="selectedAntibodies.length > 0">
-          <mat-chip *ngFor="let a of selectedAntibodies"
-                    (removed)="removeAntibody(a)">
 
-            <div class="antibody-chip">
-              {{a.code}}
-              <div class="mfi">MFI: <strong>{{a.mfi}}</strong></div>
-            </div>
-
-            <mat-icon class="cancel" matChipRemove>cancel</mat-icon>
-          </mat-chip>
-        </mat-chip-list>
+  <!-- Antibodies -->
+  <div class="antibodies">
+    <h4>
+      Antibodies
+      <app-count [count]="selectedAntibodies.length"></app-count>
+    </h4>
+    <div class="antibodies__list">
+      <div class="placeholder" *ngIf="selectedAntibodies.length === 0">
+        Recipient has no antibodies yet.
       </div>
+      <mat-chip-list *ngIf="selectedAntibodies.length > 0">
+        <mat-chip *ngFor="let a of selectedAntibodies"
+                  (removed)="removeAntibody(a)">
 
-      <div class="antibodies__add">
-        <mat-form-field>
-          <mat-label>Antibody code</mat-label>
-          <mat-chip-list #antibodyChip>
-            <mat-chip *ngIf="antibodyValue"
-                      [removable]="true"
-                      (removed)="handleNewAntibodyRemove(antibody)">
-              {{antibodyValue}}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-            <input #antibody
-                   matInput
-                   formControlName="antibody"
-                   [matAutocomplete]="antibodyAuto"
-                   [matChipInputFor]="antibodyChip"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                   (matChipInputTokenEnd)="handleNewAntibodyInputEnd($event.value, antibody)"
-                   [placeholder]="!antibodyValue ? 'Search by antibody code or add new' : ''"
-                   type="text">
+          <div class="antibody-chip">
+            {{a.code}}
+            <div class="mfi">MFI: <strong>{{a.mfi}}</strong></div>
+          </div>
+
+          <mat-icon class="cancel" matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+    </div>
+
+    <div class="antibodies__add">
+      <div class="antibodies__add-heading">Add new recipient antibody</div>
+      <div class="antibodies__add-form">
+        <form [formGroup]="antibodiesForm" (ngSubmit)="addAntibody()">
+          <mat-form-field>
+            <mat-label>Antibody code</mat-label>
+            <mat-chip-list #antibodyChip>
+              <mat-chip *ngIf="antibodyValue"
+                        [removable]="true"
+                        (removed)="handleNewAntibodyRemove(antibody)">
+                {{antibodyValue}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input #antibody
+                     matInput
+                     formControlName="antibody"
+                     [errorStateMatcher]="errorMatcher"
+                     [matAutocomplete]="antibodyAuto"
+                     [matChipInputFor]="antibodyChip"
+                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                     (matChipInputTokenEnd)="handleNewAntibodyInputEnd($event.value, antibody)"
+                     [placeholder]="!antibodyValue ? 'Search by antibody code or add new' : ''"
+                     type="text">
           </mat-chip-list>
           <mat-autocomplete #antibodyAuto="matAutocomplete"
                             (optionSelected)="handleNewAntibodySelect($event.option.value, antibody)"
@@ -115,13 +119,31 @@
               {{a.code}}
             </mat-option>
           </mat-autocomplete>
-          <mat-hint>
-            Search and select multiple antibodies from {{availableAntibodies.length}} antibodies.
-          </mat-hint>
-        </mat-form-field>
+            <mat-hint>
+              Search and select multiple antibodies from {{availableAntibodies.length}} antibodies.
+            </mat-hint>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>MFI</mat-label>
+            <input matInput
+                   formControlName="mfi"
+                   [errorStateMatcher]="errorMatcher"
+                   placeholder="Enter MFI value for antibody"
+                   type="number">
+          </mat-form-field>
+
+          <app-button size="sm"
+                      variant="success"
+                      type="submit"
+                      [disabled]="antibodiesForm.invalid">
+            Add
+            <mat-icon>add</mat-icon>
+          </app-button>
+        </form>
       </div>
     </div>
-  </form>
+  </div>
 
   <app-button [loading]="loading"
               [disabled]="!enableSave || loading"
