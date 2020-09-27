@@ -28,7 +28,6 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   public allAntigensCodes: string[] = [];
   public filteredAntigensCodes: Observable<string[]>;
 
-  public enableSave: boolean = false;
   public loading: boolean = false;
 
   public separatorKeysCodes: number[] = [ENTER];
@@ -60,7 +59,6 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
 
     const formattedCode = code.trim().toUpperCase();
     this.item.parameters.hla_typing.codes.push(formattedCode);
-    this.enableSave = true;
 
     // reset input
     this.form.controls.antigens.reset();
@@ -76,7 +74,12 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
 
     if (index >= 0) {
       this.item.parameters.hla_typing.codes.splice(index, 1);
-      this.enableSave = true;
+    }
+  }
+
+  public setCheckBoxValue(key: string, value: boolean): void {
+    if (this.item && this.item.recipient_requirements[key] !== undefined) {
+      this.item.recipient_requirements[key] = value;
     }
   }
 
@@ -85,11 +88,11 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
       return;
     }
 
-    console.log(this.item);
-    this.loading = true;
-    this._patientService.saveRecipient(this.item)
-    .then(() => this.loading = false)
-    .catch(() => this.loading = false);
+    console.log('saving', this.item);
+    // this.loading = true;
+    // this._patientService.saveRecipient(this.item)
+    // .then(() => this.loading = false)
+    // .catch(() => this.loading = false);
   }
 
   private _initAntigensCodes(): void {

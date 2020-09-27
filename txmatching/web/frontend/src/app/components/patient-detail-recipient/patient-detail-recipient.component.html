@@ -5,32 +5,31 @@
 
     <app-button (click)="handleSave()"
                 [loading]="loading"
-                [disabled]="!enableSave || loading"
+                [disabled]="loading"
                 [variant]="'success'">Save changes
     </app-button>
   </div>
 
   <form [formGroup]="form">
 
-    <!-- todo: change in item -->
     <!-- Checkboxes -->
     <h4>Conditions for new donor</h4>
     <div class="checkboxes">
       <mat-slide-toggle *ngIf="item.recipient_requirements.require_compatible_blood_group !== undefined"
                         formControlName="require_compatible_blood_group"
-                        (change)="enableSave = true"
+                        (change)="setCheckBoxValue('require_compatible_blood_group', $event.checked)"
                         [checked]="item.recipient_requirements.require_compatible_blood_group">
         Require compatible blood group
       </mat-slide-toggle>
       <mat-slide-toggle *ngIf="item.recipient_requirements.require_better_match_in_compatibility_index !== undefined"
                         formControlName="require_better_match_in_compatibility_index"
-                        (change)="enableSave = true"
+                        (change)="setCheckBoxValue('require_better_match_in_compatibility_index', $event.checked)"
                         [checked]="item.recipient_requirements.require_better_match_in_compatibility_index">
         Require new donor having better CI match than original donor
       </mat-slide-toggle>
       <mat-slide-toggle *ngIf="item.recipient_requirements.require_better_match_in_compatibility_index_or_blood_group !== undefined"
                         formControlName="require_better_match_in_compatibility_index_or_blood_group"
-                        (change)="enableSave = true"
+                        (change)="setCheckBoxValue('require_better_match_in_compatibility_index_or_blood_group', $event.checked)"
                         [checked]="item.recipient_requirements.require_better_match_in_compatibility_index_or_blood_group">
         Require new donor having better CI match than original donor or blood group match
       </mat-slide-toggle>
@@ -76,7 +75,7 @@
 
   <app-button (click)="handleSave()"
               [loading]="loading"
-              [disabled]="!enableSave || loading"
+              [disabled]="loading"
               [variant]="'success'">Save changes
   </app-button>
 
