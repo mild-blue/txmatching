@@ -7,7 +7,7 @@ from txmatching.auth.exceptions import InvalidJWTException
 
 JWT_SIGN_ALGORITHM = 'HS256'
 """
-Algorithm used for signing JWT. 
+Algorithm used for signing JWT.
 
 HS256 symmetric based on the HMAC.
 """
