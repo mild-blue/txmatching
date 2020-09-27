@@ -113,8 +113,8 @@
         },
         "TXM_event_name": {
           "type": "string",
-          "description": "The TXM event name has to be provided by an ADMIN.",
-          "example": "2020-10-CZE-IL-AUT"
+          "example": "2020-10-CZE-IL-AUT",
+          "description": "The TXM event name has to be provided by an ADMIN."
         },
         "donors": {
           "type": "array",
@@ -141,8 +141,8 @@
       "properties": {
         "medical_id": {
           "type": "string",
-          "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
-          "example": "D1037"
+          "example": "D1037",
+          "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system."
         },
         "blood_group": {
           "type": "string",
@@ -156,7 +156,6 @@
         },
         "HLA_typing": {
           "type": "array",
-          "description": "HLA typing of the patient. Use high resolution if available.",
           "example": [
             "A1",
             "A32",
@@ -170,6 +169,7 @@
             "DRB4*01:01",
             "DQB1*02:01:01:01"
           ],
+          "description": "HLA typing of the patient. Use high resolution if available.",
           "items": {
             "type": "string"
           }
@@ -185,13 +185,13 @@
         },
         "related_recipient_medical_id": {
           "type": "string",
-          "description": "Medical ID of the related recipient, empty for bridging and non-directed donors.",
-          "example": "R1037"
+          "example": "R1037",
+          "description": "Medical ID of the related recipient, empty for bridging and non-directed donors."
         },
         "sex": {
           "type": "string",
-          "description": "Sex of the patient.",
           "example": "M",
+          "description": "Sex of the patient.",
           "enum": [
             "M",
             "F"
@@ -199,18 +199,18 @@
         },
         "height": {
           "type": "integer",
-          "description": "Height of the patient in centimeters.",
-          "example": 178
+          "example": 178,
+          "description": "Height of the patient in centimeters."
         },
         "weight": {
           "type": "number",
-          "description": "Weight of the patient in kilograms.",
-          "example": 78.4
+          "example": 78.4,
+          "description": "Weight of the patient in kilograms."
         },
         "YOB": {
           "type": "integer",
-          "description": "Year of birth of the patient.",
-          "example": 1945
+          "example": 1945,
+          "description": "Year of birth of the patient."
         }
       },
       "type": "object"
