@@ -6,6 +6,7 @@
     <app-button (click)="handleSave()"
                 [loading]="loading"
                 [disabled]="loading"
+                [success]="!loading && success"
                 [variant]="'success'">Save changes
     </app-button>
   </div>
@@ -76,6 +77,7 @@
   <app-button (click)="handleSave()"
               [loading]="loading"
               [disabled]="loading"
+              [success]="!loading && success"
               [variant]="'success'">Save changes
   </app-button>
 

@@ -18,6 +18,8 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   @Input() patients?: PatientList;
   @Input() item?: Recipient;
 
+  public success: boolean = false;
+
   public form: FormGroup = new FormGroup({
     antigens: new FormControl(''),
     require_better_match_in_compatibility_index: new FormControl(false),
@@ -88,11 +90,14 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
       return;
     }
 
-    console.log('saving', this.item);
-    // this.loading = true;
-    // this._patientService.saveRecipient(this.item)
-    // .then(() => this.loading = false)
-    // .catch(() => this.loading = false);
+    this.loading = true;
+    this.success = false;
+    this._patientService.saveRecipient(this.item)
+    .then(() => {
+      this.loading = false;
+      this.success = true;
+    })
+    .catch(() => this.loading = false);
   }
 
   private _initAntigensCodes(): void {
