@@ -14,15 +14,15 @@
   <form (ngSubmit)="handleSave()">
     <h4>
       Antigens
-      <app-count [count]="selectedCodes.length"></app-count>
+      <app-count [count]="selected.length"></app-count>
     </h4>
     <mat-form-field>
       <mat-label>Recipient's antigens</mat-label>
       <mat-chip-list #antigensChipList>
-        <mat-chip *ngFor="let code of selectedCodes"
+        <mat-chip *ngFor="let code of selected"
                   (removed)="remove(code)"
                   [removable]="true">
-          {{code}}
+          {{code.raw_code}}
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input #antigensInput
@@ -35,13 +35,13 @@
                placeholder="Search by antigen code"
                type="text">
       </mat-chip-list>
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addNewAntigen($event.option.value, antigensInput)">
-        <mat-option *ngFor="let code of filteredCodes | async" [value]="code">
-          {{code}}
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addAntigen($event.option.value, antigensInput)">
+        <mat-option *ngFor="let code of filtered | async" [value]="code">
+          {{code.raw_code}}
         </mat-option>
       </mat-autocomplete>
       <mat-hint>
-        Search and select multiple antigens from {{availableCodes.length}} available antigens.
+        Search and select multiple antigens from {{available.length}} available antigens.
       </mat-hint>
     </mat-form-field>
 

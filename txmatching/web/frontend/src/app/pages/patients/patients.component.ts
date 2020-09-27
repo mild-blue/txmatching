@@ -52,7 +52,6 @@ export class PatientsComponent implements OnInit {
   }
 
   private _initPairs(): void {
-    console.log(this.patients);
     if (!this.patients) {
       return;
     }

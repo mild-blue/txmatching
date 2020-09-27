@@ -24,7 +24,6 @@ export function patientFullTextSearch(patients: Patient[], searchPhrase: string)
 }
 
 export function hlaFullTextSearch(antibodies: Hla[], searchPhrase: string): Hla[] {
-  console.log(antibodies, searchPhrase);
   const filterValue = searchPhrase.toLowerCase();
   const searchPattern = new RegExp(`(?=.*${filterValue})`);
 

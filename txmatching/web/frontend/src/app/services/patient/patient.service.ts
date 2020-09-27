@@ -32,13 +32,20 @@ export class PatientService {
   }
 
   public async saveDonor(donor: Donor): Promise<Donor> {
+    this._logger.log('Saving donor', [donor]);
     return this._http.put<Donor>(
       `${environment.apiUrl}/patients/donor`,
-      { ...donor }
+      {
+        db_id: donor.db_id,
+        hla_typing: {
+          hla_types_list: donor.parameters.hla_typing.hla_types_list
+        }
+      }
     ).pipe(first()).toPromise();
   }
 
   public async saveRecipient(recipient: Recipient): Promise<Recipient> {
+    this._logger.log('Saving recipient', [recipient]);
     return this._http.put<Recipient>(
       `${environment.apiUrl}/patients/recipient`,
       {

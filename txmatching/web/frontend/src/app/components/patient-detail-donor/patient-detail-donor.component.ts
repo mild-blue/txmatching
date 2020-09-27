@@ -21,7 +21,7 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
   public inputControl: FormControl = new FormControl('');
   public allAntigens: Antigen[] = [];
 
-  public filteredCodes: Observable<Antigen[]>;
+  public filtered: Observable<Antigen[]>;
   public separatorKeysCodes: number[] = [ENTER, SPACE];
 
   public loading: boolean = false;
@@ -30,21 +30,25 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
   constructor(private _patientService: PatientService) {
     super(_patientService);
 
-    this.filteredCodes = this.inputControl.valueChanges.pipe(
-      startWith(undefined),
-      map((code: string | null) => code ? hlaFullTextSearch(this.availableCodes, code) : this.availableCodes.slice()));
+    this.filtered = this.inputControl.valueChanges.pipe(
+      startWith(''),
+      map((value: string | Antigen) => {
+        return !value || typeof value === 'string' ? value : value.raw_code;
+      }),
+      map(code => code ? hlaFullTextSearch(this.available, code) : this.available.slice())
+    );
   }
 
   ngOnInit(): void {
     this._initAvailableCodes();
   }
 
-  get selectedCodes(): Antigen[] {
+  get selected(): Antigen[] {
     return this.item ? this.item.parameters.hla_typing.hla_types_list : [];
   }
 
-  get availableCodes(): Antigen[] {
-    return this.allAntigens.filter(code => !this.selectedCodes.includes(code));
+  get available(): Antigen[] {
+    return this.allAntigens.filter(a => !this.selected.map(antigen => antigen.raw_code).includes(a.raw_code));
   }
 
   public addNewAntigen(code: string, control: HTMLInputElement): void {
@@ -54,6 +58,18 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
 
     const formattedCode = code.trim().toUpperCase();
     this.item.parameters.hla_typing.hla_types_list.push({ raw_code: formattedCode });
+
+    // reset input
+    this.inputControl.reset();
+    control.value = '';
+  }
+
+  public addAntigen(a: Antigen, control: HTMLInputElement): void {
+    if (!this.item || !a) {
+      return;
+    }
+
+    this.item.parameters.hla_typing.hla_types_list.push(a);
 
     // reset input
     this.inputControl.reset();
@@ -92,11 +108,13 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
       return;
     }
 
-    const allCodes = [];
+    const allAntigens = [];
     for (const d of this.patients.donors) {
-      allCodes.push(...d.parameters.hla_typing.hla_types_list);
+      allAntigens.push(...d.parameters.hla_typing.hla_types_list);
     }
 
-    this.allAntigens = [...new Set(allCodes)]; // only unique
+    this.allAntigens = [...new Set(allAntigens.map(a => a.raw_code))].map(code => {
+      return { raw_code: code };
+    }); // only unique
   }
 }
