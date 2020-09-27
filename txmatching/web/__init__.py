@@ -7,18 +7,17 @@ from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from txmatching.auth import bcrypt
-from txmatching.configuration.app_configuration.application_configuration import ApplicationConfiguration, \
-    get_application_configuration
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationConfiguration, get_application_configuration)
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
-from txmatching.web.api.namespaces import (PATIENT_NAMESPACE,
+from txmatching.web.api.namespaces import (CONFIGURATION_NAMESPACE,
                                            MATCHING_NAMESPACE,
-                                           USER_NAMESPACE,
+                                           PATIENT_NAMESPACE,
+                                           REPORTS_NAMESPACE,
                                            SERVICE_NAMESPACE,
-                                           CONFIGURATION_NAMESPACE,
-                                           TXM_EVENT_NAMESPACE,
-                                           REPORTS_NAMESPACE)
+                                           TXM_EVENT_NAMESPACE, USER_NAMESPACE)
 from txmatching.web.api.patient_api import patient_api
 from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
@@ -69,7 +68,7 @@ def create_app():
             }
         }
 
-        api = Api(app, authorizations=authorizations, doc='/doc/')
+        api = Api(app, authorizations=authorizations, doc='/doc/', version='0.3', title='TXM_upload_patients')
         api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
         api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
         api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
