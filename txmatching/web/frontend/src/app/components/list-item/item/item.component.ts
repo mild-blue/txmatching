@@ -29,7 +29,7 @@ export class ItemComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.listItemComponent) {
+    if (changes.listItemComponent || changes.isActive) {
       this._loadItemComponent();
     }
     if (changes.item) {
@@ -51,6 +51,7 @@ export class ItemComponent implements OnInit, OnChanges {
       viewContainerRef.clear();
       this._componentRef = viewContainerRef.createComponent<ListItemAbstractComponent>(componentFactory);
       this._componentRef.instance.item = item;
+      this._componentRef.instance.isActive = this.isActive;
       this._componentRef.instance.patients = this.patients;
       this._componentRef.instance.configuration = this.configuration;
     }
