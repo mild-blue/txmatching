@@ -23,7 +23,7 @@ TxmEventJsonOut = txm_event_api.model('TxmEvent', {
 })
 
 HlaAntibodiesJson = txm_event_api.model('HLAAntibodies', {
-    'name': fields.String(required=True, description='HLA antibody name', example='A32'),
+    'name': fields.String(required=True, description='HLA antibody name.', example='A32'),
     'MFI': fields.Integer(required=True, description='Mean fluorescence intensity. Use exact value.', example=2350),
     'cutoff': fields.Integer(required=True,
                              description='Default cutoff value for the specific patient and HLA antibody.',
@@ -38,11 +38,11 @@ DonorJsonIn = txm_event_api.model('Donor', {
     'donor_type': fields.String(required=True, enum=[donor_type.name for donor_type in DonorType]),
     'related_recipient_medical_id': fields.String(required=False, example='R1037',
                                                   description='Medical ID of the related recipient, empty for bridging '
-                                                              'donors and non-directed.'),
-    'sex': fields.String(required=True, description='Sex of patient', enum=SEXES),
+                                                              'and non-directed donors.'),
+    'sex': fields.String(required=True, description='Sex of the patient.', enum=SEXES),
     'height': fields.Integer(required=True, description='Height of the patient in centimeters.', example=178),
     'weight': fields.Float(required=True, description='Weight of the patient in kilograms.', example=78.4),
-    'yob': fields.Integer(required=True, description='Year of birth of the patient.', example=1945),
+    'YOB': fields.Integer(required=True, description='Year of birth of the patient.', example=1945),
 })
 
 RecipientJsonIn = txm_event_api.model('Recipient', {
@@ -60,10 +60,10 @@ RecipientJsonIn = txm_event_api.model('Recipient', {
                                   cls_or_instance=fields.Nested(
                                       HlaAntibodiesJson
                                   )),
-    'sex': fields.String(required=True, description='Sex of patient', enum=SEXES),
+    'sex': fields.String(required=True, description='Sex of the patient.', enum=SEXES),
     'height': fields.Integer(required=True, description='Height of the patient in centimeters.', example=178),
     'weight': fields.Float(required=True, description='Weight of the patient in kilograms.', example=78.4),
-    'yob': fields.Integer(required=True, description='Year of birth of the patient.', example=1945),
+    'YOB': fields.Integer(required=True, description='Year of birth of the patient.', example=1945),
     'waiting_since': fields.String(required=True,
                                    description='Date since when the patient has been on waiting list. '
                                                'Use format YYYY-MM-DD.',
