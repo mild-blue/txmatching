@@ -35,8 +35,14 @@
           }
         ],
         "responses": {
-          "500": {
-            "description": "Unexpected, see contents for details",
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/PatientUploadSuccessResponse"
+            }
+          },
+          "400": {
+            "description": "Wrong data format",
             "schema": {
               "$ref": "#/definitions/FailResponse"
             }
@@ -47,16 +53,10 @@
               "$ref": "#/definitions/FailResponse"
             }
           },
-          "400": {
-            "description": "Wrong data format",
+          "500": {
+            "description": "Unexpected, see contents for details",
             "schema": {
               "$ref": "#/definitions/FailResponse"
-            }
-          },
-          "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/PatientUploadSuccessResponse"
             }
           }
         },
