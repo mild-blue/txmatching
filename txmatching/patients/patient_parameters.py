@@ -5,8 +5,8 @@ from txmatching.utils.enums import Country, Sex
 from txmatching.utils.hla_system.hla_table import (
     get_compatibility_broad_codes, parse_code)
 
-kilograms = float
-centimeters = int
+Kilograms = float
+Centimeters = int
 
 
 @dataclass
@@ -68,6 +68,6 @@ class PatientParameters:
     country_code: Country
     hla_typing: HLATyping = HLATyping()
     sex: Optional[Sex] = None
-    height: Optional[centimeters] = None
-    weight: Optional[kilograms] = None
+    height: Optional[Centimeters] = None
+    weight: Optional[Kilograms] = None
     yob: Optional[int] = None
