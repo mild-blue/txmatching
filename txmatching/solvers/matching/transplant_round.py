@@ -8,7 +8,7 @@ class TransplantRound:
     """
     A single sequence or cycle of consecutive transplantations
     For example:
-    sequence: altruist_donor_1 -> recipient_2, donor_2 -> recipient_3
+    sequence: non_directed_donor_1 -> recipient_2, donor_2 -> recipient_3
     cycle: donor_1 -> recipient_2, donor_2 -> recipient_3, donor_3 -> recipient_1
     """
 
@@ -45,11 +45,11 @@ class TransplantRound:
     def donor_recipient_list(self) -> List[DonorRecipientTuple]:
         return self._donor_recipient_list
 
-    def briding_donor_altruist_or_nothing(self):
+    def bridging_donor_non_directed_or_nothing(self):
         first_donor_type = self._donor_recipient_list[0][0].donor_type
         if first_donor_type == DonorType.BRIDGING_DONOR:
             return 'B'
-        elif first_donor_type == DonorType.ALTRUIST:
-            return 'A'
+        elif first_donor_type == DonorType.NON_DIRECTED:
+            return 'N'
         else:
             return ''

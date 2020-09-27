@@ -1,13 +1,11 @@
 from typing import List
 
-from txmatching.data_transfer_objects.matchings.matching_dto import \
-    CountryDTO
+from txmatching.data_transfer_objects.matchings.matching_dto import CountryDTO
 from txmatching.patients.donor_recipient_tuple import DonorRecipientTuple
 from txmatching.patients.patient import DonorType
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_round import TransplantRound
-from txmatching.solvers.matching.transplant_sequence import \
-    TransplantSequence
+from txmatching.solvers.matching.transplant_sequence import TransplantSequence
 
 
 class Matching:
@@ -43,8 +41,8 @@ class Matching:
     def donor_recipient_list(self):
         return self._donor_recipient_list
 
-    def get_altruist_count(self):
-        return len([donor for donor, _ in self._donor_recipient_list if donor.donor_type == DonorType.ALTRUIST])
+    def get_non_directed_count(self):
+        return len([donor for donor, _ in self._donor_recipient_list if donor.donor_type == DonorType.NON_DIRECTED])
 
     def get_donors_for_country_count(self, country_code: str):
         return len([donor.parameters.country_code for donor, _ in self._donor_recipient_list if

@@ -34,8 +34,8 @@ export class MatchingRoundComponent implements OnInit {
       if (donor.donor_type === DonorType.BRIDGING_DONOR.valueOf()) {
         return `${roundIndex}B`;
       }
-      if (donor.donor_type === DonorType.ALTRUIST.valueOf()) {
-        return `${roundIndex}A`;
+      if (donor.donor_type === DonorType.NON_DIRECTED.valueOf()) {
+        return `${roundIndex}N`;
       }
     }
 

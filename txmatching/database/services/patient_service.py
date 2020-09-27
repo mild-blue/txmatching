@@ -33,7 +33,7 @@ def donor_excel_dto_to_donor_model(donor: DonorExcelDTO,
                                    recipient: Optional[RecipientModel],
                                    txm_event_db_id: int) -> DonorModel:
     maybe_recipient_id = recipient.id if recipient else None
-    donor_type = DonorType.DONOR if recipient else DonorType.ALTRUIST
+    donor_type = DonorType.DONOR if recipient else DonorType.NON_DIRECTED
     donor_model = DonorModel(
         medical_id=donor.medical_id,
         country=donor.parameters.country_code,
