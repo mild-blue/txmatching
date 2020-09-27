@@ -6,8 +6,8 @@ export interface PatientList {
 }
 
 export interface PatientPair extends ListItem {
-  donor: Donor;
-  recipient: Recipient;
+  d: Donor;
+  r: Recipient;
 }
 
 export interface Patient extends ListItem {

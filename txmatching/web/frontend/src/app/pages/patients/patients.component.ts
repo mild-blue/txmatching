@@ -63,8 +63,8 @@ export class PatientsComponent implements OnInit {
 
       this.pairs.push({
         index: this.pairs.length + 1,
-        donor,
-        recipient
+        d: donor,
+        r: recipient
       });
     }
 

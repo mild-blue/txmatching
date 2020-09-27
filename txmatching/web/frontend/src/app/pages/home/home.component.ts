@@ -8,8 +8,8 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { Matching } from '@app/model/Matching';
-import { PatientList } from '@app/model/Patient';
+import { Matching, Transplant } from '@app/model/Matching';
+import { compatibleBloodGroups, Donor, PatientList, Recipient } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
@@ -101,11 +101,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     .subscribe(
       (matchings: Matching[]) => {
 
-        this.matchings = matchings.map((m, key) => {
-          m.index = key + 1;
-          return m;
-        });
-
+        this.matchings = this._prepareMatchings(matchings);
         this._logger.log('Calculated matchings', [matchings]);
         this.loading = false;
       },
@@ -142,4 +138,45 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.patients = this._patientService.getLocalPatients();
   }
 
+  private _isDonorBloodCompatible(donor: Donor, recipient: Recipient): boolean {
+    const donorBloodGroup = donor.parameters.blood_group;
+    const recipientBloodGroup = recipient.parameters.blood_group;
+    return compatibleBloodGroups[recipientBloodGroup].includes(donorBloodGroup);
+  }
+
+  private _prepareMatchings(m: Matching[]): Matching[] {
+    return m.map((matching, key) => {
+      matching.index = key + 1;
+
+      matching.rounds.map(round => {
+        round.transplants = round.transplants.map(transplant => this._prepareTransplant(transplant));
+        return round;
+      });
+
+      return matching;
+    });
+  }
+
+  private _prepareTransplant(t: Transplant): Transplant {
+    const transplant: Transplant = { ...t };
+
+    // try to find Donor and Recipient instances
+    if (this.patients) {
+      const foundDonor = this.patients.donors.find(p => p.medical_id === t.donor);
+      if (foundDonor) {
+        transplant.d = foundDonor;
+      }
+
+      const foundRecipient = this.patients.recipients.find(p => p.medical_id === t.recipient);
+      if (foundRecipient) {
+        transplant.r = foundRecipient;
+      }
+    }
+
+    if (transplant.d && transplant.r) {
+      transplant.compatible_blood = this._isDonorBloodCompatible(transplant.d, transplant.r);
+    }
+
+    return transplant;
+  }
 }

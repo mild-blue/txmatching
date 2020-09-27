@@ -1,7 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
-import { antibodiesMultipliers, compatibleBloodGroups, Donor, PatientList, Recipient } from '@app/model/Patient';
+import { antibodiesMultipliers, PatientList } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -9,10 +9,7 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './matching-transplant.component.html',
   styleUrls: ['./matching-transplant.component.scss']
 })
-export class MatchingTransplantComponent {
-
-  private _donor?: Donor;
-  private _recipient?: Recipient;
+export class MatchingTransplantComponent implements OnInit {
 
   @Input() transplant?: Transplant;
   @Input() patients?: PatientList;
@@ -22,27 +19,7 @@ export class MatchingTransplantComponent {
   constructor(private _patientService: PatientService) {
   }
 
-  get donor(): Donor | undefined {
-    if (!this._donor && this.patients && this.patients.donors) {
-      this._donor = this.patients.donors.find(p => p.medical_id === this.transplant?.donor);
-    }
-    return this._donor;
-  }
-
-  get recipient(): Recipient | undefined {
-    if (!this._recipient && this.patients && this.patients.recipients) {
-      this._recipient = this.patients.recipients.find(p => p.medical_id === this.transplant?.recipient);
-    }
-    return this._recipient;
-  }
-
-  get isDonorBloodCompatible(): boolean {
-    if (!this.donor || !this.recipient) {
-      return false;
-    }
-    const donorBloodGroup = this.donor.parameters.blood_group;
-    const recipientBloodGroup = this.recipient.parameters.blood_group;
-    return compatibleBloodGroups[recipientBloodGroup].includes(donorBloodGroup);
+  ngOnInit() {
   }
 
   get prefixes(): string[] {
@@ -50,12 +27,12 @@ export class MatchingTransplantComponent {
   }
 
   public antigenScore(prefix: string): number {
-    if (!this.donor || !this.recipient) {
+    if (!this.transplant || !this.transplant.d || !this.transplant.r) {
       return 0;
     }
 
-    const donorAntigens = this.donor.parameters.hla_typing.codes;
-    const recipientAntigens = this.recipient.parameters.hla_typing.codes;
+    const donorAntigens = this.transplant.d.parameters.hla_typing.codes;
+    const recipientAntigens = this.transplant.r.parameters.hla_typing.codes;
     const matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
 
     if (matchingAntigens.length) {
@@ -82,22 +59,27 @@ export class MatchingTransplantComponent {
   }
 
   public getDonorAntigenClass(code: string): string {
-    if (this.recipient) {
-      if (this.recipient.hla_antibodies.hla_codes_over_cutoff.includes(code)) {
-        // donor antigen matches some recipient antibody
-        return 'bad-matching';
-      }
-
-      if (this.recipient.parameters.hla_typing.codes.includes(code)) {
-        // donor antigen matches some recipient antigen
-        return 'matching';
-      }
+    if (!this.transplant || !this.transplant.r) {
+      return '';
     }
+
+    if (this.transplant.r.hla_antibodies.hla_codes_over_cutoff.includes(code)) {
+      // donor antigen matches some recipient antibody
+      return 'bad-matching';
+    }
+
+    if (this.transplant.r.parameters.hla_typing.codes.includes(code)) {
+      // donor antigen matches some recipient antigen
+      return 'matching';
+    }
+
     return '';
   }
 
   public getRecipientAntigenClass(code: string): string {
-    if (this.donor && this.recipient && this.donor.parameters.hla_typing.codes.includes(code) && !this.recipient.hla_antibodies.hla_codes_over_cutoff.includes(code)) {
+    if (this.transplant && this.transplant.d && this.transplant.r
+      && this.transplant.d.parameters.hla_typing.codes.includes(code)
+      && !this.transplant.r.hla_antibodies.hla_codes_over_cutoff.includes(code)) {
       // recipient antigen matches some donor antigen
       // and code is not recipient antibody
       return 'matching';
@@ -106,7 +88,7 @@ export class MatchingTransplantComponent {
   }
 
   public getRecipientAntibodyClass(code: string): string {
-    if (this.donor && this.donor.parameters.hla_typing.codes.includes(code)) {
+    if (this.transplant && this.transplant.d && this.transplant.d.parameters.hla_typing.codes.includes(code)) {
       // recipient antibody matches some donor antigen
       return 'bad-matching';
     }

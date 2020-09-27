@@ -19,26 +19,8 @@
     font-weight: 700;
 
     display: flex;
-
-    .pair {
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-
-      fa-icon {
-        margin: 0 10px;
-      }
-
-      flag {
-        &:first-of-type {
-          margin-right: 5px;
-        }
-
-        &:last-of-type {
-          margin-left: 5px;
-        }
-      }
-    }
+    justify-content: space-between;
+    align-items: center;
 
     .score {
       span {
@@ -94,6 +76,13 @@
     padding: 10px;
     border-right: 1px solid $border-color;
     vertical-align: top;
+
+    .center-holder {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
     &:not([colspan]) {
       width: 21.6666%;
