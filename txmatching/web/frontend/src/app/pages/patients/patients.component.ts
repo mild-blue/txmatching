@@ -3,6 +3,7 @@ import { PatientList, PatientPair } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientListFilter, patientListFilters, PatientListFilterType } from '@app/pages/patients/patients.interface';
+import { LoggerService } from '@app/services/logger/logger.service';
 
 @Component({
   selector: 'app-patients',
@@ -17,12 +18,16 @@ export class PatientsComponent implements OnInit {
   public patients?: PatientList;
   public pairs: PatientPair[] = [];
 
-  constructor(private _patientService: PatientService) {
+  public loading: boolean = false;
+  public error: boolean = false;
+
+  constructor(private _patientService: PatientService,
+              private _logger: LoggerService) {
     this.activeListFilter = patientListFilters[0];
   }
 
   ngOnInit(): void {
-    this._initPatients();
+    this._initPatients().then(this._initPairs.bind(this));
   }
 
   get patientsCount(): number {
@@ -46,8 +51,8 @@ export class PatientsComponent implements OnInit {
     return this.pairs;
   }
 
-  private _initPatients(): void {
-    this.patients = this._patientService.getLocalPatients();
+  private _initPairs(): void {
+    console.log(this.patients);
     if (!this.patients) {
       return;
     }
@@ -76,6 +81,20 @@ export class PatientsComponent implements OnInit {
     this.patients.recipients.map((r, key) => {
       r.index = key + 1;
       return r;
+    });
+  }
+
+  private async _initPatients(): Promise<void> {
+    this.loading = true;
+    return this._patientService.updatePatients().then(patients => {
+      this._logger.log('Got patients from server', [patients]);
+      this.loading = false;
+      this.patients = patients;
+      this._patientService.setLocalPatients(patients);
+    })
+    .catch(() => {
+      this.loading = false;
+      this.error = true;
     });
   }
 }

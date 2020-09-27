@@ -19,7 +19,7 @@ export interface Patient extends ListItem {
 export interface Recipient extends Patient {
   acceptable_blood_groups: string[];
   hla_antibodies: {
-    antibodies_list: Antibody[];
+    hla_antibodies_list: Antibody[];
     hla_codes_over_cutoff: string[];
   };
   recipient_requirements: RecipientRequirements;

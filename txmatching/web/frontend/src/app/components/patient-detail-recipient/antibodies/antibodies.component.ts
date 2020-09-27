@@ -46,7 +46,7 @@ export class AntibodiesComponent implements OnInit {
   }
 
   get selectedAntibodies(): Antibody[] {
-    return this.recipient ? this.recipient.hla_antibodies.antibodies_list : [];
+    return this.recipient ? this.recipient.hla_antibodies.hla_antibodies_list : [];
   }
 
   get availableAntibodies(): Antibody[] {
@@ -61,7 +61,7 @@ export class AntibodiesComponent implements OnInit {
     const { antibody, mfi } = this.form.value;
     const code = antibody instanceof Object ? antibody.code : antibody;
 
-    this.recipient.hla_antibodies.antibodies_list.push({
+    this.recipient.hla_antibodies.hla_antibodies_list.push({
       code,
       mfi
     });
@@ -83,10 +83,10 @@ export class AntibodiesComponent implements OnInit {
       return;
     }
 
-    const index = this.recipient.hla_antibodies.antibodies_list.indexOf(a);
+    const index = this.recipient.hla_antibodies.hla_antibodies_list.indexOf(a);
 
     if (index >= 0) {
-      this.recipient.hla_antibodies.antibodies_list.splice(index, 1);
+      this.recipient.hla_antibodies.hla_antibodies_list.splice(index, 1);
     }
   }
 
@@ -129,7 +129,7 @@ export class AntibodiesComponent implements OnInit {
 
     const allAntibodies = [];
     for (const r of this.patients.recipients) {
-      allAntibodies.push(...r.hla_antibodies.antibodies_list);
+      allAntibodies.push(...r.hla_antibodies.hla_antibodies_list);
     }
 
     this.allAntibodies = [...new Set(allAntibodies)]; // only unique

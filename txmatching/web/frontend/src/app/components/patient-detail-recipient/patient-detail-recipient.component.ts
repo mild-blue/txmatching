@@ -21,10 +21,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   public success: boolean = false;
 
   public form: FormGroup = new FormGroup({
-    antigens: new FormControl(''),
-    require_better_match_in_compatibility_index: new FormControl(false),
-    require_better_match_in_compatibility_index_or_blood_group: new FormControl(false),
-    require_compatible_blood_group: new FormControl(false)
+    antigens: new FormControl('')
   });
 
   public allAntigensCodes: string[] = [];

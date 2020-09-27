@@ -5,14 +5,15 @@
         Patients
         <app-count [count]="patientsCount"></app-count>
       </h1>
-      <app-tab-switch [tabs]="tabs"
+      <app-tab-switch *ngIf="!loading"
+                      [tabs]="tabs"
                       [activeTab]="activeListFilter ? activeListFilter.type : ''"
                       (tabClicked)="setActiveFilter($event)"></app-tab-switch>
     </div>
   </app-container>
 
   <app-content>
-    <ng-container *ngIf="activeListFilter">
+    <ng-container *ngIf="activeListFilter && !loading">
       <app-item-list [listItemDetailComponent]="activeListFilter.detailComponent"
                      [listItemComponent]="activeListFilter.itemComponent"
                      [items]="getFilteredItems()"
@@ -22,3 +23,5 @@
 
   </app-content>
 </section>
+
+<app-loading [show]="loading"></app-loading>
