@@ -142,3 +142,8 @@ COMPATIBILITY_BROAD_CODES = [split_to_broad(hla_code) for hla_code in HLA_A + HL
 def get_compatibility_broad_codes(hla_codes: List[str]) -> List[str]:
     return [split_to_broad(hla_code) for hla_code in hla_codes if
             split_to_broad(hla_code) in COMPATIBILITY_BROAD_CODES]
+
+
+def parse_code(hla_code: str) -> str:
+    # TODO https://trello.com/c/qaItmiOB
+    return hla_code

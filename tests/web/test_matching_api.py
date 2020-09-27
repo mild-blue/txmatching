@@ -44,8 +44,8 @@ class TestSaveAndGetConfiguration(DbTests):
         }
         with self.app.test_client() as client:
             self.assertIsNotNone(ConfigModel.query.get(1))
-            res = client.put('/pat/recipient', headers=self.auth_headers, json=recipient_update_dict).json['db_id']
-            self.assertEqual(1, res)
+            res = client.put('/pat/recipient', headers=self.auth_headers, json=recipient_update_dict).json
+            self.assertEqual(['A', 'AB'], res['acceptable_blood_groups'])
             recipients = client.get('/pat/', headers=self.auth_headers).json['recipients']
             self.assertEqual(recipient_update_dict['acceptable_blood_groups'], recipients[0]['acceptable_blood_groups'])
 

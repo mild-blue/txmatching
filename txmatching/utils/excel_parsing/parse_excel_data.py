@@ -8,13 +8,14 @@ from werkzeug.datastructures import FileStorage
 
 from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
+    HLATypingDTO, PatientParametersDTO)
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLATyping,
-                                                    PatientParameters)
+                                                    HLAType)
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
-from txmatching.utils.country import Country
+from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.hla_table import (HLA_A, HLA_A_BROAD, HLA_B,
                                                    HLA_B_BROAD, HLA_BW, HLA_CW,
                                                    HLA_CW_BROAD, HLA_DQ,
@@ -27,6 +28,9 @@ _valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DR
                       HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DQ_BROAD + HLA_DR_BROAD
 
 _unknown_allele_codes = set()
+
+DEFAULT_CUTOFF_FOR_EXCEL = 2000
+DEFAULT_MFI = 10000
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +55,7 @@ def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, in
     return list(acceptable_blood_groups.union(basic_acceptable_blood_groups))
 
 
-def _parse_hla(hla_allele_str: str) -> List[str]:
+def _parse_hla(hla_allele_str: str) -> List[HLAType]:
     if 'neg' in hla_allele_str.lower():
         return []
 
@@ -67,13 +71,15 @@ def _parse_hla(hla_allele_str: str) -> List[str]:
         logger.warning(f"Following codes are not in the antigen codes table: \n {', '.join(unknown_allele_codes)}")
         logger.warning(f'They were encountered in allele codes string {hla_allele_str}\n')
 
-    return allele_codes
+    return [HLAType(raw_code) for raw_code in allele_codes]
 
 
 def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
     allele_codes = _parse_hla(hla_allele_str)
     # value and cut_off are just temporary values for now
-    return HLAAntibodies([HLAAntibody(code=code, mfi=2100, cutoff=2000) for code in allele_codes])
+    return HLAAntibodies(
+        [HLAAntibody(mfi=DEFAULT_MFI, cutoff=DEFAULT_CUTOFF_FOR_EXCEL, raw_code=allele_code.raw_code) for
+         allele_code in allele_codes])
 
 
 def _country_code_from_id(patient_id: str) -> Country:
@@ -112,9 +118,9 @@ def get_donor_from_row(row: Dict) -> DonorExcelDTO:
     blood_group_donor = _parse_blood_group(row['BLOOD GROUP donor'])
     typization_donor = _parse_hla(row['TYPIZATION DONOR'])
     country_code_donor = _country_code_from_id(donor_id)
-    donor_params = PatientParameters(blood_group=blood_group_donor,
-                                     hla_typing=HLATyping(typization_donor),
-                                     country_code=country_code_donor)
+    donor_params = PatientParametersDTO(blood_group=blood_group_donor,
+                                        hla_typing=HLATypingDTO(typization_donor),
+                                        country_code=country_code_donor)
     return DonorExcelDTO(medical_id=donor_id, parameters=donor_params)
 
 
@@ -126,9 +132,10 @@ def get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
                                                                        blood_group_recipient)
     country_code_recipient = _country_code_from_id(recipient_id)
 
-    recipient_params = PatientParameters(blood_group=blood_group_recipient,
-                                         hla_typing=HLATyping(typization_recipient),
-                                         country_code=country_code_recipient)
+    recipient_params = PatientParametersDTO(blood_group=blood_group_recipient,
+                                            hla_typing=HLATypingDTO(typization_recipient),
+                                            country_code=country_code_recipient)
     return RecipientExcelDTO(medical_id=recipient_id, parameters=recipient_params,
                              hla_antibodies=antibodies_recipient,
-                             acceptable_blood_groups=acceptable_blood_groups_recipient)
+                             acceptable_blood_groups=acceptable_blood_groups_recipient,
+                             recipient_cutoff=DEFAULT_CUTOFF_FOR_EXCEL)

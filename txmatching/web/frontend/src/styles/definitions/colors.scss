@@ -27,16 +27,16 @@ $danger: #dc3545;
 
 // === ANTIBODIES & ANTIGENS CODES === //
 // basic code
-$code-bg--basic: #e6e6e6;
-$code-border-color--basic: plum;
-$code-color--basic: rebeccapurple;
+$code-bg--basic: $gray-200;
+$code-border-color--basic: $gray-600;
+$code-color--basic: $gray-600;
 
 // matching code
-$code-bg--matching: rgba(green, 0.2);
-$code-border-color--matching: green;
-$code-color--matching: green;
+$code-bg--matching: rgba($success, 0.2);
+$code-border-color--matching: $success;
+$code-color--matching: $success;
 
-// antibody code
-$code-bg--antibody: aliceblue;
-$code-border-color--antibody: lightskyblue;
-$code-color--antibody: darkblue;
+// bad matching code
+$code-bg--bad-matching: rgba($danger, 0.2);
+$code-border-color--bad-matching: $danger;
+$code-color--bad-matching: $danger;
