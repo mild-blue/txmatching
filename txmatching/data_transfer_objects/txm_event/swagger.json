@@ -1,11 +1,29 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.3",
-    "title": "TXM_upload_patients"
+    "title": "TXM_upload_patients",
+    "version": "0.3"
   },
   "basePath": "/",
   "tags": [
+    {
+      "name": "user"
+    },
+    {
+      "name": "service"
+    },
+    {
+      "name": "matching"
+    },
+    {
+      "name": "patients"
+    },
+    {
+      "name": "configuration"
+    },
+    {
+      "name": "reports"
+    },
     {
       "name": "txm-event"
     }
@@ -116,13 +134,9 @@
     "Donor": {
       "required": [
         "HLA_typing",
-        "YOB",
         "blood_group",
         "donor_type",
-        "height",
-        "medical_id",
-        "sex",
-        "weight"
+        "medical_id"
       ],
       "properties": {
         "medical_id": {
@@ -177,10 +191,10 @@
         "sex": {
           "type": "string",
           "description": "Sex of the patient.",
-          "example": "F",
+          "example": "M",
           "enum": [
-            "F",
-            "M"
+            "M",
+            "F"
           ]
         },
         "height": {
@@ -205,14 +219,8 @@
       "required": [
         "HLA_antibodies",
         "HLA_typing",
-        "YOB",
         "blood_group",
-        "height",
-        "medical_id",
-        "previous_transplants",
-        "sex",
-        "waiting_since",
-        "weight"
+        "medical_id"
       ],
       "properties": {
         "acceptable_blood_groups": {
@@ -274,10 +282,10 @@
         "sex": {
           "type": "string",
           "description": "Sex of the patient.",
-          "example": "F",
+          "example": "M",
           "enum": [
-            "F",
-            "M"
+            "M",
+            "F"
           ]
         },
         "height": {
