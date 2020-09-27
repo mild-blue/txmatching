@@ -51,8 +51,8 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   }
 
   ngOnInit(): void {
-    this._initAvailableAntigensCodes();
-    this._initAvailableAntibodies();
+    this._initAntigensCodes();
+    this._initAntibodies();
   }
 
   get selectedAntigens(): string[] {
@@ -68,7 +68,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   }
 
   get availableAntibodies(): Antibody[] {
-    return this.allAntibodies.filter(code => !this.allAntibodies.includes(code));
+    return this.allAntibodies.filter(a => !this.selectedAntibodies.map(i => i.code).includes(a.code));
   }
 
   public addAntigen(code: string): void {
@@ -122,40 +122,40 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
 
     console.log(this.item);
     this.loading = true;
-    // this._patientService.saveDonor(this.item)
-    // .then(() => this.loading = false)
-    // .catch(() => this.loading = false);
+    this._patientService.saveRecipient(this.item)
+    .then(() => this.loading = false)
+    .catch(() => this.loading = false);
   }
 
   public displayFn(a: Antibody): string {
     return a && a.code ? a.code : '';
   }
 
-  private _initAvailableAntigensCodes(): void {
+  private _initAntigensCodes(): void {
     if (!this.patients || !this.patients.recipients) {
       return;
     }
 
-    const allCodes = [];
+    const allAntigens = [];
     for (const r of this.patients.recipients) {
-      allCodes.push(...r.parameters.hla_typing.codes);
+      allAntigens.push(...r.parameters.hla_typing.codes);
     }
 
-    this.allAntigensCodes = [...new Set(allCodes)]; // only unique
+    this.allAntigensCodes = [...new Set(allAntigens)]; // only unique
   }
 
-  private _initAvailableAntibodies(): void {
+  private _initAntibodies(): void {
     if (!this.patients || !this.patients.recipients) {
       return;
     }
 
-    const allCodes = [];
+    const allAntibodies = [];
     for (const r of this.patients.recipients) {
-      allCodes.push(...r.hla_antibodies.antibodies_list);
+      allAntibodies.push(...r.hla_antibodies.antibodies_list);
     }
 
-    // todo
-    // this.allAntibodies = [...new Set(allCodes)]; // only unique
+    this.allAntibodies = [...new Set(allAntibodies)]; // only unique
+    console.log(this.allAntibodies);
   }
 
 }

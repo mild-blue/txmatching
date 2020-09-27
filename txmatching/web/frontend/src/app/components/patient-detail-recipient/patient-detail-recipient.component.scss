@@ -1,0 +1,10 @@
+@import "../../../styles/variables";
+
+.detail-recipient {
+  padding: $padding-y calc(#{$padding-x} * 2);
+
+  form, mat-form-field {
+    width: 100%;
+    margin: $padding-y 0;
+  }
+}

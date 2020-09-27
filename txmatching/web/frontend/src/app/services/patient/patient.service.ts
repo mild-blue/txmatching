@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Donor, PatientList, patientsLSKey } from '@app/model/Patient';
+import { Donor, PatientList, patientsLSKey, Recipient } from '@app/model/Patient';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { first } from 'rxjs/operators';
@@ -35,6 +35,13 @@ export class PatientService {
     return this._http.put<Donor>(
       `${environment.apiUrl}/patients/donor`,
       { ...donor }
+    ).pipe(first()).toPromise();
+  }
+
+  public async saveRecipient(recipient: Recipient): Promise<Recipient> {
+    return this._http.put<Recipient>(
+      `${environment.apiUrl}/patients/recipient`,
+      { ...recipient }
     ).pipe(first()).toPromise();
   }
 }

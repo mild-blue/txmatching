@@ -1,7 +1,7 @@
 @import "../../../styles/variables";
 
 .detail-donor {
-  padding: $padding-y $padding-x;
+  padding: $padding-y calc(#{$padding-x} * 2);
 
   form, mat-form-field {
     width: 100%;
