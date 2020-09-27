@@ -1,9 +1,13 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from txmatching.patients.patient_parameters import HLAAntibody
+
+@dataclass
+class HLAAntibodyDTO:
+    raw_code: str
+    mfi: int
 
 
 @dataclass
 class HLAAntibodiesDTO:
-    hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
+    hla_antibodies_list: List[HLAAntibodyDTO] = field(default_factory=list)

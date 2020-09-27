@@ -15,3 +15,4 @@ class RecipientUpdateDTO:
     hla_typing: Optional[HLATypingDTO] = None
     hla_antibodies: Optional[HLAAntibodiesDTO] = None
     recipient_requirements: Optional[RecipientRequirements] = None
+    cutoff: Optional[int] = None
