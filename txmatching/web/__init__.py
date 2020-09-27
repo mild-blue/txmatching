@@ -68,7 +68,7 @@ def create_app():
             }
         }
 
-        api = Api(app, authorizations=authorizations, doc='/doc/', version='0.3', title='TXM_upload_patients')
+        api = Api(app, authorizations=authorizations, doc='/doc/', version='0.3', title='TX Matching API')
         api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
         api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
         api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
