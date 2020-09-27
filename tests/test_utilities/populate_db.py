@@ -4,7 +4,8 @@ from txmatching.database.db import db
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_service import \
     save_patients_from_excel_to_empty_txm_event
-from txmatching.database.sql_alchemy_schema import AppUserModel, ConfigModel, TxmEventModel
+from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
+                                                    TxmEventModel)
 from txmatching.patients.patient import TxmEvent
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.web import create_app
@@ -17,6 +18,7 @@ VIEWER_USER = {
     'email': 'viewer@example.com',
     'password': 'admin'
 }
+
 
 def create_or_overwrite_txm_event(name: str) -> TxmEvent:
     previous_txm_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
