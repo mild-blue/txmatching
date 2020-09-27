@@ -6,7 +6,7 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.crypto.jwt_crypto import decode_auth_token
 from txmatching.auth.data_types import UserRole, EncodedBearerToken, TokenType
 from txmatching.auth.exceptions import CredentialsMismatchException, InvalidIpAddressAccessException, \
-    InvalidOtpException
+    InvalidOtpException, InvalidAuthCallException
 from txmatching.auth.login_flow import credentials_login, _refresh_token, _otp_login
 from txmatching.auth.service.service_auth_management import register_service
 from txmatching.auth.user.totp import generate_otp_for_user
@@ -85,12 +85,12 @@ class TestLoginFlow(DbTests):
     def test__refresh_token_service(self):
         conf = get_application_configuration()
         request_token = EncodedBearerToken(1, UserRole.SERVICE, TokenType.ACCESS)
-        self.assertRaises(AssertionError, lambda: _refresh_token(request_token, conf))
+        self.assertRaises(InvalidAuthCallException, lambda: _refresh_token(request_token, conf))
 
     def test__refresh_token_otp(self):
         conf = get_application_configuration()
         request_token = EncodedBearerToken(1, UserRole.ADMIN, TokenType.OTP)
-        self.assertRaises(AssertionError, lambda: _refresh_token(request_token, conf))
+        self.assertRaises(InvalidAuthCallException, lambda: _refresh_token(request_token, conf))
 
     def test__otp_login(self):
         conf = get_application_configuration()

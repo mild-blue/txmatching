@@ -6,7 +6,7 @@ from flask_restx import Api
 from werkzeug.exceptions import HTTPException
 
 from txmatching.auth.exceptions import InvalidJWTException, CredentialsMismatchException, InvalidOtpException, \
-    InvalidIpAddressAccessException, UserUpdateException
+    InvalidIpAddressAccessException, UserUpdateException, InvalidAuthCallException
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +46,10 @@ def _user_auth_handlers(api: Api):
     def handle_root_exception(error: UserUpdateException):
         logger.warning(f'It was not possible to update user. - {repr(error)}')
         return {'error': 'Invalid data submitted.', 'detail': str(error)}, 400
+
+    @api.errorhandler(InvalidAuthCallException)
+    def handle_invalid_auth_call_exception(error: InvalidAuthCallException):
+        return {'error': 'Internal data flow inconsistency.', 'detail': str(error)}, 500
 
 
 def _default_error_handlers(api: Api):

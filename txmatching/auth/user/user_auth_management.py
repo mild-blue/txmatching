@@ -2,7 +2,7 @@ from typing import Optional
 
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.exceptions import UserUpdateException
+from txmatching.auth.exceptions import UserUpdateException, require_auth_condition
 from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.database.services.app_user_management import get_app_user_by_email, persist_user, \
     update_password_for_user
@@ -13,7 +13,8 @@ def register_user(email: str, password: str, role: UserRole, phone_number: str) 
     """
     Registers new user for given email, password and role.
     """
-    assert role != UserRole.SERVICE
+    require_auth_condition(role != UserRole.SERVICE, f'{role} used for registering user!')
+
     normalized_email = email.lower()
     _assert_user_registration(normalized_email, password, role, phone_number)
 

@@ -5,7 +5,7 @@ from flask import request
 from txmatching.auth.crypto.jwt_crypto import encode_auth_token
 from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.data_types import UserRole, TokenType, BearerTokenRequest, EncodedBearerToken
-from txmatching.auth.exceptions import CredentialsMismatchException
+from txmatching.auth.exceptions import CredentialsMismatchException, require_auth_condition
 from txmatching.auth.request_context import get_request_token
 from txmatching.auth.service.service_auth import service_login_flow
 from txmatching.auth.user.user_auth import user_login_flow, refresh_user_token, user_otp_login
@@ -47,8 +47,8 @@ def refresh_token() -> str:
 
 
 def _refresh_token(request_token: EncodedBearerToken, conf: ApplicationConfiguration) -> str:
-    assert request_token.role != UserRole.SERVICE
-    assert request_token.type != TokenType.OTP
+    require_auth_condition(request_token.role != UserRole.SERVICE, f'{request_token.role} used for refresh token!')
+    require_auth_condition(request_token.type != TokenType.OTP, f'{request_token.type} used for refresh token!')
 
     new_token = refresh_user_token(request_token, conf.jwt_expiration_days)
     return _encode_auth_token(new_token, conf.jwt_secret)
@@ -62,11 +62,11 @@ def otp_login(otp: str) -> str:
 
 
 def _otp_login(otp: str, request_token: EncodedBearerToken, conf: ApplicationConfiguration) -> str:
-    assert request_token.role != UserRole.SERVICE
-    assert request_token.type == TokenType.OTP
+    require_auth_condition(request_token.role != UserRole.SERVICE, f'{request_token.role} used for otp login!')
+    require_auth_condition(request_token.type == TokenType.OTP, f'{request_token.type} used for otp login!')
 
     user = get_app_user_by_id(request_token.user_id)
-    assert user is not None
+    require_auth_condition(user is not None, f'User {request_token.user_id} does not exist!')
 
     access_token = user_otp_login(user, otp, conf.jwt_expiration_days)
     return _encode_auth_token(access_token, conf.jwt_secret)

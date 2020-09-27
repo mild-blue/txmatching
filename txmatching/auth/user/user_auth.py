@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from txmatching.auth.data_types import BearerTokenRequest, UserRole, TokenType, EncodedBearerToken
-from txmatching.auth.exceptions import InvalidOtpException
+from txmatching.auth.exceptions import InvalidOtpException, require_auth_condition
 from txmatching.auth.user.totp import OTP_LIVENESS_MINUTES, generate_otp_for_user, verify_otp_for_user
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
@@ -13,7 +13,7 @@ def user_login_flow(user: AppUserModel, jwt_expiration_days: int) -> BearerToken
     """
     Issues temporary JWT and sends OTP code for further verification.
     """
-    assert user.role != UserRole.SERVICE
+    require_auth_condition(user.role != UserRole.SERVICE, f'{user.role} used for user login flow!')
 
     if user.require_2fa:
         otp = generate_otp_for_user(user)
@@ -38,7 +38,7 @@ def user_otp_login(user: AppUserModel, otp: str, jwt_expiration_days: int) -> Be
     """
     Validates OTP and creates request for bearer.
     """
-    assert user.role != UserRole.SERVICE
+    require_auth_condition(user.role != UserRole.SERVICE, f'OTP login request for {user.role}.')
 
     if not verify_otp_for_user(user, otp):
         raise InvalidOtpException(f'OTP is not valid for the user {user.email}')
@@ -55,8 +55,8 @@ def refresh_user_token(token: EncodedBearerToken, jwt_expiration_days: int) -> B
     """"
     Generates new JWT with extended lifespan.
     """
-    assert token.type == TokenType.ACCESS
-    assert token.role != UserRole.SERVICE
+    require_auth_condition(token.type == TokenType.ACCESS, f'{token.type} used for token refresh!')
+    require_auth_condition(token.role != UserRole.SERVICE, f'{token.role} used for token refresh!')
 
     return BearerTokenRequest(
         user_id=token.user_id,
@@ -67,7 +67,7 @@ def refresh_user_token(token: EncodedBearerToken, jwt_expiration_days: int) -> B
 
 
 def _send_sms_otp(otp: str, user: AppUserModel):
-    assert user.phone_number is not None
-    assert otp
+    require_auth_condition(user.phone_number is not None, f'No phone number for user {user.email}')
+    require_auth_condition(bool(otp), 'Empty OTP!')
     # TODO https://trello.com/c/6Z8wJENk send the OTP to the user
     logger.info(f'OTP issued: "{otp}" for user {user.email}')

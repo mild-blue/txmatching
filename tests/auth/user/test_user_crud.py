@@ -4,7 +4,7 @@ from uuid import uuid4
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.exceptions import UserUpdateException
+from txmatching.auth.exceptions import UserUpdateException, InvalidAuthCallException
 from txmatching.auth.user.user_auth_management import register_user, change_user_password
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
@@ -42,5 +42,5 @@ class TestUserCrudWithDb(DbTests):
                           lambda: register_user(str(uuid4()), str(uuid4()), UserRole.ADMIN, ''))
 
     def test_create_as_service(self):
-        self.assertRaises(AssertionError,
+        self.assertRaises(InvalidAuthCallException,
                           lambda: register_user('', '', UserRole.SERVICE, ''))

@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class AuthenticationException(Exception):
     """
     Base class for Authentication related exceptions.
@@ -32,3 +35,17 @@ class UserUpdateException(AuthenticationException):
     """
     Raised if the registration or user update fails.
     """
+
+
+class InvalidAuthCallException(AuthenticationException):
+    """
+    Raised if the code started executing unexpected flow.
+    """
+
+
+def require_auth_condition(condition: bool, message: Optional[str] = None):
+    """
+    If condition is false, raises InvalidAuthCallException with message.
+    """
+    if not condition:
+        raise InvalidAuthCallException(message)

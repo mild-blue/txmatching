@@ -2,7 +2,7 @@ import datetime
 from unittest import TestCase
 
 from txmatching.auth.data_types import UserRole, BearerTokenRequest, TokenType
-from txmatching.auth.exceptions import InvalidIpAddressAccessException
+from txmatching.auth.exceptions import InvalidIpAddressAccessException, InvalidAuthCallException
 from txmatching.auth.service.service_auth import service_login_flow, SERVICE_JWT_EXPIRATION_MINUTES
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
@@ -47,4 +47,5 @@ class TestServiceAuth(TestCase):
     def test_service_login_flow_wrong_user(self):
         service = self._get_service(require_2fa=True)
         service.role = UserRole.ADMIN
-        self.assertRaises(AssertionError, lambda: service_login_flow(service, service.second_factor_material))
+        self.assertRaises(InvalidAuthCallException,
+                          lambda: service_login_flow(service, service.second_factor_material))

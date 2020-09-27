@@ -3,7 +3,7 @@ from unittest import TestCase, mock
 from uuid import uuid4
 
 from txmatching.auth.data_types import UserRole, BearerTokenRequest, TokenType, EncodedBearerToken
-from txmatching.auth.exceptions import InvalidOtpException
+from txmatching.auth.exceptions import InvalidOtpException, InvalidAuthCallException
 from txmatching.auth.user.totp import generate_totp_seed, OTP_LIVENESS_MINUTES, generate_otp_for_user
 from txmatching.auth.user.user_auth import user_login_flow, user_otp_login, refresh_user_token
 from txmatching.database.sql_alchemy_schema import AppUserModel
@@ -13,7 +13,7 @@ class TestUserAuth(TestCase):
 
     def test_user_login_flow_service(self):
         usr = AppUserModel('', '', UserRole.SERVICE, '')
-        self.assertRaises(AssertionError, lambda: user_login_flow(usr, mock.Mock()))
+        self.assertRaises(InvalidAuthCallException, lambda: user_login_flow(usr, mock.Mock()))
 
     def test_user_login_flow_enabled_2fa(self):
         usr = AppUserModel(str(uuid4()), '', UserRole.ADMIN, generate_totp_seed(), 'phone', require_2fa=True)
@@ -47,7 +47,7 @@ class TestUserAuth(TestCase):
 
     def test_user_otp_login_service(self):
         usr = AppUserModel('', '', UserRole.SERVICE, '')
-        self.assertRaises(AssertionError, lambda: user_otp_login(usr, '', mock.Mock()))
+        self.assertRaises(InvalidAuthCallException, lambda: user_otp_login(usr, '', mock.Mock()))
 
     def test_user_otp_login(self):
         jwt_expiration_days = 10
@@ -96,7 +96,7 @@ class TestUserAuth(TestCase):
             role=UserRole.ADMIN,
             type=TokenType.OTP
         )
-        self.assertRaises(AssertionError, lambda: refresh_user_token(encoded, 10))
+        self.assertRaises(InvalidAuthCallException, lambda: refresh_user_token(encoded, 10))
 
     def test_refresh_user_token_fails_service(self):
         encoded = EncodedBearerToken(
@@ -104,4 +104,4 @@ class TestUserAuth(TestCase):
             role=UserRole.SERVICE,
             type=TokenType.ACCESS
         )
-        self.assertRaises(AssertionError, lambda: refresh_user_token(encoded, 10))
+        self.assertRaises(InvalidAuthCallException, lambda: refresh_user_token(encoded, 10))

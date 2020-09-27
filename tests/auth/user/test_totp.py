@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from txmatching.auth.data_types import UserRole
+from txmatching.auth.exceptions import InvalidAuthCallException
 from txmatching.auth.user.totp import generate_totp_seed, generate_otp_for_user, verify_otp_for_user
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
@@ -17,4 +18,4 @@ class TestTotp(TestCase):
         seed = generate_totp_seed()
         usr = AppUserModel('', '', UserRole.SERVICE, second_factor_material=seed)
 
-        self.assertRaises(AssertionError, lambda: generate_otp_for_user(usr))
+        self.assertRaises(InvalidAuthCallException, lambda: generate_otp_for_user(usr))
