@@ -12,7 +12,6 @@ import { PatientListFilter, patientListFilters, PatientListFilterType } from '@a
 export class PatientsComponent implements OnInit {
 
   public activeListFilter?: PatientListFilter;
-  public listFilterTypes: typeof PatientListFilterType = PatientListFilterType;
   public tabs: string[] = Object.values(PatientListFilterType);
 
   public patients?: PatientList;

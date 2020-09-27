@@ -108,31 +108,4 @@
       width: calc(50% - 2 * #{$item-gap});
     }
   }
-
-  .mat-slide-toggle {
-    width: 100%;
-    display: block;
-    height: auto;
-
-    ::ng-deep &-label {
-      align-items: flex-start;
-      flex-direction: row-reverse;
-      justify-content: flex-start;
-    }
-
-    ::ng-deep &-bar {
-      margin-top: 7px;
-    }
-
-    ::ng-deep &-content {
-      font-family: $font-family;
-      font-weight: $font-weight;
-      white-space: normal;
-      flex: 1;
-    }
-
-    &:not(last-child) {
-      margin-bottom: calc(#{$item-gap} / 2);
-    }
-  }
 }
