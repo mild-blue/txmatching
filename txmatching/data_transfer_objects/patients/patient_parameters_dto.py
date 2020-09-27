@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from txmatching.patients.patient_parameters import HLAType
+from txmatching.patients.patient_parameters import (HLAType, centimeters,
+                                                    kilograms)
 from txmatching.utils.enums import Country, Sex
 
 
@@ -16,6 +17,6 @@ class PatientParametersDTO:
     country_code: Country
     hla_typing: HLATypingDTO = HLATypingDTO()
     sex: Optional[Sex] = None
-    height: Optional[int] = None
-    weight: Optional[float] = None
+    height: Optional[centimeters] = None
+    weight: Optional[kilograms] = None
     yob: Optional[int] = None
