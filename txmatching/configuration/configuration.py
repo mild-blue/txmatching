@@ -1,8 +1,10 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from txmatching.configuration.subclasses import ForbiddenCountryCombination, PatientDbId, ManualDonorRecipientScore
-from txmatching.utils.country import Country
+from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
+                                                 ManualDonorRecipientScore,
+                                                 PatientDbId)
+from txmatching.utils.enums import Country
 
 DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Country.IL),
                                   ForbiddenCountryCombination(Country.IL, Country.AUT)]
@@ -21,8 +23,8 @@ class Configuration:
         and -inf for impossible
     manual_donor_recipient_scores: Manual setting of score for tuple of recipient and donor
     """
-    scorer_constructor_name: str = "HLAAdditiveScorer"
-    solver_constructor_name: str = "AllSolutionsSolver"
+    scorer_constructor_name: str = 'HLAAdditiveScorer'
+    solver_constructor_name: str = 'AllSolutionsSolver'
     require_compatible_blood_group: bool = False
     minimum_total_score: float = 0.0
     maximum_total_score: float = 27.0
