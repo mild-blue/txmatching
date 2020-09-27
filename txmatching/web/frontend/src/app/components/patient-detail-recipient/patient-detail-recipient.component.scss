@@ -3,8 +3,40 @@
 .detail-recipient {
   padding: $padding-y calc(#{$padding-x} * 2);
 
+  h4 {
+    color: $body-color;
+    margin: 0;
+  }
+
   form, mat-form-field {
     width: 100%;
     margin: $padding-y 0;
+  }
+
+  .checkboxes {
+    margin: $item-gap 0 $padding-y;
+  }
+
+  .antibody-chip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .mfi {
+      margin-left: 15px;
+
+      background: $gray-600;
+      color: $white;
+      border-radius: 6px;
+      padding: 2px 5px;
+      font-size: 12px;
+    }
+  }
+
+  .placeholder {
+    font-style: italic;
+    width: 100%;
+    text-align: center;
+    color: $gray-500;
   }
 }

@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { PatientService } from '@app/services/patient/patient.service';
 import { map, startWith } from 'rxjs/operators';
 import { antibodiesFullTextSearch, countryFullTextSearch } from '@app/directives/validators/configForm.directive';
+import { ENTER } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-patient-detail-recipient',
@@ -19,10 +20,14 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
 
   public form: FormGroup = new FormGroup({
     antigens: new FormControl(''),
-    antibodies: new FormControl(''),
     require_better_match_in_compatibility_index: new FormControl(false),
     require_better_match_in_compatibility_index_or_blood_group: new FormControl(false),
     require_compatible_blood_group: new FormControl(false)
+  });
+
+  public antibodiesForm: FormGroup = new FormGroup({
+    antibody: new FormControl(''),
+    mfi: new FormControl('')
   });
 
   public allAntigensCodes: string[] = [];
@@ -34,6 +39,10 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   public enableSave: boolean = false;
   public loading: boolean = false;
 
+  public separatorKeysCodes: number[] = [ENTER];
+
+  public antibodyValue: string = '';
+
   constructor(private _patientService: PatientService) {
     super(_patientService);
 
@@ -41,7 +50,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
       startWith(undefined),
       map((code: string | null) => code ? countryFullTextSearch(this.availableAntigensCodes, code) : this.availableAntigensCodes.slice()));
 
-    this.filteredAntibodies = this.form.controls.antibodies.valueChanges.pipe(
+    this.filteredAntibodies = this.antibodiesForm.controls.antibody.valueChanges.pipe(
       startWith(''),
       map((value: string | Antibody) => {
         return typeof value === 'string' ? value : value.code;
@@ -71,13 +80,18 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     return this.allAntibodies.filter(a => !this.selectedAntibodies.map(i => i.code).includes(a.code));
   }
 
-  public addAntigen(code: string): void {
-    if (!this.item) {
+  public addAntigen(code: string, control: HTMLInputElement): void {
+    if (!this.item || !code.length) {
       return;
     }
 
-    this.item.parameters.hla_typing.codes.push(code);
+    const formattedCode = code.trim().toUpperCase();
+    this.item.parameters.hla_typing.codes.push(formattedCode);
     this.enableSave = true;
+
+    // reset input
+    this.form.controls.antigens.reset();
+    control.value = '';
   }
 
   public removeAntigen(code: string): void {
@@ -93,13 +107,17 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     }
   }
 
-  public addAntibody(a: Antibody): void {
+  public addAntibody(): void {
     if (!this.item) {
       return;
     }
 
-    this.item.hla_antibodies.antibodies_list.push(a);
-    this.enableSave = true;
+    const { antibody, mfi } = this.antibodiesForm.value;
+
+    console.log('add', antibody, mfi);
+
+    // this.item.hla_antibodies.antibodies_list.push(a);
+    // this.enableSave = true;
   }
 
   public removeAntibody(a: Antibody): void {
@@ -125,6 +143,35 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     this._patientService.saveRecipient(this.item)
     .then(() => this.loading = false)
     .catch(() => this.loading = false);
+  }
+
+  public handleNewAntibodySelect(antibody: Antibody, control: HTMLInputElement): void {
+    console.log('selected', antibody);
+    if (!control) {
+      return;
+    }
+    this.antibodyValue = antibody.code;
+    control.value = '';
+    control.disabled = true;
+  }
+
+  public handleNewAntibodyRemove(control: HTMLInputElement): void {
+    const formControl = this.antibodiesForm.controls.antibody;
+    if (!formControl || !control) {
+      return;
+    }
+    this.antibodyValue = '';
+    formControl.setValue('');
+    control.disabled = false;
+  }
+
+  public handleNewAntibodyInputEnd(value: string, control: HTMLInputElement): void {
+    if (!value.length) {
+      return;
+    }
+    this.antibodyValue = value;
+    control.value = '';
+    control.disabled = true;
   }
 
   public displayFn(a: Antibody): string {
