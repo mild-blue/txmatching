@@ -6,6 +6,7 @@ import { map, startWith } from 'rxjs/operators';
 import { countryFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { Donor, PatientList } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
+import { ENTER, SPACE } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-patient-detail-donor',
@@ -21,9 +22,10 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
   public allCodes: string[] = [];
 
   public filteredCodes: Observable<string[]>;
+  public separatorKeysCodes: number[] = [ENTER, SPACE];
 
-  public inputValueChanged: boolean = false;
   public loading: boolean = false;
+  public success: boolean = false;
 
   constructor(private _patientService: PatientService) {
     super(_patientService);
@@ -45,13 +47,17 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
     return this.allCodes.filter(code => !this.selectedCodes.includes(code));
   }
 
-  public add(code: string): void {
-    if (!this.item) {
+  public add(code: string, control: HTMLInputElement): void {
+    if (!this.item || !code.length) {
       return;
     }
 
-    this.item.parameters.hla_typing.codes.push(code);
-    this.inputValueChanged = true;
+    const formattedCode = code.trim().toUpperCase();
+    this.item.parameters.hla_typing.codes.push(formattedCode);
+
+    // reset input
+    this.inputControl.reset();
+    control.value = '';
   }
 
   public remove(code: string): void {
@@ -63,18 +69,21 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
 
     if (index >= 0) {
       this.item.parameters.hla_typing.codes.splice(index, 1);
-      this.inputValueChanged = true;
     }
   }
 
-  public handleSubmit(): void {
+  public handleSave(): void {
     if (!this.item) {
       return;
     }
 
     this.loading = true;
+    this.success = false;
     this._patientService.saveDonor(this.item)
-    .then(() => this.loading = false)
+    .then(() => {
+      this.loading = false;
+      this.success = true;
+    })
     .catch(() => this.loading = false);
   }
 

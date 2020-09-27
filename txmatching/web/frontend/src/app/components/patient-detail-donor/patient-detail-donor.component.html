@@ -1,25 +1,41 @@
 <div *ngIf="item" class="detail-donor">
 
-  <patient [patient]="item"></patient>
+  <div class="detail__header">
+    <patient [patient]="item"></patient>
 
-  <form (ngSubmit)="handleSubmit()">
+    <app-button (click)="handleSave()"
+                [loading]="loading"
+                [disabled]="loading"
+                [success]="!loading && success"
+                [variant]="'success'">Save changes
+    </app-button>
+  </div>
+
+  <form (ngSubmit)="handleSave()">
+    <h4>
+      Antigens
+      <app-count [count]="selectedCodes.length"></app-count>
+    </h4>
     <mat-form-field>
-      <mat-label>Antigens</mat-label>
-      <mat-chip-list #chipList>
+      <mat-label>Recipient's antigens</mat-label>
+      <mat-chip-list #antigensChipList>
         <mat-chip *ngFor="let code of selectedCodes"
                   (removed)="remove(code)"
                   [removable]="true">
           {{code}}
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
-        <input [formControl]="inputControl"
+        <input #antigensInput
+               [formControl]="inputControl"
                [matAutocomplete]="auto"
-               [matChipInputFor]="chipList"
+               [matChipInputFor]="antigensChipList"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               (matChipInputTokenEnd)="add($event.value, antigensInput)"
                matInput
                placeholder="Search by antigen code"
                type="text">
       </mat-chip-list>
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event.option.value)">
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event.option.value, antigensInput)">
         <mat-option *ngFor="let code of filteredCodes | async" [value]="code">
           {{code}}
         </mat-option>
@@ -31,7 +47,8 @@
 
     <app-button [type]="'submit'"
                 [loading]="loading"
-                [disabled]="!inputValueChanged || loading"
+                [disabled]="loading"
+                [success]="!loading && success"
                 [variant]="'success'">Save changes
     </app-button>
   </form>

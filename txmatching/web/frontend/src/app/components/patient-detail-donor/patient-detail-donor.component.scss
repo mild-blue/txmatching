@@ -3,6 +3,17 @@
 .detail-donor {
   padding: $padding-y calc(#{$padding-x} * 2);
 
+  .detail__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $box-shadow--wide-size;
+
+    ::ng-deep .patient {
+      font-size: 32px;
+    }
+  }
+
   form, mat-form-field {
     width: 100%;
   }

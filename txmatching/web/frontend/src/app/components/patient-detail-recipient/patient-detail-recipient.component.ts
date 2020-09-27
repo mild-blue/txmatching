@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { PatientService } from '@app/services/patient/patient.service';
 import { map, startWith } from 'rxjs/operators';
 import { countryFullTextSearch } from '@app/directives/validators/configForm.directive';
-import { ENTER } from '@angular/cdk/keycodes';
+import { ENTER, SPACE } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-patient-detail-recipient',
@@ -29,7 +29,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
 
   public loading: boolean = false;
 
-  public separatorKeysCodes: number[] = [ENTER];
+  public separatorKeysCodes: number[] = [ENTER, SPACE];
 
   constructor(private _patientService: PatientService) {
     super(_patientService);
