@@ -66,8 +66,7 @@ CREATE TABLE app_user
     updated_at             TIMESTAMPTZ NOT NULL,
     deleted_at             TIMESTAMPTZ,
     CONSTRAINT pk_app_user_id PRIMARY KEY (id),
-    CONSTRAINT uq_app_user_email UNIQUE (email),
-    CONSTRAINT uq_app_user_second_fact UNIQUE (second_factor_material)
+    CONSTRAINT uq_app_user_email UNIQUE (email)
 );
 
 
