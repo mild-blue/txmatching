@@ -10,7 +10,6 @@ from flask_restx import Resource
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.request_context import get_user_role
 from txmatching.auth.user.user_auth_check import require_user_login
-from txmatching.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_JSON
 from txmatching.data_transfer_objects.configuration.configuration_swagger import ConfigurationJson
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, Transplant)

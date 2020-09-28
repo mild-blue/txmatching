@@ -5,7 +5,7 @@ import logging
 
 from flask_restx import Resource
 
-from txmatching.auth.login_check import login_required
+from txmatching.auth.service.service_auth_check import allow_service_role
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     TxmEventJsonIn, TxmEventJsonOut, UploadPatientsJson, FailJson, PatientUploadSuccessJson)
 from txmatching.web.api.namespaces import txm_event_api
@@ -25,7 +25,7 @@ class TxmEventApi(Resource):
     @txm_event_api.response(code=401, model=FailJson, description='Authentication denied.')
     @txm_event_api.response(code=409, model=FailJson, description='Non-unique patients provided.')
     @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details.')
-    @login_required()
+    @allow_service_role()
     def put(self):
         pass
 
@@ -42,7 +42,7 @@ class TxmEventUploadPatients(Resource):
     @txm_event_api.response(code=401, model=FailJson, description='Authentication denied.')
     @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details.')
     # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
-    @login_required()
+    @allow_service_role()
     def put(self):
         # TODO add here the logic that will update patients https://trello.com/c/Yj70es9D
         pass
