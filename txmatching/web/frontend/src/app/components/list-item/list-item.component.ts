@@ -91,7 +91,7 @@ export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
     // wait for element to have .active class
     setTimeout(() => {
       scrollable.scrollTop = activeElement.offsetTop;
-    }, 0); // lol yes, 0ms is enough
+    }, 10); // wait 10ms for execution, see https://stackoverflow.com/a/779785/7169288
 
     if (this.detail) {
       this.detail.nativeElement.scrollTop = 0;

@@ -28,7 +28,7 @@ export class AuthService {
   get isLoggedIn(): boolean {
     // check if user exists
     const user = this.currentUserValue;
-    if (!user || !user.decoded) {
+    if (!user?.decoded) {
       return false;
     }
 

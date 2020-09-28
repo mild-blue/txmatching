@@ -147,12 +147,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private _prepareMatchings(m: Matching[]): Matching[] {
     return m.map((matching, key) => {
       matching.index = key + 1;
-
-      matching.rounds.map(round => {
-        round.transplants = round.transplants.map(transplant => this._prepareTransplant(transplant));
-        return round;
-      });
-
+      matching.rounds.forEach(round => round.transplants = round.transplants.map(transplant => this._prepareTransplant(transplant)));
       return matching;
     });
   }

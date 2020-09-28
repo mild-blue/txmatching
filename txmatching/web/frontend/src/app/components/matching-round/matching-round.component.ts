@@ -20,7 +20,7 @@ export class MatchingRoundComponent {
 
   get roundIndex(): string {
     const roundIndex = `${this.index}`;
-    if (!this.round || !this.round.transplants.length) {
+    if (!this.round?.transplants.length) {
       return roundIndex;
     }
 

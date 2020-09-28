@@ -48,7 +48,7 @@ export class AppComponent implements OnDestroy {
   }
 
   get showHeader(): boolean {
-    return !this._router.url.includes('login');
+    return this._router.url !== '/login';
   }
 
   private async _updatePatients(): Promise<void> {

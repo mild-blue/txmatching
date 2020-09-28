@@ -72,15 +72,8 @@ export class PatientsComponent implements OnInit {
     }
 
     // add indexes for list rendering
-    this.patients.donors.map((d, key) => {
-      d.index = key + 1;
-      return d;
-    });
-
-    this.patients.recipients.map((r, key) => {
-      r.index = key + 1;
-      return r;
-    });
+    this.patients.donors.forEach((d, key) => d.index = key + 1);
+    this.patients.recipients.forEach((r, key) => r.index = key + 1);
   }
 
   private async _initPatients(): Promise<void> {

@@ -123,7 +123,7 @@ export class AntibodiesComponent implements OnInit {
   }
 
   private _initAntibodies(): void {
-    if (!this.patients || !this.patients.recipients) {
+    if (!this.patients?.recipients) {
       return;
     }
 

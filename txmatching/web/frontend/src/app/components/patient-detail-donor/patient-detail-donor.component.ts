@@ -104,7 +104,7 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
   }
 
   private _initAvailableCodes(): void {
-    if (!this.patients || !this.patients.donors) {
+    if (!this.patients?.donors) {
       return;
     }
 

@@ -114,7 +114,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   }
 
   private _initAntigensCodes(): void {
-    if (!this.patients || !this.patients.recipients) {
+    if (!this.patients?.recipients) {
       return;
     }
 

@@ -52,7 +52,7 @@ export class MatchingTransplantComponent implements OnInit {
   }
 
   public getDonorAntigenClass(code: string): string {
-    if (!this.transplant || !this.transplant.r) {
+    if (!this.transplant?.r) {
       return '';
     }
 
@@ -90,7 +90,7 @@ export class MatchingTransplantComponent implements OnInit {
 
   private _initHLAScores(): void {
 
-    if (!this.transplant || !this.transplant.d || !this.transplant.r) {
+    if (!this.transplant?.d || !this.transplant?.r) {
       return;
     }
 

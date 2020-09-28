@@ -48,7 +48,7 @@ export class ConfigurationCountriesComponent {
   }
 
   get donorCountries(): string[] {
-    if (!this.patients || !this.patients.donors) {
+    if (!this.patients?.donors) {
       return [];
     }
 
@@ -61,7 +61,7 @@ export class ConfigurationCountriesComponent {
   }
 
   get recipientCountries(): string[] {
-    if (!this.patients || !this.patients.recipients) {
+    if (!this.patients?.recipients) {
       return [];
     }
 
