@@ -27,8 +27,11 @@ class TxmEventApi(Resource):
         description='Endpoint that lets an ADMIN create a new TXM event. \
                         The ADMIN should specify TXM event name.'
     )
-    @txm_event_api.response(code=200, model=TxmEventJsonOut,
-                            description='Returns the newly created TXM event object.')
+    @txm_event_api.response(
+        code=200,
+        model=TxmEventJsonOut,
+        description='Returns the newly created TXM event object.'
+    )
     @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
     @txm_event_api.response(code=401, model=FailJson, description='Authentication denied.')
     @txm_event_api.response(code=409, model=FailJson, description='Non-unique patients provided.')
@@ -48,7 +51,7 @@ class TxmEventUploadPatients(Resource):
                         TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients \
                         from respective country in case there were any.'
     )
-    @txm_event_api.response(code=200, description='Success.', model=PatientUploadSuccessJson)
+    @txm_event_api.response(code=200, model=PatientUploadSuccessJson, description='Success.')
     @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
     @txm_event_api.response(code=401, model=FailJson, description='Authentication denied.')
     @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details.')
