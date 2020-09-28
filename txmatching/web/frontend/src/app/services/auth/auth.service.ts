@@ -6,6 +6,7 @@ import { environment } from '@environments/environment';
 import { map } from 'rxjs/operators';
 import { AuthResponse } from '@app/services/auth/auth.interface';
 import * as jwt_decode from 'jwt-decode';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,8 @@ export class AuthService {
   private _currentUserSubject: BehaviorSubject<User | undefined> = new BehaviorSubject<User | undefined>(undefined);
   public currentUser: Observable<User | undefined> = this._currentUserSubject.asObservable();
 
-  constructor(private _http: HttpClient) {
+  constructor(private _http: HttpClient,
+              private _router: Router) {
     this._setCurrentUser();
   }
 
@@ -26,7 +28,7 @@ export class AuthService {
   get isLoggedIn(): boolean {
     // check if user exists
     const user = this.currentUserValue;
-    if (!user || !user.decoded) {
+    if (!user?.decoded) {
       return false;
     }
 
@@ -54,6 +56,7 @@ export class AuthService {
   public logout(): void {
     localStorage.removeItem('user');
     this._currentUserSubject.next(undefined);
+    this._router.navigate(['/login']);
   }
 
   private _setCurrentUser(): void {

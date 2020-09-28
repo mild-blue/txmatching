@@ -7,7 +7,7 @@ from dacite import from_dict
 from flask import jsonify, request
 from flask_restx import Resource
 
-from txmatching.auth.login_check import login_required
+from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.patients.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.patient_swagger import (
@@ -30,7 +30,7 @@ class AllPatients(Resource):
 
     @patient_api.doc(security='bearer')
     @patient_api.response(code=200, model=PatientsModel, description='')
-    @login_required()
+    @require_user_login()
     def get(self) -> str:
         patients = get_txm_event()
         return jsonify(patients.to_lists_for_fe())
@@ -41,7 +41,7 @@ class AlterRecipient(Resource):
 
     @patient_api.doc(body=RecipientModelToUpdate, security='bearer')
     @patient_api.response(code=200, model=RecipientModel, description='')
-    @login_required()
+    @require_user_login()
     def put(self):
         recipient_update_dto = from_dict(data_class=RecipientUpdateDTO, data=request.json)
 
@@ -52,7 +52,7 @@ class AlterRecipient(Resource):
 class AlterDonor(Resource):
     @patient_api.doc(body=DonorModelToUpdate, security='bearer')
     @patient_api.response(code=200, model=DonorModel, description='')
-    @login_required()
+    @require_user_login()
     def put(self):
         donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
 

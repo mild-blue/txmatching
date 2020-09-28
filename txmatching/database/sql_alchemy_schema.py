@@ -7,7 +7,7 @@ from sqlalchemy.sql import func
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.patients.patient import DonorType, RecipientRequirements
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
 from txmatching.utils.enums import Country, Sex
 
@@ -144,29 +144,11 @@ class AppUserModel(db.Model):
     email = db.Column(db.TEXT, unique=True, nullable=False)
     pass_hash = db.Column(db.TEXT, unique=False, nullable=False)
     role = db.Column(db.Enum(UserRole), unique=False, nullable=False)
+    # Whitelisted IP address if role is SERVICE
+    # Seed for TOTP in all other cases
+    second_factor_material = db.Column(db.TEXT, unique=False, nullable=False)
+    phone_number = db.Column(db.TEXT, unique=False, nullable=True, default=None)
+    require_2fa = db.Column(db.BOOLEAN, unique=False, nullable=False, default=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-
-    def __init__(self, email: str, pass_hash: str, role: UserRole):
-        self.email = email
-        self.pass_hash = pass_hash
-        self.role = role
-        self._is_authenticated = False
-
-    @staticmethod
-    def is_active():
-        return True
-
-    def is_authenticated(self):
-        return self._is_authenticated
-
-    @staticmethod
-    def is_anonymous():
-        return False
-
-    def get_id(self):
-        return self.email
-
-    def set_authenticated(self, authenticated: bool):
-        self._is_authenticated = authenticated

@@ -1,5 +1,15 @@
+@import "../styles/variables";
+
 main {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.error {
+  color: $danger;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: 700;
+  padding: $padding-y $padding-x;
 }

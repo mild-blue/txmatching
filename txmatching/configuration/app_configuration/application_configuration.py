@@ -56,4 +56,4 @@ def get_prop(name: str, optional: bool = False) -> str:
     if not optional and not config:
         logger.error(f'It was not possible to retrieve configuration for property "{name}"!')
         raise EnvironmentError(f'No existing configuration for "{name}" found!')
-    return config
+    return str(config) if config is not None else ''

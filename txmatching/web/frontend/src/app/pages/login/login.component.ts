@@ -28,8 +28,10 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this._authService.logout();
+  ngOnInit() {
+    if (this._authService.isLoggedIn) {
+      this._router.navigate(['/']);
+    }
   }
 
   public onSubmit() {
@@ -47,10 +49,7 @@ export class LoginComponent implements OnInit {
     .pipe(first())
     .subscribe(
       () => {
-        // update patients after login and then navigate to homepage
-        this._patientService.updatePatients().then(() => {
-          this._router.navigate(['/']);
-        });
+        this._router.navigate(['/']);
       },
       error => {
         this.loading = false;

@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Round, Transplant } from '@app/model/Matching';
-import { compatibleBloodGroups, Donor, DonorType, PatientList, Recipient } from '@app/model/Patient';
+import { DonorType, PatientList } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { AppConfiguration } from '@app/model/Configuration';
 
@@ -9,7 +9,7 @@ import { AppConfiguration } from '@app/model/Configuration';
   templateUrl: './matching-round.component.html',
   styleUrls: ['./matching-round.component.scss']
 })
-export class MatchingRoundComponent implements OnInit {
+export class MatchingRoundComponent {
 
   @Input() round?: Round;
   @Input() index: number = 0;
@@ -18,17 +18,14 @@ export class MatchingRoundComponent implements OnInit {
 
   public arrowRight = faAngleRight;
 
-  constructor() {
-  }
-
   get roundIndex(): string {
     const roundIndex = `${this.index}`;
-    if (!this.round || !this.round.transplants.length) {
+    if (!this.round?.transplants.length) {
       return roundIndex;
     }
 
     const firstTransplant = this.round.transplants[0];
-    const donor = this.donor(firstTransplant);
+    const donor = firstTransplant.d;
 
     if (donor) {
       if (donor.donor_type === DonorType.BRIDGING_DONOR.valueOf()) {
@@ -42,37 +39,12 @@ export class MatchingRoundComponent implements OnInit {
     return roundIndex;
   }
 
-  ngOnInit(): void {
-  }
-
-  public isDonorBloodCompatible(transplant: Transplant): boolean {
-
-    const donor = this.donor(transplant);
-    const recipient = this.recipient(transplant);
-
-    if (!donor || !recipient) {
-      return false;
-    }
-
-    const donorBloodGroup = donor.parameters.blood_group;
-    const recipientBloodGroup = recipient.parameters.blood_group;
-    return compatibleBloodGroups[recipientBloodGroup].includes(donorBloodGroup);
-  }
-
-  public donor(transplant: Transplant): Donor | undefined {
-    return this.patients?.donors?.find(p => p.medical_id === transplant.donor);
-  }
-
-  public recipient(transplant: Transplant): Recipient | undefined {
-    return this.patients?.recipients?.find(p => p.medical_id === transplant.recipient);
-  }
-
   public percentageScore(transplant: Transplant): number {
     if (!this.configuration) {
       return 0;
     }
 
     const maxScore = this.configuration.maximum_total_score;
-    return 100 * transplant.score / maxScore;
+    return 100 * (transplant.score ?? 0) / maxScore;
   }
 }

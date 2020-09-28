@@ -1,0 +1,37 @@
+@import "../../../styles/variables";
+
+.detail-recipient {
+  padding: $padding-y calc(#{$padding-x} * 2);
+
+  h4, ::ng-deep h4 {
+    color: $body-color;
+    margin: 0;
+  }
+
+  form, mat-form-field {
+    width: 100%;
+    margin: $padding-y 0;
+  }
+
+  .detail__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $box-shadow--wide-size;
+
+    ::ng-deep .patient {
+      font-size: 32px;
+    }
+  }
+
+  .checkboxes {
+    margin: $item-gap 0 $padding-y;
+  }
+
+  .placeholder, ::ng-deep .placeholder {
+    font-style: italic;
+    width: 100%;
+    text-align: center;
+    color: $gray-500;
+  }
+}

@@ -1,0 +1,28 @@
+.mat-slide-toggle {
+  width: 100%;
+  display: block;
+  height: auto !important;
+
+  &-label {
+    height: auto !important;
+    align-items: flex-start;
+    flex-direction: row-reverse !important;
+    justify-content: flex-start !important;
+  }
+
+  &-bar {
+    margin-top: 7px;
+  }
+
+  &-content {
+    font-family: $font-family;
+    font-weight: $font-weight;
+    white-space: normal !important;
+    flex: 1;
+    padding-right: 10px;
+  }
+
+  &:not(last-child) {
+    margin-bottom: calc(#{$item-gap} / 2);
+  }
+}

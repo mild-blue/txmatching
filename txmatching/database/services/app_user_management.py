@@ -12,7 +12,7 @@ def get_all_app_users():
 
 
 def get_app_user_by_email(email: str) -> Optional[AppUserModel]:
-    return AppUserModel.query.filter(AppUserModel.email == email).first()
+    return AppUserModel.query.filter(AppUserModel.email == email.lower()).first()
 
 
 def get_app_user_by_id(user_id: int) -> Optional[AppUserModel]:

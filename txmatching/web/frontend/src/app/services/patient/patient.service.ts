@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PatientList, patientsLSKey } from '@app/model/Patient';
+import { Donor, PatientList, patientsLSKey, Recipient } from '@app/model/Patient';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { first } from 'rxjs/operators';
@@ -10,28 +10,55 @@ import { LoggerService } from '@app/services/logger/logger.service';
 })
 export class PatientService {
 
-  private static _updateLocalStorage(patients: PatientList) {
-    sessionStorage.removeItem(patientsLSKey);
-    sessionStorage.setItem(patientsLSKey, JSON.stringify(patients));
-  }
-
   constructor(private _http: HttpClient,
               private _logger: LoggerService) {
   }
 
   public async updatePatients(): Promise<PatientList> {
-    const patients: PatientList = await this._http.get<PatientList>(
+    return this._http.get<PatientList>(
       `${environment.apiUrl}/patients/`
     ).pipe(first()).toPromise();
-    this._logger.log('Got patients from server', [patients]);
-
-    PatientService._updateLocalStorage(patients);
-    return patients;
   }
 
-  public getPatients(): PatientList {
+  public setLocalPatients(patients: PatientList) {
+    sessionStorage.removeItem(patientsLSKey);
+    sessionStorage.setItem(patientsLSKey, JSON.stringify(patients));
+  }
+
+  public getLocalPatients(): PatientList | undefined {
     const localPatients = sessionStorage.getItem(patientsLSKey);
     this._logger.log('Got patients from localhost', [localPatients]);
-    return localPatients ? JSON.parse(localPatients) : [];
+    return localPatients ? JSON.parse(localPatients) : undefined;
+  }
+
+  public async saveDonor(donor: Donor): Promise<Donor> {
+    this._logger.log('Saving donor', [donor]);
+    return this._http.put<Donor>(
+      `${environment.apiUrl}/patients/donor`,
+      {
+        db_id: donor.db_id,
+        hla_typing: {
+          hla_types_list: donor.parameters.hla_typing.hla_types_list
+        }
+      }
+    ).pipe(first()).toPromise();
+  }
+
+  public async saveRecipient(recipient: Recipient): Promise<Recipient> {
+    this._logger.log('Saving recipient', [recipient]);
+    return this._http.put<Recipient>(
+      `${environment.apiUrl}/patients/recipient`,
+      {
+        db_id: recipient.db_id,
+        acceptable_blood_groups: recipient.acceptable_blood_groups,
+        hla_typing: {
+          hla_types_list: recipient.parameters.hla_typing.hla_types_list
+        },
+        hla_antibodies: {
+          hla_antibodies_list: recipient.hla_antibodies.hla_antibodies_list
+        },
+        recipient_requirements: recipient.recipient_requirements
+      }
+    ).pipe(first()).toPromise();
   }
 }

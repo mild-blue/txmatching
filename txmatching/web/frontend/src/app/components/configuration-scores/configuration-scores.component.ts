@@ -54,15 +54,15 @@ export class ConfigurationScoresComponent implements OnInit {
   }
 
   get donors(): Patient[] {
-    return this.patients ? this.patients.donors ?? [] : [];
+    return this.patients?.donors ?? [];
   }
 
   get recipients(): Patient[] {
-    return this.patients ? this.patients.recipients ?? [] : [];
+    return this.patients?.recipients ?? [];
   }
 
   get selectedScores(): DonorRecipientScore[] {
-    return this.configuration ? this.configuration.manual_donor_recipient_scores : [];
+    return this.configuration?.manual_donor_recipient_scores ?? [];
   }
 
   public addScore(): void {
@@ -137,6 +137,6 @@ export class ConfigurationScoresComponent implements OnInit {
   }
 
   public displayFn(user: Donor | Recipient): string {
-    return user && user.medical_id ? user.medical_id : '';
+    return user?.medical_id ? user.medical_id : '';
   }
 }
