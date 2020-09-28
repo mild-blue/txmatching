@@ -55,13 +55,16 @@ $BODY$
 
 CREATE TABLE app_user
 (
-    id         BIGSERIAL   NOT NULL,
-    email      TEXT        NOT NULL, -- serves as username
-    pass_hash  TEXT        NOT NULL,
-    role       USER_ROLE   NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL,
-    updated_at TIMESTAMPTZ NOT NULL,
-    deleted_at TIMESTAMPTZ,
+    id                     BIGSERIAL   NOT NULL,
+    email                  TEXT        NOT NULL, -- serves as username
+    pass_hash              TEXT        NOT NULL,
+    role                   USER_ROLE   NOT NULL,
+    second_factor_material TEXT        NOT NULL,
+    phone_number           TEXT,
+    require_2fa            BOOLEAN     NOT NULL,
+    created_at             TIMESTAMPTZ NOT NULL,
+    updated_at             TIMESTAMPTZ NOT NULL,
+    deleted_at             TIMESTAMPTZ,
     CONSTRAINT pk_app_user_id PRIMARY KEY (id),
     CONSTRAINT uq_app_user_email UNIQUE (email)
 );

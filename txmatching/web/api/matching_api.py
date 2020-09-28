@@ -8,6 +8,8 @@ from flask import request, jsonify
 from flask_restx import Resource
 
 from txmatching.auth.data_types import UserRole
+from txmatching.auth.request_context import get_user_role
+from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.configuration.configuration_swagger import CONFIGURATION_JSON
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, Transplant)
@@ -18,7 +20,6 @@ from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.web.api.namespaces import matching_api
-from txmatching.auth.login_check import login_required, get_user_role
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ LOGIN_FLASH_CATEGORY = 'LOGIN'
 class CalculateFromConfig(Resource):
     @matching_api.doc(body=CONFIGURATION_JSON, security='bearer')
     @matching_api.response(200, model=MATCHING_MODEL, description='')
-    @login_required()
+    @require_user_login()
     def post(self) -> str:
         configuration = configuration_from_dict(request.json)
         save_configuration_as_current(configuration)
