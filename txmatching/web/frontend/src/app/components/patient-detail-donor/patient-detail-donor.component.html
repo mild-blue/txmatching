@@ -17,7 +17,7 @@
       <app-count [count]="selected.length"></app-count>
     </h4>
     <mat-form-field>
-      <mat-label>Donor's antigens</mat-label>
+      <mat-label>Recipient's antigens</mat-label>
       <mat-chip-list #antigensChipList>
         <mat-chip *ngFor="let code of selected"
                   (removed)="remove(code)"
@@ -32,6 +32,7 @@
                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                (matChipInputTokenEnd)="addNewAntigen($event.value, antigensInput)"
                matInput
+               placeholder="Search by antigen code"
                type="text">
       </mat-chip-list>
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addAntigen($event.option.value, antigensInput)">
@@ -40,11 +41,7 @@
         </mat-option>
       </mat-autocomplete>
       <mat-hint>
-        Add new antigens by typing codes followed by Space
-        <mat-icon>space_bar</mat-icon>
-        or Enter
-        <mat-icon>keyboard_return</mat-icon>
-        or select from other available antigens
+        Search and select multiple antigens from {{available.length}} available antigens.
       </mat-hint>
     </mat-form-field>
 
