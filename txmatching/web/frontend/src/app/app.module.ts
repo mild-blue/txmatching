@@ -17,7 +17,6 @@ import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { ConfigurationComponent } from './components/configuration/configuration.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { CountComponent } from './components/count/count.component';
-import { MatchingsExplorerComponent } from './components/matchings-explorer/matchings-explorer.component';
 import { ContainerComponent } from './components/container/container.component';
 import { ContentComponent } from './components/content/content.component';
 import { MatchingDetailComponent } from './components/matching-detail/matching-detail.component';
@@ -43,6 +42,19 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatBadgeModule } from '@angular/material/badge';
 import { PatientComponent } from './components/patient/patient.component';
 import { CountryComponent } from './components/country/country.component';
+import { PatientsComponent } from './pages/patients/patients.component';
+import { ListItemComponent } from './components/list-item/list-item.component';
+import { PatientPairItemComponent } from './components/patient-pair-item/patient-pair-item.component';
+import { PatientPairDetailComponent } from './components/patient-pair-detail/patient-pair-detail.component';
+import { ListItemDirective } from './directives/list-item/list-item.directive';
+import { ListItemDetailDirective } from './directives/list-item-detail/list-item-detail.directive';
+import { ItemComponent } from './components/list-item/item/item.component';
+import { PatientItemComponent } from './components/patient-item/patient-item.component';
+import { PatientDetailDonorComponent } from './components/patient-detail-donor/patient-detail-donor.component';
+import { PatientDetailRecipientComponent } from './components/patient-detail-recipient/patient-detail-recipient.component';
+import { PatientPairComponent } from './components/patient-pair/patient-pair.component';
+import { TabSwitchComponent } from './components/tab-switch/tab-switch.component';
+import { AntibodiesComponent } from './components/patient-detail-recipient/antibodies/antibodies.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +68,6 @@ import { CountryComponent } from './components/country/country.component';
     ConfigurationComponent,
     LoadingComponent,
     CountComponent,
-    MatchingsExplorerComponent,
     ContainerComponent,
     ContentComponent,
     MatchingDetailComponent,
@@ -71,7 +82,20 @@ import { CountryComponent } from './components/country/country.component';
     ConfigurationCountriesComponent,
     ConfigurationScoresComponent,
     PatientComponent,
-    CountryComponent
+    CountryComponent,
+    PatientsComponent,
+    ListItemComponent,
+    PatientPairItemComponent,
+    PatientPairDetailComponent,
+    ListItemDirective,
+    ListItemDetailDirective,
+    ItemComponent,
+    PatientItemComponent,
+    PatientDetailDonorComponent,
+    PatientDetailRecipientComponent,
+    PatientPairComponent,
+    TabSwitchComponent,
+    AntibodiesComponent
   ],
   imports: [
     BrowserModule,

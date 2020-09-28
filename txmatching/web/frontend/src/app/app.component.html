@@ -1,3 +1,13 @@
-<main *ngIf="!isLoggedIn || isLoggedIn && patients">
-  <router-outlet></router-outlet>
+<main>
+  <app-header *ngIf="showHeader" [user]="user"></app-header>
+
+  <ng-container *ngIf="shouldLoadContent">
+    <router-outlet></router-outlet>
+  </ng-container>
+
+  <ng-container *ngIf="error">
+    <p class="error">Error loading patients</p>
+  </ng-container>
+
+  <app-loading [show]="loading"></app-loading>
 </main>

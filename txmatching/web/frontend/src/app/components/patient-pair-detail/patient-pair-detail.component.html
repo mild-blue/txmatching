@@ -1,0 +1,21 @@
+<div class="pair-detail">
+
+  <div class="pair-detail__nav">
+    <app-tab-switch [tabs]="tabNames"
+                    [activeTab]="activeTab ? activeTab : ''"
+                    (tabClicked)="setActiveTab($event)"></app-tab-switch>
+  </div>
+
+  <div *ngIf="item" [ngSwitch]="activeTab">
+    <div *ngSwitchCase="tabs.Pair"
+         class="pair-detail__pair">
+      <app-matching-transplant [patients]="patients" [transplant]="item"></app-matching-transplant>
+    </div>
+    <app-patient-detail-donor *ngSwitchCase="tabs.Donor"
+                              [item]="item.d"
+                              [patients]="patients"></app-patient-detail-donor>
+    <app-patient-detail-recipient *ngSwitchCase="tabs.Recipient"
+                                  [item]="item.r"
+                                  [patients]="patients"></app-patient-detail-recipient>
+  </div>
+</div>

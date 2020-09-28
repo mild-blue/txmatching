@@ -1,5 +1,5 @@
 import { AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn } from '@angular/forms';
-import { Patient } from '@app/model/Patient';
+import { Hla, Patient } from '@app/model/Patient';
 import { ErrorStateMatcher } from '@angular/material/core';
 
 export function patientNameValidator(patients: Patient[]): ValidatorFn {
@@ -21,6 +21,13 @@ export function patientFullTextSearch(patients: Patient[], searchPhrase: string)
   const searchPattern = new RegExp(`(?=.*${filterValue})`);
 
   return patients.filter(patient => patient.medical_id.toLocaleLowerCase().match(searchPattern));
+}
+
+export function hlaFullTextSearch(antibodies: Hla[], searchPhrase: string): Hla[] {
+  const filterValue = searchPhrase.toLowerCase();
+  const searchPattern = new RegExp(`(?=.*${filterValue})`);
+
+  return antibodies.filter(a => a.raw_code.toLocaleLowerCase().match(searchPattern));
 }
 
 export function countryFullTextSearch(countries: string[], searchPhrase: string): string[] {

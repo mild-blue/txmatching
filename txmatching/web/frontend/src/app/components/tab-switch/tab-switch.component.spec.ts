@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MatchingsExplorerComponent } from './matchings-explorer.component';
+import { TabSwitchComponent } from './tab-switch.component';
 
-describe('MatchingExplorerComponent', () => {
-  let component: MatchingsExplorerComponent;
-  let fixture: ComponentFixture<MatchingsExplorerComponent>;
+describe('TabSwitchComponent', () => {
+  let component: TabSwitchComponent;
+  let fixture: ComponentFixture<TabSwitchComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [MatchingsExplorerComponent]
+      declarations: [TabSwitchComponent]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MatchingsExplorerComponent);
+    fixture = TestBed.createComponent(TabSwitchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

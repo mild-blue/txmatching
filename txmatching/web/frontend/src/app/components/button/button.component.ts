@@ -10,6 +10,7 @@ export class ButtonComponent {
 
   @Input() loading: boolean = false;
   @Input() disabled: boolean = false;
+  @Input() success: boolean = false;
   @Input() size: 'sm' | '' = '';
   @Input() variant: 'primary' | 'success' | 'danger' = 'primary';
   @Input() type: 'submit' | 'button' | 'reset' = 'button';
