@@ -59,7 +59,7 @@ export class AntibodiesComponent implements OnInit {
     }
 
     const { antibody, mfi } = this.form.value;
-    const code = antibody instanceof Object ? antibody.code : antibody;
+    const code = antibody instanceof Object ? antibody.raw_code : antibody;
 
     this.recipient.hla_antibodies.hla_antibodies_list.push({
       raw_code: code,
@@ -132,6 +132,8 @@ export class AntibodiesComponent implements OnInit {
       allAntibodies.push(...r.hla_antibodies.hla_antibodies_list);
     }
 
-    this.allAntibodies = [...new Set(allAntibodies)]; // only unique
+    this.allAntibodies = [...new Set(allAntibodies.map(a => a.raw_code))].map(code => {
+      return { raw_code: code, mfi: 0 };
+    }); // only unique
   }
 }
