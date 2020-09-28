@@ -2,6 +2,7 @@ import dataclasses
 import logging
 from typing import List, Optional, Tuple, Union
 
+import datetime
 import dacite
 from sqlalchemy import and_
 
@@ -9,21 +10,26 @@ from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
 from txmatching.data_transfer_objects.patients.donor_update_dto import \
     DonorUpdateDTO
+from txmatching.data_transfer_objects.patients.donor_upload_dto import DonorUploadDTO
+from txmatching.data_transfer_objects.patients.patient_upload_dto import PatientUploadDTO
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.data_transfer_objects.patients.recipient_update_dto import \
     RecipientUpdateDTO
+from txmatching.data_transfer_objects.patients.recipient_upload_dto import RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import \
-    get_newest_txm_event_db_id
+    get_newest_txm_event_db_id, remove_donors_and_recipients_from_txm_event
 from txmatching.database.sql_alchemy_schema import (
-    ConfigModel, DonorModel, RecipientAcceptableBloodModel,
-    RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
-from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
-                                         RecipientRequirements, TxmEvent)
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLATyping,
-                                                    PatientParameters)
+    ConfigModel, DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel, TxmEventModel
+)
+from txmatching.patients.patient import (
+    Donor, DonorType, Patient, Recipient, RecipientRequirements, TxmEvent, calculate_cutoff
+)
+from txmatching.patients.patient_parameters import (
+    HLAAntibodies, HLAAntibody, HLATyping, PatientParameters
+)
+from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.hla_table import parse_code
 
 logger = logging.getLogger(__name__)
@@ -47,8 +53,10 @@ def donor_excel_dto_to_donor_model(donor: DonorExcelDTO,
     return donor_model
 
 
-def recipient_excel_dto_to_recipient_model(recipient_excel_dto: RecipientExcelDTO,
-                                           txm_event_db_id: int) -> RecipientModel:
+def recipient_excel_dto_to_recipient_model(
+        recipient_excel_dto: RecipientExcelDTO,
+        txm_event_db_id: int
+) -> RecipientModel:
     patient_model = RecipientModel(
         medical_id=recipient_excel_dto.medical_id,
         country=recipient_excel_dto.parameters.country_code,
@@ -73,7 +81,7 @@ def save_patients_from_excel_to_empty_txm_event(donors_recipients: Tuple[List[Do
                                                 txm_event_db_id: int):
     txm_event = get_txm_event(txm_event_db_id)
     if len(txm_event.donors_dict) > 0 or len(txm_event.recipients_dict) > 0:
-        raise ValueError('Txm event not empty, cannot send patients to database')
+        raise ValueError(f'Txm event "{txm_event}" is not empty, cannot send patients to database.')
 
     maybe_recipient_models = [recipient_excel_dto_to_recipient_model(recipient, txm_event_db_id)
                               if recipient else None for recipient in donors_recipients[1]]
@@ -222,3 +230,115 @@ def get_txm_event(txm_event_db_id: Optional[int] = None) -> TxmEvent:
 
     return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict=donors_dict,
                     recipients_dict=recipients_dict)
+
+
+def _parse_date_to_datetime(date: str):
+    try:
+        return datetime.datetime.strptime(date, '%Y-%m-%d')
+    except Exception as ex:
+        raise ValueError(f'Invalid date "{date}". It must be in format "YYYY-MM-DD", e.g., "2020-12-31".') from ex
+
+
+def _recipient_upload_dto_to_recipient_model(
+        recipient_dto: RecipientUploadDTO,
+        country_code: Country,
+        txm_event_db_id: int
+) -> RecipientModel:
+    hla_antibodies = [RecipientHLAAntibodyModel(
+        raw_code=hla_antibody.name,
+        code=parse_code(hla_antibody.name),
+        cutoff=hla_antibody.cutoff,
+        mfi=hla_antibody.mfi
+    ) for hla_antibody in recipient_dto.hla_antibodies]
+
+    transformed_hla_antibodies = [HLAAntibody(
+        raw_code=hla_antibody.raw_code,
+        mfi=hla_antibody.mfi,
+        code=hla_antibody.code,
+        cutoff=hla_antibody.cutoff) for hla_antibody in hla_antibodies]
+
+    recipient_model = RecipientModel(
+        medical_id=recipient_dto.medical_id,
+        country=country_code,
+        blood=recipient_dto.blood_group,
+        hla_typing=[parse_code(typing) for typing in recipient_dto.hla_typing],
+        hla_antibodies=hla_antibodies,
+        active=True,
+        acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
+                          for blood in recipient_dto.acceptable_blood_groups],
+        txm_event_id=txm_event_db_id,
+        recipient_cutoff=calculate_cutoff(transformed_hla_antibodies),
+        waiting_since=_parse_date_to_datetime(recipient_dto.waiting_since),
+        weight=recipient_dto.weight,
+        height=recipient_dto.height,
+        sex=recipient_dto.sex,
+        yob=recipient_dto.yob,
+    )
+    return recipient_model
+
+
+def _donor_upload_dto_to_donor_model(
+        donor_dto: DonorUploadDTO,
+        recipient: Optional[RecipientModel],
+        country_code: Country,
+        txm_event_db_id: int
+) -> DonorModel:
+    maybe_recipient_id = recipient.id if recipient else None
+    donor_type = DonorType.DONOR if recipient else DonorType.NON_DIRECTED
+    donor_model = DonorModel(
+        medical_id=donor_dto.medical_id,
+        country=country_code,
+        blood=donor_dto.blood_group,
+        hla_typing=[parse_code(typing) for typing in donor_dto.hla_typing],
+        active=True,
+        recipient_id=maybe_recipient_id,
+        donor_type=donor_type,
+        weight=donor_dto.weight,
+        height=donor_dto.height,
+        sex=donor_dto.sex,
+        yob=donor_dto.yob,
+        txm_event_id=txm_event_db_id
+    )
+    return donor_model
+
+
+def _save_patients_to_existing_txm_event(
+        donors: List[DonorUploadDTO],
+        recipients: List[RecipientUploadDTO],
+        country_code: Country,
+        txm_event_name: str
+):
+    txm_event = TxmEventModel.query.filter(TxmEventModel.name == txm_event_name).first()
+    if not txm_event:
+        raise ValueError(f'No TXM event with name "{txm_event_name}" found.')
+
+    if len(txm_event.donors) > 0 or len(txm_event.recipients) > 0:
+        raise ValueError(f'Txm event "{txm_event_name}" is not empty, cannot send patients to database.')
+
+    txm_event_db_id = txm_event.id
+    maybe_recipient_models = [_recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
+                              if recipient else None for recipient in recipients]
+    recipient_models = [recipient_model for recipient_model in maybe_recipient_models if recipient_model]
+    db.session.add_all(recipient_models)
+
+    donor_models = [_donor_upload_dto_to_donor_model(donor_dto, maybe_recipient_model, country_code, txm_event_db_id)
+                    for
+                    donor_dto, maybe_recipient_model in zip(donors, maybe_recipient_models)]
+    db.session.add_all(donor_models)
+
+
+def update_txm_event_patients(patient_upload_dto: PatientUploadDTO, country_code: Country):
+    """
+    Updates TXM event patients, i.e., removes current event donors and recipients and add new entities.
+    :param patient_upload_dto:
+    :param country_code:
+    :return:
+    """
+    remove_donors_and_recipients_from_txm_event(patient_upload_dto.txm_event_name)
+    _save_patients_to_existing_txm_event(
+        donors=patient_upload_dto.donors,
+        recipients=patient_upload_dto.recipients,
+        country_code=country_code,
+        txm_event_name=patient_upload_dto.txm_event_name
+    )
+    db.session.commit()
