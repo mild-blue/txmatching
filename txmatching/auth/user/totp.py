@@ -7,14 +7,14 @@ from txmatching.database.sql_alchemy_schema import AppUserModel
 # TODO https://trello.com/c/3RtDcOlt consider putting this to the configuration instead of the code
 
 
-OTP_LIVENESS_MINUTES = 10
+OTP_VALIDITY_MINUTES = 5
 """
 How long is one single OTP considered valid.
 """
 
 OTP_REFRESH_INTERVAL_MINUTES = 1
 """
-How often should be new OTP generated.
+How often new OTP should be generated.
 """
 
 
@@ -35,9 +35,9 @@ def generate_otp_for_user(user: AppUserModel) -> str:
 def verify_otp_for_user(user: AppUserModel, otp: str) -> bool:
     """
     Validates the OTP for the given user.
-    Sliding window is determined by the OTP_LIVENESS_MINUTES and OTP_REFRESH_INTERVAL_MINUTES
+    Sliding window is determined by the OTP_VALIDITY_MINUTES and OTP_REFRESH_INTERVAL_MINUTES
     """
-    return _totp(user).verify(otp, valid_window=int(OTP_LIVENESS_MINUTES / OTP_REFRESH_INTERVAL_MINUTES))
+    return _totp(user).verify(otp, valid_window=int(OTP_VALIDITY_MINUTES / OTP_REFRESH_INTERVAL_MINUTES))
 
 
 def _totp(user: AppUserModel) -> pyotp.TOTP:

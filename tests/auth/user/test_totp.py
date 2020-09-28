@@ -10,12 +10,22 @@ class TestTotp(TestCase):
 
     def test_generate_otp_for_user(self):
         seed = generate_totp_seed()
-        usr = AppUserModel('', '', UserRole.ADMIN, second_factor_material=seed)
+        usr = AppUserModel(
+            email='',
+            pass_hash='',
+            role=UserRole.ADMIN,
+            second_factor_material=seed
+        )
         otp = generate_otp_for_user(usr)
         self.assertTrue(verify_otp_for_user(usr, otp))
 
     def test_generate_otp_for_user_service(self):
         seed = generate_totp_seed()
-        usr = AppUserModel('', '', UserRole.SERVICE, second_factor_material=seed)
+        usr = AppUserModel(
+            email='',
+            pass_hash='',
+            role=UserRole.SERVICE,
+            second_factor_material=seed
+        )
 
         self.assertRaises(InvalidAuthCallException, lambda: generate_otp_for_user(usr))

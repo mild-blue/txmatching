@@ -1,9 +1,9 @@
 import datetime
 import logging
 
-from txmatching.auth.data_types import BearerTokenRequest, UserRole, TokenType, EncodedBearerToken
+from txmatching.auth.data_types import BearerTokenRequest, UserRole, TokenType, DecodedBearerToken
 from txmatching.auth.exceptions import InvalidOtpException, require_auth_condition
-from txmatching.auth.user.totp import OTP_LIVENESS_MINUTES, generate_otp_for_user, verify_otp_for_user
+from txmatching.auth.user.totp import OTP_VALIDITY_MINUTES, generate_otp_for_user, verify_otp_for_user
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ def user_login_flow(user: AppUserModel, jwt_expiration_days: int) -> BearerToken
             user_id=user.id,
             role=user.role,
             type=TokenType.OTP,
-            expiration=datetime.timedelta(minutes=OTP_LIVENESS_MINUTES)
+            expiration=datetime.timedelta(minutes=OTP_VALIDITY_MINUTES)
         )
     else:
         token = BearerTokenRequest(
@@ -51,7 +51,7 @@ def user_otp_login(user: AppUserModel, otp: str, jwt_expiration_days: int) -> Be
     )
 
 
-def refresh_user_token(token: EncodedBearerToken, jwt_expiration_days: int) -> BearerTokenRequest:
+def refresh_user_token(token: DecodedBearerToken, jwt_expiration_days: int) -> BearerTokenRequest:
     """"
     Generates new JWT with extended lifespan.
     """

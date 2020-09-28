@@ -26,7 +26,7 @@ def register_service(email: str, password: str, whitelisted_ip: str) -> AppUserM
 
 def change_service_password(user_id: int, new_password: str):
     """
-    Updates password for the service.
+    Updates password for the service account.
     """
     _assert_service_password_validity(new_password)
     pwd_hash = encode_password(new_password)

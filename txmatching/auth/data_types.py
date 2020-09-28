@@ -16,12 +16,12 @@ class TokenType(str, Enum):
 
 
 @dataclass(frozen=True)
-class EncodedBearerToken:
+class DecodedBearerToken:
     user_id: int
     role: UserRole
     type: TokenType
 
 
 @dataclass(frozen=True)
-class BearerTokenRequest(EncodedBearerToken):
+class BearerTokenRequest(DecodedBearerToken):
     expiration: datetime.timedelta

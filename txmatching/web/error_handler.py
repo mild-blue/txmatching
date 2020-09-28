@@ -39,8 +39,8 @@ def _user_auth_handlers(api: Api):
 
     @api.errorhandler(InvalidIpAddressAccessException)
     def handle_invalid_ip(error: InvalidIpAddressAccessException):
-        logger.warning(f'IP not on whitelist. - {repr(error)}')
-        return {'error': 'Authentication denied.', 'detail': 'Used IP is not on whitelist.'}, 401
+        logger.warning(f'IP not whitelisted. - {repr(error)}')
+        return {'error': 'Authentication denied.', 'detail': 'Used IP is not whitelisted.'}, 401
 
     @api.errorhandler(UserUpdateException)
     def handle_root_exception(error: UserUpdateException):
@@ -59,7 +59,7 @@ def _default_error_handlers(api: Api):
 
     @api.errorhandler(HTTPException)
     def handle_http_exception(error: HTTPException):
-        logger.warning(f'HttpException: - {repr(error)}')
+        logger.exception(f'HttpException: - {repr(error)}')
         return {'error': error.name, 'detail': error.description}, getattr(error, 'code', 500)
 
     @api.errorhandler(Exception)
@@ -69,5 +69,5 @@ def _default_error_handlers(api: Api):
 
     @api.errorhandler
     def default_error_handler(error):
-        logger.warning(f'Error: - {repr(error)}')
+        logger.exception(f'Error: - {repr(error)}')
         return {'error': error.name, 'detail': error.description}, getattr(error, 'code', 500)

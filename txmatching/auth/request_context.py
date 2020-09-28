@@ -1,11 +1,11 @@
 from flask import g, request
 
 from txmatching.auth.crypto.jwt_crypto import parse_request_token
-from txmatching.auth.data_types import UserRole, EncodedBearerToken
+from txmatching.auth.data_types import UserRole, DecodedBearerToken
 from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
 
 
-def get_request_token() -> EncodedBearerToken:
+def get_request_token() -> DecodedBearerToken:
     """
     Returns token of the currently logged in user.
     Token is present in the header Authorization: Bearer <real_token>

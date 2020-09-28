@@ -1,5 +1,4 @@
 import dataclasses
-from typing import Optional
 
 from sqlalchemy import ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -148,17 +147,8 @@ class AppUserModel(db.Model):
     # Whitelisted IP address if role is SERVICE
     # Seed for TOTP in all other cases
     second_factor_material = db.Column(db.TEXT, unique=True, nullable=False)
-    phone_number = db.Column(db.TEXT, unique=False, nullable=True)
+    phone_number = db.Column(db.TEXT, unique=False, nullable=True, default=None)
     require_2fa = db.Column(db.BOOLEAN, unique=False, nullable=False, default=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-
-    def __init__(self, email: str, pass_hash: str, role: UserRole, second_factor_material: str,
-                 phone_number: Optional[str] = None, require_2fa: bool = True):
-        self.email = email
-        self.pass_hash = pass_hash
-        self.role = role
-        self.second_factor_material = second_factor_material
-        self.phone_number = phone_number
-        self.require_2fa = require_2fa

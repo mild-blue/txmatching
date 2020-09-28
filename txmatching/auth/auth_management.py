@@ -23,6 +23,6 @@ def register(email: str, password: str, role: UserRole, second_factor: str):
     Registers new user entity.
     """
     if role == UserRole.SERVICE:
-        register_service(email=email.lower(), password=password, whitelisted_ip=second_factor)
+        register_service(email=email, password=password, whitelisted_ip=second_factor)
     else:
-        register_user(email=email.lower(), password=password, role=role, phone_number=second_factor)
+        register_user(email=email, password=password, role=role, phone_number=second_factor)

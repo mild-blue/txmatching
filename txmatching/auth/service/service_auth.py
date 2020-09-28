@@ -5,7 +5,7 @@ from txmatching.auth.exceptions import InvalidIpAddressAccessException, require_
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 # TODO https://trello.com/c/sRq4nFRv specify with the customer
-SERVICE_JWT_EXPIRATION_MINUTES = 5
+SERVICE_JWT_EXPIRATION_MINUTES = 2
 
 
 def service_login_flow(user: AppUserModel, request_ip: str) -> BearerTokenRequest:
@@ -13,7 +13,7 @@ def service_login_flow(user: AppUserModel, request_ip: str) -> BearerTokenReques
     Issues JWT for given service user while checking the IP address of the request,
      only whitelisted IPs are allowed.
     """
-    require_auth_condition(user.role == UserRole.SERVICE, f'{user.role} used for service registration!')
+    require_auth_condition(user.role == UserRole.SERVICE, f'{user.role} used for service login!')
 
     if user.require_2fa:
         _assert_second_factor_material(user, request_ip)
@@ -32,6 +32,6 @@ def _assert_second_factor_material(user: AppUserModel, request_ip: str):
     """
     if user.second_factor_material != request_ip:
         raise InvalidIpAddressAccessException(
-            f'IP mismatch for account {user.email} registered IP: {user.second_factor_material}, '
-            f'used IP: {request_ip}'
+            f'IP mismatch for account {user.email}. Registered IP: {user.second_factor_material}, '
+            f'used IP: {request_ip}.'
         )

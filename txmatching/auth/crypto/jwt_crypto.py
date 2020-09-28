@@ -2,7 +2,7 @@ import datetime
 
 import jwt
 
-from txmatching.auth.data_types import TokenType, UserRole, EncodedBearerToken
+from txmatching.auth.data_types import TokenType, UserRole, DecodedBearerToken
 from txmatching.auth.exceptions import InvalidJWTException
 
 JWT_SIGN_ALGORITHM = 'HS256'
@@ -13,7 +13,7 @@ HS256 symmetric based on the HMAC.
 """
 
 
-def parse_request_token(auth_header: str, jwt_secret: str) -> EncodedBearerToken:
+def parse_request_token(auth_header: str, jwt_secret: str) -> DecodedBearerToken:
     """
     Parses and verifies bearer token from the given string.
     Expects in format 'Bearer <token>'.
@@ -32,13 +32,13 @@ def parse_request_token(auth_header: str, jwt_secret: str) -> EncodedBearerToken
         raise InvalidJWTException('Missing or invalid JWT.') from missing_field
 
 
-def decode_auth_token(auth_token: str, jwt_secret: str) -> EncodedBearerToken:
+def decode_auth_token(auth_token: str, jwt_secret: str) -> DecodedBearerToken:
     """
-    Validates the auth token, returns user mail on success, raises exception on failure.
+    Validates the auth token, returns DecodedBearerToken on success, raises exception on failure.
     """
     try:
         payload = jwt.decode(auth_token, jwt_secret, algorithms=[JWT_SIGN_ALGORITHM])
-        return EncodedBearerToken(
+        return DecodedBearerToken(
             user_id=int(payload['user_id']),
             role=UserRole(payload['role']),
             type=TokenType(payload['type'])

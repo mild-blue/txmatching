@@ -9,7 +9,7 @@ class AuthenticationException(Exception):
 
 class InvalidJWTException(AuthenticationException):
     """
-    Exception indicating that JWT was for some reason invalid.
+    Exception indicating that JWT is invalid for some reason.
     """
 
 
@@ -33,7 +33,7 @@ class InvalidIpAddressAccessException(AuthenticationException):
 
 class UserUpdateException(AuthenticationException):
     """
-    Raised if the registration or user update fails.
+    Raised if the registration or update of the user fails.
     """
 
 
@@ -45,7 +45,7 @@ class InvalidAuthCallException(AuthenticationException):
 
 def require_auth_condition(condition: bool, message: Optional[str] = None):
     """
-    If condition is false, raises InvalidAuthCallException with message.
+    Raises InvalidAuthCallException with message if condition is false.
     """
     if not condition:
         raise InvalidAuthCallException(message)

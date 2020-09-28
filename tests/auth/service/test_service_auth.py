@@ -10,7 +10,13 @@ from txmatching.database.sql_alchemy_schema import AppUserModel
 class TestServiceAuth(TestCase):
     @staticmethod
     def _get_service(require_2fa: bool) -> AppUserModel:
-        service = AppUserModel('email', 'hash', UserRole.SERVICE, '0.0.0.0', require_2fa=require_2fa)
+        service = AppUserModel(
+            email='email',
+            pass_hash='hash',
+            role=UserRole.SERVICE,
+            second_factor_material='0.0.0.0',
+            require_2fa=require_2fa
+        )
         service.id = 10
         return service
 

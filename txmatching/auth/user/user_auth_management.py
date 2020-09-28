@@ -34,8 +34,8 @@ def change_user_password(user_id: int, new_password: str):
     Updates password for the user.
     """
     _assert_user_password_validity(new_password)
-    pwd_hash = encode_password(new_password)
-    update_password_for_user(user_id=user_id, new_password_hash=pwd_hash)
+    password_hash = encode_password(new_password)
+    update_password_for_user(user_id=user_id, new_password_hash=password_hash)
 
 
 def _assert_user_registration(normalized_email: str, password: str, role: Optional[UserRole], phone_number: str):

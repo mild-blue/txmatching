@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.crypto.jwt_crypto import decode_auth_token
-from txmatching.auth.data_types import UserRole, EncodedBearerToken, TokenType
+from txmatching.auth.data_types import UserRole, DecodedBearerToken, TokenType
 from txmatching.auth.exceptions import CredentialsMismatchException, InvalidIpAddressAccessException, \
     InvalidOtpException, InvalidAuthCallException
 from txmatching.auth.login_flow import credentials_login, _refresh_token, _otp_login
@@ -30,7 +30,7 @@ class TestLoginFlow(DbTests):
         self.assertTrue(bool(jwt_sec))
         usr, pwd = self._create_service()
 
-        expected = EncodedBearerToken(usr.id, UserRole.SERVICE, TokenType.ACCESS)
+        expected = DecodedBearerToken(usr.id, UserRole.SERVICE, TokenType.ACCESS)
 
         request = mock.MagicMock()
         request.remote_addr = usr.second_factor_material
@@ -53,14 +53,14 @@ class TestLoginFlow(DbTests):
         self.assertTrue(bool(jwt_sec))
         usr, pwd = self._create_user(require_2fa=False)
 
-        expected = EncodedBearerToken(usr.id, usr.role, TokenType.ACCESS)
+        expected = DecodedBearerToken(usr.id, usr.role, TokenType.ACCESS)
         encoded = credentials_login(usr.email, pwd)
         decoded = decode_auth_token(encoded, jwt_sec)
         self.assertEqual(expected, decoded)
 
     def test_credentials_login_user_2fa(self):
         usr, pwd = self._create_user(require_2fa=True)
-        expected = EncodedBearerToken(usr.id, usr.role, TokenType.OTP)
+        expected = DecodedBearerToken(usr.id, usr.role, TokenType.OTP)
 
         conf = mock.MagicMock()
         conf.jwt_expiration_days = get_application_configuration().jwt_expiration_days
@@ -76,7 +76,7 @@ class TestLoginFlow(DbTests):
 
     def test__refresh_token(self):
         conf = get_application_configuration()
-        request_token = EncodedBearerToken(1, UserRole.ADMIN, TokenType.ACCESS)
+        request_token = DecodedBearerToken(1, UserRole.ADMIN, TokenType.ACCESS)
         encoded = _refresh_token(request_token, conf)
         decoded = decode_auth_token(encoded, conf.jwt_secret)
 
@@ -84,21 +84,21 @@ class TestLoginFlow(DbTests):
 
     def test__refresh_token_service(self):
         conf = get_application_configuration()
-        request_token = EncodedBearerToken(1, UserRole.SERVICE, TokenType.ACCESS)
+        request_token = DecodedBearerToken(1, UserRole.SERVICE, TokenType.ACCESS)
         self.assertRaises(InvalidAuthCallException, lambda: _refresh_token(request_token, conf))
 
     def test__refresh_token_otp(self):
         conf = get_application_configuration()
-        request_token = EncodedBearerToken(1, UserRole.ADMIN, TokenType.OTP)
+        request_token = DecodedBearerToken(1, UserRole.ADMIN, TokenType.OTP)
         self.assertRaises(InvalidAuthCallException, lambda: _refresh_token(request_token, conf))
 
     def test__otp_login(self):
         conf = get_application_configuration()
         usr, pwd = self._create_user()
 
-        otp_token = EncodedBearerToken(usr.id, usr.role, TokenType.OTP)
+        otp_token = DecodedBearerToken(usr.id, usr.role, TokenType.OTP)
         otp = generate_otp_for_user(usr)
-        expected = EncodedBearerToken(usr.id, usr.role, TokenType.ACCESS)
+        expected = DecodedBearerToken(usr.id, usr.role, TokenType.ACCESS)
 
         encoded = _otp_login(otp, otp_token, conf)
         decoded = decode_auth_token(encoded, conf.jwt_secret)
@@ -109,7 +109,7 @@ class TestLoginFlow(DbTests):
         usr1, _ = self._create_user()
         usr2, _ = self._create_user()
 
-        otp_token = EncodedBearerToken(usr1.id, usr1.role, TokenType.OTP)
+        otp_token = DecodedBearerToken(usr1.id, usr1.role, TokenType.OTP)
         wrong_otp = generate_otp_for_user(usr2)
 
         self.assertRaises(InvalidOtpException, lambda: _otp_login(wrong_otp, otp_token, conf))

@@ -2,7 +2,7 @@ import datetime
 from unittest import TestCase
 
 from txmatching.auth.crypto.jwt_crypto import decode_auth_token, encode_auth_token, parse_request_token
-from txmatching.auth.data_types import EncodedBearerToken, UserRole, TokenType
+from txmatching.auth.data_types import DecodedBearerToken, UserRole, TokenType
 from txmatching.auth.exceptions import InvalidJWTException
 
 
@@ -14,7 +14,7 @@ class TestJwtCrypto(TestCase):
             'U3MjQ4fQ.d9dVRLCi4uGmPc2GjrDY_G34Q5N7I2VD3EW1' \
             '0PLZWo0'
     secret = 'some-cool-secret-in-test'
-    expected = EncodedBearerToken(1, UserRole.ADMIN, TokenType.ACCESS)
+    expected = DecodedBearerToken(1, UserRole.ADMIN, TokenType.ACCESS)
 
     def test_parse_request_token_failing(self):
         self.assertRaises(InvalidJWTException, lambda: parse_request_token('Bearer totally not a token', self.secret))

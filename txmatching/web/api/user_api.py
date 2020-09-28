@@ -84,13 +84,12 @@ class PasswordChangeApi(Resource):
 
 @user_api.route('/register', methods=['POST'])
 class RegistrationApi(Resource):
-    registration_model = user_api.model('UserRegistration', {
-        'email': fields.String(required=True, description='Email/username used for authentication.'),
-        'password': fields.String(required=True, description='User\'s password.'),
-        'role': fields.String(required=True, enum=[r.name for r in UserRole], description='User\'s role.'),
-        'second_factor': fields.String(required=True,
-                                       description='2FA - for user phone number, for SERVICE role IP address.')
-    })
+    registration_model = user_api.model('UserRegistration', dict(
+        email=fields.String(required=True, description='Email/username used for authentication.'),
+        password=fields.String(required=True, description='User\'s password.'),
+        role=fields.String(required=True, enum=[role.name for role in UserRole], description='User\'s role.'),
+        second_factor=fields.String(required=True,
+                                    description='2FA: Phone number for user account, IP address for SERVICE account.')))
 
     @user_api.doc(body=registration_model, security='bearer')
     @user_api.response(code=200, model=STATUS_RESPONSE, description='User registered successfully.')

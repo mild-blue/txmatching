@@ -8,8 +8,8 @@ def encode_password(password: str) -> str:
     return bcrypt.generate_password_hash(password).decode()
 
 
-def password_matches_hash(pwd_hash: str, password: str) -> bool:
+def password_matches_hash(password_hash: str, password: str) -> bool:
     """
-    Validates that password hash and password are same.
+    Validates that password_hash and password are the same.
     """
-    return bcrypt.check_password_hash(pwd_hash, password)
+    return bcrypt.check_password_hash(password_hash, password)
