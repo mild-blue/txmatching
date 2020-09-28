@@ -21,7 +21,7 @@ TxmEventJsonOut = txm_event_api.model('TxmEvent', {
     'db_id': fields.Integer(required=True),
 })
 
-HlaAntibodiesJson = txm_event_api.model('HLA_Antibodies', {
+HlaAntibodiesJson = txm_event_api.model('HLAAntibodies', {
     'name': fields.String(required=True, example='A32', description='HLA antibody name.'),
     'MFI': fields.Integer(required=True, example=2350, description='Mean fluorescence intensity. Use exact value.'),
     'cutoff': fields.Integer(required=True,
@@ -29,7 +29,7 @@ HlaAntibodiesJson = txm_event_api.model('HLA_Antibodies', {
                              description='Default cutoff value for the specific patient and HLA antibody.'),
 })
 
-DonorJsonIn = txm_event_api.model('Donor', {
+DonorJsonIn = txm_event_api.model('DonorInput', {
     'medical_id': fields.String(required=True, example='D1037', description=MEDICAL_ID_DESCRIPTION),
     'blood_group': fields.String(required=True, enum=BLOOD_GROUPS),
     'HLA_typing': fields.List(required=True, cls_or_instance=fields.String,
@@ -44,7 +44,7 @@ DonorJsonIn = txm_event_api.model('Donor', {
     'YOB': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
 })
 
-RecipientJsonIn = txm_event_api.model('Recipient', {
+RecipientJsonIn = txm_event_api.model('RecipientInput', {
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(enum=BLOOD_GROUPS),
                                            description='Acceptable blood groups for the patient. Leave empty to use \
                                             compatible blood groups.'),
@@ -94,6 +94,8 @@ FailJson = txm_event_api.model('FailResponse', {
 })
 
 PatientUploadSuccessJson = txm_event_api.model('PatientUploadSuccessResponse', {
-    'recipients_uploaded': fields.Integer(required=True),
-    'donors_uploaded': fields.Integer(required=True),
+    'recipients_uploaded': fields.Integer(required=True,
+                                          description='Number of recipients successfully loaded into the application.'),
+    'donors_uploaded': fields.Integer(required=True,
+                                      description='Number of donors successfully loaded into the application.'),
 })

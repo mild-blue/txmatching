@@ -21,10 +21,10 @@ class TxmEventApi(Resource):
                         The ADMIN should specify TXM event name.')
     @txm_event_api.response(code=200, model=TxmEventJsonOut,
                             description='Returns the newly created TXM event object.')
-    @txm_event_api.response(code=400, model=FailJson, description='Wrong data format')
-    @txm_event_api.response(code=401, model=FailJson, description='Authentication Denied')
-    @txm_event_api.response(code=409, model=FailJson, description='Non-unique patients provided')
-    @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details')
+    @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @txm_event_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @txm_event_api.response(code=409, model=FailJson, description='Non-unique patients provided.')
+    @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details.')
     @login_required()
     def put(self):
         pass
@@ -37,10 +37,10 @@ class TxmEventUploadPatients(Resource):
                        description='This endpoint allows the country editor to upload patient data for given \
                         TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients \
                         from respective country in case there were any.')
-    @txm_event_api.response(code=200, description='Success', model=PatientUploadSuccessJson)
-    @txm_event_api.response(code=400, model=FailJson, description='Wrong data format')
-    @txm_event_api.response(code=401, model=FailJson, description='Authentication Denied')
-    @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details')
+    @txm_event_api.response(code=200, description='Success.', model=PatientUploadSuccessJson)
+    @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @txm_event_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details.')
     # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
     @login_required()
     def put(self):
