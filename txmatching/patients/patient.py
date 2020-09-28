@@ -61,9 +61,7 @@ class Recipient(Patient):
 
     def __post_init__(self):
         if self.recipient_cutoff is None:
-            self.recipient_cutoff = max(self.hla_antibodies.hla_antibodies_list,
-                                        key=lambda antibody: antibody.cutoff,
-                                        default=HLAAntibody('Default', mfi=0, cutoff=DEFAULT_CUTOFF)).cutoff
+            self.recipient_cutoff = calculate_cutoff(self.hla_antibodies.hla_antibodies_list)
 
 
 @dataclass
@@ -78,3 +76,14 @@ class TxmEvent:
             'donors': list(self.donors_dict.values()),
             'recipients': list(self.recipients_dict.values())
         }
+
+
+def calculate_cutoff(hla_antibodies_list: List[HLAAntibody]) -> int:
+    """
+    Calculates patient cutoff.
+    :param hla_antibodies_list: list of HLA antibodies.
+    :return: Patient cutoff.
+    """
+    return max(hla_antibodies_list,
+               key=lambda antibody: antibody.cutoff,
+               default=HLAAntibody('Default', mfi=0, cutoff=DEFAULT_CUTOFF)).cutoff
