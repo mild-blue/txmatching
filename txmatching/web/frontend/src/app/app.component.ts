@@ -55,13 +55,10 @@ export class AppComponent implements OnDestroy {
     this.loading = true;
     this._patientService.updatePatients().then(patients => {
       this._logger.log('Got patients from server', [patients]);
-      this.loading = false;
       this.patients = patients;
       this._patientService.setLocalPatients(patients);
     })
-    .catch(() => {
-      this.loading = false;
-      this.error = true;
-    });
+    .catch(() => this.error = true)
+    .finally(() => this.loading = false);
   }
 }

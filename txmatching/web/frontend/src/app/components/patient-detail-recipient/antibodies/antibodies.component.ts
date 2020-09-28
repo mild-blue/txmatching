@@ -119,7 +119,7 @@ export class AntibodiesComponent implements OnInit {
   }
 
   public displayFn(a: Antibody): string {
-    return a && a.raw_code ? a.raw_code : '';
+    return a?.raw_code ?? '';
   }
 
   private _initAntibodies(): void {

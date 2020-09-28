@@ -48,7 +48,8 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
   }
 
   get available(): Antigen[] {
-    return this.allAntigens.filter(a => !this.selected.map(antigen => antigen.raw_code).includes(a.raw_code));
+    const selectedAntigensCodes = [...new Set(this.selected.map(antigen => antigen.raw_code))];
+    return this.allAntigens.filter(a => !selectedAntigensCodes.includes(a.raw_code));
   }
 
   public addNewAntigen(code: string, control: HTMLInputElement): void {

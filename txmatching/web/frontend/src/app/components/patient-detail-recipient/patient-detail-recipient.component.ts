@@ -52,7 +52,8 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   }
 
   get availableAntigens(): Antigen[] {
-    return this.allAntigens.filter(a => !this.selectedAntigens.map(antigen => antigen.raw_code).includes(a.raw_code));
+    const selectedAntigensCodes = [...new Set(this.selectedAntigens.map(antigen => antigen.raw_code))];
+    return this.allAntigens.filter(a => !selectedAntigensCodes.includes(a.raw_code));
   }
 
   public addAntigen(a: Antigen, control: HTMLInputElement): void {
@@ -106,11 +107,8 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     this.loading = true;
     this.success = false;
     this._patientService.saveRecipient(this.item)
-    .then(() => {
-      this.loading = false;
-      this.success = true;
-    })
-    .catch(() => this.loading = false);
+    .then(() => this.success = true)
+    .finally(() => this.loading = false);
   }
 
   private _initAntigensCodes(): void {

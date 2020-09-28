@@ -74,7 +74,7 @@ export class ConfigurationCountriesComponent {
   }
 
   get selectedCombinations(): CountryCombination[] {
-    return this.configuration ? this.configuration.forbidden_country_combinations : [];
+    return this.configuration?.forbidden_country_combinations ?? [];
   }
 
   get donorCountry(): string {
