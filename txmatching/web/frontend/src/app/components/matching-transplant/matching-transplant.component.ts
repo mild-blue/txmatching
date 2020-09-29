@@ -14,13 +14,14 @@ export class MatchingTransplantComponent implements OnInit {
   @Input() patients?: PatientList;
 
   public hlaScores?: Map<string, number>;
-  public hlaScoresTotal: number = 0;
+  public totalScore: number = 0;
 
   constructor(private _patientService: PatientService) {
   }
 
   ngOnInit() {
     this._initHLAScores();
+    this._initTotalScore();
   }
 
   get prefixes(): string[] {
@@ -70,7 +71,7 @@ export class MatchingTransplantComponent implements OnInit {
   }
 
   public getRecipientAntigenClass(code: string): string {
-    if (this.transplant && this.transplant.d && this.transplant.r
+    if (this.transplant?.d && this.transplant.r
       && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)
       && !this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.raw_code === code)) {
       // recipient antigen matches some donor antigen
@@ -81,7 +82,7 @@ export class MatchingTransplantComponent implements OnInit {
   }
 
   public getRecipientAntibodyClass(code: string): string {
-    if (this.transplant && this.transplant.d && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)) {
+    if (this.transplant?.d && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)) {
       // recipient antibody matches some donor antigen
       return 'bad-matching';
     }
@@ -109,6 +110,32 @@ export class MatchingTransplantComponent implements OnInit {
     }
 
     this.hlaScores = map;
-    this.hlaScoresTotal = [...this.hlaScores.values()].reduce((a, b) => a + b, 0);
+    this.totalScore = [...this.hlaScores.values()].reduce((a, b) => a + b, 0);
+  }
+
+  private _initTotalScore(): void {
+    // if transplant score exists use it as total score
+    if (this.transplant?.score !== undefined) {
+      this.totalScore = this.transplant.score;
+    }
+
+    // return if there is no donor or recipient object linked
+    if (!this.transplant?.d || !this.transplant.r) {
+      return;
+    }
+
+    // check if there is a match of recipient antibodies and donor antigens
+    const donorAntigensCodes = this.transplant.d.parameters.hla_typing.hla_types_list.map(a => a.raw_code);
+    for (const antibody of this.transplant.r.hla_antibodies.hla_antibodies_list) {
+      if (donorAntigensCodes.includes(antibody.raw_code)) {
+        this.totalScore = -1;
+        return;
+      }
+    }
+
+    // sum all scores for matching antigens
+    if (this.hlaScores) {
+      this.totalScore = [...this.hlaScores.values()].reduce((a, b) => a + b, 0);
+    }
   }
 }

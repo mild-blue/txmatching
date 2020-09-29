@@ -3,7 +3,7 @@
     <app-patient-pair [pair]="transplant"></app-patient-pair>
 
     <div class="score">
-      Score: <span>{{ transplant.score !== undefined ? transplant.score : hlaScoresTotal }}</span>
+      Score: <span>{{ totalScore }}</span>
     </div>
   </div>
 
@@ -81,7 +81,7 @@
         <td colspan="4">
           Final score:
         </td>
-        <td><span>{{ transplant.score !== undefined ? transplant.score : hlaScoresTotal }}</span></td>
+        <td><span>{{ totalScore }}</span></td>
       </tr>
       </tbody>
     </table>
