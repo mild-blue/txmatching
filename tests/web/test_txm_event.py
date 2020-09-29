@@ -1,3 +1,4 @@
+from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
@@ -180,13 +181,15 @@ class TestMatchingApi(DbTests):
 
         txm_name = 'test'
 
+        upload_patients = {
+            'country': Country.CZE.value,
+            'txm_event_name': txm_name,
+            'donors': DONORS,
+            'recipients': RECIPIENTS
+        }
+
+        self.login_with_role(UserRole.SERVICE)
         with self.app.test_client() as client:
-            upload_patients = {
-                'country': Country.CZE.value,
-                'txm_event_name': txm_name,
-                'donors': DONORS,
-                'recipients': RECIPIENTS
-            }
 
             res = client.put(
                 f'/{TXM_EVENT_NAMESPACE}/patients',
@@ -211,14 +214,15 @@ class TestMatchingApi(DbTests):
         txm_event_db_id = get_newest_txm_event_db_id()
         txm_event = get_txm_event(txm_event_db_id)
 
-        with self.app.test_client() as client:
-            upload_patients = {
-                'country': Country.CZE.value,
-                'txm_event_name': 'invalid_name',
-                'donors': DONORS,
-                'recipients': RECIPIENTS
-            }
+        upload_patients = {
+            'country': Country.CZE.value,
+            'txm_event_name': 'invalid_name',
+            'donors': DONORS,
+            'recipients': RECIPIENTS
+        }
 
+        self.login_with_role(UserRole.SERVICE)
+        with self.app.test_client() as client:
             res = client.put(
                 f'/{TXM_EVENT_NAMESPACE}/patients',
                 headers=self.auth_headers,
@@ -227,9 +231,9 @@ class TestMatchingApi(DbTests):
 
             db.session.rollback()
 
-            self.assertEqual(500, res.status_code)  # TODO: Fix to check error 400/404
+            self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
-            self.assertEqual('Internal Server Error', res.json['message'])
+            self.assertEqual('No TXM event with name "invalid_name" found.', res.json['message'])
 
     def test_txm_event_patient_failed_upload_invalid_waiting_since_date(self):
         self.fill_db_with_patients_and_results()
@@ -240,38 +244,40 @@ class TestMatchingApi(DbTests):
 
         txm_name = 'test'
 
+        upload_patients = {
+            'country': Country.CZE.value,
+            'txm_event_name': txm_name,
+            'donors': DONORS,
+            'recipients': [
+                {
+                    'acceptable_blood_groups': [
+                        'A',
+                        '0'
+                    ],
+                    'medical_id': 'R1',
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A9', 'A21'
+                    ],
+                    'hla_antibodies': [
+                        {
+                            'name': 'B43',
+                            'mfi': 2000,
+                            'cutoff': 2100
+                        }
+                    ],
+                    'sex': 'F',
+                    'height': 150,
+                    'weight': 65,
+                    'yob': 21,
+                    'waiting_since': '2020-13-06',
+                    'previous_transplants': 0
+                }
+            ]
+        }
+
+        self.login_with_role(UserRole.SERVICE)
         with self.app.test_client() as client:
-            upload_patients = {
-                'country': Country.CZE.value,
-                'txm_event_name': txm_name,
-                'donors': DONORS,
-                'recipients': [
-                    {
-                        'acceptable_blood_groups': [
-                            'A',
-                            '0'
-                        ],
-                        'medical_id': 'R1',
-                        'blood_group': 'A',
-                        'hla_typing': [
-                            'A9', 'A21'
-                        ],
-                        'hla_antibodies': [
-                            {
-                                'name': 'B43',
-                                'mfi': 2000,
-                                'cutoff': 2100
-                            }
-                        ],
-                        'sex': 'F',
-                        'height': 150,
-                        'weight': 65,
-                        'yob': 21,
-                        'waiting_since': '2020-13-06',
-                        'previous_transplants': 0
-                    }
-                ]
-            }
 
             res = client.put(
                 f'/{TXM_EVENT_NAMESPACE}/patients',
@@ -281,6 +287,6 @@ class TestMatchingApi(DbTests):
 
             db.session.rollback()
 
-            self.assertEqual(500, res.status_code)  # TODO: Fix to check error 400/404
+            self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
-            self.assertEqual('Internal Server Error', res.json['message'])
+            self.assertEqual('Invalid date "2020-13-06". It must be in format "YYYY-MM-DD", e.g., "2020-12-31".', res.json['message'])

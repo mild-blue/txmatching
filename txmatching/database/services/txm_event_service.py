@@ -1,3 +1,4 @@
+from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import TxmEventModel, DonorModel, RecipientModel
 from txmatching.patients.patient import TxmEvent
@@ -23,6 +24,6 @@ def create_txm_event(name: str) -> TxmEvent:
 def remove_donors_and_recipients_from_txm_event(name: str):
     txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
     if not txm_event_model:
-        raise ValueError(f'No TXM event with name "{name}" found.')
+        raise InvalidArgumentException(f'No TXM event with name "{name}" found.')
     DonorModel.query.filter(DonorModel.txm_event_id == txm_event_model.id).delete()
     RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event_model.id).delete()

@@ -6,6 +6,7 @@ import datetime
 import dacite
 from sqlalchemy import and_
 
+from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
 from txmatching.data_transfer_objects.patients.donor_update_dto import \
@@ -236,7 +237,8 @@ def _parse_date_to_datetime(date: str):
     try:
         return datetime.datetime.strptime(date, '%Y-%m-%d')
     except Exception as ex:
-        raise ValueError(f'Invalid date "{date}". It must be in format "YYYY-MM-DD", e.g., "2020-12-31".') from ex
+        raise InvalidArgumentException(f'Invalid date "{date}". It must be in format "YYYY-MM-DD", e.g.,'
+                                       ' "2020-12-31".') from ex
 
 
 def _recipient_upload_dto_to_recipient_model(
@@ -310,10 +312,10 @@ def _save_patients_to_existing_txm_event(
 ):
     txm_event = TxmEventModel.query.filter(TxmEventModel.name == txm_event_name).first()
     if not txm_event:
-        raise ValueError(f'No TXM event with name "{txm_event_name}" found.')
+        raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.')
 
     if len(txm_event.donors) > 0 or len(txm_event.recipients) > 0:
-        raise ValueError(f'Txm event "{txm_event_name}" is not empty, cannot send patients to database.')
+        raise InvalidArgumentException(f'Txm event "{txm_event_name}" is not empty, cannot send patients to database.')
 
     txm_event_db_id = txm_event.id
     maybe_recipient_models = [_recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)

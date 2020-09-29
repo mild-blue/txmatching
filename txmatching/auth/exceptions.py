@@ -43,6 +43,12 @@ class InvalidAuthCallException(AuthenticationException):
     """
 
 
+class InvalidArgumentException(Exception):
+    """
+    Raised if invalid argument received.
+    """
+
+
 def require_auth_condition(condition: bool, message: Optional[str] = None):
     """
     Raises InvalidAuthCallException with message if condition is false.

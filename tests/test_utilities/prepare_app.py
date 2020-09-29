@@ -5,7 +5,8 @@ from importlib import util as importing
 from flask import Flask
 from flask_restx import Api
 
-from tests.test_utilities.populate_db import ADMIN_USER, add_users, create_or_overwrite_txm_event
+from tests.test_utilities.populate_db import ADMIN_USER, add_users, create_or_overwrite_txm_event, VIEWER_USER, \
+    OTP_USER, SERVICE_USER
 from txmatching.auth.auth_check import store_user_in_context
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
@@ -14,7 +15,14 @@ from txmatching.database.services.patient_service import \
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import user_api
+from txmatching.web import user_api, register_error_handlers
+
+ROLE_CREDENTIALS = {
+    UserRole.ADMIN: ADMIN_USER,
+    UserRole.VIEWER: VIEWER_USER,
+    UserRole.EDITOR: None,
+    UserRole.SERVICE: SERVICE_USER
+}
 
 
 class DbTests(unittest.TestCase):
@@ -54,13 +62,19 @@ class DbTests(unittest.TestCase):
 
     def _set_bearer_token(self):
         self.api = Api(self.app)
+        register_error_handlers(self.api)
         self.api.add_namespace(user_api, path='/user')
+        self.login_with_role(UserRole.ADMIN)
+
+    def login_with_role(self, user_role: UserRole):
+        credentials = ROLE_CREDENTIALS[user_role]
+
         with self.app.test_client() as client:
             json = client.post('/user/login',
-                               json={'email': ADMIN_USER['email'], 'password': ADMIN_USER['password']}).json
+                               json={'email': credentials['email'], 'password': credentials['password']}).json
             token = json['auth_token']
             self.auth_headers = {'Authorization': f'Bearer {token}'}
-            store_user_in_context(ADMIN_USER['id'], UserRole.ADMIN)
+            store_user_in_context(credentials['id'], user_role)
 
     def _load_local_development_config(self):
         config_file = 'txmatching.web.local_config'

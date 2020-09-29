@@ -6,7 +6,7 @@ from flask_restx import Api
 from werkzeug.exceptions import HTTPException
 
 from txmatching.auth.exceptions import InvalidJWTException, CredentialsMismatchException, InvalidOtpException, \
-    InvalidIpAddressAccessException, UserUpdateException, InvalidAuthCallException
+    InvalidIpAddressAccessException, UserUpdateException, InvalidAuthCallException, InvalidArgumentException
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +50,15 @@ def _user_auth_handlers(api: Api):
     @api.errorhandler(InvalidAuthCallException)
     def handle_invalid_auth_call_exception(error: InvalidAuthCallException):
         return {'error': 'Internal data flow inconsistency.', 'detail': str(error)}, 500
+
+    @api.errorhandler(InvalidArgumentException)
+    def handle_invalid_argument_exception(error: InvalidArgumentException):
+        return {'error': 'Invalid argument.', 'detail': str(error)}, 400
+
+    @api.errorhandler(ValueError)
+    def handle_invalid_value_error(error: ValueError):
+        return {'error': 'Invalid argument.', 'detail': str(error)}, 400
+
 
 
 def _default_error_handlers(api: Api):
