@@ -6,8 +6,8 @@ from txmatching.utils.hla_system.hla_table import CompatibilityGeneCode
 # You calculate it by calculating the number of differences in A, B, DR alleles and look up the corresponding
 # column in the incompatibility index table.
 # For our purposes, we will use the index of compatibility, which is the inverse of index of incompatibility
-# -- see function compatibility_index -- and is calculated as the number of matches in A, B, DR alleles. Where depending
-# on the alleles for each matching allele a certain bonus is added to compatibility index depending on allele type.
+# -- see function compatibility_index -- and is calculated as the number of matches in A, B, DR alleles.
+# For each matching allele a certain bonus is added to compatibility index depending on the allele type.
 
 COMPATIBILITY_INDEX_BONUS_PER_GENE_CODE = {
     CompatibilityGeneCode.A: 1,
