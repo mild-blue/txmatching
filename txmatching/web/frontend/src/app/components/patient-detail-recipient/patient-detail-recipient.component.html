@@ -14,7 +14,7 @@
   <form [formGroup]="form">
 
     <!-- Checkboxes -->
-    <h4>Conditions for new donor</h4>
+    <h4>Matching conditions</h4>
     <div class="checkboxes">
       <mat-slide-toggle *ngIf="item.recipient_requirements.require_compatible_blood_group !== undefined"
                         (change)="setCheckBoxValue('require_compatible_blood_group', $event.checked)"
@@ -49,21 +49,24 @@
         </mat-chip>
         <input #antigensInput
                formControlName="antigens"
-               [matAutocomplete]="auto"
+               [matAutocomplete]="antigensAuto"
                [matChipInputFor]="antigensChipList"
                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                (matChipInputTokenEnd)="addNewAntigen($event.value, antigensInput)"
                matInput
-               placeholder="Search by antigen code"
                type="text">
       </mat-chip-list>
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addAntigen($event.option.value, antigensInput)">
+      <mat-autocomplete #antigensAuto (optionSelected)="addAntigen($event.option.value, antigensInput)">
         <mat-option *ngFor="let a of filteredAntigensCodes | async" [value]="a">
           {{a.raw_code}}
         </mat-option>
       </mat-autocomplete>
       <mat-hint>
-        Search and select multiple antigens from {{availableAntigens.length}} available antigens.
+        Add new antigens by typing codes followed by
+        <span class="key">Space <mat-icon>space_bar</mat-icon></span>
+        or
+        <span class="key">Enter <mat-icon>keyboard_return</mat-icon></span>
+        or select from available antigens.
       </mat-hint>
     </mat-form-field>
   </form>
@@ -71,11 +74,12 @@
   <!-- Antibodies -->
   <app-antibodies [recipient]="item" [patients]="patients"></app-antibodies>
 
-  <app-button (click)="handleSave()"
-              [loading]="loading"
-              [disabled]="loading"
-              [success]="!loading && success"
-              [variant]="'success'">Save changes
-  </app-button>
-
+  <div class="save-button">
+    <app-button (click)="handleSave()"
+                [loading]="loading"
+                [disabled]="loading"
+                [success]="!loading && success"
+                [variant]="'success'">Save changes
+    </app-button>
+  </div>
 </div>
