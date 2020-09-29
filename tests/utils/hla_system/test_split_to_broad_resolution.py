@@ -1,8 +1,7 @@
 import logging
 import unittest
 
-from tests.patients.test_patient_parameters import (donor_parameters_Joe,
-                                                    recipient_parameters_Jack)
+from tests.patients.test_patient_parameters import (donor_parameters_Joe, recipient_parameters_Jack)
 from txmatching.utils.hla_system.hla_table import split_to_broad
 
 logger = logging.getLogger(__name__)

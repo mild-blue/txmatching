@@ -16,7 +16,7 @@ class ConfigModel(db.Model):
     __tablename__ = 'config'
     __table_args__ = {'extend_existing': True}
     # Here and below I am using Integer instead of BigInt because it seems that there is a bug and BigInteger is not
-    # transfered to BigSerial with autoincrement True, but to BigInt only.
+    # transferred to BigSerial with autoincrement True, but to BigInt only.
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     txm_event_id = db.Column(db.Integer, ForeignKey('txm_event.id'), unique=False, nullable=False)
     parameters = db.Column(db.JSON, unique=False, nullable=False)
