@@ -13,7 +13,7 @@ DEFAULT_CUTOFF = 2000
 class DonorType(str, Enum):
     DONOR = 'DONOR'
     BRIDGING_DONOR = 'BRIDGING_DONOR'
-    ALTRUIST = 'ALTRUIST'
+    NON_DIRECTED = 'NON_DIRECTED'
 
 
 @dataclass

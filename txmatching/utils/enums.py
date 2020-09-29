@@ -8,5 +8,5 @@ class Country(str, Enum):
 
 
 class Sex(str, Enum):
-    F = 'F'
     M = 'M'
+    F = 'F'

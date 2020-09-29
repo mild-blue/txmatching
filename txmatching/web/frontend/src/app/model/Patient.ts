@@ -59,7 +59,7 @@ export interface Antibody extends Hla {
 export enum DonorType {
   DONOR = 'DONOR',
   BRIDGING_DONOR = 'BRIDGING_DONOR',
-  ALTRUIST = 'ALTRUIST'
+  NON_DIRECTED = 'NON_DIRECTED'
 }
 
 export const patientsLSKey = 'patients';

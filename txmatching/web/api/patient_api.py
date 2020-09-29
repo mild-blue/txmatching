@@ -11,8 +11,8 @@ from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.patients.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.patient_swagger import (
-    DONOR_MODEL, DONOR_MODEL_TO_UPDATE, PATIENTS_MODEL, RECIPIENT_MODEL,
-    RECIPIENT_MODEL_TO_UPDATE)
+    DonorModel, DonorModelToUpdate, PatientsModel, RecipientModel,
+    RecipientModelToUpdate)
 from txmatching.data_transfer_objects.patients.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.database.services.patient_service import (get_txm_event,
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 class AllPatients(Resource):
 
     @patient_api.doc(security='bearer')
-    @patient_api.response(code=200, model=PATIENTS_MODEL, description='')
+    @patient_api.response(code=200, model=PatientsModel, description='')
     @require_user_login()
     def get(self) -> str:
         patients = get_txm_event()
@@ -39,8 +39,8 @@ class AllPatients(Resource):
 @patient_api.route('/recipient', methods=['PUT'])
 class AlterRecipient(Resource):
 
-    @patient_api.doc(body=RECIPIENT_MODEL_TO_UPDATE, security='bearer')
-    @patient_api.response(code=200, model=RECIPIENT_MODEL, description='')
+    @patient_api.doc(body=RecipientModelToUpdate, security='bearer')
+    @patient_api.response(code=200, model=RecipientModel, description='')
     @require_user_login()
     def put(self):
         recipient_update_dto = from_dict(data_class=RecipientUpdateDTO, data=request.json)
@@ -50,8 +50,8 @@ class AlterRecipient(Resource):
 
 @patient_api.route('/donor', methods=['PUT'])
 class AlterDonor(Resource):
-    @patient_api.doc(body=DONOR_MODEL_TO_UPDATE, security='bearer')
-    @patient_api.response(code=200, model=DONOR_MODEL, description='')
+    @patient_api.doc(body=DonorModelToUpdate, security='bearer')
+    @patient_api.response(code=200, model=DonorModel, description='')
     @require_user_login()
     def put(self):
         donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
