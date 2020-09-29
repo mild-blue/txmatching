@@ -74,7 +74,7 @@ const compatibleBloodGroups: { [key: string]: string[]; } = {
 
 const antibodiesMultipliers: { [key: string]: number; } = {
   A: 1,
-  B: 2,
+  B: 3,
   DR: 9
 };
 

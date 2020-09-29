@@ -1,12 +1,12 @@
-from txmatching.configuration.configuration import (Configuration)
+from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
 from txmatching.utils.blood_groups import blood_groups_compatible
-from txmatching.utils.hla_system.compatibility_index import \
-    compatibility_index
-from txmatching.utils.hla_system.hla_crossmatch import is_positive_hla_crossmatch
+from txmatching.utils.hla_system.compatibility_index import compatibility_index
+from txmatching.utils.hla_system.hla_crossmatch import \
+    is_positive_hla_crossmatch
 
 
 class HLAAdditiveScorer(AdditiveScorer):
@@ -27,8 +27,9 @@ class HLAAdditiveScorer(AdditiveScorer):
                 in self._configuration.forbidden_country_combinations:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
-        # Donor must have blood group that is acceptable for recipient
-        if donor.parameters.blood_group not in recipient.acceptable_blood_groups:
+        # Donor must have blood group that is acceptable or compatible for the recipient
+        if not (donor.parameters.blood_group in recipient.acceptable_blood_groups
+                or blood_groups_compatible(donor, recipient)):
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
         # Recipient can't have antibodies that donor has hla_typing for
@@ -40,20 +41,20 @@ class HLAAdditiveScorer(AdditiveScorer):
 
         better_match_in_ci_or_br = self._get_setting_from_config_or_recipient(
             recipient,
-            "require_better_match_in_compatibility_index_or_blood_group"
+            'require_better_match_in_compatibility_index_or_blood_group'
         )
 
         if better_match_in_ci_or_br and (not blood_groups_compatible(donor, recipient)
                                          and donor_recipient_ci <= related_donor_recipient_ci):
             return TRANSPLANT_IMPOSSIBLE_SCORE
         require_compatible_blood_group = self._get_setting_from_config_or_recipient(recipient,
-                                                                                    "require_compatible_blood_group")
+                                                                                    'require_compatible_blood_group')
         # If required, the donor must have the compatible blood group with recipient
         if require_compatible_blood_group and not blood_groups_compatible(donor, recipient):
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
         better_match_in_ci = self._get_setting_from_config_or_recipient(recipient,
-                                                                        "require_better_match_in_compatibility_index")
+                                                                        'require_better_match_in_compatibility_index')
 
         # If required, the compatibility index between donor and recipient must be higher than
         # between recipient and the donor related to him
