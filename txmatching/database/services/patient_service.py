@@ -252,7 +252,7 @@ def _recipient_upload_dto_to_recipient_model(
         code=parse_code(hla_antibody.name),
         cutoff=hla_antibody.cutoff,
         mfi=hla_antibody.mfi
-    ) for hla_antibody in recipient_dto.hla_antibodies]
+    ) for hla_antibody in recipient_dto.HLA_antibodies]
 
     transformed_hla_antibodies = [HLAAntibody(
         raw_code=hla_antibody.raw_code,
@@ -267,7 +267,7 @@ def _recipient_upload_dto_to_recipient_model(
         medical_id=recipient_dto.medical_id,
         country=country_code,
         blood=recipient_dto.blood_group,
-        hla_typing=[parse_code(typing) for typing in recipient_dto.hla_typing],
+        hla_typing=[parse_code(typing) for typing in recipient_dto.HLA_typing],
         hla_antibodies=hla_antibodies,
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
@@ -278,7 +278,7 @@ def _recipient_upload_dto_to_recipient_model(
         weight=recipient_dto.weight,
         height=recipient_dto.height,
         sex=recipient_dto.sex,
-        yob=recipient_dto.yob,
+        yob=recipient_dto.YOB,
     )
     return recipient_model
 
@@ -312,14 +312,14 @@ def _donor_upload_dto_to_donor_model(
         medical_id=donor_dto.medical_id,
         country=country_code,
         blood=donor_dto.blood_group,
-        hla_typing=[parse_code(typing) for typing in donor_dto.hla_typing],
+        hla_typing=[parse_code(typing) for typing in donor_dto.HLA_typing],
         active=True,
         recipient_id=maybe_recipient_id,
         donor_type=donor_dto.donor_type,
         weight=donor_dto.weight,
         height=donor_dto.height,
         sex=donor_dto.sex,
-        yob=donor_dto.yob,
+        yob=donor_dto.YOB,
         txm_event_id=txm_event_db_id
     )
     return donor_model

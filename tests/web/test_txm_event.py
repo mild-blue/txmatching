@@ -14,7 +14,7 @@ DONORS = [
     {
         'medical_id': 'D1',
         'blood_group': 'A',
-        'hla_typing': [
+        'HLA_typing': [
             'A9', 'A21'
         ],
         'donor_type': DonorType.DONOR.value,
@@ -22,12 +22,12 @@ DONORS = [
         'sex': 'M',
         'height': 180,
         'weight': 90,
-        'yob': 1965
+        'YOB': 1965
     },
     {
         'medical_id': 'D2',
         'blood_group': 'B',
-        'hla_typing': [
+        'HLA_typing': [
             'A9', 'A21'
         ],
         'donor_type': DonorType.DONOR.value,
@@ -35,25 +35,25 @@ DONORS = [
         'sex': 'M',
         'height': 178,
         'weight': 69,
-        'yob': 1967
+        'YOB': 1967
     },
     {
         # Missing related_recipient_medical_id
         'medical_id': 'D3',
         'blood_group': '0',
-        'hla_typing': [
+        'HLA_typing': [
             'A9', 'A21'
         ],
         'donor_type': DonorType.NON_DIRECTED.value,
         'sex': 'M',
         'height': 146,
         'weight': 89,
-        'yob': 1960
+        'YOB': 1960
     },
     {
         'medical_id': 'D4',
         'blood_group': 'AB',
-        'hla_typing': [
+        'HLA_typing': [
             'A9'
         ],
         'donor_type': DonorType.DONOR.value,
@@ -61,7 +61,7 @@ DONORS = [
         'sex': 'M',
         'height': 145,
         'weight': 56,
-        'yob': 1989
+        'YOB': 1989
     },
 ]
 
@@ -73,10 +73,10 @@ RECIPIENTS = [
         ],
         'medical_id': 'R1',
         'blood_group': 'A',
-        'hla_typing': [
+        'HLA_typing': [
             'A9', 'A21'
         ],
-        'hla_antibodies': [
+        'HLA_antibodies': [
             {
                 'name': 'B43',
                 'mfi': 2000,
@@ -86,7 +86,7 @@ RECIPIENTS = [
         'sex': 'F',
         'height': 150,
         'weight': 65,
-        'yob': 2001,
+        'YOB': 2001,
         'waiting_since': '2020-01-06',
         'previous_transplants': 0
     },
@@ -97,10 +97,10 @@ RECIPIENTS = [
         ],
         'medical_id': 'R2',
         'blood_group': 'B',
-        'hla_typing': [
+        'HLA_typing': [
             'A9', 'A21'
         ],
-        'hla_antibodies': [
+        'HLA_antibodies': [
             {
                 'name': 'B43',
                 'mfi': 2000,
@@ -110,7 +110,7 @@ RECIPIENTS = [
         'sex': 'F',
         'height': 189,
         'weight': 70,
-        'yob': 1996,
+        'YOB': 1996,
         'waiting_since': '2020-02-07',
         'previous_transplants': 0
     },
@@ -120,10 +120,10 @@ RECIPIENTS = [
         ],
         'medical_id': 'R3',
         'blood_group': '0',
-        'hla_typing': [
+        'HLA_typing': [
             'A9', 'A21'
         ],
-        'hla_antibodies': [
+        'HLA_antibodies': [
             {
                 'name': 'B43',
                 'mfi': 2000,
@@ -133,7 +133,7 @@ RECIPIENTS = [
         'sex': 'M',
         'height': 201,
         'weight': 120,
-        'yob': 1999,
+        'YOB': 1999,
         'waiting_since': '2020-05-13',
         'previous_transplants': 0
     }
@@ -240,10 +240,10 @@ class TestMatchingApi(DbTests):
                     ],
                     'medical_id': 'R1',
                     'blood_group': 'A',
-                    'hla_typing': [
+                    'HLA_typing': [
                         'A9', 'A21'
                     ],
-                    'hla_antibodies': [
+                    'HLA_antibodies': [
                         {
                             'name': 'B43',
                             'mfi': 2000,
@@ -253,7 +253,7 @@ class TestMatchingApi(DbTests):
                     'sex': 'F',
                     'height': 150,
                     'weight': 65,
-                    'yob': 21,
+                    'YOB': 21,
                     'waiting_since': '2020-13-06',
                     'previous_transplants': 0
                 }
@@ -290,7 +290,7 @@ class TestMatchingApi(DbTests):
                 {
                     'medical_id': 'D1',
                     'blood_group': 'A',
-                    'hla_typing': [
+                    'HLA_typing': [
                         'A9', 'A21'
                     ],
                     'donor_type': DonorType.NON_DIRECTED.value,
@@ -298,7 +298,7 @@ class TestMatchingApi(DbTests):
                     'sex': 'M',
                     'height': 180,
                     'weight': 90,
-                    'yob': 1965
+                    'YOB': 1965
                 }
             ],
             'recipients': [
@@ -309,10 +309,10 @@ class TestMatchingApi(DbTests):
                     ],
                     'medical_id': 'R1',
                     'blood_group': 'A',
-                    'hla_typing': [
+                    'HLA_typing': [
                         'A9', 'A21'
                     ],
-                    'hla_antibodies': [
+                    'HLA_antibodies': [
                         {
                             'name': 'B43',
                             'mfi': 2000,
@@ -322,7 +322,7 @@ class TestMatchingApi(DbTests):
                     'sex': 'F',
                     'height': 150,
                     'weight': 65,
-                    'yob': 2001,
+                    'YOB': 2001,
                     'waiting_since': '2020-01-06',
                     'previous_transplants': 0
                 }
@@ -351,14 +351,14 @@ class TestMatchingApi(DbTests):
                 {
                     'medical_id': 'D1',
                     'blood_group': 'A',
-                    'hla_typing': [
+                    'HLA_typing': [
                         'A9', 'A21'
                     ],
                     'donor_type': DonorType.DONOR.value,
                     'sex': 'M',
                     'height': 180,
                     'weight': 90,
-                    'yob': 1965
+                    'YOB': 1965
                 }
             ],
             'recipients': [
@@ -369,10 +369,10 @@ class TestMatchingApi(DbTests):
                     ],
                     'medical_id': 'R2',
                     'blood_group': 'A',
-                    'hla_typing': [
+                    'HLA_typing': [
                         'A9', 'A21'
                     ],
-                    'hla_antibodies': [
+                    'HLA_antibodies': [
                         {
                             'name': 'B43',
                             'mfi': 2000,
@@ -382,7 +382,7 @@ class TestMatchingApi(DbTests):
                     'sex': 'F',
                     'height': 150,
                     'weight': 65,
-                    'yob': 2001,
+                    'YOB': 2001,
                     'waiting_since': '2020-01-06',
                     'previous_transplants': 0
                 }
@@ -420,7 +420,7 @@ class TestMatchingApi(DbTests):
                 {
                     'medical_id': 'D1',
                     'blood_group': 'A',
-                    'hla_typing': [
+                    'HLA_typing': [
                         'A9', 'A21'
                     ],
                     'donor_type': DonorType.DONOR.value,
@@ -428,7 +428,7 @@ class TestMatchingApi(DbTests):
                     'sex': 'M',
                     'height': 180,
                     'weight': 90,
-                    'yob': 1965
+                    'YOB': 1965
                 }
             ],
             'recipients': [
@@ -439,10 +439,10 @@ class TestMatchingApi(DbTests):
                     ],
                     'medical_id': 'R2',
                     'blood_group': 'A',
-                    'hla_typing': [
+                    'HLA_typing': [
                         'A9', 'A21'
                     ],
-                    'hla_antibodies': [
+                    'HLA_antibodies': [
                         {
                             'name': 'B43',
                             'mfi': 2000,
@@ -452,7 +452,7 @@ class TestMatchingApi(DbTests):
                     'sex': 'F',
                     'height': 150,
                     'weight': 65,
-                    'yob': 2001,
+                    'YOB': 2001,
                     'waiting_since': '2020-01-06',
                     'previous_transplants': 0
                 }
@@ -487,7 +487,7 @@ class TestMatchingApi(DbTests):
                 {
                     'medical_id': 'D1',
                     'blood_group': 'A',
-                    'hla_typing': [
+                    'HLA_typing': [
                         'A9', 'A21'
                     ],
                     'donor_type': DonorType.DONOR.value,
@@ -495,12 +495,12 @@ class TestMatchingApi(DbTests):
                     'sex': 'M',
                     'height': 180,
                     'weight': 90,
-                    'yob': 1965
+                    'YOB': 1965
                 },
                 {
                     'medical_id': 'D2',
                     'blood_group': 'A',
-                    'hla_typing': [
+                    'HLA_typing': [
                         'A9'
                     ],
                     'donor_type': DonorType.DONOR.value,
@@ -508,7 +508,7 @@ class TestMatchingApi(DbTests):
                     'sex': 'F',
                     'height': 187,
                     'weight': 97,
-                    'yob': 1969
+                    'YOB': 1969
                 }
             ],
             'recipients': [
@@ -519,10 +519,10 @@ class TestMatchingApi(DbTests):
                     ],
                     'medical_id': 'R1',
                     'blood_group': 'A',
-                    'hla_typing': [
+                    'HLA_typing': [
                         'A9', 'A21'
                     ],
-                    'hla_antibodies': [
+                    'HLA_antibodies': [
                         {
                             'name': 'B43',
                             'mfi': 2000,
@@ -532,7 +532,7 @@ class TestMatchingApi(DbTests):
                     'sex': 'F',
                     'height': 150,
                     'weight': 65,
-                    'yob': 2001,
+                    'YOB': 2001,
                     'waiting_since': '2020-01-06',
                     'previous_transplants': 0
                 }
