@@ -503,7 +503,7 @@ class TestMatchingApi(DbTests):
                         'A',
                         '0'
                     ],
-                    'medical_id': 'R2',
+                    'medical_id': 'R1',
                     'blood_group': 'A',
                     'hla_typing': [
                         'A9', 'A21'
