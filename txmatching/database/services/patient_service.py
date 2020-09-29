@@ -1,3 +1,4 @@
+import collections
 import dataclasses
 import datetime
 import logging
@@ -259,6 +260,9 @@ def _recipient_upload_dto_to_recipient_model(
         code=hla_antibody.code,
         cutoff=hla_antibody.cutoff) for hla_antibody in hla_antibodies]
 
+    acceptable_blood_groups = [] if recipient_dto.acceptable_blood_groups is None \
+        else recipient_dto.acceptable_blood_groups
+
     recipient_model = RecipientModel(
         medical_id=recipient_dto.medical_id,
         country=country_code,
@@ -267,7 +271,7 @@ def _recipient_upload_dto_to_recipient_model(
         hla_antibodies=hla_antibodies,
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
-                          for blood in recipient_dto.acceptable_blood_groups],
+                          for blood in acceptable_blood_groups],
         txm_event_id=txm_event_db_id,
         recipient_cutoff=calculate_cutoff(transformed_hla_antibodies),
         waiting_since=_parse_date_to_datetime(recipient_dto.waiting_since),
@@ -285,8 +289,6 @@ def _donor_upload_dto_to_donor_model(
         country_code: Country,
         txm_event_db_id: int
 ) -> DonorModel:
-    maybe_recipient_id = recipient.id if recipient else None
-
     if recipient:
         if donor_dto.donor_type != DonorType.DONOR:
             raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
@@ -295,6 +297,16 @@ def _donor_upload_dto_to_donor_model(
             raise InvalidArgumentException(
                 f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" '
                 f'or "{DonorType.NON_DIRECTED}".')
+
+    maybe_recipient_medical_id = recipient.medical_id if recipient else None
+
+    if donor_dto.related_recipient_medical_id and maybe_recipient_medical_id != donor_dto.related_recipient_medical_id:
+        raise InvalidArgumentException(
+            f'Donor requires recipient medical id "{donor_dto.related_recipient_medical_id}", '
+            f'but received "{maybe_recipient_medical_id}".'
+        )
+
+    maybe_recipient_id = recipient.id if recipient else None
 
     donor_model = DonorModel(
         medical_id=donor_dto.medical_id,
@@ -319,6 +331,15 @@ def _save_patients_to_existing_txm_event(
         country_code: Country,
         txm_event_name: str
 ):
+    related_recipient_medical_ids = [
+        donor.related_recipient_medical_id
+        for donor in list(filter(lambda donor: donor.related_recipient_medical_id is not None, donors))
+    ]
+
+    duplicate_ids = [item for item, count in collections.Counter(related_recipient_medical_ids).items() if count > 1]
+    if len(duplicate_ids) > 0:
+        raise InvalidArgumentException(f'Duplicate recipient medical ids found: {duplicate_ids}.')
+
     txm_event = TxmEventModel.query.filter(TxmEventModel.name == txm_event_name).first()
     if not txm_event:
         raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.')

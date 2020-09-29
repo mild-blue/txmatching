@@ -1,7 +1,7 @@
-from txmatching.auth.data_types import UserRole
-from txmatching.database.db import db
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
+from txmatching.auth.data_types import UserRole
+from txmatching.database.db import db
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import create_txm_event, \
     get_newest_txm_event_db_id
@@ -31,7 +31,7 @@ DONORS = [
             'A9', 'A21'
         ],
         'donor_type': DonorType.DONOR.value,
-        'related_recipient_medical_id': 'R3',
+        'related_recipient_medical_id': 'R2',
         'sex': 'M',
         'height': 178,
         'weight': 69,
@@ -44,7 +44,7 @@ DONORS = [
             'A9', 'A21'
         ],
         'donor_type': DonorType.DONOR.value,
-        'related_recipient_medical_id': 'R2',
+        'related_recipient_medical_id': 'R3',
         'sex': 'M',
         'height': 146,
         'weight': 89,
@@ -174,7 +174,6 @@ class TestMatchingApi(DbTests):
 
     def test_txm_event_patient_successful_upload(self):
         self.fill_db_with_patients_and_results()
-        self.api.add_namespace(report_api, path=f'/{REPORTS_NAMESPACE}')
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
         txm_event_db_id = get_newest_txm_event_db_id()
         txm_event = get_txm_event(txm_event_db_id)
@@ -190,7 +189,6 @@ class TestMatchingApi(DbTests):
 
         self.login_with_role(UserRole.SERVICE)
         with self.app.test_client() as client:
-
             res = client.put(
                 f'/{TXM_EVENT_NAMESPACE}/patients',
                 headers=self.auth_headers,
@@ -209,7 +207,6 @@ class TestMatchingApi(DbTests):
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         self.fill_db_with_patients_and_results()
-        self.api.add_namespace(report_api, path=f'/{REPORTS_NAMESPACE}')
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
         txm_event_db_id = get_newest_txm_event_db_id()
 
@@ -236,7 +233,6 @@ class TestMatchingApi(DbTests):
 
     def test_txm_event_patient_failed_upload_invalid_waiting_since_date(self):
         self.fill_db_with_patients_and_results()
-        self.api.add_namespace(report_api, path=f'/{REPORTS_NAMESPACE}')
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
         txm_event_db_id = get_newest_txm_event_db_id()
 
@@ -276,7 +272,6 @@ class TestMatchingApi(DbTests):
 
         self.login_with_role(UserRole.SERVICE)
         with self.app.test_client() as client:
-
             res = client.put(
                 f'/{TXM_EVENT_NAMESPACE}/patients',
                 headers=self.auth_headers,
@@ -287,57 +282,61 @@ class TestMatchingApi(DbTests):
 
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
-            self.assertEqual('Invalid date "2020-13-06". It must be in format "YYYY-MM-DD", e.g., "2020-12-31".', res.json['message'])
+            self.assertEqual('Invalid date "2020-13-06". It must be in format "YYYY-MM-DD", e.g., "2020-12-31".',
+                             res.json['message'])
 
     def test_txm_event_patient_failed_upload_invalid_recipient_donor_types(self):
         self.fill_db_with_patients_and_results()
-        self.api.add_namespace(report_api, path=f'/{REPORTS_NAMESPACE}')
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
         txm_event_db_id = get_newest_txm_event_db_id()
 
         txm_name = 'test'
 
-        # Case 1
+        # Case 1 - recipient, DONOR type expected
         upload_patients = {
             'country': Country.CZE.value,
             'txm_event_name': txm_name,
-            'donors': [{
-                'medical_id': 'D1',
-                'blood_group': 'A',
-                'hla_typing': [
-                    'A9', 'A21'
-                ],
-                'donor_type': DonorType.NON_DIRECTED.value,
-                'related_recipient_medical_id': 'R1',
-                'sex': 'M',
-                'height': 180,
-                'weight': 90,
-                'yob': 1965
-            }],
-            'recipients': [{
-                'acceptable_blood_groups': [
-                    'A',
-                    '0'
-                ],
-                'medical_id': 'R1',
-                'blood_group': 'A',
-                'hla_typing': [
-                    'A9', 'A21'
-                ],
-                'hla_antibodies': [
-                    {
-                        'name': 'B43',
-                        'mfi': 2000,
-                        'cutoff': 2100
-                    }
-                ],
-                'sex': 'F',
-                'height': 150,
-                'weight': 65,
-                'yob': 2001,
-                'waiting_since': '2020-01-06',
-                'previous_transplants': 0
-            }]
+            'donors': [
+                {
+                    'medical_id': 'D1',
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A9', 'A21'
+                    ],
+                    'donor_type': DonorType.NON_DIRECTED.value,
+                    'related_recipient_medical_id': 'R1',
+                    'sex': 'M',
+                    'height': 180,
+                    'weight': 90,
+                    'yob': 1965
+                }
+            ],
+            'recipients': [
+                {
+                    'acceptable_blood_groups': [
+                        'A',
+                        '0'
+                    ],
+                    'medical_id': 'R1',
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A9', 'A21'
+                    ],
+                    'hla_antibodies': [
+                        {
+                            'name': 'B43',
+                            'mfi': 2000,
+                            'cutoff': 2100
+                        }
+                    ],
+                    'sex': 'F',
+                    'height': 150,
+                    'weight': 65,
+                    'yob': 2001,
+                    'waiting_since': '2020-01-06',
+                    'previous_transplants': 0
+                }
+            ]
         }
 
         self.login_with_role(UserRole.SERVICE)
@@ -353,3 +352,189 @@ class TestMatchingApi(DbTests):
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
             self.assertEqual('When recipient is set, donor type must be "DONOR".', res.json['message'])
+
+        # Case 2 - None recipient, BRIDGING_DONOR or NON_DIRECTED type expected
+        upload_patients = {
+            'country': Country.CZE.value,
+            'txm_event_name': txm_name,
+            'donors': [
+                {
+                    'medical_id': 'D1',
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A9', 'A21'
+                    ],
+                    'donor_type': DonorType.NON_DIRECTED.value,
+                    'related_recipient_medical_id': 'R1',
+                    'sex': 'M',
+                    'height': 180,
+                    'weight': 90,
+                    'yob': 1965
+                }
+            ],
+            'recipients': [None]
+        }
+
+        self.login_with_role(UserRole.SERVICE)
+        with self.app.test_client() as client:
+            res = client.put(
+                f'/{TXM_EVENT_NAMESPACE}/patients',
+                headers=self.auth_headers,
+                json=upload_patients
+            )
+
+            db.session.rollback()
+
+            self.assertEqual(400, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+            self.assertEqual(
+                'When recipient is not set, donor type must be "BRIDGING_DONOR" or "NON_DIRECTED".',
+                res.json['message']
+            )
+
+    def test_txm_event_patient_failed_upload_invalid_related_medical_id_in_donor(self):
+        self.fill_db_with_patients_and_results()
+        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
+        txm_event_db_id = get_newest_txm_event_db_id()
+
+        txm_name = 'test'
+
+        upload_patients = {
+            'country': Country.CZE.value,
+            'txm_event_name': txm_name,
+            'donors': [
+                {
+                    'medical_id': 'D1',
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A9', 'A21'
+                    ],
+                    'donor_type': DonorType.DONOR.value,
+                    'related_recipient_medical_id': 'R1',
+                    'sex': 'M',
+                    'height': 180,
+                    'weight': 90,
+                    'yob': 1965
+                }
+            ],
+            'recipients': [
+                {
+                    'acceptable_blood_groups': [
+                        'A',
+                        '0'
+                    ],
+                    'medical_id': 'R2',
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A9', 'A21'
+                    ],
+                    'hla_antibodies': [
+                        {
+                            'name': 'B43',
+                            'mfi': 2000,
+                            'cutoff': 2100
+                        }
+                    ],
+                    'sex': 'F',
+                    'height': 150,
+                    'weight': 65,
+                    'yob': 2001,
+                    'waiting_since': '2020-01-06',
+                    'previous_transplants': 0
+                }
+            ]
+        }
+
+        self.login_with_role(UserRole.SERVICE)
+        with self.app.test_client() as client:
+            res = client.put(
+                f'/{TXM_EVENT_NAMESPACE}/patients',
+                headers=self.auth_headers,
+                json=upload_patients
+            )
+
+            db.session.rollback()
+
+            self.assertEqual(400, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+            self.assertEqual('Donor requires recipient medical id "R1", but received "R2".', res.json['message'])
+
+    def test_txm_event_patient_failed_upload_duplicate_related_recipient_medical_id_in_donors(self):
+        self.fill_db_with_patients_and_results()
+        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
+        txm_event_db_id = get_newest_txm_event_db_id()
+
+        txm_name = 'test'
+
+        upload_patients = {
+            'country': Country.CZE.value,
+            'txm_event_name': txm_name,
+            'donors': [
+                {
+                    'medical_id': 'D1',
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A9', 'A21'
+                    ],
+                    'donor_type': DonorType.DONOR.value,
+                    'related_recipient_medical_id': 'R1',
+                    'sex': 'M',
+                    'height': 180,
+                    'weight': 90,
+                    'yob': 1965
+                },
+                {
+                    'medical_id': 'D2',
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A9'
+                    ],
+                    'donor_type': DonorType.DONOR.value,
+                    'related_recipient_medical_id': 'R1',
+                    'sex': 'F',
+                    'height': 187,
+                    'weight': 97,
+                    'yob': 1969
+                }
+            ],
+            'recipients': [
+                {
+                    'acceptable_blood_groups': [
+                        'A',
+                        '0'
+                    ],
+                    'medical_id': 'R2',
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A9', 'A21'
+                    ],
+                    'hla_antibodies': [
+                        {
+                            'name': 'B43',
+                            'mfi': 2000,
+                            'cutoff': 2100
+                        }
+                    ],
+                    'sex': 'F',
+                    'height': 150,
+                    'weight': 65,
+                    'yob': 2001,
+                    'waiting_since': '2020-01-06',
+                    'previous_transplants': 0
+                }
+            ]
+        }
+
+        self.login_with_role(UserRole.SERVICE)
+        with self.app.test_client() as client:
+            res = client.put(
+                f'/{TXM_EVENT_NAMESPACE}/patients',
+                headers=self.auth_headers,
+                json=upload_patients
+            )
+
+            db.session.rollback()
+
+            self.assertEqual(400, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+            self.assertEqual('Duplicate recipient medical ids found: [\'R1\'].', res.json['message'])

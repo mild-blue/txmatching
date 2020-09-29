@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from typing import List
+from typing import List, Optional
 
 
 @dataclass
@@ -10,8 +10,8 @@ class DonorUploadDTO:
     blood_group: str
     hla_typing: List[str]
     donor_type: str
-    related_recipient_medical_id: str
-    sex: str
-    height: int
-    weight: int
-    yob: int
+    related_recipient_medical_id: Optional[str]
+    sex: Optional[str]
+    height: Optional[int]
+    weight: Optional[int]
+    yob: Optional[int]
