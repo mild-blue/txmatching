@@ -2,7 +2,7 @@ import logging
 import sys
 from importlib import util as importing
 
-from flask import Flask, send_from_directory, request
+from flask import Flask, request, send_from_directory
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -12,11 +12,16 @@ from txmatching.configuration.app_configuration.application_configuration import
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
-from txmatching.web.api.namespaces import PATIENT_NAMESPACE, MATCHING_NAMESPACE, \
-    USER_NAMESPACE, SERVICE_NAMESPACE, CONFIGURATION_NAMESPACE, REPORTS_NAMESPACE
+from txmatching.web.api.namespaces import (CONFIGURATION_NAMESPACE,
+                                           MATCHING_NAMESPACE,
+                                           PATIENT_NAMESPACE,
+                                           REPORTS_NAMESPACE,
+                                           SERVICE_NAMESPACE,
+                                           TXM_EVENT_NAMESPACE, USER_NAMESPACE)
 from txmatching.web.api.patient_api import patient_api
 from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
+from txmatching.web.api.txm_event_api import txm_event_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.error_handler import register_error_handlers
 
@@ -42,11 +47,11 @@ def create_app():
             app.config.from_object(config_file)
             app.config['IS_LOCAL_DEV'] = True
 
-    def configure_db(application_config: ApplicationConfiguration):
+    def configure_db(application_configuration: ApplicationConfiguration):
         app.config['SQLALCHEMY_DATABASE_URI'] \
             = f'postgresql+psycopg2://' \
-              f'{application_config.postgres_user}:{application_config.postgres_password}@' \
-              f'{application_config.postgres_url}/{application_config.postgres_db}'
+              f'{application_configuration.postgres_user}:{application_configuration.postgres_password}@' \
+              f'{application_configuration.postgres_url}/{application_configuration.postgres_db}'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
         db.init_app(app)
@@ -67,13 +72,14 @@ def create_app():
             }
         }
 
-        api = Api(app, authorizations=authorizations, doc='/doc/')
+        api = Api(app, authorizations=authorizations, doc='/doc/', version='0.3', title='TX Matching API')
         api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
         api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
         api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
         api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
         api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
         api.add_namespace(report_api, path=f'{API_VERSION}/{REPORTS_NAMESPACE}')
+        api.add_namespace(txm_event_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}')
 
         register_error_handlers(api)
 
