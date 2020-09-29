@@ -11,7 +11,7 @@ class TestSplitToBroadResolution(unittest.TestCase):
     def setUp(self):
         self._original_split_and_expected_broad_res = [(donor_parameters_Joe.hla_typing,
                                                         {'A11', 'A10', 'B16', 'B15', 'DR4', 'DR5', 'DR52', 'DR53',
-                                                         'DQ3', 'DQ3', 'Cw3'}
+                                                         'DQ3', 'DQ3', 'CW3'}
                                                         ),
                                                        (recipient_parameters_Jack.hla_typing,
                                                         {'A1', 'A19', 'B14', 'B15', 'B15', 'B15', 'B14', 'B14', 'B15',

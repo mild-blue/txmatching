@@ -12,7 +12,7 @@ codes = {
     'DR15': ('DR15', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*02:03': ('A203', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*11:01:35': ('A11', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'C*01:02': ('Cw1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'C*01:02': ('CW1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DPA1*01:07': (None, HlaCodeProcessingResultDetail.UNEXPECTED_HIGH_RES_CODE),
     'DRB4*01:01': ('DRB453', HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
     'DQB1*02:01:01:01': ('DQB12', HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),

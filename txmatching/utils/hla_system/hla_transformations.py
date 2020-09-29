@@ -77,7 +77,7 @@ def _high_res_to_split(hla_code: str) -> Tuple[Optional[str], Optional[HlaCodePr
                 issue = HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND
     if split_hla_code:
         if re.match(C_SPLIT_FROM_HIGH_RES_REGEX, split_hla_code):
-            split_hla_code = f'Cw{split_hla_code[1:]}'
+            split_hla_code = f'CW{split_hla_code[1:]}'
         return split_hla_code, issue
 
     return None, HlaCodeProcessingResultDetail.UNEXPECTED_HIGH_RES_CODE

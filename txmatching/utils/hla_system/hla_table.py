@@ -17,9 +17,9 @@ HLA_B_BROAD = {'B5', 'B12', 'B14', 'B15', 'B16', 'B17', 'B22', 'B40', 'B70'}
 
 HLA_BW = {'Bw4', 'Bw6'}
 
-HLA_CW = {'Cw1', 'Cw2', 'Cw4', 'Cw5', 'Cw6', 'Cw7', 'Cw8', 'Cw9', 'Cw10'}
+HLA_CW = {'CW1', 'CW2', 'CW4', 'CW5', 'CW6', 'CW7', 'CW8', 'CW9', 'CW10'}
 
-HLA_CW_BROAD = {'Cw3'}
+HLA_CW_BROAD = {'CW3'}
 
 HLA_DR = {'DR1', 'DR103', 'DR4', 'DR7', 'DR8', 'DR9', 'DR10', 'DR11', 'DR12',
           'DR13', 'DR14', 'DR1403', 'DR1404', 'DR15', 'DR16', 'DR17', 'DR18'}
@@ -70,8 +70,8 @@ SPLIT_TO_BROAD = {'A23': 'A9',
                   'B75': 'B15',
                   'B76': 'B15',
                   'B77': 'B15',
-                  'Cw9': 'Cw3',
-                  'Cw10': 'Cw3',
+                  'CW9': 'CW3',
+                  'CW10': 'CW3',
                   'DR11': 'DR5',
                   'DR12': 'DR5',
                   'DR13': 'DR6',
