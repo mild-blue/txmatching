@@ -300,11 +300,12 @@ def _donor_upload_dto_to_donor_model(
 
     maybe_recipient_medical_id = recipient.medical_id if recipient else None
 
-    if donor_dto.related_recipient_medical_id and maybe_recipient_medical_id != donor_dto.related_recipient_medical_id:
-        raise InvalidArgumentException(
-            f'Donor requires recipient medical id "{donor_dto.related_recipient_medical_id}", '
-            f'but received "{maybe_recipient_medical_id}".'
-        )
+    assert (donor_dto.related_recipient_medical_id
+            and maybe_recipient_medical_id == donor_dto.related_recipient_medical_id
+            ) \
+           or (not donor_dto.related_recipient_medical_id and not maybe_recipient_medical_id), \
+        f'Donor requires recipient medical id "{donor_dto.related_recipient_medical_id}", ' \
+        f'but received "{maybe_recipient_medical_id}" or related recipient must be None.'
 
     maybe_recipient_id = recipient.id if recipient else None
 

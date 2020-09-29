@@ -3,7 +3,9 @@
 
 import logging
 
-from dacite import from_dict
+from enum import Enum
+from dacite import from_dict, Config
+
 from flask import request, jsonify
 from flask_restx import Resource
 
@@ -58,7 +60,7 @@ class TxmEventUploadPatients(Resource):
     # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
     @allow_service_role()
     def put(self):
-        patient_upload_dto = from_dict(data_class=PatientUploadDTO, data=request.json)
+        patient_upload_dto = from_dict(data_class=PatientUploadDTO, data=request.json, config=Config(cast=[Enum]))
         #  current_user = get_current_user()  # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
         country_code = Country.CZE  # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
         update_txm_event_patients(patient_upload_dto, country_code)
