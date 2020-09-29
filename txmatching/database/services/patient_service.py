@@ -1,8 +1,8 @@
 import dataclasses
+import datetime
 import logging
 from typing import List, Optional, Tuple, Union
 
-import datetime
 import dacite
 from sqlalchemy import and_
 
@@ -236,7 +236,7 @@ def get_txm_event(txm_event_db_id: Optional[int] = None) -> TxmEvent:
 def _parse_date_to_datetime(date: str):
     try:
         return datetime.datetime.strptime(date, '%Y-%m-%d')
-    except Exception as ex:
+    except (ValueError, TypeError) as ex:
         raise InvalidArgumentException(f'Invalid date "{date}". It must be in format "YYYY-MM-DD", e.g.,'
                                        ' "2020-12-31".') from ex
 
@@ -286,7 +286,16 @@ def _donor_upload_dto_to_donor_model(
         txm_event_db_id: int
 ) -> DonorModel:
     maybe_recipient_id = recipient.id if recipient else None
-    donor_type = DonorType.DONOR if recipient else DonorType.NON_DIRECTED
+
+    if recipient:
+        if donor_dto.donor_type != DonorType.DONOR:
+            raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
+    else:
+        if donor_dto.donor_type != DonorType.BRIDGING_DONOR or donor_dto.donor_type != DonorType.NON_DIRECTED:
+            raise InvalidArgumentException(
+                f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" '
+                f'or "{DonorType.NON_DIRECTED}".')
+
     donor_model = DonorModel(
         medical_id=donor_dto.medical_id,
         country=country_code,
@@ -294,7 +303,7 @@ def _donor_upload_dto_to_donor_model(
         hla_typing=[parse_code(typing) for typing in donor_dto.hla_typing],
         active=True,
         recipient_id=maybe_recipient_id,
-        donor_type=donor_type,
+        donor_type=donor_dto.donor_type,
         weight=donor_dto.weight,
         height=donor_dto.height,
         sex=donor_dto.sex,
