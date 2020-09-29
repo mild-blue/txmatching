@@ -28,7 +28,7 @@
     <div class="antibodies__add-form">
       <form [formGroup]="form" #viewForm="ngForm" (ngSubmit)="addAntibody(antibody)">
         <mat-form-field>
-          <mat-label>Antibody code</mat-label>
+          <mat-label>Code</mat-label>
           <mat-chip-list #antibodyChip>
             <mat-chip *ngIf="antibodyValue"
                       [removable]="true"
@@ -40,14 +40,14 @@
                    matInput
                    formControlName="antibody"
                    [errorStateMatcher]="errorMatcher"
-                   [matAutocomplete]="antibodyAuto"
+                   [matAutocomplete]="antibodiesAuto"
+                   [matAutocompletePosition]="'below'"
                    [matChipInputFor]="antibodyChip"
                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                    (matChipInputTokenEnd)="handleNewAntibodyInputEnd($event.value, antibody)"
-                   [placeholder]="!antibodyValue ? 'Search by antibody code or add new' : ''"
                    type="text">
           </mat-chip-list>
-          <mat-autocomplete #antibodyAuto="matAutocomplete"
+          <mat-autocomplete #antibodiesAuto
                             (optionSelected)="handleNewAntibodySelect($event.option.value, antibody)"
                             [displayWith]="displayFn">
             <mat-option *ngFor="let a of filteredAntibodies | async" [value]="a">
@@ -55,7 +55,7 @@
             </mat-option>
           </mat-autocomplete>
           <mat-hint>
-            Search and select multiple antibodies from {{availableAntibodies.length}} antibodies.
+            Add new antibody by typing its code or select an antibody from available antibodies.
           </mat-hint>
         </mat-form-field>
 
