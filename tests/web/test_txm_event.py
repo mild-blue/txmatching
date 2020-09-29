@@ -38,13 +38,13 @@ DONORS = [
         'yob': 1967
     },
     {
+        # Missing related_recipient_medical_id
         'medical_id': 'D3',
         'blood_group': '0',
         'hla_typing': [
             'A9', 'A21'
         ],
         'donor_type': DonorType.DONOR.value,
-        'related_recipient_medical_id': 'R3',
         'sex': 'M',
         'height': 146,
         'weight': 89,
@@ -123,29 +123,6 @@ RECIPIENTS = [
         'yob': 1999,
         'waiting_since': '2020-05-13',
         'previous_transplants': 0
-    },
-    {
-        'acceptable_blood_groups': [
-            '0'
-        ],
-        'medical_id': 'R4',
-        'blood_group': 'AB',
-        'hla_typing': [
-            'A9', 'A21'
-        ],
-        'hla_antibodies': [
-            {
-                'name': 'B43',
-                'mfi': 2000,
-                'cutoff': 2400
-            }
-        ],
-        'sex': 'M',
-        'height': 196,
-        'weight': 80,
-        'yob': 2000,
-        'waiting_since': '2020-04-19',
-        'previous_transplants': 0
     }
 ]
 
@@ -200,9 +177,9 @@ class TestMatchingApi(DbTests):
             self.assertIsNotNone(res.json)
 
         self.assertEqual(txm_name, txm_event.name)
-        self.assertEqual(4, len(RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event.db_id).all()))
+        self.assertEqual(3, len(RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event.db_id).all()))
         self.assertEqual(3, len(DonorModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()))
-        self.assertEqual(4, res.json['recipients_uploaded'])
+        self.assertEqual(3, res.json['recipients_uploaded'])
         self.assertEqual(3, res.json['donors_uploaded'])
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
