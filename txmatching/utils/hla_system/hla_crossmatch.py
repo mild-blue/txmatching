@@ -26,8 +26,9 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
         recipient_antibodies_set = {split_code for code in recipient_antibodies.hla_codes_over_cutoff for split_code in
                                     broad_to_split(code)}
     else:
-        donor_hla_typing_set = {split_to_broad(code) for code in donor_hla_typing.codes}
-        recipient_antibodies_set = {split_to_broad(code) for code in recipient_antibodies.hla_codes_over_cutoff}
+        donor_hla_typing_set = {split_to_broad(code) for code in donor_hla_typing.codes if split_to_broad(code)}
+        recipient_antibodies_set = {split_to_broad(code) for code in recipient_antibodies.hla_codes_over_cutoff if
+                                    split_to_broad(code)}
 
     common_codes = recipient_antibodies_set.intersection(donor_hla_typing_set)
     # if there are any common codes, positive crossmatch is found
