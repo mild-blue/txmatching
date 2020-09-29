@@ -12,7 +12,7 @@ from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
 
-from txmatching.auth.login_check import login_required
+from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore)
 from txmatching.data_transfer_objects.matchings.matching_dto import (
@@ -53,7 +53,7 @@ class Report(Resource):
             404: 'Raised when matching with particular id was not found.'
         }
     )
-    @login_required()
+    @require_user_login()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
         matching_id = int(request.view_args['matching_id'])
@@ -164,17 +164,17 @@ def antigen_dr_filter(codes: List[str]) -> List[str]:
 
 def antibody_a_filter(antibodies: HLAAntibodies) -> List[str]:
     return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.A.value), antibodies.antibodies_over_cutoff))]
+            list(filter(lambda x: x.upper().startswith(HLATypes.A.value), antibodies.hla_codes_over_cutoff))]
 
 
 def antibody_b_filter(antibodies: HLAAntibodies) -> List[str]:
     return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.B.value), antibodies.antibodies_over_cutoff))]
+            list(filter(lambda x: x.upper().startswith(HLATypes.B.value), antibodies.hla_codes_over_cutoff))]
 
 
 def antibody_dr_filter(antibodies: HLAAntibodies) -> List[str]:
     return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), antibodies.antibodies_over_cutoff))]
+            list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), antibodies.hla_codes_over_cutoff))]
 
 
 def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:

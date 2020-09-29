@@ -1,0 +1,8 @@
+<div class="tab-switch">
+  <ul>
+    <li *ngFor="let tab of tabs"
+        [class.active]="tab === activeTab">
+      <button (click)="handleClick(tab)">{{tab}}</button>
+    </li>
+  </ul>
+</div>

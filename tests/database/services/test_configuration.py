@@ -1,8 +1,10 @@
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.configuration.configuration import Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore
-from txmatching.database.services.config_service import \
-    save_configuration_as_current, get_current_configuration, configuration_from_dict
-from txmatching.utils.country import Country
+from txmatching.configuration.configuration import (
+    Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore)
+from txmatching.database.services.config_service import (
+    configuration_from_dict, get_current_configuration,
+    save_configuration_as_current)
+from txmatching.utils.enums import Country
 
 
 class TestConfiguration(DbTests):
@@ -22,14 +24,14 @@ class TestConfiguration(DbTests):
                     'minimum_total_score': 0.0,
                     'maximum_total_score': 27.0,
                     'enforce_compatible_blood_group': False,
-                    'forbidden_country_combinations': [{"donor_country": 'AUT', "recipient_country": 'IL'}],
+                    'forbidden_country_combinations': [{'donor_country': 'AUT', 'recipient_country': 'IL'}],
                     'use_binary_scoring': False,
                     'max_cycle_length': 100,
                     'max_sequence_length': 100,
                     'max_number_of_distinct_countries_in_round': 100,
                     'required_patient_db_ids': [1, 3, 5],
                     'use_split_resolution': False,
-                    'manual_donor_recipient_scores': [{"donor_db_id": 1, "recipient_db_id": 0, "score": 0.0}]}
+                    'manual_donor_recipient_scores': [{'donor_db_id': 1, 'recipient_db_id': 0, 'score': 0.0}]}
 
         config = configuration_from_dict(dto_dict)
         self.assertEqual(Country.AUT, config.forbidden_country_combinations[0].donor_country)

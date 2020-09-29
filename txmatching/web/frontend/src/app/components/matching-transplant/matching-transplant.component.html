@@ -1,15 +1,9 @@
-<div *ngIf="transplant && donor && recipient && matchingAntigens" class="transplant">
+<div *ngIf="transplant" class="transplant">
   <div class="transplant-header">
-    <div class="pair">
-      <flag [countryCode]="donor.parameters.country_code"></flag>
-      {{ donor.medical_id }}
-      <fa-icon [icon]="arrowRight"></fa-icon>
-      {{ recipient.medical_id }}
-      <flag [countryCode]="recipient.parameters.country_code"></flag>
-    </div>
+    <app-patient-pair [pair]="transplant"></app-patient-pair>
 
     <div class="score">
-      Score: <span>{{ transplant.score }}</span>
+      Score: <span>{{ transplant.score !== undefined ? transplant.score : hlaScoresTotal }}</span>
     </div>
   </div>
 
@@ -19,30 +13,30 @@
       <tr>
         <td></td>
         <td>
-          <flag [countryCode]="donor.parameters.country_code"></flag>
-          {{ donor.medical_id }}
+          <div class="center-holder">
+            <patient [patient]="transplant.d"></patient>
+          </div>
         </td>
         <td colspan="2">
-          <flag [countryCode]="recipient.parameters.country_code"></flag>
-          {{ recipient.medical_id }}
+          <div class="center-holder">
+            <patient [patient]="transplant.r"></patient>
+          </div>
         </td>
         <td>Score</td>
       </tr>
       <tr>
         <td>Blood type</td>
         <td>
-          <app-code [class.matching]="isDonorBloodCompatible">{{ donor.parameters.blood_group }}</app-code>
+          <app-code [class.matching]="transplant.compatible_blood || pairBloodCompatible">{{ transplant.d.parameters.blood_group }}</app-code>
         </td>
         <td colspan="2">
-          <app-code [class.matching]="isDonorBloodCompatible">{{ recipient.parameters.blood_group }}</app-code>
+          <app-code [class.matching]="transplant.compatible_blood || pairBloodCompatible">{{ transplant.r.parameters.blood_group }}</app-code>
           <div class="small">
             Acceptable:
-            <app-code *ngFor="let bloodGroup of recipient.acceptable_blood_groups">{{ bloodGroup }}</app-code>
+            <app-code *ngFor="let bloodGroup of transplant.r.acceptable_blood_groups">{{ bloodGroup }}</app-code>
           </div>
         </td>
-        <td>
-
-        </td>
+        <td>-</td>
       </tr>
       <tr class="anti-header">
         <td></td>
@@ -51,27 +45,43 @@
         <td>Antibodies</td>
         <td></td>
       </tr>
-      <tr *ngFor="let antibody of antibodies">
-        <td>{{antibody}}</td>
+      <tr *ngFor="let prefix of prefixes">
+        <td>{{prefix}}</td>
         <td>
-          <app-code *ngFor="let code of filterCodes(donor.parameters.hla_typing.codes, antibody)"
-                    [class.matching]="matchingAntigens.includes(code)">{{ code }}</app-code>
+          <app-code *ngFor="let code of filterCodes(transplant.d.parameters.hla_typing.hla_types_list, prefix)"
+                    [class]="getDonorAntigenClass(code.raw_code)">{{ code.raw_code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterCodes(recipient.parameters.hla_typing.codes, antibody)"
-                    [class.matching]="matchingAntigens.includes(code)">{{ code }}</app-code>
+          <app-code *ngFor="let code of filterCodes(transplant.r.parameters.hla_typing.hla_types_list, prefix)"
+                    [class]="getRecipientAntigenClass(code.raw_code)">{{ code.raw_code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterCodes(recipient.hla_antibodies.antibodies_over_cutoff, antibody)"
-                    [class]="'antibody'">{{ code }}</app-code>
+          <app-code *ngFor="let code of filterCodes(transplant.r.hla_antibodies.hla_antibodies_list, prefix)"
+                    [class]="getRecipientAntibodyClass(code.raw_code)">{{ code.raw_code }}</app-code>
         </td>
-        <td>{{ antigenScore(antibody) }}</td>
+        <td>{{ hlaScores ? hlaScores.get(prefix) : 0 }}</td>
+      </tr>
+      <tr>
+        <td>Other</td>
+        <td>
+          <app-code *ngFor="let code of otherHLA(transplant.d.parameters.hla_typing.hla_types_list)"
+                    [class]="getDonorAntigenClass(code.raw_code)">{{ code.raw_code }}</app-code>
+        </td>
+        <td>
+          <app-code *ngFor="let code of otherHLA(transplant.r.parameters.hla_typing.hla_types_list)"
+                    [class]="getRecipientAntigenClass(code.raw_code)">{{ code.raw_code }}</app-code>
+        </td>
+        <td>
+          <app-code *ngFor="let code of otherHLA(transplant.r.hla_antibodies.hla_antibodies_list)"
+                    [class]="getRecipientAntibodyClass(code.raw_code)">{{ code.raw_code }}</app-code>
+        </td>
+        <td>-</td>
       </tr>
       <tr class="footer-score">
         <td colspan="4">
           Final score:
         </td>
-        <td><span>{{ transplant.score }}</span></td>
+        <td><span>{{ transplant.score !== undefined ? transplant.score : hlaScoresTotal }}</span></td>
       </tr>
       </tbody>
     </table>

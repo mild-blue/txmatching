@@ -32,7 +32,7 @@ export class ConfigurationPatientsComponent {
   }
 
   get allPatients(): Patient[] {
-    return this.patients ? this.patients.recipients ?? [] : [];
+    return this.patients?.recipients ?? [];
   }
 
   get availablePatients(): Patient[] {
@@ -48,7 +48,7 @@ export class ConfigurationPatientsComponent {
   }
 
   public displayFn(user: Patient): string {
-    return user && user.medical_id ? user.medical_id : '';
+    return user?.medical_id ?? '';
   }
 
   public add(event: MatAutocompleteSelectedEvent): void {

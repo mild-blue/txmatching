@@ -6,8 +6,8 @@ from flask import Flask
 from flask_restx import Api
 
 from tests.test_utilities.populate_db import ADMIN_USER, add_users, create_or_overwrite_txm_event
+from txmatching.auth.auth_check import store_user_in_context
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.login_check import store_user_in_context
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import \
     save_patients_from_excel_to_empty_txm_event

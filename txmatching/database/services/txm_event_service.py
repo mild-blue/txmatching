@@ -1,6 +1,3 @@
-from typing import Union
-
-from txmatching.auth.data_types import FailResponse
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import TxmEventModel
 from txmatching.patients.patient import TxmEvent
@@ -14,7 +11,7 @@ def get_newest_txm_event_db_id() -> int:
         raise ValueError('No TXM event found')
 
 
-def create_txm_event(name: str) -> Union[TxmEvent, FailResponse]:
+def create_txm_event(name: str) -> TxmEvent:
     if len(TxmEventModel.query.filter(TxmEventModel.name == name).all()) > 0:
         raise ValueError("TXM event already exists")
     txm_event_model = TxmEventModel(name=name)

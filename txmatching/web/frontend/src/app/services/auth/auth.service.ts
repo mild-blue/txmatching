@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { User } from '@app/model/User';
+import { DecodedToken, User } from '@app/model/User';
 import { environment } from '@environments/environment';
 import { map } from 'rxjs/operators';
-import { AuthResponse, DecodedToken } from '@app/services/auth/auth.interface';
+import { AuthResponse } from '@app/services/auth/auth.interface';
 import * as jwt_decode from 'jwt-decode';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,8 @@ export class AuthService {
   private _currentUserSubject: BehaviorSubject<User | undefined> = new BehaviorSubject<User | undefined>(undefined);
   public currentUser: Observable<User | undefined> = this._currentUserSubject.asObservable();
 
-  constructor(private _http: HttpClient) {
+  constructor(private _http: HttpClient,
+              private _router: Router) {
     this._setCurrentUser();
   }
 
@@ -26,13 +28,12 @@ export class AuthService {
   get isLoggedIn(): boolean {
     // check if user exists
     const user = this.currentUserValue;
-    if (!user) {
+    if (!user?.decoded) {
       return false;
     }
 
     // check if token is valid
-    const decoded = jwt_decode(user.token) as DecodedToken;
-    return decoded.exp >= Date.now() / 1000;
+    return user.decoded.exp >= Date.now() / 1000;
   }
 
   public login(email: string, password: string): Observable<User> {
@@ -43,7 +44,8 @@ export class AuthService {
       map((r: Object) => {
         const response = r as AuthResponse;
         const token = response.auth_token;
-        const user: User = { email, token };
+        const decoded = jwt_decode(token) as DecodedToken;
+        const user: User = { email, token, decoded };
         localStorage.setItem('user', JSON.stringify(user));
         this._currentUserSubject.next(user);
         return user;
@@ -54,6 +56,7 @@ export class AuthService {
   public logout(): void {
     localStorage.removeItem('user');
     this._currentUserSubject.next(undefined);
+    this._router.navigate(['/login']);
   }
 
   private _setCurrentUser(): void {

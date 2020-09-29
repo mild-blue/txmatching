@@ -7,9 +7,9 @@ from sqlalchemy.sql import func
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.patients.patient import DonorType, RecipientRequirements
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
-from txmatching.utils.country import Country
+from txmatching.utils.enums import Country, Sex
 
 
 class ConfigModel(db.Model):
@@ -67,14 +67,21 @@ class RecipientModel(db.Model):
     country = db.Column(db.Enum(Country), unique=False, nullable=False)
     blood = db.Column(db.TEXT, unique=False, nullable=False)
     hla_typing = db.Column(db.JSON, unique=False, nullable=False)
-    hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, nullable=False)
     recipient_requirements = db.Column(db.JSON, unique=False, nullable=False,
                                        default=dataclasses.asdict(RecipientRequirements()))
+    recipient_cutoff = db.Column(db.Integer, unique=False, nullable=False)
+    sex = db.Column(db.Enum(Sex), unique=False, nullable=True)
+    height = db.Column(db.Integer, unique=False, nullable=True)
+    weight = db.Column(db.Float, unique=False, nullable=True)
+    yob = db.Column(db.Integer, unique=False, nullable=True)
+    waiting_since = db.Column(db.DateTime(timezone=True), unique=False, nullable=True)
+    previous_transplants = db.Column(db.Integer, unique=False, nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
     acceptable_blood = relationship('RecipientAcceptableBloodModel', backref='recipient', cascade='all, delete')
+    hla_antibodies = relationship('RecipientHLAAntibodyModel', backref='recipient', cascade='all, delete')
     UniqueConstraint('medical_id', 'txm_event_id')
 
 
@@ -90,6 +97,10 @@ class DonorModel(db.Model):
     hla_typing = db.Column(db.JSON, unique=False, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, nullable=False)
     donor_type = db.Column(db.Enum(DonorType), unique=False, nullable=False)
+    sex = db.Column(db.Enum(Sex), unique=False, nullable=True)
+    height = db.Column(db.Integer, unique=False, nullable=True)
+    weight = db.Column(db.Float, unique=False, nullable=True)
+    yob = db.Column(db.Integer, unique=False, nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
@@ -109,6 +120,22 @@ class RecipientAcceptableBloodModel(db.Model):
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
 
+class RecipientHLAAntibodyModel(db.Model):
+    __tablename__ = 'recipient_hla_antibodies'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    recipient_id = db.Column(db.Integer, ForeignKey('recipient.id'), unique=False, nullable=False)
+    raw_code = db.Column(db.TEXT, unique=False, nullable=False)
+    mfi = db.Column(db.Integer, unique=False, nullable=False)
+    cutoff = db.Column(db.Integer, unique=False, nullable=False)
+    code = db.Column(db.TEXT, unique=False, nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+    deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    UniqueConstraint('recipient_id', 'code')
+
+
 class AppUserModel(db.Model):
     __tablename__ = 'app_user'
     __table_args__ = {'extend_existing': True}
@@ -117,29 +144,11 @@ class AppUserModel(db.Model):
     email = db.Column(db.TEXT, unique=True, nullable=False)
     pass_hash = db.Column(db.TEXT, unique=False, nullable=False)
     role = db.Column(db.Enum(UserRole), unique=False, nullable=False)
+    # Whitelisted IP address if role is SERVICE
+    # Seed for TOTP in all other cases
+    second_factor_material = db.Column(db.TEXT, unique=False, nullable=False)
+    phone_number = db.Column(db.TEXT, unique=False, nullable=True, default=None)
+    require_2fa = db.Column(db.BOOLEAN, unique=False, nullable=False, default=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-
-    def __init__(self, email: str, pass_hash: str, role: UserRole):
-        self.email = email
-        self.pass_hash = pass_hash
-        self.role = role
-        self._is_authenticated = False
-
-    @staticmethod
-    def is_active():
-        return True
-
-    def is_authenticated(self):
-        return self._is_authenticated
-
-    @staticmethod
-    def is_anonymous():
-        return False
-
-    def get_id(self):
-        return self.email
-
-    def set_authenticated(self, authenticated: bool):
-        self._is_authenticated = authenticated

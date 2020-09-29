@@ -1,13 +1,14 @@
 CREATE TYPE USER_ROLE AS ENUM (
     'VIEWER',
     'EDITOR',
-    'ADMIN'
+    'ADMIN',
+    'SERVICE'
     );
 
 CREATE TYPE DONOR_TYPE AS ENUM (
     'DONOR',
     'BRIDGING_DONOR',
-    'ALTRUIST'
+    'NON_DIRECTED'
     );
 
 CREATE TYPE COUNTRY AS ENUM (
@@ -21,6 +22,11 @@ CREATE TYPE BLOOD_TYPE AS ENUM (
     'B',
     'AB',
     '0'
+    );
+
+CREATE TYPE SEX AS ENUM (
+    'F',
+    'M'
     );
 
 -- BEFORE insert function for trigger
@@ -49,13 +55,16 @@ $BODY$
 
 CREATE TABLE app_user
 (
-    id         BIGSERIAL   NOT NULL,
-    email      TEXT        NOT NULL, -- serves as username
-    pass_hash  TEXT        NOT NULL,
-    role       USER_ROLE   NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL,
-    updated_at TIMESTAMPTZ NOT NULL,
-    deleted_at TIMESTAMPTZ,
+    id                     BIGSERIAL   NOT NULL,
+    email                  TEXT        NOT NULL, -- serves as username
+    pass_hash              TEXT        NOT NULL,
+    role                   USER_ROLE   NOT NULL,
+    second_factor_material TEXT        NOT NULL,
+    phone_number           TEXT,
+    require_2fa            BOOLEAN     NOT NULL,
+    created_at             TIMESTAMPTZ NOT NULL,
+    updated_at             TIMESTAMPTZ NOT NULL,
+    deleted_at             TIMESTAMPTZ,
     CONSTRAINT pk_app_user_id PRIMARY KEY (id),
     CONSTRAINT uq_app_user_email UNIQUE (email)
 );
@@ -80,9 +89,15 @@ CREATE TABLE recipient
     country                COUNTRY     NOT NULL,
     blood                  BLOOD_TYPE  NOT NULL,
     hla_typing             JSONB       NOT NULL, -- JSON
-    hla_antibodies         JSONB       NOT NULL, -- JSON
     active                 BOOL        NOT NULL, -- assume some patients fall out of the set
     recipient_requirements JSONB       NOT NULL, -- JSON
+    recipient_cutoff       INT         NOT NULL,
+    sex                    SEX,
+    height                 INT,
+    weight                 NUMERIC,
+    yob                    INT,
+    waiting_since          timestamptz,
+    previous_transplants   INT,
     created_at             TIMESTAMPTZ NOT NULL,
     updated_at             TIMESTAMPTZ NOT NULL,
     deleted_at             TIMESTAMPTZ,
@@ -102,6 +117,10 @@ CREATE TABLE donor
     blood        BLOOD_TYPE  NOT NULL,
     hla_typing   JSONB       NOT NULL, -- JSON
     active       BOOL        NOT NULL, -- assume some patients fall out of the set
+    sex          SEX,
+    height       INT,
+    weight       NUMERIC,
+    yob          INT,
     created_at   TIMESTAMPTZ NOT NULL,
     updated_at   TIMESTAMPTZ NOT NULL,
     deleted_at   TIMESTAMPTZ,
@@ -123,6 +142,23 @@ CREATE TABLE recipient_acceptable_blood
     deleted_at   TIMESTAMPTZ,
     CONSTRAINT pk_recipient_acceptable_blood_id PRIMARY KEY (id),
     CONSTRAINT fk_recipient_acceptable_blood_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE recipient_hla_antibodies
+(
+    id           BIGSERIAL   NOT NULL,
+    recipient_id BIGINT      NOT NULL,
+    raw_code     TEXT        NOT NULL,
+    mfi          INT         NOT NULL,
+    cutoff       INT         NOT NULL,
+    code         TEXT,
+    created_at   TIMESTAMPTZ NOT NULL,
+    updated_at   TIMESTAMPTZ NOT NULL,
+    deleted_at   TIMESTAMPTZ,
+    CONSTRAINT uq_recipient_hla_antibodies_code_recipient_id UNIQUE (raw_code, recipient_id),
+    CONSTRAINT pk_recipient_hla_antibodies_id PRIMARY KEY (id),
+    CONSTRAINT fk_recipient_hla_antibodies_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE config

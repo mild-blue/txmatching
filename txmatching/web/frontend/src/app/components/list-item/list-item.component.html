@@ -1,0 +1,26 @@
+<div class="list-item">
+  <div class="list">
+    <div #list
+         infinite-scroll
+         class="list-inner"
+         (scrolled)="onScrollDown()"
+         [scrollWindow]="false">
+      <app-item *ngFor="let item of displayedItems; trackBy: trackListItem"
+                [listItemComponent]="listItemComponent"
+                [isActive]="item === activeItem"
+                [item]="item"
+                [patients]="patients"
+                [configuration]="configuration"
+                (click)="setActive(item)"></app-item>
+    </div>
+  </div>
+  <div class="detail">
+    <div [class.aligned-bottom]="activeAlignedBottom"
+         [class.aligned-top]="activeAlignedTop"
+         #detail
+         cdk-scrollable
+         class="detail-inner">
+      <ng-template listItemDetail></ng-template>
+    </div>
+  </div>
+</div>

@@ -58,11 +58,16 @@ header {
       display: flex;
       justify-content: flex-end;
 
+      li {
+        padding: 0 $item-gap;
+      }
+
       a {
         text-transform: uppercase;
         font-size: 15px;
         letter-spacing: 1px;
         font-weight: 600;
+        color: $body-color--secondary;
 
         &.active {
           color: $primary;
@@ -90,7 +95,7 @@ header {
     }
 
     .info, .user {
-      ::ng-deep button {
+      ::ng-deep .dropdown button {
         margin: 10px auto 0;
       }
     }

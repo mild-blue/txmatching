@@ -1,69 +1,114 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
-import { antibodiesMultipliers, compatibleBloodGroups, Donor, Recipient, PatientList } from '@app/model/Patient';
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import { antibodiesMultipliers, compatibleBloodGroups, Hla, PatientList } from '@app/model/Patient';
 
 @Component({
   selector: 'app-matching-transplant',
   templateUrl: './matching-transplant.component.html',
   styleUrls: ['./matching-transplant.component.scss']
 })
-export class MatchingTransplantComponent {
-
-  private _donor?: Donor;
-  private _recipient?: Recipient;
-  private _matchingAntigens?: string[];
+export class MatchingTransplantComponent implements OnInit {
 
   @Input() transplant?: Transplant;
   @Input() patients?: PatientList;
 
-  public arrowRight = faAngleRight;
+  public hlaScores?: Map<string, number>;
+  public hlaScoresTotal: number = 0;
 
   constructor(private _patientService: PatientService) {
   }
 
-  get donor(): Donor | undefined {
-    if (!this._donor && this.patients && this.patients.donors) {
-      this._donor = this.patients.donors.find(p => p.medical_id === this.transplant?.donor);
-    }
-    return this._donor;
+  ngOnInit() {
+    this._initHLAScores();
   }
 
-  get recipient(): Recipient | undefined {
-    if (!this._recipient && this.patients && this.patients.recipients) {
-      this._recipient = this.patients.recipients.find(p => p.medical_id === this.transplant?.recipient);
-    }
-    return this._recipient;
-  }
-
-  get matchingAntigens(): string[] | undefined {
-    if (this.donor && this.recipient && this._matchingAntigens === undefined) {
-      const donorAntigens = this.donor.parameters.hla_typing.codes;
-      const recipientAntigens = this.recipient.parameters.hla_typing.codes;
-      this._matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
-    }
-    return this._matchingAntigens;
-  }
-
-  get isDonorBloodCompatible(): boolean {
-    if (!this.donor || !this.recipient) {
-      return false;
-    }
-    const donorBloodGroup = this.donor.parameters.blood_group;
-    const recipientBloodGroup = this.recipient.parameters.blood_group;
-    return compatibleBloodGroups[recipientBloodGroup].includes(donorBloodGroup);
-  }
-
-  get antibodies(): string[] {
+  get prefixes(): string[] {
     return Object.keys(antibodiesMultipliers);
   }
 
-  public antigenScore(prefix: string): number {
-    return this.matchingAntigens ? this.matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix] : 0;
+  get pairBloodCompatible(): boolean {
+    if (!this.transplant) {
+      return false;
+    }
+
+    return compatibleBloodGroups[this.transplant.r.parameters.blood_group].includes(this.transplant.d.parameters.blood_group);
   }
 
-  public filterCodes(codes: string[], prefix: string): string[] {
-    return codes.filter(code => code.startsWith(prefix));
+  public filterCodes(codes: Hla[], prefix: string): Hla[] {
+    return codes.filter(code => code.raw_code.startsWith(prefix));
+  }
+
+  public otherHLA(codes: Hla[]): Hla[] {
+    // return codes that do not start with any of prefixes
+    return codes.filter(i => {
+      for (const prefix of this.prefixes) {
+        if (i.raw_code.startsWith(prefix)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  public getDonorAntigenClass(code: string): string {
+    if (!this.transplant?.r) {
+      return '';
+    }
+
+    if (this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.raw_code === code)) {
+      // donor antigen matches some recipient antibody
+      return 'bad-matching';
+    }
+
+    if (this.transplant.r.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)) {
+      // donor antigen matches some recipient antigen
+      return 'matching';
+    }
+
+    return '';
+  }
+
+  public getRecipientAntigenClass(code: string): string {
+    if (this.transplant && this.transplant.d && this.transplant.r
+      && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)
+      && !this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.raw_code === code)) {
+      // recipient antigen matches some donor antigen
+      // and code is not recipient antibody
+      return 'matching';
+    }
+    return '';
+  }
+
+  public getRecipientAntibodyClass(code: string): string {
+    if (this.transplant && this.transplant.d && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)) {
+      // recipient antibody matches some donor antigen
+      return 'bad-matching';
+    }
+    return '';
+  }
+
+  private _initHLAScores(): void {
+
+    if (!this.transplant?.d || !this.transplant?.r) {
+      return;
+    }
+
+    const donorAntigens = this.transplant.d.parameters.hla_typing.hla_types_list;
+    const recipientAntigens = this.transplant.r.parameters.hla_typing.hla_types_list;
+    const matchingAntigens = donorAntigens.filter(a => recipientAntigens.includes(a));
+
+    if (!matchingAntigens.length) {
+      return;
+    }
+
+    const map: Map<string, number> = new Map<string, number>();
+    for (const prefix of this.prefixes) {
+      const score = matchingAntigens.filter(a => a.raw_code.startsWith(prefix)).length * antibodiesMultipliers[prefix];
+      map.set(prefix, score);
+    }
+
+    this.hlaScores = map;
+    this.hlaScoresTotal = [...this.hlaScores.values()].reduce((a, b) => a + b, 0);
   }
 }

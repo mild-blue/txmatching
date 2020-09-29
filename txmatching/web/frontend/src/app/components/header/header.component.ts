@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { User } from '@app/model/User';
 import { faQuestionCircle, faUserAlt } from '@fortawesome/free-solid-svg-icons';
+import { AuthService } from '@app/services/auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -15,6 +16,9 @@ export class HeaderComponent {
 
   public userIcon = faUserAlt;
   public infoIcon = faQuestionCircle;
+
+  constructor(private _authService: AuthService) {
+  }
 
   get userDropdownId(): string {
     return 'user-dropdown';
@@ -36,5 +40,9 @@ export class HeaderComponent {
     if (this._openedDropdownId === dropdownId) {
       this._openedDropdownId = '';
     }
+  }
+
+  public logOut(): void {
+    this._authService.logout();
   }
 }

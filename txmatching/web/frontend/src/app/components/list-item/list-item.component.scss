@@ -1,0 +1,109 @@
+@import "../../../styles/breakpoints";
+@import "../../../styles/variables";
+
+.list-item {
+  flex-grow: 1;
+  position: relative;
+
+  min-height: calc(50vh);
+  height: 100%;
+  display: flex;
+
+  overflow-y: hidden;
+  overflow-x: visible;
+
+  border-radius: $border-radius--wide;
+  box-shadow: $box-shadow--wide;
+
+  @include media-breakpoint-down(md) {
+    flex-direction: column;
+  }
+
+  .list, .detail {
+    position: absolute;
+    height: 100%;
+
+    @include media-breakpoint-down(md) {
+      position: relative;
+    }
+  }
+
+  .list {
+    width: 40%;
+    max-width: 800px;
+    left: 0;
+
+    &-inner {
+      height: 100%;
+      overflow-y: scroll;
+      scroll-behavior: smooth;
+      position: relative;
+    }
+
+    &::before, &::after {
+      position: absolute;
+      content: '';
+      height: $item-gap;
+      width: 100%;
+      left: 0;
+      z-index: 1;
+    }
+
+    &::before {
+      top: 0;
+      background: linear-gradient($body-bg, rgba($body-bg, 0));
+    }
+
+    &::after {
+      bottom: 0;
+      background: linear-gradient(rgba($body-bg, 0), $body-bg);
+    }
+
+    @include media-breakpoint-down(md) {
+      height: 600px;
+      width: 100%;
+      max-width: none;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  .detail {
+    width: 60%;
+    min-width: calc(100% - 800px);
+    right: 0;
+    z-index: 2;
+
+    &-inner {
+      background: $white;
+      box-shadow: $box-shadow--wide;
+
+      border-top-left-radius: $border-radius--wide;
+      border-bottom-left-radius: $border-radius--wide;
+
+      height: 100%;
+      overflow-y: scroll;
+
+      &.aligned-top {
+        border-top-left-radius: 0;
+      }
+
+      &.aligned-bottom {
+        border-bottom-left-radius: 0;
+      }
+    }
+
+    @include media-breakpoint-down(md) {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+}
+
+:host {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}

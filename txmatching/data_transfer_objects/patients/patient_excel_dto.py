@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 
-from txmatching.patients.patient_parameters import PatientParameters
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
+    PatientParametersDTO
 
 
 @dataclass
 class PatientExcelDTO:
     medical_id: str
-    parameters: PatientParameters
+    parameters: PatientParametersDTO

@@ -1,0 +1,24 @@
+.patients {
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  ::ng-deep .list-item {
+    .list {
+      width: 30% !important;
+    }
+
+    .detail {
+      width: 70% !important;
+    }
+  }
+}
+
+:host {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}

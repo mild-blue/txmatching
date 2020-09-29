@@ -1,5 +1,3 @@
-<app-header [user]="user"></app-header>
-
 <section class="home">
   <app-container>
     <div class="home-header">
@@ -8,7 +6,7 @@
         <app-count *ngIf="!loading" [count]="matchings.length"></app-count>
       </h1>
       <button (click)="toggleConfiguration()"
-              *ngIf="!loading && configuration && patients"
+              *ngIf="showConfiguration"
               class="config">
         Configure
         <fa-icon [icon]="configIcon"></fa-icon>
@@ -17,7 +15,7 @@
   </app-container>
 
   <app-configuration (configClosed)="toggleConfiguration()"
-                     *ngIf="configuration"
+                     *ngIf="showConfiguration"
                      [configuration]="configuration"
                      [isOpened]="configOpened"
                      [patients]="patients"
@@ -26,10 +24,12 @@
 
   <app-content>
     <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>
-    <app-matchings-explorer *ngIf="!loading && matchings.length > 0"
-                            [matchings]="matchings"
-                            [configuration]="appConfiguration"
-                            [patients]="patients"></app-matchings-explorer>
+    <app-item-list *ngIf="!loading && matchings.length"
+                   [listItemDetailComponent]="listItemDetailComponent"
+                   [listItemComponent]="listItemComponent"
+                   [items]="matchings"
+                   [configuration]="appConfiguration"
+                   [patients]="patients"></app-item-list>
   </app-content>
 
 </section>
