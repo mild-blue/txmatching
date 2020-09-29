@@ -52,7 +52,7 @@ DonorModel = patient_api.model('Donor model', {
     'related_recipient_db_id': fields.Integer(required=False, description='Database id of the related recipient'),
 })
 
-RecipientModel = patient_api.model('Recipient model', {
+RecipientModel = patient_api.model('RecipientModel', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(enum=BLOOD_TYPES)),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
@@ -78,11 +78,11 @@ HLATypeToUpdate = patient_api.model('HlaTypeToUpdate', {
     'raw_code': fields.String(required=True),
 })
 
-HLATypingToUpdate = patient_api.model('HlaTyping', {
+HLATypingToUpdate = patient_api.model('HlaTypingToUpdate', {
     'hla_types_list': fields.List(required=True, cls_or_instance=fields.Nested(HLATypeToUpdate)),
 })
 
-HLAAntibodiesToUpdate = patient_api.model('HlaAntibodies', {
+HLAAntibodiesToUpdate = patient_api.model('HlaAntibodiesToUpdate', {
     'hla_antibodies_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAAntibodyToUpdate)),
 })
 
