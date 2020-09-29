@@ -325,11 +325,6 @@ def _donor_upload_dto_to_donor_model(
     return donor_model
 
 
-def get_recipient_by_medical_id(recipient_models: List[RecipientModel], medical_id: str):
-    result = list(filter(lambda recipient_model: recipient_model.medical_id == medical_id, recipient_models))
-    return None if len(result) == 0 else result[0]
-
-
 def _save_patients_to_existing_txm_event(
         donors: List[DonorUploadDTO],
         recipients: List[RecipientUploadDTO],
