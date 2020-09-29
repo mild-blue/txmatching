@@ -97,15 +97,20 @@ export class MatchingTransplantComponent implements OnInit {
 
     const donorAntigensCodes = this.transplant.d.parameters.hla_typing.hla_types_list.map(a => a.raw_code);
     const recipientAntigensCodes = this.transplant.r.parameters.hla_typing.hla_types_list.map(a => a.raw_code);
+    const recipientAntibodiesCodes = this.transplant.r.hla_antibodies.hla_antibodies_list.map(a => a.raw_code);
     const matchingAntigens = donorAntigensCodes.filter(a => recipientAntigensCodes.includes(a));
-
-    if (!matchingAntigens.length) {
-      return;
-    }
+    const matchingAntibodies = recipientAntibodiesCodes.filter(a => donorAntigensCodes.includes(a));
 
     const map: Map<string, number> = new Map<string, number>();
     for (const prefix of this.prefixes) {
-      const score = matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix];
+      const prefixBadMatch = matchingAntibodies.length ? matchingAntibodies.filter(a => a.startsWith(prefix)).length : false;
+
+      if (prefixBadMatch) {
+        map.set(prefix, -1);
+        continue;
+      }
+
+      const score = matchingAntigens ? matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix] : 0;
       map.set(prefix, score);
     }
 
