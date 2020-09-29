@@ -22,7 +22,7 @@
         <mat-chip *ngFor="let code of selected"
                   (removed)="remove(code)"
                   [removable]="true">
-          {{code.raw_code}}
+          {{code.code}}
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input #antigensInput
@@ -36,7 +36,7 @@
       </mat-chip-list>
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addAntigen($event.option.value, antigensInput)">
         <mat-option *ngFor="let code of filtered | async" [value]="code">
-          {{code.raw_code}}
+          {{code.code}}
         </mat-option>
       </mat-autocomplete>
       <mat-hint>

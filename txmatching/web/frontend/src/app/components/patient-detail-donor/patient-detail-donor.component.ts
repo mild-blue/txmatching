@@ -33,7 +33,7 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
     this.filtered = this.inputControl.valueChanges.pipe(
       startWith(''),
       map((value: string | Antigen) => {
-        return !value || typeof value === 'string' ? value : value.raw_code;
+        return !value || typeof value === 'string' ? value : value.code;
       }),
       map(code => code ? hlaFullTextSearch(this.available, code) : this.available.slice())
     );
@@ -48,8 +48,8 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
   }
 
   get available(): Antigen[] {
-    const selectedAntigensCodes = [...new Set(this.selected.map(antigen => antigen.raw_code))];
-    return this.allAntigens.filter(a => !selectedAntigensCodes.includes(a.raw_code));
+    const selectedAntigensCodes = [...new Set(this.selected.map(antigen => antigen.code))];
+    return this.allAntigens.filter(a => !selectedAntigensCodes.includes(a.code));
   }
 
   public addNewAntigen(code: string, control: HTMLInputElement): void {
@@ -58,7 +58,7 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
     }
 
     const formattedCode = code.trim().toUpperCase();
-    this.item.parameters.hla_typing.hla_types_list.push({ raw_code: formattedCode });
+    this.item.parameters.hla_typing.hla_types_list.push({ code: formattedCode, raw_code: formattedCode });
 
     // reset input
     this.inputControl.reset();
@@ -114,8 +114,8 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
       allAntigens.push(...d.parameters.hla_typing.hla_types_list);
     }
 
-    this.allAntigens = [...new Set(allAntigens.map(a => a.raw_code))].map(code => {
-      return { raw_code: code };
+    this.allAntigens = [...new Set(allAntigens.map(a => a.code))].map(code => {
+      return { code: code, raw_code: code };
     }); // only unique
   }
 }

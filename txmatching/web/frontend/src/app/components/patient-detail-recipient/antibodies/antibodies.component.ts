@@ -35,7 +35,7 @@ export class AntibodiesComponent implements OnInit {
     this.filteredAntibodies = this.form.controls.antibody.valueChanges.pipe(
       startWith(''),
       map((value: string | Antibody) => {
-        return !value || typeof value === 'string' ? value : value.raw_code;
+        return !value || typeof value === 'string' ? value : value.code;
       }),
       map(code => code ? hlaFullTextSearch(this.availableAntibodies, code) : this.availableAntibodies.slice())
     );
@@ -50,7 +50,7 @@ export class AntibodiesComponent implements OnInit {
   }
 
   get availableAntibodies(): Antibody[] {
-    return this.allAntibodies.filter(a => !this.selectedAntibodies.map(i => i.raw_code).includes(a.raw_code));
+    return this.allAntibodies.filter(a => !this.selectedAntibodies.map(i => i.code).includes(a.code));
   }
 
   public addAntibody(control: HTMLInputElement): void {
@@ -60,9 +60,11 @@ export class AntibodiesComponent implements OnInit {
 
     const { antibody, mfi } = this.form.value;
     const code = antibody instanceof Object ? antibody.code : antibody;
+    const formattedCode = code.trim().toUpperCase();
 
     this.recipient.hla_antibodies.hla_antibodies_list.push({
-      raw_code: code,
+      code: formattedCode,
+      raw_code: formattedCode,
       mfi
     });
 
@@ -94,7 +96,7 @@ export class AntibodiesComponent implements OnInit {
     if (!control) {
       return;
     }
-    this.antibodyValue = antibody.raw_code;
+    this.antibodyValue = antibody.code;
     control.value = '';
     control.disabled = true;
   }
@@ -113,13 +115,13 @@ export class AntibodiesComponent implements OnInit {
     if (!value.length) {
       return;
     }
-    this.antibodyValue = value;
+    this.antibodyValue = value.trim().toUpperCase();
     control.value = '';
     control.disabled = true;
   }
 
   public displayFn(a: Antibody): string {
-    return a?.raw_code ?? '';
+    return a?.code ?? '';
   }
 
   private _initAntibodies(): void {
