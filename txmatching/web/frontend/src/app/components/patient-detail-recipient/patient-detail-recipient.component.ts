@@ -37,7 +37,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     this.filteredAntigensCodes = this.form.controls.antigens.valueChanges.pipe(
       startWith(''),
       map((value: string | Antigen) => {
-        return !value || typeof value === 'string' ? value : value.raw_code;
+        return !value || typeof value === 'string' ? value : value.code;
       }),
       map(code => code ? hlaFullTextSearch(this.availableAntigens, code) : this.availableAntigens.slice())
     );
@@ -52,8 +52,8 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
   }
 
   get availableAntigens(): Antigen[] {
-    const selectedAntigensCodes = [...new Set(this.selectedAntigens.map(antigen => antigen.raw_code))];
-    return this.allAntigens.filter(a => !selectedAntigensCodes.includes(a.raw_code));
+    const selectedAntigensCodes = [...new Set(this.selectedAntigens.map(antigen => antigen.code))];
+    return this.allAntigens.filter(a => !selectedAntigensCodes.includes(a.code));
   }
 
   public addAntigen(a: Antigen, control: HTMLInputElement): void {
@@ -74,7 +74,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     }
 
     const formattedCode = code.trim().toUpperCase();
-    this.item.parameters.hla_typing.hla_types_list.push({ raw_code: formattedCode });
+    this.item.parameters.hla_typing.hla_types_list.push({ code: formattedCode, raw_code: formattedCode });
 
     // reset input
     this.form.controls.antigens.reset();
@@ -118,12 +118,11 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
 
     const allAntigens = [];
     for (const r of this.patients.recipients) {
-
       allAntigens.push(...r.parameters.hla_typing.hla_types_list);
     }
 
-    this.allAntigens = [...new Set(allAntigens.map(a => a.raw_code))].map(code => {
-      return { raw_code: code };
+    this.allAntigens = [...new Set(allAntigens.map(a => a.code))].map(code => {
+      return { code, raw_code: code };
     }); // only unique
   }
 }

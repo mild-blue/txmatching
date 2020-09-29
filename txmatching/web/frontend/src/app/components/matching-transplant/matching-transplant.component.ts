@@ -37,14 +37,14 @@ export class MatchingTransplantComponent implements OnInit {
   }
 
   public filterCodes(codes: Hla[], prefix: string): Hla[] {
-    return codes.filter(code => code.raw_code.startsWith(prefix));
+    return codes.filter(code => code.code.startsWith(prefix));
   }
 
   public otherHLA(codes: Hla[]): Hla[] {
     // return codes that do not start with any of prefixes
     return codes.filter(i => {
       for (const prefix of this.prefixes) {
-        if (i.raw_code.startsWith(prefix)) {
+        if (i.code.startsWith(prefix)) {
           return false;
         }
       }
@@ -57,12 +57,12 @@ export class MatchingTransplantComponent implements OnInit {
       return '';
     }
 
-    if (this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.raw_code === code)) {
+    if (this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.code === code)) {
       // donor antigen matches some recipient antibody
       return 'bad-matching';
     }
 
-    if (this.transplant.r.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)) {
+    if (this.transplant.r.parameters.hla_typing.hla_types_list.find(a => a.code === code)) {
       // donor antigen matches some recipient antigen
       return 'matching';
     }
@@ -72,8 +72,8 @@ export class MatchingTransplantComponent implements OnInit {
 
   public getRecipientAntigenClass(code: string): string {
     if (this.transplant?.d && this.transplant.r
-      && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)
-      && !this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.raw_code === code)) {
+      && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.code === code)
+      && !this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.code === code)) {
       // recipient antigen matches some donor antigen
       // and code is not recipient antibody
       return 'matching';
@@ -82,7 +82,7 @@ export class MatchingTransplantComponent implements OnInit {
   }
 
   public getRecipientAntibodyClass(code: string): string {
-    if (this.transplant?.d && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.raw_code === code)) {
+    if (this.transplant?.d && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.code === code)) {
       // recipient antibody matches some donor antigen
       return 'bad-matching';
     }
@@ -95,9 +95,9 @@ export class MatchingTransplantComponent implements OnInit {
       return;
     }
 
-    const donorAntigensCodes = this.transplant.d.parameters.hla_typing.hla_types_list.map(a => a.raw_code);
-    const recipientAntigensCodes = this.transplant.r.parameters.hla_typing.hla_types_list.map(a => a.raw_code);
-    const recipientAntibodiesCodes = this.transplant.r.hla_antibodies.hla_antibodies_list.map(a => a.raw_code);
+    const donorAntigensCodes = this.transplant.d.parameters.hla_typing.hla_types_list.map(a => a.code);
+    const recipientAntigensCodes = this.transplant.r.parameters.hla_typing.hla_types_list.map(a => a.code);
+    const recipientAntibodiesCodes = this.transplant.r.hla_antibodies.hla_antibodies_list.map(a => a.code);
     const matchingAntigens = donorAntigensCodes.filter(a => recipientAntigensCodes.includes(a));
     const matchingAntibodies = recipientAntibodiesCodes.filter(a => donorAntigensCodes.includes(a));
 
@@ -130,9 +130,9 @@ export class MatchingTransplantComponent implements OnInit {
     }
 
     // check if there is a match of recipient antibodies and donor antigens
-    const donorAntigensCodes = this.transplant.d.parameters.hla_typing.hla_types_list.map(a => a.raw_code);
+    const donorAntigensCodes = this.transplant.d.parameters.hla_typing.hla_types_list.map(a => a.code);
     for (const antibody of this.transplant.r.hla_antibodies.hla_antibodies_list) {
-      if (donorAntigensCodes.includes(antibody.raw_code)) {
+      if (donorAntigensCodes.includes(antibody.code)) {
         this.totalScore = -1;
         return;
       }

@@ -44,7 +44,7 @@
         <mat-chip *ngFor="let a of selectedAntigens"
                   (removed)="removeAntigen(a)"
                   [removable]="true">
-          {{a.raw_code}}
+          {{a.code}}
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input #antigensInput
@@ -58,7 +58,7 @@
       </mat-chip-list>
       <mat-autocomplete #antigensAuto (optionSelected)="addAntigen($event.option.value, antigensInput)">
         <mat-option *ngFor="let a of filteredAntigensCodes | async" [value]="a">
-          {{a.raw_code}}
+          {{a.code}}
         </mat-option>
       </mat-autocomplete>
       <mat-hint>

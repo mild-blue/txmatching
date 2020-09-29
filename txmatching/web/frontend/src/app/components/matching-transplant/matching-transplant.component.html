@@ -49,15 +49,15 @@
         <td>{{prefix}}</td>
         <td>
           <app-code *ngFor="let code of filterCodes(transplant.d.parameters.hla_typing.hla_types_list, prefix)"
-                    [class]="getDonorAntigenClass(code.raw_code)">{{ code.raw_code }}</app-code>
+                    [class]="getDonorAntigenClass(code.code)">{{ code.code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let code of filterCodes(transplant.r.parameters.hla_typing.hla_types_list, prefix)"
-                    [class]="getRecipientAntigenClass(code.raw_code)">{{ code.raw_code }}</app-code>
+                    [class]="getRecipientAntigenClass(code.code)">{{ code.code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let code of filterCodes(transplant.r.hla_antibodies.hla_antibodies_list, prefix)"
-                    [class]="getRecipientAntibodyClass(code.raw_code)">{{ code.raw_code }}</app-code>
+                    [class]="getRecipientAntibodyClass(code.code)">{{ code.code }}</app-code>
         </td>
         <td>{{ hlaScores ? hlaScores.get(prefix) : 0 }}</td>
       </tr>
@@ -65,15 +65,15 @@
         <td>Other</td>
         <td>
           <app-code *ngFor="let code of otherHLA(transplant.d.parameters.hla_typing.hla_types_list)"
-                    [class]="getDonorAntigenClass(code.raw_code)">{{ code.raw_code }}</app-code>
+                    [class]="getDonorAntigenClass(code.code)">{{ code.code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let code of otherHLA(transplant.r.parameters.hla_typing.hla_types_list)"
-                    [class]="getRecipientAntigenClass(code.raw_code)">{{ code.raw_code }}</app-code>
+                    [class]="getRecipientAntigenClass(code.code)">{{ code.code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let code of otherHLA(transplant.r.hla_antibodies.hla_antibodies_list)"
-                    [class]="getRecipientAntibodyClass(code.raw_code)">{{ code.raw_code }}</app-code>
+                    [class]="getRecipientAntibodyClass(code.code)">{{ code.code }}</app-code>
         </td>
         <td>-</td>
       </tr>
