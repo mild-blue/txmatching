@@ -41,4 +41,16 @@
     justify-content: center;
     align-items: center;
   }
+
+  .key {
+    background: $gray-200;
+    font-family: monospace;
+    border-radius: 3px;
+    padding: 2px 5px;
+    display: inline-block;
+
+    mat-icon {
+      vertical-align: -2px;
+    }
+  }
 }
