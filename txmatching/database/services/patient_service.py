@@ -293,7 +293,7 @@ def _donor_upload_dto_to_donor_model(
         if donor_dto.donor_type != DonorType.DONOR:
             raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
     else:
-        if donor_dto.donor_type != DonorType.BRIDGING_DONOR or donor_dto.donor_type != DonorType.NON_DIRECTED:
+        if donor_dto.donor_type != DonorType.BRIDGING_DONOR and donor_dto.donor_type != DonorType.NON_DIRECTED:
             raise InvalidArgumentException(
                 f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" '
                 f'or "{DonorType.NON_DIRECTED}".')
@@ -325,6 +325,11 @@ def _donor_upload_dto_to_donor_model(
     return donor_model
 
 
+def get_recipient_by_medical_id(recipient_models: List[RecipientModel], medical_id: str):
+    result = list(filter(lambda recipient_model: recipient_model.medical_id == medical_id, recipient_models))
+    return None if len(result) == 0 else result[0]
+
+
 def _save_patients_to_existing_txm_event(
         donors: List[DonorUploadDTO],
         recipients: List[RecipientUploadDTO],
@@ -348,14 +353,21 @@ def _save_patients_to_existing_txm_event(
         raise InvalidArgumentException(f'Txm event "{txm_event_name}" is not empty, cannot send patients to database.')
 
     txm_event_db_id = txm_event.id
-    maybe_recipient_models = [_recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
-                              if recipient else None for recipient in recipients]
-    recipient_models = [recipient_model for recipient_model in maybe_recipient_models if recipient_model]
+    recipient_models = [
+        _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
+        for recipient in recipients
+    ]
     db.session.add_all(recipient_models)
 
-    donor_models = [_donor_upload_dto_to_donor_model(donor_dto, maybe_recipient_model, country_code, txm_event_db_id)
-                    for
-                    donor_dto, maybe_recipient_model in zip(donors, maybe_recipient_models)]
+    recipient_models_dict = {recipient_model.medical_id: recipient_model for recipient_model in recipient_models}
+
+    donor_models = [
+        _donor_upload_dto_to_donor_model(
+            donor,
+            recipient_models_dict.get(donor.related_recipient_medical_id, None),
+            country_code, txm_event_db_id)
+        for donor in donors
+    ]
     db.session.add_all(donor_models)
 
 

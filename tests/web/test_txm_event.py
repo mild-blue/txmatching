@@ -44,12 +44,25 @@ DONORS = [
         'hla_typing': [
             'A9', 'A21'
         ],
-        'donor_type': DonorType.DONOR.value,
+        'donor_type': DonorType.NON_DIRECTED.value,
         'sex': 'M',
         'height': 146,
         'weight': 89,
         'yob': 1960
-    }
+    },
+    {
+        'medical_id': 'D4',
+        'blood_group': 'AB',
+        'hla_typing': [
+            'A9'
+        ],
+        'donor_type': DonorType.DONOR.value,
+        'related_recipient_medical_id': 'R3',
+        'sex': 'M',
+        'height': 145,
+        'weight': 56,
+        'yob': 1989
+    },
 ]
 
 RECIPIENTS = [
@@ -117,7 +130,7 @@ RECIPIENTS = [
                 'cutoff': 2300
             }
         ],
-        'sex': 'F',
+        'sex': 'M',
         'height': 201,
         'weight': 120,
         'yob': 1999,
@@ -178,9 +191,9 @@ class TestMatchingApi(DbTests):
 
         self.assertEqual(txm_name, txm_event.name)
         self.assertEqual(3, len(RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event.db_id).all()))
-        self.assertEqual(3, len(DonorModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()))
+        self.assertEqual(4, len(DonorModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()))
         self.assertEqual(3, res.json['recipients_uploaded'])
-        self.assertEqual(3, res.json['donors_uploaded'])
+        self.assertEqual(4, res.json['donors_uploaded'])
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         self.fill_db_with_patients_and_results()
@@ -330,7 +343,7 @@ class TestMatchingApi(DbTests):
             self.assertEqual('application/json', res.content_type)
             self.assertEqual('When recipient is set, donor type must be "DONOR".', res.json['message'])
 
-        # Case 2 - None recipient, BRIDGING_DONOR or NON_DIRECTED type expected
+        # Case 2 - None recipient, BRIDGING_DONOR or NON_DIRECTED type expected (related_recipient_medical_id is not set)
         upload_patients = {
             'country': Country.CZE.value,
             'txm_event_name': txm_name,
@@ -341,15 +354,39 @@ class TestMatchingApi(DbTests):
                     'hla_typing': [
                         'A9', 'A21'
                     ],
-                    'donor_type': DonorType.NON_DIRECTED.value,
-                    'related_recipient_medical_id': 'R1',
+                    'donor_type': DonorType.DONOR.value,
                     'sex': 'M',
                     'height': 180,
                     'weight': 90,
                     'yob': 1965
                 }
             ],
-            'recipients': [None]
+            'recipients': [
+                {
+                    'acceptable_blood_groups': [
+                        'A',
+                        '0'
+                    ],
+                    'medical_id': 'R2',
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A9', 'A21'
+                    ],
+                    'hla_antibodies': [
+                        {
+                            'name': 'B43',
+                            'mfi': 2000,
+                            'cutoff': 2100
+                        }
+                    ],
+                    'sex': 'F',
+                    'height': 150,
+                    'weight': 65,
+                    'yob': 2001,
+                    'waiting_since': '2020-01-06',
+                    'previous_transplants': 0
+                }
+            ]
         }
 
         self.login_with_role(UserRole.SERVICE)
@@ -434,7 +471,7 @@ class TestMatchingApi(DbTests):
 
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
-            self.assertEqual('Donor requires recipient medical id "R1", but received "R2".', res.json['message'])
+            self.assertEqual('When recipient is not set, donor type must be "BRIDGING_DONOR" or "NON_DIRECTED".', res.json['message'])
 
     def test_txm_event_patient_failed_upload_duplicate_related_recipient_medical_id_in_donors(self):
         self.fill_db_with_patients_and_results()
