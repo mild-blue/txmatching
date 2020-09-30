@@ -47,7 +47,7 @@ class TxmEventApi(Resource):
     def put(self):
         tmx_event = from_dict(data_class=TxmEventDTOIn, data=request.json)
         created_event = create_txm_event(tmx_event.name)
-        return jsonify(TxmEventDTOOut(name=created_event.name, db_id=created_event.db_id))
+        return jsonify(TxmEventDTOOut(name=created_event.name))
 
 
 @txm_event_api.route('/patients', methods=['PUT'])

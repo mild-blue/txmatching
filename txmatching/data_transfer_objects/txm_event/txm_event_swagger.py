@@ -17,8 +17,7 @@ TxmEventJsonIn = txm_event_api.model('NewTxmEvent', {
 })
 
 TxmEventJsonOut = txm_event_api.model('TxmEvent', {
-    'name': fields.String(required=True),
-    'db_id': fields.Integer(required=True),
+    'name': fields.String(required=True)
 })
 
 HlaAntibodiesJson = txm_event_api.model('HLAAntibodies', {
