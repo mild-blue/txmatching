@@ -134,6 +134,8 @@ export class AntibodiesComponent implements OnInit {
       allAntibodies.push(...r.hla_antibodies.hla_antibodies_list);
     }
 
-    this.allAntibodies = [...new Set(allAntibodies)]; // only unique
+    this.allAntibodies = [...new Set(allAntibodies.map(a => a.code))].map(code => {
+      return { code, raw_code: code, mfi: 0 };
+    }); // only unique
   }
 }
