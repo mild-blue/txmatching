@@ -153,13 +153,13 @@ class TestMatchingApi(DbTests):
 
         # Successful creation
         with self.app.test_client() as client:
-            res = client.put(
+            res = client.post(
                 f'/{TXM_EVENT_NAMESPACE}',
                 headers=self.auth_headers,
                 json=TxmEventDTOIn(name=txm_name).__dict__
             )
 
-            self.assertEqual(200, res.status_code)
+            self.assertEqual(201, res.status_code)
             self.assertEqual("application/json", res.content_type)
             self.assertIsNotNone(res.json)
             self.assertEqual(txm_name, res.json['name'])
@@ -170,7 +170,7 @@ class TestMatchingApi(DbTests):
 
         # Duplicate creation
         with self.app.test_client() as client:
-            res = client.put(
+            res = client.post(
                 f'/{TXM_EVENT_NAMESPACE}',
                 headers=self.auth_headers,
                 json=TxmEventDTOIn(name=txm_name).__dict__
@@ -191,7 +191,7 @@ class TestMatchingApi(DbTests):
         self.login_with_role(UserRole.VIEWER)
 
         with self.app.test_client() as client:
-            res = client.put(
+            res = client.post(
                 f'/{TXM_EVENT_NAMESPACE}',
                 headers=self.auth_headers,
                 json=TxmEventDTOIn(name=txm_name).__dict__
@@ -205,7 +205,7 @@ class TestMatchingApi(DbTests):
         self.login_with_role(UserRole.VIEWER)
 
         with self.app.test_client() as client:
-            res = client.put(
+            res = client.post(
                 f'/{TXM_EVENT_NAMESPACE}',
                 headers=self.auth_headers,
                 json=TxmEventDTOIn(name=txm_name).__dict__

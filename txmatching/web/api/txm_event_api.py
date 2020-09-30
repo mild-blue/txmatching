@@ -5,7 +5,7 @@ import logging
 from enum import Enum
 
 from dacite import from_dict, Config
-from flask import request, jsonify
+from flask import request, jsonify, make_response
 from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_role
@@ -25,7 +25,7 @@ from txmatching.web.api.namespaces import txm_event_api
 logger = logging.getLogger(__name__)
 
 
-@txm_event_api.route('', methods=['PUT'])
+@txm_event_api.route('', methods=['POST'])
 class TxmEventApi(Resource):
 
     @txm_event_api.doc(
@@ -35,7 +35,7 @@ class TxmEventApi(Resource):
                         The ADMIN should specify TXM event name.'
     )
     @txm_event_api.response(
-        code=200,
+        code=201,
         model=TxmEventJsonOut,
         description='Returns the newly created TXM event object.'
     )
@@ -44,10 +44,10 @@ class TxmEventApi(Resource):
     @txm_event_api.response(code=409, model=FailJson, description='Non-unique patients provided.')
     @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details.')
     @require_role(UserRole.ADMIN)
-    def put(self):
+    def post(self):
         tmx_event = from_dict(data_class=TxmEventDTOIn, data=request.json)
         created_event = create_txm_event(tmx_event.name)
-        return jsonify(TxmEventDTOOut(name=created_event.name))
+        return make_response(jsonify(TxmEventDTOOut(name=created_event.name)), 201)
 
 
 @txm_event_api.route('/patients', methods=['PUT'])
