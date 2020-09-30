@@ -12,25 +12,28 @@ from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
 from txmatching.data_transfer_objects.patients.donor_update_dto import \
     DonorUpdateDTO
-from txmatching.data_transfer_objects.patients.donor_upload_dto import DonorUploadDTO
-from txmatching.data_transfer_objects.patients.patient_upload_dto import PatientUploadDTO
+from txmatching.data_transfer_objects.patients.donor_upload_dto import \
+    DonorUploadDTO
+from txmatching.data_transfer_objects.patients.patient_upload_dto import \
+    PatientUploadDTO
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.data_transfer_objects.patients.recipient_update_dto import \
     RecipientUpdateDTO
-from txmatching.data_transfer_objects.patients.recipient_upload_dto import RecipientUploadDTO
+from txmatching.data_transfer_objects.patients.recipient_upload_dto import \
+    RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import \
-    get_newest_txm_event_db_id, remove_donors_and_recipients_from_txm_event
+    remove_donors_and_recipients_from_txm_event
 from txmatching.database.sql_alchemy_schema import (
-    ConfigModel, DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel, TxmEventModel
-)
-from txmatching.patients.patient import (
-    Donor, DonorType, Patient, Recipient, RecipientRequirements, TxmEvent, calculate_cutoff
-)
-from txmatching.patients.patient_parameters import (
-    HLAAntibodies, HLAAntibody, HLATyping, PatientParameters
-)
+    ConfigModel, DonorModel, RecipientAcceptableBloodModel,
+    RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
+from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
+                                         RecipientRequirements, TxmEvent,
+                                         calculate_cutoff)
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
+                                                    HLATyping,
+                                                    PatientParameters)
 from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.hla_table import parse_code
 
@@ -149,10 +152,11 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      )
 
 
-def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> Recipient:
+def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
     # TODO do not delete https://trello.com/c/zseK1Zcf
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
-    txm_event_db_id = old_recipient_model.txm_event_id
+    if txm_event_db_id != old_recipient_model.txm_event_id:
+        raise InvalidArgumentException('Trying to update patient the user has no access to')
     ConfigModel.query.filter(
         and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
 
@@ -197,11 +201,13 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> Recipient:
     return _get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id))
 
 
-def update_donor(donor_update_dto: DonorUpdateDTO) -> Donor:
+def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
     # TODO do not delete https://trello.com/c/zseK1Zcf
-    old_donor = DonorModel.query.get(donor_update_dto.db_id)
+    old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
+    if txm_event_db_id != old_donor_model.txm_event_id:
+        raise InvalidArgumentException('Trying to update patient the user has no access to')
     ConfigModel.query.filter(
-        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == old_donor.txm_event_id)).delete()
+        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
 
     donor_update_dict = {}
     if donor_update_dto.hla_typing:
@@ -211,9 +217,7 @@ def update_donor(donor_update_dto: DonorUpdateDTO) -> Donor:
     return _get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
 
 
-def get_txm_event(txm_event_db_id: Optional[int] = None) -> TxmEvent:
-    if not txm_event_db_id:
-        txm_event_db_id = get_newest_txm_event_db_id()
+def get_txm_event(txm_event_db_id: int) -> TxmEvent:
     txm_event_model = TxmEventModel.query.get(txm_event_db_id)
 
     active_donors = txm_event_model.donors
@@ -359,7 +363,7 @@ def _save_patients_to_existing_txm_event(
 
     donor_models = [
         _donor_upload_dto_to_donor_model(
-            donor= donor,
+            donor=donor,
             related_recipient=recipient_models_dict.get(donor.related_recipient_medical_id, None),
             country_code=country_code,
             txm_event_db_id=txm_event_db_id)

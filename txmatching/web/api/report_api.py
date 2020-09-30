@@ -23,6 +23,7 @@ from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.patients.patient_parameters import HLAAntibodies
 from txmatching.utils.blood_groups import ANTIBODIES_MULTIPLIERS_STR, HLATypes
+from txmatching.utils.logged_user import get_current_user
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -56,12 +57,14 @@ class Report(Resource):
     @require_user_login()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
+        current_user = get_current_user()
         matching_id = int(request.view_args['matching_id'])
         if request.args.get('matchingRangeLimit') is None or request.args.get('matchingRangeLimit') == '':
             abort(400, "Query argument 'matchingRangeLimit' must be set.")
 
         matching_range_limit = int(request.args.get('matchingRangeLimit'))
-        (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix()
+        (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(
+            current_user.default_txm_event_id)
 
         requested_matching = list(filter(lambda matching: matching.db_id() == matching_id, all_matchings))
         if len(requested_matching) == 0:
@@ -95,7 +98,7 @@ class Report(Resource):
         ) for matching in matchings
         ]
 
-        configuration = get_current_configuration()
+        configuration = get_current_configuration(txm_event_db_id=current_user.default_txm_event_id)
 
         Report.prepare_tmp_dir()
         Report.prune_old_reports()

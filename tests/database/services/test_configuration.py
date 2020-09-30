@@ -3,17 +3,18 @@ from txmatching.configuration.configuration import (
     Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore)
 from txmatching.database.services.config_service import (
     configuration_from_dict, get_current_configuration,
-    save_configuration_as_current)
+    save_configuration_to_db)
 from txmatching.utils.enums import Country
 
 
 class TestConfiguration(DbTests):
     def test_configuration(self):
-        self.fill_db_with_patients_and_results()
-        save_configuration_as_current(
-            Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
-        )
-        configuration = get_current_configuration()
+        txm_event_db_id = self.fill_db_with_patients_and_results()
+        configuration = Configuration(
+            forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
+        save_configuration_to_db(configuration, txm_event_db_id)
+
+        configuration = get_current_configuration(txm_event_db_id)
         self.assertEqual(Country.CZE, configuration.forbidden_country_combinations[0].donor_country)
 
     def test_configuration_from_dto(self):

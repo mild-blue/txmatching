@@ -53,23 +53,6 @@ $BODY$
     LANGUAGE plpgsql;
 
 
-CREATE TABLE app_user
-(
-    id                     BIGSERIAL   NOT NULL,
-    email                  TEXT        NOT NULL, -- serves as username
-    pass_hash              TEXT        NOT NULL,
-    role                   USER_ROLE   NOT NULL,
-    second_factor_material TEXT        NOT NULL,
-    phone_number           TEXT,
-    require_2fa            BOOLEAN     NOT NULL,
-    created_at             TIMESTAMPTZ NOT NULL,
-    updated_at             TIMESTAMPTZ NOT NULL,
-    deleted_at             TIMESTAMPTZ,
-    CONSTRAINT pk_app_user_id PRIMARY KEY (id),
-    CONSTRAINT uq_app_user_email UNIQUE (email)
-);
-
-
 CREATE TABLE txm_event
 (
     id         BIGSERIAL   NOT NULL,
@@ -79,6 +62,24 @@ CREATE TABLE txm_event
     deleted_at TIMESTAMPTZ,
     CONSTRAINT pk_txm_event_id PRIMARY KEY (id),
     CONSTRAINT uq_txm_event_name UNIQUE (name)
+);
+
+CREATE TABLE app_user
+(
+    id                     BIGSERIAL   NOT NULL,
+    email                  TEXT        NOT NULL, -- serves as username
+    pass_hash              TEXT        NOT NULL,
+    role                   USER_ROLE   NOT NULL,
+    second_factor_material TEXT        NOT NULL,
+    phone_number           TEXT,
+    require_2fa            BOOLEAN     NOT NULL,
+    default_txm_event_id    BIGINT,
+    created_at             TIMESTAMPTZ NOT NULL,
+    updated_at             TIMESTAMPTZ NOT NULL,
+    deleted_at             TIMESTAMPTZ,
+    CONSTRAINT pk_app_user_id PRIMARY KEY (id),
+    CONSTRAINT uq_app_user_email UNIQUE (email),
+    CONSTRAINT fk_app_user_default_txm_event_id_txm_event_id FOREIGN KEY (default_txm_event_id) REFERENCES txm_event (id) on delete set null on update cascade
 );
 
 CREATE TABLE recipient

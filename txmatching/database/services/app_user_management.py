@@ -23,6 +23,7 @@ def persist_user(user: AppUserModel):
     # insert the user
     db.session.add(user)
     db.session.commit()
+    return user
 
 
 def update_password_for_user(user_id: int, new_password_hash: str):

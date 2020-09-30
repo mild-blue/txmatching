@@ -3,12 +3,15 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import get_txm_event
-from txmatching.database.services.txm_event_service import create_txm_event, \
-    get_newest_txm_event_db_id
-from txmatching.database.sql_alchemy_schema import ConfigModel, RecipientModel, PairingResultModel, DonorModel
+from txmatching.database.services.txm_event_service import (
+    create_txm_event, get_newest_txm_event_db_id)
+from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
+                                                    PairingResultModel,
+                                                    RecipientModel)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.enums import Country, Sex
-from txmatching.web import report_api, REPORTS_NAMESPACE, txm_event_api, TXM_EVENT_NAMESPACE
+from txmatching.web import (REPORTS_NAMESPACE, TXM_EVENT_NAMESPACE, report_api,
+                            txm_event_api)
 
 DONORS = [
     {
@@ -149,7 +152,7 @@ class TestMatchingApi(DbTests):
         txm_event = get_txm_event(txm_event_db_id)
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()
         self.assertEqual(2, len(txm_event.donors_dict))
-        self.assertEqual(2, len(configs))
+        self.assertEqual(1, len(configs))
         self.assertEqual(1, len(PairingResultModel.query.filter(PairingResultModel.config_id.in_(
             [config.id for config in configs])).all()))
 
@@ -186,7 +189,7 @@ class TestMatchingApi(DbTests):
             )
 
             self.assertEqual(200, res.status_code)
-            self.assertEqual("application/json", res.content_type)
+            self.assertEqual('application/json', res.content_type)
             self.assertIsNotNone(res.json)
 
         self.assertEqual(txm_name, txm_event.name)
@@ -467,7 +470,8 @@ class TestMatchingApi(DbTests):
 
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
-            self.assertEqual('When recipient is not set, donor type must be "BRIDGING_DONOR" or "NON_DIRECTED".', res.json['message'])
+            self.assertEqual('When recipient is not set, donor type must be "BRIDGING_DONOR" or "NON_DIRECTED".',
+                             res.json['message'])
 
     def test_txm_event_patient_failed_upload_duplicate_related_recipient_medical_id_in_donors(self):
         self.fill_db_with_patients_and_results()
