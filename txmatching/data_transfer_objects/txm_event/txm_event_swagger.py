@@ -63,7 +63,7 @@ RecipientJsonIn = txm_event_api.model('RecipientInput', {
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
     'YOB': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
-    'waiting_since': fields.String(required=False,
+    'waiting_since': fields.Date(required=False,
                                    example='2015-01-17',
                                    description='Date since when the patient has been on waiting list. '
                                                'Use format YYYY-MM-DD.'),
