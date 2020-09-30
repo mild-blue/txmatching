@@ -7,7 +7,7 @@ from txmatching.utils.enums import Country
 
 
 @dataclass
-class PatientUploadDTO:
+class PatientUploadDTOIn:
     country: Country
     txm_event_name: str
     donors: List[DonorUploadDTO]

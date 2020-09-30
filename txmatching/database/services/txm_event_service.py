@@ -14,7 +14,7 @@ def get_newest_txm_event_db_id() -> int:
 
 def create_txm_event(name: str) -> TxmEvent:
     if len(TxmEventModel.query.filter(TxmEventModel.name == name).all()) > 0:
-        raise ValueError(f'TXM event "{name}" already exists.')
+        raise InvalidArgumentException(f'TXM event "{name}" already exists.')
     txm_event_model = TxmEventModel(name=name)
     db.session.add(txm_event_model)
     db.session.commit()

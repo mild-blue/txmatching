@@ -1,14 +1,15 @@
-from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.data_types import UserRole
+from txmatching.data_transfer_objects.patients.txm_event_dto_in import TxmEventDTOIn
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import create_txm_event, \
     get_newest_txm_event_db_id
-from txmatching.database.sql_alchemy_schema import ConfigModel, RecipientModel, PairingResultModel, DonorModel
+from txmatching.database.sql_alchemy_schema import ConfigModel, RecipientModel, PairingResultModel, DonorModel, \
+    TxmEventModel
 from txmatching.patients.patient import DonorType
 from txmatching.utils.enums import Country, Sex
-from txmatching.web import report_api, REPORTS_NAMESPACE, txm_event_api, TXM_EVENT_NAMESPACE
+from txmatching.web import txm_event_api, TXM_EVENT_NAMESPACE
 
 DONORS = [
     {
@@ -142,25 +143,77 @@ RECIPIENTS = [
 
 class TestMatchingApi(DbTests):
 
-    def test_txm_event_creation_and_deletion(self):
+    def test_txm_event_creation_and_deletion_successful(self):
         self.fill_db_with_patients_and_results()
-        self.api.add_namespace(report_api, path=f'/{REPORTS_NAMESPACE}')
-        txm_event_db_id = get_newest_txm_event_db_id()
-        txm_event = get_txm_event(txm_event_db_id)
-        configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()
-        self.assertEqual(2, len(txm_event.donors_dict))
-        self.assertEqual(2, len(configs))
-        self.assertEqual(1, len(PairingResultModel.query.filter(PairingResultModel.config_id.in_(
-            [config.id for config in configs])).all()))
+        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
-        txm_name = 'test'
+        txm_name = 'test2'
 
-        with self.assertRaises(ValueError):
-            create_txm_event(txm_name)
-        txm_event = create_or_overwrite_txm_event(txm_name)
-        self.assertEqual(txm_name, txm_event.name)
-        self.assertEqual(0, len(RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event.db_id).all()))
-        self.assertEqual(0, len(ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()))
+        self.login_with_role(UserRole.ADMIN)
+
+        # Successful creation
+        with self.app.test_client() as client:
+            res = client.put(
+                f'/{TXM_EVENT_NAMESPACE}',
+                headers=self.auth_headers,
+                json=TxmEventDTOIn(name=txm_name).__dict__
+            )
+
+            self.assertEqual(200, res.status_code)
+            self.assertEqual("application/json", res.content_type)
+            self.assertIsNotNone(res.json)
+            self.assertEqual(txm_name, res.json['name'])
+
+        tmx_event_db = TxmEventModel.query.filter(TxmEventModel.name == txm_name).first()
+        self.assertEqual(0, len(RecipientModel.query.filter(RecipientModel.txm_event_id == tmx_event_db.id).all()))
+        self.assertEqual(0, len(ConfigModel.query.filter(ConfigModel.txm_event_id == tmx_event_db.id).all()))
+
+        # Duplicate creation
+        with self.app.test_client() as client:
+            res = client.put(
+                f'/{TXM_EVENT_NAMESPACE}',
+                headers=self.auth_headers,
+                json=TxmEventDTOIn(name=txm_name).__dict__
+            )
+
+            self.assertEqual(400, res.status_code)
+            self.assertEqual("application/json", res.content_type)
+            self.assertIsNotNone(res.json)
+            self.assertEqual('TXM event "test2" already exists.', res.json['message'])
+
+    def test_txm_event_creation_and_deletion_failure_invalid_role(self):
+        self.fill_db_with_patients_and_results()
+        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
+
+        txm_name = 'test2'
+
+        # VIEWER role
+        self.login_with_role(UserRole.VIEWER)
+
+        with self.app.test_client() as client:
+            res = client.put(
+                f'/{TXM_EVENT_NAMESPACE}',
+                headers=self.auth_headers,
+                json=TxmEventDTOIn(name=txm_name).__dict__
+            )
+
+            self.assertEqual(403, res.status_code)
+            self.assertEqual("application/json", res.content_type)
+            self.assertIsNotNone(res.json)
+
+        # SERVICE role
+        self.login_with_role(UserRole.VIEWER)
+
+        with self.app.test_client() as client:
+            res = client.put(
+                f'/{TXM_EVENT_NAMESPACE}',
+                headers=self.auth_headers,
+                json=TxmEventDTOIn(name=txm_name).__dict__
+            )
+
+            self.assertEqual(403, res.status_code)
+            self.assertEqual("application/json", res.content_type)
+            self.assertIsNotNone(res.json)
 
     def test_txm_event_patient_successful_upload(self):
         self.fill_db_with_patients_and_results()
