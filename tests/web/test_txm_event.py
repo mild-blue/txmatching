@@ -198,7 +198,6 @@ class TestMatchingApi(DbTests):
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
-        txm_event_db_id = get_newest_txm_event_db_id()
 
         upload_patients = {
             'country': Country.CZE.value,
@@ -224,7 +223,6 @@ class TestMatchingApi(DbTests):
     def test_txm_event_patient_failed_upload_invalid_waiting_since_date(self):
         self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
-        txm_event_db_id = get_newest_txm_event_db_id()
 
         txm_name = 'test'
 
@@ -278,7 +276,6 @@ class TestMatchingApi(DbTests):
     def test_txm_event_patient_failed_upload_invalid_recipient_donor_types(self):
         self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
-        txm_event_db_id = get_newest_txm_event_db_id()
 
         txm_name = 'test'
 
@@ -409,7 +406,6 @@ class TestMatchingApi(DbTests):
     def test_txm_event_patient_failed_upload_invalid_related_medical_id_in_donor(self):
         self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
-        txm_event_db_id = get_newest_txm_event_db_id()
 
         txm_name = 'test'
 
@@ -476,7 +472,6 @@ class TestMatchingApi(DbTests):
     def test_txm_event_patient_failed_upload_duplicate_related_recipient_medical_id_in_donors(self):
         self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
-        txm_event_db_id = get_newest_txm_event_db_id()
 
         txm_name = 'test'
 
