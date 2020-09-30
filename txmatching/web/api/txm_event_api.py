@@ -18,7 +18,7 @@ from txmatching.data_transfer_objects.patients.txm_event_dto_out import TxmEvent
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     TxmEventJsonIn, TxmEventJsonOut, UploadPatientsJson, FailJson, PatientUploadSuccessJson)
 from txmatching.database.services.patient_service import update_txm_event_patients
-from txmatching.database.services.txm_event_service import create_txm_event
+from txmatching.database.services.txm_event_service import create_txm_event, delete_txm_event
 from txmatching.utils.enums import Country
 from txmatching.web.api.namespaces import txm_event_api
 
@@ -48,6 +48,35 @@ class TxmEventApi(Resource):
         tmx_event = from_dict(data_class=TxmEventDTOIn, data=request.json)
         created_event = create_txm_event(tmx_event.name)
         return make_response(jsonify(TxmEventDTOOut(name=created_event.name)), 201)
+
+
+@txm_event_api.route('/<name>', methods=['DELETE'])
+class TxmEventDeleteApi(Resource):
+
+    @txm_event_api.doc(
+        params={
+            'name': {
+                'description': 'Name of the TXM event to be deleted.',
+                'in': 'query',
+                'type': 'string',
+                'required': 'true'
+            }
+        },
+        security='bearer',
+        description='Endpoint that lets an ADMIN delete existing TXM event. \
+                        The ADMIN should specify TXM event name.'
+    )
+    @txm_event_api.response(
+        code=200,
+        model=None,
+        description='Returns status code representing result of TXM event object deletion.'
+    )
+    @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @txm_event_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details.')
+    @require_role(UserRole.ADMIN)
+    def delete(self, name: str):
+        delete_txm_event(name)
 
 
 @txm_event_api.route('/patients', methods=['PUT'])

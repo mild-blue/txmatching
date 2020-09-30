@@ -21,6 +21,13 @@ def create_txm_event(name: str) -> TxmEvent:
     return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict={}, recipients_dict={})
 
 
+def delete_txm_event(name: str):
+    if len(TxmEventModel.query.filter(TxmEventModel.name == name).all()) == 0:
+        raise InvalidArgumentException(f'TXM event "{name}" does not exist.')
+    TxmEventModel.query.filter(TxmEventModel.name == name).delete()
+    db.session.commit()
+
+
 def remove_donors_and_recipients_from_txm_event(name: str):
     txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
     if not txm_event_model:

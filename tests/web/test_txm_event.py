@@ -143,7 +143,7 @@ RECIPIENTS = [
 
 class TestMatchingApi(DbTests):
 
-    def test_txm_event_creation_and_deletion_successful(self):
+    def test_txm_event_creation_successful(self):
         self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
@@ -181,7 +181,7 @@ class TestMatchingApi(DbTests):
             self.assertIsNotNone(res.json)
             self.assertEqual('TXM event "test2" already exists.', res.json['message'])
 
-    def test_txm_event_creation_and_deletion_failure_invalid_role(self):
+    def test_txm_event_creation_failure_invalid_role(self):
         self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
@@ -214,6 +214,67 @@ class TestMatchingApi(DbTests):
             self.assertEqual(403, res.status_code)
             self.assertEqual("application/json", res.content_type)
             self.assertIsNotNone(res.json)
+
+    def test_txm_event_deletion(self):
+        self.fill_db_with_patients_and_results()
+        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
+
+        txm_name = 'test'
+
+        self.login_with_role(UserRole.ADMIN)
+
+        # Successful deletion
+        with self.app.test_client() as client:
+            res = client.delete(
+                f'/{TXM_EVENT_NAMESPACE}/{txm_name}',
+                headers=self.auth_headers
+            )
+
+            self.assertEqual(200, res.status_code)
+            self.assertEqual("application/json", res.content_type)
+
+        tmx_event_db = TxmEventModel.query.filter(TxmEventModel.name == txm_name).first()
+        self.assertIsNone(tmx_event_db)
+
+        # Second deletion should fail
+        with self.app.test_client() as client:
+            res = client.delete(
+                f'/{TXM_EVENT_NAMESPACE}/{txm_name}',
+                headers=self.auth_headers
+            )
+
+            self.assertEqual(400, res.status_code)
+            self.assertEqual("application/json", res.content_type)
+
+    def test_txm_event_deletion_failure_invalid_role(self):
+        self.fill_db_with_patients_and_results()
+        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
+
+        txm_name = 'test'
+
+        # VIEWER role
+        self.login_with_role(UserRole.VIEWER)
+
+        with self.app.test_client() as client:
+            res = client.delete(
+                f'/{TXM_EVENT_NAMESPACE}/{txm_name}',
+                headers=self.auth_headers
+            )
+
+            self.assertEqual(403, res.status_code)
+            self.assertEqual("application/json", res.content_type)
+
+        # SERVICE role
+        self.login_with_role(UserRole.SERVICE)
+
+        with self.app.test_client() as client:
+            res = client.delete(
+                f'/{TXM_EVENT_NAMESPACE}/{txm_name}',
+                headers=self.auth_headers
+            )
+
+            self.assertEqual(403, res.status_code)
+            self.assertEqual("application/json", res.content_type)
 
     def test_txm_event_patient_successful_upload(self):
         self.fill_db_with_patients_and_results()
