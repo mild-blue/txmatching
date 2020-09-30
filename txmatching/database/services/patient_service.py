@@ -243,7 +243,7 @@ def _parse_date_to_datetime(date: str):
 
 
 def _recipient_upload_dto_to_recipient_model(
-        recipient_dto: RecipientUploadDTO,
+        recipient: RecipientUploadDTO,
         country_code: Country,
         txm_event_db_id: int
 ) -> RecipientModel:
@@ -252,7 +252,7 @@ def _recipient_upload_dto_to_recipient_model(
         code=parse_code(hla_antibody.name),
         cutoff=hla_antibody.cutoff,
         mfi=hla_antibody.mfi
-    ) for hla_antibody in recipient_dto.HLA_antibodies]
+    ) for hla_antibody in recipient.HLA_antibodies]
 
     transformed_hla_antibodies = [HLAAntibody(
         raw_code=hla_antibody.raw_code,
@@ -260,67 +260,67 @@ def _recipient_upload_dto_to_recipient_model(
         code=hla_antibody.code,
         cutoff=hla_antibody.cutoff) for hla_antibody in hla_antibodies]
 
-    acceptable_blood_groups = [] if recipient_dto.acceptable_blood_groups is None \
-        else recipient_dto.acceptable_blood_groups
+    acceptable_blood_groups = [] if recipient.acceptable_blood_groups is None \
+        else recipient.acceptable_blood_groups
 
     recipient_model = RecipientModel(
-        medical_id=recipient_dto.medical_id,
+        medical_id=recipient.medical_id,
         country=country_code,
-        blood=recipient_dto.blood_group,
-        hla_typing=[parse_code(typing) for typing in recipient_dto.HLA_typing],
+        blood=recipient.blood_group,
+        hla_typing=[parse_code(typing) for typing in recipient.HLA_typing],
         hla_antibodies=hla_antibodies,
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in acceptable_blood_groups],
         txm_event_id=txm_event_db_id,
         recipient_cutoff=calculate_cutoff(transformed_hla_antibodies),
-        waiting_since=_parse_date_to_datetime(recipient_dto.waiting_since),
-        weight=recipient_dto.weight,
-        height=recipient_dto.height,
-        sex=recipient_dto.sex,
-        yob=recipient_dto.YOB,
+        waiting_since=_parse_date_to_datetime(recipient.waiting_since),
+        weight=recipient.weight,
+        height=recipient.height,
+        sex=recipient.sex,
+        yob=recipient.YOB,
     )
     return recipient_model
 
 
 def _donor_upload_dto_to_donor_model(
-        donor_dto: DonorUploadDTO,
-        recipient: Optional[RecipientModel],
+        donor: DonorUploadDTO,
+        related_recipient: Optional[RecipientModel],
         country_code: Country,
         txm_event_db_id: int
 ) -> DonorModel:
-    if recipient:
-        if donor_dto.donor_type != DonorType.DONOR:
+    if related_recipient:
+        if donor.donor_type != DonorType.DONOR:
             raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
     else:
-        if donor_dto.donor_type != DonorType.BRIDGING_DONOR and donor_dto.donor_type != DonorType.NON_DIRECTED:
+        if donor.donor_type != DonorType.BRIDGING_DONOR and donor.donor_type != DonorType.NON_DIRECTED:
             raise InvalidArgumentException(
                 f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" '
                 f'or "{DonorType.NON_DIRECTED}".')
 
-    maybe_recipient_medical_id = recipient.medical_id if recipient else None
+    maybe_recipient_medical_id = related_recipient.medical_id if related_recipient else None
 
-    assert (donor_dto.related_recipient_medical_id
-            and maybe_recipient_medical_id == donor_dto.related_recipient_medical_id
+    assert (donor.related_recipient_medical_id
+            and maybe_recipient_medical_id == donor.related_recipient_medical_id
             ) \
-           or (not donor_dto.related_recipient_medical_id and not maybe_recipient_medical_id), \
-        f'Donor requires recipient medical id "{donor_dto.related_recipient_medical_id}", ' \
+           or (not donor.related_recipient_medical_id and not maybe_recipient_medical_id), \
+        f'Donor requires recipient medical id "{donor.related_recipient_medical_id}", ' \
         f'but received "{maybe_recipient_medical_id}" or related recipient must be None.'
 
-    maybe_recipient_id = recipient.id if recipient else None
+    maybe_recipient_id = related_recipient.id if related_recipient else None
 
     donor_model = DonorModel(
-        medical_id=donor_dto.medical_id,
+        medical_id=donor.medical_id,
         country=country_code,
-        blood=donor_dto.blood_group,
-        hla_typing=[parse_code(typing) for typing in donor_dto.HLA_typing],
+        blood=donor.blood_group,
+        hla_typing=[parse_code(typing) for typing in donor.HLA_typing],
         active=True,
         recipient_id=maybe_recipient_id,
-        donor_type=donor_dto.donor_type,
-        weight=donor_dto.weight,
-        height=donor_dto.height,
-        sex=donor_dto.sex,
-        yob=donor_dto.YOB,
+        donor_type=donor.donor_type,
+        weight=donor.weight,
+        height=donor.height,
+        sex=donor.sex,
+        yob=donor.YOB,
         txm_event_id=txm_event_db_id
     )
     return donor_model
@@ -359,9 +359,10 @@ def _save_patients_to_existing_txm_event(
 
     donor_models = [
         _donor_upload_dto_to_donor_model(
-            donor,
-            recipient_models_dict.get(donor.related_recipient_medical_id, None),
-            country_code, txm_event_db_id)
+            donor= donor,
+            related_recipient=recipient_models_dict.get(donor.related_recipient_medical_id, None),
+            country_code=country_code,
+            txm_event_db_id=txm_event_db_id)
         for donor in donors
     ]
     db.session.add_all(donor_models)

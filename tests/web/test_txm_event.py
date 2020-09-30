@@ -7,7 +7,7 @@ from txmatching.database.services.txm_event_service import create_txm_event, \
     get_newest_txm_event_db_id
 from txmatching.database.sql_alchemy_schema import ConfigModel, RecipientModel, PairingResultModel, DonorModel
 from txmatching.patients.patient import DonorType
-from txmatching.utils.enums import Country
+from txmatching.utils.enums import Country, Sex
 from txmatching.web import report_api, REPORTS_NAMESPACE, txm_event_api, TXM_EVENT_NAMESPACE
 
 DONORS = [
@@ -19,7 +19,7 @@ DONORS = [
         ],
         'donor_type': DonorType.DONOR.value,
         'related_recipient_medical_id': 'R1',
-        'sex': 'M',
+        'sex': Sex.M,
         'height': 180,
         'weight': 90,
         'YOB': 1965
@@ -32,7 +32,7 @@ DONORS = [
         ],
         'donor_type': DonorType.DONOR.value,
         'related_recipient_medical_id': 'R2',
-        'sex': 'M',
+        'sex': Sex.M,
         'height': 178,
         'weight': 69,
         'YOB': 1967
@@ -45,7 +45,7 @@ DONORS = [
             'A9', 'A21'
         ],
         'donor_type': DonorType.NON_DIRECTED.value,
-        'sex': 'M',
+        'sex': Sex.M,
         'height': 146,
         'weight': 89,
         'YOB': 1960
@@ -58,7 +58,7 @@ DONORS = [
         ],
         'donor_type': DonorType.DONOR.value,
         'related_recipient_medical_id': 'R3',
-        'sex': 'M',
+        'sex': Sex.M,
         'height': 145,
         'weight': 56,
         'YOB': 1989
@@ -83,7 +83,7 @@ RECIPIENTS = [
                 'cutoff': 2100
             }
         ],
-        'sex': 'F',
+        'sex': Sex.F,
         'height': 150,
         'weight': 65,
         'YOB': 2001,
@@ -107,7 +107,7 @@ RECIPIENTS = [
                 'cutoff': 2200
             }
         ],
-        'sex': 'F',
+        'sex': Sex.F,
         'height': 189,
         'weight': 70,
         'YOB': 1996,
@@ -130,7 +130,7 @@ RECIPIENTS = [
                 'cutoff': 2300
             }
         ],
-        'sex': 'M',
+        'sex': Sex.M,
         'height': 201,
         'weight': 120,
         'YOB': 1999,
@@ -248,7 +248,7 @@ class TestMatchingApi(DbTests):
                             'cutoff': 2100
                         }
                     ],
-                    'sex': 'F',
+                    'sex': Sex.F,
                     'height': 150,
                     'weight': 65,
                     'YOB': 21,
@@ -292,7 +292,7 @@ class TestMatchingApi(DbTests):
                     ],
                     'donor_type': DonorType.NON_DIRECTED.value,
                     'related_recipient_medical_id': 'R1',
-                    'sex': 'M',
+                    'sex': Sex.M,
                     'height': 180,
                     'weight': 90,
                     'YOB': 1965
@@ -316,7 +316,7 @@ class TestMatchingApi(DbTests):
                             'cutoff': 2100
                         }
                     ],
-                    'sex': 'F',
+                    'sex': Sex.F,
                     'height': 150,
                     'weight': 65,
                     'YOB': 2001,
@@ -352,7 +352,7 @@ class TestMatchingApi(DbTests):
                         'A9', 'A21'
                     ],
                     'donor_type': DonorType.DONOR.value,
-                    'sex': 'M',
+                    'sex': Sex.M,
                     'height': 180,
                     'weight': 90,
                     'YOB': 1965
@@ -376,7 +376,7 @@ class TestMatchingApi(DbTests):
                             'cutoff': 2100
                         }
                     ],
-                    'sex': 'F',
+                    'sex': Sex.F,
                     'height': 150,
                     'weight': 65,
                     'YOB': 2001,
@@ -421,7 +421,7 @@ class TestMatchingApi(DbTests):
                     ],
                     'donor_type': DonorType.DONOR.value,
                     'related_recipient_medical_id': 'R1',
-                    'sex': 'M',
+                    'sex': Sex.M,
                     'height': 180,
                     'weight': 90,
                     'YOB': 1965
@@ -445,7 +445,7 @@ class TestMatchingApi(DbTests):
                             'cutoff': 2100
                         }
                     ],
-                    'sex': 'F',
+                    'sex': Sex.F,
                     'height': 150,
                     'weight': 65,
                     'YOB': 2001,
@@ -487,7 +487,7 @@ class TestMatchingApi(DbTests):
                     ],
                     'donor_type': DonorType.DONOR.value,
                     'related_recipient_medical_id': 'R1',
-                    'sex': 'M',
+                    'sex': Sex.M,
                     'height': 180,
                     'weight': 90,
                     'YOB': 1965
@@ -500,7 +500,7 @@ class TestMatchingApi(DbTests):
                     ],
                     'donor_type': DonorType.DONOR.value,
                     'related_recipient_medical_id': 'R1',
-                    'sex': 'F',
+                    'sex': Sex.F,
                     'height': 187,
                     'weight': 97,
                     'YOB': 1969
@@ -524,7 +524,7 @@ class TestMatchingApi(DbTests):
                             'cutoff': 2100
                         }
                     ],
-                    'sex': 'F',
+                    'sex': Sex.F,
                     'height': 150,
                     'weight': 65,
                     'YOB': 2001,
