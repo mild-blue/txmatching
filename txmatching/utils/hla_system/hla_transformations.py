@@ -22,7 +22,7 @@ from txmatching.utils.hla_system.rel_dna_ser_parsing import HIGH_RES_TO_SPLIT
 
 logger = logging.getLogger(__name__)
 
-HIG_RES_REGEX = re.compile(r'^[A-Z]+\d*\*(\d\d:?)+$')
+HIG_RES_REGEX = re.compile(r'^[A-Z]+\d*\*(\d+[A-Z]?:?)+$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
 C_SPLIT_FROM_HIGH_RES_REGEX = re.compile(r'^C\d+$')
 
@@ -52,8 +52,8 @@ class HlaCodeProcessingResultDetail(str, Enum):
     UNEXPECTED_SPLIT_RES_CODE = 'Unknown HLA code, seems to be in split resolution'
     MULTIPLE_SPLITS_FOUND = 'Multiple splits were found, returning first'
     # returning no value
-    UNEXPECTED_HIGH_RES_CODE = 'High resolution HLA code we cannot transform, because ' \
-                               'its transformation to split codes is unknown'
+    UNEXPECTED_HIGH_RES_CODE = 'Unable to transform high resolution HLA code. Its transformation to split code is ' \
+                               'unknown'
     UNPARSABLE_HLA_CODE = 'Completely Unexpected HLA code'
 
 
@@ -67,13 +67,15 @@ def _high_res_to_split(hla_code: str) -> Tuple[Optional[str], Optional[HlaCodePr
     split_hla_code = HIGH_RES_TO_SPLIT.get(hla_code)
     issue = None
     if not split_hla_code:
-        possible_split_resolutions = {split for high_res, split in HIGH_RES_TO_SPLIT.items() if
-                                      high_res.startswith(hla_code) and split}
+        possible_split_resolutions = [split for high_res, split in HIGH_RES_TO_SPLIT.items() if
+                                      high_res.startswith(hla_code) and split]
         if possible_split_resolutions:
-            if len(possible_split_resolutions) == 1:
+            found_splits = set(possible_split_resolutions)
+            if len(found_splits) == 1:
                 split_hla_code = possible_split_resolutions.pop()
-            elif len(possible_split_resolutions) > 1:
-                split_hla_code = possible_split_resolutions.pop()
+            else:
+                # in case the number is equal we take one randomly for the moment.
+                split_hla_code = max(found_splits, key=possible_split_resolutions.count)
                 issue = HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND
     if split_hla_code:
         if re.match(C_SPLIT_FROM_HIGH_RES_REGEX, split_hla_code):

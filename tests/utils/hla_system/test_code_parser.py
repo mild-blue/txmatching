@@ -10,13 +10,14 @@ codes = {
     'B51': ('B51', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DR11': ('DR11', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DR15': ('DR15', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*23': ('A23', HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND),
     'A*02:03': ('A203', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*11:01:35': ('A11', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'C*01:02': ('CW1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DPA1*01:07': (None, HlaCodeProcessingResultDetail.UNEXPECTED_HIGH_RES_CODE),
-    'DRB4*01:01': ('DRB453', HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
-    'DQB1*02:01:01:01': ('DQB12', HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
-
+    'DPA1*01:07': ('DP1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DRB4*01:01': ('DR53', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DQB1*02:01:01:01': ('DQ2', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'MICA*064N': ('MICA64', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
 }
 
 
@@ -24,10 +25,9 @@ class TestCodeParser(unittest.TestCase):
     def test_parsing(self):
         for code, (expected_result, expected_result_detail) in codes.items():
             result = any_code_to_split(code)
-            parse_code(code)
-            self.assertEqual(expected_result, result.maybe_hla_code,
-                             f'{code} was processed to {result.maybe_hla_code}'
-                             f' not correctly')
-            self.assertEqual(expected_result_detail, result.result_detail,
-                             f'{code} was processed to {result.result_detail}'
-                             f' not correctly')
+            parse_code(code)  # here just to test logging
+            self.assertTupleEqual((expected_result_detail, expected_result),
+                                  (result.result_detail, result.maybe_hla_code),
+                                  f'{code} was processed to {result.maybe_hla_code} '
+                                  f'with result {result.result_detail} expected was: '
+                                  f'{expected_result} with result {expected_result_detail}')

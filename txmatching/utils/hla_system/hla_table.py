@@ -1,5 +1,9 @@
 from enum import Enum
 
+from txmatching.utils.hla_system.rel_dna_ser_parsing import SPLIT_CODES
+
+# TODO All the codes below are used purely to get set of broad codes its not user this set is complete. Get better
+# maybe use http://hla.alleles.org/antigens/recognised_serology.html task: https://trello.com/c/JdmZ3iMY
 HLA_A = {'A1', 'A2', 'A203', 'A210', 'A3', 'A11', 'A23', 'A24', 'A2403',
          'A25', 'A26', 'A29', 'A30', 'A31', 'A32', 'A33', 'A34', 'A36',
          'A43', 'A66', 'A68', 'A69', 'A74', 'A80'}
@@ -15,7 +19,7 @@ HLA_B = {'B7', 'B703', 'B8', 'B13', 'B18', 'B27', 'B2708', 'B35', 'B37',
 
 HLA_B_BROAD = {'B5', 'B12', 'B14', 'B15', 'B16', 'B17', 'B22', 'B40', 'B70'}
 
-HLA_BW = {'Bw4', 'Bw6'}
+HLA_BW = {'BW4', 'BW6'}
 
 HLA_CW = {'CW1', 'CW2', 'CW4', 'CW5', 'CW6', 'CW7', 'CW8', 'CW9', 'CW10'}
 
@@ -87,12 +91,6 @@ SPLIT_TO_BROAD = {'A23': 'A9',
                   'DQ9': 'DQ3'
                   }
 
-# for some reason before here was the code below (see the HLA_DQ_BROAD that is in split and not broad and missing
-# HL_DQ usage this was probably a bug
-# split_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DR + HLA_DRDR + HLA_DQ_BROAD
-# broad_codes = HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DR_BROAD
-
-SPLIT_CODES = set.union(HLA_A, HLA_B, HLA_BW, HLA_CW, HLA_DR, HLA_DRDR, HLA_DQ)
 PURELY_BROAD_CODES = set.union(HLA_A_BROAD, HLA_B_BROAD, HLA_CW_BROAD, HLA_DR_BROAD, HLA_DQ_BROAD)
 
 BROAD_CODES = PURELY_BROAD_CODES.union(
