@@ -14,13 +14,13 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
     ConfigurationJson
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, Transplant)
-from txmatching.data_transfer_objects.matchings.matching_swagger import \
-    Matchings
-from txmatching.database.services.config_service import (
-    configuration_from_dict, save_configuration_as_current)
+from txmatching.data_transfer_objects.matchings.matching_swagger import MATCHING_MODEL
+from txmatching.database.services.config_service import \
+    save_configuration_as_current, configuration_from_dict
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.solve_service.solve_from_db import solve_from_db
+from txmatching.utils.logged_user import get_current_user
 from txmatching.web.api.namespaces import matching_api
 
 logger = logging.getLogger(__name__)
@@ -37,9 +37,10 @@ class CalculateFromConfig(Resource):
     @require_user_login()
     def post(self) -> str:
         configuration = configuration_from_dict(request.json)
-        save_configuration_as_current(configuration)
-        solve_from_db()
-        matchings, score_dict, compatible_blood_dict = get_latest_matchings_and_score_matrix()
+        current_user = get_current_user()
+        solve_from_db(configuration, txm_event_db_id=current_user.default_txm_event_id)
+        matchings, score_dict, compatible_blood_dict = get_latest_matchings_and_score_matrix(
+            current_user.default_txm_event_id)
 
         matching_dtos = [
             dataclasses.asdict(MatchingDTO(

@@ -5,17 +5,19 @@ from importlib import util as importing
 from flask import Flask
 from flask_restx import Api
 
-from tests.test_utilities.populate_db import ADMIN_USER, add_users, create_or_overwrite_txm_event, VIEWER_USER, \
-    OTP_USER, SERVICE_USER
+from tests.test_utilities.populate_db import (ADMIN_USER, SERVICE_USER,
+                                              VIEWER_USER, add_users,
+                                              create_or_overwrite_txm_event)
 from txmatching.auth.auth_check import store_user_in_context
 from txmatching.auth.data_types import UserRole
+from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import \
     save_patients_from_excel_to_empty_txm_event
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import user_api, register_error_handlers
+from txmatching.web import register_error_handlers, user_api
 
 ROLE_CREDENTIALS = {
     UserRole.ADMIN: ADMIN_USER,
@@ -51,14 +53,16 @@ class DbTests(unittest.TestCase):
         self._set_bearer_token()
 
     def fill_db_with_patients_and_results(self):
-        self.fill_db_with_patients()
-        solve_from_db()
+        txm_event_db_id = self.fill_db_with_patients()
+        solve_from_db(Configuration(), txm_event_db_id)
+        return txm_event_db_id
 
     @staticmethod
     def fill_db_with_patients(file=get_absolute_path('/tests/test_utilities/data.xlsx')):
         patients = parse_excel_data(file)
         txm_event = create_or_overwrite_txm_event(name='test')
         save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=txm_event.db_id)
+        return txm_event.db_id
 
     def _set_bearer_token(self):
         self.api = Api(self.app)
@@ -86,6 +90,7 @@ class DbTests(unittest.TestCase):
         Ensures that the database is emptied for next unit test
         """
         with self.app.app_context():
+            db.session.rollback()
             db.drop_all()
 
         if os.path.exists(get_absolute_path(f'/tests/test_utilities/{self._database_name}')):
