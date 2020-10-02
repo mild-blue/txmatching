@@ -10,14 +10,15 @@ codes = {
     'B51': ('B51', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DR11': ('DR11', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DR15': ('DR15', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*23': ('A23', HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND),
+    'A*23': ('A23', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*01:53N': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
     'A*02:03': ('A203', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*11:01:35': ('A11', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'C*01:02': ('CW1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DPA1*01:07': ('DP1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DPA1*01:07': ('DPA1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DRB4*01:01': ('DR53', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DQB1*02:01:01:01': ('DQ2', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'MICA*064N': ('MICA64', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'MICA*064N': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
 }
 
 

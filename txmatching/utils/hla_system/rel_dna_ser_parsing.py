@@ -18,6 +18,7 @@ def parse_rel_dna_ser():
             .fillna('')
             .astype(str)
             .replace('?', '')
+            .replace('0', '')
             .loc[lambda s: s != '']
             .astype(int)
             .astype(str)
@@ -25,74 +26,27 @@ def parse_rel_dna_ser():
             .assign(source='unambigous')
     )
 
-    done = set(split_unambigous.index)
-
-    split_possible = (
-        rel_dna_ser_df.loc[lambda df: set(df.index) - done, 3]
-            .fillna('')
-            .astype(str)
-            .str.split('/')
-            .str[-1]
-            .loc[lambda s: s != '']
-            .astype(int)
-            .astype(str)
-            .to_frame(name='split_number')
-            .assign(source='possible')
-    )
-
-    done = set.union(done, split_possible.index)
-
-    split_assumed = (
-        rel_dna_ser_df.loc[lambda df: set(df.index) - done, 4]
-            .fillna('')
-            .astype(str)
-            .str.replace('?', '')
-            .str.replace('/?', '')
-            .str.split('/')
-            .str[-1]
-            .loc[lambda s: s != '']
-            .astype(int)
-            .astype(str)
-            .to_frame(name='split_number')
-            .assign(source='assumed')
-    )
-
-    done = set.union(done, split_assumed.index)
-
-    split_expert = (
-        rel_dna_ser_df.loc[lambda df: set(df.index) - done, 5]
-            .fillna('')
-            .astype(str)
-            .str.replace('?', '')
-            .str.replace('/?', '')
-            .str.split('/')
-            .str[-1]
-            .loc[lambda s: s != '']
-            .astype(int)
-            .astype(str)
-            .to_frame(name='split_number')
-            .assign(source='expert')
-    )
-
-    done = set.union(done, split_expert.index)
-
-    split_fallback = (
-        rel_dna_ser_df.loc[lambda df: set(df.index) - done, 1]
+    split_dp = (
+        rel_dna_ser_df.loc[lambda df: rel_dna_ser_df[0].str.startswith('DP'), 1]
             .str.split(':')
             .str[0]
-            .str.replace('[A-Z]', '')
+            # remove special ones with letter - we do not know what code to assign to them
+            .loc[lambda s: ~s.str.contains('[A-Z]')]
             .astype(int)
             .astype(str)
             .to_frame(name='split_number')
-            .assign(source='fallback')
+            .assign(source='dp_fallback')
     )
 
-    split_numbers = pd.concat([split_expert, split_assumed, split_fallback, split_possible, split_unambigous])
+    split_numbers = pd.concat([split_dp, split_unambigous])
 
     rel_dna_ser_df['split_type'] = (rel_dna_ser_df[0]
+                                    # gene codes to serology codes as aggreed with immunologists
                                     .str.replace(r'C\*', 'CW')
-                                    .str.replace(r'(DQA1)|(DQB1)', 'DQ')
-                                    .str.replace(r'(DPA1)|(DPB1)', 'DP')
+                                    .str.replace(r'DQB1', 'DQ')
+                                    .str.replace(r'DQA1', 'DQA')
+                                    .str.replace(r'DPB1', 'DP')
+                                    .str.replace(r'DPA1', 'DPA')
                                     .str.replace(r'(DRB1)|(DRB3)|(DRB4)|(DRB5)|(DRA1)', 'DR')
                                     .str.replace(r'\*', '')
                                     )
@@ -103,6 +57,7 @@ def parse_rel_dna_ser():
     return rel_dna_ser_df
 
 
-HIGH_RES_TO_SPLIT = parse_rel_dna_ser().split.to_dict()
+HIGH_RES_TO_SPLIT = dict([(high_res, split) if not pd.isna(split) else (high_res, None) for high_res, split in
+                          parse_rel_dna_ser().split.to_dict().items()])
 
 SPLIT_CODES = set(HIGH_RES_TO_SPLIT.values())

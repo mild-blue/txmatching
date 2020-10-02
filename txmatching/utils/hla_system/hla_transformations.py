@@ -50,10 +50,11 @@ class HlaCodeProcessingResultDetail(str, Enum):
     # still returning value
     SUCCESSFULLY_PARSED = 'Code successfully parsed without anything unexpected'
     UNEXPECTED_SPLIT_RES_CODE = 'Unknown HLA code, seems to be in split resolution'
-    MULTIPLE_SPLITS_FOUND = 'Multiple splits were found, returning first'
+    MULTIPLE_SPLITS_FOUND = 'Multiple splits were found, unable to choose the right one.' \
+                            ' Immunologists shall be contacted'
     # returning no value
-    UNEXPECTED_HIGH_RES_CODE = 'Unable to transform high resolution HLA code. Its transformation to split code is ' \
-                               'unknown'
+    UNKNOWN_TRANSFORMATION_TO_SPLIT = 'Unable to transform high resolution HLA code. Its transformation to split' \
+                                      ' code is unknown. Immunologists shall be contacted'
     UNPARSABLE_HLA_CODE = 'Completely Unexpected HLA code'
 
 
@@ -67,22 +68,23 @@ def _high_res_to_split(hla_code: str) -> Tuple[Optional[str], Optional[HlaCodePr
     split_hla_code = HIGH_RES_TO_SPLIT.get(hla_code)
     issue = None
     if not split_hla_code:
-        possible_split_resolutions = [split for high_res, split in HIGH_RES_TO_SPLIT.items() if
-                                      high_res.startswith(hla_code) and split]
+        possible_split_resolutions = {split for high_res, split in HIGH_RES_TO_SPLIT.items() if
+                                      high_res.startswith(hla_code) and split}
         if possible_split_resolutions:
             found_splits = set(possible_split_resolutions)
             if len(found_splits) == 1:
                 split_hla_code = possible_split_resolutions.pop()
             else:
                 # in case the number is equal we take one randomly for the moment.
-                split_hla_code = max(found_splits, key=possible_split_resolutions.count)
+                split_hla_code = None
+                logger.warning(possible_split_resolutions)
                 issue = HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND
     if split_hla_code:
         if re.match(C_SPLIT_FROM_HIGH_RES_REGEX, split_hla_code):
             split_hla_code = f'CW{split_hla_code[1:]}'
         return split_hla_code, issue
 
-    return None, HlaCodeProcessingResultDetail.UNEXPECTED_HIGH_RES_CODE
+    return None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
 
 
 # TODO https://trello.com/c/PtK2Bg27 add support for square brackets and also preprocess incoming strings in other ways
