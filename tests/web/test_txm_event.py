@@ -189,21 +189,13 @@ class TestMatchingApi(DbTests):
 
         # VIEWER role
         self.login_with_role(UserRole.VIEWER)
-
-        with self.app.test_client() as client:
-            res = client.post(
-                f'/{TXM_EVENT_NAMESPACE}',
-                headers=self.auth_headers,
-                json=TxmEventDTOIn(name=txm_name).__dict__
-            )
-
-            self.assertEqual(403, res.status_code)
-            self.assertEqual("application/json", res.content_type)
-            self.assertIsNotNone(res.json)
+        self._validate_invalid_access_for_event_creation(txm_name)
 
         # SERVICE role
-        self.login_with_role(UserRole.VIEWER)
+        self.login_with_role(UserRole.SERVICE)
+        self._validate_invalid_access_for_event_creation(txm_name)
 
+    def _validate_invalid_access_for_event_creation(self, txm_name: str):
         with self.app.test_client() as client:
             res = client.post(
                 f'/{TXM_EVENT_NAMESPACE}',
@@ -254,19 +246,13 @@ class TestMatchingApi(DbTests):
 
         # VIEWER role
         self.login_with_role(UserRole.VIEWER)
-
-        with self.app.test_client() as client:
-            res = client.delete(
-                f'/{TXM_EVENT_NAMESPACE}/{txm_name}',
-                headers=self.auth_headers
-            )
-
-            self.assertEqual(403, res.status_code)
-            self.assertEqual("application/json", res.content_type)
+        self._validate_invalid_access_for_event_deletion(txm_name)
 
         # SERVICE role
         self.login_with_role(UserRole.SERVICE)
+        self._validate_invalid_access_for_event_deletion(txm_name)
 
+    def _validate_invalid_access_for_event_deletion(self, txm_name: str):
         with self.app.test_client() as client:
             res = client.delete(
                 f'/{TXM_EVENT_NAMESPACE}/{txm_name}',
