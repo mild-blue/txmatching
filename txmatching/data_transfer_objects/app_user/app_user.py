@@ -4,7 +4,7 @@ from txmatching.auth.data_types import UserRole
 
 
 @dataclass
-class AppUser:
+class AppUserDTO:
     email: str
     role: UserRole
     default_txm_event_id: int

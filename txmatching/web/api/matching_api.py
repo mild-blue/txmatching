@@ -13,7 +13,7 @@ from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigurationJson
 from txmatching.data_transfer_objects.matchings.matching_dto import (
-    MatchingDTO, RoundDTO, Transplant)
+    MatchingDTO, RoundDTO, TransplantDTOIn)
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
     MatchingJson
 from txmatching.database.services.config_service import configuration_from_dict
@@ -47,7 +47,7 @@ class CalculateFromConfig(Resource):
                 rounds=[
                     RoundDTO(
                         transplants=[
-                            Transplant(
+                            TransplantDTOIn(
                                 score_dict[(donor.db_id, recipient.db_id)],
                                 compatible_blood_dict[(donor.db_id, recipient.db_id)],
                                 donor.medical_id,

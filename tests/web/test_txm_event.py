@@ -471,7 +471,8 @@ class TestMatchingApi(DbTests):
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
             self.assertEqual('When recipient is not set, donor type must be "BRIDGING_DONOR" or "NON_DIRECTED".',
-                             res.json['message'])
+                             res.json['message']
+                             )
 
     def test_txm_event_patient_failed_upload_duplicate_related_recipient_medical_id_in_donors(self):
         self.fill_db_with_patients_and_results()
