@@ -52,13 +52,13 @@ class DbTests(unittest.TestCase):
 
         self._set_bearer_token()
 
-    def fill_db_with_patients_and_results(self):
+    def fill_db_with_patients_and_results(self) -> int:
         txm_event_db_id = self.fill_db_with_patients()
         solve_from_db(Configuration(), txm_event_db_id)
         return txm_event_db_id
 
     @staticmethod
-    def fill_db_with_patients(file=get_absolute_path('/tests/test_utilities/data.xlsx')):
+    def fill_db_with_patients(file=get_absolute_path('/tests/test_utilities/data.xlsx')) -> int:
         patients = parse_excel_data(file)
         txm_event = create_or_overwrite_txm_event(name='test')
         save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=txm_event.db_id)

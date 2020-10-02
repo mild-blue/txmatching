@@ -73,7 +73,7 @@ CREATE TABLE app_user
     second_factor_material TEXT        NOT NULL,
     phone_number           TEXT,
     require_2fa            BOOLEAN     NOT NULL,
-    default_txm_event_id    BIGINT,
+    default_txm_event_id   BIGINT,
     created_at             TIMESTAMPTZ NOT NULL,
     updated_at             TIMESTAMPTZ NOT NULL,
     deleted_at             TIMESTAMPTZ,

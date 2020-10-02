@@ -6,17 +6,17 @@ from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.database.services import txm_event_service
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.sql_alchemy_schema import AppUserModel
-from txmatching.web import patient_api
+from txmatching.web import PATIENT_NAMESPACE, patient_api
 
 
 class TestMultipleEventAccess(DbTests):
     def test_txm_event_multiple(self):
-        self.api.add_namespace(patient_api, path=f'/patients')
+        self.api.add_namespace(patient_api, path=f'/{PATIENT_NAMESPACE}')
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event_service.create_txm_event('test2')
         self.login_with_role(UserRole.ADMIN)
         with self.app.test_client() as client:
-            self.assertEqual(0, len(client.get('/patients/', headers=self.auth_headers).json['donors']))
+            self.assertEqual(0, len(client.get(f'/{PATIENT_NAMESPACE}/', headers=self.auth_headers).json['donors']))
 
         user = persist_user(AppUserModel(
             email='user_with_default_txm_event_set',
@@ -34,4 +34,4 @@ class TestMultipleEventAccess(DbTests):
             store_user_in_context(user.id, user.role)
 
         with self.app.test_client() as client:
-            self.assertEqual(2, len(client.get('/patients/', headers=self.auth_headers).json['donors']))
+            self.assertEqual(2, len(client.get(f'/{PATIENT_NAMESPACE}/', headers=self.auth_headers).json['donors']))

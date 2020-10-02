@@ -2,7 +2,7 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import (
     Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore)
 from txmatching.database.services.config_service import (
-    configuration_from_dict, get_current_configuration,
+    configuration_from_dict, latest_configuration_for_txm_event,
     save_configuration_to_db)
 from txmatching.utils.enums import Country
 
@@ -14,7 +14,7 @@ class TestConfiguration(DbTests):
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
         save_configuration_to_db(configuration, txm_event_db_id)
 
-        configuration = get_current_configuration(txm_event_db_id)
+        configuration = latest_configuration_for_txm_event(txm_event_db_id)
         self.assertEqual(Country.CZE, configuration.forbidden_country_combinations[0].donor_country)
 
     def test_configuration_from_dto(self):
