@@ -61,3 +61,4 @@ HIGH_RES_TO_SPLIT = {high_res: split if not pd.isna(split) else None for high_re
                      parse_rel_dna_ser().split.to_dict().items()}
 
 SPLIT_CODES = set(HIGH_RES_TO_SPLIT.values())
+SPLIT_CODES.remove(None)

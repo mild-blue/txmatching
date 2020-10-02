@@ -15,7 +15,6 @@ from enum import Enum
 from typing import List, Optional, Tuple
 
 from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
-                                                   BROAD_CODES,
                                                    COMPATIBILITY_BROAD_CODES,
                                                    SPLIT_TO_BROAD)
 from txmatching.utils.hla_system.rel_dna_ser_parsing import HIGH_RES_TO_SPLIT
@@ -38,12 +37,8 @@ def broad_to_split(hla_code: str) -> List[str]:
         return splits
 
 
-def split_to_broad(hla_code: str) -> Optional[str]:
-    maybe_hla_broad_code = SPLIT_TO_BROAD.get(hla_code, hla_code)
-    if maybe_hla_broad_code not in BROAD_CODES:
-        logger.warning(f'Cannot transform hla_code: {hla_code} to broad')
-        return None
-    return maybe_hla_broad_code
+def split_to_broad(hla_code: str) -> str:
+    return SPLIT_TO_BROAD.get(hla_code, hla_code)
 
 
 class HlaCodeProcessingResultDetail(str, Enum):
@@ -123,5 +118,4 @@ def parse_code(hla_code: str) -> Optional[str]:
 
 
 def get_compatibility_broad_codes(hla_codes: List[str]) -> List[str]:
-    return [split_to_broad(hla_code) for hla_code in hla_codes if
-            split_to_broad(hla_code) and split_to_broad(hla_code) in COMPATIBILITY_BROAD_CODES]
+    return [split_to_broad(hla_code) for hla_code in hla_codes if split_to_broad(hla_code) in COMPATIBILITY_BROAD_CODES]
