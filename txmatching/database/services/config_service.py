@@ -21,7 +21,7 @@ def configuration_from_dict(config_model: Dict) -> Configuration:
     return configuration
 
 
-def get_current_configuration(txm_event_db_id: int) -> Configuration:
+def latest_configuration_for_txm_event(txm_event_db_id: int) -> Configuration:
     current_config_model = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).order_by(
         ConfigModel.id.desc()).first()
     if current_config_model is None:

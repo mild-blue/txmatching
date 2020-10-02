@@ -6,7 +6,7 @@ from txmatching.patients.patient_types import CountryCode, MedicalId
 
 
 @dataclass
-class TransplantDTOIn:
+class TransplantDTOOut:
     score: float
     compatible_blood: bool
     donor: MedicalId
@@ -15,7 +15,7 @@ class TransplantDTOIn:
 
 @dataclass
 class RoundDTO:
-    transplants: List[TransplantDTOIn]
+    transplants: List[TransplantDTOOut]
 
 
 @dataclass
