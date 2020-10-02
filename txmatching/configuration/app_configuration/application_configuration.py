@@ -1,10 +1,10 @@
 import logging
 import os
+import re
 from dataclasses import dataclass
+from typing import Tuple
 
 from flask import current_app as app
-
-from txmatching.configuration.app_configuration.context import get_or_set
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,11 @@ class ApplicationConfiguration:
     """
     Configuration of the web application.
     """
+    # pylint: disable=too-many-instance-attributes
+    # because this is configuration, we need a lot of attributes
 
+    code_version: str
+    is_production: bool
     # Postgres configuration
     postgres_user: str
     postgres_password: str
@@ -29,26 +33,34 @@ def get_application_configuration() -> ApplicationConfiguration:
     """
     Obtains configuration from the application context.
     """
-    return get_or_set('application_configuration', build_application_configuration)
+    place_holder = 'APPLICATION_CONFIGURATION'
+    if not app.config.get(place_holder):
+        app.config[place_holder] = _build_application_configuration()
+    return app.config[place_holder]
 
 
-def build_application_configuration() -> ApplicationConfiguration:
+def _build_application_configuration() -> ApplicationConfiguration:
     """
     Builds configuration from environment or from the Flask properties
     """
     logger.debug('Building configuration.')
+    code_version, tagged = _get_version()
+
     config = ApplicationConfiguration(
-        postgres_user=get_prop('POSTGRES_USER'),
-        postgres_password=get_prop('POSTGRES_PASSWORD'),
-        postgres_db=get_prop('POSTGRES_DB'),
-        postgres_url=get_prop('POSTGRES_URL'),
-        jwt_secret=get_prop('JWT_SECRET'),
-        jwt_expiration_days=int(get_prop('JWT_EXPIRATION_DAYS'))
+        code_version=code_version,
+        # we consider tagged code as the one that is running in the production
+        is_production=tagged,
+        postgres_user=_get_prop('POSTGRES_USER'),
+        postgres_password=_get_prop('POSTGRES_PASSWORD'),
+        postgres_db=_get_prop('POSTGRES_DB'),
+        postgres_url=_get_prop('POSTGRES_URL'),
+        jwt_secret=_get_prop('JWT_SECRET'),
+        jwt_expiration_days=int(_get_prop('JWT_EXPIRATION_DAYS'))
     )
     return config
 
 
-def get_prop(name: str, optional: bool = False) -> str:
+def _get_prop(name: str, optional: bool = False) -> str:
     """
     Gets property from environment or from the flask env.
     """
@@ -57,3 +69,33 @@ def get_prop(name: str, optional: bool = False) -> str:
         logger.error(f'It was not possible to retrieve configuration for property "{name}"!')
         raise EnvironmentError(f'No existing configuration for "{name}" found!')
     return str(config) if config is not None else ''
+
+
+def _get_version() -> Tuple[str, bool]:
+    """
+    Retrieves version from the flask app.
+
+    Returns version of the code and boolean whether the code is tagged.
+    """
+    version = _read_version('development')
+    # try to match current version to the semantic versioning (x.y.z)
+    # the semantic versioning indicates that the code is tagged, thus released
+    prod = bool(re.search(r'^\d+\.\d+\.\d$', version))
+    return version, prod
+
+
+def _read_version(default: str) -> str:
+    """
+    Reads version from the file or returns default version.
+    """
+    file_path = os.environ.get('RELEASE_FILE_PATH')
+    file_path = file_path if file_path else app.config.get('RELEASE_FILE_PATH')
+    logger.debug(f'File path: {file_path}')
+
+    version = None
+    if file_path:
+        with open(file_path, 'r') as file:
+            version = file.readline().strip()
+            logger.debug(f'Settings version as: {version}')
+
+    return version if version else default
