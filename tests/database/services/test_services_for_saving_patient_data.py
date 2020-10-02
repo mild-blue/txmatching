@@ -9,7 +9,8 @@ from txmatching.data_transfer_objects.patients.recipient_update_dto import \
 from txmatching.database.services.patient_service import (
     save_patients_from_excel_to_empty_txm_event, update_donor,
     update_recipient)
-from txmatching.database.sql_alchemy_schema import DonorModel, RecipientModel
+from txmatching.database.sql_alchemy_schema import DonorModel, RecipientModel, ConfigModel, PairingResultModel, \
+    RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, AppUserModel
 from txmatching.patients.patient import RecipientRequirements
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType)
@@ -18,11 +19,26 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 
 
 class TestSolveFromDbAndItsSupportFunctionality(DbTests):
-    def test_saving_patients_from_excel(self):
-        patients = parse_excel_data(get_absolute_path('tests/test_utilities/data.xlsx'))
+    def test_saving_patients_from_obfuscated_excel(self):
+        patients = parse_excel_data(get_absolute_path('tests/test_utilities/patient_data_2020_07_obfuscated.xlsx'))
         txm_event = create_or_overwrite_txm_event('test')
         save_patients_from_excel_to_empty_txm_event(patients, txm_event.db_id)
-        self.assertEqual(1, 1)
+
+        configs = ConfigModel.query.all()
+        recipients = RecipientModel.query.all()
+        donors = DonorModel.query.all()
+        pairing_results = PairingResultModel.query.all()
+        recipient_acceptable_bloods = RecipientAcceptableBloodModel.query.all()
+        recipient_HLA_antibodies = RecipientHLAAntibodyModel.query.all()
+        app_users = AppUserModel.query.all()
+
+        self.assertEqual(0, len(configs))
+        self.assertEqual(34, len(recipients))
+        self.assertEqual(38, len(donors))
+        self.assertEqual(0, len(pairing_results))
+        self.assertEqual(91, len(recipient_acceptable_bloods))
+        self.assertEqual(1097, len(recipient_HLA_antibodies))
+        self.assertEqual(4, len(app_users))
 
     def test_saving_patients(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()

@@ -1,8 +1,11 @@
-truncate table txm_event restart identity cascade ;
-truncate table donor restart identity cascade ;
-truncate table recipient restart identity cascade;
-truncate table app_user restart identity cascade;
-truncate table config restart identity cascade ;
+truncate table public.txm_event restart identity cascade ;
+truncate table public.donor restart identity cascade ;
+truncate table public.recipient_acceptable_blood restart identity cascade ;
+truncate table public.recipient_hla_antibodies restart identity cascade ;
+truncate table public.recipient restart identity cascade;
+truncate table public.app_user restart identity cascade;
+truncate table public.config restart identity cascade ;
+truncate table public.pairing_result restart identity cascade ;
 
 --
 -- PostgreSQL database dump
@@ -29,6 +32,11 @@ SET row_security = off;
 
 INSERT INTO public.app_user (id, email, pass_hash, role, second_factor_material, phone_number, require_2fa, created_at, updated_at, deleted_at) VALUES (1, 'admin@mild.blue', '$2b$12$/NEEpcYIEstkNk8.eDMqTut/wOvITSBQdy.wCvzOQvDh06QZc3tuy', 'ADMIN', 'NA74T2H2GGOGPB6U', '<REPLACE WITH REAL>', false, '2020-09-30 18:39:23.275041+00', '2020-09-30 18:39:23.275041+00', NULL);
 
+--
+-- Data for Name: txm_event; Type: TABLE DATA; Schema: public; Owner: super-cool-txmatching
+--
+
+INSERT INTO public.txm_event (id, name, created_at, updated_at, deleted_at) VALUES (1, 'test', '2020-09-30 18:40:29.48858+00', '2020-09-30 18:40:29.48858+00', NULL);
 
 --
 -- Data for Name: config; Type: TABLE DATA; Schema: public; Owner: super-cool-txmatching
