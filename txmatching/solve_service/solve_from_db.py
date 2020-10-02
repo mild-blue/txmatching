@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Iterable
+from typing import Iterable, Optional
 
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db

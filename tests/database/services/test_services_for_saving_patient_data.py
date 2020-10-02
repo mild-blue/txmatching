@@ -14,6 +14,7 @@ from txmatching.database.sql_alchemy_schema import DonorModel, RecipientModel, C
 from txmatching.patients.patient import RecipientRequirements
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType)
+from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 
@@ -37,8 +38,10 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(38, len(donors))
         self.assertEqual(0, len(pairing_results))
         self.assertEqual(91, len(recipient_acceptable_bloods))
-        self.assertEqual(1097, len(recipient_HLA_antibodies))
+        self.assertEqual(1102, len(recipient_HLA_antibodies))
         self.assertEqual(4, len(app_users))
+
+        solve_from_db(txm_event.db_id)
 
     def test_saving_patients(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
