@@ -92,7 +92,7 @@ def _add_users(users: List[AppUserModel]):
 if __name__ == '__main__':
     app = create_app()
     with app.app_context():
-        patients = parse_excel_data('data.xlsx')
+        patients = parse_excel_data('patient_data_2020_07_obfuscated.xlsx')
         txm_event = create_or_overwrite_txm_event(name='test')
         save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=txm_event.db_id)
         add_users()
