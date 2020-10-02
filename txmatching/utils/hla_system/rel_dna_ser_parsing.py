@@ -57,7 +57,7 @@ def parse_rel_dna_ser():
     return rel_dna_ser_df
 
 
-HIGH_RES_TO_SPLIT = dict([(high_res, split) if not pd.isna(split) else (high_res, None) for high_res, split in
-                          parse_rel_dna_ser().split.to_dict().items()])
+HIGH_RES_TO_SPLIT = {high_res: split if not pd.isna(split) else None for high_res, split in
+                     parse_rel_dna_ser().split.to_dict().items()}
 
 SPLIT_CODES = set(HIGH_RES_TO_SPLIT.values())
