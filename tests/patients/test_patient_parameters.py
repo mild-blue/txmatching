@@ -18,8 +18,8 @@ donor_parameters_Joe = PatientParameters(
          HLAType('DQ8'),
          HLAType('DP2'),
          HLAType('DP10'),
-         HLAType('Cw9'),
-         HLAType('Cw12')
+         HLAType('CW9'),
+         HLAType('CW12')
          ]
     )
 )

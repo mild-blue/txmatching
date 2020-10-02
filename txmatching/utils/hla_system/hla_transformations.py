@@ -1,13 +1,3 @@
-# HLA system (https://en.wikipedia.org/wiki/Human_leukocyte_antigen)
-# Has some of the hla_typing similar, these similar ones seem like a one when using broad resolution detection
-# techniques.
-#
-# For more info, see: https://en.wikipedia.org/wiki/History_and_naming_of_human_leukocyte_antigens
-
-# TODO: Confirm this table with some immunologist https://trello.com/c/MtiTnNYG
-# TODO: ask what exact hla_typing should I count in the matches - for example what about DR52, DR53 - what do those mean
-#  https://trello.com/c/08MZVRCk
-# TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9) https://trello.com/c/UIo23mPb
 import logging
 import re
 from dataclasses import dataclass
@@ -21,7 +11,7 @@ from txmatching.utils.hla_system.rel_dna_ser_parsing import HIGH_RES_TO_SPLIT
 
 logger = logging.getLogger(__name__)
 
-HIG_RES_REGEX = re.compile(r'^[A-Z]+\d*\*(\d+[A-Z]?:?)+$')
+HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d\d(\:\d\d)*[A-Z]?$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
 C_SPLIT_FROM_HIGH_RES_REGEX = re.compile(r'^C\d+$')
 
@@ -31,10 +21,7 @@ def broad_to_split(hla_code: str) -> List[str]:
         logger.warning(f'Unexpected hla_code: {hla_code}')
         return [hla_code]
     splits = [split for split, broad in SPLIT_TO_BROAD.items() if broad == hla_code]
-    if not splits:
-        return [hla_code]
-    else:
-        return splits
+    return splits if splits else [hla_code]
 
 
 def split_to_broad(hla_code: str) -> str:
@@ -64,7 +51,10 @@ def _high_res_to_split(hla_code: str) -> Tuple[Optional[str], Optional[HlaCodePr
     issue = None
     if not split_hla_code:
         possible_split_resolutions = {split for high_res, split in HIGH_RES_TO_SPLIT.items() if
-                                      high_res.startswith(hla_code) and split}
+                                      high_res.startswith(hla_code)}
+        if len(possible_split_resolutions) == 0:
+            return None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE
+        possible_split_resolutions = possible_split_resolutions.difference({None})
         if possible_split_resolutions:
             found_splits = set(possible_split_resolutions)
             if len(found_splits) == 1:
@@ -86,7 +76,7 @@ def _high_res_to_split(hla_code: str) -> Tuple[Optional[str], Optional[HlaCodePr
 #  (move the upper there as well)
 def any_code_to_split(hla_code_raw: str) -> HlaCodeProcessingResult:
     hla_code_raw = hla_code_raw.upper()
-    if re.match(HIG_RES_REGEX, hla_code_raw):
+    if re.match(HIGH_RES_REGEX, hla_code_raw):
         maybe_hla_code, maybe_result_detail = _high_res_to_split(hla_code_raw)
     else:
         maybe_hla_code, maybe_result_detail = hla_code_raw, None
