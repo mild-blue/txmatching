@@ -4,22 +4,28 @@
 import logging
 from enum import Enum
 
-from dacite import from_dict, Config
-from flask import request, jsonify, make_response
+from dacite import Config, from_dict
+from flask import jsonify, make_response, request
 from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_role
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.service.service_auth_check import allow_service_role
-from txmatching.data_transfer_objects.patients.patient_upload_dto_in import PatientUploadDTOIn
-from txmatching.data_transfer_objects.patients.patient_upload_dto_out import PatientUploadDTOOut
-from txmatching.data_transfer_objects.patients.txm_event_dto_in import TxmEventDTOIn
-from txmatching.data_transfer_objects.patients.txm_event_dto_out import TxmEventDTOOut
+from txmatching.data_transfer_objects.patients.patient_upload_dto_in import \
+    PatientUploadDTOIn
+from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
+    PatientUploadDTOOut
+from txmatching.data_transfer_objects.patients.txm_event_dto_in import \
+    TxmEventDTOIn
+from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
+    TxmEventDTOOut
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
-    TxmEventJsonIn, TxmEventJsonOut, UploadPatientsJson, FailJson, PatientUploadSuccessJson)
-from txmatching.database.services.patient_service import update_txm_event_patients
-from txmatching.database.services.txm_event_service import create_txm_event, delete_txm_event
-from txmatching.utils.enums import Country
+    FailJson, PatientUploadSuccessJson, TxmEventJsonIn, TxmEventJsonOut,
+    UploadPatientsJson)
+from txmatching.database.services.patient_service import \
+    update_txm_event_patients
+from txmatching.database.services.txm_event_service import (create_txm_event,
+                                                            delete_txm_event)
 from txmatching.web.api.namespaces import txm_event_api
 
 logger = logging.getLogger(__name__)
@@ -98,7 +104,7 @@ class TxmEventUploadPatients(Resource):
     def put(self):
         patient_upload_dto = from_dict(data_class=PatientUploadDTOIn, data=request.json, config=Config(cast=[Enum]))
         #  current_user = get_current_user()  # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
-        country_code = Country.CZE  # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
+        country_code = patient_upload_dto.country  # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
         update_txm_event_patients(patient_upload_dto, country_code)
         return jsonify(PatientUploadDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),
