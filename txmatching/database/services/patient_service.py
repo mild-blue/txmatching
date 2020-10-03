@@ -138,7 +138,7 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      related_donor_db_id=related_donor_db_id,
                      hla_antibodies=HLAAntibodies(
                          [HLAAntibody(code=hla_antibody.code,
-                                      mfi=hla_antibody.MFI,
+                                      mfi=hla_antibody.mfi,
                                       cutoff=hla_antibody.cutoff,
                                       raw_code=hla_antibody.raw_code)
                           for hla_antibody in recipient_model.hla_antibodies]
@@ -254,7 +254,7 @@ def _recipient_upload_dto_to_recipient_model(
         raw_code=hla_antibody.name,
         code=parse_code(hla_antibody.name),
         cutoff=hla_antibody.cutoff,
-        mfi=hla_antibody.MFI
+        mfi=hla_antibody.mfi
     ) for hla_antibody in recipient.HLA_antibodies]
 
     transformed_hla_antibodies = [HLAAntibody(

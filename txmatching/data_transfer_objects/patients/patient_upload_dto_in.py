@@ -11,6 +11,6 @@ from txmatching.utils.enums import Country
 @dataclass
 class PatientUploadDTOIn:
     country: Country
-    TXM_event_name: str
+    TXM_event_name: str  # pylint: disable=invalid-name
     donors: List[DonorUploadDTO]
     recipients: List[RecipientUploadDTO]
