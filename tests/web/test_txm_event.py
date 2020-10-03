@@ -1,15 +1,18 @@
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.data_types import UserRole
-from txmatching.data_transfer_objects.patients.txm_event_dto_in import TxmEventDTOIn
+from txmatching.data_transfer_objects.patients.txm_event_dto_in import \
+    TxmEventDTOIn
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import get_txm_event
-from txmatching.database.services.txm_event_service import create_txm_event, \
-    get_newest_txm_event_db_id
-from txmatching.database.sql_alchemy_schema import ConfigModel, RecipientModel, PairingResultModel, DonorModel, \
-    TxmEventModel
+from txmatching.database.services.txm_event_service import (
+    create_txm_event, get_newest_txm_event_db_id)
+from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
+                                                    PairingResultModel,
+                                                    RecipientModel,
+                                                    TxmEventModel)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.enums import Country, Sex
-from txmatching.web import txm_event_api, TXM_EVENT_NAMESPACE
+from txmatching.web import TXM_EVENT_NAMESPACE, txm_event_api
 
 DONORS = [
     {
@@ -80,7 +83,7 @@ RECIPIENTS = [
         'HLA_antibodies': [
             {
                 'name': 'B43',
-                'mfi': 2000,
+                'MFI': 2000,
                 'cutoff': 2100
             }
         ],
@@ -104,7 +107,7 @@ RECIPIENTS = [
         'HLA_antibodies': [
             {
                 'name': 'B43',
-                'mfi': 2000,
+                'MFI': 2000,
                 'cutoff': 2200
             }
         ],
@@ -127,7 +130,7 @@ RECIPIENTS = [
         'HLA_antibodies': [
             {
                 'name': 'B43',
-                'mfi': 2000,
+                'MFI': 2000,
                 'cutoff': 2300
             }
         ],
@@ -160,7 +163,7 @@ class TestMatchingApi(DbTests):
             )
 
             self.assertEqual(201, res.status_code)
-            self.assertEqual("application/json", res.content_type)
+            self.assertEqual('application/json', res.content_type)
             self.assertIsNotNone(res.json)
             self.assertEqual(txm_name, res.json['name'])
 
@@ -177,7 +180,7 @@ class TestMatchingApi(DbTests):
             )
 
             self.assertEqual(400, res.status_code)
-            self.assertEqual("application/json", res.content_type)
+            self.assertEqual('application/json', res.content_type)
             self.assertIsNotNone(res.json)
             self.assertEqual('TXM event "test2" already exists.', res.json['message'])
 
@@ -204,7 +207,7 @@ class TestMatchingApi(DbTests):
             )
 
             self.assertEqual(403, res.status_code)
-            self.assertEqual("application/json", res.content_type)
+            self.assertEqual('application/json', res.content_type)
             self.assertIsNotNone(res.json)
 
     def test_txm_event_deletion(self):
@@ -223,7 +226,7 @@ class TestMatchingApi(DbTests):
             )
 
             self.assertEqual(200, res.status_code)
-            self.assertEqual("application/json", res.content_type)
+            self.assertEqual('application/json', res.content_type)
 
         tmx_event_db = TxmEventModel.query.filter(TxmEventModel.name == txm_name).first()
         self.assertIsNone(tmx_event_db)
@@ -236,7 +239,7 @@ class TestMatchingApi(DbTests):
             )
 
             self.assertEqual(400, res.status_code)
-            self.assertEqual("application/json", res.content_type)
+            self.assertEqual('application/json', res.content_type)
 
     def test_txm_event_deletion_failure_invalid_role(self):
         self.fill_db_with_patients_and_results()
@@ -260,7 +263,7 @@ class TestMatchingApi(DbTests):
             )
 
             self.assertEqual(403, res.status_code)
-            self.assertEqual("application/json", res.content_type)
+            self.assertEqual('application/json', res.content_type)
 
     def test_txm_event_patient_successful_upload(self):
         self.fill_db_with_patients_and_results()
@@ -272,7 +275,7 @@ class TestMatchingApi(DbTests):
 
         upload_patients = {
             'country': Country.CZE.value,
-            'txm_event_name': txm_name,
+            'TXM_event_name': txm_name,
             'donors': DONORS,
             'recipients': RECIPIENTS
         }
@@ -286,7 +289,7 @@ class TestMatchingApi(DbTests):
             )
 
             self.assertEqual(200, res.status_code)
-            self.assertEqual("application/json", res.content_type)
+            self.assertEqual('application/json', res.content_type)
             self.assertIsNotNone(res.json)
 
         self.assertEqual(txm_name, txm_event.name)
@@ -301,7 +304,7 @@ class TestMatchingApi(DbTests):
 
         upload_patients = {
             'country': Country.CZE.value,
-            'txm_event_name': 'invalid_name',
+            'TXM_event_name': 'invalid_name',
             'donors': DONORS,
             'recipients': RECIPIENTS
         }
@@ -328,7 +331,7 @@ class TestMatchingApi(DbTests):
 
         upload_patients = {
             'country': Country.CZE.value,
-            'txm_event_name': txm_name,
+            'TXM_event_name': txm_name,
             'donors': DONORS,
             'recipients': [
                 {
@@ -344,7 +347,7 @@ class TestMatchingApi(DbTests):
                     'HLA_antibodies': [
                         {
                             'name': 'B43',
-                            'mfi': 2000,
+                            'MFI': 2000,
                             'cutoff': 2100
                         }
                     ],
@@ -382,7 +385,7 @@ class TestMatchingApi(DbTests):
         # Case 1 - recipient, DONOR type expected
         upload_patients = {
             'country': Country.CZE.value,
-            'txm_event_name': txm_name,
+            'TXM_event_name': txm_name,
             'donors': [
                 {
                     'medical_id': 'D1',
@@ -412,7 +415,7 @@ class TestMatchingApi(DbTests):
                     'HLA_antibodies': [
                         {
                             'name': 'B43',
-                            'mfi': 2000,
+                            'MFI': 2000,
                             'cutoff': 2100
                         }
                     ],
@@ -443,7 +446,7 @@ class TestMatchingApi(DbTests):
         # Case 2 - None recipient, BRIDGING_DONOR or NON_DIRECTED type expected (related_recipient_medical_id is not set)
         upload_patients = {
             'country': Country.CZE.value,
-            'txm_event_name': txm_name,
+            'TXM_event_name': txm_name,
             'donors': [
                 {
                     'medical_id': 'D1',
@@ -472,7 +475,7 @@ class TestMatchingApi(DbTests):
                     'HLA_antibodies': [
                         {
                             'name': 'B43',
-                            'mfi': 2000,
+                            'MFI': 2000,
                             'cutoff': 2100
                         }
                     ],
@@ -511,7 +514,7 @@ class TestMatchingApi(DbTests):
 
         upload_patients = {
             'country': Country.CZE.value,
-            'txm_event_name': txm_name,
+            'TXM_event_name': txm_name,
             'donors': [
                 {
                     'medical_id': 'D1',
@@ -541,7 +544,7 @@ class TestMatchingApi(DbTests):
                     'HLA_antibodies': [
                         {
                             'name': 'B43',
-                            'mfi': 2000,
+                            'MFI': 2000,
                             'cutoff': 2100
                         }
                     ],
@@ -577,7 +580,7 @@ class TestMatchingApi(DbTests):
 
         upload_patients = {
             'country': Country.CZE.value,
-            'txm_event_name': txm_name,
+            'TXM_event_name': txm_name,
             'donors': [
                 {
                     'medical_id': 'D1',
@@ -620,7 +623,7 @@ class TestMatchingApi(DbTests):
                     'HLA_antibodies': [
                         {
                             'name': 'B43',
-                            'mfi': 2000,
+                            'MFI': 2000,
                             'cutoff': 2100
                         }
                     ],

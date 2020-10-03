@@ -254,7 +254,7 @@ def _recipient_upload_dto_to_recipient_model(
         raw_code=hla_antibody.name,
         code=parse_code(hla_antibody.name),
         cutoff=hla_antibody.cutoff,
-        mfi=hla_antibody.mfi
+        mfi=hla_antibody.MFI
     ) for hla_antibody in recipient.HLA_antibodies]
 
     transformed_hla_antibodies = [HLAAntibody(
