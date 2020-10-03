@@ -12,25 +12,28 @@ from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
 from txmatching.data_transfer_objects.patients.donor_update_dto import \
     DonorUpdateDTO
-from txmatching.data_transfer_objects.patients.donor_upload_dto import DonorUploadDTO
-from txmatching.data_transfer_objects.patients.patient_upload_dto_in import PatientUploadDTOIn
+from txmatching.data_transfer_objects.patients.donor_upload_dto import \
+    DonorUploadDTO
+from txmatching.data_transfer_objects.patients.patient_upload_dto_in import \
+    PatientUploadDTOIn
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.data_transfer_objects.patients.recipient_update_dto import \
     RecipientUpdateDTO
-from txmatching.data_transfer_objects.patients.recipient_upload_dto import RecipientUploadDTO
+from txmatching.data_transfer_objects.patients.recipient_upload_dto import \
+    RecipientUploadDTO
 from txmatching.database.db import db
-from txmatching.database.services.txm_event_service import \
-    get_newest_txm_event_db_id, remove_donors_and_recipients_from_txm_event
+from txmatching.database.services.txm_event_service import (
+    get_newest_txm_event_db_id, remove_donors_and_recipients_from_txm_event)
 from txmatching.database.sql_alchemy_schema import (
-    ConfigModel, DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel, TxmEventModel
-)
-from txmatching.patients.patient import (
-    Donor, DonorType, Patient, Recipient, RecipientRequirements, TxmEvent, calculate_cutoff
-)
-from txmatching.patients.patient_parameters import (
-    HLAAntibodies, HLAAntibody, HLATyping, PatientParameters
-)
+    ConfigModel, DonorModel, RecipientAcceptableBloodModel,
+    RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
+from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
+                                         RecipientRequirements, TxmEvent,
+                                         calculate_cutoff)
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
+                                                    HLATyping,
+                                                    PatientParameters)
 from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.hla_table import parse_code
 
@@ -135,7 +138,7 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      related_donor_db_id=related_donor_db_id,
                      hla_antibodies=HLAAntibodies(
                          [HLAAntibody(code=hla_antibody.code,
-                                      mfi=hla_antibody.mfi,
+                                      mfi=hla_antibody.MFI,
                                       cutoff=hla_antibody.cutoff,
                                       raw_code=hla_antibody.raw_code)
                           for hla_antibody in recipient_model.hla_antibodies]
@@ -251,7 +254,7 @@ def _recipient_upload_dto_to_recipient_model(
         raw_code=hla_antibody.name,
         code=parse_code(hla_antibody.name),
         cutoff=hla_antibody.cutoff,
-        mfi=hla_antibody.mfi
+        mfi=hla_antibody.MFI
     ) for hla_antibody in recipient.HLA_antibodies]
 
     transformed_hla_antibodies = [HLAAntibody(
@@ -375,11 +378,11 @@ def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_co
     :param country_code:
     :return:
     """
-    remove_donors_and_recipients_from_txm_event(patient_upload_dto.txm_event_name)
+    remove_donors_and_recipients_from_txm_event(patient_upload_dto.TXM_event_name)
     _save_patients_to_existing_txm_event(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,
         country_code=country_code,
-        txm_event_name=patient_upload_dto.txm_event_name
+        txm_event_name=patient_upload_dto.TXM_event_name
     )
     db.session.commit()

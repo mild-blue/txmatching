@@ -4,5 +4,5 @@ from dataclasses import dataclass
 @dataclass
 class HLAAntibodiesUploadDTO:
     name: str
-    mfi: int
+    MFI: int
     cutoff: int

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-
 from typing import List, Optional
 
+from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.enums import Sex
 
 
@@ -14,6 +14,6 @@ class DonorUploadDTO:
     donor_type: str
     related_recipient_medical_id: Optional[str]
     sex: Optional[Sex]
-    height: Optional[int]
-    weight: Optional[int]
+    height: Optional[Centimeters]
+    weight: Optional[Kilograms]
     YOB: Optional[int]  # pylint: disable=invalid-name
