@@ -5,23 +5,23 @@
         Patients
         <app-count [count]="patientsCount"></app-count>
       </h1>
-      <app-tab-switch *ngIf="!loading"
+      <app-tab-switch *ngIf="!loading && patients && activeListFilter"
                       [tabs]="tabs"
-                      [activeTab]="activeListFilter ? activeListFilter.type : ''"
+                      [activeTab]="activeListFilter.type"
                       (tabClicked)="setActiveFilter($event)"></app-tab-switch>
     </div>
   </app-container>
 
   <app-content>
-    <ng-container *ngIf="activeListFilter && !loading">
-      <app-item-list [listItemDetailComponent]="activeListFilter.detailComponent"
-                     [listItemComponent]="activeListFilter.itemComponent"
-                     [items]="getFilteredItems()"
-                     [configuration]="undefined"
-                     [patients]="patients"></app-item-list>
-    </ng-container>
-
+    <h3 *ngIf="!loading && !patients">No patients were found.</h3>
+    <app-item-list *ngIf="!loading && patients && activeListFilter"
+                   [listItemDetailComponent]="activeListFilter.detailComponent"
+                   [listItemComponent]="activeListFilter.itemComponent"
+                   [items]="getFilteredItems()"
+                   [configuration]="undefined"
+                   [patients]="patients"></app-item-list>
   </app-content>
 </section>
 
+<app-alert></app-alert>
 <app-loading [show]="loading"></app-loading>

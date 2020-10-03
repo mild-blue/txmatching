@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Donor, PatientList, patientsLSKey, Recipient } from '@app/model/Patient';
+import { Donor, PatientList, Recipient } from '@app/model/Patient';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { first } from 'rxjs/operators';
@@ -14,21 +14,10 @@ export class PatientService {
               private _logger: LoggerService) {
   }
 
-  public async updatePatients(): Promise<PatientList> {
+  public async getPatients(): Promise<PatientList> {
     return this._http.get<PatientList>(
       `${environment.apiUrl}/patients/`
     ).pipe(first()).toPromise();
-  }
-
-  public setLocalPatients(patients: PatientList) {
-    sessionStorage.removeItem(patientsLSKey);
-    sessionStorage.setItem(patientsLSKey, JSON.stringify(patients));
-  }
-
-  public getLocalPatients(): PatientList | undefined {
-    const localPatients = sessionStorage.getItem(patientsLSKey);
-    this._logger.log('Got patients from localhost', [localPatients]);
-    return localPatients ? JSON.parse(localPatients) : undefined;
   }
 
   public async saveDonor(donor: Donor): Promise<Donor> {
