@@ -16,5 +16,5 @@ export class Alert {
   }
 }
 
-export const alertTimeoutMs = 5000;
-export const fadeDurationMs = 250;
+export const alertTimeoutMs = 10;
+export const fadeDurationMs = 5000;

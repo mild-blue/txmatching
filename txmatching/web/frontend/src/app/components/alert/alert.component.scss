@@ -10,10 +10,14 @@
   border-radius: $border-radius;
 
   opacity: 1;
-  transition: opacity .15s linear;
+  transition: opacity 5s linear;
 
   &.fade {
     opacity: 0;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
   &-success {
