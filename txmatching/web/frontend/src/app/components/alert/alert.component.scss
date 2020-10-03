@@ -9,6 +9,13 @@
   border: 1px solid transparent;
   border-radius: $border-radius;
 
+  opacity: 1;
+  transition: opacity .15s linear;
+
+  &.fade {
+    opacity: 0;
+  }
+
   &-success {
     color: darken($success, 10%);
     background-color: lighten($success, 40%);

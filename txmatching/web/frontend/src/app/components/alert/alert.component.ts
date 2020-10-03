@@ -1,8 +1,9 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Alert, AlertType, fadeDuration } from '@app/model/Alert';
+import { Alert, alertTimeoutMs, AlertType, fadeDurationMs } from '@app/model/Alert';
 import { Subscription } from 'rxjs';
 import { NavigationStart, Router } from '@angular/router';
 import { AlertService } from '@app/services/alert/alert.service';
+import Timeout = NodeJS.Timeout;
 
 @Component({
   selector: 'app-alert',
@@ -11,11 +12,14 @@ import { AlertService } from '@app/services/alert/alert.service';
 })
 export class AlertComponent implements OnInit, OnDestroy {
 
+  private _alertSubscription?: Subscription;
+  private _routeSubscription?: Subscription;
+  private _alertFadeTimeout?: Timeout;
+  private _alertRemoveTimeout?: Timeout;
+
   @Input() id: string = 'default-alert';
   @Input() fade: boolean = true;
   public alerts: Alert[] = [];
-  private _alertSubscription?: Subscription;
-  private _routeSubscription?: Subscription;
 
   constructor(private _router: Router,
               private _alertService: AlertService) {
@@ -23,7 +27,7 @@ export class AlertComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._alertSubscription = this._alertService.onAlert(this.id)
-    .subscribe(alert => this.alerts.push(alert));
+    .subscribe(alert => this._showAlert(alert));
 
     this._routeSubscription = this._router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -35,6 +39,14 @@ export class AlertComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._alertSubscription?.unsubscribe();
     this._routeSubscription?.unsubscribe();
+
+    if (this._alertFadeTimeout) {
+      clearTimeout(this._alertFadeTimeout);
+    }
+
+    if (this._alertRemoveTimeout) {
+      clearTimeout(this._alertRemoveTimeout);
+    }
   }
 
   public removeAlert(alert: Alert): void {
@@ -50,9 +62,9 @@ export class AlertComponent implements OnInit, OnDestroy {
     }
 
     // remove alert after faded out
-    setTimeout(() => {
+    this._alertRemoveTimeout = setTimeout(() => {
       this.alerts = this.alerts.filter(x => x !== alert);
-    }, fadeDuration);
+    }, fadeDurationMs);
   }
 
   public getClass(alert: Alert): string {
@@ -80,4 +92,8 @@ export class AlertComponent implements OnInit, OnDestroy {
     return classes.join(' ');
   }
 
+  private _showAlert(alert: Alert): void {
+    this.alerts.push(alert);
+    this._alertFadeTimeout = setTimeout(() => this.removeAlert(alert), alertTimeoutMs);
+  }
 }
