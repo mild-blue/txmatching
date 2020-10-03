@@ -12,8 +12,8 @@
       </li>
     </ul>
   </div>
-  <div class="download">
-    <button>
+  <div *ngIf="showDownload" class="download">
+    <button (click)="handleDownloadClick()">
       Download PDF
       <mat-icon [inline]="true">get_app</mat-icon>
     </button>
