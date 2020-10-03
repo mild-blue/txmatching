@@ -13,7 +13,7 @@ from txmatching.data_transfer_objects.patients.donor_excel_dto import \
 from txmatching.data_transfer_objects.patients.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.donor_upload_dto import DonorUploadDTO
-from txmatching.data_transfer_objects.patients.patient_upload_dto import PatientUploadDTO
+from txmatching.data_transfer_objects.patients.patient_upload_dto_in import PatientUploadDTOIn
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.data_transfer_objects.patients.recipient_update_dto import \
@@ -368,7 +368,7 @@ def _save_patients_to_existing_txm_event(
     db.session.add_all(donor_models)
 
 
-def update_txm_event_patients(patient_upload_dto: PatientUploadDTO, country_code: Country):
+def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_code: Country):
     """
     Updates TXM event patients, i.e., removes current event donors and recipients and add new entities.
     :param patient_upload_dto:

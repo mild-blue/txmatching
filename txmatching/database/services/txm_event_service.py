@@ -14,11 +14,18 @@ def get_newest_txm_event_db_id() -> int:
 
 def create_txm_event(name: str) -> TxmEvent:
     if len(TxmEventModel.query.filter(TxmEventModel.name == name).all()) > 0:
-        raise ValueError(f'TXM event "{name}" already exists.')
+        raise InvalidArgumentException(f'TXM event "{name}" already exists.')
     txm_event_model = TxmEventModel(name=name)
     db.session.add(txm_event_model)
     db.session.commit()
     return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict={}, recipients_dict={})
+
+
+def delete_txm_event(name: str):
+    if len(TxmEventModel.query.filter(TxmEventModel.name == name).all()) == 0:
+        raise InvalidArgumentException(f'TXM event "{name}" does not exist.')
+    TxmEventModel.query.filter(TxmEventModel.name == name).delete()
+    db.session.commit()
 
 
 def remove_donors_and_recipients_from_txm_event(name: str):
