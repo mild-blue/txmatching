@@ -35,6 +35,6 @@ def solve_from_config(params: SolverInputParameters) -> Tuple[Iterable[MatchingW
     matchings.sort(key=lambda matching: matching.score(), reverse=True)
     matchings.sort(key=lambda matching: len(matching.donor_recipient_list), reverse=True)
     for idx, matching in enumerate(matchings):
-        matching.set_db_id(idx + 1)
+        matching.set_db_id(idx + 1) # TODO neni to chyba? Davam db_id proste podle poradi?
 
     return matchings, score_matrix
