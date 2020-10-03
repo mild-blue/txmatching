@@ -47,10 +47,6 @@ export class AppComponent implements OnDestroy {
     return !this.isLoggedIn || this.patients !== undefined;
   }
 
-  get showHeader(): boolean {
-    return this._router.url !== '/login';
-  }
-
   private async _updatePatients(): Promise<void> {
     this.loading = true;
     this._patientService.updatePatients().then(patients => {
