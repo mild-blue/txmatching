@@ -12,6 +12,12 @@
       </li>
     </ul>
   </div>
+  <div class="download">
+    <button>
+      Download PDF
+      <mat-icon [inline]="true">get_app</mat-icon>
+    </button>
+  </div>
   <div class="icons">
     <div *ngIf="user" class="user">
       <button #userDropdownTrigger (click)="openDropdown(userDropdownId)">

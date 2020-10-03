@@ -76,6 +76,32 @@ header {
     }
   }
 
+  .download {
+    margin-right: $padding-x;
+
+    button {
+      border-radius: $border-radius--wide;
+      border: 1px solid $body-color--secondary;
+      color: $body-color--secondary;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+      font-size: 14px;
+      background-color: transparent;
+      transition: background-color 0.5s ease;
+
+      mat-icon {
+        margin-left: 10px;
+        font-size: 16px;
+      }
+
+      &:hover {
+        background-color: $gray-200;
+      }
+    }
+  }
+
   .icons {
     display: flex;
     justify-content: flex-end;
