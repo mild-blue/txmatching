@@ -14,6 +14,7 @@ import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
 import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
+import { ReportService } from '@app/services/report/report.service';
 
 @Component({
   selector: 'app-home',
@@ -45,6 +46,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               private _alertService: AlertService,
               private _matchingService: MatchingService,
               private _patientService: PatientService,
+              private _reportService: ReportService,
               private _logger: LoggerService) {
   }
 
@@ -60,6 +62,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._patientsSubscription?.unsubscribe();
   }
 
+  public getActiveMatching(): Matching | undefined {
+    return this.matchings.find(m => m.isActive);
+  }
+
   get isViewer(): boolean {
     return this.user ? this.user.decoded.role === Role.VIEWER : false;
   }
@@ -73,6 +79,16 @@ export class HomeComponent implements OnInit, OnDestroy {
   public toggleConfiguration(): void {
     this.configOpened = !this.configOpened;
     document.querySelector('body')?.classList.toggle('config-opened');
+  }
+
+  public downloadReport(): void {
+    const activeMatching = this.getActiveMatching();
+    if (!activeMatching) {
+      return;
+    }
+
+    console.log('download', activeMatching);
+    // todo use reportService
   }
 
   public calculate(configuration: Configuration): void {

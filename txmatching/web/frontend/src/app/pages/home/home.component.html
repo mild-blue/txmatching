@@ -1,4 +1,6 @@
-<app-header [user]="user"></app-header>
+<app-header [user]="user"
+            [showDownload]="getActiveMatching() !== undefined"
+            (downloadAction)="downloadReport()"></app-header>
 
 <section class="home">
   <app-container>
