@@ -5,9 +5,9 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 PATH_TO_REL_DNA_SER = get_absolute_path('./txmatching/utils/hla_system/rel_dna_ser.txt')
 
 
-def parse_rel_dna_ser():
+def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
     rel_dna_ser_df = (
-        pd.read_csv(PATH_TO_REL_DNA_SER, comment='#', delimiter=';', header=None)
+        pd.read_csv(path_to_rel_dna_ser, comment='#', delimiter=';', header=None)
 
     )
 
@@ -27,7 +27,9 @@ def parse_rel_dna_ser():
     )
 
     split_dp = (
-        rel_dna_ser_df.loc[lambda df: rel_dna_ser_df[0].str.startswith('DP'), 1]
+        rel_dna_ser_df
+            .loc[lambda df: ~df.index.isin(split_unambigous.index)]
+            .loc[lambda df: (rel_dna_ser_df[0].str.startswith('DP')) | (rel_dna_ser_df[0].str.startswith('C*')), 1]
             .str.split(':')
             .str[0]
             # remove special ones with letter - we do not know what code to assign to them
@@ -35,7 +37,7 @@ def parse_rel_dna_ser():
             .astype(int)
             .astype(str)
             .to_frame(name='split_number')
-            .assign(source='dp_fallback')
+            .assign(source='dp_cw_fallback')
     )
 
     split_numbers = pd.concat([split_dp, split_unambigous])
@@ -58,7 +60,7 @@ def parse_rel_dna_ser():
 
 
 HIGH_RES_TO_SPLIT = {high_res: split if not pd.isna(split) else None for high_res, split in
-                     parse_rel_dna_ser().split.to_dict().items()}
+                     parse_rel_dna_ser(PATH_TO_REL_DNA_SER).split.to_dict().items()}
 
 SPLIT_CODES = set(HIGH_RES_TO_SPLIT.values())
 SPLIT_CODES.remove(None)

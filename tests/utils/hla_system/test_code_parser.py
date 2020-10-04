@@ -1,7 +1,11 @@
 import unittest
 
+import pandas as pd
+
+from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (
     HlaCodeProcessingResultDetail, any_code_to_split, parse_code)
+from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
 
 codes = {
     'A1': ('A1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
@@ -33,3 +37,13 @@ class TestCodeParser(unittest.TestCase):
                                   f'{code} was processed to {result.maybe_hla_code} '
                                   f'with result {result.result_detail} expected was: '
                                   f'{expected_result} with result {expected_result_detail}')
+
+    def test_parse_hla_ser(self):
+        parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))
+
+        self.assertEqual('A1', parsing_result.loc['A*01:01:01:01'].split)
+        self.assertTrue(pd.isna(parsing_result.loc['A*05:01:01:02N'].split))
+        self.assertTrue(pd.isna(parsing_result.loc['A*06:01:01:02'].split))
+        self.assertEqual('DR1', parsing_result.loc['DRB1*03:01:01:02'].split)
+        self.assertEqual('DP2', parsing_result.loc['DPB1*02:01:06'].split)
+        self.assertEqual('CW14', parsing_result.loc['C*14:02:01:01'].split)
