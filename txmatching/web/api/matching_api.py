@@ -13,13 +13,14 @@ from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigurationJson
 from txmatching.data_transfer_objects.matchings.matching_dto import (
-    MatchingDTO, RoundDTO, Transplant)
+    MatchingDTO, RoundDTO, TransplantDTOOut)
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
     Matchings
-from txmatching.database.services.config_service import (
-    configuration_from_dict, save_configuration_as_current)
+from txmatching.database.services.config_service import configuration_from_dict
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_for_current_user
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.web.api.namespaces import matching_api
 
@@ -36,17 +37,17 @@ class CalculateFromConfig(Resource):
     @matching_api.response(200, model=Matchings, description='List of all matching for given configuration')
     @require_user_login()
     def post(self) -> str:
+        txm_event_id = get_txm_event_for_current_user()
         configuration = configuration_from_dict(request.json)
-        save_configuration_as_current(configuration)
-        solve_from_db()
-        matchings, score_dict, compatible_blood_dict = get_latest_matchings_and_score_matrix()
+        solve_from_db(configuration, txm_event_db_id=txm_event_id)
+        matchings, score_dict, compatible_blood_dict = get_latest_matchings_and_score_matrix(txm_event_id)
 
         matching_dtos = [
             dataclasses.asdict(MatchingDTO(
                 rounds=[
                     RoundDTO(
                         transplants=[
-                            Transplant(
+                            TransplantDTOOut(
                                 score_dict[(donor.db_id, recipient.db_id)],
                                 compatible_blood_dict[(donor.db_id, recipient.db_id)],
                                 donor.medical_id,

@@ -25,7 +25,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(1, 1)
 
     def test_saving_patients(self):
-        self.fill_db_with_patients_and_results()
+        txm_event_db_id = self.fill_db_with_patients_and_results()
 
         self.assertSetEqual({'0', 'A'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
         self.assertSetEqual({'B7', 'DQ6', 'DQ5'},
@@ -37,7 +37,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             hla_antibodies=HLAAntibodies([HLAAntibody(mfi=20, cutoff=10, code='B43', raw_code='B43')]),
             recipient_requirements=RecipientRequirements(require_better_match_in_compatibility_index=True),
             db_id=1
-        ))
+        ), txm_event_db_id)
 
         self.assertSetEqual({'AB'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
         self.assertSetEqual({'B43'}, {code.code for code in RecipientModel.query.get(1).hla_antibodies})
@@ -45,7 +45,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
 
     def test_saving_donors(self):
-        self.fill_db_with_patients_and_results()
+        txm_event_db_id = self.fill_db_with_patients_and_results()
 
         self.assertSetEqual({'A11',
                              'B8',
@@ -55,7 +55,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         update_donor(DonorUpdateDTO(
             hla_typing=HLATypingDTO([HLAType('A11')]),
             db_id=1
-        ))
+        ), txm_event_db_id)
 
         self.assertSetEqual({'A11'},
                             {hla_type['code'] for hla_type in DonorModel.query.get(1).hla_typing['hla_types_list']})

@@ -18,6 +18,8 @@ from txmatching.data_transfer_objects.patients.recipient_update_dto import \
 from txmatching.database.services.patient_service import (get_txm_event,
                                                           update_donor,
                                                           update_recipient)
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_for_current_user
 from txmatching.web.api.namespaces import patient_api
 
 logger = logging.getLogger(__name__)
@@ -32,7 +34,7 @@ class AllPatients(Resource):
     @patient_api.response(code=200, model=PatientsModel, description='')
     @require_user_login()
     def get(self) -> str:
-        patients = get_txm_event()
+        patients = get_txm_event(get_txm_event_for_current_user())
         return jsonify(patients.to_lists_for_fe())
 
 
@@ -45,7 +47,7 @@ class AlterRecipient(Resource):
     def put(self):
         recipient_update_dto = from_dict(data_class=RecipientUpdateDTO, data=request.json)
 
-        return jsonify(update_recipient(recipient_update_dto))
+        return jsonify(update_recipient(recipient_update_dto, get_txm_event_for_current_user()))
 
 
 @patient_api.route('/donor', methods=['PUT'])
@@ -56,4 +58,4 @@ class AlterDonor(Resource):
     def put(self):
         donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
 
-        return jsonify(update_donor(donor_update_dto))
+        return jsonify(update_donor(donor_update_dto, get_txm_event_for_current_user()))

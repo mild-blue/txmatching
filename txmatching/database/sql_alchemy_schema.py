@@ -144,6 +144,7 @@ class AppUserModel(db.Model):
     email = db.Column(db.TEXT, unique=True, nullable=False)
     pass_hash = db.Column(db.TEXT, unique=False, nullable=False)
     role = db.Column(db.Enum(UserRole), unique=False, nullable=False)
+    default_txm_event_id = db.Column(db.Integer, unique=False, nullable=True)
     # Whitelisted IP address if role is SERVICE
     # Seed for TOTP in all other cases
     second_factor_material = db.Column(db.TEXT, unique=False, nullable=False)
