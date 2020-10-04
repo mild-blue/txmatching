@@ -362,7 +362,7 @@ def _save_patients_to_existing_txm_event(
 
     donor_models = [
         _donor_upload_dto_to_donor_model(
-            donor= donor,
+            donor=donor,
             related_recipient=recipient_models_dict.get(donor.related_recipient_medical_id, None),
             country_code=country_code,
             txm_event_db_id=txm_event_db_id)

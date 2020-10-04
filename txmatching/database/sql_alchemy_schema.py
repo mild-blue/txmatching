@@ -152,3 +152,17 @@ class AppUserModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+
+class UploadedDataModel(db.Model):
+    __tablename__ = 'uploaded_data'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    txm_event_id = db.Column(db.Integer, ForeignKey('txm_event.id'), unique=False, nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('app_user.id'), unique=False, nullable=False)
+    uploaded_data = db.Column(db.JSON, unique=False, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now(),
+                           onupdate=func.now())
+    deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
