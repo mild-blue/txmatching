@@ -59,7 +59,7 @@ def create_app():
     def configure_encryption():
         bcrypt.init_app(app)
 
-    def configure_apis():
+    def configure_apis(application_configuration: ApplicationConfiguration):
         # disable default error handling
         app.config['ERROR_INCLUDE_MESSAGE'] = False
 
@@ -71,8 +71,15 @@ def create_app():
                 'name': 'Authorization'
             }
         }
-
-        api = Api(app, authorizations=authorizations, doc='/doc/', version='0.3', title='TX Matching API')
+        # disable swagger when we're running in the production
+        enable_swagger = not application_configuration.is_production
+        api = Api(
+            authorizations=authorizations,
+            doc='/doc/' if enable_swagger else False,
+            version='0.3',
+            title='TX Matching API'
+        )
+        api.init_app(app, add_specs=enable_swagger)
         api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
         api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
         api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
@@ -122,5 +129,5 @@ def create_app():
         # enable cors
         enable_cors()
         # finish configuration
-        configure_apis()
+        configure_apis(application_config)
         return app

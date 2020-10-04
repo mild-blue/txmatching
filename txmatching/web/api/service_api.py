@@ -2,13 +2,12 @@
 # can not, they are used for generating swagger which needs class
 
 import logging
-import os
 
-from flask import current_app as app
 from flask import jsonify
 from flask_restx import Resource, fields
 from sqlalchemy.exc import OperationalError
 
+from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
 from txmatching.database.db import db
 from txmatching.web.api.namespaces import service_api
 
@@ -43,30 +42,6 @@ class Version(Resource):
 
     @service_api.response(code=200, model=version_model, description='Returns version of the code')
     def get(self):
-        version = get_version()
+        version = get_application_configuration().code_version
         logger.debug(f'Responding on version endpoint with version {version}')
-        return jsonify({'version': get_version()})
-
-
-def get_version() -> str:
-    """
-    Retrieves version from the flask app.
-    """
-    return read_version('development')
-
-
-def read_version(default: str) -> str:
-    """
-    Reads version from the file or returns default version.
-    """
-    file_path = os.environ.get('RELEASE_FILE_PATH')
-    file_path = file_path if file_path else app.config.get('RELEASE_FILE_PATH')
-    logger.debug(f'File path: {file_path}')
-
-    version = None
-    if file_path:
-        with open(file_path, 'r') as file:
-            version = file.readline().strip()
-            logger.info(f'Settings version as: {version}')
-
-    return version if version else default
+        return jsonify({'version': version})
