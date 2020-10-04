@@ -25,7 +25,9 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
 from txmatching.database.services.patient_service import \
     update_txm_event_patients
 from txmatching.database.services.txm_event_service import (create_txm_event,
-                                                            delete_txm_event)
+                                                            delete_txm_event,
+                                                            save_original_data)
+from txmatching.utils.logged_user import get_current_user
 from txmatching.web.api.namespaces import txm_event_api
 
 logger = logging.getLogger(__name__)
@@ -104,8 +106,9 @@ class TxmEventUploadPatients(Resource):
     def put(self):
         patient_upload_dto = from_dict(data_class=PatientUploadDTOIn, data=request.json, config=Config(cast=[Enum]))
         # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
-        # current_user = get_current_user()
+        current_user = get_current_user()
         country_code = patient_upload_dto.country  # TODO get from the user https://trello.com/c/8tzYR2Dj
+        save_original_data(patient_upload_dto, current_user)
         update_txm_event_patients(patient_upload_dto, country_code)
         return jsonify(PatientUploadDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),
