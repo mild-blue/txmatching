@@ -9,7 +9,8 @@ from txmatching.database.services.txm_event_service import (
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     PairingResultModel,
                                                     RecipientModel,
-                                                    TxmEventModel)
+                                                    TxmEventModel,
+                                                    UploadedDataModel)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.enums import Country, Sex
 from txmatching.web import TXM_EVENT_NAMESPACE, txm_event_api
@@ -297,6 +298,7 @@ class TestMatchingApi(DbTests):
         self.assertEqual(4, len(DonorModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()))
         self.assertEqual(3, res.json['recipients_uploaded'])
         self.assertEqual(4, res.json['donors_uploaded'])
+        self.assertEqual(1, len(UploadedDataModel.query.all()))
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         self.fill_db_with_patients_and_results()
