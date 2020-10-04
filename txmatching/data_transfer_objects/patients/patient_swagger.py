@@ -8,7 +8,7 @@ BLOOD_TYPES = ['A', 'B', 'AB', '0']
 
 HLAAntibody = patient_api.model('HlaAntibody', {
     'raw_code': fields.String(required=True),
-    'MFI': fields.Integer(required=True),
+    'mfi': fields.Integer(required=True),
     'cutoff': fields.String(required=True),
     'code': fields.String(required=False)
 })
@@ -71,7 +71,7 @@ PatientsModel = patient_api.model('Patients', {
 
 HLAAntibodyToUpdate = patient_api.model('HlaAntibodyToUpdate', {
     'raw_code': fields.String(required=True),
-    'MFI': fields.Integer(required=True),
+    'mfi': fields.Integer(required=True),
 })
 
 HLATypeToUpdate = patient_api.model('HlaTypeToUpdate', {
