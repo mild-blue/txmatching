@@ -107,8 +107,8 @@ class TxmEventUploadPatients(Resource):
         patient_upload_dto = from_dict(data_class=PatientUploadDTOIn, data=request.json, config=Config(cast=[Enum]))
         # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
         current_user = get_current_user()
+        save_original_data(patient_upload_dto.TXM_event_name, current_user.id, request.json)
         country_code = patient_upload_dto.country  # TODO get from the user https://trello.com/c/8tzYR2Dj
-        save_original_data(patient_upload_dto, current_user)
         update_txm_event_patients(patient_upload_dto, country_code)
         return jsonify(PatientUploadDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),

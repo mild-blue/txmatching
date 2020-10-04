@@ -2,8 +2,7 @@ from sqlalchemy import and_
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.database.db import db
-from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
-                                                    RecipientModel,
+from txmatching.database.sql_alchemy_schema import (DonorModel, RecipientModel,
                                                     TxmEventModel,
                                                     UploadedDataModel)
 from txmatching.patients.patient import TxmEvent
@@ -41,13 +40,22 @@ def remove_donors_and_recipients_from_txm_event(name: str):
     RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event_model.id).delete()
 
 
-def _remove_last_uploaded_data(txm_event_name: str, current_user: AppUserModel):
+def _remove_last_uploaded_data(txm_event_id: int, current_user_id: int):
+    UploadedDataModel.query.filter(and_(UploadedDataModel.txm_event_id == txm_event_id,
+                                        UploadedDataModel.user_id == current_user_id)).delete()
+
+
+def save_original_data(txm_event_name: str, current_user_id: int, data: dict):
     txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == txm_event_name).first()
     if not txm_event_model:
         raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.')
-    UploadedDataModel.query.filter(and_(UploadedDataModel.txm_event_id == txm_event_model.id,
-                                        UploadedDataModel.user_id == current_user.id)).delete()
+    txm_event_model_id = txm_event_model.id
+    _remove_last_uploaded_data(txm_event_model_id, current_user_id)
+    uploaded_data_model = UploadedDataModel(
+        txm_event_id=txm_event_model_id,
+        user_id=current_user_id,
+        uploaded_data=data
+    )
 
-
-def save_original_data(patient_upload_dto, current_user):
-    _remove_last_uploaded_data(patient_upload_dto.TXM_event_name, current_user)
+    db.session.add_all([uploaded_data_model])
+    db.session.commit()
