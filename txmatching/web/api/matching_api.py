@@ -4,18 +4,20 @@
 import dataclasses
 import logging
 
-from flask import request, jsonify
+from flask import jsonify, request
 from flask_restx import Resource
 
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.request_context import get_user_role
 from txmatching.auth.user.user_auth_check import require_user_login
-from txmatching.data_transfer_objects.configuration.configuration_swagger import ConfigurationJson
+from txmatching.data_transfer_objects.configuration.configuration_swagger import \
+    ConfigurationJson
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, Transplant)
-from txmatching.data_transfer_objects.matchings.matching_swagger import MATCHING_MODEL
-from txmatching.database.services.config_service import \
-    save_configuration_as_current, configuration_from_dict
+from txmatching.data_transfer_objects.matchings.matching_swagger import \
+    Matchings
+from txmatching.database.services.config_service import (
+    configuration_from_dict, save_configuration_as_current)
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.solve_service.solve_from_db import solve_from_db
@@ -31,7 +33,7 @@ LOGIN_FLASH_CATEGORY = 'LOGIN'
 @matching_api.route('/calculate-for-config', methods=['POST'])
 class CalculateFromConfig(Resource):
     @matching_api.doc(body=ConfigurationJson, security='bearer')
-    @matching_api.response(200, model=MATCHING_MODEL, description='')
+    @matching_api.response(200, model=Matchings, description='List of all matching for given configuration')
     @require_user_login()
     def post(self) -> str:
         configuration = configuration_from_dict(request.json)
