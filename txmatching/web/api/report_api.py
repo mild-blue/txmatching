@@ -12,7 +12,7 @@ from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
 
-from txmatching.auth.user.user_auth_check import require_user_login
+from txmatching.auth.user.user_auth_check import require_user_edit_access
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore)
 from txmatching.data_transfer_objects.matchings.matching_dto import (
@@ -53,7 +53,7 @@ class Report(Resource):
             404: 'Raised when matching with particular id was not found.'
         }
     )
-    @require_user_login()
+    @require_user_edit_access()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
         matching_id = int(request.view_args['matching_id'])
