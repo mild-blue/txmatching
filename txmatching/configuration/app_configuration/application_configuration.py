@@ -44,12 +44,11 @@ def _build_application_configuration() -> ApplicationConfiguration:
     Builds configuration from environment or from the Flask properties
     """
     logger.debug('Building configuration.')
-    code_version, tagged = _get_version()
+    code_version, is_production = _get_version()
 
     config = ApplicationConfiguration(
         code_version=code_version,
-        # we consider tagged code as the one that is running in the production
-        is_production=tagged,
+        is_production=is_production,
         postgres_user=_get_prop('POSTGRES_USER'),
         postgres_password=_get_prop('POSTGRES_PASSWORD'),
         postgres_db=_get_prop('POSTGRES_DB'),
@@ -75,13 +74,26 @@ def _get_version() -> Tuple[str, bool]:
     """
     Retrieves version from the flask app.
 
-    Returns version of the code and boolean whether the code is tagged.
+    Returns version of the code and boolean whether the code runs in the production.
     """
     version = _read_version('development')
-    # try to match current version to the semantic versioning (x.y.z)
-    # the semantic versioning indicates that the code is tagged, thus released
-    prod = bool(re.search(r'^\d+\.\d+\.\d$', version))
-    return version, prod
+    return version, _determine_is_production_from_version(version)
+
+
+def _determine_is_production_from_version(version: str) -> bool:
+    """
+    Returns true if the current version uses semantic versioning.
+    The semantic versioning indicates that the code is tagged, thus released.
+    >>> _determine_is_production_from_version('1.2.3')
+    True
+    >>> _determine_is_production_from_version('10.20.30')
+    True
+    >>> _determine_is_production_from_version('10.20.30-dirty')
+    False
+    >>> _determine_is_production_from_version('development')
+    False
+    """
+    return bool(re.match(r'^\d+\.\d+\.\d+$', version))
 
 
 def _read_version(default: str) -> str:
@@ -96,6 +108,6 @@ def _read_version(default: str) -> str:
     if file_path:
         with open(file_path, 'r') as file:
             version = file.readline().strip()
-            logger.debug(f'Settings version as: {version}')
+            logger.debug(f'Setting version as: {version}')
 
     return version if version else default
