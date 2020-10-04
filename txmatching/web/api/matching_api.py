@@ -15,7 +15,7 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, Transplant)
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
-    MATCHING_MODELS
+    Matchings
 from txmatching.database.services.config_service import (
     configuration_from_dict, save_configuration_as_current)
 from txmatching.database.services.matching_service import \
@@ -33,7 +33,7 @@ LOGIN_FLASH_CATEGORY = 'LOGIN'
 @matching_api.route('/calculate-for-config', methods=['POST'])
 class CalculateFromConfig(Resource):
     @matching_api.doc(body=ConfigurationJson, security='bearer')
-    @matching_api.response(200, model=MATCHING_MODELS, description='List of all matching for given configuration')
+    @matching_api.response(200, model=Matchings, description='List of all matching for given configuration')
     @require_user_login()
     def post(self) -> str:
         configuration = configuration_from_dict(request.json)
