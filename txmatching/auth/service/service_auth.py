@@ -4,7 +4,6 @@ from txmatching.auth.data_types import UserRole, TokenType, BearerTokenRequest
 from txmatching.auth.exceptions import InvalidIpAddressAccessException, require_auth_condition
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
-# TODO https://trello.com/c/sRq4nFRv specify with the customer
 SERVICE_JWT_EXPIRATION_MINUTES = 2
 
 
