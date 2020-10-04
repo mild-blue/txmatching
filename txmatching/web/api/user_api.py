@@ -73,6 +73,8 @@ class RefreshTokenApi(Resource):
     @user_api.response(code=200, model=LoginSuccessResponse, description='Token successfully refreshed.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
     @user_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @user_api.response(code=403, model=FailJson,
+                       description='Authentication denied. You do not have rights to access this endpoint')
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     def get(self):
@@ -89,6 +91,8 @@ class PasswordChangeApi(Resource):
     @user_api.response(code=200, model=StatusResponse, description='Password changed successfully.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
     @user_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @user_api.response(code=403, model=FailJson,
+                       description='Authentication denied. You do not have rights to access this endpoint')
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     def put(self):
