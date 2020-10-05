@@ -70,6 +70,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.user ? this.user.decoded.role === Role.VIEWER : false;
   }
 
+  get showDownload(): boolean {
+    // const activeMatching =
+    return !this.loading && this.getActiveMatching() !== undefined;
+  }
+
   get showConfiguration(): boolean {
     const configDefined = !!this.configuration;
     const patientsDefined = !!this.patients;
@@ -81,14 +86,22 @@ export class HomeComponent implements OnInit, OnDestroy {
     document.querySelector('body')?.classList.toggle('config-opened');
   }
 
-  public downloadReport(): void {
+  public async downloadReport(): Promise<void> {
     const activeMatching = this.getActiveMatching();
     if (!activeMatching) {
       return;
     }
 
     console.log('download', activeMatching);
-    // todo use reportService
+
+    try {
+      const report = await this._reportService.downloadReport(activeMatching.db_id);
+      console.log(report);
+    } catch (e) {
+      this._alertService.error(`<strong>Error downloading PDF:</strong> ${e}`);
+      // todo logger error
+    }
+
   }
 
   public calculate(configuration: Configuration): void {
@@ -163,6 +176,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private _prepareMatchings(m: Matching[]): Matching[] {
     return m.map((matching, key) => {
       matching.index = key + 1;
+      matching.isActive = key === 0;
       matching.rounds.forEach(round => round.transplants = round.transplants.map(transplant => this._prepareTransplant(transplant)));
       return matching;
     });

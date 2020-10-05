@@ -13,7 +13,7 @@ export class ReportService {
 
   public async downloadReport(matchingId: number): Promise<unknown> {
     return this._http.get<unknown>(
-      `${environment.apiUrl}/report/${matchingId}`
+      `${environment.apiUrl}/reports/${matchingId}`
     ).pipe(first()).toPromise();
   }
 }
