@@ -23,8 +23,8 @@ from txmatching.data_transfer_objects.patients.recipient_update_dto import \
 from txmatching.data_transfer_objects.patients.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
-from txmatching.database.services.txm_event_service import (
-    get_newest_txm_event_db_id, remove_donors_and_recipients_from_txm_event)
+from txmatching.database.services.txm_event_service import \
+    remove_donors_and_recipients_from_txm_event
 from txmatching.database.sql_alchemy_schema import (
     ConfigModel, DonorModel, RecipientAcceptableBloodModel,
     RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
