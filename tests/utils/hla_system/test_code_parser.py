@@ -47,3 +47,4 @@ class TestCodeParser(unittest.TestCase):
         self.assertEqual('DR1', parsing_result.loc['DRB1*03:01:01:02'].split)
         self.assertEqual('DP2', parsing_result.loc['DPB1*02:01:06'].split)
         self.assertEqual('CW14', parsing_result.loc['C*14:02:01:01'].split)
+        self.assertEqual('CW8', parsing_result.loc['C*09'].split)
