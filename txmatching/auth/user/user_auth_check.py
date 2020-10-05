@@ -6,6 +6,13 @@ from txmatching.auth.data_types import UserRole
 
 def require_user_login() -> Callable:
     """
-    Requires login from user (not service)
+    Requires login from user (not service).
     """
     return require_role(UserRole.ADMIN, UserRole.VIEWER, UserRole.EDITOR)
+
+
+def require_user_edit_access() -> Callable:
+    """
+    Requires user with edit rights - ADMIN or EDITOR.
+    """
+    return require_role(UserRole.ADMIN, UserRole.EDITOR)

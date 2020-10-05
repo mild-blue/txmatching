@@ -1,7 +1,12 @@
+from sqlalchemy import and_
+
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.database.db import db
-from txmatching.database.sql_alchemy_schema import TxmEventModel, DonorModel, RecipientModel
+from txmatching.database.sql_alchemy_schema import (DonorModel, RecipientModel,
+                                                    TxmEventModel,
+                                                    UploadedDataModel)
 from txmatching.patients.patient import TxmEvent
+from txmatching.utils.logged_user import get_current_user
 
 
 def get_newest_txm_event_db_id() -> int:
@@ -34,3 +39,33 @@ def remove_donors_and_recipients_from_txm_event(name: str):
         raise InvalidArgumentException(f'No TXM event with name "{name}" found.')
     DonorModel.query.filter(DonorModel.txm_event_id == txm_event_model.id).delete()
     RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event_model.id).delete()
+
+
+def get_txm_event_for_current_user() -> int:
+    current_user_model = get_current_user()
+    # TODO change in https://trello.com/c/xRmQhnqM
+    if current_user_model.default_txm_event_id:
+        return current_user_model.default_txm_event_id
+    else:
+        return get_newest_txm_event_db_id()
+
+
+def _remove_last_uploaded_data(txm_event_id: int, current_user_id: int):
+    UploadedDataModel.query.filter(and_(UploadedDataModel.txm_event_id == txm_event_id,
+                                        UploadedDataModel.user_id == current_user_id)).delete()
+
+
+def save_original_data(txm_event_name: str, current_user_id: int, data: dict):
+    txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == txm_event_name).first()
+    if not txm_event_model:
+        raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.')
+    txm_event_model_id = txm_event_model.id
+    _remove_last_uploaded_data(txm_event_model_id, current_user_id)
+    uploaded_data_model = UploadedDataModel(
+        txm_event_id=txm_event_model_id,
+        user_id=current_user_id,
+        uploaded_data=data
+    )
+
+    db.session.add(uploaded_data_model)
+    db.session.commit()
