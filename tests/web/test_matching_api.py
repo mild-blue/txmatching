@@ -28,7 +28,7 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(expected, res.json)
 
     def test_get_patients(self):
-        self.fill_db_with_patients_and_results()
+        self.fill_db_with_patients()
         self.api.add_namespace(patient_api, path='/pat')
         with self.app.test_client() as client:
             res = client.get('/pat/', headers=self.auth_headers)

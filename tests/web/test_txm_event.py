@@ -7,6 +7,7 @@ from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_newest_txm_event_db_id
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
+                                                    PairingResultModel,
                                                     RecipientModel,
                                                     TxmEventModel,
                                                     UploadedDataModel)
@@ -244,6 +245,13 @@ class TestMatchingApi(DbTests):
     def test_txm_event_deletion_failure_invalid_role(self):
         self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
+        txm_event_db_id = get_newest_txm_event_db_id()
+        txm_event = get_txm_event(txm_event_db_id)
+        configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()
+        self.assertEqual(2, len(txm_event.donors_dict))
+        self.assertEqual(1, len(configs))
+        self.assertEqual(1, len(PairingResultModel.query.filter(PairingResultModel.config_id.in_(
+            [config.id for config in configs])).all()))
 
         txm_name = 'test'
 
@@ -572,7 +580,8 @@ class TestMatchingApi(DbTests):
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
             self.assertEqual('When recipient is not set, donor type must be "BRIDGING_DONOR" or "NON_DIRECTED".',
-                             res.json['message'])
+                             res.json['message']
+                             )
 
     def test_txm_event_patient_failed_upload_duplicate_related_recipient_medical_id_in_donors(self):
         self.fill_db_with_patients_and_results()

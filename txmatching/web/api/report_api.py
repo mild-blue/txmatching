@@ -12,15 +12,17 @@ from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
 
-from txmatching.auth.user.user_auth_check import require_user_login
+from txmatching.auth.user.user_auth_check import require_user_edit_access
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore)
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, MatchingReportDTO, RoundReportDTO, TransplantDTO)
 from txmatching.database.services.config_service import \
-    get_current_configuration
+    latest_configuration_for_txm_event
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
 from txmatching.utils.blood_groups import ANTIBODIES_MULTIPLIERS_STR, HLATypes
 from txmatching.web.api.namespaces import report_api
@@ -53,15 +55,16 @@ class Report(Resource):
             404: 'Raised when matching with particular id was not found.'
         }
     )
-    @require_user_login()
+    @require_user_edit_access()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
+        txm_event_id = get_txm_event_for_current_user()
         matching_id = int(request.view_args['matching_id'])
         if request.args.get('matchingRangeLimit') is None or request.args.get('matchingRangeLimit') == '':
             abort(400, "Query argument 'matchingRangeLimit' must be set.")
 
         matching_range_limit = int(request.args.get('matchingRangeLimit'))
-        (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix()
+        (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_id)
 
         requested_matching = list(filter(lambda matching: matching.db_id() == matching_id, all_matchings))
         if len(requested_matching) == 0:
@@ -95,7 +98,7 @@ class Report(Resource):
         ) for matching in matchings
         ]
 
-        configuration = get_current_configuration()
+        configuration = latest_configuration_for_txm_event(txm_event_db_id=txm_event_id)
 
         Report.prepare_tmp_dir()
         Report.prune_old_reports()

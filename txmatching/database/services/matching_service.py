@@ -21,14 +21,15 @@ ScoreDict = Dict[Tuple[int, int], float]
 BloodCompatibleDict = Dict[Tuple[int, int], bool]
 
 
-def get_latest_matchings_and_score_matrix() -> Tuple[List[MatchingWithScore], ScoreDict, BloodCompatibleDict]:
+def get_latest_matchings_and_score_matrix(txm_event_db_id: int) -> Tuple[
+    List[MatchingWithScore], ScoreDict, BloodCompatibleDict]:
     last_pairing_result_model = PairingResultModel.query.order_by(PairingResultModel.updated_at.desc()).first()
 
     if last_pairing_result_model is None:
         raise AssertionError('There are no latest matchings in the database, '
                              "didn't you forget to call solve_from_db()?")
 
-    txm_event = get_txm_event()
+    txm_event = get_txm_event(txm_event_db_id)
 
     calculated_matchings = from_dict(data_class=CalculatedMatchings,
                                      data=last_pairing_result_model.calculated_matchings)

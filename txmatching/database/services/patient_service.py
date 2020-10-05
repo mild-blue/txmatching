@@ -152,10 +152,11 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      )
 
 
-def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> Recipient:
+def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
     # TODO do not delete https://trello.com/c/zseK1Zcf
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
-    txm_event_db_id = old_recipient_model.txm_event_id
+    if txm_event_db_id != old_recipient_model.txm_event_id:
+        raise InvalidArgumentException('Trying to update patient the user has no access to')
     ConfigModel.query.filter(
         and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
 
@@ -200,11 +201,13 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO) -> Recipient:
     return _get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id))
 
 
-def update_donor(donor_update_dto: DonorUpdateDTO) -> Donor:
+def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
     # TODO do not delete https://trello.com/c/zseK1Zcf
-    old_donor = DonorModel.query.get(donor_update_dto.db_id)
+    old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
+    if txm_event_db_id != old_donor_model.txm_event_id:
+        raise InvalidArgumentException('Trying to update patient the user has no access to')
     ConfigModel.query.filter(
-        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == old_donor.txm_event_id)).delete()
+        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
 
     donor_update_dict = {}
     if donor_update_dto.hla_typing:
@@ -214,9 +217,7 @@ def update_donor(donor_update_dto: DonorUpdateDTO) -> Donor:
     return _get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
 
 
-def get_txm_event(txm_event_db_id: Optional[int] = None) -> TxmEvent:
-    if not txm_event_db_id:
-        txm_event_db_id = get_newest_txm_event_db_id()
+def get_txm_event(txm_event_db_id: int) -> TxmEvent:
     txm_event_model = TxmEventModel.query.get(txm_event_db_id)
 
     active_donors = txm_event_model.donors
