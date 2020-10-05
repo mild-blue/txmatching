@@ -32,11 +32,15 @@ StatusResponse = user_api.model('StatusResponse', {
 class LoginApi(Resource):
     login_input_model = user_api.model('UserLogin', {
         'email': fields.String(required=True, description='Email of the user to login.'),
-        'password': fields.String(required=True, description='Users password.')
+        'password': fields.String(required=True, description='User\'s password.')
     })
 
     @user_api.doc(body=login_input_model)
-    @user_api.response(code=200, model=LoginSuccessResponse, description='Login successful. JWT generated.')
+    @user_api.response(code=200, model=LoginSuccessResponse,
+                       description='Login successful. JWT generated. User must attach the token to every request '
+                                   'in the "Authorization" header with the prefix "Bearer". Example: '
+                                   '"Authorization: Bearer some_token", where some_token is the token received '
+                                   'in the response.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
     @user_api.response(code=401, model=FailJson, description='Authentication denied.')
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
