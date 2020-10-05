@@ -3,7 +3,6 @@ import logging
 from typing import Dict, Iterator
 
 from dacite import Config, from_dict
-from sqlalchemy import and_
 
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
@@ -42,7 +41,7 @@ def save_configuration_to_db(configuration: Configuration, txm_event_db_id: int)
 
 
 def get_config_models(txm_event_db_id: int) -> Iterator[ConfigModel]:
-    configs = ConfigModel.query.filter(and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).all()
+    configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
     return configs
 
 

@@ -14,7 +14,9 @@ CREATE TYPE DONOR_TYPE AS ENUM (
 CREATE TYPE COUNTRY AS ENUM (
     'CZE',
     'AUT',
-    'IL'
+    'ISR',
+    'CAN',
+    'IND'
     );
 
 CREATE TYPE BLOOD_TYPE AS ENUM (
@@ -53,8 +55,7 @@ $BODY$
     LANGUAGE plpgsql;
 
 
-CREATE TABLE txm_event
-(
+CREATE TABLE txm_event (
     id         BIGSERIAL   NOT NULL,
     name       TEXT        NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
@@ -64,8 +65,7 @@ CREATE TABLE txm_event
     CONSTRAINT uq_txm_event_name UNIQUE (name)
 );
 
-CREATE TABLE app_user
-(
+CREATE TABLE app_user (
     id                     BIGSERIAL   NOT NULL,
     email                  TEXT        NOT NULL, -- serves as username
     pass_hash              TEXT        NOT NULL,
@@ -73,17 +73,16 @@ CREATE TABLE app_user
     second_factor_material TEXT        NOT NULL,
     phone_number           TEXT,
     require_2fa            BOOLEAN     NOT NULL,
-    default_txm_event_id    BIGINT,
+    default_txm_event_id   BIGINT,
     created_at             TIMESTAMPTZ NOT NULL,
     updated_at             TIMESTAMPTZ NOT NULL,
     deleted_at             TIMESTAMPTZ,
     CONSTRAINT pk_app_user_id PRIMARY KEY (id),
     CONSTRAINT uq_app_user_email UNIQUE (email),
-    CONSTRAINT fk_app_user_default_txm_event_id_txm_event_id FOREIGN KEY (default_txm_event_id) REFERENCES txm_event (id) on delete set null on update cascade
+    CONSTRAINT fk_app_user_default_txm_event_id_txm_event_id FOREIGN KEY (default_txm_event_id) REFERENCES txm_event(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
-CREATE TABLE recipient
-(
+CREATE TABLE recipient (
     id                     BIGSERIAL   NOT NULL,
     medical_id             TEXT        NOT NULL,
     txm_event_id           BIGINT      NOT NULL,
@@ -97,18 +96,17 @@ CREATE TABLE recipient
     height                 INT,
     weight                 NUMERIC,
     yob                    INT,
-    waiting_since          timestamptz,
+    waiting_since          TIMESTAMPTZ,
     previous_transplants   INT,
     created_at             TIMESTAMPTZ NOT NULL,
     updated_at             TIMESTAMPTZ NOT NULL,
     deleted_at             TIMESTAMPTZ,
     CONSTRAINT pk_recipient_id PRIMARY KEY (id),
     CONSTRAINT uq_recipient_medical_id UNIQUE (medical_id, txm_event_id),
-    CONSTRAINT fk_recipient_txm_event_id_txm_event_id FOREIGN KEY (txm_event_id) REFERENCES txm_event (id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT fk_recipient_txm_event_id_txm_event_id FOREIGN KEY (txm_event_id) REFERENCES txm_event(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE donor
-(
+CREATE TABLE donor (
     id           BIGSERIAL   NOT NULL,
     medical_id   TEXT        NOT NULL,
     txm_event_id BIGINT      NOT NULL,
@@ -127,14 +125,13 @@ CREATE TABLE donor
     deleted_at   TIMESTAMPTZ,
     CONSTRAINT pk_donor_id PRIMARY KEY (id),
     CONSTRAINT uq_donor_medical_id UNIQUE (medical_id, txm_event_id),
-    CONSTRAINT fk_donor_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT fk_donor_txm_event_id_txm_event_id FOREIGN KEY (txm_event_id) REFERENCES txm_event (id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT fk_donor_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_donor_txm_event_id_txm_event_id FOREIGN KEY (txm_event_id) REFERENCES txm_event(id) ON DELETE CASCADE ON UPDATE CASCADE
 
 
 );
 
-CREATE TABLE recipient_acceptable_blood
-(
+CREATE TABLE recipient_acceptable_blood (
     id           BIGSERIAL   NOT NULL,
     recipient_id BIGINT      NOT NULL,
     blood_type   BLOOD_TYPE  NOT NULL,
@@ -142,12 +139,11 @@ CREATE TABLE recipient_acceptable_blood
     updated_at   TIMESTAMPTZ NOT NULL,
     deleted_at   TIMESTAMPTZ,
     CONSTRAINT pk_recipient_acceptable_blood_id PRIMARY KEY (id),
-    CONSTRAINT fk_recipient_acceptable_blood_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient (id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT fk_recipient_acceptable_blood_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
-CREATE TABLE recipient_hla_antibodies
-(
+CREATE TABLE recipient_hla_antibodies (
     id           BIGSERIAL   NOT NULL,
     recipient_id BIGINT      NOT NULL,
     raw_code     TEXT        NOT NULL,
@@ -159,25 +155,23 @@ CREATE TABLE recipient_hla_antibodies
     deleted_at   TIMESTAMPTZ,
     CONSTRAINT uq_recipient_hla_antibodies_code_recipient_id UNIQUE (raw_code, recipient_id),
     CONSTRAINT pk_recipient_hla_antibodies_id PRIMARY KEY (id),
-    CONSTRAINT fk_recipient_hla_antibodies_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient (id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT fk_recipient_hla_antibodies_recipient_id_recipient_id FOREIGN KEY (recipient_id) REFERENCES recipient(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE config
-(
+CREATE TABLE config (
     id           BIGSERIAL   NOT NULL,
     txm_event_id BIGINT      NOT NULL,
-    parameters   JSONB       NOT NULL,                                                             -- JSON
+    parameters   JSONB       NOT NULL,                                                            -- JSON
     created_by   BIGINT      NOT NULL,
     created_at   TIMESTAMPTZ NOT NULL,
     updated_at   TIMESTAMPTZ NOT NULL,
     deleted_at   TIMESTAMPTZ,
     CONSTRAINT pk_config_id PRIMARY KEY (id),
-    CONSTRAINT fk_config_created_by_app_user_id FOREIGN KEY (created_by) REFERENCES app_user (id), -- this is also valid for pairing_result
-    CONSTRAINT fk_config_txm_event_id_txm_event_id FOREIGN KEY (txm_event_id) REFERENCES txm_event (id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT fk_config_created_by_app_user_id FOREIGN KEY (created_by) REFERENCES app_user(id), -- this is also valid for pairing_result
+    CONSTRAINT fk_config_txm_event_id_txm_event_id FOREIGN KEY (txm_event_id) REFERENCES txm_event(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE pairing_result
-(
+CREATE TABLE pairing_result (
     id                   BIGSERIAL   NOT NULL,
     config_id            BIGINT      NOT NULL,
     calculated_matchings JSONB       NOT NULL, -- JSON
@@ -187,7 +181,22 @@ CREATE TABLE pairing_result
     updated_at           TIMESTAMPTZ NOT NULL,
     deleted_at           TIMESTAMPTZ,
     CONSTRAINT pk_pairing_result_id PRIMARY KEY (id),
-    CONSTRAINT fk_pairing_result_config_id_config_id FOREIGN KEY (config_id) REFERENCES config (id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT fk_pairing_result_config_id_config_id FOREIGN KEY (config_id) REFERENCES config(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE uploaded_data (
+    id            BIGSERIAL   NOT NULL,
+    txm_event_id  BIGINT      NOT NULL,
+    user_id       BIGINT      NOT NULL,
+    uploaded_data JSONB       NOT NULL, -- JSON, original data uploaded by the SERVICE account
+    created_at    TIMESTAMPTZ NOT NULL,
+    updated_at    TIMESTAMPTZ NOT NULL,
+    deleted_at    TIMESTAMPTZ,
+    CONSTRAINT pk_uploaded_data_id PRIMARY KEY (id),
+    CONSTRAINT uq_uploaded_data_txm_event_id_user_id UNIQUE (txm_event_id, user_id),
+    CONSTRAINT fk_uploaded_data_txm_event_id_txm_event_id FOREIGN KEY (txm_event_id) REFERENCES txm_event(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_uploaded_data_user_id_app_user_id FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE ON UPDATE CASCADE
+
 );
 
 

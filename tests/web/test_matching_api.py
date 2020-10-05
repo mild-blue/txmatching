@@ -28,7 +28,7 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(expected, res.json)
 
     def test_get_patients(self):
-        txm_event_db_id = self.fill_db_with_patients_and_results()
+        self.fill_db_with_patients()
         self.api.add_namespace(patient_api, path='/pat')
         with self.app.test_client() as client:
             res = client.get('/pat/', headers=self.auth_headers)
@@ -36,7 +36,7 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(2, len(res.json['recipients']))
 
     def test_save_recipient(self):
-        txm_event_db_id = self.fill_db_with_patients_and_results()
+        self.fill_db_with_patients_and_results()
         self.api.add_namespace(patient_api, path='/pat')
         recipient_update_dict = {
             'db_id': 1,

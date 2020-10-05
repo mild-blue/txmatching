@@ -32,6 +32,8 @@ _unknown_allele_codes = set()
 DEFAULT_CUTOFF_FOR_EXCEL = 2000
 DEFAULT_MFI = 10000
 
+TEST_PATIENT_ID_REGEX = re.compile(r'([0-9A-Z]{1,5})-([A-Z]{3})-([DR])')
+
 logger = logging.getLogger(__name__)
 
 
@@ -83,13 +85,17 @@ def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
 
 
 def _country_code_from_id(patient_id: str) -> Country:
-    if re.match('[PD][0-9]{4}', patient_id):
-        return Country.IL
+    match = re.match(TEST_PATIENT_ID_REGEX, patient_id)
+    if match:
+        return Country[match.group(2)]
+    # Old excels from IKEM had the country distinction below
+    elif re.match('[PD][0-9]{4}', patient_id):
+        return Country.ISR
 
-    if re.match('[PD][0-9]{1,2}', patient_id):
+    elif re.match('[PD][0-9]{1,2}', patient_id):
         return Country.CZE
 
-    if patient_id.startswith('W-'):
+    elif patient_id.startswith('W-'):
         return Country.AUT
 
     raise ValueError(f'Could not assign country code to {patient_id}')

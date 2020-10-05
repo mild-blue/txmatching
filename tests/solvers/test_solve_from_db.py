@@ -7,11 +7,11 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 
 class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_caching_in_solve_from_db(self):
-        txm_event_db_id = self.fill_db_with_patients_and_results()
+        self.fill_db_with_patients()
         self.assertEqual(1, len(list(solve_from_db(Configuration(), 1))))
 
     def test_solve_from_db(self):
-        txm_event_db_id = self.fill_db_with_patients_and_results()
+        self.fill_db_with_patients()
         configuration = Configuration(
             manual_donor_recipient_scores=[
                 ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=4, score=1.0)])

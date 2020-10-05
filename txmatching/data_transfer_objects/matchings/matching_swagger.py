@@ -9,7 +9,7 @@ TransplantJson = matching_api.model('Transplant', {
     'recipient': fields.String(required=True)
 })
 
-CountryJson = matching_api.model('Country', {
+CountryInRoundJson = matching_api.model('Country', {
     'country_code': fields.String(required=True),
     'donor_count': fields.Integer(required=True),
     'recipient_count': fields.Integer(required=True)
@@ -22,6 +22,9 @@ RoundJson = matching_api.model('Round', {
 MatchingJson = matching_api.model('Matching', {
     'score': fields.Float(required=True),
     'rounds': fields.List(required=True, cls_or_instance=fields.Nested(RoundJson)),
-    'countries': fields.List(required=True, cls_or_instance=fields.Nested(CountryJson))
+    'countries': fields.List(required=True, cls_or_instance=fields.Nested(CountryInRoundJson)),
+    'db_id': fields.Integer(required=True)
 
 })
+
+Matchings = fields.List(fields.Nested(MatchingJson))

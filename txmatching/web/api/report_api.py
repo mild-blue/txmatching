@@ -12,7 +12,7 @@ from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
 
-from txmatching.auth.user.user_auth_check import require_user_login
+from txmatching.auth.user.user_auth_check import require_user_edit_access
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore)
 from txmatching.data_transfer_objects.matchings.matching_dto import (
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TMP_DIR = '/tmp/txmatching_reports'
-
+MATCHINGS_BELOW_CHOSEN = 'matchingsBelowChosen'
 
 # pylint: disable=no-self-use
 # Query params:
@@ -42,8 +42,8 @@ class Report(Resource):
     @report_api.doc(
         security='bearer',
         params={
-            'matchingRangeLimit': {
-                'description': 'Range limit over/under of requested matching score.',
+            MATCHINGS_BELOW_CHOSEN: {
+                'description': 'Number of matchings with lower score than chosen to include in report',
                 'in': 'query',
                 'type': 'integer',
                 'required': 'true'
@@ -55,15 +55,15 @@ class Report(Resource):
             404: 'Raised when matching with particular id was not found.'
         }
     )
-    @require_user_login()
+    @require_user_edit_access()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
         txm_event_id = get_txm_event_for_current_user()
         matching_id = int(request.view_args['matching_id'])
-        if request.args.get('matchingRangeLimit') is None or request.args.get('matchingRangeLimit') == '':
-            abort(400, "Query argument 'matchingRangeLimit' must be set.")
+        if request.args.get(MATCHINGS_BELOW_CHOSEN) is None or request.args.get(MATCHINGS_BELOW_CHOSEN) == '':
+            abort(400, f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
 
-        matching_range_limit = int(request.args.get('matchingRangeLimit'))
+        matching_range_limit = int(request.args.get(MATCHINGS_BELOW_CHOSEN))
         (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_id)
 
         requested_matching = list(filter(lambda matching: matching.db_id() == matching_id, all_matchings))
@@ -74,13 +74,14 @@ class Report(Resource):
 
         matchings_over_score = list(
             filter(lambda matching: matching.db_id() != matching_id and matching.score() >= matching_score,
-                   all_matchings))[
-                               :matching_range_limit]
+                   all_matchings))
         matchings_under_score = list(
             filter(lambda matching: matching.db_id() != matching_id and matching.score() < matching_score,
                    all_matchings))[
                                 :matching_range_limit]
-        matchings = requested_matching + matchings_over_score + matchings_under_score
+        other_matchings_to_include = matchings_over_score + matchings_under_score
+        other_matchings_to_include.sort(key=lambda m: m.score())
+        matchings = requested_matching + other_matchings_to_include
 
         matching_dtos = [MatchingReportDTO(
             rounds=[
