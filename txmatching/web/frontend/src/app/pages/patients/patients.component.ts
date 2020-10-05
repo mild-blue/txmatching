@@ -6,6 +6,7 @@ import { PatientListFilter, patientListFilters, PatientListFilterType } from '@a
 import { LoggerService } from '@app/services/logger/logger.service';
 import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
+import { DownloadStatus } from '@app/components/header/header.interface';
 
 @Component({
   selector: 'app-patients',
@@ -22,6 +23,7 @@ export class PatientsComponent implements OnInit {
 
   public loading: boolean = false;
   public error: boolean = false;
+  public downloadStatus: DownloadStatus = DownloadStatus.hidden;
 
   public user?: User;
 

@@ -78,6 +78,18 @@ header {
 
   .download {
     margin-right: $padding-x;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+
+    &.disabled {
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    &.hidden {
+      pointer-events: none;
+      opacity: 0;
+    }
 
     button {
       border-radius: $border-radius--wide;
@@ -95,8 +107,9 @@ header {
         margin-left: 10px;
       }
 
-      mat-icon, mat-spinner {
+      mat-icon {
         font-size: 16px;
+        width: 16px;
       }
 
       mat-spinner {
