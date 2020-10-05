@@ -1,5 +1,6 @@
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
+from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.patients.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
@@ -9,20 +10,40 @@ from txmatching.data_transfer_objects.patients.recipient_update_dto import \
 from txmatching.database.services.patient_service import (
     save_patients_from_excel_to_empty_txm_event, update_donor,
     update_recipient)
-from txmatching.database.sql_alchemy_schema import DonorModel, RecipientModel
+from txmatching.database.sql_alchemy_schema import (
+    AppUserModel, ConfigModel, DonorModel, PairingResultModel,
+    RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
 from txmatching.patients.patient import RecipientRequirements
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType)
+from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 
 class TestSolveFromDbAndItsSupportFunctionality(DbTests):
-    def test_saving_patients_from_excel(self):
-        patients = parse_excel_data(get_absolute_path('tests/test_utilities/data.xlsx'))
+    def test_saving_patients_from_obfuscated_excel(self):
+        patients = parse_excel_data(get_absolute_path('tests/test_utilities/patient_data_2020_07_obfuscated.xlsx'))
         txm_event = create_or_overwrite_txm_event('test')
         save_patients_from_excel_to_empty_txm_event(patients, txm_event.db_id)
-        self.assertEqual(1, 1)
+
+        configs = ConfigModel.query.all()
+        recipients = RecipientModel.query.all()
+        donors = DonorModel.query.all()
+        pairing_results = PairingResultModel.query.all()
+        recipient_acceptable_bloods = RecipientAcceptableBloodModel.query.all()
+        recipient_hla_antibodies = RecipientHLAAntibodyModel.query.all()
+        app_users = AppUserModel.query.all()
+
+        self.assertEqual(0, len(configs))
+        self.assertEqual(34, len(recipients))
+        self.assertEqual(38, len(donors))
+        self.assertEqual(0, len(pairing_results))
+        self.assertEqual(91, len(recipient_acceptable_bloods))
+        self.assertEqual(1102, len(recipient_hla_antibodies))
+        self.assertEqual(4, len(app_users))
+
+        self.assertEqual(650, len(list(solve_from_db(Configuration(), txm_event.db_id))))
 
     def test_saving_patients(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()

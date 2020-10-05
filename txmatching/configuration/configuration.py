@@ -6,8 +6,8 @@ from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  PatientDbId)
 from txmatching.utils.enums import Country
 
-DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Country.IL),
-                                  ForbiddenCountryCombination(Country.IL, Country.AUT)]
+DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Country.ISR),
+                                  ForbiddenCountryCombination(Country.ISR, Country.AUT)]
 
 
 # pylint: disable=too-many-instance-attributes

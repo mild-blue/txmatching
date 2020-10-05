@@ -75,7 +75,6 @@ setup-non-empty-db:
 	sleep 2
 	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./txmatching/database/db_migrations/V1_schema.sql
 	cd tests/test_utilities; PYTHONPATH=../..:$PYTHONPATH python populate_db.py
-	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./tests/test_utilities/sql_part_of_prepare_nonempty_db.sql
 
 clean-db:
 	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./tests/test_utilities/clean_db.sql

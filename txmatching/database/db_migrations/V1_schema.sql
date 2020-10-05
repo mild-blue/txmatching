@@ -14,7 +14,9 @@ CREATE TYPE DONOR_TYPE AS ENUM (
 CREATE TYPE COUNTRY AS ENUM (
     'CZE',
     'AUT',
-    'IL'
+    'ISR',
+    'CAN',
+    'IND'
     );
 
 CREATE TYPE BLOOD_TYPE AS ENUM (
