@@ -12,8 +12,10 @@ from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
 from txmatching.data_transfer_objects.patients.donor_update_dto import \
     DonorUpdateDTO
-from txmatching.data_transfer_objects.patients.donor_upload_dto import DonorUploadDTO
-from txmatching.data_transfer_objects.patients.patient_upload_dto_in import PatientUploadDTOIn
+from txmatching.data_transfer_objects.patients.donor_upload_dto import \
+    DonorUploadDTO
+from txmatching.data_transfer_objects.patients.patient_upload_dto_in import \
+    PatientUploadDTOIn
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.data_transfer_objects.patients.recipient_update_dto import \
@@ -254,7 +256,7 @@ def _recipient_upload_dto_to_recipient_model(
         code=parse_code(hla_antibody.name),
         cutoff=hla_antibody.cutoff,
         mfi=hla_antibody.mfi
-    ) for hla_antibody in recipient.HLA_antibodies]
+    ) for hla_antibody in recipient.hla_antibodies]
 
     transformed_hla_antibodies = [HLAAntibody(
         raw_code=hla_antibody.raw_code,
@@ -269,7 +271,7 @@ def _recipient_upload_dto_to_recipient_model(
         medical_id=recipient.medical_id,
         country=country_code,
         blood=recipient.blood_group,
-        hla_typing=[parse_code(typing) for typing in recipient.HLA_typing],
+        hla_typing=[parse_code(typing) for typing in recipient.hla_typing],
         hla_antibodies=hla_antibodies,
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
@@ -280,7 +282,7 @@ def _recipient_upload_dto_to_recipient_model(
         weight=recipient.weight,
         height=recipient.height,
         sex=recipient.sex,
-        yob=recipient.YOB,
+        yob=recipient.year_of_birth,
     )
     return recipient_model
 
@@ -315,14 +317,14 @@ def _donor_upload_dto_to_donor_model(
         medical_id=donor.medical_id,
         country=country_code,
         blood=donor.blood_group,
-        hla_typing=[parse_code(typing) for typing in donor.HLA_typing],
+        hla_typing=[parse_code(typing) for typing in donor.hla_typing],
         active=True,
         recipient_id=maybe_recipient_id,
         donor_type=donor.donor_type,
         weight=donor.weight,
         height=donor.height,
         sex=donor.sex,
-        yob=donor.YOB,
+        yob=donor.year_of_birth,
         txm_event_id=txm_event_db_id
     )
     return donor_model

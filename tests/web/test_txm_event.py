@@ -9,7 +9,8 @@ from txmatching.database.services.txm_event_service import \
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     PairingResultModel,
                                                     RecipientModel,
-                                                    TxmEventModel)
+                                                    TxmEventModel,
+                                                    UploadedDataModel)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.enums import Country, Sex
 from txmatching.web import TXM_EVENT_NAMESPACE, txm_event_api
@@ -18,7 +19,7 @@ DONORS = [
     {
         'medical_id': 'D1',
         'blood_group': 'A',
-        'HLA_typing': [
+        'hla_typing': [
             'A9', 'A21'
         ],
         'donor_type': DonorType.DONOR.value,
@@ -26,12 +27,12 @@ DONORS = [
         'sex': Sex.M,
         'height': 180,
         'weight': 90,
-        'YOB': 1965
+        'year_of_birth': 1965
     },
     {
         'medical_id': 'D2',
         'blood_group': 'B',
-        'HLA_typing': [
+        'hla_typing': [
             'A9', 'A21'
         ],
         'donor_type': DonorType.DONOR.value,
@@ -39,25 +40,25 @@ DONORS = [
         'sex': Sex.M,
         'height': 178,
         'weight': 69,
-        'YOB': 1967
+        'year_of_birth': 1967
     },
     {
         # Missing related_recipient_medical_id
         'medical_id': 'D3',
         'blood_group': '0',
-        'HLA_typing': [
+        'hla_typing': [
             'A9', 'A21'
         ],
         'donor_type': DonorType.NON_DIRECTED.value,
         'sex': Sex.M,
         'height': 146,
         'weight': 89,
-        'YOB': 1960
+        'year_of_birth': 1960
     },
     {
         'medical_id': 'D4',
         'blood_group': 'AB',
-        'HLA_typing': [
+        'hla_typing': [
             'A9'
         ],
         'donor_type': DonorType.DONOR.value,
@@ -65,7 +66,7 @@ DONORS = [
         'sex': Sex.M,
         'height': 145,
         'weight': 56,
-        'YOB': 1989
+        'year_of_birth': 1989
     },
 ]
 
@@ -77,10 +78,10 @@ RECIPIENTS = [
         ],
         'medical_id': 'R1',
         'blood_group': 'A',
-        'HLA_typing': [
+        'hla_typing': [
             'A9', 'A21'
         ],
-        'HLA_antibodies': [
+        'hla_antibodies': [
             {
                 'name': 'B43',
                 'mfi': 2000,
@@ -90,7 +91,7 @@ RECIPIENTS = [
         'sex': Sex.F,
         'height': 150,
         'weight': 65,
-        'YOB': 2001,
+        'year_of_birth': 2001,
         'waiting_since': '2020-01-06',
         'previous_transplants': 0
     },
@@ -101,10 +102,10 @@ RECIPIENTS = [
         ],
         'medical_id': 'R2',
         'blood_group': 'B',
-        'HLA_typing': [
+        'hla_typing': [
             'A9', 'A21'
         ],
-        'HLA_antibodies': [
+        'hla_antibodies': [
             {
                 'name': 'B43',
                 'mfi': 2000,
@@ -114,7 +115,7 @@ RECIPIENTS = [
         'sex': Sex.F,
         'height': 189,
         'weight': 70,
-        'YOB': 1996,
+        'year_of_birth': 1996,
         'waiting_since': '2020-02-07',
         'previous_transplants': 0
     },
@@ -124,10 +125,10 @@ RECIPIENTS = [
         ],
         'medical_id': 'R3',
         'blood_group': '0',
-        'HLA_typing': [
+        'hla_typing': [
             'A9', 'A21'
         ],
-        'HLA_antibodies': [
+        'hla_antibodies': [
             {
                 'name': 'B43',
                 'mfi': 2000,
@@ -137,7 +138,7 @@ RECIPIENTS = [
         'sex': Sex.M,
         'height': 201,
         'weight': 120,
-        'YOB': 1999,
+        'year_of_birth': 1999,
         'waiting_since': '2020-05-13',
         'previous_transplants': 0
     }
@@ -304,6 +305,7 @@ class TestMatchingApi(DbTests):
         self.assertEqual(4, len(DonorModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()))
         self.assertEqual(3, res.json['recipients_uploaded'])
         self.assertEqual(4, res.json['donors_uploaded'])
+        self.assertEqual(1, len(UploadedDataModel.query.all()))
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         self.fill_db_with_patients_and_results()
@@ -348,10 +350,10 @@ class TestMatchingApi(DbTests):
                     ],
                     'medical_id': 'R1',
                     'blood_group': 'A',
-                    'HLA_typing': [
+                    'hla_typing': [
                         'A9', 'A21'
                     ],
-                    'HLA_antibodies': [
+                    'hla_antibodies': [
                         {
                             'name': 'B43',
                             'mfi': 2000,
@@ -361,7 +363,7 @@ class TestMatchingApi(DbTests):
                     'sex': Sex.F,
                     'height': 150,
                     'weight': 65,
-                    'YOB': 21,
+                    'year_of_birth': 21,
                     'waiting_since': '2020-13-06',
                     'previous_transplants': 0
                 }
@@ -397,7 +399,7 @@ class TestMatchingApi(DbTests):
                 {
                     'medical_id': 'D1',
                     'blood_group': 'A',
-                    'HLA_typing': [
+                    'hla_typing': [
                         'A9', 'A21'
                     ],
                     'donor_type': DonorType.NON_DIRECTED.value,
@@ -405,7 +407,7 @@ class TestMatchingApi(DbTests):
                     'sex': Sex.M,
                     'height': 180,
                     'weight': 90,
-                    'YOB': 1965
+                    'year_of_birth': 1965
                 }
             ],
             'recipients': [
@@ -416,10 +418,10 @@ class TestMatchingApi(DbTests):
                     ],
                     'medical_id': 'R1',
                     'blood_group': 'A',
-                    'HLA_typing': [
+                    'hla_typing': [
                         'A9', 'A21'
                     ],
-                    'HLA_antibodies': [
+                    'hla_antibodies': [
                         {
                             'name': 'B43',
                             'mfi': 2000,
@@ -429,7 +431,7 @@ class TestMatchingApi(DbTests):
                     'sex': Sex.F,
                     'height': 150,
                     'weight': 65,
-                    'YOB': 2001,
+                    'year_of_birth': 2001,
                     'waiting_since': '2020-01-06',
                     'previous_transplants': 0
                 }
@@ -458,14 +460,14 @@ class TestMatchingApi(DbTests):
                 {
                     'medical_id': 'D1',
                     'blood_group': 'A',
-                    'HLA_typing': [
+                    'hla_typing': [
                         'A9', 'A21'
                     ],
                     'donor_type': DonorType.DONOR.value,
                     'sex': Sex.M,
                     'height': 180,
                     'weight': 90,
-                    'YOB': 1965
+                    'year_of_birth': 1965
                 }
             ],
             'recipients': [
@@ -476,10 +478,10 @@ class TestMatchingApi(DbTests):
                     ],
                     'medical_id': 'R2',
                     'blood_group': 'A',
-                    'HLA_typing': [
+                    'hla_typing': [
                         'A9', 'A21'
                     ],
-                    'HLA_antibodies': [
+                    'hla_antibodies': [
                         {
                             'name': 'B43',
                             'mfi': 2000,
@@ -489,7 +491,7 @@ class TestMatchingApi(DbTests):
                     'sex': Sex.F,
                     'height': 150,
                     'weight': 65,
-                    'YOB': 2001,
+                    'year_of_birth': 2001,
                     'waiting_since': '2020-01-06',
                     'previous_transplants': 0
                 }
@@ -526,7 +528,7 @@ class TestMatchingApi(DbTests):
                 {
                     'medical_id': 'D1',
                     'blood_group': 'A',
-                    'HLA_typing': [
+                    'hla_typing': [
                         'A9', 'A21'
                     ],
                     'donor_type': DonorType.DONOR.value,
@@ -534,7 +536,7 @@ class TestMatchingApi(DbTests):
                     'sex': Sex.M,
                     'height': 180,
                     'weight': 90,
-                    'YOB': 1965
+                    'year_of_birth': 1965
                 }
             ],
             'recipients': [
@@ -545,10 +547,10 @@ class TestMatchingApi(DbTests):
                     ],
                     'medical_id': 'R2',
                     'blood_group': 'A',
-                    'HLA_typing': [
+                    'hla_typing': [
                         'A9', 'A21'
                     ],
-                    'HLA_antibodies': [
+                    'hla_antibodies': [
                         {
                             'name': 'B43',
                             'mfi': 2000,
@@ -558,7 +560,7 @@ class TestMatchingApi(DbTests):
                     'sex': Sex.F,
                     'height': 150,
                     'weight': 65,
-                    'YOB': 2001,
+                    'year_of_birth': 2001,
                     'waiting_since': '2020-01-06',
                     'previous_transplants': 0
                 }
@@ -594,7 +596,7 @@ class TestMatchingApi(DbTests):
                 {
                     'medical_id': 'D1',
                     'blood_group': 'A',
-                    'HLA_typing': [
+                    'hla_typing': [
                         'A9', 'A21'
                     ],
                     'donor_type': DonorType.DONOR.value,
@@ -602,12 +604,12 @@ class TestMatchingApi(DbTests):
                     'sex': Sex.M,
                     'height': 180,
                     'weight': 90,
-                    'YOB': 1965
+                    'year_of_birth': 1965
                 },
                 {
                     'medical_id': 'D2',
                     'blood_group': 'A',
-                    'HLA_typing': [
+                    'hla_typing': [
                         'A9'
                     ],
                     'donor_type': DonorType.DONOR.value,
@@ -615,7 +617,7 @@ class TestMatchingApi(DbTests):
                     'sex': Sex.F,
                     'height': 187,
                     'weight': 97,
-                    'YOB': 1969
+                    'year_of_birth': 1969
                 }
             ],
             'recipients': [
@@ -626,10 +628,10 @@ class TestMatchingApi(DbTests):
                     ],
                     'medical_id': 'R1',
                     'blood_group': 'A',
-                    'HLA_typing': [
+                    'hla_typing': [
                         'A9', 'A21'
                     ],
-                    'HLA_antibodies': [
+                    'hla_antibodies': [
                         {
                             'name': 'B43',
                             'mfi': 2000,
@@ -639,7 +641,7 @@ class TestMatchingApi(DbTests):
                     'sex': Sex.F,
                     'height': 150,
                     'weight': 65,
-                    'YOB': 2001,
+                    'year_of_birth': 2001,
                     'waiting_since': '2020-01-06',
                     'previous_transplants': 0
                 }

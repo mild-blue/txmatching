@@ -6,13 +6,15 @@ from typing import Tuple
 from flask import request
 from flask_restx import Resource, fields
 
-from txmatching.auth.auth_check import (require_role)
-from txmatching.auth.auth_management import register, change_password
-from txmatching.auth.data_types import (UserRole)
-from txmatching.auth.login_flow import credentials_login, refresh_token, otp_login
+from txmatching.auth.auth_check import require_role
+from txmatching.auth.auth_management import change_password, register
+from txmatching.auth.data_types import UserRole
+from txmatching.auth.login_flow import (credentials_login, otp_login,
+                                        refresh_token)
 from txmatching.auth.user.topt_auth_check import allow_otp_request
 from txmatching.auth.user.user_auth_check import require_user_login
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import FailJson
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
+    FailJson
 from txmatching.web.api.namespaces import user_api
 
 logger = logging.getLogger(__name__)
@@ -98,7 +100,7 @@ class PasswordChangeApi(Resource):
     def put(self):
         data = request.get_json()
         change_password(new_password=data.get('new_password'))
-        return {'status': 'ok'}
+        return {'status': 'ok'}, 200
 
 
 @user_api.route('/register', methods=['POST'])
@@ -124,7 +126,7 @@ class RegistrationApi(Resource):
                  password=post_data.get('password'),
                  role=UserRole(post_data.get('role')),
                  second_factor=post_data.get('second_factor'))
-        return {'status', 'ok'}
+        return {'status': 'ok'}, 200
 
 
 def _respond_token(token: str) -> Tuple[dict, int]:

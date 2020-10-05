@@ -1,7 +1,10 @@
+from sqlalchemy import and_
+
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import (DonorModel, RecipientModel,
-                                                    TxmEventModel)
+                                                    TxmEventModel,
+                                                    UploadedDataModel)
 from txmatching.patients.patient import TxmEvent
 from txmatching.utils.logged_user import get_current_user
 
@@ -45,3 +48,24 @@ def get_txm_event_for_current_user() -> int:
         return current_user_model.default_txm_event_id
     else:
         return get_newest_txm_event_db_id()
+
+
+def _remove_last_uploaded_data(txm_event_id: int, current_user_id: int):
+    UploadedDataModel.query.filter(and_(UploadedDataModel.txm_event_id == txm_event_id,
+                                        UploadedDataModel.user_id == current_user_id)).delete()
+
+
+def save_original_data(txm_event_name: str, current_user_id: int, data: dict):
+    txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == txm_event_name).first()
+    if not txm_event_model:
+        raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.')
+    txm_event_model_id = txm_event_model.id
+    _remove_last_uploaded_data(txm_event_model_id, current_user_id)
+    uploaded_data_model = UploadedDataModel(
+        txm_event_id=txm_event_model_id,
+        user_id=current_user_id,
+        uploaded_data=data
+    )
+
+    db.session.add(uploaded_data_model)
+    db.session.commit()

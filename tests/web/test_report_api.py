@@ -1,5 +1,3 @@
-import dataclasses
-
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.solve_service.solve_from_db import solve_from_db
@@ -14,7 +12,6 @@ class TestMatchingApi(DbTests):
         self.api.add_namespace(report_api, path=f'/{REPORTS_NAMESPACE}')
 
         with self.app.test_client() as client:
-
             solve_from_db(Configuration(), self.txm_event_db_id)
 
             res = client.get(f'/{REPORTS_NAMESPACE}/1?matchingRangeLimit=2', headers=self.auth_headers)
