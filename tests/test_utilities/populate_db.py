@@ -19,7 +19,7 @@ ADMIN_USER = {
 }
 VIEWER_USER = {
     'email': 'viewer@example.com',
-    'password': 'admin'
+    'password': 'viewer'
 }
 
 OTP_USER = {

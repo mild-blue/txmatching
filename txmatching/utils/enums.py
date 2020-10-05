@@ -3,8 +3,10 @@ from enum import Enum
 
 class Country(str, Enum):
     CZE = 'CZE'
-    IL = 'IL'
+    ISR = 'ISR'
     AUT = 'AUT'
+    CAN = 'CAN'
+    IND = 'IND'
 
 
 class Sex(str, Enum):

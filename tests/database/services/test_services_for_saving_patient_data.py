@@ -1,5 +1,6 @@
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
+from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.patients.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
@@ -9,8 +10,9 @@ from txmatching.data_transfer_objects.patients.recipient_update_dto import \
 from txmatching.database.services.patient_service import (
     save_patients_from_excel_to_empty_txm_event, update_donor,
     update_recipient)
-from txmatching.database.sql_alchemy_schema import DonorModel, RecipientModel, ConfigModel, PairingResultModel, \
-    RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, AppUserModel
+from txmatching.database.sql_alchemy_schema import (
+    AppUserModel, ConfigModel, DonorModel, PairingResultModel,
+    RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
 from txmatching.patients.patient import RecipientRequirements
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType)
@@ -30,7 +32,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         donors = DonorModel.query.all()
         pairing_results = PairingResultModel.query.all()
         recipient_acceptable_bloods = RecipientAcceptableBloodModel.query.all()
-        recipient_HLA_antibodies = RecipientHLAAntibodyModel.query.all()
+        recipient_hla_antibodies = RecipientHLAAntibodyModel.query.all()
         app_users = AppUserModel.query.all()
 
         self.assertEqual(0, len(configs))
@@ -38,10 +40,10 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(38, len(donors))
         self.assertEqual(0, len(pairing_results))
         self.assertEqual(91, len(recipient_acceptable_bloods))
-        self.assertEqual(1102, len(recipient_HLA_antibodies))
+        self.assertEqual(1102, len(recipient_hla_antibodies))
         self.assertEqual(4, len(app_users))
 
-        solve_from_db(txm_event.db_id)
+        self.assertEqual(650, len(list(solve_from_db(Configuration(), txm_event.db_id))))
 
     def test_saving_patients(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
