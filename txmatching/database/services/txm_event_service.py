@@ -57,5 +57,5 @@ def save_original_data(txm_event_name: str, current_user_id: int, data: dict):
         uploaded_data=data
     )
 
-    db.session.add_all([uploaded_data_model])
+    db.session.add(uploaded_data_model)
     db.session.commit()

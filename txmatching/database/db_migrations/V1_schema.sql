@@ -190,6 +190,7 @@ CREATE TABLE uploaded_data (
     updated_at    TIMESTAMPTZ NOT NULL,
     deleted_at    TIMESTAMPTZ,
     CONSTRAINT pk_uploaded_data_id PRIMARY KEY (id),
+    CONSTRAINT uq_uploaded_data_txm_event_id_user_id UNIQUE (txm_event_id, user_id),
     CONSTRAINT fk_uploaded_data_txm_event_id_txm_event_id FOREIGN KEY (txm_event_id) REFERENCES txm_event(id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_uploaded_data_user_id_app_user_id FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE ON UPDATE CASCADE
 
