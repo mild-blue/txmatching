@@ -15,6 +15,7 @@ import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
 import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
 import { ReportService } from '@app/services/report/report.service';
+import { DownloadStatus } from '@app/components/header/header.interface';
 
 @Component({
   selector: 'app-home',
@@ -26,6 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private _configSubscription?: Subscription;
   private _matchingSubscription?: Subscription;
   private _patientsSubscription?: Subscription;
+  private _downloadInProgress: boolean = false;
 
   public loading: boolean = false;
 
@@ -70,9 +72,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.user ? this.user.decoded.role === Role.VIEWER : false;
   }
 
-  get showDownload(): boolean {
-    // const activeMatching =
-    return !this.loading && this.getActiveMatching() !== undefined;
+  get downloadStatus(): DownloadStatus {
+    const activeMatchingExists = !this.loading && this.getActiveMatching() !== undefined;
+    if (!activeMatchingExists) {
+      return DownloadStatus.disabled;
+    }
+    return this._downloadInProgress ? DownloadStatus.loading : DownloadStatus.enabled;
   }
 
   get showConfiguration(): boolean {
@@ -92,6 +97,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this._downloadInProgress = true;
     this._reportService.downloadReport(activeMatching.db_id).subscribe(
       (data) => {
         const blob = new Blob([data], { type: 'application/pdf' });
@@ -100,6 +106,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       (error: string) => {
         this._alertService.error(`<strong>Error downloading PDF:</strong> ${error}`);
+      },
+      () => {
+        this._downloadInProgress = false;
       });
   }
 
@@ -128,7 +137,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     .pipe(first())
     .subscribe(
       (matchings: Matching[]) => {
-
         this.matchings = this._prepareMatchings(matchings);
         this._logger.log('Calculated matchings', [matchings]);
         this.loading = false;

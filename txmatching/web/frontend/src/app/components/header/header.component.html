@@ -12,10 +12,11 @@
       </li>
     </ul>
   </div>
-  <div *ngIf="showDownload" class="download">
+  <div *ngIf="downloadStatus === downloadStatusOptions.enabled || downloadStatus === downloadStatusOptions.loading" class="download">
     <button (click)="handleDownloadClick()">
       Download PDF
-      <mat-icon [inline]="true">get_app</mat-icon>
+      <mat-icon *ngIf="downloadStatus === downloadStatusOptions.enabled" [inline]="true">get_app</mat-icon>
+      <mat-spinner *ngIf="downloadStatus === downloadStatusOptions.loading" diameter="16"></mat-spinner>
     </button>
   </div>
   <div class="icons">
