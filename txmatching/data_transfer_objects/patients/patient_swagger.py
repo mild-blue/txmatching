@@ -35,7 +35,7 @@ PatientParametersModel = patient_api.model('PatientParameters', {
     'sex': fields.String(required=False, enum=[sex.name for sex in Sex]),
     'height': fields.Integer(required=False),
     'weight': fields.Float(required=False),
-    'YOB': fields.Integer(required=False),
+    'year_of_birth': fields.Integer(required=False),
 })
 
 RecipientRequirements = patient_api.model('RecipientRequirements', {

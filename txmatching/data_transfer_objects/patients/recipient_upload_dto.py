@@ -13,11 +13,11 @@ class RecipientUploadDTO:
     acceptable_blood_groups: Optional[List[str]]
     medical_id: str
     blood_group: str
-    HLA_typing: List[str]  # pylint: disable=invalid-name
-    HLA_antibodies: List[HLAAntibodiesUploadDTO]  # pylint: disable=invalid-name
+    hla_typing: List[str]
+    hla_antibodies: List[HLAAntibodiesUploadDTO]
     sex: Optional[Sex]
     height: Optional[Centimeters]
     weight: Optional[Kilograms]
-    YOB: Optional[int]  # pylint: disable=invalid-name
+    year_of_birth: Optional[int]
     waiting_since: Optional[str]
     previous_transplants: Optional[int]

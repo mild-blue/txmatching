@@ -10,10 +10,10 @@ class DonorUploadDTO:
     # pylint: disable=too-many-instance-attributes
     medical_id: str
     blood_group: str
-    HLA_typing: List[str]  # pylint: disable=invalid-name
+    hla_typing: List[str]
     donor_type: str
     related_recipient_medical_id: Optional[str]
     sex: Optional[Sex]
     height: Optional[Centimeters]
     weight: Optional[Kilograms]
-    YOB: Optional[int]  # pylint: disable=invalid-name
+    year_of_birth: Optional[int]

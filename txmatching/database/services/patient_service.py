@@ -254,8 +254,8 @@ def _recipient_upload_dto_to_recipient_model(
         raw_code=hla_antibody.name,
         code=parse_code(hla_antibody.name),
         cutoff=hla_antibody.cutoff,
-        mfi=hla_antibody.MFI
-    ) for hla_antibody in recipient.HLA_antibodies]
+        mfi=hla_antibody.mfi
+    ) for hla_antibody in recipient.hla_antibodies]
 
     transformed_hla_antibodies = [HLAAntibody(
         raw_code=hla_antibody.raw_code,
@@ -270,7 +270,7 @@ def _recipient_upload_dto_to_recipient_model(
         medical_id=recipient.medical_id,
         country=country_code,
         blood=recipient.blood_group,
-        hla_typing=[parse_code(typing) for typing in recipient.HLA_typing],
+        hla_typing=[parse_code(typing) for typing in recipient.hla_typing],
         hla_antibodies=hla_antibodies,
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
@@ -281,7 +281,7 @@ def _recipient_upload_dto_to_recipient_model(
         weight=recipient.weight,
         height=recipient.height,
         sex=recipient.sex,
-        yob=recipient.YOB,
+        yob=recipient.year_of_birth,
     )
     return recipient_model
 
@@ -316,14 +316,14 @@ def _donor_upload_dto_to_donor_model(
         medical_id=donor.medical_id,
         country=country_code,
         blood=donor.blood_group,
-        hla_typing=[parse_code(typing) for typing in donor.HLA_typing],
+        hla_typing=[parse_code(typing) for typing in donor.hla_typing],
         active=True,
         recipient_id=maybe_recipient_id,
         donor_type=donor.donor_type,
         weight=donor.weight,
         height=donor.height,
         sex=donor.sex,
-        yob=donor.YOB,
+        yob=donor.year_of_birth,
         txm_event_id=txm_event_db_id
     )
     return donor_model
@@ -378,11 +378,11 @@ def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_co
     :param country_code:
     :return:
     """
-    remove_donors_and_recipients_from_txm_event(patient_upload_dto.TXM_event_name)
+    remove_donors_and_recipients_from_txm_event(patient_upload_dto.txm_event_name)
     _save_patients_to_existing_txm_event(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,
         country_code=country_code,
-        txm_event_name=patient_upload_dto.TXM_event_name
+        txm_event_name=patient_upload_dto.txm_event_name
     )
     db.session.commit()
