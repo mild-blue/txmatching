@@ -16,7 +16,7 @@
        [class.hidden]="downloadStatus === downloadStatusOptions.hidden"
        [class.disabled]="downloadStatus === downloadStatusOptions.disabled">
     <button (click)="handleDownloadClick()">
-      Generate PDF
+      Generate report
       <mat-icon *ngIf="downloadStatus !== downloadStatusOptions.loading" [inline]="true">get_app</mat-icon>
       <mat-spinner *ngIf="downloadStatus === downloadStatusOptions.loading" diameter="16"></mat-spinner>
     </button>
