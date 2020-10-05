@@ -92,16 +92,15 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    console.log('download', activeMatching);
-
-    try {
-      const report = await this._reportService.downloadReport(activeMatching.db_id);
-      console.log(report);
-    } catch (e) {
-      this._alertService.error(`<strong>Error downloading PDF:</strong> ${e}`);
-      // todo logger error
-    }
-
+    this._reportService.downloadReport(activeMatching.db_id).subscribe(
+      (data) => {
+        const blob = new Blob([data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        window.open(url);
+      },
+      (error: string) => {
+        this._alertService.error(`<strong>Error downloading PDF:</strong> ${error}`);
+      });
   }
 
   public calculate(configuration: Configuration): void {
