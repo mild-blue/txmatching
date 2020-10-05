@@ -1,7 +1,13 @@
 from typing import Optional
 
 
-class AuthenticationException(Exception):
+class BaseTxmException(Exception):
+    """
+    Base class for TXM related exceptions.
+    """
+
+
+class AuthenticationException(BaseTxmException):
     """
     Base class for Authentication related exceptions.
     """
@@ -43,7 +49,7 @@ class InvalidAuthCallException(AuthenticationException):
     """
 
 
-class InvalidArgumentException(Exception):
+class InvalidArgumentException(BaseTxmException):
     """
     Raised if invalid argument received.
     """

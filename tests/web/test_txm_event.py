@@ -211,6 +211,26 @@ class TestMatchingApi(DbTests):
             self.assertEqual('application/json', res.content_type)
             self.assertIsNotNone(res.json)
 
+    def test_txm_event_creation_invalid_data(self):
+        self.fill_db_with_patients_and_results()
+        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
+
+        self.login_with_role(UserRole.ADMIN)
+
+        with self.app.test_client() as client:
+            res = client.post(
+                f'/{TXM_EVENT_NAMESPACE}',
+                headers=self.auth_headers,
+                json={'invalid': 'data'}
+            )
+
+            self.assertEqual(400, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+            self.assertIsNotNone(res.json)
+            self.assertEqual('Invalid request data.', res.json['error'])
+            self.assertEqual('missing value for field "name"', res.json['detail'])
+            self.assertEqual('missing value for field "name"', res.json['message'])
+
     def test_txm_event_deletion(self):
         self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
