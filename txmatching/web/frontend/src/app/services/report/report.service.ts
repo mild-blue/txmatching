@@ -20,7 +20,7 @@ export class ReportService {
     };
 
     return this._http.get<Blob>(
-      `${environment.apiUrl}/reports/${matchingId}?matchingRangeLimit=${otherMatchingsCount}`,
+      `${environment.apiUrl}/reports/${matchingId}?matchingsBelowChosen=${otherMatchingsCount}`,
       httpOptions
     ).pipe(first());
   }

@@ -97,6 +97,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this._logger.log('Downloading with active matching', [activeMatching]);
+
     this._downloadInProgress = true;
     this._reportService.downloadReport(activeMatching.db_id).subscribe(
       (data) => {

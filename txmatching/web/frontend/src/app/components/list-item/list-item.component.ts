@@ -49,6 +49,13 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   }
 
   public setActive(item: ListItem | undefined): void {
+
+    // deactivate activeItem if there is one
+    if (this.activeItem) {
+      this.activeItem.isActive = false;
+    }
+
+    // activate new item
     this.activeItem = item;
     if (item && item.index) {
       item.isActive = true;
