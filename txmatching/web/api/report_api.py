@@ -74,8 +74,7 @@ class Report(Resource):
 
         matchings_over_score = list(
             filter(lambda matching: matching.db_id() != matching_id and matching.score() >= matching_score,
-                   all_matchings))[
-                               :matching_range_limit]
+                   all_matchings))
         matchings_under_score = list(
             filter(lambda matching: matching.db_id() != matching_id and matching.score() < matching_score,
                    all_matchings))[
