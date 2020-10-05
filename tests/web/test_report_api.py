@@ -3,6 +3,7 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import REPORTS_NAMESPACE, report_api
+from txmatching.web.api.report_api import MATCHINGS_BELOW_CHOSEN
 
 
 class TestMatchingApi(DbTests):
@@ -14,7 +15,7 @@ class TestMatchingApi(DbTests):
         with self.app.test_client() as client:
             solve_from_db(Configuration(), self.txm_event_db_id)
 
-            res = client.get(f'/{REPORTS_NAMESPACE}/1?matchingRangeLimit=2', headers=self.auth_headers)
+            res = client.get(f'/{REPORTS_NAMESPACE}/1?{MATCHINGS_BELOW_CHOSEN}=2', headers=self.auth_headers)
 
             self.assertEqual(200, res.status_code)
             self.assertEqual('application/pdf', res.content_type)
