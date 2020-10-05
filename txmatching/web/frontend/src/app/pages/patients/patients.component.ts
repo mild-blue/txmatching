@@ -86,7 +86,6 @@ export class PatientsComponent implements OnInit {
     } catch (e) {
       this._alertService.error(`Error loading patients: "${e}"`);
       this._logger.error(`Error loading patients: "${e}"`);
-      return; // jump to finally block
     } finally {
       this.loading = false;
     }

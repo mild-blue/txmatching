@@ -101,7 +101,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     } catch (e) {
       this._alertService.error(`Error calculating matchings: "${e}"`);
       this._logger.error(`Error calculating matchings: "${e}"`);
-      return; // jump to finally block
     } finally {
       this._logger.log('End of calculation');
       this.loading = false;

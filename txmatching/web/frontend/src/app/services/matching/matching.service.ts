@@ -15,7 +15,7 @@ export class MatchingService {
 
   public async calculate(config: AppConfiguration): Promise<Matching[]> {
     return this._http.post<Matching[]>(
-      `${environment.apiUrl}/matching/calclate-for-config`,
+      `${environment.apiUrl}/matching/calculate-for-config`,
       config
     ).pipe(first()).toPromise();
   }
