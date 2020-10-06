@@ -5,9 +5,11 @@ from tests.test_utilities.prepare_app import DbTests
 from tests.web.data_upload_api.patient_upload_example_data import (
     TXM_EVENT_NAME, VALID_UPLOAD_1, VALID_UPLOAD_MISSING)
 from txmatching.auth.data_types import UserRole
-from txmatching.database.sql_alchemy_schema import (DonorModel, RecipientModel,
-                                                    UploadedDataModel)
+from txmatching.database.services.patient_service import get_txm_event
+from txmatching.database.sql_alchemy_schema import UploadedDataModel
 from txmatching.patients.patient import TxmEvent
+from txmatching.patients.patient_parameters import HLAType, HLATyping
+from txmatching.utils.blood_groups import BloodGroup
 from txmatching.web import TXM_EVENT_NAMESPACE, txm_event_api
 
 
@@ -28,24 +30,18 @@ class TestMatchingApi(DbTests):
         self.assertIsNotNone(res.json)
         self.assertLess(0, res.json['recipients_uploaded'])
         self.assertLess(0, res.json['donors_uploaded'])
-        return txm_event
+        return get_txm_event(txm_event.db_id)
 
     def test_txm_event_patient_successful_upload(self):
         txm_event = self._upload_for_test(VALID_UPLOAD_1)
-        donors = DonorModel.query.filter(DonorModel.txm_event_id == txm_event.db_id).all()
-        recipients = RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event.db_id).all()
-
-        self.assertEqual(1, len(donors))
-        self.assertEqual(1, len(recipients))
 
         self.assertEqual(1, len(UploadedDataModel.query.all()))
-        self.assertEqual(1, donors[0].recipient_id)
-        self.assertSetEqual({'0', 'A'}, set(blood.blood_type for blood in recipients[0].acceptable_blood))
+        self.assertEqual(1, txm_event.donors_dict[1].related_recipient_db_id)
+        self.assertSetEqual({BloodGroup.ZERO, BloodGroup.A},
+                            set(blood for blood in txm_event.recipients_dict[1].acceptable_blood_groups))
+        self.assertEqual(HLATyping(hla_types_list=[HLAType(raw_code='A2', code='A2')]),
+                         get_txm_event(txm_event.db_id).donors_dict[1].parameters.hla_typing)
 
     def test_txm_event_patient_successful_upload_missing_not_required_params(self):
         txm_event = self._upload_for_test(VALID_UPLOAD_MISSING)
-        donors = DonorModel.query.filter(DonorModel.txm_event_id == txm_event.db_id).all()
-        recipients = RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event.db_id).all()
-
-        self.assertEqual(1, len(donors))
-        self.assertEqual(1, len(recipients))
+        self.assertIsNone(txm_event.recipients_dict[1].waiting_since)
