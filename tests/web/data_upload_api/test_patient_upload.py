@@ -42,7 +42,7 @@ class TestMatchingApi(DbTests):
         self.assertEqual(1, donors[0].recipient_id)
         self.assertSetEqual({'0', 'A'}, set(blood.blood_type for blood in recipients[0].acceptable_blood))
 
-    def test_txm_event_patient_successful_upload_missing_things(self):
+    def test_txm_event_patient_successful_upload_missing_not_required_params(self):
         txm_event = self._upload_for_test(VALID_UPLOAD_MISSING)
         donors = DonorModel.query.filter(DonorModel.txm_event_id == txm_event.db_id).all()
         recipients = RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event.db_id).all()
