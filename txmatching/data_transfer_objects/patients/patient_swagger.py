@@ -2,7 +2,7 @@ from flask_restx import fields
 
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Sex, Country
+from txmatching.utils.enums import Country, Sex
 from txmatching.web.api.namespaces import patient_api
 
 HLAAntibody = patient_api.model('HlaAntibody', {
@@ -30,8 +30,8 @@ HLAAntibodies = patient_api.model('HlaAntibodies', {
 PatientParametersModel = patient_api.model('PatientParameters', {
     'blood_group': fields.String(required=False, enum=[blood_group.value for blood_group in BloodGroup]),
     'hla_typing': fields.List(required=False, cls_or_instance=fields.Nested(HLATyping)),
-    'country_code': fields.String(required=False, enum=[country.name for country in Country]),
-    'sex': fields.String(required=False, enum=[sex.name for sex in Sex]),
+    'country_code': fields.String(required=False, enum=[country.value for country in Country]),
+    'sex': fields.String(required=False, enum=[sex.value for sex in Sex]),
     'height': fields.Integer(required=False),
     'weight': fields.Float(required=False),
     'year_of_birth': fields.Integer(required=False),
@@ -47,7 +47,7 @@ DonorModel = patient_api.model('DonorModel', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
     'parameters': fields.Nested(required=True, model=PatientParametersModel),
-    'donor_type': fields.String(required=True, enum=[donor_type.name for donor_type in DonorType]),
+    'donor_type': fields.String(required=True, enum=[donor_type.value for donor_type in DonorType]),
     'related_recipient_db_id': fields.Integer(required=False, description='Database id of the related recipient'),
 })
 

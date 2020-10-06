@@ -10,8 +10,8 @@ ManualDonorRecipientScoreJson = matching_api.model('Manual Recipient Donor Score
 })
 
 ForbiddenCountryCombination = matching_api.model('Forbidden Country Combination', {
-    'donor_country': fields.String(required=True, enum=[country.name for country in Country]),
-    'recipient_country': fields.String(required=True, enum=[country.name for country in Country]),
+    'donor_country': fields.String(required=True, enum=[country.value for country in Country]),
+    'recipient_country': fields.String(required=True, enum=[country.value for country in Country]),
 })
 
 ConfigurationJson = matching_api.model(

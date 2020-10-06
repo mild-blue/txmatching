@@ -1,7 +1,6 @@
 from txmatching.patients.patient_parameters import HLATyping
-from txmatching.utils.enums import HLATyping_BONUS_PER_GENE_CODE
+from txmatching.utils.enums import HLA_TYPING_BONUS_PER_GENE_CODE
 from txmatching.utils.hla_system.get_genotype import get_antigen_genotype
-
 
 # Traditionally one can calculate index of incompatibility (IK) - the higher IK the higher incompatibility.
 # You calculate it by calculating the number of differences in A, B, DR alleles and look up the corresponding
@@ -20,7 +19,7 @@ def compatibility_index(donor_hla_typing: HLATyping,
     This function thus should not be modified unless after consulting with immunologists.
     """
     hla_compatibility_index = 0.0
-    for gene_code, ci_bonus in HLATyping_BONUS_PER_GENE_CODE.items():
+    for gene_code, ci_bonus in HLA_TYPING_BONUS_PER_GENE_CODE.items():
         donor_genotype = get_antigen_genotype(donor_hla_typing.compatibility_broad_resolution_codes, gene_code)
         recipient_genotype = get_antigen_genotype(recipient_hla_typing.compatibility_broad_resolution_codes, gene_code)
         common_allele_codes = set(donor_genotype.keys()).intersection(set(recipient_genotype.keys()))
