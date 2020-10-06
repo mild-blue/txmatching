@@ -3,11 +3,11 @@
 import datetime
 import logging
 import os
+import time
 from typing import List
 
 import jinja2
 import pdfkit
-import time
 from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
@@ -24,7 +24,7 @@ from txmatching.database.services.matching_service import \
 from txmatching.database.services.txm_event_service import \
     get_txm_event_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
-from txmatching.utils.enums import HLATyping_BONUS_PER_GENE_CODE_STR, HLATypes
+from txmatching.utils.enums import HLATypes, HLATyping_BONUS_PER_GENE_CODE_STR
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
