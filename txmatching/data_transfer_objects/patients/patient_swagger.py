@@ -1,10 +1,9 @@
 from flask_restx import fields
 
 from txmatching.patients.patient import DonorType
-from txmatching.utils.enums import Sex
+from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.enums import Sex, Country
 from txmatching.web.api.namespaces import patient_api
-
-BLOOD_TYPES = ['A', 'B', 'AB', '0']
 
 HLAAntibody = patient_api.model('HlaAntibody', {
     'raw_code': fields.String(required=True),
@@ -29,9 +28,9 @@ HLAAntibodies = patient_api.model('HlaAntibodies', {
 })
 
 PatientParametersModel = patient_api.model('PatientParameters', {
-    'blood_group': fields.String(required=False, enum=BLOOD_TYPES),
+    'blood_group': fields.String(required=False, enum=[blood_group.value for blood_group in BloodGroup]),
     'hla_typing': fields.List(required=False, cls_or_instance=fields.Nested(HLATyping)),
-    'country_code': fields.String(required=False),
+    'country_code': fields.String(required=False, enum=[country.name for country in Country]),
     'sex': fields.String(required=False, enum=[sex.name for sex in Sex]),
     'height': fields.Integer(required=False),
     'weight': fields.Float(required=False),
@@ -44,7 +43,7 @@ RecipientRequirements = patient_api.model('RecipientRequirements', {
     'require_compatible_blood_group': fields.Boolean(required=True)
 })
 
-DonorModel = patient_api.model('Donor model', {
+DonorModel = patient_api.model('DonorModel', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
     'parameters': fields.Nested(required=True, model=PatientParametersModel),
@@ -54,7 +53,8 @@ DonorModel = patient_api.model('Donor model', {
 
 RecipientModel = patient_api.model('RecipientModel', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
-    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(enum=BLOOD_TYPES)),
+    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(
+        enum=[blood_group.value for blood_group in BloodGroup])),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
     'parameters': fields.Nested(required=True, model=PatientParametersModel),
     'hla_antibodies': fields.Nested(required=True, model=HLAAntibodies),
@@ -88,7 +88,8 @@ HLAAntibodiesToUpdate = patient_api.model('HlaAntibodiesToUpdate', {
 
 RecipientModelToUpdate = patient_api.model('RecipientModelToUpdate', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
-    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(enum=BLOOD_TYPES),
+    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(
+        enum=[blood_group.value for blood_group in BloodGroup]),
                                            description='Provide full list of all the acceptable blood groups of the '
                                                        'patient, not just the change set'),
     'hla_typing': fields.Nested(HLATypingToUpdate, required=False,

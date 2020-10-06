@@ -1,10 +1,10 @@
 from typing import Dict, List
 
-from txmatching.utils.hla_system.hla_table import (COMPATIBILITY_BROAD_CODES,
-                                                   CompatibilityGeneCode)
+from txmatching.utils.enums import HLATypes
+from txmatching.utils.hla_system.hla_table import COMPATIBILITY_BROAD_CODES
 
 
-def get_antigen_genotype(compatibility_broad_codes: List[str], gene_code: CompatibilityGeneCode) -> Dict[str, int]:
+def get_antigen_genotype(compatibility_broad_codes: List[str], gene_code: HLATypes) -> Dict[str, int]:
     """
     Returns the genotype for specific antigen
     for example for A it can be (A9, A10), or (A9, A9) etc. (In case we see only one genotype we assume it means that
