@@ -238,7 +238,9 @@ def get_txm_event(txm_event_db_id: int) -> TxmEvent:
                     recipients_dict=recipients_dict)
 
 
-def _parse_date_to_datetime(date: str):
+def _parse_date_to_datetime(date: Optional[str]) -> Optional[datetime.datetime]:
+    if date is None:
+        return None
     try:
         return datetime.datetime.strptime(date, '%Y-%m-%d')
     except (ValueError, TypeError) as ex:
@@ -358,6 +360,7 @@ def _save_patients_to_existing_txm_event(
         for recipient in recipients
     ]
     db.session.add_all(recipient_models)
+    db.session.commit()
 
     recipient_models_dict = {recipient_model.medical_id: recipient_model for recipient_model in recipient_models}
 

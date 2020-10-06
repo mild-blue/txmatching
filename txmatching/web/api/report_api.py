@@ -124,7 +124,7 @@ class Report(Resource):
         with open(html_file_full_path, 'w') as text_file:
             text_file.write(html)
 
-        pdfkit.from_file(html_file_full_path, pdf_file_full_path)
+            pdfkit.from_file(html_file_full_path, pdf_file_full_path)
         if os.path.exists(html_file_full_path):
             os.remove(html_file_full_path)
 
