@@ -43,7 +43,8 @@ def get_latest_matchings_and_score_matrix(txm_event_db_id: int) -> Tuple[
         zip(txm_event.donors_dict, score_matrix) for recipient_db_id, score in zip(txm_event.recipients_dict, row)
     }
 
-    compatible_blood_dict = {(donor_db_id, recipient_db_id): blood_groups_compatible(donor, recipient)
+    compatible_blood_dict = {(donor_db_id, recipient_db_id): blood_groups_compatible(donor.parameters.blood_group,
+                                                                                     recipient.parameters.blood_group)
                              for donor_db_id, donor in txm_event.donors_dict.items()
                              for recipient_db_id, recipient in txm_event.recipients_dict.items()
                              }

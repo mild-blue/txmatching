@@ -29,7 +29,7 @@ class HLAAdditiveScorer(AdditiveScorer):
 
         # Donor must have blood group that is acceptable or compatible for the recipient
         if not (donor.parameters.blood_group in recipient.acceptable_blood_groups
-                or blood_groups_compatible(donor, recipient)):
+                or blood_groups_compatible(donor.parameters.blood_group, recipient.parameters.blood_group)):
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
         # Recipient can't have antibodies that donor has hla_typing for
@@ -44,13 +44,15 @@ class HLAAdditiveScorer(AdditiveScorer):
             'require_better_match_in_compatibility_index_or_blood_group'
         )
 
-        if better_match_in_ci_or_br and (not blood_groups_compatible(donor, recipient)
-                                         and donor_recipient_ci <= related_donor_recipient_ci):
+        if better_match_in_ci_or_br and (
+                not blood_groups_compatible(donor.parameters.blood_group, recipient.parameters.blood_group)
+                and donor_recipient_ci <= related_donor_recipient_ci):
             return TRANSPLANT_IMPOSSIBLE_SCORE
         require_compatible_blood_group = self._get_setting_from_config_or_recipient(recipient,
                                                                                     'require_compatible_blood_group')
         # If required, the donor must have the compatible blood group with recipient
-        if require_compatible_blood_group and not blood_groups_compatible(donor, recipient):
+        if require_compatible_blood_group and not blood_groups_compatible(donor.parameters.blood_group,
+                                                                          recipient.parameters.blood_group):
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
         better_match_in_ci = self._get_setting_from_config_or_recipient(recipient,
@@ -81,7 +83,7 @@ class HLAAdditiveScorer(AdditiveScorer):
         return hla_additive_scorer
 
     def _blood_group_compatibility_bonus(self, donor: Donor, recipient: Recipient):
-        if blood_groups_compatible(donor, recipient):
+        if blood_groups_compatible(donor.parameters.blood_group, recipient.parameters.blood_group):
             return self._configuration.blood_group_compatibility_bonus
         else:
             return 0.0

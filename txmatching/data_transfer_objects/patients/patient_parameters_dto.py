@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from txmatching.patients.patient_parameters import (Centimeters, HLAType,
                                                     Kilograms)
+from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
 
 
@@ -13,7 +14,7 @@ class HLATypingDTO:
 
 @dataclass
 class PatientParametersDTO:
-    blood_group: str
+    blood_group: BloodGroup
     country_code: Country
     hla_typing: HLATypingDTO = HLATypingDTO()
     sex: Optional[Sex] = None
