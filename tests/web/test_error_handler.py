@@ -4,8 +4,13 @@ from dacite import DaciteError
 from werkzeug.exceptions import HTTPException
 
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.auth.exceptions import InvalidOtpException, CredentialsMismatchException, InvalidJWTException, \
-    InvalidIpAddressAccessException, UserUpdateException, InvalidAuthCallException, InvalidArgumentException
+from txmatching.auth.exceptions import (CredentialsMismatchException,
+                                        InvalidArgumentException,
+                                        InvalidAuthCallException,
+                                        InvalidIpAddressAccessException,
+                                        InvalidJWTException,
+                                        InvalidOtpException,
+                                        UserUpdateException)
 from txmatching.web import USER_NAMESPACE, user_api
 
 
@@ -97,9 +102,9 @@ class TestErrorHandler(DbTests):
         self._test_handler(
             side_effect=HTTPException,
             status_code=500,
-            error='Internal server error',
-            detail="'>=' not supported between instances of 'NoneType' and 'HTTPStatus'",
-            message="'>=' not supported between instances of 'NoneType' and 'HTTPStatus'"
+            error='Unknown Error',
+            detail=None,
+            message='??? Unknown Error: None'
         )
 
     def test_handle_default_exception_error(self):
