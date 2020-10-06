@@ -32,7 +32,7 @@ from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
                                          RecipientRequirements, TxmEvent,
                                          calculate_cutoff)
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLATyping,
+                                                    HLAType, HLATyping,
                                                     PatientParameters)
 from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.hla_table import parse_code
@@ -273,7 +273,7 @@ def _recipient_upload_dto_to_recipient_model(
         medical_id=recipient.medical_id,
         country=country_code,
         blood=recipient.blood_group,
-        hla_typing=[parse_code(typing) for typing in recipient.hla_typing],
+        hla_typing=dataclasses.asdict(HLATyping([HLAType(parse_code(typing)) for typing in recipient.hla_typing])),
         hla_antibodies=hla_antibodies,
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
@@ -319,7 +319,7 @@ def _donor_upload_dto_to_donor_model(
         medical_id=donor.medical_id,
         country=country_code,
         blood=donor.blood_group,
-        hla_typing=[parse_code(typing) for typing in donor.hla_typing],
+        hla_typing=dataclasses.asdict(HLATyping([HLAType(parse_code(typing)) for typing in donor.hla_typing])),
         active=True,
         recipient_id=maybe_recipient_id,
         donor_type=donor.donor_type,

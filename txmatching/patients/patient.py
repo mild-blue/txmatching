@@ -6,6 +6,7 @@ from typing import Dict, List, Optional
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     PatientParameters)
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
+from txmatching.utils.blood_groups import BloodGroup
 
 DEFAULT_CUTOFF = 2000
 
@@ -52,7 +53,7 @@ class RecipientRequirements:
 @dataclass
 class Recipient(Patient):
     related_donor_db_id: DonorDbId
-    acceptable_blood_groups: List[str]
+    acceptable_blood_groups: List[BloodGroup]
     recipient_cutoff: Optional[int] = None
     hla_antibodies: HLAAntibodies = HLAAntibodies()
     recipient_requirements: RecipientRequirements = RecipientRequirements()
