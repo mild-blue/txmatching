@@ -4,10 +4,16 @@ import logging
 
 from dacite import DaciteError
 from flask_restx import Api
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 
-from txmatching.auth.exceptions import InvalidJWTException, CredentialsMismatchException, InvalidOtpException, \
-    InvalidIpAddressAccessException, UserUpdateException, InvalidAuthCallException, InvalidArgumentException
+from txmatching.auth.exceptions import (CredentialsMismatchException,
+                                        InvalidArgumentException,
+                                        InvalidAuthCallException,
+                                        InvalidIpAddressAccessException,
+                                        InvalidJWTException,
+                                        InvalidOtpException,
+                                        UserUpdateException)
 
 logger = logging.getLogger(__name__)
 
@@ -78,17 +84,17 @@ def _default_error_handlers(api: Api):
     @api.errorhandler(HTTPException)
     def handle_http_exception(error: HTTPException):
         _log_exception(error)
-        return {'error': error.name, 'detail': error.description}, getattr(error, 'code', 500)
+        return {'error': error.name, 'detail': error.description}, _get_code_from_error_else_500(error)
 
     @api.errorhandler(Exception)
     def handle_default_exception_error(error: Exception):
         _log_exception(error)
-        return {'error': 'Internal server error', 'detail': str(error)}, getattr(error, 'code', 500)
+        return {'error': 'Internal server error', 'detail': str(error)}, _get_code_from_error_else_500(error)
 
     @api.errorhandler
     def handle_default_error(error):
         _log_exception(error)
-        return {'error': error.name, 'detail': error.description}, getattr(error, 'code', 500)
+        return {'error': error.name, 'detail': error.description}, _get_code_from_error_else_500(error)
 
 
 def _log_exception(ex: Exception):
@@ -101,3 +107,10 @@ def _log_warning(ex: Exception):
 
 def _format_exception(ex: Exception) -> str:
     return f'{type(ex)}: - {str(ex)}'
+
+
+def _get_code_from_error_else_500(error: Exception):
+    error_code = getattr(error, 'code', 500)
+    if isinstance(error_code, int):
+        return error_code
+    return 500
