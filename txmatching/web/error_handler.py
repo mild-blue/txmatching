@@ -4,7 +4,6 @@ import logging
 
 from dacite import DaciteError
 from flask_restx import Api
-from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 
 from txmatching.auth.exceptions import (CredentialsMismatchException,
