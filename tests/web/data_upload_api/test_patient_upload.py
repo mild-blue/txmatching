@@ -3,21 +3,17 @@ from typing import Dict
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
 from tests.web.data_upload_api.patient_upload_example_data import (
-    TXM_EVENT_NAME, VALID_UPLOAD_1)
+    TXM_EVENT_NAME, VALID_UPLOAD_1, VALID_UPLOAD_MISSING)
 from txmatching.auth.data_types import UserRole
 from txmatching.database.sql_alchemy_schema import (DonorModel, RecipientModel,
                                                     UploadedDataModel)
 from txmatching.patients.patient import TxmEvent
-from txmatching.utils.enums import BloodGroup
 from txmatching.web import TXM_EVENT_NAMESPACE, txm_event_api
 
 
 class TestMatchingApi(DbTests):
-    def test_mini(self):
-        self.assertEqual(BloodGroup.A, BloodGroup('A'))
-        self.assertEqual(BloodGroup.ZERO, BloodGroup(0))
 
-    def upload_for_test(self, json: Dict) -> TxmEvent:
+    def _upload_for_test(self, json: Dict) -> TxmEvent:
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
         txm_event = create_or_overwrite_txm_event(name=TXM_EVENT_NAME)
         self.login_with_role(UserRole.SERVICE)
@@ -35,7 +31,7 @@ class TestMatchingApi(DbTests):
         return txm_event
 
     def test_txm_event_patient_successful_upload(self):
-        txm_event = self.upload_for_test(VALID_UPLOAD_1)
+        txm_event = self._upload_for_test(VALID_UPLOAD_1)
         donors = DonorModel.query.filter(DonorModel.txm_event_id == txm_event.db_id).all()
         recipients = RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event.db_id).all()
 
@@ -45,3 +41,11 @@ class TestMatchingApi(DbTests):
         self.assertEqual(1, len(UploadedDataModel.query.all()))
         self.assertEqual(1, donors[0].recipient_id)
         self.assertSetEqual({'0', 'A'}, set(blood.blood_type for blood in recipients[0].acceptable_blood))
+
+    def test_txm_event_patient_successful_upload_missing_things(self):
+        txm_event = self._upload_for_test(VALID_UPLOAD_MISSING)
+        donors = DonorModel.query.filter(DonorModel.txm_event_id == txm_event.db_id).all()
+        recipients = RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event.db_id).all()
+
+        self.assertEqual(1, len(donors))
+        self.assertEqual(1, len(recipients))

@@ -14,14 +14,20 @@ class Sex(str, Enum):
     F = 'F'
 
 
-class BloodGroup(str, Enum):
+class HLATypes(Enum):
     A = 'A'
     B = 'B'
-    AB = 'AB'
-    ZERO = '0'
+    DR = 'DR'
 
-    @classmethod
-    def _missing_(cls, name):
-        if name == 0:
-            return cls.ZERO
-        raise ValueError(f'{name} is not a valid BloodGroup')
+
+ANTIBODIES_MULTIPLIERS = {
+    HLATypes.A: 1,
+    HLATypes.B: 2,
+    HLATypes.DR: 9
+}
+
+ANTIBODIES_MULTIPLIERS_STR = {
+    HLATypes.A.value: 1,
+    HLATypes.B.value: 2,
+    HLATypes.DR.value: 9
+}

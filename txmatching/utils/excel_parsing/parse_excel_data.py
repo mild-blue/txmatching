@@ -14,7 +14,7 @@ from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType)
-from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS
+from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup
 from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.hla_table import (HLA_A, HLA_A_BROAD, HLA_B,
                                                    HLA_B_BROAD, HLA_BW, HLA_CW,
@@ -46,7 +46,8 @@ def _parse_blood_group(blood_group_str: Union[str, int]) -> str:
     return blood_group_str
 
 
-def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, int], blood_group: str) -> List[str]:
+def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, int],
+                                   blood_group: str) -> List[BloodGroup]:
     basic_acceptable_blood_groups = COMPATIBLE_BLOOD_GROUPS[blood_group]
     if not isinstance(acceptable_blood_groups, str) and math.isnan(acceptable_blood_groups):
         return list(basic_acceptable_blood_groups)

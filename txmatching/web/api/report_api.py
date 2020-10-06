@@ -24,7 +24,7 @@ from txmatching.database.services.matching_service import \
 from txmatching.database.services.txm_event_service import \
     get_txm_event_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
-from txmatching.utils.blood_groups import ANTIBODIES_MULTIPLIERS_STR, HLATypes
+from txmatching.utils.enums import ANTIBODIES_MULTIPLIERS_STR, HLATypes
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -124,7 +124,7 @@ class Report(Resource):
         with open(html_file_full_path, 'w') as text_file:
             text_file.write(html)
 
-            pdfkit.from_file(html_file_full_path, pdf_file_full_path)
+        pdfkit.from_file(html_file_full_path, pdf_file_full_path)
         if os.path.exists(html_file_full_path):
             os.remove(html_file_full_path)
 

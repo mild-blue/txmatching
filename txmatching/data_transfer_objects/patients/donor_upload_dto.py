@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
-from txmatching.utils.enums import BloodGroup, Sex
+from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.enums import Sex
 
 
 @dataclass
