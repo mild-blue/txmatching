@@ -11,7 +11,7 @@ from txmatching.utils.hla_system.rel_dna_ser_parsing import HIGH_RES_TO_SPLIT
 
 logger = logging.getLogger(__name__)
 
-HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d\d(\:\d\d)*[A-Z]?$')
+HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d\d(:\d{2,3})*[A-Z]?$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
 C_SPLIT_FROM_HIGH_RES_REGEX = re.compile(r'^C\d+$')
 
@@ -60,7 +60,7 @@ def _high_res_to_split(hla_code: str) -> Tuple[Optional[str], Optional[HlaCodePr
             if len(found_splits) == 1:
                 split_hla_code = possible_split_resolutions.pop()
             else:
-                # in case the number is equal we take one randomly for the moment.
+                # in case there are multiple possibilites we do not know which to choose and return None.
                 split_hla_code = None
                 logger.warning(possible_split_resolutions)
                 issue = HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND

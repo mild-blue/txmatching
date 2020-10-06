@@ -58,7 +58,7 @@ def _parse_hla(hla_allele_str: str) -> List[HLAType]:
         return []
 
     allele_codes = re.split('[,. ()]+', hla_allele_str)
-    allele_codes = [code for code in allele_codes if len(code) > 0]
+    allele_codes = [code.upper() for code in allele_codes if len(code) > 0]
     checked_allele_codes = [code for code in allele_codes if code in _valid_allele_codes]
     if len(checked_allele_codes) != len(allele_codes):
         unknown_allele_codes = []

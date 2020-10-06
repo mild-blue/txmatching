@@ -24,6 +24,9 @@ codes = {
     'DQB1*02:01:01:01': ('DQ2', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'NONEXISTENT': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT*11': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
+    'A*68:06': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
+    'B*46:10': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
+    'A*02:719': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
 }
 
 

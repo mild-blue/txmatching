@@ -1,7 +1,7 @@
 import re
-from enum import Enum
 
-from txmatching.utils.hla_system.rel_dna_ser_parsing import SPLIT_CODES
+from txmatching.utils.hla_system.rel_dna_ser_parsing import \
+    SEROLOGICAL_CODES_IN_REL_DNA_SER
 
 # the dict below is based on http://hla.alleles.org/antigens/recognised_serology.html
 
@@ -59,11 +59,10 @@ SPLIT_TO_BROAD = {'A23': 'A9',
                   'DQ8': 'DQ3',
                   'DQ9': 'DQ3'
                   }
-A_B_DR_HLA_CODE_REGEX = re.compile(r'^A|B|(DR(?!5(1|2|3)))')
+A_B_DR_HLA_CODE_REGEX = re.compile(r'^A|B|(DR(?!5([123])))')
 
-BROAD_CODES = {SPLIT_TO_BROAD.get(hla_code, hla_code) for hla_code in SPLIT_CODES}
+BROAD_CODES = {SPLIT_TO_BROAD.get(hla_code, hla_code) for hla_code in SEROLOGICAL_CODES_IN_REL_DNA_SER}
 
 COMPATIBILITY_BROAD_CODES = {broad_code for broad_code in BROAD_CODES if re.match(A_B_DR_HLA_CODE_REGEX, broad_code)}
 
-ALL_SPLIT_BROAD_CODES = SPLIT_CODES.union(BROAD_CODES)
-
+ALL_SPLIT_BROAD_CODES = SEROLOGICAL_CODES_IN_REL_DNA_SER.union(BROAD_CODES)
