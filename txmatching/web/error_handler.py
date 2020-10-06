@@ -111,5 +111,6 @@ def _format_exception(ex: Exception) -> str:
 def _get_code_from_error_else_500(error: Exception):
     error_code = getattr(error, 'code', 500)
     if isinstance(error_code, int):
+        logger.error(f'Unexpected error code returned {error_code}, returning 500 instead')
         return error_code
     return 500
