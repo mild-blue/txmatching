@@ -70,17 +70,15 @@ class Report(Resource):
         if len(requested_matching) == 0:
             abort(404, f'Matching with id {matching_id} not found.')
 
-        matching_score = requested_matching[0].score()
-
         matchings_over_score = list(
-            filter(lambda matching: matching.db_id() != matching_id and matching.score() >= matching_score,
+            filter(lambda matching: matching.db_id() > matching_id,
                    all_matchings))
         matchings_under_score = list(
-            filter(lambda matching: matching.db_id() != matching_id and matching.score() < matching_score,
+            filter(lambda matching: matching.db_id() < matching_id,
                    all_matchings))[
                                 :matching_range_limit]
         other_matchings_to_include = matchings_over_score + matchings_under_score
-        other_matchings_to_include.sort(key=lambda m: m.score())
+        other_matchings_to_include.sort(key=lambda m: m.db_id())
         matchings = requested_matching + other_matchings_to_include
 
         matching_dtos = [MatchingReportDTO(
