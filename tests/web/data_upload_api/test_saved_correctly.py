@@ -11,16 +11,17 @@ from txmatching.web import (PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE,
 
 class TestMatchingApi(DbTests):
 
-    def test_saved(self):
+    def test_patients_hla_codes_were_saved_correctly_to_db(self):
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
         self.api.add_namespace(patient_api, path=f'/{PATIENT_NAMESPACE}')
         txm_event = create_or_overwrite_txm_event(name=TXM_EVENT_NAME)
         self.login_with_role(UserRole.SERVICE)
         with self.app.test_client() as client:
-            client.put(
+            res = client.put(
                 f'/{TXM_EVENT_NAMESPACE}/patients',
                 headers=self.auth_headers,
                 json=VALID_UPLOAD_1
             )
+        self.assertEqual(200, res.status_code)
         self.assertEqual(HLATyping(hla_types_list=[HLAType(raw_code='A2', code='A2')]),
                          get_txm_event(txm_event.db_id).donors_dict[1].parameters.hla_typing)
