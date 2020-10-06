@@ -9,7 +9,6 @@
 #  https://trello.com/c/08MZVRCk
 # TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9) https://trello.com/c/UIo23mPb
 import logging
-from enum import Enum
 from typing import List
 
 logger = logging.getLogger(__name__)
@@ -125,12 +124,6 @@ def split_to_broad(hla_code: str) -> str:
         logger.warning(f'Unexpected hla_code: {hla_code}')
         return hla_code
     return SPLIT_TO_BROAD.get(hla_code, hla_code)
-
-
-class CompatibilityGeneCode(str, Enum):
-    A = 'A'
-    B = 'B'
-    DR = 'DR'
 
 
 # Compatibility (my name, no real term) broad codes were used before without the distinction of normal broad codes,

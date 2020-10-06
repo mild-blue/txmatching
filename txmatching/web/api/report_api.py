@@ -24,7 +24,7 @@ from txmatching.database.services.matching_service import \
 from txmatching.database.services.txm_event_service import \
     get_txm_event_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
-from txmatching.utils.enums import ANTIBODIES_MULTIPLIERS_STR, HLATypes
+from txmatching.utils.enums import HLA_TYPING_BONUS_PER_GENE_CODE_STR, HLATypes
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TMP_DIR = '/tmp/txmatching_reports'
 MATCHINGS_BELOW_CHOSEN = 'matchingsBelowChosen'
+
 
 # pylint: disable=no-self-use
 # Query params:
@@ -188,7 +189,7 @@ def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:
 def antigen_score(donor_recipient: TransplantDTO, antigen: HLATypes) -> int:
     filtered = list(
         filter(lambda x: x.upper().startswith(antigen.upper()), matching_hla_typing_filter(donor_recipient)))
-    return len(filtered) * ANTIBODIES_MULTIPLIERS_STR[antigen.upper()]
+    return len(filtered) * HLA_TYPING_BONUS_PER_GENE_CODE_STR[antigen.upper()]
 
 
 def antigen_score_a_filter(transplant: TransplantDTO) -> int:

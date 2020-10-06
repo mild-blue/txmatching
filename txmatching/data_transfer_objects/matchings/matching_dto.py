@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from typing import List
 
 from txmatching.patients.patient import Donor, Recipient
-from txmatching.patients.patient_types import CountryCode, MedicalId
+from txmatching.patients.patient_types import MedicalId
+from txmatching.utils.enums import Country
 
 
 @dataclass
@@ -20,7 +21,7 @@ class RoundDTO:
 
 @dataclass
 class CountryDTO:
-    country_code: CountryCode
+    country_code: Country
     donor_count: int
     recipient_count: int
 
