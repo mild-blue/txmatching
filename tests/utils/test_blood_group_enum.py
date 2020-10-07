@@ -8,3 +8,4 @@ class TestAcceptableBloodGroupParsing(unittest.TestCase):
         self.assertEqual(BloodGroup.A, BloodGroup('A'))
         self.assertEqual(BloodGroup.ZERO, BloodGroup(0))
         self.assertEqual('0', BloodGroup(0))
+        self.assertEqual('0', BloodGroup('O'))

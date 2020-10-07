@@ -9,7 +9,7 @@ class BloodGroup(str, Enum):
 
     @classmethod
     def _missing_(cls, name):
-        if name == 0:
+        if name in {0, 'O'}:
             return cls.ZERO
         raise ValueError(f'{name} is not a valid BloodGroup')
 
