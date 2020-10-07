@@ -9,6 +9,18 @@
   border: 1px solid transparent;
   border-radius: $border-radius;
 
+  opacity: 1;
+  transition: none;
+
+  &.fade {
+    opacity: 0;
+    transition: opacity 5s linear;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
   &-success {
     color: darken($success, 10%);
     background-color: lighten($success, 40%);

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { AppConfiguration } from '@app/model/Configuration';
 
 @Injectable({
@@ -12,9 +11,9 @@ export class ConfigurationService {
   constructor(private _http: HttpClient) {
   }
 
-  public getConfiguration(): Observable<AppConfiguration> {
+  public async getConfiguration(): Promise<AppConfiguration> {
     return this._http.get<AppConfiguration>(
       `${environment.apiUrl}/configuration/`
-    ).pipe();
+    ).pipe().toPromise();
   }
 }

@@ -4,6 +4,7 @@ import { PatientService } from '@app/services/patient/patient.service';
 import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientListFilter, patientListFilters, PatientListFilterType } from '@app/pages/patients/patients.interface';
 import { LoggerService } from '@app/services/logger/logger.service';
+import { AlertService } from '@app/services/alert/alert.service';
 
 @Component({
   selector: 'app-patients',
@@ -19,9 +20,9 @@ export class PatientsComponent implements OnInit {
   public pairs: PatientPair[] = [];
 
   public loading: boolean = false;
-  public error: boolean = false;
 
   constructor(private _patientService: PatientService,
+              private _alertService: AlertService,
               private _logger: LoggerService) {
     this.activeListFilter = patientListFilters[0];
   }
@@ -78,15 +79,15 @@ export class PatientsComponent implements OnInit {
 
   private async _initPatients(): Promise<void> {
     this.loading = true;
-    return this._patientService.updatePatients().then(patients => {
-      this._logger.log('Got patients from server', [patients]);
+    // try getting patients
+    try {
+      this.patients = await this._patientService.getPatients();
+      this._logger.log('Got patients from server', [this.patients]);
+    } catch (e) {
+      this._alertService.error(`Error loading patients: "${e}"`);
+      this._logger.error(`Error loading patients: "${e}"`);
+    } finally {
       this.loading = false;
-      this.patients = patients;
-      this._patientService.setLocalPatients(patients);
-    })
-    .catch(() => {
-      this.loading = false;
-      this.error = true;
-    });
+    }
   }
 }

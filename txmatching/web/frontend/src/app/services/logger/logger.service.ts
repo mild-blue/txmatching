@@ -14,4 +14,11 @@ export class LoggerService {
       }
     }
   }
+
+  public error(text: string, args?: unknown[]): void {
+    console.error(text);
+    if (args) {
+      console.error(...args);
+    }
+  }
 }

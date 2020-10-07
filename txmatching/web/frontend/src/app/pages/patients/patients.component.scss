@@ -1,3 +1,5 @@
+@import "../../../styles/variables";
+
 .patients {
 
   &__header {
@@ -14,6 +16,11 @@
     .detail {
       width: 70% !important;
     }
+  }
+
+  h3 {
+    text-align: center;
+    padding: $padding-y $padding-x;
   }
 }
 
