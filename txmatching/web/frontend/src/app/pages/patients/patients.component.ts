@@ -5,6 +5,9 @@ import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientListFilter, patientListFilters, PatientListFilterType } from '@app/pages/patients/patients.interface';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { AlertService } from '@app/services/alert/alert.service';
+import { User } from '@app/model/User';
+import { AuthService } from '@app/services/auth/auth.service';
+import { DownloadStatus } from '@app/components/header/header.interface';
 
 @Component({
   selector: 'app-patients',
@@ -20,14 +23,20 @@ export class PatientsComponent implements OnInit {
   public pairs: PatientPair[] = [];
 
   public loading: boolean = false;
+  public error: boolean = false;
+  public downloadStatus: DownloadStatus = DownloadStatus.hidden;
 
-  constructor(private _patientService: PatientService,
+  public user?: User;
+
+  constructor(private _authService: AuthService,
               private _alertService: AlertService,
+              private _patientService: PatientService,
               private _logger: LoggerService) {
     this.activeListFilter = patientListFilters[0];
   }
 
   ngOnInit(): void {
+    this.user = this._authService.currentUserValue;
     this._initPatients().then(this._initPairs.bind(this));
   }
 

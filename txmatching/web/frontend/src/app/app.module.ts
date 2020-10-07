@@ -55,6 +55,7 @@ import { PatientDetailRecipientComponent } from './components/patient-detail-rec
 import { PatientPairComponent } from './components/patient-pair/patient-pair.component';
 import { TabSwitchComponent } from './components/tab-switch/tab-switch.component';
 import { AntibodiesComponent } from './components/patient-detail-recipient/antibodies/antibodies.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -113,7 +114,8 @@ import { AntibodiesComponent } from './components/patient-detail-recipient/antib
     BrowserAnimationsModule,
     MatInputModule,
     MatSlideToggleModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

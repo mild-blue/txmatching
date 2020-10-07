@@ -4,6 +4,7 @@ import { PatientService } from '@app/services/patient/patient.service';
 
 export interface ListItem {
   index: number;
+  isActive?: boolean;
 }
 
 export class ListItemAbstractComponent {

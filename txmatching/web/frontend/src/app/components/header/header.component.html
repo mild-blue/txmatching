@@ -12,6 +12,15 @@
       </li>
     </ul>
   </div>
+  <div class="download"
+       [class.hidden]="downloadStatus === downloadStatusOptions.hidden"
+       [class.disabled]="downloadStatus === downloadStatusOptions.disabled">
+    <button (click)="handleDownloadClick()">
+      Generate report
+      <mat-icon *ngIf="downloadStatus !== downloadStatusOptions.loading" [inline]="true">get_app</mat-icon>
+      <mat-spinner *ngIf="downloadStatus === downloadStatusOptions.loading" diameter="16"></mat-spinner>
+    </button>
+  </div>
   <div class="icons">
     <div *ngIf="user" class="user">
       <button #userDropdownTrigger (click)="openDropdown(userDropdownId)">

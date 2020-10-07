@@ -76,6 +76,54 @@ header {
     }
   }
 
+  .download {
+    margin-right: $padding-x;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+
+    &.disabled {
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    &.hidden {
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    button {
+      border-radius: $border-radius--wide;
+      border: 1px solid $body-color--secondary;
+      color: $body-color--secondary;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+      font-size: 14px;
+      background-color: transparent;
+      transition: background-color 0.5s ease;
+
+      mat-icon, mat-spinner {
+        margin-left: 10px;
+      }
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+      }
+
+      mat-spinner {
+        ::ng-deep circle {
+          stroke: $body-color--secondary;
+        }
+      }
+
+      &:hover {
+        background-color: $gray-200;
+      }
+    }
+  }
+
   .icons {
     display: flex;
     justify-content: flex-end;

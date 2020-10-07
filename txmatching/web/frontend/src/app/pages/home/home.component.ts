@@ -13,6 +13,8 @@ import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
 import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
+import { ReportService } from '@app/services/report/report.service';
+import { DownloadStatus } from '@app/components/header/header.interface';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +26,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private _configSubscription?: Subscription;
   private _matchingSubscription?: Subscription;
   private _patientsSubscription?: Subscription;
+  private _downloadInProgress: boolean = false;
 
   public loading: boolean = false;
 
@@ -44,6 +47,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               private _alertService: AlertService,
               private _matchingService: MatchingService,
               private _patientService: PatientService,
+              private _reportService: ReportService,
               private _logger: LoggerService) {
   }
 
@@ -58,8 +62,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._patientsSubscription?.unsubscribe();
   }
 
+  public getActiveMatching(): Matching | undefined {
+    return this.matchings.find(m => m.isActive);
+  }
+
   get isViewer(): boolean {
     return this.user ? this.user.decoded.role === Role.VIEWER : false;
+  }
+
+  get downloadStatus(): DownloadStatus {
+    const activeMatchingExists = !this.loading && this.getActiveMatching() !== undefined;
+    if (!activeMatchingExists) {
+      return DownloadStatus.disabled;
+    }
+    return this._downloadInProgress ? DownloadStatus.loading : DownloadStatus.enabled;
   }
 
   get showConfiguration(): boolean {
@@ -71,6 +87,29 @@ export class HomeComponent implements OnInit, OnDestroy {
   public toggleConfiguration(): void {
     this.configOpened = !this.configOpened;
     document.querySelector('body')?.classList.toggle('config-opened');
+  }
+
+  public async downloadReport(): Promise<void> {
+    const activeMatching = this.getActiveMatching();
+    if (!activeMatching) {
+      return;
+    }
+
+    this._logger.log('Downloading with active matching', [activeMatching]);
+
+    this._downloadInProgress = true;
+    this._reportService.downloadReport(activeMatching.db_id).subscribe(
+      (data) => {
+        const blob = new Blob([data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        window.open(url);
+      },
+      (error: string) => {
+        this._alertService.error(`<strong>Error downloading PDF:</strong> ${error}`);
+      },
+      () => {
+        this._downloadInProgress = false;
+      });
   }
 
   public async calculate(configuration: Configuration): Promise<void> {
@@ -160,6 +199,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private _prepareMatchings(m: Matching[]): Matching[] {
     return m.map((matching, key) => {
       matching.index = key + 1;
+      matching.isActive = key === 0;
       matching.rounds.forEach(round => round.transplants = round.transplants.map(transplant => this._prepareTransplant(transplant)));
       return matching;
     });

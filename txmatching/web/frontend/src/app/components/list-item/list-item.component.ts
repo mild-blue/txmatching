@@ -1,14 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ComponentFactoryResolver,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { matchingBatchSize } from '@app/model/Matching';
 import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
@@ -20,7 +10,7 @@ import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-i
   templateUrl: './list-item.component.html',
   styleUrls: ['./list-item.component.scss']
 })
-export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
+export class ListItemComponent implements OnChanges, AfterViewInit {
 
   @ViewChild('list') list?: ElementRef;
   @ViewChild('detail') detail?: ElementRef;
@@ -43,10 +33,6 @@ export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
   constructor(private _componentFactoryResolver: ComponentFactoryResolver) {
   }
 
-  ngOnInit(): void {
-    this._reloadItems();
-  }
-
   ngOnChanges(changes: SimpleChanges) {
     if (changes.listItemDetailComponent) {
       this._loadDetailComponent();
@@ -63,8 +49,16 @@ export class ListItemComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   public setActive(item: ListItem | undefined): void {
+
+    // deactivate activeItem if there is one
+    if (this.activeItem) {
+      this.activeItem.isActive = false;
+    }
+
+    // activate new item
     this.activeItem = item;
     if (item && item.index) {
+      item.isActive = true;
       this._loadDetailComponent();
       this._scrollToElement(item.index);
       this.activeAlignedTop = item.index === 1;

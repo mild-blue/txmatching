@@ -31,12 +31,4 @@ export class AppComponent implements OnDestroy {
   ngOnDestroy() {
     this._userSubscription?.unsubscribe();
   }
-
-  get isLoggedIn(): boolean {
-    return this._authService.isLoggedIn;
-  }
-
-  get showHeader(): boolean {
-    return this._router.url !== '/login';
-  }
 }
