@@ -20,6 +20,10 @@
       padding: 5px;
     }
 
+    table, tr, td, th, tbody, thead, tfoot {
+      page-break-inside: avoid !important;
+    }
+
     .no-border-table {
       border: none;
     }
@@ -44,13 +48,6 @@
       margin-bottom: 20px;
     }
 
-    .caption-rounds {
-      font-weight: bold;
-      font-size: 20px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
-
     .caption-round {
       font-weight: bold;
       font-size: 18px;
@@ -58,11 +55,11 @@
       margin-bottom: 10px;
     }
 
-    .caption-donors-and-recipients {
+    .caption-transplant {
       font-weight: bold;
-      font-size: 17px;
-      margin-top: 20px;
-      margin-bottom: 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      margin-bottom: 10px;
     }
 
     .table-header {
@@ -162,121 +159,103 @@
   <div class="caption">Matchings</div>
   {% for matching in matchings %}
     <div class="caption-matching">Matching #{{ matching.db_id }}</div>
-    <table class="no-border-table">
+
+    <!-- Matching info -->
+    <table>
       <tr>
-        <td class="no-border-table">
-          <table>
-            <tr>
-              <td class="table-header">Score</td>
-              <td>{{ matching.score }}</td>
-            </tr>
-            <tr>
-              <td class="table-header">Rounds</td>
-              <td>{{ matching.rounds|length }}</td>
-            </tr>
-            <tr>
-              <td class="table-header">Transplants</td>
-              <td>{{ matching|sum_of_transplants }}</td>
-            </tr>
-            <tr>
-              <td class="table-header">Countries</td>
-              <td>{{ matching.countries|code_from_country_filter|join(', ') }}</td>
-            </tr>
-          </table>
-        </td>
+        <td class="table-header">Score</td>
+        <td>{{ matching.score }}</td>
       </tr>
       <tr>
-        <td class="no-border-table">
-          <div class="caption-rounds">Rounds</div>
-        </td>
+        <td class="table-header">Rounds</td>
+        <td>{{ matching.rounds|length }}</td>
       </tr>
       <tr>
-        <td class="no-border-table">
-          <table class="no-border-table">
-            {% for round in matching.rounds %}
-              <tr>
-                <td class="no-border-table caption-round">
-                  Round #{{ loop.index }}
-                </td>
-              </tr>
-              <tr>
-                <td class="no-border-table">
-                  <table class="no-border-table">
-                    {% for transplant in round.transplants %}
-                      <tr>
-                        <td class="table-header"></td>
-                        <td class="table-header">Donor</td>
-                        <td class="table-header" colspan="2">Recipient</td>
-                        <td class="table-header">Score</td>
-                      </tr>
-                      <tr>
-                        <td class="table-header">Medical id</td>
-                        <td>{{ transplant.donor.medical_id }}</td>
-                        <td colspan="2">{{ transplant.recipient.medical_id }}</td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td class="table-header">Blood type</td>
-                        <td class="{{ 'compatible-blood-type' if transplant.compatible_blood }} {{ 'incompatible-blood-type' if not transplant.compatible_blood }}">{{ transplant.donor.parameters.blood_group }}</td>
-                        <td class="{{ 'compatible-blood-type' if transplant.compatible_blood }} {{ 'incompatible-blood-type' if not transplant.compatible_blood }}">{{ transplant.recipient.parameters.blood_group }}</td>
-                        <td>Acceptable: {{ transplant.recipient.acceptable_blood_groups|join(', ') }}</td>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <td class="table-header">Country code</td>
-                        <td>{{ transplant.donor.parameters.country_code.value }}</td>
-                        <td colspan="2">{{ transplant.recipient.parameters.country_code.value }}</td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td class="table-header"></td>
-                        <td class="table-header">Antigens</td>
-                        <td class="table-header">Antigens</td>
-                        <td class="table-header">Antibodies</td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td class="table-header">A</td>
-                        <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_a_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_a_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.hla_antibodies|antibody_a_filter|join(', ') }}</td>
-                        <td>{{ transplant|antigen_score_a_filter }}</td>
-                      </tr>
-                      <tr>
-                        <td class="table-header">B</td>
-                        <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_b_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_b_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.hla_antibodies|antibody_b_filter|join(', ') }}</td>
-                        <td>{{ transplant|antigen_score_b_filter }}</td>
-                      </tr>
-                      <tr>
-                        <td class="table-header">DR</td>
-                        <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_dr_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_dr_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.hla_antibodies|antibody_dr_filter|join(', ') }}</td>
-                        <td>{{ transplant|antigen_score_dr_filter }}</td>
-                      </tr>
-                      <tr>
-                        <td class="table-header">Other</td>
-                        <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_other_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_other_filter|join(', ') }}</td>
-                        <td>{{ transplant.recipient.hla_antibodies|antibody_other_filter|join(', ') }}</td>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <td colspan="3"></td>
-                        <td>Final score</td>
-                        <td class="final-score">{{ transplant.score }}</td>
-                      </tr>
-                    {% endfor %}
-                  </table>
-                </td>
-              </tr>
-            {% endfor %}
-          </table>
-        </td>
+        <td class="table-header">Transplants</td>
+        <td>{{ matching|sum_of_transplants }}</td>
+      </tr>
+      <tr>
+        <td class="table-header">Countries</td>
+        <td>{{ matching.countries|code_from_country_filter|join(', ') }}</td>
       </tr>
     </table>
+
+    <!-- Matching rounds -->
+    {% for round in matching.rounds %}
+      <div class="caption-round">Round #{{ loop.index }}</div>
+
+      <!-- Matching round transplants -->
+      {% for transplant in round.transplants %}
+        <div class="caption-transplant">Transplant #{{ loop.index }}</div>
+        <table class="no-border-table">
+          <tr>
+            <td class="table-header"></td>
+            <td class="table-header">Donor</td>
+            <td class="table-header" colspan="2">Recipient</td>
+            <td class="table-header">Score</td>
+          </tr>
+          <tr>
+            <td class="table-header">Medical id</td>
+            <td>{{ transplant.donor.medical_id }}</td>
+            <td colspan="2">{{ transplant.recipient.medical_id }}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-header">Blood type</td>
+            <td class="{{ 'compatible-blood-type' if transplant.compatible_blood }} {{ 'incompatible-blood-type' if not transplant.compatible_blood }}">{{ transplant.donor.parameters.blood_group }}</td>
+            <td class="{{ 'compatible-blood-type' if transplant.compatible_blood }} {{ 'incompatible-blood-type' if not transplant.compatible_blood }}">{{ transplant.recipient.parameters.blood_group }}</td>
+            <td>Acceptable: {{ transplant.recipient.acceptable_blood_groups|join(', ') }}</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td class="table-header">Country code</td>
+            <td>{{ transplant.donor.parameters.country_code.value }}</td>
+            <td colspan="2">{{ transplant.recipient.parameters.country_code.value }}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-header"></td>
+            <td class="table-header">Antigens</td>
+            <td class="table-header">Antigens</td>
+            <td class="table-header">Antibodies</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="table-header">A</td>
+            <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_a_filter|join(', ') }}</td>
+            <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_a_filter|join(', ') }}</td>
+            <td>{{ transplant.recipient.hla_antibodies|antibody_a_filter|join(', ') }}</td>
+            <td>{{ transplant|antigen_score_a_filter }}</td>
+          </tr>
+          <tr>
+            <td class="table-header">B</td>
+            <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_b_filter|join(', ') }}</td>
+            <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_b_filter|join(', ') }}</td>
+            <td>{{ transplant.recipient.hla_antibodies|antibody_b_filter|join(', ') }}</td>
+            <td>{{ transplant|antigen_score_b_filter }}</td>
+          </tr>
+          <tr>
+            <td class="table-header">DR</td>
+            <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_dr_filter|join(', ') }}</td>
+            <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_dr_filter|join(', ') }}</td>
+            <td>{{ transplant.recipient.hla_antibodies|antibody_dr_filter|join(', ') }}</td>
+            <td>{{ transplant|antigen_score_dr_filter }}</td>
+          </tr>
+          <tr>
+            <td class="table-header">Other</td>
+            <td>{{ transplant.donor.parameters.hla_typing.codes|antigen_other_filter|join(', ') }}</td>
+            <td>{{ transplant.recipient.parameters.hla_typing.codes|antigen_other_filter|join(', ') }}</td>
+            <td>{{ transplant.recipient.hla_antibodies|antibody_other_filter|join(', ') }}</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td colspan="3"></td>
+            <td>Final score</td>
+            <td class="final-score">{{ transplant.score }}</td>
+          </tr>
+        </table>
+      {% endfor %}
+    {% endfor %}
   {% endfor %}
 </div>
 </body>

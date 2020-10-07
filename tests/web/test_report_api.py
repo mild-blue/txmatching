@@ -15,7 +15,7 @@ class TestMatchingApi(DbTests):
         with self.app.test_client() as client:
             solve_from_db(Configuration(), self.txm_event_db_id)
 
-            res = client.get(f'/{REPORTS_NAMESPACE}/1?{MATCHINGS_BELOW_CHOSEN}=2', headers=self.auth_headers)
+            res = client.get(f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}=2', headers=self.auth_headers)
 
             self.assertEqual(200, res.status_code)
             self.assertEqual('application/pdf', res.content_type)
