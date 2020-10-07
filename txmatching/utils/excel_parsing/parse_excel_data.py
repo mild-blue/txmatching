@@ -16,16 +16,11 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType)
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup
 from txmatching.utils.enums import Country
-from txmatching.utils.hla_system.hla_table import (HLA_A, HLA_A_BROAD, HLA_B,
-                                                   HLA_B_BROAD, HLA_BW, HLA_CW,
-                                                   HLA_CW_BROAD, HLA_DQ,
-                                                   HLA_DQ_BROAD, HLA_DR,
-                                                   HLA_DR_BROAD, HLA_DRDR)
+from txmatching.utils.hla_system.hla_table import ALL_SPLIT_BROAD_CODES
 
 _valid_blood_groups = ['A', 'B', '0', 'AB']
 
-_valid_allele_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DQ + HLA_DR + HLA_DRDR + \
-                      HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DQ_BROAD + HLA_DR_BROAD
+_valid_allele_codes = ALL_SPLIT_BROAD_CODES
 
 _unknown_allele_codes = set()
 
@@ -63,7 +58,7 @@ def _parse_hla(hla_allele_str: str) -> List[HLAType]:
         return []
 
     allele_codes = re.split('[,. ()]+', hla_allele_str)
-    allele_codes = [code for code in allele_codes if len(code) > 0]
+    allele_codes = [code.upper() for code in allele_codes if len(code) > 0]
     checked_allele_codes = [code for code in allele_codes if code in _valid_allele_codes]
     if len(checked_allele_codes) != len(allele_codes):
         unknown_allele_codes = []

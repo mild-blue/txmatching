@@ -87,4 +87,4 @@ def calculate_cutoff(hla_antibodies_list: List[HLAAntibody]) -> int:
     """
     return max(hla_antibodies_list,
                key=lambda antibody: antibody.cutoff,
-               default=HLAAntibody('Default', mfi=0, cutoff=DEFAULT_CUTOFF)).cutoff
+               default=HLAAntibody('A21', mfi=0, cutoff=DEFAULT_CUTOFF)).cutoff

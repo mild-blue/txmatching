@@ -2,6 +2,7 @@ from txmatching.patients.patient_parameters import HLATyping
 from txmatching.utils.enums import HLA_TYPING_BONUS_PER_GENE_CODE
 from txmatching.utils.hla_system.get_genotype import get_antigen_genotype
 
+
 # Traditionally one can calculate index of incompatibility (IK) - the higher IK the higher incompatibility.
 # You calculate it by calculating the number of differences in A, B, DR alleles and look up the corresponding
 # column in the incompatibility index table.

@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
-from txmatching.utils.hla_system.hla_table import (
+from txmatching.utils.hla_system.hla_transformations import (
     get_compatibility_broad_codes, parse_code)
 
 Kilograms = float
