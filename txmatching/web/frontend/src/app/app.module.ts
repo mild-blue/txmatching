@@ -56,6 +56,7 @@ import { PatientPairComponent } from './components/patient-pair/patient-pair.com
 import { TabSwitchComponent } from './components/tab-switch/tab-switch.component';
 import { AntibodiesComponent } from './components/patient-detail-recipient/antibodies/antibodies.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AuthenticationComponent } from './pages/authentication/authentication.component';
 
 @NgModule({
   declarations: [
@@ -96,7 +97,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     PatientDetailRecipientComponent,
     PatientPairComponent,
     TabSwitchComponent,
-    AntibodiesComponent
+    AntibodiesComponent,
+    AuthenticationComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,25 @@
+@import "../../../styles/variables";
+
+.authentication {
+  padding: $padding-y $padding-x;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .form {
+    margin-top: $padding-y;
+    padding: $padding-y $padding-x;
+    width: 380px;
+    max-width: 100%;
+    border-radius: $border-radius--wide;
+    box-shadow: $box-shadow--wide;
+    background: $white;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+}

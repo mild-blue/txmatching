@@ -1,0 +1,22 @@
+<div class="authentication">
+
+  <div class="content">
+
+    <button routerLink="login">
+      <mat-icon>keyboard_backspace</mat-icon>
+      <span>Back to login</span>
+    </button>
+
+    <div class="form">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field>
+          <mat-label>Verification code</mat-label>
+          <input matInput type="text"
+                 placeholder="Enter code from SMS"
+                 formControlName="input">
+        </mat-form-field>
+        <app-button type="submit">Verify</app-button>
+      </form>
+    </div>
+  </div>
+</div>

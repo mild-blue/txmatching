@@ -5,6 +5,7 @@ import { AuthService } from '@app/services/auth/auth.service';
 import { first } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert/alert.service';
 import { PatientService } from '@app/services/patient/patient.service';
+import { TokenType, User } from '@app/model/User';
 
 @Component({
   selector: 'app-login',
@@ -48,8 +49,13 @@ export class LoginComponent implements OnInit {
     this._authService.login(email.value, password.value)
     .pipe(first())
     .subscribe(
-      () => {
-        this._router.navigate(['/']);
+      (user: User) => {
+        if (user.decoded.type === TokenType.OTP) {
+          this._router.navigate(['authentication']);
+        } else {
+          this._router.navigate(['authentication']);
+          // this._router.navigate(['/']);
+        }
       },
       error => {
         this.loading = false;
