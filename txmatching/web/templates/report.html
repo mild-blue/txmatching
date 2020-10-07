@@ -164,20 +164,26 @@
     <div class="caption-matching">Matching #{{ matching.db_id }}</div>
     <table class="no-border-table">
       <tr>
-        <td class="no-border-table">Score</td>
-        <td class="no-border-table">{{ matching.score }}</td>
-      </tr>
-      <tr>
-        <td class="no-border-table">Rounds</td>
-        <td class="no-border-table">{{ matching.rounds|length }}</td>
-      </tr>
-      <tr>
-        <td class="no-border-table">Transplants</td>
-        <td class="no-border-table">{{ matching|sum_of_transplants }}</td>
-      </tr>
-      <tr>
-        <td class="no-border-table">Countries</td>
-        <td class="no-border-table">{{ matching.countries|code_from_country_filter|join(', ') }}</td>
+        <td class="no-border-table">
+          <table>
+            <tr>
+              <td class="table-header">Score</td>
+              <td>{{ matching.score }}</td>
+            </tr>
+            <tr>
+              <td class="table-header">Rounds</td>
+              <td>{{ matching.rounds|length }}</td>
+            </tr>
+            <tr>
+              <td class="table-header">Transplants</td>
+              <td>{{ matching|sum_of_transplants }}</td>
+            </tr>
+            <tr>
+              <td class="table-header">Countries</td>
+              <td>{{ matching.countries|code_from_country_filter|join(', ') }}</td>
+            </tr>
+          </table>
+        </td>
       </tr>
       <tr>
         <td class="no-border-table">
@@ -189,7 +195,7 @@
           <table class="no-border-table">
             {% for round in matching.rounds %}
               <tr>
-                <td class="no-border-table caption-round" >
+                <td class="no-border-table caption-round">
                   Round #{{ loop.index }}
                 </td>
               </tr>
