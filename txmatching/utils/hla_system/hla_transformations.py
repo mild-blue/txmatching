@@ -11,7 +11,7 @@ from txmatching.utils.hla_system.rel_dna_ser_parsing import HIGH_RES_TO_SPLIT
 
 logger = logging.getLogger(__name__)
 
-HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d\d(:\d{2,3})*[A-Z]?$')
+HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*[A-Z]?$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
 C_SPLIT_FROM_HIGH_RES_REGEX = re.compile(r'^C\d+$')
 
