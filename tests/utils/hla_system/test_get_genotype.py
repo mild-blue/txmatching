@@ -2,8 +2,8 @@ import logging
 import unittest
 
 from tests.patients.test_patient_parameters import (donor_parameters_Joe, recipient_parameters_Jack)
+from txmatching.utils.enums import HLATypes
 from txmatching.utils.hla_system.get_genotype import get_antigen_genotype
-from txmatching.utils.hla_system.hla_table import CompatibilityGeneCode
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class TestGetGenotype(unittest.TestCase):
         for patient_params, genotypes in self._patient_params_genotypes:
             logger.info(f'Original HLA typing: {str(patient_params.hla_typing)}')
             logger.info(f'Broad HLA typing: {str(patient_params.hla_typing.compatibility_broad_resolution_codes)}')
-            for gene_code in CompatibilityGeneCode:
+            for gene_code in HLATypes:
                 calculated_genotype = get_antigen_genotype(
                     patient_params.hla_typing.compatibility_broad_resolution_codes,
                     gene_code)

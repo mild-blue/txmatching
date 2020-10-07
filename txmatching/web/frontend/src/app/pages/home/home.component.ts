@@ -3,7 +3,6 @@ import { Role, User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
-import { first } from 'rxjs/operators';
 import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
@@ -54,8 +53,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._initUser();
-    this._initPatients();
-    this._getResultsWithInitConfig();
+    this._initMatchings();
   }
 
   ngOnDestroy(): void {
@@ -114,7 +112,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  public calculate(configuration: Configuration): void {
+  public async calculate(configuration: Configuration): Promise<void> {
     if (!this.appConfiguration) {
       return;
     }
@@ -135,45 +133,61 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.appConfiguration = updatedConfig;
     this.configuration = configuration;
 
-    this._matchingSubscription = this._matchingService.calculate(updatedConfig)
-    .pipe(first())
-    .subscribe(
-      (matchings: Matching[]) => {
-        this.matchings = this._prepareMatchings(matchings);
-        this._logger.log('Calculated matchings', [matchings]);
-        this.loading = false;
-      },
-      error => {
-        this.loading = false;
-        this._alertService.error(error);
-      });
-  }
-
-  private _getResultsWithInitConfig(): void {
-    this.loading = true;
-    this._configSubscription = this._configService.getConfiguration()
-    .pipe(first())
-    .subscribe(
-      (config: AppConfiguration) => {
-        this._logger.log('Got config from server', [config]);
-        this.appConfiguration = config;
-        const { scorer_constructor_name, solver_constructor_name, ...rest } = config;
-        this.configuration = rest;
-
-        this.calculate(this.configuration);
-      },
-      error => {
-        this.loading = false;
-        this._alertService.error(error);
-      });
+    try {
+      const matchings: Matching[] = await this._matchingService.calculate(updatedConfig);
+      this.matchings = this._prepareMatchings(matchings);
+      this._logger.log('Calculated matchings', [matchings]);
+    } catch (e) {
+      this._alertService.error(`Error calculating matchings: "${e}"`);
+      this._logger.error(`Error calculating matchings: "${e}"`);
+    } finally {
+      this._logger.log('End of calculation');
+      this.loading = false;
+    }
   }
 
   private _initUser(): void {
     this.user = this._authService.currentUserValue;
   }
 
-  private _initPatients(): void {
-    this.patients = this._patientService.getLocalPatients();
+  private async _initMatchings(): Promise<void> {
+    this.loading = true;
+    try {
+      // try getting patients
+      try {
+        this.patients = await this._patientService.getPatients();
+        this._logger.log('Got patients from server', [this.patients]);
+      } catch (e) {
+        this._alertService.error(`Error loading patients: "${e}"`);
+        this._logger.error(`Error loading patients: "${e}"`);
+        return; // jump to finally block
+      }
+
+      // try getting configuration
+      try {
+        this.appConfiguration = await this._configService.getConfiguration();
+        this._logger.log('Got config from server', [this.appConfiguration]);
+      } catch (e) {
+        this._alertService.error(`Error loading configuration: "${e}"`);
+        this._logger.error(`Error loading configuration: "${e}"`);
+        return; // jump to finally block
+      }
+
+      // when successfully got patients & configuration
+      // get useful config properties
+      const { scorer_constructor_name, solver_constructor_name, ...rest } = this.appConfiguration;
+      this.configuration = rest;
+
+      // calculate matchings
+      await this.calculate(this.configuration);
+    } catch (e) {
+      // just in case
+      this._alertService.error(e);
+      this._logger.error(e);
+    } finally {
+      this._logger.log('End of matchings initialization');
+      this.loading = false;
+    }
   }
 
   private _isDonorBloodCompatible(donor: Donor, recipient: Recipient): boolean {

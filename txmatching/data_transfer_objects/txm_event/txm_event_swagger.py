@@ -1,11 +1,10 @@
 from flask_restx import fields
 
 from txmatching.patients.patient import DonorType
+from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
 from txmatching.web.api.namespaces import txm_event_api
 
-# remove in task https://trello.com/c/pKMqnv7X
-BLOOD_GROUPS = ['A', 'B', '0', 'AB']
 ANTIGENS_EXAMPLE = ['A1', 'A32', 'B7', 'B51', 'DR11', 'DR15', 'A*02:03', 'A*11:01:35', 'DPA1*01:07', 'DRB4*01:01',
                     'DQB1*02:01:01:01']
 MEDICAL_ID_DESCRIPTION = 'Medical ID of the patient. This ID is unique thorough the system and can be used for the \
@@ -30,25 +29,26 @@ HlaAntibodiesJson = txm_event_api.model('HLAAntibodies', {
 
 DonorJsonIn = txm_event_api.model('DonorInput', {
     'medical_id': fields.String(required=True, example='D1037', description=MEDICAL_ID_DESCRIPTION),
-    'blood_group': fields.String(required=True, enum=BLOOD_GROUPS),
+    'blood_group': fields.String(required=True, enum=[blood_group.value for blood_group in BloodGroup]),
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String,
                               example=ANTIGENS_EXAMPLE, description=HLA_TYPING_DESCRIPTION),
-    'donor_type': fields.String(required=True, enum=[donor_type.name for donor_type in DonorType]),
+    'donor_type': fields.String(required=True, enum=[donor_type.value for donor_type in DonorType]),
     'related_recipient_medical_id': fields.String(required=False, example='R1037',
                                                   description='Medical ID of the related recipient, empty for bridging '
                                                               'and non-directed donors.'),
-    'sex': fields.String(required=False, description='Sex of the patient.', enum=[sex.name for sex in Sex]),
+    'sex': fields.String(required=False, description='Sex of the patient.', enum=[sex.value for sex in Sex]),
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
 })
 
 RecipientJsonIn = txm_event_api.model('RecipientInput', {
-    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(enum=BLOOD_GROUPS),
+    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(
+        enum=[blood_group.value for blood_group in BloodGroup]),
                                            description='Acceptable blood groups for the patient. Leave empty to use \
                                             compatible blood groups.'),
     'medical_id': fields.String(required=True, example='R1037', description=MEDICAL_ID_DESCRIPTION),
-    'blood_group': fields.String(required=True, enum=BLOOD_GROUPS),
+    'blood_group': fields.String(required=True, enum=[blood_group.value for blood_group in BloodGroup]),
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String,
                               example=ANTIGENS_EXAMPLE,
                               description=HLA_TYPING_DESCRIPTION),
@@ -58,14 +58,14 @@ RecipientJsonIn = txm_event_api.model('RecipientInput', {
                                   cls_or_instance=fields.Nested(
                                       HlaAntibodiesJson
                                   )),
-    'sex': fields.String(required=False, description='Sex of the patient.', enum=[sex.name for sex in Sex]),
+    'sex': fields.String(required=False, description='Sex of the patient.', enum=[sex.value for sex in Sex]),
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
     'waiting_since': fields.Date(required=False,
-                                   example='2015-01-17',
-                                   description='Date since when the patient has been on waiting list. '
-                                               'Use format YYYY-MM-DD.'),
+                                 example='2015-01-17',
+                                 description='Date since when the patient has been on waiting list. '
+                                             'Use format YYYY-MM-DD.'),
     'previous_transplants': fields.Integer(required=False,
                                            example=0,
                                            description='Number of previous kidney transplants.'),
@@ -74,9 +74,9 @@ RecipientJsonIn = txm_event_api.model('RecipientInput', {
 UploadPatientsJson = txm_event_api.model(
     'UploadPatients',
     {
-        'country': fields.String(required=True, enum=[country.name for country in Country]),
+        'country': fields.String(required=True, enum=[country.value for country in Country]),
         'txm_event_name': fields.String(required=True,
-                                        example='2020-10-CZE-IL-AUT',
+                                        example='2020-10-CZE-ISR-AUT',
                                         description='The TXM event name has to be provided by an ADMIN.'),
         'donors': fields.List(required=True, cls_or_instance=fields.Nested(
             DonorJsonIn

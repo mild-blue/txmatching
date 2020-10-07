@@ -1,4 +1,7 @@
-<div *ngFor="let alert of alerts" class="{{getClass(alert)}}">
+<div *ngFor="let alert of alerts"
+     class="{{getClass(alert)}}"
+     (mouseenter)="onMouseEnter(alert)"
+     (mouseleave)="onMouseLeave(alert)">
   <a class="close" (click)="removeAlert(alert)">&times;</a>
   <span [innerHTML]="alert.message"></span>
 </div>

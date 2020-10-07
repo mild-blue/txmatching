@@ -1,33 +1,26 @@
 from enum import Enum
 
-from txmatching.patients.patient import Recipient, Donor
+
+class BloodGroup(str, Enum):
+    A = 'A'
+    B = 'B'
+    AB = 'AB'
+    ZERO = '0'
+
+    @classmethod
+    def _missing_(cls, name):
+        if name in {0, 'O'}:
+            return cls.ZERO
+        raise ValueError(f'{name} is not a valid BloodGroup')
+
 
 COMPATIBLE_BLOOD_GROUPS = {
-    "0": {"0"},
-    "A": {"0", "A"},
-    "B": {"0", "B"},
-    "AB": {"0", "A", "B", "AB"}
+    BloodGroup.ZERO: {BloodGroup.ZERO},
+    BloodGroup.A: {BloodGroup.ZERO, BloodGroup.A},
+    BloodGroup.B: {BloodGroup.ZERO, BloodGroup.B},
+    BloodGroup.AB: {BloodGroup.ZERO, BloodGroup.A, BloodGroup.B, BloodGroup.AB}
 }
 
 
-class HLATypes(Enum):
-    A = "A"
-    B = "B"
-    DR = "DR"
-
-
-ANTIBODIES_MULTIPLIERS = {
-    HLATypes.A: 1,
-    HLATypes.B: 2,
-    HLATypes.DR: 9
-}
-
-ANTIBODIES_MULTIPLIERS_STR = {
-    HLATypes.A.value: 1,
-    HLATypes.B.value: 2,
-    HLATypes.DR.value: 9
-}
-
-
-def blood_groups_compatible(donor: Donor, recipient: Recipient) -> bool:
-    return donor.parameters.blood_group in COMPATIBLE_BLOOD_GROUPS[recipient.parameters.blood_group]
+def blood_groups_compatible(donor_blood: BloodGroup, recipient_blood: BloodGroup) -> bool:
+    return donor_blood in COMPATIBLE_BLOOD_GROUPS[recipient_blood]

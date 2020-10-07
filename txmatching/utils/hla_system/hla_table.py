@@ -1,49 +1,9 @@
-# HLA system (https://en.wikipedia.org/wiki/Human_leukocyte_antigen)
-# Has some of the hla_typing similar, these similar ones seem like a one when using broad resolution detection
-# techniques.
-#
-# For more info, see: https://en.wikipedia.org/wiki/History_and_naming_of_human_leukocyte_antigens
+import re
 
-# TODO: Confirm this table with some immunologist https://trello.com/c/MtiTnNYG
-# TODO: ask what exact hla_typing should I count in the matches - for example what about DR52, DR53 - what do those mean
-#  https://trello.com/c/08MZVRCk
-# TODO: Is it a problem if donor has A23 antigen and recipient A24 antibody? (Both is A9) https://trello.com/c/UIo23mPb
-import logging
-from enum import Enum
-from typing import List
+from txmatching.utils.hla_system.rel_dna_ser_parsing import \
+    SEROLOGICAL_CODES_IN_REL_DNA_SER
 
-logger = logging.getLogger(__name__)
-HLA_A = ['A1', 'A2', 'A203', 'A210', 'A3', 'A11', 'A23', 'A24', 'A2403',
-         'A25', 'A26', 'A29', 'A30', 'A31', 'A32', 'A33', 'A34', 'A36',
-         'A43', 'A66', 'A68', 'A69', 'A74', 'A80']
-
-HLA_A_BROAD = ['A9', 'A10', 'A19', 'A28']
-
-HLA_B = ['B7', 'B703', 'B8', 'B13', 'B18', 'B27', 'B2708', 'B35', 'B37',
-         'B38', 'B39', 'B3901', 'B3902', 'B4005', 'B41', 'B42', 'B44',
-         'B45', 'B46', 'B47', 'B48', 'B49', 'B50', 'B51', 'B5102', 'B5103',
-         'B52', 'B53', 'B54', 'B55', 'B56', 'B57', 'B58', 'B59', 'B60',
-         'B61', 'B62', 'B63', 'B64', 'B65', 'B67', 'B71', 'B72', 'B73',
-         'B75', 'B76', 'B77', 'B78', 'B81', 'B82']
-
-HLA_B_BROAD = ['B5', 'B12', 'B14', 'B15', 'B16', 'B17', 'B22', 'B40', 'B70']
-
-HLA_BW = ['Bw4', 'Bw6']
-
-HLA_CW = ['Cw1', 'Cw2', 'Cw4', 'Cw5', 'Cw6', 'Cw7', 'Cw8', 'Cw9', 'Cw10']
-
-HLA_CW_BROAD = ['Cw3']
-
-HLA_DR = ['DR1', 'DR103', 'DR4', 'DR7', 'DR8', 'DR9', 'DR10', 'DR11', 'DR12',
-          'DR13', 'DR14', 'DR1403', 'DR1404', 'DR15', 'DR16', 'DR17', 'DR18']
-
-HLA_DR_BROAD = ['DR2', 'DR3', 'DR5', 'DR6']
-
-HLA_DRDR = ['DR51', 'DR52', 'DR53']
-
-HLA_DQ = ['DQ2', 'DQ4', 'DQ5', 'DQ6', 'DQ7', 'DQ8', 'DQ9']
-
-HLA_DQ_BROAD = ['DQ1', 'DQ3']
+# the dict below is based on http://hla.alleles.org/antigens/recognised_serology.html
 
 SPLIT_TO_BROAD = {'A23': 'A9',
                   'A24': 'A9',
@@ -83,8 +43,8 @@ SPLIT_TO_BROAD = {'A23': 'A9',
                   'B75': 'B15',
                   'B76': 'B15',
                   'B77': 'B15',
-                  'Cw9': 'Cw3',
-                  'Cw10': 'Cw3',
+                  'CW9': 'CW3',
+                  'CW10': 'CW3',
                   'DR11': 'DR5',
                   'DR12': 'DR5',
                   'DR13': 'DR6',
@@ -99,51 +59,10 @@ SPLIT_TO_BROAD = {'A23': 'A9',
                   'DQ8': 'DQ3',
                   'DQ9': 'DQ3'
                   }
+A_B_DR_HLA_CODE_REGEX = re.compile(r'^A|B|(DR(?!5([123])))')
 
-# for some reason before here was the code below (see the HLA_DQ_BROAD that is in split and not broad and missing
-# HL_DQ usage this was probably a bug
-# split_codes = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DR + HLA_DRDR + HLA_DQ_BROAD
-# broad_codes = HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DR_BROAD
+BROAD_CODES = {SPLIT_TO_BROAD.get(hla_code, hla_code) for hla_code in SEROLOGICAL_CODES_IN_REL_DNA_SER}
 
-SPLIT_CODES = HLA_A + HLA_B + HLA_BW + HLA_CW + HLA_DR + HLA_DRDR + HLA_DQ
-BROAD_CODES = HLA_A_BROAD + HLA_B_BROAD + HLA_CW_BROAD + HLA_DR_BROAD + HLA_DQ_BROAD
+COMPATIBILITY_BROAD_CODES = {broad_code for broad_code in BROAD_CODES if re.match(A_B_DR_HLA_CODE_REGEX, broad_code)}
 
-
-def broad_to_split(hla_code: str) -> List[str]:
-    if hla_code not in SPLIT_CODES + BROAD_CODES:
-        logger.warning(f'Unexpected hla_code: {hla_code}')
-        return [hla_code]
-    splits = [split for split, broad in SPLIT_TO_BROAD.items() if broad == hla_code]
-    if not splits:
-        return [hla_code]
-    else:
-        return splits
-
-
-def split_to_broad(hla_code: str) -> str:
-    if hla_code not in SPLIT_CODES + BROAD_CODES:
-        logger.warning(f'Unexpected hla_code: {hla_code}')
-        return hla_code
-    return SPLIT_TO_BROAD.get(hla_code, hla_code)
-
-
-class CompatibilityGeneCode(str, Enum):
-    A = 'A'
-    B = 'B'
-    DR = 'DR'
-
-
-# Compatibility (my name, no real term) broad codes were used before without the distinction of normal broad codes,
-# but this distinction seems to be important as the code implies we do not want to include non-proper codes to
-# compatibility index computation
-COMPATIBILITY_BROAD_CODES = [split_to_broad(hla_code) for hla_code in HLA_A + HLA_B + HLA_DR]
-
-
-def get_compatibility_broad_codes(hla_codes: List[str]) -> List[str]:
-    return [split_to_broad(hla_code) for hla_code in hla_codes if
-            split_to_broad(hla_code) in COMPATIBILITY_BROAD_CODES]
-
-
-def parse_code(hla_code: str) -> str:
-    # TODO https://trello.com/c/qaItmiOB
-    return hla_code
+ALL_SPLIT_BROAD_CODES = SEROLOGICAL_CODES_IN_REL_DNA_SER.union(BROAD_CODES)
