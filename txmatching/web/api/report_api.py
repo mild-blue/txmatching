@@ -12,11 +12,12 @@ from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
 
-from txmatching.auth.user.user_auth_check import require_user_edit_access
+from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore)
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, MatchingReportDTO, RoundReportDTO, TransplantDTO)
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import FailJson
 from txmatching.database.services.config_service import \
     latest_configuration_for_txm_event
 from txmatching.database.services.matching_service import \
@@ -49,14 +50,17 @@ class Report(Resource):
                 'type': 'integer',
                 'required': 'true'
             }
-        },
-        responses={
-            200: 'Returns matching report as PDF file.',
-            400: 'Raised in case of bad request.',
-            404: 'Raised when matching with particular id was not found.'
         }
     )
-    @require_user_edit_access()
+    @report_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @report_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @report_api.response(
+        code=403,
+        model=FailJson,
+        description='Access denied. You do not have rights to access this endpoint.'
+    )
+    @report_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @require_user_login()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
         txm_event_id = get_txm_event_for_current_user()
@@ -103,8 +107,10 @@ class Report(Resource):
         Report.prepare_tmp_dir()
         Report.prune_old_reports()
 
-        j2_env = Environment(loader=FileSystemLoader(os.path.join(THIS_DIR, '../templates')),
-                             trim_blocks=True)
+        j2_env = Environment(
+            loader=FileSystemLoader(os.path.join(THIS_DIR, '../templates')),
+            trim_blocks=True
+        )
 
         now = datetime.datetime.now()
         now_formatted = now.strftime('%Y_%m_%d_%H_%M_%S')

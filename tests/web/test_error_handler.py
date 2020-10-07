@@ -21,7 +21,7 @@ class TestErrorHandler(DbTests):
         self._test_handler(
             side_effect=InvalidJWTException,
             status_code=401,
-            error='Authentication denied.',
+            error='Authentication failed.',
             detail='Invalid JWT.',
             message=''
         )
@@ -30,7 +30,7 @@ class TestErrorHandler(DbTests):
         self._test_handler(
             side_effect=CredentialsMismatchException,
             status_code=401,
-            error='Authentication denied.',
+            error='Authentication failed.',
             detail='Credentials mismatch.',
             message=''
         )
@@ -39,7 +39,7 @@ class TestErrorHandler(DbTests):
         self._test_handler(
             side_effect=InvalidOtpException,
             status_code=401,
-            error='Authentication denied.',
+            error='Authentication failed.',
             detail='Invalid OTP.',
             message=''
         )
@@ -48,7 +48,7 @@ class TestErrorHandler(DbTests):
         self._test_handler(
             side_effect=InvalidIpAddressAccessException,
             status_code=401,
-            error='Authentication denied.',
+            error='Authentication failed.',
             detail='Used IP is not whitelisted.',
             message=''
         )

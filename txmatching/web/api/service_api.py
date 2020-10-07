@@ -8,6 +8,7 @@ from flask_restx import Resource, fields
 from sqlalchemy.exc import OperationalError
 
 from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import FailJson
 from txmatching.database.db import db
 from txmatching.web.api.namespaces import service_api
 
@@ -24,6 +25,8 @@ class Status(Resource):
     })
 
     @service_api.response(code=200, model=status, description='Returns ok if service is healthy.')
+    @service_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    # TODO: Remove: @Lukas - opravdu z toho lita nekdy 503?
     @service_api.response(code=503, model=status, description='Some services are failing.')
     def get(self):
         try:
@@ -41,7 +44,8 @@ class Version(Resource):
     })
 
     @service_api.response(code=200, model=version_model, description='Returns version of the code')
+    @service_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     def get(self):
         version = get_application_configuration().code_version
-        logger.debug(f'Responding on version endpoint with version {version}')
+        logger.debug(f'Responding on version endpoint with version {version}.')
         return jsonify({'version': version})

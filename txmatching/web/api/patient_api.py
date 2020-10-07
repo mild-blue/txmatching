@@ -15,6 +15,7 @@ from txmatching.data_transfer_objects.patients.patient_swagger import (
     RecipientModelToUpdate)
 from txmatching.data_transfer_objects.patients.recipient_update_dto import \
     RecipientUpdateDTO
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import FailJson
 from txmatching.database.services.patient_service import (get_txm_event,
                                                           update_donor,
                                                           update_recipient)
@@ -31,7 +32,15 @@ logger = logging.getLogger(__name__)
 class AllPatients(Resource):
 
     @patient_api.doc(security='bearer')
-    @patient_api.response(code=200, model=PatientsModel, description='')
+    @patient_api.response(code=200, model=PatientsModel, description='List of donors and list of recipients.')
+    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @patient_api.response(
+        code=403,
+        model=FailJson,
+        description='Access denied. You do not have rights to access this endpoint.'
+    )
+    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     def get(self) -> str:
         patients = get_txm_event(get_txm_event_for_current_user())
@@ -42,20 +51,34 @@ class AllPatients(Resource):
 class AlterRecipient(Resource):
 
     @patient_api.doc(body=RecipientModelToUpdate, security='bearer')
-    @patient_api.response(code=200, model=RecipientModel, description='')
+    @patient_api.response(code=200, model=RecipientModel, description='Updated recipient.')
+    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @patient_api.response(
+        code=403,
+        model=FailJson,
+        description='Access denied. You do not have rights to access this endpoint.'
+    )
+    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_edit_access()
     def put(self):
         recipient_update_dto = from_dict(data_class=RecipientUpdateDTO, data=request.json)
-
         return jsonify(update_recipient(recipient_update_dto, get_txm_event_for_current_user()))
 
 
 @patient_api.route('/donor', methods=['PUT'])
 class AlterDonor(Resource):
     @patient_api.doc(body=DonorModelToUpdate, security='bearer')
-    @patient_api.response(code=200, model=DonorModel, description='')
+    @patient_api.response(code=200, model=DonorModel, description='Updated donor.')
+    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @patient_api.response(
+        code=403,
+        model=FailJson,
+        description='Access denied. You do not have rights to access this endpoint.'
+    )
+    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_edit_access()
     def put(self):
         donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
-
         return jsonify(update_donor(donor_update_dto, get_txm_event_for_current_user()))

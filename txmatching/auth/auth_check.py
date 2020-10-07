@@ -22,7 +22,7 @@ def require_role(*role_names: UserRole) -> Callable:
             token = get_request_token()
 
             if token.type != TokenType.ACCESS:
-                abort(403, description='Authentication denied.')
+                abort(403, description='Authentication failed.')
             elif token.role not in role_names:
                 abort(403, description='Access denied. You do not have privileges to view this page. If you believe'
                                        ' you are seeing this message by error, contact your administrator.')
