@@ -55,7 +55,7 @@ class CalculateFromConfig(Resource):
                     for matching_round in matching.get_rounds()],
                 countries=matching.get_country_codes_counts(),
                 score=matching.score(),
-                db_id=matching.db_id()
+                order_id=matching.order_id()
             )) for matching in matchings
         ]
         if get_user_role() == UserRole.VIEWER:

@@ -66,20 +66,21 @@ class Report(Resource):
 
         matching_range_limit = int(request.args.get(MATCHINGS_BELOW_CHOSEN))
         (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_id)
+        all_matchings.sort(key=lambda m: m.order_id())  # lower ID -> better evaluation
 
-        requested_matching = list(filter(lambda matching: matching.db_id() == matching_id, all_matchings))
+        requested_matching = list(filter(lambda matching: matching.order_id() == matching_id, all_matchings))
         if len(requested_matching) == 0:
             abort(404, f'Matching with id {matching_id} not found.')
 
-        matchings_over_score = list(
-            filter(lambda matching: matching.db_id() > matching_id,
+        matchings_over = list(
+            filter(lambda matching: matching.order_id() < matching_id,
                    all_matchings))
-        matchings_under_score = list(
-            filter(lambda matching: matching.db_id() < matching_id,
+        matchings_under = list(
+            filter(lambda matching: matching.order_id() > matching_id,
                    all_matchings))[
-                                :matching_range_limit]
-        other_matchings_to_include = matchings_over_score + matchings_under_score
-        other_matchings_to_include.sort(key=lambda m: m.db_id())
+            :matching_range_limit]
+        other_matchings_to_include = matchings_over + matchings_under
+        other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
 
         matching_dtos = [MatchingReportDTO(
@@ -94,7 +95,7 @@ class Report(Resource):
                 for matching_round in matching.get_rounds()],
             countries=matching.get_country_codes_counts(),
             score=matching.score(),
-            db_id=matching.db_id()
+            order_id=matching.order_id()
         ) for matching in matchings
         ]
 
@@ -123,11 +124,26 @@ class Report(Resource):
         with open(html_file_full_path, 'w') as text_file:
             text_file.write(html)
 
-        pdfkit.from_file(html_file_full_path, pdf_file_full_path)
+        pdfkit.from_file(
+            input=html_file_full_path,
+            output_path=pdf_file_full_path,
+            options={
+                'footer-center': '[page] / [topage]'
+            }
+        )
         if os.path.exists(html_file_full_path):
             os.remove(html_file_full_path)
 
-        return send_from_directory(TMP_DIR, pdf_file_name, as_attachment=True)
+        response = send_from_directory(
+            TMP_DIR,
+            pdf_file_name,
+            as_attachment=True,
+            attachment_filename=pdf_file_name
+        )
+
+        response.headers["x-filename"] = pdf_file_name
+        response.headers["Access-Control-Expose-Headers"] = 'x-filename'
+        return response
 
     @staticmethod
     def prepare_tmp_dir():
@@ -165,6 +181,17 @@ def antigen_dr_filter(codes: List[str]) -> List[str]:
     return list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), codes))
 
 
+def _start_with(value: str, values: List[str]) -> bool:
+    for val in values:
+        if value.upper().startswith(val):
+            return True
+    return False
+
+
+def antigen_other_filter(codes: List[str]) -> List[str]:
+    return list(filter(lambda x: not _start_with(x, [hla.value for hla in HLATypes]), codes))
+
+
 def antibody_a_filter(antibodies: HLAAntibodies) -> List[str]:
     return [code for code in
             list(filter(lambda x: x.upper().startswith(HLATypes.A.value), antibodies.hla_codes_over_cutoff))]
@@ -178,6 +205,10 @@ def antibody_b_filter(antibodies: HLAAntibodies) -> List[str]:
 def antibody_dr_filter(antibodies: HLAAntibodies) -> List[str]:
     return [code for code in
             list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), antibodies.hla_codes_over_cutoff))]
+
+
+def antibody_other_filter(antibodies: HLAAntibodies) -> List[str]:
+    return list(filter(lambda x: not _start_with(x, [hla.value for hla in HLATypes]), antibodies.hla_codes_over_cutoff))
 
 
 def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:
@@ -205,7 +236,14 @@ def antigen_score_dr_filter(transplant: TransplantDTO) -> int:
 
 
 def code_from_country_filter(countries: List[CountryDTO]) -> List[str]:
-    return [country.country_code for country in countries]
+    return [country.country_code.value for country in countries]
+
+
+def sum_of_transplants(matching: MatchingReportDTO) -> int:
+    count_of_transplants = 0
+    for matching_round in matching.rounds:
+        count_of_transplants += len(matching_round.transplants)
+    return count_of_transplants
 
 
 jinja2.filters.FILTERS['country_combination_filter'] = country_combination_filter
@@ -213,6 +251,7 @@ jinja2.filters.FILTERS['donor_recipient_score_filter'] = donor_recipient_score_f
 jinja2.filters.FILTERS['antigen_a_filter'] = antigen_a_filter
 jinja2.filters.FILTERS['antigen_b_filter'] = antigen_b_filter
 jinja2.filters.FILTERS['antigen_dr_filter'] = antigen_dr_filter
+jinja2.filters.FILTERS['antigen_other_filter'] = antigen_other_filter
 jinja2.filters.FILTERS['matching_hla_typing_filter'] = matching_hla_typing_filter
 jinja2.filters.FILTERS['antigen_score_a_filter'] = antigen_score_a_filter
 jinja2.filters.FILTERS['antigen_score_b_filter'] = antigen_score_b_filter
@@ -221,3 +260,5 @@ jinja2.filters.FILTERS['code_from_country_filter'] = code_from_country_filter
 jinja2.filters.FILTERS['antibody_a_filter'] = antibody_a_filter
 jinja2.filters.FILTERS['antibody_b_filter'] = antibody_b_filter
 jinja2.filters.FILTERS['antibody_dr_filter'] = antibody_dr_filter
+jinja2.filters.FILTERS['antibody_other_filter'] = antibody_other_filter
+jinja2.filters.FILTERS['sum_of_transplants'] = sum_of_transplants
