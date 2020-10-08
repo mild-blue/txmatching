@@ -2,17 +2,19 @@
 
   <div class="content">
 
-    <button routerLink="login">
+    <button routerLink="/login">
       <mat-icon>keyboard_backspace</mat-icon>
       <span>Back to login</span>
     </button>
 
     <div class="form">
+      <h3>Enter a verification code</h3>
+      <p>A text message with a verification code was just send to you by SMS.</p>
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <mat-form-field>
           <mat-label>Verification code</mat-label>
           <input matInput type="text"
-                 placeholder="Enter code from SMS"
+                 placeholder="Enter a code from SMS"
                  formControlName="input">
         </mat-form-field>
         <app-button type="submit">Verify</app-button>

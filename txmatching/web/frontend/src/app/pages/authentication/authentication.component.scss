@@ -9,6 +9,24 @@
   align-items: center;
   flex-direction: column;
 
+  button {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+
+    mat-icon {
+      margin-left: 5px;
+      margin-right: 10px;
+      transition: margin-left 0.2s ease;
+    }
+
+    &:hover {
+      mat-icon {
+        margin-left: 0;
+      }
+    }
+  }
+
   .form {
     margin-top: $padding-y;
     padding: $padding-y $padding-x;
@@ -18,8 +36,13 @@
     box-shadow: $box-shadow--wide;
     background: $white;
 
+    h3 {
+      margin-top: 0;
+    }
+
     mat-form-field {
       width: 100%;
+      margin-top: $item-gap;
     }
   }
 }
