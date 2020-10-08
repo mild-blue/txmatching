@@ -15,6 +15,7 @@ import { MatchingDetailComponent } from '@app/components/matching-detail/matchin
 import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
 import { ReportService } from '@app/services/report/report.service';
 import { DownloadStatus } from '@app/components/header/header.interface';
+import { Report } from '@app/services/report/report.interface';
 
 @Component({
   selector: 'app-home',
@@ -98,14 +99,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._logger.log('Downloading with active matching', [activeMatching]);
 
     this._downloadInProgress = true;
-    this._reportService.downloadReport(activeMatching.order_id).subscribe(
-      (data) => {
-        const blob = new Blob([data], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
+    this._reportService.downloadReport(activeMatching.order_id)
+    .subscribe(
+      (report: Report) => {
+        const blob = new Blob([report.data], { type: 'application/pdf' });
         const link = document.createElement('a');
-        const date = new Date();
-        link.href = url;
-        link.download = `report-${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}.pdf`;
+        link.href = window.URL.createObjectURL(blob);
+        link.download = report.filename;
         link.dispatchEvent(new MouseEvent('click'));
       },
       (error: string) => {
