@@ -68,6 +68,11 @@ class OtpLoginApi(Resource):
         description='Access denied. You do not have rights to access this endpoint.'
     )
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @user_api.response(
+        code=503,
+        model=FailJson,
+        description='It was not possible to reach SMS gate, thus the one time password could not be send.'
+    )
     @allow_otp_request()
     def post(self):
         post_data = request.get_json()

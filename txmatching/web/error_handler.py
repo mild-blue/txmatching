@@ -12,7 +12,7 @@ from txmatching.auth.exceptions import (CredentialsMismatchException,
                                         InvalidIpAddressAccessException,
                                         InvalidJWTException,
                                         InvalidOtpException,
-                                        UserUpdateException)
+                                        UserUpdateException, CouldNotSendOtpUsingSmsServiceException)
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +42,14 @@ def _user_auth_handlers(api: Api):
     def handle_invalid_otp_exception(error: InvalidOtpException):
         _log_warning(error)
         return {'error': 'Authentication denied.', 'detail': 'Invalid OTP.'}, 401
+
+    @api.errorhandler(CouldNotSendOtpUsingSmsServiceException)
+    def handle_could_not_send_otp(error: CouldNotSendOtpUsingSmsServiceException):
+        _log_exception(error)
+        return {
+                   'error': 'Service unavailable.',
+                   'detail': 'It was not possible to reach SMS gate. Please contact support.'
+               }, 503
 
     @api.errorhandler(InvalidIpAddressAccessException)
     def handle_invalid_ip_exception(error: InvalidIpAddressAccessException):
