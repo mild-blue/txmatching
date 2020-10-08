@@ -66,6 +66,7 @@ class Report(Resource):
 
         matching_range_limit = int(request.args.get(MATCHINGS_BELOW_CHOSEN))
         (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_id)
+        all_matchings.sort(key=lambda m: m.db_id())
 
         requested_matching = list(filter(lambda matching: matching.db_id() == matching_id, all_matchings))
         if len(requested_matching) == 0:
@@ -77,7 +78,7 @@ class Report(Resource):
         matchings_under_score = list(
             filter(lambda matching: matching.db_id() < matching_id,
                    all_matchings))[
-                                :matching_range_limit]
+            -matching_range_limit:]
         other_matchings_to_include = matchings_over_score + matchings_under_score
         other_matchings_to_include.sort(key=lambda m: m.db_id())
         matchings = requested_matching + other_matchings_to_include
