@@ -102,7 +102,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       (data) => {
         const blob = new Blob([data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
-        window.open(url);
+        const link = document.createElement('a');
+        const date = new Date();
+        link.href = url;
+        link.download = `report-${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}.pdf`;
+        link.dispatchEvent(new MouseEvent('click'));
       },
       (error: string) => {
         this._alertService.error(`<strong>Error downloading PDF:</strong> ${error}`);
