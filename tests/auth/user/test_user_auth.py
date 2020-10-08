@@ -1,11 +1,13 @@
 import datetime
+import random
 from unittest import TestCase, mock
 from uuid import uuid4
 
 from txmatching.auth.data_types import UserRole, BearerTokenRequest, TokenType, DecodedBearerToken
 from txmatching.auth.exceptions import InvalidOtpException, InvalidAuthCallException
-from txmatching.auth.user.totp import generate_totp_seed, OTP_VALIDITY_MINUTES, generate_otp_for_user
-from txmatching.auth.user.user_auth import user_login_flow, user_otp_login, refresh_user_token
+from txmatching.auth.user.totp import generate_totp_seed, OTP_VALIDITY_MINUTES, generate_otp_for_user, \
+    verify_otp_for_user
+from txmatching.auth.user.user_auth import user_login_flow, user_otp_login, refresh_user_token, _send_sms_otp
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
@@ -33,8 +35,14 @@ class TestUserAuth(TestCase):
             expiration=datetime.timedelta(minutes=OTP_VALIDITY_MINUTES)
         )
 
-        token = user_login_flow(usr, 0)
-        self.assertEqual(expected, token)
+        def send(phone_number: str, message_body: str):
+            self.assertEqual(usr.phone_number, phone_number)
+            token = message_body[0:6]
+            self.assertTrue(verify_otp_for_user(usr, token))
+
+        with mock.patch('txmatching.auth.user.user_auth.send_sms', send):
+            token = user_login_flow(usr, 0)
+            self.assertEqual(expected, token)
 
     def test_user_login_flow_disabled_2fa(self):
         jwt_expiration_days = 9
@@ -136,3 +144,16 @@ class TestUserAuth(TestCase):
             type=TokenType.ACCESS
         )
         self.assertRaises(InvalidAuthCallException, lambda: refresh_user_token(encoded, 10))
+
+    def test__send_sms_otp(self):
+        usr = mock.MagicMock()
+        usr.phone_number = 'phone'
+
+        token = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+
+        def send(phone_number: str, message_body: str):
+            self.assertEqual(usr.phone_number, phone_number)
+            self.assertEqual(f'{token} - use this code for TXMatching login.', message_body)
+
+        with mock.patch('txmatching.auth.user.user_auth.send_sms', send):
+            _send_sms_otp(token, usr)

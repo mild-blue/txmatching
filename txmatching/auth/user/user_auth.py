@@ -70,4 +70,4 @@ def refresh_user_token(token: DecodedBearerToken, jwt_expiration_days: int) -> B
 def _send_sms_otp(otp: str, user: AppUserModel):
     require_auth_condition(user.phone_number is not None, f'No phone number for user {user.email}')
     require_auth_condition(bool(otp), 'Empty OTP!')
-    send_sms(user.phone_number, message_body=f'Your TXMatching code is: {otp}')
+    send_sms(user.phone_number, message_body=f'{otp} - use this code for TXMatching login.')

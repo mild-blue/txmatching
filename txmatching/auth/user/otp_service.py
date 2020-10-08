@@ -13,12 +13,7 @@ def send_sms(recipient_phone: str, message_body: str):
     """
     Send SMS with message_body to recipient_phone.
     """
-    app_conf = get_application_configuration()
-    if app_conf.is_production:
-        return _send_otp_ikem(recipient_phone, message_body, app_conf)
-    else:
-        raise NotImplementedError('It is not possible to send SMS unless '
-                                  'the app is running in the production environment.')
+    return _send_otp_ikem(recipient_phone, message_body, get_application_configuration())
 
 
 def _send_otp_ikem(recipient_phone: str, message_body: str, app_config: ApplicationConfiguration):
@@ -38,7 +33,8 @@ def _send_otp_ikem(recipient_phone: str, message_body: str, app_config: Applicat
     sms_request = requests.get(app_config.sms_service_url, params=params)
     if sms_request.status_code != 200:
         raise CouldNotSendOtpUsingSmsServiceException(
-            f'SMS gate responded with {sms_request.status_code} and {sms_request.json()}'
+            f'SMS gate responded with status code: {sms_request.status_code} '
+            f'and body: {sms_request.json()}'
         )
 
     logger.info('SMS sent successfully.')

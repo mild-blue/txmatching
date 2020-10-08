@@ -71,7 +71,7 @@ class OtpLoginApi(Resource):
     @user_api.response(
         code=503,
         model=FailJson,
-        description='It was not possible to reach SMS gate, thus the one time password could not be send.'
+        description='It was not possible to reach the SMS gate, thus the one time password could not be send.'
     )
     @allow_otp_request()
     def post(self):

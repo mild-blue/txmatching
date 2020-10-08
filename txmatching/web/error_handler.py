@@ -12,7 +12,8 @@ from txmatching.auth.exceptions import (CredentialsMismatchException,
                                         InvalidIpAddressAccessException,
                                         InvalidJWTException,
                                         InvalidOtpException,
-                                        UserUpdateException, CouldNotSendOtpUsingSmsServiceException)
+                                        UserUpdateException,
+                                        CouldNotSendOtpUsingSmsServiceException)
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +49,7 @@ def _user_auth_handlers(api: Api):
         _log_exception(error)
         return {
                    'error': 'Service unavailable.',
-                   'detail': 'It was not possible to reach SMS gate. Please contact support.'
+                   'detail': 'It was not possible to reach the SMS gate. Please contact support.'
                }, 503
 
     @api.errorhandler(InvalidIpAddressAccessException)
