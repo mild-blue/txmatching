@@ -66,21 +66,21 @@ class Report(Resource):
 
         matching_range_limit = int(request.args.get(MATCHINGS_BELOW_CHOSEN))
         (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_id)
-        all_matchings.sort(key=lambda m: m.db_id())
+        all_matchings.sort(key=lambda m: m.order_id())  # lower ID -> better evaluation
 
-        requested_matching = list(filter(lambda matching: matching.db_id() == matching_id, all_matchings))
+        requested_matching = list(filter(lambda matching: matching.order_id() == matching_id, all_matchings))
         if len(requested_matching) == 0:
             abort(404, f'Matching with id {matching_id} not found.')
 
-        matchings_over_score = list(
-            filter(lambda matching: matching.db_id() > matching_id,
+        matchings_over = list(
+            filter(lambda matching: matching.order_id() < matching_id,
                    all_matchings))
-        matchings_under_score = list(
-            filter(lambda matching: matching.db_id() < matching_id,
+        matchings_under = list(
+            filter(lambda matching: matching.order_id() > matching_id,
                    all_matchings))[
-            -matching_range_limit:]
-        other_matchings_to_include = matchings_over_score + matchings_under_score
-        other_matchings_to_include.sort(key=lambda m: m.db_id())
+            :matching_range_limit]
+        other_matchings_to_include = matchings_over + matchings_under
+        other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
 
         matching_dtos = [MatchingReportDTO(
@@ -95,7 +95,7 @@ class Report(Resource):
                 for matching_round in matching.get_rounds()],
             countries=matching.get_country_codes_counts(),
             score=matching.score(),
-            db_id=matching.db_id()
+            order_id=matching.order_id()
         ) for matching in matchings
         ]
 

@@ -98,7 +98,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._logger.log('Downloading with active matching', [activeMatching]);
 
     this._downloadInProgress = true;
-    this._reportService.downloadReport(activeMatching.db_id).subscribe(
+    this._reportService.downloadReport(activeMatching.order_id).subscribe(
       (data) => {
         const blob = new Blob([data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);

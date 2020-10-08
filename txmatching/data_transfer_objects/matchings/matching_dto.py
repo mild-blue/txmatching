@@ -31,7 +31,7 @@ class MatchingDTO:
     score: float
     rounds: List[RoundDTO]
     countries: List[CountryDTO]
-    db_id: int
+    order_id: int
 
 
 @dataclass
@@ -52,4 +52,4 @@ class MatchingReportDTO:
     score: float
     rounds: List[RoundReportDTO]
     countries: List[CountryDTO]
-    db_id: int
+    order_id: int

@@ -2,7 +2,7 @@ import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientPair } from '@app/model/Patient';
 
 export interface Matching extends ListItem {
-  db_id: number;
+  order_id: number;
   score: number;
   rounds: Round[];
   countries: MatchingCountry[];
