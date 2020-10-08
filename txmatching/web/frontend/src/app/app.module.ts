@@ -122,7 +122,6 @@ import { AuthenticationComponent } from './pages/authentication/authentication.c
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
-
   ],
   bootstrap: [AppComponent]
 })

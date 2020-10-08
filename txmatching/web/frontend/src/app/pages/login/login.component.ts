@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
 import { first } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert/alert.service';
-import { PatientService } from '@app/services/patient/patient.service';
 import { TokenType, User } from '@app/model/User';
 
 @Component({
@@ -21,8 +20,7 @@ export class LoginComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder,
               private _router: Router,
               private _authService: AuthService,
-              private _alertService: AlertService,
-              private _patientService: PatientService) {
+              private _alertService: AlertService) {
     this.loginForm = this._formBuilder.group({
       email: ['', [Validators.required]], // todo: add Validators.email when relevant
       password: ['', Validators.required]
@@ -53,8 +51,7 @@ export class LoginComponent implements OnInit {
         if (user.decoded.type === TokenType.OTP) {
           this._router.navigate(['authentication']);
         } else {
-          this._router.navigate(['authentication']);
-          // this._router.navigate(['/']);
+          this._router.navigate(['/']);
         }
       },
       error => {
