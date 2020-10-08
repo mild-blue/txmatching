@@ -1,18 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
-import { User } from '@app/model/User';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { LoggerService } from '@app/services/logger/logger.service';
+
+const redirectTimeoutMs = 2000;
 
 @Component({
   selector: 'app-authentication',
   templateUrl: './authentication.component.html',
   styleUrls: ['./authentication.component.scss']
 })
-export class AuthenticationComponent {
+export class AuthenticationComponent implements OnDestroy {
+
+  private _timeout?: NodeJS.Timeout;
 
   public form: FormGroup = new FormGroup({
     input: new FormControl([''], Validators.required)
@@ -27,6 +30,12 @@ export class AuthenticationComponent {
               private _logger: LoggerService) {
   }
 
+  ngOnDestroy() {
+    if (this._timeout) {
+      clearTimeout(this._timeout);
+    }
+  }
+
   public onSubmit(): void {
     if (this.form.invalid) {
       return;
@@ -37,11 +46,9 @@ export class AuthenticationComponent {
 
     this._authService.verify(code).pipe(first())
     .subscribe(
-      (user: User) => {
+      () => {
         this.success = true;
-        setTimeout(() => {
-          this._router.navigate(['/login']);
-        }, 2000);
+        this._timeout = setTimeout(async () => this._router.navigate(['/']), redirectTimeoutMs);
       },
       (error: Error) => {
         this._alertService.error(`<strong>Error while verifying:</strong> ${error.message}`);
