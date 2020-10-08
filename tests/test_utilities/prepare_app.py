@@ -41,6 +41,7 @@ class DbTests(unittest.TestCase):
         self.app = Flask(__name__)
         self.app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self._database_name}'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        self.app.config['SQLALCHEMY_ECHO'] = False  # Enable if you want to see DB queries.
         db.init_app(self.app)
 
         self.app.app_context().push()

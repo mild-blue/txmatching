@@ -48,14 +48,14 @@ class TxmEventApi(Resource):
         description='Returns the newly created TXM event object.'
     )
     @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @txm_event_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @txm_event_api.response(code=401, model=FailJson, description='Authentication failed.')
     @txm_event_api.response(
         code=403,
         model=FailJson,
         description='Access denied. You do not have rights to access this endpoint.'
     )
     @txm_event_api.response(code=409, model=FailJson, description='Non-unique patients provided.')
-    @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details.')
+    @txm_event_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_role(UserRole.ADMIN)
     def post(self):
         tmx_event = from_dict(data_class=TxmEventDTOIn, data=request.json)
@@ -85,13 +85,13 @@ class TxmEventDeleteApi(Resource):
         description='Returns status code representing result of TXM event object deletion.'
     )
     @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @txm_event_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @txm_event_api.response(code=401, model=FailJson, description='Authentication failed.')
     @txm_event_api.response(
         code=403,
         model=FailJson,
         description='Access denied. You do not have rights to access this endpoint.'
     )
-    @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details.')
+    @txm_event_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_role(UserRole.ADMIN)
     def delete(self, name: str):
         delete_txm_event(name)
@@ -109,13 +109,13 @@ class TxmEventUploadPatients(Resource):
     )
     @txm_event_api.response(code=200, model=PatientUploadSuccessJson, description='Success.')
     @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @txm_event_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @txm_event_api.response(code=401, model=FailJson, description='Authentication failed.')
     @txm_event_api.response(
         code=403,
         model=FailJson,
         description='Access denied. You do not have rights to access this endpoint.'
     )
-    @txm_event_api.response(code=500, model=FailJson, description='Unexpected, see contents for details.')
+    @txm_event_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
     @allow_service_role()
     def put(self):
