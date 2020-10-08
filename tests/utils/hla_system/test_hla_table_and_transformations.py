@@ -28,7 +28,7 @@ class TestHlaTable(unittest.TestCase):
         self.assertIsNone(re.match(HIGH_RES_REGEX, 'C*11:45:3'))
         self.assertIsNone(re.match(HIGH_RES_REGEX, 'C*11:45:'))
         self.assertIsNone(re.match(HIGH_RES_REGEX, 'C*111:45:'))
-        self.assertIsNone(re.match(HIGH_RES_REGEX, 'C*111:45:03'))
+        self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'DPB1*1110:01'))
         self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'C*11:45:32Q'))
         self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'A*68:06'))
         self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'B*46:10'))
