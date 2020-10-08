@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { User } from '@app/model/User';
@@ -12,7 +12,7 @@ import { LoggerService } from '@app/services/logger/logger.service';
   templateUrl: './authentication.component.html',
   styleUrls: ['./authentication.component.scss']
 })
-export class AuthenticationComponent implements OnInit {
+export class AuthenticationComponent {
 
   public form: FormGroup = new FormGroup({
     input: new FormControl([''], Validators.required)
@@ -25,9 +25,6 @@ export class AuthenticationComponent implements OnInit {
               private _authService: AuthService,
               private _alertService: AlertService,
               private _logger: LoggerService) {
-  }
-
-  ngOnInit(): void {
   }
 
   public onSubmit(): void {

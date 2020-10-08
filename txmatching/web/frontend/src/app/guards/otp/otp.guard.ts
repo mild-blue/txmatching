@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AuthService } from '@app/services/auth/auth.service';
 import { TokenType } from '@app/model/User';
+import { AuthService } from '@app/services/auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate {
+export class OtpGuard implements CanActivate {
 
   constructor(private _router: Router,
               private _authService: AuthService) {
@@ -14,16 +14,14 @@ export class AuthGuard implements CanActivate {
 
   canActivate(): boolean {
     const currentUser = this._authService.currentUserValue;
-    const isLoggedIn = this._authService.isLoggedIn;
 
     if (currentUser) {
       if (currentUser.decoded.type === TokenType.OTP) {
-        this._router.navigate(['authentication']);
-        return false;
+        return true;
       }
 
-      if (isLoggedIn) {
-        return true;
+      if (this._authService.isLoggedIn) {
+        return false;
       }
     }
 

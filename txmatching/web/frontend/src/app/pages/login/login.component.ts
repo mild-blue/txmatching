@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
@@ -11,7 +11,7 @@ import { TokenType, User } from '@app/model/User';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 
   public loginForm: FormGroup;
   public loading: boolean = false;
@@ -25,12 +25,6 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required]], // todo: add Validators.email when relevant
       password: ['', Validators.required]
     });
-  }
-
-  ngOnInit() {
-    if (this._authService.isLoggedIn) {
-      this._router.navigate(['/']);
-    }
   }
 
   public onSubmit() {
