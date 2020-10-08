@@ -1,24 +1,25 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from txmatching.data_transfer_objects.patients.hla_antibodies_upload_dto import \
-    HLAAntibodiesUploadDTO
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
+from txmatching.utils.hla_system.hla_transformations import \
+    preprocess_hla_codes_in
 
 
 @dataclass
-class RecipientUploadDTO:
+class DonorUploadDTO:
     # pylint: disable=too-many-instance-attributes
-    acceptable_blood_groups: Optional[List[BloodGroup]]
     medical_id: str
     blood_group: BloodGroup
     hla_typing: List[str]
-    hla_antibodies: List[HLAAntibodiesUploadDTO]
+    donor_type: str
+    related_recipient_medical_id: Optional[str]
     sex: Optional[Sex]
     height: Optional[Centimeters]
     weight: Optional[Kilograms]
     year_of_birth: Optional[int]
-    waiting_since: Optional[str]
-    previous_transplants: Optional[int]
+
+    def __post_init__(self):
+        self.hla_typing_preprocessed = preprocess_hla_codes_in(self.hla_typing)

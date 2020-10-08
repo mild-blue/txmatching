@@ -4,7 +4,7 @@ from typing import List, Optional
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
 from txmatching.utils.hla_system.hla_transformations import (
-    get_compatibility_broad_codes, parse_code)
+    get_compatibility_broad_codes, parse_hla_raw_code)
 
 Kilograms = float
 Centimeters = int
@@ -17,7 +17,7 @@ class HLAType:
 
     def __post_init__(self):
         if self.code is None:
-            code = parse_code(self.raw_code)
+            code = parse_hla_raw_code(self.raw_code)
             object.__setattr__(self, 'code', code)
 
 
@@ -45,7 +45,7 @@ class HLAAntibody:
 
     def __post_init__(self):
         if self.code is None:
-            code = parse_code(self.raw_code)
+            code = parse_hla_raw_code(self.raw_code)
             object.__setattr__(self, 'code', code)
 
 

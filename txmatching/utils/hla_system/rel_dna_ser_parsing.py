@@ -29,7 +29,9 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
     split_dp = (
         rel_dna_ser_df
             .loc[lambda df: ~df.index.isin(split_unambiguous.index) & (df[2] == '?')]
-            .loc[lambda df: (rel_dna_ser_df[0].str.startswith('DP')) | (rel_dna_ser_df[0].str.startswith('C*')), 1]
+            .loc[lambda df: (rel_dna_ser_df[0].str.startswith('DP')) |
+                            (rel_dna_ser_df[0].str.startswith('C*')) |
+                            (rel_dna_ser_df[0].str.startswith('DQA')), 1]
             .str.split(':')
             .str[0]
             # remove special ones with letter - we do not know what code to assign to them

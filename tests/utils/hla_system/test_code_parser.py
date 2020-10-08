@@ -4,7 +4,8 @@ import pandas as pd
 
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (
-    HlaCodeProcessingResultDetail, any_code_to_split, parse_code)
+    HlaCodeProcessingResultDetail, parse_hla_raw_code,
+    parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
 
 codes = {
@@ -27,14 +28,15 @@ codes = {
     'A*68:06': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
     'B*46:10': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
     'A*02:719': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
+    'DQA1*01:03': ('DQA1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
 }
 
 
 class TestCodeParser(unittest.TestCase):
     def test_parsing(self):
         for code, (expected_result, expected_result_detail) in codes.items():
-            result = any_code_to_split(code)
-            parse_code(code)  # here just to test logging
+            result = parse_hla_raw_code_with_details(code)
+            parse_hla_raw_code(code)  # here just to test logging
             self.assertTupleEqual((expected_result_detail, expected_result),
                                   (result.result_detail, result.maybe_hla_code),
                                   f'{code} was processed to {result.maybe_hla_code} '
@@ -51,3 +53,7 @@ class TestCodeParser(unittest.TestCase):
         self.assertEqual('DP2', parsing_result.loc['DPB1*02:01:06'].split)
         self.assertEqual('CW14', parsing_result.loc['C*14:02:01:01'].split)
         self.assertEqual('CW8', parsing_result.loc['C*09'].split)
+
+    def test_preprocessing(self):
+        self.assertSetEqual({'DPA1*01:03', 'DPB1*04:02'}, set(preprocess_hla_code_in('DP4 [01:03, 04:02]')))
+        self.assertSetEqual({'DQA1*01:03', 'DQB1*06:03'}, set(preprocess_hla_code_in('DQ[01:03,      06:03]')))

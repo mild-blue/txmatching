@@ -10,17 +10,17 @@ from sqlalchemy import and_
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
-from txmatching.data_transfer_objects.patients.donor_update_dto import \
-    DonorUpdateDTO
-from txmatching.data_transfer_objects.patients.donor_upload_dto import \
-    DonorUploadDTO
-from txmatching.data_transfer_objects.patients.patient_upload_dto_in import \
-    PatientUploadDTOIn
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
-from txmatching.data_transfer_objects.patients.recipient_update_dto import \
+from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
+    DonorUpdateDTO
+from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
-from txmatching.data_transfer_objects.patients.recipient_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
+    DonorUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import \
+    PatientUploadDTOIn
+from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import \
@@ -35,7 +35,7 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType, HLATyping,
                                                     PatientParameters)
 from txmatching.utils.enums import Country
-from txmatching.utils.hla_system.hla_transformations import parse_code
+from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 
 logger = logging.getLogger(__name__)
 
@@ -181,15 +181,15 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
                                       raw_code=hla_antibody_dto.raw_code,
                                       mfi=hla_antibody_dto.mfi,
                                       cutoff=cutoff,
-                                      code=parse_code(hla_antibody_dto.raw_code)) for hla_antibody_dto
+                                      code=parse_hla_raw_code(hla_antibody_dto.raw_code)) for hla_antibody_dto
             in
-            recipient_update_dto.hla_antibodies.hla_antibodies_list]
+            recipient_update_dto.hla_antibodies_preprocessed.hla_antibodies_list]
 
         RecipientHLAAntibodyModel.query.filter(
             RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id).delete()
         db.session.add_all(hla_antibodies)
     if recipient_update_dto.hla_typing:
-        recipient_update_dict['hla_typing'] = dataclasses.asdict(recipient_update_dto.hla_typing)
+        recipient_update_dict['hla_typing'] = dataclasses.asdict(recipient_update_dto.hla_typing_preprocessed)
     if recipient_update_dto.recipient_requirements:
         recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
             recipient_update_dto.recipient_requirements)
@@ -211,7 +211,7 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
 
     donor_update_dict = {}
     if donor_update_dto.hla_typing:
-        donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing)
+        donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing_preprocessed)
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
     db.session.commit()
     return _get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
@@ -255,10 +255,10 @@ def _recipient_upload_dto_to_recipient_model(
 ) -> RecipientModel:
     hla_antibodies = [RecipientHLAAntibodyModel(
         raw_code=hla_antibody.name,
-        code=parse_code(hla_antibody.name),
+        code=parse_hla_raw_code(hla_antibody.name),
         cutoff=hla_antibody.cutoff,
         mfi=hla_antibody.mfi
-    ) for hla_antibody in recipient.hla_antibodies]
+    ) for hla_antibody in recipient.hla_antibodies_preprocessed]
 
     transformed_hla_antibodies = [HLAAntibody(
         raw_code=hla_antibody.raw_code,
@@ -273,7 +273,7 @@ def _recipient_upload_dto_to_recipient_model(
         medical_id=recipient.medical_id,
         country=country_code,
         blood=recipient.blood_group,
-        hla_typing=dataclasses.asdict(HLATyping([HLAType(parse_code(typing)) for typing in recipient.hla_typing])),
+        hla_typing=dataclasses.asdict(HLATyping([HLAType(typing) for typing in recipient.hla_typing_preprocessed])),
         hla_antibodies=hla_antibodies,
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
@@ -317,7 +317,7 @@ def _donor_upload_dto_to_donor_model(
         medical_id=donor.medical_id,
         country=country_code,
         blood=donor.blood_group,
-        hla_typing=dataclasses.asdict(HLATyping([HLAType(parse_code(typing)) for typing in donor.hla_typing])),
+        hla_typing=dataclasses.asdict(HLATyping([HLAType(typing) for typing in donor.hla_typing_preprocessed])),
         active=True,
         recipient=related_recipient,
         donor_type=donor.donor_type,
