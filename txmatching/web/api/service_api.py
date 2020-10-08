@@ -26,7 +26,6 @@ class Status(Resource):
 
     @service_api.response(code=200, model=status, description='Returns ok if service is healthy.')
     @service_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
-    # TODO: Remove: @Lukas - opravdu z toho lita nekdy 503?
     @service_api.response(code=503, model=status, description='Some services are failing.')
     def get(self):
         try:
