@@ -35,12 +35,12 @@ class TestUserAuth(TestCase):
             expiration=datetime.timedelta(minutes=OTP_VALIDITY_MINUTES)
         )
 
-        def send(phone_number: str, message_body: str):
+        def send_sms_mock(phone_number: str, message_body: str):
             self.assertEqual(usr.phone_number, phone_number)
             token = message_body[0:6]
             self.assertTrue(verify_otp_for_user(usr, token))
 
-        with mock.patch('txmatching.auth.user.user_auth.send_sms', send):
+        with mock.patch('txmatching.auth.user.user_auth.send_sms', send_sms_mock):
             token = user_login_flow(usr, 0)
             self.assertEqual(expected, token)
 
@@ -151,9 +151,9 @@ class TestUserAuth(TestCase):
 
         token = ''.join([str(random.randint(0, 9)) for _ in range(6)])
 
-        def send(phone_number: str, message_body: str):
+        def send_sms_mock(phone_number: str, message_body: str):
             self.assertEqual(usr.phone_number, phone_number)
             self.assertEqual(f'{token} - use this code for TXMatching login.', message_body)
 
-        with mock.patch('txmatching.auth.user.user_auth.send_sms', send):
+        with mock.patch('txmatching.auth.user.user_auth.send_sms', send_sms_mock):
             _send_sms_otp(token, usr)
