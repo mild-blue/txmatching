@@ -134,7 +134,16 @@ class Report(Resource):
         if os.path.exists(html_file_full_path):
             os.remove(html_file_full_path)
 
-        return send_from_directory(TMP_DIR, pdf_file_name, as_attachment=True)
+        response = send_from_directory(
+            TMP_DIR,
+            pdf_file_name,
+            as_attachment=True,
+            attachment_filename=pdf_file_name
+        )
+
+        response.headers["x-filename"] = pdf_file_name
+        response.headers["Access-Control-Expose-Headers"] = 'x-filename'
+        return response
 
     @staticmethod
     def prepare_tmp_dir():

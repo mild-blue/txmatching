@@ -20,3 +20,5 @@ class TestMatchingApi(DbTests):
             self.assertEqual(200, res.status_code)
             self.assertEqual('application/pdf', res.content_type)
             self.assertIsNotNone(res.data)
+            self.assertTrue(res.content_length > 0)
+            self.assertIsNotNone(res.headers['x-filename'])
