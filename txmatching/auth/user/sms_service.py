@@ -30,11 +30,13 @@ def _send_otp_ikem(recipient_phone: str, message_body: str, app_config: Applicat
         'phone': recipient_phone,
         'message': message_body
     }
-    sms_request = requests.get(app_config.sms_service_url, params=params)
-    if sms_request.status_code != 200:
-        raise CouldNotSendOtpUsingSmsServiceException(
-            f'SMS gate responded with status code: {sms_request.status_code} '
-            f'and body: {sms_request.json()}'
-        )
-
-    logger.info('SMS sent successfully.')
+    try:
+        sms_request = requests.get(app_config.sms_service_url, params=params)
+        if sms_request.status_code != 200:
+            raise CouldNotSendOtpUsingSmsServiceException(
+                f'SMS gate responded with status code: {sms_request.status_code} '
+                f'and body: {sms_request.json()}'
+            )
+        logger.info('SMS sent successfully.')
+    except Exception as ex:
+        raise CouldNotSendOtpUsingSmsServiceException('Unexpected error occurred during SMS sending.') from ex
