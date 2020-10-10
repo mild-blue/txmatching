@@ -37,6 +37,6 @@ export class AlertService {
   }
 
   public clear(id = this._defaultId): void {
-    this._subject.next(new Alert({ id }));
+    this._subject.next(undefined);
   }
 }
