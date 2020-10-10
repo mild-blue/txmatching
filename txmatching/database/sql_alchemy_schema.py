@@ -1,7 +1,7 @@
 import dataclasses
 
 from sqlalchemy import ForeignKey, Integer, UniqueConstraint
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
 
 from txmatching.auth.data_types import UserRole
@@ -105,6 +105,7 @@ class DonorModel(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
     recipient_id = db.Column(db.Integer, ForeignKey('recipient.id'), unique=False, nullable=True)
+    recipient = relationship("RecipientModel", backref=backref("recipient", uselist=False))
     UniqueConstraint('medical_id', 'txm_event_id')
 
 

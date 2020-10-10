@@ -42,7 +42,7 @@ class LoginApi(Resource):
                                    '"Authorization: Bearer some_token", where some_token is the token received '
                                    'in the response.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @user_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @user_api.response(code=401, model=FailJson, description='Authentication failed.')
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     def post(self):
         post_data = request.get_json()
@@ -61,7 +61,7 @@ class OtpLoginApi(Resource):
     @user_api.response(code=200, model=LoginSuccessResponse,
                        description='OTP validation was successful. JWT generated.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @user_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @user_api.response(code=401, model=FailJson, description='Authentication failed.')
     @user_api.response(
         code=403,
         model=FailJson,
@@ -81,7 +81,7 @@ class RefreshTokenApi(Resource):
     @user_api.doc(security='bearer')
     @user_api.response(code=200, model=LoginSuccessResponse, description='Token successfully refreshed.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @user_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @user_api.response(code=401, model=FailJson, description='Authentication failed.')
     @user_api.response(
         code=403,
         model=FailJson,
@@ -102,7 +102,7 @@ class PasswordChangeApi(Resource):
     @user_api.doc(body=input, security='bearer')
     @user_api.response(code=200, model=StatusResponse, description='Password changed successfully.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @user_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @user_api.response(code=401, model=FailJson, description='Authentication failed.')
     @user_api.response(
         code=403,
         model=FailJson,
@@ -128,7 +128,7 @@ class RegistrationApi(Resource):
     @user_api.doc(body=registration_model, security='bearer')
     @user_api.response(code=200, model=StatusResponse, description='User registered successfully.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @user_api.response(code=401, model=FailJson, description='Authentication denied.')
+    @user_api.response(code=401, model=FailJson, description='Authentication failed.')
     @user_api.response(
         code=403,
         model=FailJson,

@@ -92,7 +92,7 @@ def save_patients_from_excel_to_empty_txm_event(donors_recipients: Tuple[List[Do
                               if recipient else None for recipient in donors_recipients[1]]
     recipient_models = [recipient_model for recipient_model in maybe_recipient_models if recipient_model]
     db.session.add_all(recipient_models)
-    db.session.commit()
+    db.session.flush()
 
     donor_models = [donor_excel_dto_to_donor_model(donor_dto, maybe_recipient_model, txm_event_db_id) for
                     donor_dto, maybe_recipient_model in zip(donors_recipients[0], maybe_recipient_models)]
@@ -156,7 +156,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
     # TODO do not delete https://trello.com/c/zseK1Zcf
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     if txm_event_db_id != old_recipient_model.txm_event_id:
-        raise InvalidArgumentException('Trying to update patient the user has no access to')
+        raise InvalidArgumentException('Trying to update patient the user has no access to.')
     ConfigModel.query.filter(
         and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
 
@@ -313,15 +313,13 @@ def _donor_upload_dto_to_donor_model(
         f'Donor requires recipient medical id "{donor.related_recipient_medical_id}", ' \
         f'but received "{maybe_recipient_medical_id}" or related recipient must be None.'
 
-    maybe_recipient_id = related_recipient.id if related_recipient else None
-
     donor_model = DonorModel(
         medical_id=donor.medical_id,
         country=country_code,
         blood=donor.blood_group,
         hla_typing=dataclasses.asdict(HLATyping([HLAType(parse_code(typing)) for typing in donor.hla_typing])),
         active=True,
-        recipient_id=maybe_recipient_id,
+        recipient=related_recipient,
         donor_type=donor.donor_type,
         weight=donor.weight,
         height=donor.height,
@@ -360,7 +358,6 @@ def _save_patients_to_existing_txm_event(
         for recipient in recipients
     ]
     db.session.add_all(recipient_models)
-    db.session.commit()
 
     recipient_models_dict = {recipient_model.medical_id: recipient_model for recipient_model in recipient_models}
 

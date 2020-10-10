@@ -51,7 +51,7 @@ def _current_config_matchings_to_model(config_matchings: Iterable[MatchingWithSc
                 for donor, recipient in final_solution.donor_recipient_list
             ],
             score=final_solution.score(),
-            db_id=final_solution.db_id()
+            db_id=final_solution.order_id()
         )
         for final_solution in config_matchings
     ])

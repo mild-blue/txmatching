@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
-import { first } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Report } from '@app/services/report/report.interface';
 
 const otherMatchingsCount = 5;
 
@@ -14,14 +15,26 @@ export class ReportService {
   constructor(private _http: HttpClient) {
   }
 
-  public downloadReport(matchingId: number): Observable<Blob> {
+  public downloadReport(matchingId: number): Observable<Report> {
     const httpOptions: Object = {
-      responseType: 'blob'
+      responseType: 'blob',
+      observe: 'response'
     };
 
-    return this._http.get<Blob>(
+    return this._http.get<HttpResponse<Blob>>(
       `${environment.apiUrl}/reports/${matchingId}?matchingsBelowChosen=${otherMatchingsCount}`,
       httpOptions
-    ).pipe(first());
+    ).pipe(
+      map((response: HttpResponse<Blob>) => {
+        const data = response.body as Blob;
+        const filename = response.headers.get('x-filename') ?? this._generateFilename();
+        return { data, filename };
+      })
+    );
+  }
+
+  private _generateFilename(): string {
+    const date = new Date();
+    return `report_${date.getDate()}_${date.getMonth() + 1}_${date.getFullYear()}.pdf`;
   }
 }

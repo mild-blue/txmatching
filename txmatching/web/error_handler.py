@@ -31,22 +31,22 @@ def _user_auth_handlers(api: Api):
     @api.errorhandler(InvalidJWTException)
     def handle_invalid_jwt_exception(error: InvalidJWTException):
         _log_warning(error)
-        return {'error': 'Authentication denied.', 'detail': 'Invalid JWT.'}, 401
+        return {'error': 'Authentication failed.', 'detail': 'Invalid JWT.'}, 401
 
     @api.errorhandler(CredentialsMismatchException)
     def handle_credentials_mismatch_exception(error: CredentialsMismatchException):
         _log_warning(error)
-        return {'error': 'Authentication denied.', 'detail': 'Credentials mismatch.'}, 401
+        return {'error': 'Authentication failed.', 'detail': 'Credentials mismatch.'}, 401
 
     @api.errorhandler(InvalidOtpException)
     def handle_invalid_otp_exception(error: InvalidOtpException):
         _log_warning(error)
-        return {'error': 'Authentication denied.', 'detail': 'Invalid OTP.'}, 401
+        return {'error': 'Authentication failed.', 'detail': 'Invalid OTP.'}, 401
 
     @api.errorhandler(InvalidIpAddressAccessException)
     def handle_invalid_ip_exception(error: InvalidIpAddressAccessException):
         _log_warning(error)
-        return {'error': 'Authentication denied.', 'detail': 'Used IP is not whitelisted.'}, 401
+        return {'error': 'Authentication failed.', 'detail': 'Used IP is not whitelisted.'}, 401
 
     @api.errorhandler(UserUpdateException)
     def handle_user_update_exception(error: UserUpdateException):
