@@ -2,6 +2,6 @@
      class="{{getClass(alert)}}"
      (mouseenter)="onMouseEnter(alert)"
      (mouseleave)="onMouseLeave(alert)">
-  <a class="close" (click)="removeAlert(alert)">&times;</a>
   <span [innerHTML]="alert.message"></span>
+  <a class="close" (click)="removeAlert(alert)">&times;</a>
 </div>

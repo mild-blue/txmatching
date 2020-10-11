@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { first } from 'rxjs/operators';
+import { finalize, first } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
 import { AlertService } from '@app/services/alert/alert.service';
@@ -37,25 +37,24 @@ export class AuthenticationComponent implements OnDestroy {
   }
 
   public onSubmit(): void {
-    if (this.form.invalid) {
-      return;
-    }
+    const input = this.form.controls.input;
+    const code = input.value;
 
     this.loading = true;
-    const code = this.form.controls.input.value;
 
-    this._authService.verify(code).pipe(first())
+    this._authService.verify(code)
+    .pipe(
+      first(),
+      finalize(() => this.loading = false))
     .subscribe(
       () => {
         this.success = true;
         this._timeout = setTimeout(async () => this._router.navigate(['/']), redirectTimeoutMs);
       },
       (error: Error) => {
+        input.setErrors({ incorrect: true });
         this._alertService.error(`<strong>Error while verifying:</strong> ${error.message}`);
         this._logger.error(error.message);
-      },
-      () => {
-        this.loading = false;
       });
   }
 

@@ -16,6 +16,7 @@ import { MatchingItemComponent } from '@app/components/matching-item/matching-it
 import { ReportService } from '@app/services/report/report.service';
 import { DownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
+import { finalize, first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -100,6 +101,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this._downloadInProgress = true;
     this._reportService.downloadReport(activeMatching.order_id)
+    .pipe(
+      first(),
+      finalize(() => this._downloadInProgress = false)
+    )
     .subscribe(
       (report: Report) => {
         const blob = new Blob([report.data], { type: 'application/pdf' });
@@ -108,11 +113,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         link.download = report.filename;
         link.dispatchEvent(new MouseEvent('click'));
       },
-      (error: string) => {
-        this._alertService.error(`<strong>Error downloading PDF:</strong> ${error}`);
-      },
-      () => {
-        this._downloadInProgress = false;
+      (error: Error) => {
+        this._alertService.error(`<strong>Error downloading PDF:</strong> ${error.message}`);
       });
   }
 
@@ -142,8 +144,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.matchings = this._prepareMatchings(matchings);
       this._logger.log('Calculated matchings', [matchings]);
     } catch (e) {
-      this._alertService.error(`Error calculating matchings: "${e}"`);
-      this._logger.error(`Error calculating matchings: "${e}"`);
+      this._alertService.error(`Error calculating matchings: "${e.message || e}"`);
+      this._logger.error(`Error calculating matchings: "${e.message || e}"`);
     } finally {
       this._logger.log('End of calculation');
       this.loading = false;
@@ -162,8 +164,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.patients = await this._patientService.getPatients();
         this._logger.log('Got patients from server', [this.patients]);
       } catch (e) {
-        this._alertService.error(`Error loading patients: "${e}"`);
-        this._logger.error(`Error loading patients: "${e}"`);
+        this._alertService.error(`Error loading patients: "${e.message || e}"`);
+        this._logger.error(`Error loading patients: "${e.message || e}"`);
         return; // jump to finally block
       }
 
@@ -172,8 +174,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.appConfiguration = await this._configService.getConfiguration();
         this._logger.log('Got config from server', [this.appConfiguration]);
       } catch (e) {
-        this._alertService.error(`Error loading configuration: "${e}"`);
-        this._logger.error(`Error loading configuration: "${e}"`);
+        this._alertService.error(`Error loading configuration: "${e.message || e}"`);
+        this._logger.error(`Error loading configuration: "${e.message || e}"`);
         return; // jump to finally block
       }
 

@@ -95,10 +95,11 @@ export class AlertComponent implements OnInit, OnDestroy {
   }
 
   private _showAlert(alert: Alert): void {
-    this.alerts.push(alert);
+    // add to start
+    this.alerts.unshift(alert);
     // begin fading out
-    // wait 10ms for previous command
-    setTimeout(() => this._fadeOutAlert(alert), 10);
+    // wait 100ms for previous command
+    setTimeout(() => this._fadeOutAlert(alert), 100);
   }
 
   private _fadeOutAlert(alert: Alert): void {

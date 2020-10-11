@@ -48,9 +48,9 @@ export class LoginComponent {
           this._router.navigate(['/']);
         }
       },
-      error => {
+      (error: Error) => {
         this.loading = false;
-        this._alertService.error(error);
+        this._alertService.error(`<strong>Error while verifying:</strong> ${error.message}`);
       });
   }
 
