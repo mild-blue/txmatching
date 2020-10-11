@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
-import { first } from 'rxjs/operators';
+import { finalize, first } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert/alert.service';
 import { TokenType, User } from '@app/model/User';
 
@@ -39,18 +39,22 @@ export class LoginComponent {
     const { email, password } = this.f;
 
     this._authService.login(email.value, password.value)
-    .pipe(first())
+    .pipe(
+      first(),
+      finalize(() => this.loading = false)
+    )
     .subscribe(
       (user: User) => {
         if (user.decoded.type === TokenType.OTP) {
           this._router.navigate(['authentication']);
-        } else {
+        } else if (user.decoded.type === TokenType.ACCESS) {
           this._router.navigate(['/']);
+        } else {
+          this._alertService.error('<strong>Authentication error:</strong> Unexpected token received, contact administrator.');
         }
       },
       (error: Error) => {
-        this.loading = false;
-        this._alertService.error(`<strong>Error while verifying:</strong> ${error.message}`);
+        this._alertService.error(`<strong>Authentication error:</strong> ${error.message}`);
       });
   }
 

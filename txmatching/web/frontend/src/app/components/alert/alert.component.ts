@@ -30,7 +30,7 @@ export class AlertComponent implements OnInit, OnDestroy {
 
     this._routeSubscription = this._router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
-        this._alertService.clear(this.id);
+        this._alertService.clear();
       }
     });
   }

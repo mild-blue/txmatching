@@ -53,7 +53,7 @@ export class AuthenticationComponent implements OnDestroy {
       },
       (error: Error) => {
         input.setErrors({ incorrect: true });
-        this._alertService.error(`<strong>Error while verifying:</strong> ${error.message}`);
+        this._alertService.error(`<strong>Authentication error:</strong> ${error.message}`);
         this._logger.error(error.message);
       });
   }
