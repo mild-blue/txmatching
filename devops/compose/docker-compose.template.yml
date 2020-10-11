@@ -2,6 +2,7 @@ version: '3.7'
 services:
   backend:
     image: mildblue/txmatching:TAG
+    container_name: backend
     env_file:
       - .env
     ports:
@@ -9,16 +10,24 @@ services:
     restart: always
     depends_on:
       - db
-
+    networks:
+      - txmatching
   db:
     image: postgres:12.2
+    container_name: db
     env_file:
       - .env
     ports:
-      - 35432:5432
+      - 5432:5432
     restart: always
     volumes:
       - txmatching-postgres:/var/lib/postgresql/data/
+    networks:
+      - txmatching
+
+networks:
+  txmatching:
+    driver: bridge
 
 volumes:
   txmatching-postgres:
