@@ -34,7 +34,7 @@ export class AuthService {
     }
 
     // check if token is valid
-    return token.type !== TokenType.OTP && token.exp >= Date.now() / 1000;
+    return token.type === TokenType.ACCESS && token.exp > (Date.now() / 1000);
   }
 
   public login(email: string, password: string): Observable<User> {
