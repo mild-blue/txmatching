@@ -93,8 +93,8 @@ export class PatientsComponent implements OnInit {
       this.patients = await this._patientService.getPatients();
       this._logger.log('Got patients from server', [this.patients]);
     } catch (e) {
-      this._alertService.error(`Error loading patients: "${e}"`);
-      this._logger.error(`Error loading patients: "${e}"`);
+      this._alertService.error(`Error loading patients: "${e.message || e}"`);
+      this._logger.error(`Error loading patients: "${e.message || e}"`);
     } finally {
       this.loading = false;
     }

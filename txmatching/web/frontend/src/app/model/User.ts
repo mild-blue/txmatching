@@ -9,10 +9,16 @@ export interface DecodedToken {
   role: Role;
   iat: number;
   exp: number;
+  type: TokenType;
 }
 
 export enum Role {
   ADMIN = 'ADMIN',
   VIEWER = 'VIEWER',
   EDITOR = 'EDITOR'
+}
+
+export enum TokenType {
+  OTP = 'OTP',
+  ACCESS = 'ACCESS'
 }
