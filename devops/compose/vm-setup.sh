@@ -31,8 +31,16 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 
-# Install Postgres client
+# 3 Install Postgres client
+
 yum install -y postgresql
 
-# Install Git
+# 4. Install Git
+
 yum install -y git
+
+# 5. Setup firewall properly
+
+firewall-cmd --zone=public --add-masquerade --permanent
+firewall-cmd --reload
+systemctl restart docker
