@@ -10,7 +10,7 @@ from graph_tool.all import Graph
 
 from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor, Recipient
-from txmatching.patients.patient_types import RecipientDbId, DonorDbId
+from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
@@ -127,32 +127,28 @@ class AllSolutionsSolver(SolverBase):
             yield pairs
 
     @staticmethod
-    def _construct_intersection_graph(sets: List[Tuple[int]]) -> Tuple[Graph, Dict[int, Tuple[int]]]:
+    def _construct_intersection_graph(all_paths: List[Tuple[int]]) -> Tuple[Graph, Dict[int, Tuple[int]]]:
         graph = Graph(directed=False)
 
-        i_to_set = {index: st for index, st in enumerate(sets)}
+        path_number_to_path = {path_number: path for path_number, path in enumerate(all_paths)}
+        path_to_path_number = {st: index for index, st in enumerate(all_paths)}
 
-        unique_indices = set()
-        for st in sets:
-            unique_indices.update(st)
+        unique_indices = {index for path in all_paths for index in path}
 
-        index_to_sets_not_having_index = {i: {st for st in sets if i not in st} for i in unique_indices}
+        index_to_paths_not_having_index = {index: {path for path in all_paths if index not in path} for index in
+                                           unique_indices}
+        compatible_paths = []
+        for path_1 in all_paths:
+            item_complementary_set_list = [index_to_paths_not_having_index[item] for item in path_1]
+            complementary_paths = set.intersection(*item_complementary_set_list)
 
-        set_to_index = {st: index for index, st in enumerate(sets)}
-        n_sets = len(sets)
-        adjacency_matrix = np.zeros((n_sets, n_sets))
+            index_1 = path_to_path_number[path_1]
+            for path_2 in complementary_paths:
+                index_2 = path_to_path_number[path_2]
+                compatible_paths.append((index_1, index_2))
 
-        for set_1 in sets:
-            item_complementary_set_list = [index_to_sets_not_having_index[item] for item in set_1]
-            complementary_sets = set.intersection(*item_complementary_set_list)
-
-            index_1 = set_to_index[set_1]
-            for set_2 in complementary_sets:
-                index_2 = set_to_index[set_2]
-                adjacency_matrix[index_1, index_2] = True
-
-        graph.add_edge_list(np.transpose(adjacency_matrix.nonzero()))
-        return graph, i_to_set
+        graph.add_edge_list(compatible_paths)
+        return graph, path_number_to_path
 
     @staticmethod
     def _find_all_circuits(graph: Graph) -> Iterator[List[int]]:
