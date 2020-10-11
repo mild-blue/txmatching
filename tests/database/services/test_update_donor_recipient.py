@@ -5,6 +5,8 @@ from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
     HLAAntibodiesDTO, HLAAntibodyDTO)
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
+from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
+    HLAAntibodiesDTO, HLAAntibodyDTO)
 from txmatching.data_transfer_objects.patients.update_dtos.hla_code_update_dtos import (
     HLATypeUpdateDTO, HLATypingUpdateDTO)
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
@@ -16,7 +18,7 @@ from txmatching.database.sql_alchemy_schema import (
     AppUserModel, ConfigModel, DonorModel, PairingResultModel,
     RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
 from txmatching.patients.patient import RecipientRequirements
-from txmatching.solve_service.solve_from_db import solve_from_db
+from txmatching.solve_service.solve_from_configuration import solve_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 
@@ -43,7 +45,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(1102, len(recipient_hla_antibodies))
         self.assertEqual(4, len(app_users))
 
-        self.assertEqual(650, len(list(solve_from_db(Configuration(), txm_event.db_id))))
+        self.assertEqual(650,
+                         len(list(solve_from_configuration(Configuration(), txm_event.db_id).calculated_matchings)))
 
     def test_update_recipient(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
@@ -55,8 +58,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
         update_recipient(RecipientUpdateDTO(
             acceptable_blood_groups=['AB'],
-            hla_antibodies=HLAAntibodiesDTO([
-                HLAAntibodyDTO(mfi=20, raw_code='B42'),
+            hla_antibodies=HLAAntibodiesDTO([HLAAntibodyDTO(mfi=20, raw_code='B42'),
                 HLAAntibodyDTO(mfi=20, raw_code='DQ[01:03,      06:03]')
             ]),
             hla_typing=HLATypingUpdateDTO([

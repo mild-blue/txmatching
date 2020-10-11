@@ -6,6 +6,7 @@ from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.services_for_solve import \
     db_matchings_to_matching_list
 from txmatching.database.sql_alchemy_schema import PairingResultModel
+from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.solve_service.data_objects.calculated_matchings import \
     CalculatedMatchings
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
@@ -21,15 +22,15 @@ def get_latest_matchings_and_score_matrix(txm_event_db_id: int) -> Tuple[
 
     if last_pairing_result_model is None:
         raise AssertionError('There are no latest matchings in the database, '
-                             "didn't you forget to call solve_from_db()?")
+                             "didn't you forget to call solve_from_configuration()?")
 
     txm_event = get_txm_event(txm_event_db_id)
 
     calculated_matchings = from_dict(data_class=CalculatedMatchings,
                                      data=last_pairing_result_model.calculated_matchings)
 
-    all_matchings = db_matchings_to_matching_list(calculated_matchings, txm_event.donors_dict,
-                                                  txm_event.recipients_dict)
+    all_matchings = _db_matchings_to_matching_list(calculated_matchings, txm_event.donors_dict,
+                                                   txm_event.recipients_dict)
 
     score_matrix = last_pairing_result_model.score_matrix['score_matrix_dto']
     score_dict = {

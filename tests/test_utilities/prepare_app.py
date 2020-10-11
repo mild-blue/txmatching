@@ -12,9 +12,11 @@ from txmatching.auth.auth_check import store_user_in_context
 from txmatching.auth.data_types import UserRole
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
+from txmatching.database.services import solver_service
 from txmatching.database.services.patient_service import \
     save_patients_from_excel_to_empty_txm_event
-from txmatching.solve_service.solve_from_db import solve_from_db
+from txmatching.solve_service.solve_from_configuration import \
+    solve_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import register_error_handlers, user_api
@@ -55,7 +57,8 @@ class DbTests(unittest.TestCase):
 
     def fill_db_with_patients_and_results(self) -> int:
         txm_event_db_id = self.fill_db_with_patients()
-        solve_from_db(Configuration(), txm_event_db_id)
+        pairing_result = solve_from_configuration(Configuration(), txm_event_db_id)
+        solver_service.save_pairing_result(pairing_result)
         return txm_event_db_id
 
     @staticmethod
