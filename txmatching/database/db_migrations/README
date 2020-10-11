@@ -1,0 +1,16 @@
+# DB Migrations via Alembic
+
+Because we are using migrations via RAW SQL, migration process is little bit hacky that normally via generation from SQL Alchemy models.
+There are prepared migration command in main `Makefile`.
+
+## Create DB migration and Execute it
+
+1. Create SQL file `V[REVISION]_[MESSAGE]_up.sql` for new migration.
+1. Create SQL file `V[REVISION]_[MESSAGE]_dow.sql` for downgrade to previous version (mandatory).
+1. Execute `make generate-new-db-migration` with required ENV variables and REVISION and MESSAGE same as set for files.
+   This generates a new file `V[REVISION]_[MESSAGE]_.py`
+1. Execute migration via `make migrate-db` with required ENV variables.
+
+## Downgrade DB migration
+
+1. Execute migration via `make downgrade-db` with required ENV variables.

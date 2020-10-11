@@ -70,6 +70,10 @@ def _build_application_configuration() -> ApplicationConfiguration:
     return config
 
 
+def build_db_connection_string(postgres_user: str, postgres_password: str, postgres_url: str, postgres_db: str) -> str:
+    return f'postgresql+psycopg2://{postgres_user}:{postgres_password}@{postgres_url}/{postgres_db}'
+
+
 def _get_prop(name: str, optional: bool = False) -> str:
     """
     Gets property from environment or from the flask env.

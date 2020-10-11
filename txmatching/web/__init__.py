@@ -8,7 +8,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from txmatching.auth.crypto import bcrypt
 from txmatching.configuration.app_configuration.application_configuration import ApplicationConfiguration, \
-    get_application_configuration
+    get_application_configuration, build_db_connection_string
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
@@ -49,9 +49,12 @@ def create_app():
 
     def configure_db(application_configuration: ApplicationConfiguration):
         app.config['SQLALCHEMY_DATABASE_URI'] \
-            = f'postgresql+psycopg2://' \
-              f'{application_configuration.postgres_user}:{application_configuration.postgres_password}@' \
-              f'{application_configuration.postgres_url}/{application_configuration.postgres_db}'
+            = build_db_connection_string(
+            application_configuration.postgres_user,
+            application_configuration.postgres_password,
+            application_configuration.postgres_user,
+            application_configuration.postgres_db
+        )
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
         db.init_app(app)

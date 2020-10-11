@@ -98,3 +98,30 @@ run-fe:
 	cd txmatching/web/frontend; npm run start
 
 rebuild: conda-update build-fe
+
+init-db-migrations:
+	alembic init ./txmatching/database/db_migrations
+
+# NOTE: POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_URL env variables must be specified
+# Sample: cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER='super-cool-txmatching' POSTGRES_PASSWORD='super-secret-pwd' POSTGRES_DB='txmatching' POSTGRES_URL='localhost:5432' alembic current
+migrate-db-status:
+	cd txmatching && alembic current
+
+# Generates new DB migration with particular message and revision.
+# NOTE: MESSAGE and REVISION env variables must be specified.
+MESSAGE="schema"
+REVISION=1
+generate-new-db-migration:
+	cd txmatching && alembic revision -m $(MESSAGE) --rev-id $(REVISION) && REVISION=$(REVISION) MESSAGE=$(MESSAGE) && REVISION=$(REVISION) MESSAGE=$(MESSAGE) && cd ./database/db_migrations && . ./transform_migration_file.sh
+
+# Updates DB to the latest migration.
+# NOTE: PROFILE=PATH_TO_PROFILE_CONF_FILE DB_NAME=NAME_OF_DB_TO_MIGRATE MIGRATION_NAME=NAME_OF_MIGRATION env variables must be specified
+# Sample: cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER='super-cool-txmatching' POSTGRES_PASSWORD='super-secret-pwd' POSTGRES_DB='txmatching' POSTGRES_URL='localhost:5432' alembic upgrade head
+migrate-db:
+	cd txmatching alembic upgrade head
+
+# Downgrade DB to the previous version (see -1 argument)
+# NOTE: PROFILE=PATH_TO_PROFILE_CONF_FILE DB_NAME=NAME_OF_DB_TO_MIGRATE MIGRATION_NAME=NAME_OF_MIGRATION env variables must be specified
+# Sample: cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER='super-cool-txmatching' POSTGRES_PASSWORD='super-secret-pwd' POSTGRES_DB='txmatching' POSTGRES_URL='localhost:5432' alembic downgrade -1
+downgrade-db:
+	cd txmatching && alembic downgrade -1
