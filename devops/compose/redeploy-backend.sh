@@ -1,22 +1,33 @@
 #!/bin/bash
 
-DEPLOYMENT_NAMESPACE="txmatch"
 GIT_TOKEN="SET_ME"
+
+is_healthy() {
+    service="$1"
+    container_id="$(docker-compose ps -q "$service")"
+    health_status="$(docker inspect -f "{{.State.Health.Status}}" "$container_id")"
+
+    if [ "$health_status" = "healthy" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
 
 function redeploy {
   echo "Redeploying Backend."
 
-  echo "Deleting backend deployment."
-  kubectl delete -f backend.yaml --namespace="${DEPLOYMENT_NAMESPACE}"
+  echo "Stop backend service."
+  docker-compose -f docker-compose.yml stop backend
 
   echo "Updating tag version to ${LATEST_TAG}."
-  sed "s/TAG/${LATEST_TAG}/" backend_template.yaml > backend.yaml
+  sed "s/TAG/${LATEST_TAG}/" bdocker-compose.template.yml > docker-compose.yml
 
   echo "Deploying new backend version ${LATEST_TAG}."
-  kubectl apply -f backend.yaml --namespace="${DEPLOYMENT_NAMESPACE}"
+  docker-compose -f docker-compose.yml up -d backend
 
   echo "Checking pod status and waiting until ready."
-  kubectl wait --for=condition=ready pod -l app=backend --namespace="${DEPLOYMENT_NAMESPACE}" --timeout=300s
+  while ! is_healthy "backend"; do sleep 1; done
 
   echo "Backend is ready."
 }
