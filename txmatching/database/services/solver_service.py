@@ -9,7 +9,7 @@ from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.solve_service.data_objects.calculated_matchings import (
     CalculatedMatching, CalculatedMatchings)
 from txmatching.solve_service.data_objects.donor_recipient import \
-    DonorRecipient
+    DonorIdRecipientIdPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.pairing_result import PairingResult
 
@@ -34,8 +34,8 @@ def _current_config_matchings_to_model(config_matchings: Iterable[MatchingWithSc
     return CalculatedMatchings([
         CalculatedMatching(
             donors_recipients=[
-                DonorRecipient(donor.db_id, recipient.db_id)
-                for donor, recipient in final_solution.donor_recipient_list
+                DonorIdRecipientIdPair(pair.donor.db_id, pair.recipient.db_id)
+                for pair in final_solution.donor_recipient_pairs
             ],
             score=final_solution.score(),
             db_id=final_solution.order_id()

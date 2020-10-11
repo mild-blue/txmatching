@@ -3,14 +3,16 @@ from unittest import TestCase
 
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
+from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching import Matching
 from txmatching.solvers.matching.transplant_round import TransplantRound
+from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country
 
 
 def _create_recipient(recipient_id: int, donor: Donor) -> Recipient:
     return Recipient(recipient_id, f'R-{recipient_id}', related_donor_db_id=donor.db_id, parameters=PatientParameters(
-        country_code=Country.CZE, blood_group='A'
+        country_code=Country.CZE, blood_group=BloodGroup.A
     ),
                      acceptable_blood_groups=list())
 
@@ -23,7 +25,7 @@ class TestMatching(TestCase):
     def setUp(self) -> None:
         self._donors = [
             Donor(donor_index, f'D-{donor_index}',
-                  parameters=PatientParameters(blood_group='A', country_code=Country.CZE))
+                  parameters=PatientParameters(blood_group=BloodGroup.A, country_code=Country.CZE))
             for donor_index in range(10)]
         self._recipients = [_create_recipient(10 + donor_index, donor)
                             for donor_index, donor in enumerate(self._donors)]
@@ -64,13 +66,14 @@ class TestMatching(TestCase):
 
     def _make_matching_from_donor_recipient_indices(self, donor_recipient_indices: List[Tuple[int, int]]) \
             -> Matching:
-        donor_recipient_list = [(self._donors[donor_index], self._recipients[recipient_index])
-                                for donor_index, recipient_index in donor_recipient_indices]
+        donor_recipient_list = frozenset(
+            DonorRecipientPair(self._donors[donor_index], self._recipients[recipient_index])
+            for donor_index, recipient_index in donor_recipient_indices)
         return Matching(donor_recipient_list)
 
     def _transplant_round_to_indices(self, transplant_round: TransplantRound) -> frozenset:
-        donor_recipient_indices = {(self._donors.index(donor), self._recipients.index(recipient))
-                                   for donor, recipient in transplant_round.donor_recipient_list}
+        donor_recipient_indices = {(self._donors.index(pair.donor), self._recipients.index(pair.recipient))
+                                   for pair in transplant_round.donor_recipient_list}
         return frozenset(donor_recipient_indices)
 
     def test_get_cycles(self):

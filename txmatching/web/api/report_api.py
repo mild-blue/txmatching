@@ -18,7 +18,8 @@ from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore)
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, MatchingReportDTO, RoundReportDTO, TransplantDTO)
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import FailJson
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
+    FailJson
 from txmatching.database.services.config_service import \
     latest_configuration_for_txm_event
 from txmatching.database.services.matching_service import \
@@ -94,10 +95,10 @@ class Report(Resource):
                 RoundReportDTO(
                     transplants=[
                         TransplantDTO(
-                            score_dict[(donor.db_id, recipient.db_id)],
-                            compatible_blood_dict[(donor.db_id, recipient.db_id)],
-                            donor,
-                            recipient) for donor, recipient in matching_round.donor_recipient_list])
+                            score_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                            compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                            pair.donor,
+                            pair.recipient) for pair in matching_round.donor_recipient_list])
                 for matching_round in matching.get_rounds()],
             countries=matching.get_country_codes_counts(),
             score=matching.score(),
@@ -155,8 +156,8 @@ class Report(Resource):
             attachment_filename=pdf_file_name
         )
 
-        response.headers["x-filename"] = pdf_file_name
-        response.headers["Access-Control-Expose-Headers"] = 'x-filename'
+        response.headers['x-filename'] = pdf_file_name
+        response.headers['Access-Control-Expose-Headers'] = 'x-filename'
         return response
 
     @staticmethod

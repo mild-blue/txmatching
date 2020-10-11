@@ -17,15 +17,16 @@ logger = logging.getLogger(__name__)
 def solve_from_configuration(configuration: Configuration, txm_event_db_id: int) -> PairingResult:
     txm_event = get_txm_event(txm_event_db_id)
     scorer = scorer_from_configuration(configuration)
-    solver = solver_from_config(configuration)
+    solver = solver_from_config(configuration,
+                                donors_dict=txm_event.donors_dict,
+                                recipients_dict=txm_event.recipients_dict,
+                                scorer=scorer)
     matchings_in_db = load_matching_for_config_from_db(txm_event, configuration)
-    score_matrix = scorer.get_score_matrix(
-        txm_event.donors_dict, txm_event.recipients_dict
-    )
+    score_matrix = solver.score_matrix
     if matchings_in_db is not None:
         all_solutions = matchings_in_db
     else:
-        all_solutions = solver.solve(txm_event.donors_dict, txm_event.recipients_dict, scorer)
+        all_solutions = solver.solve()
 
     matching_filter = filter_from_config(configuration)
     matchings_filtered = filter(matching_filter.keep, all_solutions)
@@ -40,7 +41,7 @@ def solve_from_configuration(configuration: Configuration, txm_event_db_id: int)
 def _sort_matchings_by_transplant_number_and_score(matchings: Iterable[MatchingWithScore]) -> List[MatchingWithScore]:
     matchings = sorted(matchings, key=lambda matching: len(matching.get_rounds()), reverse=True)
     matchings = sorted(matchings, key=lambda matching: matching.score(), reverse=True)
-    matchings = sorted(matchings, key=lambda matching: len(matching.donor_recipient_list), reverse=True)
+    matchings = sorted(matchings, key=lambda matching: len(matching.donor_recipient_pairs), reverse=True)
     for idx, matching_in_good_order in enumerate(matchings):
         matching_in_good_order.set_order_id(idx + 1)
     return matchings

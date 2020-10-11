@@ -35,8 +35,8 @@ def _parse_blood_group(blood_group_str: Union[str, int]) -> BloodGroup:
     blood_group_str = str(blood_group_str).strip()
     try:
         return BloodGroup(blood_group_str)
-    except Exception as er:
-        raise ValueError(f'Encountered invalid group in blood group string {blood_group_str}') from er
+    except Exception as error:
+        raise ValueError(f'Encountered invalid group in blood group string {blood_group_str}') from error
 
 
 def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, int],

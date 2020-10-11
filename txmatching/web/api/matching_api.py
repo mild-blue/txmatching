@@ -61,10 +61,10 @@ class CalculateFromConfig(Resource):
                     RoundDTO(
                         transplants=[
                             TransplantDTOOut(
-                                score_dict[(donor.db_id, recipient.db_id)],
-                                compatible_blood_dict[(donor.db_id, recipient.db_id)],
-                                donor.medical_id,
-                                recipient.medical_id) for donor, recipient in matching_round.donor_recipient_list])
+                                score_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                                compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                                pair.donor.medical_id,
+                                pair.recipient.medical_id) for pair in matching_round.donor_recipient_list])
                     for matching_round in matching.get_rounds()],
                 countries=matching.get_country_codes_counts(),
                 score=matching.score(),
