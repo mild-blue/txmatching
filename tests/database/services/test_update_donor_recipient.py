@@ -45,7 +45,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(1102, len(recipient_hla_antibodies))
         self.assertEqual(4, len(app_users))
 
-        self.assertEqual(650,
+        self.assertEqual(492,
                          len(list(solve_from_configuration(Configuration(), txm_event.db_id).calculated_matchings)))
 
     def test_update_recipient(self):

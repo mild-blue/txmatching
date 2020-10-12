@@ -7,6 +7,7 @@ from typing import Dict, Iterator, List
 
 import numpy as np
 
+from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
@@ -25,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class AllSolutionsSolver(SolverBase):
-    max_number_of_distinct_countries_in_round: int
+    configuration: Configuration
     donors_dict: Dict[DonorDbId, Donor]
     recipients_dict: Dict[RecipientDbId, Recipient]
     scorer: AdditiveScorer
@@ -45,13 +46,15 @@ class AllSolutionsSolver(SolverBase):
     def solve(self) -> Iterator[MatchingWithScore]:
 
         returned_matchings = set()
-        pairs_for_solutions = find_possible_solution_pairs_from_score_matrix(score_matrix=self.score_matrix_array)
+        pairs_for_solutions = find_possible_solution_pairs_from_score_matrix(score_matrix=self.score_matrix_array,
+                                                                             configuration=self.configuration)
 
         for solution_pairs in pairs_for_solutions:
             matching = self._get_matching_from_pairs(solution_pairs)
 
-            valid_number_of_countries = max([transplant_round.country_count for transplant_round in
-                                             matching.get_rounds()]) <= self.max_number_of_distinct_countries_in_round
+            valid_number_of_countries = max(
+                [transplant_round.country_count for transplant_round in
+                 matching.get_rounds()]) <= self.configuration.max_number_of_distinct_countries_in_round
             if valid_number_of_countries:
                 if matching not in returned_matchings:
                     yield matching
@@ -73,7 +76,7 @@ class AllSolutionsSolver(SolverBase):
     def _clean_matching_of_too_many_countries(self, matching: MatchingWithScore):
         proper_rounds = [transplant_round for transplant_round in
                          matching.get_rounds() if
-                         transplant_round.country_count <= self.max_number_of_distinct_countries_in_round]
+                         transplant_round.country_count <= self.configuration.max_number_of_distinct_countries_in_round]
 
         if len(proper_rounds) > 0:
             solution_pairs_enriched = frozenset(

@@ -20,7 +20,7 @@ def solver_from_config(configuration: Configuration,
     if solver is None:
         raise NotImplementedError(f'{configuration.solver_constructor_name} not supported yet')
 
-    return solver(max_number_of_distinct_countries_in_round=configuration.max_number_of_distinct_countries_in_round,
+    return solver(configuration=configuration,
                   donors_dict=donors_dict,
                   recipients_dict=recipients_dict,
                   scorer=scorer)

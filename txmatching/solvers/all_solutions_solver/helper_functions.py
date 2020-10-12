@@ -12,14 +12,25 @@ from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 Path = Tuple[int]
 
 
-def find_all_circuits(graph: Graph) -> List[Path]:
+def find_all_circuits(graph: Graph,
+                      score_matrix: np.ndarray,
+                      pair_index_to_recipient_index: Dict[int, int],
+                      max_length: int) -> List[Path]:
     """
     Circuits between pairs, each pair is denoted by it's pair = donor index
     """
-    return [tuple(circuit) for circuit in topology.all_circuits(graph)]
+    all_circuits = []
+    for circuit in topology.all_circuits(graph):
+        if len(circuit) <= max_length:
+            circuit_with_end = tuple(list(circuit) + [circuit[0]])
+            all_circuits.append(circuit_with_end)
+
+    return _keep_only_highest_scoring_paths(all_circuits, score_matrix, pair_index_to_recipient_index)
 
 
-def find_all_bridge_paths(score_matrix: np.ndarray) -> List[Path]:
+def find_all_bridge_paths(score_matrix: np.ndarray,
+                          pair_index_to_recipient_index: Dict[int, int],
+                          max_length: int) -> List[Path]:
     bridge_indices = get_bridge_indices(score_matrix)
     donor_pair_index_to_recipient_pair_indices = get_donor_pair_index_to_recipient_pairs_indices(score_matrix)
 
@@ -30,43 +41,35 @@ def find_all_bridge_paths(score_matrix: np.ndarray) -> List[Path]:
                                                     set(bridge_indices))
         paths.extend(bridge_paths)
 
-    paths = [tuple(path) for path in paths if len(path) > 1]
+    paths = [tuple(path) for path in paths if 1 < len(path) <= max_length]
 
-    return paths
+    return _keep_only_highest_scoring_paths(paths, score_matrix, pair_index_to_recipient_index)
 
 
 def get_path_score(score_matrix: np.array,
                    path: Path,
                    pair_index_to_recipient_index):
-    pairs = get_pairs_from_paths([path],
-                                 pair_index_to_recipient_index)
+    pairs = get_pairs_from_paths([path], pair_index_to_recipient_index)
     return get_score_for_pairs(score_matrix, pairs)
 
 
-def keep_only_highest_scoring_paths(pure_circuits: List[Path],
-                                    bridge_paths: List[Path],
-                                    score_matrix: np.ndarray,
-                                    pair_index_to_recipient_index: Dict[int, int]):
-    pure_circuits_with_end = [tuple(list(circuit) + [circuit[0]]) for circuit in pure_circuits]
-    paths = pure_circuits_with_end + bridge_paths
+def _keep_only_highest_scoring_paths(paths: List[Path],
+                                     score_matrix: np.ndarray,
+                                     pair_index_to_recipient_index: Dict[int, int]) -> List[Path]:
+    paths_grouped = [list(group) for _, group in groupby(sorted(paths, key=frozenset), frozenset)]
 
-    grouped_paths = [list(group) for _, group in
-                     groupby(sorted(paths, key=lambda path: frozenset(path)), lambda path: frozenset(path))]
+    paths_filtered = [
+        max(path_group,
+            key=lambda path: get_path_score(score_matrix, path, pair_index_to_recipient_index))
+        for path_group in paths_grouped]
 
-    paths = [max(path_group, key=lambda path: get_path_score(score_matrix, path, pair_index_to_recipient_index))
-             for path_group in grouped_paths]
-    return paths
+    return paths_filtered
 
 
 def get_pairs_from_clique(clique,
                           path_number_to_path: Dict[int, Path],
-                          pure_circuits: List[Path],
                           pair_index_to_recipient_index: Dict[int, int]):
     circuit_list = [path_number_to_path[path_number] for path_number in clique]
-
-    for circuit_index, circuit in enumerate(circuit_list):
-        if circuit in pure_circuits:
-            circuit_list[circuit_index] = tuple(list(circuit) + [circuit[0]])
 
     return get_pairs_from_paths(circuit_list, pair_index_to_recipient_index)
 
@@ -77,6 +80,8 @@ def get_pairs_from_paths(paths: List[Tuple[int]],
             for path in paths for i in range(len(path) - 1)]
 
 
+# pylint: disable=too-many-locals
+# I think here the local variables help the code
 def construct_intersection_graph(all_paths: List[Path]) -> Tuple[Graph, Dict[int, Path]]:
     graph = Graph(directed=False)
 
@@ -85,17 +90,18 @@ def construct_intersection_graph(all_paths: List[Path]) -> Tuple[Graph, Dict[int
 
     unique_indices = {index for path in all_paths for index in path}
 
-    index_to_paths_not_having_index = {index: {path for path in all_paths if index not in path} for index in
-                                       unique_indices}
+    index_to_path_number_not_having_index = {
+        index: {path_to_path_number[path] for path in all_paths if index not in path} for index in
+        unique_indices}
     compatible_paths = []
     for path_1 in all_paths:
-        item_complementary_set_list = [index_to_paths_not_having_index[item] for item in path_1]
-        complementary_paths = set.intersection(*item_complementary_set_list)
+        path_number_1 = path_to_path_number[path_1]
+        complementary_paths_per_item = [index_to_path_number_not_having_index[item] for item in path_1]
+        complementary_path_numbers = set.intersection(*complementary_paths_per_item)
 
-        index_1 = path_to_path_number[path_1]
-        for path_2 in complementary_paths:
-            index_2 = path_to_path_number[path_2]
-            compatible_paths.append((index_1, index_2))
+        for path_number_2 in complementary_path_numbers:
+            if path_number_2 > path_number_1:
+                compatible_paths.append((path_number_1, path_number_2))
 
     graph.add_edge_list(compatible_paths)
     return graph, path_number_to_path
