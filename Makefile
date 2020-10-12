@@ -108,11 +108,11 @@ migrate-db-status:
 	cd txmatching && alembic current
 
 # Generates new DB migration with particular message and revision.
-# NOTE: MESSAGE and REVISION env variables must be specified.
+# NOTE: MESSAGE and REVISION env variables must be specified into proper values.
 MESSAGE="schema"
 REVISION=1
 generate-new-db-migration:
-	cd txmatching && alembic revision -m $(MESSAGE) --rev-id $(REVISION) && REVISION=$(REVISION) MESSAGE=$(MESSAGE) && REVISION=$(REVISION) MESSAGE=$(MESSAGE) && cd ./database/db_migrations && . ./transform_migration_file.sh
+	cd txmatching && alembic revision -m $(MESSAGE) --rev-id $(REVISION) && REVISION=$(REVISION) MESSAGE=$(MESSAGE) && cd ./database/db_migrations && . ./prepare_migration_files.sh
 
 # Updates DB to the latest migration.
 # NOTE: PROFILE=PATH_TO_PROFILE_CONF_FILE DB_NAME=NAME_OF_DB_TO_MIGRATE MIGRATION_NAME=NAME_OF_MIGRATION env variables must be specified

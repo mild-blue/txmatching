@@ -10,9 +10,9 @@ def execute(filename: str):
     :param filename:
     :return:
     """
-    dir = os.path.dirname(os.path.realpath(__file__))
+    directory = os.path.dirname(os.path.realpath(__file__))
     conn = op.get_bind()
-    path = os.path.join(dir, 'versions', filename)
+    path = os.path.join(directory, 'versions', filename)
     with open(path) as file:
         script = file.read()
         conn.execute(text(script))

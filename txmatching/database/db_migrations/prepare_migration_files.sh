@@ -1,6 +1,7 @@
-echo "Transforming REVISION ${REVISION} with MESSAGE ${MESSAGE}."
+echo "Preparing migration files for REVISION ${REVISION} with MESSAGE ${MESSAGE}."
 MIGRATION_FILE_NAME="V${REVISION}_${MESSAGE}"
-pwd
+
+echo "Creating file ${MIGRATION_FILE_NAME}.py."
 head -n 14 "./versions/${MIGRATION_FILE_NAME}.py" > "migration.tmp"
 sed "s/FILE_UP/${MIGRATION_FILE_NAME}_up.sql/" "migration_template.py" > "migration_template.tmp1"
 sed "s/FILE_DOWN/${MIGRATION_FILE_NAME}_down.sql/" "migration_template.tmp1" > "migration_template.tmp2"
@@ -8,3 +9,9 @@ cat "migration.tmp" > "./versions/${MIGRATION_FILE_NAME}.py"
 cat "migration_template.tmp2" >> "./versions/${MIGRATION_FILE_NAME}.py"
 rm "migration.tmp" "migration_template.tmp1" "migration_template.tmp2"
 echo "New migration ${MIGRATION_FILE_NAME}.py generated"
+
+echo "Creating file ${MIGRATION_FILE_NAME}_up.sql."
+echo "select * from pg_catalog.pg_tables;" > "versions/${MIGRATION_FILE_NAME}_up.sql"
+
+echo "Creating file ${MIGRATION_FILE_NAME}_down.sql."
+echo "select * from pg_catalog.pg_tables;" > "versions/${MIGRATION_FILE_NAME}_down.sql"

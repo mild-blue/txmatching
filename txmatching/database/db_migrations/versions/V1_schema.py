@@ -15,6 +15,7 @@ depends_on = None
 # revision identifiers, used by Alembic.
 from txmatching.database.db_migrations.migration_base import execute
 
+
 def upgrade():
     execute('V1_schema_up.sql')
 
