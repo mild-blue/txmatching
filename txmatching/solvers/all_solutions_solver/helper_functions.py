@@ -1,3 +1,4 @@
+from itertools import groupby
 from typing import Dict, Iterable, List, Set, Tuple, Union
 
 import numpy as np
@@ -30,6 +31,30 @@ def find_all_bridge_paths(score_matrix: np.ndarray) -> List[Path]:
         paths.extend(bridge_paths)
 
     paths = [tuple(path) for path in paths if len(path) > 1]
+
+    return paths
+
+
+def get_path_score(score_matrix: np.array,
+                   path: Path,
+                   pair_index_to_recipient_index):
+    pairs = get_pairs_from_paths([path],
+                                 pair_index_to_recipient_index)
+    return get_score_for_pairs(score_matrix, pairs)
+
+
+def keep_only_highest_scoring_paths(pure_circuits: List[Path],
+                                    bridge_paths: List[Path],
+                                    score_matrix: np.ndarray,
+                                    pair_index_to_recipient_index: Dict[int, int]):
+    pure_circuits_with_end = [tuple(list(circuit) + [circuit[0]]) for circuit in pure_circuits]
+    paths = pure_circuits_with_end + bridge_paths
+
+    grouped_paths = [list(group) for _, group in
+                     groupby(sorted(paths, key=lambda path: frozenset(path)), lambda path: frozenset(path))]
+
+    paths = [max(path_group, key=lambda path: get_path_score(score_matrix, path, pair_index_to_recipient_index))
+             for path_group in grouped_paths]
     return paths
 
 
@@ -43,8 +68,13 @@ def get_pairs_from_clique(clique,
         if circuit in pure_circuits:
             circuit_list[circuit_index] = tuple(list(circuit) + [circuit[0]])
 
-    return [DonorIdRecipientIdPair(circuit[i], pair_index_to_recipient_index[circuit[i + 1]])
-            for circuit in circuit_list for i in range(len(circuit) - 1)]
+    return get_pairs_from_paths(circuit_list, pair_index_to_recipient_index)
+
+
+def get_pairs_from_paths(paths: List[Tuple[int]],
+                         pair_index_to_recipient_index: Dict[int, int]) -> List[DonorIdRecipientIdPair]:
+    return [DonorIdRecipientIdPair(path[i], pair_index_to_recipient_index[path[i + 1]])
+            for path in paths for i in range(len(path) - 1)]
 
 
 def construct_intersection_graph(all_paths: List[Path]) -> Tuple[Graph, Dict[int, Path]]:

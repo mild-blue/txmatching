@@ -9,7 +9,7 @@ from txmatching.solve_service.data_objects.donor_recipient import \
 from txmatching.solvers.all_solutions_solver.helper_functions import (
     construct_intersection_graph, construct_pair_index_to_recipient_index,
     find_all_bridge_paths, find_all_circuits, get_pairs_from_clique,
-    graph_from_score_matrix)
+    graph_from_score_matrix, keep_only_highest_scoring_paths)
 
 logger = logging.getLogger(__name__)
 
@@ -25,18 +25,22 @@ def find_possible_solution_pairs_from_score_matrix(score_matrix: np.ndarray) -> 
         DEFAULT_DONOR_RECIPIENT_PAIR_SCORE = np.NAN
     """
     graph, _ = graph_from_score_matrix(score_matrix)
+    pair_index_to_recipient_index = construct_pair_index_to_recipient_index(score_matrix)
     pure_circuits = find_all_circuits(graph)
     bridge_paths = find_all_bridge_paths(score_matrix)
 
-    all_paths = pure_circuits + bridge_paths
+    all_paths = keep_only_highest_scoring_paths(score_matrix=score_matrix,
+                                                pure_circuits=pure_circuits,
+                                                bridge_paths=bridge_paths,
+                                                pair_index_to_recipient_index=pair_index_to_recipient_index)
 
     if len(all_paths) == 0:
         logger.info('Empty set of paths, returning empty iterator')
-        yield from()
+        yield from ()
         return
 
     logger.info(f'Constructing intersection graph, '
-                f'#circuits: {len(pure_circuits)}, #paths: {len(bridge_paths)}')
+                f'#circuits: {len(pure_circuits)}, #paths: {len(bridge_paths)} initially, filtered to {len(all_paths)}')
     intersection_graph, path_number_to_path = construct_intersection_graph(all_paths)
     unused_path_numbers = {intersection_graph.vertex_index[path_number] for path_number in
                            path_number_to_path.keys()}
@@ -50,8 +54,6 @@ def find_possible_solution_pairs_from_score_matrix(score_matrix: np.ndarray) -> 
         max_cliques = []
 
     logger.info('Creating pairings from paths and circuits ')
-
-    pair_index_to_recipient_index = construct_pair_index_to_recipient_index(score_matrix)
 
     for clique in max_cliques:
         unused_path_numbers.difference_update(clique)
