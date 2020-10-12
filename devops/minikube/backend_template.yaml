@@ -40,6 +40,26 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: POSTGRES_URL
+            - name: SMS_SERVICE_URL
+                valueFrom:
+                  secretKeyRef:
+                    name: secrets
+                    key: SMS_SERVICE_URL
+            - name: SMS_SERVICE_SENDER
+                valueFrom:
+                  secretKeyRef:
+                    name: secrets
+                    key: SMS_SERVICE_SENDER
+            - name: SMS_SERVICE_LOGIN
+                valueFrom:
+                  secretKeyRef:
+                    name: secrets
+                    key: SMS_SERVICE_LOGIN
+            - name: SMS_SERVICE_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: secrets
+                    key: SMS_SERVICE_PASSWORD
 ---
 # Service
 apiVersion: v1

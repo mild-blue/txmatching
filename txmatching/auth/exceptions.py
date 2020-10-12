@@ -49,6 +49,13 @@ class InvalidAuthCallException(AuthenticationException):
     """
 
 
+class CouldNotSendOtpUsingSmsServiceException(AuthenticationException):
+    """
+    Raised if the SMS service could not be reached or responded with
+    unexpected status code. In that case OTP code was not sent.
+    """
+
+
 class InvalidArgumentException(BaseTxmException):
     """
     Raised if invalid argument received.

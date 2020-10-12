@@ -2,7 +2,7 @@ import logging
 import os
 import re
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Optional
 
 from flask import current_app as app
 
@@ -27,6 +27,13 @@ class ApplicationConfiguration:
 
     jwt_secret: str
     jwt_expiration_days: int
+
+    # configuration of the SMS service
+    # required only when running in the production
+    sms_service_url: Optional[str]
+    sms_service_sender: Optional[str]
+    sms_service_login: Optional[str]
+    sms_service_password: Optional[str]
 
 
 def get_application_configuration() -> ApplicationConfiguration:
@@ -54,7 +61,11 @@ def _build_application_configuration() -> ApplicationConfiguration:
         postgres_db=_get_prop('POSTGRES_DB'),
         postgres_url=_get_prop('POSTGRES_URL'),
         jwt_secret=_get_prop('JWT_SECRET'),
-        jwt_expiration_days=int(_get_prop('JWT_EXPIRATION_DAYS'))
+        jwt_expiration_days=int(_get_prop('JWT_EXPIRATION_DAYS')),
+        sms_service_url=_get_prop('SMS_SERVICE_URL', optional=not is_production),
+        sms_service_sender=_get_prop('SMS_SERVICE_SENDER', optional=not is_production),
+        sms_service_login=_get_prop('SMS_SERVICE_LOGIN', optional=not is_production),
+        sms_service_password=_get_prop('SMS_SERVICE_PASSWORD', optional=not is_production)
     )
     return config
 

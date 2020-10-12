@@ -3,6 +3,7 @@ import logging
 
 from txmatching.auth.data_types import BearerTokenRequest, UserRole, TokenType, DecodedBearerToken
 from txmatching.auth.exceptions import InvalidOtpException, require_auth_condition
+from txmatching.auth.user.sms_service import send_sms
 from txmatching.auth.user.totp import OTP_VALIDITY_MINUTES, generate_otp_for_user, verify_otp_for_user
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
@@ -69,5 +70,4 @@ def refresh_user_token(token: DecodedBearerToken, jwt_expiration_days: int) -> B
 def _send_sms_otp(otp: str, user: AppUserModel):
     require_auth_condition(user.phone_number is not None, f'No phone number for user {user.email}')
     require_auth_condition(bool(otp), 'Empty OTP!')
-    # TODO https://trello.com/c/6Z8wJENk send the OTP to the user
-    logger.info(f'OTP issued: "{otp}" for user {user.email}')
+    send_sms(user.phone_number, message_body=f'{otp} - use this code for TXMatching login.')
