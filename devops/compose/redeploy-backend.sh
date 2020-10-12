@@ -19,6 +19,9 @@ is_running() {
 function redeploy {
   echo "Redeploying backend."
 
+  echo "Pull mildblue/txmatching:${BACKEND_TAG} image."
+  docker pull "mildblue/txmatching:${BACKEND_TAG}"
+
   echo "Stop backend service."
   export BACKEND_TAG="${LATEST_TAG}"
   docker-compose -f docker-compose.yml stop backend
