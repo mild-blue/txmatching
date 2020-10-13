@@ -45,6 +45,10 @@ git reset --hard origin/master
 LATEST_TAG=`git describe --tags --abbrev=0`
 cd ..
 
+echo "Updating docker-compose.yml with version from Git repository."
+rm -rf docker-compose.yml
+cp txmatching/devops/compose/docker-compose.yml docker-compose.yml
+
 while true; do
     read -p "Do you want to redeploy backend with version ${LATEST_TAG} [yn]?" yn
     case $yn in
