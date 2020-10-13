@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: mildblue/txmatching:latest
+          image: mildblue/txmatching:TAG
           imagePullPolicy: "Always"
           ports:
             - containerPort: 8080

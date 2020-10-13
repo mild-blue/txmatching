@@ -99,3 +99,6 @@ minikube dashboard --url
 
 # Install Postgres client
 yum install -y postgresql
+
+# Install Git
+yum install -y git
