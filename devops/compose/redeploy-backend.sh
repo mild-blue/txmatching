@@ -19,15 +19,16 @@ is_running() {
 function redeploy {
   echo "Redeploying backend."
 
+  export BACKEND_TAG="${1}"
+
   echo "Pull mildblue/txmatching:${BACKEND_TAG} image."
   docker pull "mildblue/txmatching:${BACKEND_TAG}"
 
   echo "Stop backend service."
-  export BACKEND_TAG="${LATEST_TAG}"
   docker-compose -f docker-compose.yml stop backend
   docker-compose rm -f backend || true
 
-  echo "Deploying new backend version ${LATEST_TAG}."
+  echo "Deploying new backend version ${BACKEND_TAG}."
   docker-compose -f docker-compose.yml up -d backend
 
   echo "Checking pod status and waiting until ready."
@@ -38,11 +39,11 @@ function redeploy {
 }
 
 echo "Getting latest version info from Git repository."
-git clone https://${GIT_TOKEN}@github.com/mild-blue/txmatching.git | true
+git clone https://${GIT_TOKEN}@github.com/mild-blue/txmatching.git || true
 cd txmatching
 git fetch --all
 git reset --hard origin/master
-LATEST_TAG=`git describe --tags --abbrev=0`
+LATEST_TAG=$(git describe --tags --abbrev=0)
 cd ..
 
 echo "Updating docker-compose.yml with version from Git repository."
@@ -52,7 +53,7 @@ cp txmatching/devops/compose/docker-compose.yml docker-compose.yml
 while true; do
     read -p "Do you want to redeploy backend with version ${LATEST_TAG} [yn]?" yn
     case $yn in
-        [Yy]* ) redeploy; break;;
+        [Yy]* ) redeploy "${LATEST_TAG}"; break;;
         [Nn]* ) echo "Ok, exit."; break;;
         * ) echo "Please answer yes or no.";;
     esac

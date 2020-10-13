@@ -4,7 +4,7 @@
 
 1. Create a folder on server, e.g./ `deployment`.
 1. Create `.env` file in folder `deployment` based on `.env.template` file and set proper variables.
-1. Copy `redeploy-backend.sh` file into folder `deployment` and set `GIT_TOKEN` variable in this file.
+1. Copy `redeploy-backend.sh` file into the folder `deployment` and set `GIT_TOKEN` variable in this file.
 
 ## Start All
 1. For the first time, just get proper latest Git tag and call `BACKEND_TAG="LATEST_TAG_VALUE" docker-compose -f docker-compose.yml up -d`
