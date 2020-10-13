@@ -21,3 +21,5 @@ Note: migration name, e.g., `[MIGRATION_NUMBER.MIGRATION_NAME]` must be unique.
 
 
 1. Execute migration via `make migrate-db` with required environment variables described in Makefile next to this task.
+   So you have to create `.env.pub`based on `.env.teplate` file next to the Makefile and fill it in with proper environment
+   variables.
