@@ -2,7 +2,6 @@ name: txmatching
 channels:
   - conda-forge
 dependencies:
-  - alembic==1.4.3
   - bcrypt=3.2.0
   - python=3.8.3
   - pip=20.1.1
@@ -30,4 +29,5 @@ dependencies:
       - dacite==1.5.1
       - autopep8==1.5.4
       - pdfkit==0.6.1
-      - jinja2==2.11.2
+      - jinja2==2.11
+      - yoyo-migrations==7.2.0

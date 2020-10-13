@@ -52,7 +52,7 @@ def create_app():
             = build_db_connection_string(
             application_configuration.postgres_user,
             application_configuration.postgres_password,
-            application_configuration.postgres_user,
+            application_configuration.postgres_url,
             application_configuration.postgres_db
         )
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
