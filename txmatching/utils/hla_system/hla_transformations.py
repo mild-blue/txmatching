@@ -4,12 +4,16 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Tuple
 
+import numpy as np
+
 from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
                                                    COMPATIBILITY_BROAD_CODES,
                                                    SPLIT_TO_BROAD)
 from txmatching.utils.hla_system.rel_dna_ser_parsing import HIGH_RES_TO_SPLIT
 
 logger = logging.getLogger(__name__)
+
+MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI = 2
 
 HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*[A-Z]?$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
@@ -124,3 +128,18 @@ def preprocess_hla_codes_in(hla_codes_in: List[str]) -> List[str]:
 
 def get_compatibility_broad_codes(hla_codes: List[str]) -> List[str]:
     return [split_to_broad(hla_code) for hla_code in hla_codes if split_to_broad(hla_code) in COMPATIBILITY_BROAD_CODES]
+
+
+def get_mfi_from_multiple_hla_codes(mfis: List[int]):
+    """
+    Takes list of mfis of the same hla code and estimates the mfi for the code.
+    It is based on discussions with immunologists. If variance is low, take average, if variance is high, something
+    is wrong and ignore the hla_code (return 0 mfi)
+    :param mfis:
+    :return:
+    """
+    mean = np.mean(mfis)
+    max_min_difference = (np.max(mfis) - np.min(mfis))/np.min(mfis)
+    if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
+        return mean
+    return 0

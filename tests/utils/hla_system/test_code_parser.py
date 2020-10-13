@@ -4,8 +4,9 @@ import pandas as pd
 
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (
-    HlaCodeProcessingResultDetail, parse_hla_raw_code,
-    parse_hla_raw_code_with_details, preprocess_hla_code_in)
+    HlaCodeProcessingResultDetail, get_mfi_from_multiple_hla_codes,
+    parse_hla_raw_code, parse_hla_raw_code_with_details,
+    preprocess_hla_code_in)
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
 
 codes = {
@@ -57,3 +58,12 @@ class TestCodeParser(unittest.TestCase):
     def test_preprocessing(self):
         self.assertSetEqual({'DPA1*01:03', 'DPB1*04:02'}, set(preprocess_hla_code_in('DP4 [01:03, 04:02]')))
         self.assertSetEqual({'DQA1*01:03', 'DQB1*06:03'}, set(preprocess_hla_code_in('DQ[01:03,      06:03]')))
+        self.assertSetEqual({'DPA1', 'DP2'},
+                            set(parse_hla_raw_code(code) for code in preprocess_hla_code_in('DP[01:03,02:01]')))
+
+    def test_mfi_extraction(self):
+        self.assertEqual(0, get_mfi_from_multiple_hla_codes([1, 3000, 4000]))
+        self.assertEqual(0, get_mfi_from_multiple_hla_codes([1000, 20000, 18000]))
+        self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000]))
+        self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000]))
+        self.assertEqual(0, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000]))

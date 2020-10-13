@@ -1,10 +1,12 @@
+import itertools
 from dataclasses import dataclass, field
 from typing import List, Optional
 
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
 from txmatching.utils.hla_system.hla_transformations import (
-    get_compatibility_broad_codes, parse_hla_raw_code)
+    get_compatibility_broad_codes, get_mfi_from_multiple_hla_codes,
+    parse_hla_raw_code)
 
 Kilograms = float
 Centimeters = int
@@ -58,9 +60,19 @@ class HLAAntibodies:
         if hla_antibodies_list is None:
             hla_antibodies_list = []
         object.__setattr__(self, 'hla_antibodies_list', hla_antibodies_list)
-        hla_codes_over_cutoff = [hla_antibody.code for hla_antibody in hla_antibodies_list if
-                                 hla_antibody.mfi >= hla_antibody.cutoff and hla_antibody.code]
+        grouped_hla_codes = itertools.groupby(
+            sorted(hla_antibodies_list, key=lambda hla_code: (hla_code.code, hla_code.cutoff)),
+            key=lambda hla_code: (hla_code.code, hla_code.cutoff)
+        )
+        hla_codes_over_cutoff = []
+        for (hla_code_name, hla_code_cutoff), hla_code_group in grouped_hla_codes:
+            mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in hla_code_group])
+            if hla_code_name and mfi >= hla_code_cutoff:
+                hla_codes_over_cutoff.append(hla_code_name)
         object.__setattr__(self, 'hla_codes_over_cutoff', hla_codes_over_cutoff)
+
+
+
 
 
 @dataclass
