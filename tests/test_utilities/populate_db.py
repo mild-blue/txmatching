@@ -52,16 +52,14 @@ def add_users():
         pass_hash=encode_password(ADMIN_USER['password']),
         role=UserRole.ADMIN,
         second_factor_material=generate_totp_seed(),
-        require_2fa=False,
-        default_txm_event_id=1
+        require_2fa=False
     )
     viewer = AppUserModel(
         email=VIEWER_USER['email'],
         pass_hash=encode_password(VIEWER_USER['password']),
         role=UserRole.VIEWER,
         second_factor_material=generate_totp_seed(),
-        require_2fa=False,
-        default_txm_event_id=1
+        require_2fa=False
     )
     otp = AppUserModel(
         email=OTP_USER['email'],
@@ -69,8 +67,7 @@ def add_users():
         role=UserRole.ADMIN,
         second_factor_material=generate_totp_seed(),
         phone_number='123456789',
-        require_2fa=True,
-        default_txm_event_id=1
+        require_2fa=True
     )
     service = AppUserModel(
         email=SERVICE_USER['email'],
@@ -78,7 +75,7 @@ def add_users():
         role=UserRole.SERVICE,
         second_factor_material=generate_totp_seed(),
         require_2fa=False,
-        default_txm_event_id=2
+        default_txm_event_id=1
     )
     _add_users([admin, viewer, otp, service])
     ADMIN_USER['id'] = admin.id
@@ -96,8 +93,8 @@ def _add_users(users: List[AppUserModel]):
 if __name__ == '__main__':
     app = create_app()
     with app.app_context():
+        create_or_overwrite_txm_event(name='test')
         patients = parse_excel_data('patient_data_2020_07_obfuscated.xlsx')
         txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
         save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=txm_event.db_id)
-        create_or_overwrite_txm_event(name='test')
         add_users()

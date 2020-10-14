@@ -29,8 +29,8 @@ SET row_security = off;
 -- Data for Name: txm_event; Type: TABLE DATA; Schema: public; Owner: super-cool-txmatching
 --
 
-INSERT INTO public.txm_event (name) VALUES ('mock_data_CZE_CAN_IND');
 INSERT INTO public.txm_event (name) VALUES ('test');
+INSERT INTO public.txm_event (name) VALUES ('mock_data_CZE_CAN_IND');
 
 
 --
