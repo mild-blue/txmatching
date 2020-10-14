@@ -11,14 +11,14 @@ from flask_restx import Resource
 from txmatching.auth.auth_check import require_role
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.service.service_auth_check import allow_service_role
-from txmatching.data_transfer_objects.patients.patient_upload_dto_in import \
-    PatientUploadDTOIn
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadDTOOut
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import \
     TxmEventDTOIn
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
     TxmEventDTOOut
+from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import \
+    PatientUploadDTOIn
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson, TxmEventJsonIn, TxmEventJsonOut,
     UploadPatientsJson)

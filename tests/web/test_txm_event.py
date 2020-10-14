@@ -83,7 +83,7 @@ RECIPIENTS = [
         ],
         'hla_antibodies': [
             {
-                'name': 'B43',
+                'name': 'B42',
                 'mfi': 2000,
                 'cutoff': 2100
             }
@@ -107,7 +107,7 @@ RECIPIENTS = [
         ],
         'hla_antibodies': [
             {
-                'name': 'B43',
+                'name': 'B42',
                 'mfi': 2000,
                 'cutoff': 2200
             }
@@ -130,7 +130,7 @@ RECIPIENTS = [
         ],
         'hla_antibodies': [
             {
-                'name': 'B43',
+                'name': 'B42',
                 'mfi': 2000,
                 'cutoff': 2300
             }
@@ -375,7 +375,7 @@ class TestMatchingApi(DbTests):
                     ],
                     'hla_antibodies': [
                         {
-                            'name': 'B43',
+                            'name': 'B42',
                             'mfi': 2000,
                             'cutoff': 2100
                         }
@@ -443,7 +443,7 @@ class TestMatchingApi(DbTests):
                     ],
                     'hla_antibodies': [
                         {
-                            'name': 'B43',
+                            'name': 'B42',
                             'mfi': 2000,
                             'cutoff': 2100
                         }
@@ -503,7 +503,7 @@ class TestMatchingApi(DbTests):
                     ],
                     'hla_antibodies': [
                         {
-                            'name': 'B43',
+                            'name': 'B42',
                             'mfi': 2000,
                             'cutoff': 2100
                         }
@@ -572,7 +572,7 @@ class TestMatchingApi(DbTests):
                     ],
                     'hla_antibodies': [
                         {
-                            'name': 'B43',
+                            'name': 'B42',
                             'mfi': 2000,
                             'cutoff': 2100
                         }
@@ -653,7 +653,7 @@ class TestMatchingApi(DbTests):
                     ],
                     'hla_antibodies': [
                         {
-                            'name': 'B43',
+                            'name': 'B42',
                             'mfi': 2000,
                             'cutoff': 2100
                         }

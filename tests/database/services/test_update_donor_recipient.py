@@ -1,11 +1,13 @@
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
-from txmatching.data_transfer_objects.patients.donor_update_dto import \
+from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
+    HLAAntibodiesDTO, HLAAntibodyDTO)
+from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
-from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
-    HLATypingDTO
-from txmatching.data_transfer_objects.patients.recipient_update_dto import \
+from txmatching.data_transfer_objects.patients.update_dtos.hla_code_update_dtos import (
+    HLATypeUpdateDTO, HLATypingUpdateDTO)
+from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.database.services.patient_service import (
     save_patients_from_excel_to_empty_txm_event, update_donor,
@@ -14,8 +16,6 @@ from txmatching.database.sql_alchemy_schema import (
     AppUserModel, ConfigModel, DonorModel, PairingResultModel,
     RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
 from txmatching.patients.patient import RecipientRequirements
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLAType)
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -45,7 +45,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
 
         self.assertEqual(650, len(list(solve_from_db(Configuration(), txm_event.db_id))))
 
-    def test_saving_patients(self):
+    def test_update_recipient(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
 
         self.assertSetEqual({'0', 'A'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
@@ -55,17 +55,26 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
         update_recipient(RecipientUpdateDTO(
             acceptable_blood_groups=['AB'],
-            hla_antibodies=HLAAntibodies([HLAAntibody(mfi=20, cutoff=10, code='B43', raw_code='B43')]),
+            hla_antibodies=HLAAntibodiesDTO([
+                HLAAntibodyDTO(mfi=20, raw_code='B42'),
+                HLAAntibodyDTO(mfi=20, raw_code='DQ[01:03,      06:03]')
+            ]),
+            hla_typing=HLATypingUpdateDTO([
+                HLATypeUpdateDTO('A11'),
+                HLATypeUpdateDTO('DQ[01:03,      06:03]')
+            ]),
             recipient_requirements=RecipientRequirements(require_better_match_in_compatibility_index=True),
             db_id=1
         ), txm_event_db_id)
 
         self.assertSetEqual({'AB'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
-        self.assertSetEqual({'B43'}, {code.code for code in RecipientModel.query.get(1).hla_antibodies})
+        self.assertSetEqual({'B42', 'DQ6', 'DQA1'}, {code.code for code in RecipientModel.query.get(1).hla_antibodies})
         self.assertTrue(
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
+        self.assertSetEqual({'A11', 'DQ6', 'DQA1'},
+                            {hla_type['code'] for hla_type in RecipientModel.query.get(1).hla_typing['hla_types_list']})
 
-    def test_saving_donors(self):
+    def test_update_donor(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
 
         self.assertSetEqual({'A11',
@@ -74,9 +83,12 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                             {hla_type['code'] for hla_type in DonorModel.query.get(1).hla_typing['hla_types_list']})
 
         update_donor(DonorUpdateDTO(
-            hla_typing=HLATypingDTO([HLAType('A11')]),
+            hla_typing=HLATypingUpdateDTO([
+                HLATypeUpdateDTO('A11'),
+                HLATypeUpdateDTO('DQ[01:03,      06:03]')
+            ]),
             db_id=1
         ), txm_event_db_id)
 
-        self.assertSetEqual({'A11'},
+        self.assertSetEqual({'A11', 'DQ6', 'DQA1'},
                             {hla_type['code'] for hla_type in DonorModel.query.get(1).hla_typing['hla_types_list']})

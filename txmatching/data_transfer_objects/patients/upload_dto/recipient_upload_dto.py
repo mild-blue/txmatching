@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from txmatching.data_transfer_objects.patients.hla_antibodies_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dto.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
+from txmatching.utils.hla_system.hla_transformations import (
+    preprocess_hla_code_in, preprocess_hla_codes_in)
 
 
 @dataclass
@@ -22,3 +24,11 @@ class RecipientUploadDTO:
     year_of_birth: Optional[int]
     waiting_since: Optional[str]
     previous_transplants: Optional[int]
+
+    def __post_init__(self):
+        self.hla_typing_preprocessed = preprocess_hla_codes_in(self.hla_typing)
+        self.hla_antibodies_preprocessed = [
+            HLAAntibodiesUploadDTO(parsed_code, hla_antibody_in.mfi, hla_antibody_in.cutoff)
+            for hla_antibody_in in self.hla_antibodies
+            for parsed_code in preprocess_hla_code_in(hla_antibody_in.name)
+        ]

@@ -7,15 +7,17 @@ from dacite import from_dict
 from flask import jsonify, request
 from flask_restx import Resource
 
-from txmatching.auth.user.user_auth_check import require_user_login, require_user_edit_access
-from txmatching.data_transfer_objects.patients.donor_update_dto import \
-    DonorUpdateDTO
+from txmatching.auth.user.user_auth_check import (require_user_edit_access,
+                                                  require_user_login)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
     DonorModel, DonorModelToUpdate, PatientsModel, RecipientModel,
     RecipientModelToUpdate)
-from txmatching.data_transfer_objects.patients.recipient_update_dto import \
+from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
+    DonorUpdateDTO
+from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import FailJson
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
+    FailJson
 from txmatching.database.services.patient_service import (get_txm_event,
                                                           update_donor,
                                                           update_recipient)

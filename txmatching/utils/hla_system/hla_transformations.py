@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Tuple
 
+import numpy as np
+
 from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
                                                    COMPATIBILITY_BROAD_CODES,
                                                    SPLIT_TO_BROAD)
@@ -11,9 +13,12 @@ from txmatching.utils.hla_system.rel_dna_ser_parsing import HIGH_RES_TO_SPLIT
 
 logger = logging.getLogger(__name__)
 
+MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI = 2
+
 HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*[A-Z]?$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
 C_SPLIT_FROM_HIGH_RES_REGEX = re.compile(r'^C\d+$')
+HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'([A-Za-z]{1,3})\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
 
 
 def broad_to_split(hla_code: str) -> List[str]:
@@ -47,12 +52,12 @@ class HlaCodeProcessingResult:
     result_detail: HlaCodeProcessingResultDetail
 
 
-def _high_res_to_split(hla_code: str) -> Tuple[Optional[str], Optional[HlaCodeProcessingResultDetail]]:
-    split_hla_code = HIGH_RES_TO_SPLIT.get(hla_code)
+def _high_res_to_split(hla_raw_code: str) -> Tuple[Optional[str], Optional[HlaCodeProcessingResultDetail]]:
+    split_hla_code = HIGH_RES_TO_SPLIT.get(hla_raw_code)
     issue = None
     if not split_hla_code:
         possible_split_resolutions = {split for high_res, split in HIGH_RES_TO_SPLIT.items() if
-                                      high_res.startswith(hla_code)}
+                                      high_res.startswith(hla_raw_code)}
         if len(possible_split_resolutions) == 0:
             return None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE
         possible_split_resolutions = possible_split_resolutions.difference({None})
@@ -73,14 +78,11 @@ def _high_res_to_split(hla_code: str) -> Tuple[Optional[str], Optional[HlaCodePr
     return None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
 
 
-# TODO https://trello.com/c/PtK2Bg27 add support for square brackets and also preprocess incoming strings in other ways
-#  (move the upper there as well)
-def any_code_to_split(hla_code_raw: str) -> HlaCodeProcessingResult:
-    hla_code_raw = hla_code_raw.upper()
-    if re.match(HIGH_RES_REGEX, hla_code_raw):
-        maybe_hla_code, maybe_result_detail = _high_res_to_split(hla_code_raw)
+def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
+    if re.match(HIGH_RES_REGEX, hla_raw_code):
+        maybe_hla_code, maybe_result_detail = _high_res_to_split(hla_raw_code)
     else:
-        maybe_hla_code, maybe_result_detail = hla_code_raw, None
+        maybe_hla_code, maybe_result_detail = hla_raw_code, None
 
     if maybe_hla_code in ALL_SPLIT_BROAD_CODES:
         return HlaCodeProcessingResult(maybe_hla_code,
@@ -99,14 +101,44 @@ def any_code_to_split(hla_code_raw: str) -> HlaCodeProcessingResult:
         return HlaCodeProcessingResult(None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
 
 
-def parse_code(hla_code: str) -> Optional[str]:
-    parsing_result = any_code_to_split(hla_code)
+def parse_hla_raw_code(hla_raw_code: str) -> Optional[str]:
+    parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not parsing_result.maybe_hla_code:
-        logger.error(f'HLA code processing of {hla_code} was not successful: {parsing_result.result_detail}')
+        logger.error(f'HLA code processing of {hla_raw_code} was not successful: {parsing_result.result_detail}')
     elif parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:
-        logger.warning(f'HLA code processing of {hla_code} was successful with warning: {parsing_result.result_detail}')
+        logger.warning(f'HLA code processing of {hla_raw_code} was successful with warning: '
+                       f'{parsing_result.result_detail}')
     return parsing_result.maybe_hla_code
+
+
+def preprocess_hla_code_in(hla_code_in: str) -> List[str]:
+    hla_code_in = hla_code_in.replace(' ', '')
+    hla_code_in = hla_code_in.upper()
+    matched_multi_hla_codes = re.match(HIGH_RES_WITH_SUBUNITS_REGEX, hla_code_in)
+    if matched_multi_hla_codes:
+        return [f'{matched_multi_hla_codes.group(1)}A1*{matched_multi_hla_codes.group(2)}',
+                f'{matched_multi_hla_codes.group(1)}B1*{matched_multi_hla_codes.group(3)}']
+    else:
+        return [hla_code_in]
+
+
+def preprocess_hla_codes_in(hla_codes_in: List[str]) -> List[str]:
+    return [parsed_code for hla_code_in in hla_codes_in for parsed_code in preprocess_hla_code_in(hla_code_in)]
 
 
 def get_compatibility_broad_codes(hla_codes: List[str]) -> List[str]:
     return [split_to_broad(hla_code) for hla_code in hla_codes if split_to_broad(hla_code) in COMPATIBILITY_BROAD_CODES]
+
+
+def get_mfi_from_multiple_hla_codes(mfis: List[int]):
+    """
+    Takes list of mfis of the same hla code and estimates the mfi for the code.
+    It is based on discussions with immunologists. If variance is low, take average, if variance is high, something
+    is wrong and ignore the hla_code (return 0 mfi)
+    :param mfis:
+    :return:
+    """
+    max_min_difference = (np.max(mfis) - np.min(mfis))/np.min(mfis)
+    if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
+        return np.mean(mfis)
+    return 0

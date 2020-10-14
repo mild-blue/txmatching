@@ -74,6 +74,7 @@ setup-non-empty-db:
 	docker-compose up -d db
 	sleep 2
 	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./txmatching/database/db_migrations/V1_schema.sql
+	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./txmatching/database/db_migrations/V2_drop_unique_recipient_antibodies.sql
 	cd tests/test_utilities; PYTHONPATH=../..:$PYTHONPATH python populate_db.py
 
 clean-db:
