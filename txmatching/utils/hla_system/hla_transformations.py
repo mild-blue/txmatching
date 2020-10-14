@@ -66,7 +66,7 @@ def _high_res_to_split(hla_raw_code: str) -> Tuple[Optional[str], Optional[HlaCo
             if len(found_splits) == 1:
                 split_hla_code = possible_split_resolutions.pop()
             else:
-                # in case there are multiple possibilites we do not know which to choose and return None.
+                # in case there are multiple possibilities we do not know which to choose and return None.
                 split_hla_code = None
                 logger.warning(possible_split_resolutions)
                 issue = HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND

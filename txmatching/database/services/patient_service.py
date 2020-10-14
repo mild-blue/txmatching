@@ -10,6 +10,8 @@ from sqlalchemy import and_
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.donor_excel_dto import \
     DonorExcelDTO
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
+    HLATypingDTO
 from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
@@ -273,7 +275,7 @@ def _recipient_upload_dto_to_recipient_model(
         medical_id=recipient.medical_id,
         country=country_code,
         blood=recipient.blood_group,
-        hla_typing=dataclasses.asdict(HLATyping([HLAType(typing) for typing in recipient.hla_typing_preprocessed])),
+        hla_typing=dataclasses.asdict(HLATypingDTO([HLAType(typing) for typing in recipient.hla_typing_preprocessed])),
         hla_antibodies=hla_antibodies,
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
@@ -317,7 +319,7 @@ def _donor_upload_dto_to_donor_model(
         medical_id=donor.medical_id,
         country=country_code,
         blood=donor.blood_group,
-        hla_typing=dataclasses.asdict(HLATyping([HLAType(typing) for typing in donor.hla_typing_preprocessed])),
+        hla_typing=dataclasses.asdict(HLATypingDTO([HLAType(typing) for typing in donor.hla_typing_preprocessed])),
         active=True,
         recipient=related_recipient,
         donor_type=donor.donor_type,
