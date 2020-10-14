@@ -73,8 +73,8 @@ setup-non-empty-db:
 	docker volume rm txmatching_txmatching-postgres || true
 	docker-compose up -d db
 	sleep 2
-	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./txmatching/database/db_migrations/V1_schema.sql
-	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./txmatching/database/db_migrations/V2_drop_unique_recipient_antibodies.sql
+	make migrate-db
+	cd ..
 	cd tests/test_utilities; PYTHONPATH=../..:$PYTHONPATH python populate_db.py
 
 clean-db:
@@ -98,3 +98,9 @@ run-fe:
 	cd txmatching/web/frontend; npm run start
 
 rebuild: conda-update build-fe
+
+# Updates DB to the latest migration.
+# NOTE: PROFILE=PATH_TO_PROFILE_CONF_FILE DB_NAME=NAME_OF_DB_TO_MIGRATE MIGRATION_NAME=NAME_OF_MIGRATION env variables must be specified
+# Sample: cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER='super-cool-txmatching' POSTGRES_PASSWORD='super-secret-pwd' POSTGRES_DB='txmatching' POSTGRES_URL='localhost:5432' python database/migrate_db.py
+migrate-db:
+	cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER=${POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} POSTGRES_DB=${POSTGRES_DB} POSTGRES_URL=${POSTGRES_URL} python database/migrate_db.py
