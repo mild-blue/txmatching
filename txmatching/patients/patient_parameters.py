@@ -60,14 +60,15 @@ class HLAAntibodies:
         if hla_antibodies_list is None:
             hla_antibodies_list = []
         object.__setattr__(self, 'hla_antibodies_list', hla_antibodies_list)
+        hla_antibodies_list_without_none = [hla_antibody for hla_antibody in hla_antibodies_list if hla_antibody.code]
         grouped_hla_codes = itertools.groupby(
-            sorted(hla_antibodies_list, key=lambda hla_code: (hla_code.code, hla_code.cutoff)),
+            sorted(hla_antibodies_list_without_none, key=lambda hla_code: (hla_code.code, hla_code.cutoff)),
             key=lambda hla_code: (hla_code.code, hla_code.cutoff)
         )
         hla_codes_over_cutoff = []
         for (hla_code_name, hla_code_cutoff), hla_code_group in grouped_hla_codes:
             mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in hla_code_group])
-            if hla_code_name and mfi >= hla_code_cutoff:
+            if mfi >= hla_code_cutoff:
                 hla_codes_over_cutoff.append(hla_code_name)
         object.__setattr__(self, 'hla_codes_over_cutoff', hla_codes_over_cutoff)
 

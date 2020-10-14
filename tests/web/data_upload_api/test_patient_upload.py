@@ -42,6 +42,7 @@ class TestMatchingApi(DbTests):
                             set(blood for blood in txm_event.recipients_dict[1].acceptable_blood_groups))
         self.assertEqual(HLATyping(hla_types_list=[HLAType(raw_code='A2', code='A2')]),
                          get_txm_event(txm_event.db_id).donors_dict[1].parameters.hla_typing)
+        self.assertListEqual(['A9'], txm_event.recipients_dict[1].hla_antibodies.hla_codes_over_cutoff)
 
     def test_txm_event_patient_successful_upload_missing_not_required_params(self):
         txm_event = self._upload_for_test(VALID_UPLOAD_MISSING_FIELDS)

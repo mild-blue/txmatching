@@ -30,6 +30,11 @@ VALID_UPLOAD_1 = {
                     'mfi': 2350,
                     'name': 'sdfsdfafaf',
                     'cutoff': 2000
+                },
+                {
+                    'mfi': 2350,
+                    'name': 'A9',
+                    'cutoff': 2000
                 }
             ],
             'acceptable_blood_groups': [
