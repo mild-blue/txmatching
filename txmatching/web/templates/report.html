@@ -1,98 +1,311 @@
 <html>
 <head>
   <title>{{ title }}</title>
-  <style>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
 
-    html {
-      margin: 20px;
-      font-size: 13px;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+        /* General */
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
 
-    table {
-      border-collapse: collapse;
-      margin: 5px;
-      width: 100%;
-    }
+        body {
+            font-size: 13px;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 300;
+            background: #f8f9fa;
+            color: #000;
+        }
 
-    table, th, td {
-      border: 1px solid black;
-      padding: 5px;
-    }
+        h1 {
+            margin-top: 0;
+        }
 
-    table, tr, td, th, tbody, thead, tfoot {
-      page-break-inside: avoid !important;
-    }
+        h3 {
+            text-transform: uppercase;
+        }
 
-    .no-border-table {
-      border: none;
-    }
+        h4 {
+            margin: 0;
+        }
 
-    .header {
-      font-size: 29px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
-    .caption {
-      font-weight: bold;
-      font-size: 23px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
 
-    .caption-matching {
-      font-weight: bold;
-      font-size: 20px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
+            margin-bottom: 20px;
+        }
 
-    .caption-round {
-      font-weight: bold;
-      font-size: 18px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-    }
+        .header h1 {
+            margin: 0;
+            color: #e2001a;
+            font-size: 32px;
+        }
 
-    .caption-transplant {
-      font-weight: bold;
-      font-size: 16px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-    }
+        /* Logo */
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-    .table-header {
-      background-color: #e6e6e6;
-      font-weight: bold;
-    }
+        .logo img {
+            width: 50px;
+        }
 
-    .compatible-blood-type {
-      background-color: rgba(0, 128, 0, .2);
-      color: green;
-    }
+        .logo h2 {
+            margin: 0 0 0 20px;
+            padding-left: 20px;
+            color: #e2001a;
+            line-height: 1;
+            font-size: 18px;
+            position: relative;
+        }
 
-    .incompatible-blood-type {
-      background-color: #639;
-      color: #e6e6e6;
-    }
+        .logo h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: #e2001a;
+        }
 
-    .final-score {
-      color: red;
-      font-weight: bolder;
-    }
+        /* Date */
+        .date {
+            font-weight: 700;
+            color: #454545;
+        }
 
-  </style>
+        .date span {
+            font-weight: 400;
+            font-family: monospace;
+            margin-left: 10px;
+        }
+
+        /* Box */
+        .box {
+            padding: 30px;
+        }
+
+        .box:nth-child(even) {
+            background: #ffffff;
+        }
+
+        /* Configuration */
+        .configuration ul li {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .configuration ul li:not(:last-child) {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .configuration .value {
+            max-width: 50%;
+            text-align: right;
+            font-weight: 700;
+        }
+
+        /* Matching info */
+        .matching-info {
+            display: flex;
+        }
+
+        .matching-info li:not(:last-child) {
+            margin-right: 5px;
+        }
+
+        .matching-info li:not(:last-child)::after {
+            content: '|';
+            margin: 0 5px;
+            color: #454545;
+        }
+
+        /* Matching round */
+        .matching-round {
+            padding-top: 20px;
+        }
+
+        /* Matching transplant */
+        .matching-transplant {
+            border-top: none;
+            border-radius: 40px;
+            margin-bottom: 20px;
+        }
+
+        .transplant-header {
+            background: #eff3f7;
+            border: 1px solid #dddddd;
+            border-bottom: none;
+            padding: 0 10px;
+            font-weight: 700;
+            font-size: 14px;
+            height: 50px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transplant-header .score span {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e2001a;
+        }
+
+        /* Transplant table */
+        .small {
+            font-size: 10px !important;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .center-holder {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        tr {
+            border-top: 1px solid #dddddd;
+        }
+
+        tr:first-child {
+            font-weight: 700;
+        }
+
+        tr.anti-header td {
+            background: #eff3f7;
+            font-size: 12px;
+            padding: 2px;
+        }
+
+        td {
+            text-align: center;
+            padding: 5px 10px;
+            border: 1px solid #dddddd;
+            vertical-align: top;
+        }
+
+        td:not([colspan]) {
+            width: 21.6666%;
+        }
+
+        td:first-child {
+            width: 20%;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        td:last-child {
+            width: 15%;
+        }
+
+        .footer-score td {
+            text-align: right;
+        }
+
+        .footer-score td:not(:last-child) {
+            border: none !important;
+        }
+
+        .footer-score td:last-child {
+            background: transparent;
+        }
+
+        .footer-score span {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e2001a;
+        }
+
+        /* Code */
+        .code {
+            display: inline-block;
+            border-radius: 3px;
+            padding: 0 3px;
+            margin: 1px;
+            border: 1px solid #6c757d;
+
+            background: #e9ecef;
+            color: #6c757d;
+
+            font-weight: 600;
+        }
+
+        .code.matching {
+            background: rgba(40, 167, 69, 0.2);
+            border-color: #28a745;
+            color: #28a745;
+        }
+
+        .code.bad-matching {
+            background: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545 !important;
+            color: #dc3545 !important;
+        }
+
+        /* Patient */
+        .patient {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .patient .flag {
+            margin-right: 10px;
+            border-radius: 3px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .patient img {
+            height: 16px;
+            width: 16px;
+        }
+
+    </style>
 </head>
 <body>
-<div>
-  <div class="header">{{ title }}</div>
-  <table class="no-border-table">
-    <tr>
-      <td class="no-border-table">Generated</td>
-      <td class="no-border-table">{{ date }}</td>
-    </tr>
-  </table>
+<div class="box">
+    <div class="header">
+        <h1>{{ title }}</h1>
+
+        <div class="logo">
+            <img alt="logo" src="./assets/logo_ikem.svg"/>
+            <h2>
+                Transplant<br>Matching
+            </h2>
+        </div>
+    </div>
+
+    <div class="date">
+        Generated
+        <span>{{ date }}</span>
+    </div>
 </div>
 <div>
   <div class="caption">Configuration</div>

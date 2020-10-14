@@ -11,6 +11,7 @@ import pdfkit
 from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
+from distutils.dir_util import copy_tree
 
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
@@ -107,6 +108,7 @@ class Report(Resource):
         configuration = latest_configuration_for_txm_event(txm_event_db_id=txm_event_id)
 
         Report.prepare_tmp_dir()
+        Report.copy_assets()
         Report.prune_old_reports()
 
         j2_env = Environment(
@@ -135,7 +137,12 @@ class Report(Resource):
             input=html_file_full_path,
             output_path=pdf_file_full_path,
             options={
-                'footer-center': '[page] / [topage]'
+                'footer-center': '[page] / [topage]',
+                'enable-local-file-access': '',
+                '--margin-top': '0',
+                '--margin-left': '0',
+                '--margin-right': '0',
+                '--margin-bottom': '0',
             }
         )
         if os.path.exists(html_file_full_path):
@@ -156,6 +163,13 @@ class Report(Resource):
     def prepare_tmp_dir():
         if not os.path.exists(TMP_DIR):
             os.makedirs(TMP_DIR)
+
+    @staticmethod
+    def copy_assets():
+        if os.path.exists(TMP_DIR):
+            old_dir = os.path.join(THIS_DIR, '../templates/assets/')
+            new_dir = TMP_DIR + '/assets/'
+            copy_tree(old_dir, new_dir)
 
     @staticmethod
     def prune_old_reports():
