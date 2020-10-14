@@ -72,9 +72,6 @@ class HLAAntibodies:
         object.__setattr__(self, 'hla_codes_over_cutoff', hla_codes_over_cutoff)
 
 
-
-
-
 @dataclass
 class PatientParameters:
     blood_group: BloodGroup

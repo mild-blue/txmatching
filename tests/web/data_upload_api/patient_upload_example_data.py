@@ -158,6 +158,10 @@ VALID_UPLOAD_MULTIPLE_SAME_HLA_CODES = {
                     'name': 'DQ[06:01,03:02]',
                     'cutoff': 4000
                 },
+                {
+                    'mfi': 4200,
+                    'name': 'DQ[06:02,03:02]',
+                    'cutoff': 4000},
             ]
         }
     ],

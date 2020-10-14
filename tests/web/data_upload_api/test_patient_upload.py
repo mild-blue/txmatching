@@ -47,7 +47,7 @@ class TestMatchingApi(DbTests):
         txm_event = self._upload_for_test(VALID_UPLOAD_MISSING_FIELDS)
         self.assertIsNone(txm_event.recipients_dict[1].waiting_since)
 
-    def test_txm_event_patient_successful_upload_missing_special_hla_typing(self):
+    def test_txm_event_patient_successful_upload_special_hla_typing(self):
         txm_event = self._upload_for_test(VALID_UPLOAD_SPECIAL_HLA_CODES)
         recipient = txm_event.recipients_dict[1]
         expected_antibodies = {'DPA1', 'DP4', 'A23'}

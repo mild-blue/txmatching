@@ -16,7 +16,6 @@ from txmatching.database.sql_alchemy_schema import (
     AppUserModel, ConfigModel, DonorModel, PairingResultModel,
     RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
 from txmatching.patients.patient import RecipientRequirements
-from txmatching.patients.patient_parameters import HLAAntibodies, HLAAntibody
 from txmatching.solve_service.solve_from_db import solve_from_db
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path

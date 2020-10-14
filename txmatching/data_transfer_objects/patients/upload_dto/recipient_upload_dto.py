@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from txmatching.data_transfer_objects.patients.hla_antibodies_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dto.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
