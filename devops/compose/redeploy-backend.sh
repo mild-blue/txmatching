@@ -7,7 +7,7 @@ is_running() {
     container_id="$(docker-compose ps -q ${service})"
     health_status="$(docker inspect -f "{{.State.Status}}" "${container_id}")"
 
-    if [ ${health_status} = "running" ]; then
+    if [ "${health_status}" = "running" ]; then
         echo "${service} status is ${health_status}."
         return 0
     else
