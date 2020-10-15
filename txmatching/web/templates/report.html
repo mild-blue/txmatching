@@ -1,8 +1,34 @@
 {% macro yes_no(value) %}
     {% if value %}
-        Yes
+        <strong>Yes</strong>
     {% else %}
         No
+    {% endif %}
+{% endmacro %}
+
+{% macro donor_antigen_class(code, transplant) %}
+    {% if code in transplant.recipient.hla_antibodies.hla_antibodies_list %}
+        {# donor antigen matches some recipient antibody #}
+        bad-matching
+    {% elif code in transplant.recipient.parameters.hla_typing.codes %}
+        {# donor antigen matches some recipient antigen #}
+        matching
+    {% endif %}
+{% endmacro %}
+
+{% macro recipient_antigen_class(code, transplant) %}
+    {% if code in transplant.donor.parameters.hla_typing.codes
+            and code not in transplant.recipient.hla_antibodies.hla_antibodies_list %}
+            {# recipient antigen matches some donor antigen
+                and code is not recipient antibody #}
+        matching
+    {% endif %}
+{% endmacro %}
+
+{% macro recipient_antibody_class(code, transplant) %}
+    {% if code in transplant.donor.parameters.hla_typing.codes %}
+        {# recipient antibody matches some donor antigen #}
+        bad-matching
     {% endif %}
 {% endmacro %}
 
@@ -108,7 +134,6 @@
     /* Date */
     .date {
         font-weight: 700;
-        color: #454545;
     }
 
     .date span {
@@ -146,7 +171,6 @@
     .configuration .value {
         max-width: 50%;
         text-align: right;
-        font-weight: 700;
     }
 
     /* Matching info */
@@ -387,11 +411,11 @@
             </li>
             <li>
                 <div class="label">Minimum total score</div>
-                <div class="value">{{ configuration.minimum_total_score }}</div>
+                <div class="value"><strong>{{ configuration.minimum_total_score }}</strong></div>
             </li>
             <li>
                 <div class="label">Maximum total score</div>
-                <div class="value">{{ configuration.maximum_total_score }}</div>
+                <div class="value"><strong>{{ configuration.maximum_total_score }}</strong></div>
             </li>
             <li>
                 <div class="label">Require new donor having better match in compatibility index</div>
@@ -403,7 +427,7 @@
             </li>
             <li>
                 <div class="label">Blood group compatibility bonus</div>
-                <div class="value">{{ configuration.blood_group_compatibility_bonus }}</div>
+                <div class="value"><strong>{{ configuration.blood_group_compatibility_bonus }}</strong></div>
             </li>
             <li>
                 <div class="label">Use binary scoring</div>
@@ -411,19 +435,19 @@
             </li>
             <li>
                 <div class="label">Max cycle length</div>
-                <div class="value">{{ configuration.max_cycle_length }}</div>
+                <div class="value"><strong>{{ configuration.max_cycle_length }}</strong></div>
             </li>
             <li>
                 <div class="label">Max sequence length</div>
-                <div class="value">{{ configuration.max_sequence_length }}</div>
+                <div class="value"><strong>{{ configuration.max_sequence_length }}</strong></div>
             </li>
             <li>
-                <div class="label">Max number of distinct counliies in round</div>
-                <div class="value">{{ configuration.max_number_of_distinct_counliies_in_round }}</div>
+                <div class="label">Max number of distinct countries in round</div>
+                <div class="value"><strong>{{ configuration.max_number_of_distinct_counliies_in_round }}</strong></div>
             </li>
             <li>
                 <div class="label">Required patient db ids</div>
-                <div class="value">{{ configuration.required_patient_db_ids|join(', ') }}</div>
+                <div class="value"><strong>{{ configuration.required_patient_db_ids|join(', ') }}</strong></div>
             </li>
             <li>
                 <div class="label">Allow low high res incompatible</div>
@@ -431,11 +455,11 @@
             </li>
             <li>
                 <div class="label">Forbidden counliy combinations</div>
-                <div class="value">{{ configuration.forbidden_counliy_combinations|map('counliy_combination_filter')|join(', ') }}</div>
+                <div class="value"><strong>{{ configuration.forbidden_counliy_combinations|map('counliy_combination_filter')|join(', ') }}</strong></div>
             </li>
             <li>
                 <div class="label">Manual donor recipient scores</div>
-                <div class="value">{{ configuration.manual_donor_recipient_scores|map('donor_recipient_score_filter')|join(', ') }}</div>
+                <div class="value"><strong>{{ configuration.manual_donor_recipient_scores|map('donor_recipient_score_filter')|join(', ') }}</strong></div>
             </li>
         </ul>
     </div>
@@ -526,21 +550,18 @@
                                 <tr>
                                     <td>A</td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.donor.parameters.hla_typing.codes|antigen_a_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.recipient.parameters.hla_typing.codes|antigen_a_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.recipient.hla_antibodies|antibody_a_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ recipient_antibody_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>{{ transplant|antigen_score_a_filter }}</td>
@@ -548,21 +569,18 @@
                                 <tr>
                                     <td>B</td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.donor.parameters.hla_typing.codes|antigen_b_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.recipient.parameters.hla_typing.codes|antigen_b_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.recipient.hla_antibodies|antibody_b_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ recipient_antibody_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>{{ transplant|antigen_score_b_filter }}</td>
@@ -570,21 +588,18 @@
                                 <tr>
                                     <td>DR</td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.donor.parameters.hla_typing.codes|antigen_dr_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.recipient.parameters.hla_typing.codes|antigen_dr_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.recipient.hla_antibodies|antibody_dr_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ recipient_antibody_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>{{ transplant|antigen_score_dr_filter }}</td>
@@ -592,21 +607,18 @@
                                 <tr>
                                     <td>Other</td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.donor.parameters.hla_typing.codes|antigen_other_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.recipient.parameters.hla_typing.codes|antigen_other_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {# todo matching not-matching classes#}
                                         {% for code in transplant.recipient.hla_antibodies|antibody_other_filter %}
-                                            <div class="code">{{ code }}</div>
+                                            <div class="code {{ recipient_antibody_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>-</td>
