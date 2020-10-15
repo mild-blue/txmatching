@@ -2,7 +2,7 @@ import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Tuple
+from typing import List, Optional, Set, Tuple
 
 import numpy as np
 
@@ -17,7 +17,6 @@ MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI = 2
 
 HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*[A-Z]?$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
-C_SPLIT_FROM_HIGH_RES_REGEX = re.compile(r'^C\d+$')
 HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'([A-Za-z]{1,3})\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
 
 ANOTHER_VERSION_CW_SEROLOGICAL_CODE_REGEX = re.compile(r'C(\d+)')
@@ -55,30 +54,32 @@ class HlaCodeProcessingResult:
     result_detail: HlaCodeProcessingResultDetail
 
 
-def _high_res_to_split(hla_raw_code: str) -> Tuple[Optional[str], Optional[HlaCodeProcessingResultDetail]]:
-    split_hla_code = HIGH_RES_TO_SPLIT.get(hla_raw_code)
-    issue = None
-    if not split_hla_code:
-        possible_split_resolutions = {split for high_res, split in HIGH_RES_TO_SPLIT.items() if
-                                      high_res.startswith(hla_raw_code)}
-        if len(possible_split_resolutions) == 0:
+def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
+    return {split for high_res, split in HIGH_RES_TO_SPLIT.items() if
+            high_res.startswith(f'{high_res_code}:')}
+
+
+def _high_res_to_split(high_res_code: str) -> Tuple[Optional[str], Optional[HlaCodeProcessingResultDetail]]:
+    maybe_split_hla_code = HIGH_RES_TO_SPLIT.get(high_res_code, _get_possible_splits_for_high_res_code(high_res_code))
+    if maybe_split_hla_code is None:
+        return None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
+    elif isinstance(maybe_split_hla_code, str):
+        return maybe_split_hla_code, None
+    else:
+        assert isinstance(maybe_split_hla_code, set), 'Unexpected type'
+        if len(maybe_split_hla_code) == 0:
             return None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE
-        possible_split_resolutions = possible_split_resolutions.difference({None})
-        if possible_split_resolutions:
+        possible_split_resolutions = maybe_split_hla_code.difference({None})
+        if len(possible_split_resolutions) == 0:
+            return None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
+        else:
             found_splits = set(possible_split_resolutions)
             if len(found_splits) == 1:
-                split_hla_code = possible_split_resolutions.pop()
+                return possible_split_resolutions.pop(), None
             else:
                 # in case there are multiple possibilities we do not know which to choose and return None.
-                split_hla_code = None
-                logger.warning(possible_split_resolutions)
-                issue = HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND
-    if split_hla_code:
-        if re.match(C_SPLIT_FROM_HIGH_RES_REGEX, split_hla_code):
-            split_hla_code = f'CW{split_hla_code[1:]}'
-        return split_hla_code, issue
-
-    return None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
+                logger.warning(f'Multiple possible split resolutions found: {possible_split_resolutions}')
+                return None, HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND
 
 
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
