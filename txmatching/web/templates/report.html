@@ -331,13 +331,12 @@
     }
 
     .patient .flag {
-        margin-right: 10px;
+        margin-right: 5px;
         border-radius: 3px;
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: flex-start;
-        box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
 
         /* wkhtmltopdf */
         display: -webkit-box;
@@ -479,7 +478,7 @@
                                         <div class="center-holder">
                                             <div class="patient">
                                                 <div class="flag">
-                                                    {#                                                <img src="assets/countries/{{ transplant.donor.parameters.country_code }}.png"/>#}
+                                                   <img src="assets/countries/{{ transplant.donor.parameters.country_code.name }}.png"/>
                                                 </div>
                                                 {{ transplant.donor.medical_id }}
                                             </div>
@@ -489,7 +488,7 @@
                                         <div class="center-holder">
                                             <div class="patient">
                                                 <div class="flag">
-                                                    {#                                                <img src="assets/countries/{{ transplant.recipient.parameters.country_code }}.png"/>#}
+                                                    <img src="assets/countries/{{ transplant.recipient.parameters.country_code.name }}.png"/>
                                                 </div>
                                                 {{ transplant.recipient.medical_id }}
                                             </div>
