@@ -6,12 +6,12 @@ import os
 import time
 from typing import List
 
+from distutils.dir_util import copy_tree
 import jinja2
 import pdfkit
 from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
-from distutils.dir_util import copy_tree
 
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
