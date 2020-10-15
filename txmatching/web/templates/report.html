@@ -19,7 +19,7 @@
 {% macro recipient_antigen_class(code, transplant) %}
     {% if code in transplant.donor.parameters.hla_typing.codes
             and code not in transplant.recipient.hla_antibodies.hla_antibodies_list %}
-            {# recipient antigen matches some donor antigen
+        {# recipient antigen matches some donor antigen
                 and code is not recipient antibody #}
         matching
     {% endif %}
@@ -60,6 +60,7 @@
 
     h3 {
         text-transform: uppercase;
+        margin-top: 0;
     }
 
     h4 {
@@ -173,7 +174,12 @@
         text-align: right;
     }
 
-    /* Matching info */
+    /* Matching */
+    .matching-header {
+        padding-top: 30px;
+        page-break-inside: avoid !important;
+    }
+
     .matching-info {
         width: 100%;
         display: flex;
@@ -199,14 +205,18 @@
 
     /* Matching round */
     .matching-round {
-        padding-top: 10px;
+        margin-bottom: 20px;
     }
 
     /* Matching transplant */
     .matching-transplant {
         border-top: none;
         border-radius: 40px;
-        margin-bottom: 20px;
+        padding-top: 20px;
+    }
+
+    .matching-transplant, .matching-transplant > * {
+        page-break-inside: avoid !important;
     }
 
     .transplant-header {
@@ -279,9 +289,11 @@
 
     td {
         text-align: center;
-        padding: 5px 10px;
+        padding: 7px 10px;
         border: 1px solid #dddddd;
         vertical-align: top;
+
+        width: auto;
     }
 
     td:not([colspan]) {
@@ -375,7 +387,11 @@
 
     /* Helper classes */
     .mb-0 {
-        margin-bottom: 0;
+        margin-bottom: 0 !important;
+    }
+
+    .pt-0 {
+        padding-top: 0 !important;
     }
 
     .color-primary {
@@ -455,11 +471,15 @@
             </li>
             <li>
                 <div class="label">Forbidden counliy combinations</div>
-                <div class="value"><strong>{{ configuration.forbidden_counliy_combinations|map('counliy_combination_filter')|join(', ') }}</strong></div>
+                <div class="value">
+                    <strong>{{ configuration.forbidden_counliy_combinations|map('counliy_combination_filter')|join(', ') }}</strong>
+                </div>
             </li>
             <li>
                 <div class="label">Manual donor recipient scores</div>
-                <div class="value"><strong>{{ configuration.manual_donor_recipient_scores|map('donor_recipient_score_filter')|join(', ') }}</strong></div>
+                <div class="value">
+                    <strong>{{ configuration.manual_donor_recipient_scores|map('donor_recipient_score_filter')|join(', ') }}</strong>
+                </div>
             </li>
         </ul>
     </div>
@@ -469,25 +489,32 @@
 </div>
 
 {% for matching in matchings %}
-    <div class="box">
-        <h2>Matching #{{ matching.order_id }}</h2>
+    <div class="box pt-0">
+        <div class="matching-header">
+            <h2>Matching #{{ matching.order_id }}</h2>
 
-        <!-- Matching info -->
-        <ul class="matching-info">
-            <li>Score: <strong class="color-primary">{{ matching.score }}</strong></li>
-            <li>Rounds: <strong>{{ matching.rounds|length }}</strong></li>
-            <li>Transplants: <strong>{{ matching|sum_of_transplants }}</strong></li>
-            <li>Countries: <strong>{{ matching.countries|code_from_country_filter|join(', ') }}</strong></li>
-        </ul>
+            <!-- Matching info -->
+            <ul class="matching-info">
+                <li>Score: <strong class="color-primary">{{ matching.score }}</strong></li>
+                <li>Rounds: <strong>{{ matching.rounds|length }}</strong></li>
+                <li>Transplants: <strong>{{ matching|sum_of_transplants }}</strong></li>
+                <li>Countries: <strong>{{ matching.countries|code_from_country_filter|join(', ') }}</strong></li>
+            </ul>
+        </div>
 
         <!-- Matching rounds -->
         {% for round in matching.rounds %}
             <div class="matching-round">
-                <h3>Round #{{ loop.index }}</h3>
+                {% set round_index = loop.index %}
 
                 <!-- Matching round transplants -->
                 {% for transplant in round.transplants %}
                     <div class="matching-transplant">
+                        <!-- Prevent page break between round heading and first transplant -->
+                        {% if loop.index == 1 %}
+                            <h3>Round #{{ round_index }}</h3>
+                        {% endif %}
+
                         <div class="transplant-header">
                             <h4>Transplant #{{ loop.index }}</h4>
                             <div class="score">Score: <span>{{ transplant.score }}</span></div>
@@ -502,7 +529,7 @@
                                         <div class="center-holder">
                                             <div class="patient">
                                                 <div class="flag">
-                                                   <img src="assets/countries/{{ transplant.donor.parameters.country_code.name }}.png"/>
+                                                    <img src="assets/countries/{{ transplant.donor.parameters.country_code.name }}.png"/>
                                                 </div>
                                                 {{ transplant.donor.medical_id }}
                                             </div>
