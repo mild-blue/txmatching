@@ -20,6 +20,9 @@ SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
 C_SPLIT_FROM_HIGH_RES_REGEX = re.compile(r'^C\d+$')
 HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'([A-Za-z]{1,3})\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
 
+ANOTHER_VERSION_CW_SEROLOGICAL_CODE_REGEX = re.compile(r'C(\d+)')
+ANOTHER_VERSION_DQ_DP_B_SEROLOGICAL_CODE_REGEX = re.compile(r'(D[QP])B(\d+)')
+
 
 def broad_to_split(hla_code: str) -> List[str]:
     if hla_code not in ALL_SPLIT_BROAD_CODES:
@@ -84,16 +87,24 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
     else:
         maybe_hla_code, maybe_result_detail = hla_raw_code, None
 
-    if maybe_hla_code in ALL_SPLIT_BROAD_CODES:
-        return HlaCodeProcessingResult(maybe_hla_code,
-                                       maybe_result_detail if maybe_result_detail
-                                       else HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
+    if maybe_hla_code and re.match(SPLIT_RES_REGEX, maybe_hla_code):
+        c_match = re.match(ANOTHER_VERSION_CW_SEROLOGICAL_CODE_REGEX, maybe_hla_code)
+        if c_match:
+            maybe_hla_code = f'CW{int(c_match.group(1))}'
 
-    elif maybe_hla_code and re.match(SPLIT_RES_REGEX, maybe_hla_code):
-        # Some split hla codes are missing in our table, therefore we still return hla_codes if they match expected
+        dpqb_match = re.match(ANOTHER_VERSION_DQ_DP_B_SEROLOGICAL_CODE_REGEX, maybe_hla_code)
+        if dpqb_match:
+            maybe_hla_code = f'{dpqb_match.group(1)}{int(dpqb_match.group(2))}'
+
+        if maybe_hla_code in ALL_SPLIT_BROAD_CODES:
+            return HlaCodeProcessingResult(maybe_hla_code,
+                                           maybe_result_detail if maybe_result_detail
+                                           else HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
+            # Some split hla codes are missing in our table, therefore we still return hla_codes if they match expected
         # format of split codes
         return HlaCodeProcessingResult(maybe_hla_code,
                                        HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)
+
 
     elif maybe_result_detail:
         return HlaCodeProcessingResult(None, maybe_result_detail)
@@ -138,7 +149,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int]):
     :param mfis:
     :return:
     """
-    max_min_difference = (np.max(mfis) - np.min(mfis))/np.min(mfis)
+    max_min_difference = (np.max(mfis) - np.min(mfis)) / np.min(mfis)
     if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
         return np.mean(mfis)
     return 0
