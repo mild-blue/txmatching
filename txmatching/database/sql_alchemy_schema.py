@@ -154,6 +154,8 @@ class AppUserModel(db.Model):
     second_factor_material = db.Column(db.TEXT, unique=False, nullable=False)
     phone_number = db.Column(db.TEXT, unique=False, nullable=True, default=None)
     require_2fa = db.Column(db.BOOLEAN, unique=False, nullable=False, default=True)
+    can_edit_countries = db.Column(db.ARRAY(db.Enum(Country, create_constraint=False, native_enum=False)),
+                                   nullable=False, default=[])
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
