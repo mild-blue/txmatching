@@ -2,7 +2,7 @@ import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Tuple
+from typing import List, Optional, Set, Union
 
 import numpy as np
 
@@ -17,8 +17,10 @@ MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI = 2
 
 HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*[A-Z]?$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
-C_SPLIT_FROM_HIGH_RES_REGEX = re.compile(r'^C\d+$')
 HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'([A-Za-z]{1,3})\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
+
+CW_SEROLOGICAL_CODE_WITHOUT_W_REGEX = re.compile(r'C(\d+)')
+DQ_DP_B_SEROLOGICAL_CODE_WITH_B_REGEX = re.compile(r'(D[QP])B(\d+)')
 
 
 def broad_to_split(hla_code: str) -> List[str]:
@@ -52,51 +54,68 @@ class HlaCodeProcessingResult:
     result_detail: HlaCodeProcessingResultDetail
 
 
-def _high_res_to_split(hla_raw_code: str) -> Tuple[Optional[str], Optional[HlaCodeProcessingResultDetail]]:
-    split_hla_code = HIGH_RES_TO_SPLIT.get(hla_raw_code)
-    issue = None
-    if not split_hla_code:
-        possible_split_resolutions = {split for high_res, split in HIGH_RES_TO_SPLIT.items() if
-                                      high_res.startswith(hla_raw_code)}
+def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
+    return {split for high_res, split in HIGH_RES_TO_SPLIT.items() if
+            high_res.startswith(f'{high_res_code}:')}
+
+
+def _high_res_to_split(high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
+    """
+    Transforms high resolution code to serological (split) code. In the case no code is found
+    HlaCodeProcessingResultDetail with details is returned.
+    :param high_res_code: High res code to transform.
+    :return: Either found split code or HlaCodeProcessingResultDetail in case no split code is found.
+    """
+    maybe_split_hla_code = HIGH_RES_TO_SPLIT.get(high_res_code, _get_possible_splits_for_high_res_code(high_res_code))
+    if maybe_split_hla_code is None:
+        # Code found in the HIGH_RES_TO_SPLIT but none was returned as the transformation is unknown.
+        return HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
+    elif isinstance(maybe_split_hla_code, str):
+        return maybe_split_hla_code
+    else:
+        assert isinstance(maybe_split_hla_code, set), 'Unexpected type'
+        if len(maybe_split_hla_code) == 0:
+            # No code found in HIGH_RES_TO_SPLIT so it is code in high_res_code that does not exist in our
+            # transformation table at all.
+            return HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE
+        possible_split_resolutions = maybe_split_hla_code.difference({None})
         if len(possible_split_resolutions) == 0:
-            return None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE
-        possible_split_resolutions = possible_split_resolutions.difference({None})
-        if possible_split_resolutions:
+            return HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
+        else:
             found_splits = set(possible_split_resolutions)
             if len(found_splits) == 1:
-                split_hla_code = possible_split_resolutions.pop()
+                return possible_split_resolutions.pop()
             else:
                 # in case there are multiple possibilities we do not know which to choose and return None.
-                split_hla_code = None
-                logger.warning(possible_split_resolutions)
-                issue = HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND
-    if split_hla_code:
-        if re.match(C_SPLIT_FROM_HIGH_RES_REGEX, split_hla_code):
-            split_hla_code = f'CW{split_hla_code[1:]}'
-        return split_hla_code, issue
-
-    return None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
+                logger.warning(f'Multiple possible split resolutions for high res code {high_res_code}'
+                               f' found: {possible_split_resolutions}')
+                return HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND
 
 
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
     if re.match(HIGH_RES_REGEX, hla_raw_code):
-        maybe_hla_code, maybe_result_detail = _high_res_to_split(hla_raw_code)
+        hla_code_or_error = _high_res_to_split(hla_raw_code)
     else:
-        maybe_hla_code, maybe_result_detail = hla_raw_code, None
+        hla_code_or_error = hla_raw_code
 
-    if maybe_hla_code in ALL_SPLIT_BROAD_CODES:
-        return HlaCodeProcessingResult(maybe_hla_code,
-                                       maybe_result_detail if maybe_result_detail
-                                       else HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
+    if isinstance(hla_code_or_error, str) and re.match(SPLIT_RES_REGEX, hla_code_or_error):
+        c_match = re.match(CW_SEROLOGICAL_CODE_WITHOUT_W_REGEX, hla_code_or_error)
+        if c_match:
+            hla_code_or_error = f'CW{int(c_match.group(1))}'
 
-    elif maybe_hla_code and re.match(SPLIT_RES_REGEX, maybe_hla_code):
+        dpqb_match = re.match(DQ_DP_B_SEROLOGICAL_CODE_WITH_B_REGEX, hla_code_or_error)
+        if dpqb_match:
+            hla_code_or_error = f'{dpqb_match.group(1)}{int(dpqb_match.group(2))}'
+
+        if hla_code_or_error in ALL_SPLIT_BROAD_CODES:
+            return HlaCodeProcessingResult(hla_code_or_error, HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
         # Some split hla codes are missing in our table, therefore we still return hla_codes if they match expected
         # format of split codes
-        return HlaCodeProcessingResult(maybe_hla_code,
+        return HlaCodeProcessingResult(hla_code_or_error,
                                        HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)
 
-    elif maybe_result_detail:
-        return HlaCodeProcessingResult(None, maybe_result_detail)
+    elif isinstance(hla_code_or_error, HlaCodeProcessingResultDetail):
+        return HlaCodeProcessingResult(None, hla_code_or_error)
     else:
         return HlaCodeProcessingResult(None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
 
@@ -138,7 +157,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int]):
     :param mfis:
     :return:
     """
-    max_min_difference = (np.max(mfis) - np.min(mfis))/np.min(mfis)
+    max_min_difference = (np.max(mfis) - np.min(mfis)) / np.min(mfis)
     if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
         return np.mean(mfis)
     return 0
