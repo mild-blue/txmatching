@@ -144,7 +144,9 @@ class RegistrationApi(Resource):
                                       description='Countries that the user has access to.',
                                       cls_or_instance=fields.String(enum=[country.value for country in Country])),
         second_factor=fields.String(required=True,
-                                    description='2FA: Phone number for user account, IP address for SERVICE account.')), )
+                                    description='2FA: Phone number for user account, '
+                                                'IP address for SERVICE account.')),
+                                        )
 
     @user_api.doc(body=registration_model, security='bearer')
     @user_api.response(code=200, model=StatusResponse, description='User registered successfully.')
