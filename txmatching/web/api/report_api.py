@@ -1,5 +1,5 @@
 # pylint: disable=no-self-use
-# can not, they are used for generating swagger which needs class
+# Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 import datetime
 import logging
 import os
@@ -17,7 +17,8 @@ from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore)
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, MatchingReportDTO, RoundReportDTO, TransplantDTO)
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import FailJson
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
+    FailJson
 from txmatching.database.services.config_service import \
     latest_configuration_for_txm_event
 from txmatching.database.services.matching_service import \
@@ -35,7 +36,6 @@ TMP_DIR = '/tmp/txmatching_reports'
 MATCHINGS_BELOW_CHOSEN = 'matchingsBelowChosen'
 
 
-# pylint: disable=no-self-use
 # Query params:
 #   - matchingRangeLimit
 @report_api.route('/<matching_id>', methods=['GET'])
@@ -52,14 +52,12 @@ class Report(Resource):
             }
         }
     )
-    @report_api.response(code=200, model=None, description='Pdf report.')
+    @report_api.response(code=200, model=None, description='Generates PDF report.')
     @report_api.response(code=400, model=FailJson, description='Wrong data format.')
     @report_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @report_api.response(
-        code=403,
-        model=FailJson,
-        description='Access denied. You do not have rights to access this endpoint.'
-    )
+    @report_api.response(code=403, model=FailJson,
+                         description='Access denied. You do not have rights to access this endpoint.'
+                         )
     @report_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     # pylint: disable=too-many-locals
@@ -82,8 +80,7 @@ class Report(Resource):
                    all_matchings))
         matchings_under = list(
             filter(lambda matching: matching.order_id() > matching_id,
-                   all_matchings))[
-            :matching_range_limit]
+                   all_matchings))[:matching_range_limit]
         other_matchings_to_include = matchings_over + matchings_under
         other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
@@ -148,8 +145,8 @@ class Report(Resource):
             attachment_filename=pdf_file_name
         )
 
-        response.headers["x-filename"] = pdf_file_name
-        response.headers["Access-Control-Expose-Headers"] = 'x-filename'
+        response.headers['x-filename'] = pdf_file_name
+        response.headers['Access-Control-Expose-Headers'] = 'x-filename'
         return response
 
     @staticmethod
