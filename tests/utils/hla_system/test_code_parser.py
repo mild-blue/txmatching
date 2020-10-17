@@ -33,7 +33,9 @@ codes = {
     'DQB01': ('DQ1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'C12': ('CW12', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'B*15:10': ('B71', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'B*15:11': ('B75', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
+    'B*15:11': ('B75', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'C1': ('CW1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DPB13': ('DP13', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
 }
 
 
