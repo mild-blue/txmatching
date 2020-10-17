@@ -4,4 +4,5 @@
 --
 
 ALTER TABLE public.app_user
-    ADD COLUMN can_edit_countries COUNTRY[] NOT NULL DEFAULT [];
+    -- with '_' as prefix in order to indicate private field in the python
+    ADD COLUMN _allowed_edit_countries TEXT NOT NULL DEFAULT '';

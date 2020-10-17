@@ -20,6 +20,15 @@ def get_app_user_by_id(user_id: int) -> Optional[AppUserModel]:
 
 
 def persist_user(user: AppUserModel):
+    # verify that the user has correct countries set
+    try:
+        user.get_allowed_edit_countries()
+    except KeyError as ke:
+        # noinspection PyProtectedMember
+        raise ValueError(f'User has wrong format of allowed countries! '
+                         f'Was {user._allowed_edit_countries} - see [AppUserModel._allowed_edit_countries]'
+                         f'for proper format.') from ke
+
     # insert the user
     db.session.add(user)
     db.session.commit()
