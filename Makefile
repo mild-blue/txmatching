@@ -1,4 +1,4 @@
-include .env.pub
+include .env.local
 
 CONDA_ENV=txmatching
 
