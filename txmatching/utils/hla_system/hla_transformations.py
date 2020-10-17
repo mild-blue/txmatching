@@ -61,22 +61,22 @@ def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
 
 def _high_res_to_split(high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
     """
-    Transforms high res code to serological (split) code. In case no code is found HlaCodePRocessingResult with details
-    is returned
-    :param high_res_code: high res code to transform
-    :return: Either found split code or HlaCodeProcessingResult in case no split code is found
+    Transforms high resolution code to serological (split) code. In the case no code is found
+    HlaCodeProcessingResultDetail with details is returned.
+    :param high_res_code: High res code to transform.
+    :return: Either found split code or HlaCodeProcessingResultDetail in case no split code is found.
     """
     maybe_split_hla_code = HIGH_RES_TO_SPLIT.get(high_res_code, _get_possible_splits_for_high_res_code(high_res_code))
     if maybe_split_hla_code is None:
-        # code found in the HIGH_RES_TO_SPLIT but none was returned as the transformation is uknown
+        # Code found in the HIGH_RES_TO_SPLIT but none was returned as the transformation is unknown.
         return HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
     elif isinstance(maybe_split_hla_code, str):
         return maybe_split_hla_code
     else:
         assert isinstance(maybe_split_hla_code, set), 'Unexpected type'
         if len(maybe_split_hla_code) == 0:
-            # co code found in HIGH_RES_TO_SPLIT so it is code in high_res_code that does not exist in our tranformation
-            # table at all
+            # No code found in HIGH_RES_TO_SPLIT so it is code in high_res_code that does not exist in our
+            # transformation table at all.
             return HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE
         possible_split_resolutions = maybe_split_hla_code.difference({None})
         if len(possible_split_resolutions) == 0:
