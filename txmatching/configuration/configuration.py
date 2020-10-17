@@ -17,17 +17,17 @@ DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Count
 class Configuration:
     """
     Attributes:
-        minimum_total_score: Minimum total score (compatibility index + blood group bonus) that is required for
-        a transplant to be possible
-        use_binary_scoring: If all the conditions above are satisfied, then use just 1 for possible transplant
-        and -inf for impossible
+    minimum_total_score: Minimum total score (compatibility index + blood group bonus) that is required for
+    a transplant to be possible
+    use_binary_scoring: If all the conditions above are satisfied, then use just 1 for possible transplant
+    and -inf for impossible
     manual_donor_recipient_scores: Manual setting of score for tuple of recipient and donor
     """
     scorer_constructor_name: str = 'HLAAdditiveScorer'
     solver_constructor_name: str = 'AllSolutionsSolver'
     require_compatible_blood_group: bool = False
     minimum_total_score: float = 0.0
-    maximum_total_score: float = 27.0
+    maximum_total_score: float = 26.0
     require_better_match_in_compatibility_index: bool = False
     require_better_match_in_compatibility_index_or_blood_group: bool = False
     blood_group_compatibility_bonus: float = 0.0
