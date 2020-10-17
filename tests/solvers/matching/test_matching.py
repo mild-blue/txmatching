@@ -72,8 +72,9 @@ class TestMatching(TestCase):
         return Matching(donor_recipient_list)
 
     def _transplant_round_to_indices(self, transplant_round: TransplantRound) -> frozenset:
-        donor_recipient_indices = {(self._donors.index(pair.donor), self._recipients.index(pair.recipient))
-                                   for pair in transplant_round.donor_recipient_list}
+        donor_recipient_indices = {(self._donors.index(donor_recipient.donor),
+                                    self._recipients.index(donor_recipient.recipient))
+                                   for donor_recipient in transplant_round.donor_recipient_list}
         return frozenset(donor_recipient_indices)
 
     def test_get_cycles(self):

@@ -59,31 +59,15 @@ class Matching:
         self._sequences = list(TransplantSequence([matching_pairs[i] for i in seq])
                                for seq in vertex_sequences)
 
-    def __str__(self) -> str:
-        cycles = self.get_cycles()
-        sequences = self.get_sequences()
-
-        str_repr = '[Matching]'
-
-        if len(cycles) > 0:
-            str_repr += 'Cycles:\n'
-
-            for cycle in self.get_cycles():
-                str_repr += f'\t{cycle}\n'
-
-        if len(sequences) > 0:
-            str_repr = '\nSequences:\n'
-            for sequence in sequences:
-                str_repr += f'\t{sequence}\n'
-
-        return str_repr
-
-    @property
-    def donor_recipient_pairs(self):
+    def get_donor_recipient_pairs(self):
         return self.matching_pairs
 
     def get_non_directed_count(self):
         return len([donor for donor, _ in self.matching_pairs if donor.donor_type == DonorType.NON_DIRECTED])
+
+    def get_bridging_donor_count(self):
+        return len(
+            [donor for donor, _ in self.matching_pairs if donor.donor_type == DonorType.BRIDGING_DONOR])
 
     def get_donors_for_country_count(self, country_code: str):
         return len([pair.donor.parameters.country_code for pair in self.matching_pairs if
@@ -100,10 +84,6 @@ class Matching:
         return [CountryDTO(country,
                            self.get_donors_for_country_count(country),
                            self.get_recipients_for_country_count(country)) for country in countries]
-
-    def get_bridging_donor_count(self):
-        return len(
-            [donor for donor, _ in self.matching_pairs if donor.donor_type == DonorType.BRIDGING_DONOR])
 
     def get_cycles(self) -> List[TransplantCycle]:
         return self._cycles

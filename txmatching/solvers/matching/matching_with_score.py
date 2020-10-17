@@ -9,8 +9,8 @@ class MatchingWithScore(Matching):
     Set of disjoint TransplantRound's
     """
 
-    def __init__(self, donor_recipient_list: FrozenSet[DonorRecipientPair], score: float, order_id: int = 0):
-        super().__init__(donor_recipient_list)
+    def __init__(self, donor_recipient_pairs: FrozenSet[DonorRecipientPair], score: float, order_id: int = 0):
+        super().__init__(donor_recipient_pairs)
         self._score = score
         self._order_id = order_id
 
@@ -24,4 +24,4 @@ class MatchingWithScore(Matching):
         self._order_id = order_id
 
     def __hash__(self):
-        return self.donor_recipient_pairs.__hash__()
+        return self.get_donor_recipient_pairs().__hash__()

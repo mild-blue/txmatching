@@ -12,14 +12,8 @@ class TransplantRound:
     cycle: donor_1 -> recipient_2, donor_2 -> recipient_3, donor_3 -> recipient_1
     """
 
-    def __init__(self, donor_recipient_list: List[DonorRecipientPair]):
-        self._donor_recipient_pairs = donor_recipient_list
-
-    def __str__(self) -> str:
-        donor_to_rec_str_list = [f'{donor.medical_id} > {recipient.medical_id}' for donor, recipient in
-                                 self._donor_recipient_pairs]
-        str_repr = ','.join(donor_to_rec_str_list)
-        return str_repr
+    def __init__(self, donor_recipient_pairs: List[DonorRecipientPair]):
+        self._donor_recipient_pairs = donor_recipient_pairs
 
     @property
     def length(self) -> int:

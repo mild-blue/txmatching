@@ -35,7 +35,7 @@ class AdditiveScorer(ScorerBase):
         Higher score means better matching
         """
         total_score = 0
-        for transplant in matching.donor_recipient_pairs:
+        for transplant in matching.get_donor_recipient_pairs():
             donor, recipient = transplant
             total_score += self.score_transplant(donor=donor, recipient=recipient,
                                                  original_donor=donors_dict[recipient.related_donor_db_id])

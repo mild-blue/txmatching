@@ -11,10 +11,10 @@ from txmatching.solvers.solver_base import SolverBase
 _supported_solvers = [AllSolutionsSolver]
 
 
-def solver_from_config(configuration: Configuration,
-                       donors_dict: Dict[DonorDbId, Donor],
-                       recipients_dict: Dict[RecipientDbId, Recipient],
-                       scorer: AdditiveScorer) -> SolverBase:
+def solver_from_configuration(configuration: Configuration,
+                              donors_dict: Dict[DonorDbId, Donor],
+                              recipients_dict: Dict[RecipientDbId, Recipient],
+                              scorer: AdditiveScorer) -> SolverBase:
     solver_dict = {supported_object.__name__: supported_object for supported_object in _supported_solvers}
     solver = solver_dict.get(configuration.solver_constructor_name)
     if solver is None:
