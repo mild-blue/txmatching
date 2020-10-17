@@ -9,6 +9,7 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_role
 from txmatching.auth.data_types import UserRole
+from txmatching.auth.operation_guards.country_guard import guard_user_has_access_to
 from txmatching.auth.service.service_auth_check import allow_service_role
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadDTOOut
@@ -26,7 +27,7 @@ from txmatching.database.services.patient_service import \
 from txmatching.database.services.txm_event_service import (create_txm_event,
                                                             delete_txm_event,
                                                             save_original_data)
-from txmatching.utils.logged_user import get_current_user
+from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import txm_event_api
 
 logger = logging.getLogger(__name__)
@@ -55,6 +56,8 @@ class TxmEventApi(Resource):
         return make_response(jsonify(TxmEventDTOOut(name=created_event.name)), 201)
 
 
+# noinspection PyUnresolvedReferences
+# because Pycharm clearly does not know how what that is
 @txm_event_api.route('/<name>', methods=['DELETE'])
 class TxmEventDeleteApi(Resource):
 
@@ -103,14 +106,17 @@ class TxmEventUploadPatients(Resource):
                             description='Access denied. You do not have rights to access this endpoint.'
                             )
     @txm_event_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
-    # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
     @allow_service_role()
     def put(self):
         patient_upload_dto = from_dict(data_class=PatientUploadDTOIn, data=request.json, config=Config(cast=[Enum]))
-        current_user = get_current_user()
-        save_original_data(patient_upload_dto.txm_event_name, current_user.id, request.json)
-        country_code = patient_upload_dto.country  # TODO get from the user https://trello.com/c/8tzYR2Dj
-        # TODO validate based on country of the user https://trello.com/c/8tzYR2Dj
+        country_code = patient_upload_dto.country
+
+        current_user_id = get_current_user_id()
+        # check if user is allowed to modify resources to the country
+        guard_user_has_access_to(current_user_id, country_code)
+        # safe the original request to the database
+        save_original_data(patient_upload_dto.txm_event_name, current_user_id, request.json)
+        # perform update operation
         update_txm_event_patients(patient_upload_dto, country_code)
         return jsonify(PatientUploadDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),

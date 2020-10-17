@@ -13,7 +13,8 @@ from txmatching.auth.exceptions import (CredentialsMismatchException,
                                         InvalidJWTException,
                                         InvalidOtpException,
                                         UserUpdateException,
-                                        CouldNotSendOtpUsingSmsServiceException)
+                                        CouldNotSendOtpUsingSmsServiceException,
+                                        GuardException)
 from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
 
 logger = logging.getLogger(__name__)
@@ -68,6 +69,11 @@ def _user_auth_handlers(api: Api):
     def handle_invalid_auth_call_exception(error: InvalidAuthCallException):
         _log_warning(error)
         return {'error': 'Internal error, please contact support.', 'detail': str(error)}, 500
+
+    @api.errorhandler(GuardException)
+    def handle_invalid_auth_call_exception(error: GuardException):
+        _log_warning(error)
+        return {'error': 'Access denied.', 'detail': str(error)}, 403
 
     @api.errorhandler(InvalidArgumentException)
     def handle_invalid_argument_exception(error: InvalidArgumentException):

@@ -14,6 +14,7 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
 from txmatching.patients.patient import TxmEvent
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
+from txmatching.utils.enums import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.web import create_app
 
@@ -70,6 +71,7 @@ def create_or_overwrite_txm_event(name: str) -> TxmEvent:
 
 
 def add_users():
+    all_countries = {country for country in Country}
     ConfigModel.query.delete()
     AppUserModel.query.delete()
     user_models = []
@@ -83,6 +85,7 @@ def add_users():
             require_2fa=user.get('require_2fa'),
             default_txm_event_id=user.get('default_txm_event_id')
         )
+        user_model.set_allowed_edit_countries(all_countries)
         user_models.append(user_model)
 
     _add_users(user_models)
