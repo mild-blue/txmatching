@@ -1,5 +1,5 @@
 # pylint: disable=no-self-use
-# can not, they are used for generating swagger which needs class
+# Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 import logging
 from typing import Tuple
 
@@ -62,17 +62,13 @@ class OtpLoginApi(Resource):
                        description='OTP validation was successful. JWT generated.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
     @user_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @user_api.response(
-        code=403,
-        model=FailJson,
-        description='Access denied. You do not have rights to access this endpoint.'
-    )
+    @user_api.response(code=403, model=FailJson,
+                       description='Access denied. You do not have rights to access this endpoint.'
+                       )
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
-    @user_api.response(
-        code=503,
-        model=FailJson,
-        description='It was not possible to reach the SMS gate, thus the one time password could not be send.'
-    )
+    @user_api.response(code=503, model=FailJson,
+                       description='It was not possible to reach the SMS gate, '
+                                   'thus the one time password could not be send.')
     @allow_otp_request()
     def post(self):
         post_data = request.get_json()
@@ -87,11 +83,9 @@ class RefreshTokenApi(Resource):
     @user_api.response(code=200, model=LoginSuccessResponse, description='Token successfully refreshed.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
     @user_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @user_api.response(
-        code=403,
-        model=FailJson,
-        description='Access denied. You do not have rights to access this endpoint.'
-    )
+    @user_api.response(code=403, model=FailJson,
+                       description='Access denied. You do not have rights to access this endpoint.'
+                       )
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     def get(self):
@@ -108,11 +102,9 @@ class PasswordChangeApi(Resource):
     @user_api.response(code=200, model=StatusResponse, description='Password changed successfully.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
     @user_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @user_api.response(
-        code=403,
-        model=FailJson,
-        description='Access denied. You do not have rights to access this endpoint.'
-    )
+    @user_api.response(code=403, model=FailJson,
+                       description='Access denied. You do not have rights to access this endpoint.'
+                       )
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     def put(self):
@@ -134,11 +126,9 @@ class RegistrationApi(Resource):
     @user_api.response(code=200, model=StatusResponse, description='User registered successfully.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
     @user_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @user_api.response(
-        code=403,
-        model=FailJson,
-        description='Access denied. You do not have rights to access this endpoint.'
-    )
+    @user_api.response(code=403, model=FailJson,
+                       description='Access denied. You do not have rights to access this endpoint.'
+                       )
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_role(UserRole.ADMIN)
     def post(self):

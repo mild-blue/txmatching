@@ -35,15 +35,15 @@ def split_to_broad(hla_code: str) -> str:
 
 class HlaCodeProcessingResultDetail(str, Enum):
     # still returning value
-    SUCCESSFULLY_PARSED = 'Code successfully parsed without anything unexpected'
-    UNEXPECTED_SPLIT_RES_CODE = 'Unknown HLA code, seems to be in split resolution'
+    SUCCESSFULLY_PARSED = 'Code successfully parsed without anything unexpected.'
+    UNEXPECTED_SPLIT_RES_CODE = 'Unknown HLA code, seems to be in split resolution.'
 
     # returning no value
     MULTIPLE_SPLITS_FOUND = 'Multiple splits were found, unable to choose the right one.' \
-                            ' Immunologists shall be contacted'
+                            ' Immunologists shall be contacted.'
     UNKNOWN_TRANSFORMATION_TO_SPLIT = 'Unable to transform high resolution HLA code. Its transformation to split' \
-                                      ' code is unknown. Immunologists shall be contacted'
-    UNPARSABLE_HLA_CODE = 'Completely Unexpected HLA code'
+                                      ' code is unknown. Immunologists shall be contacted.'
+    UNPARSABLE_HLA_CODE = 'Completely Unexpected HLA code.'
 
 
 @dataclass
@@ -138,7 +138,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int]):
     :param mfis:
     :return:
     """
-    max_min_difference = (np.max(mfis) - np.min(mfis))/np.min(mfis)
+    max_min_difference = (np.max(mfis) - np.min(mfis)) / np.min(mfis)
     if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
         return np.mean(mfis)
     return 0
