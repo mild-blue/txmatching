@@ -18,7 +18,7 @@ JWT_OTP_EXPIRATION_MINUTES = OTP_VALIDITY_MINUTES * OTP_RESEND_WINDOW_MULTIPLIER
 """
 JWT with TokenType.OTP expiration.
 
-The OTP itself is valid for [OTP_VALIDITY_MINUTES], but we want to give user option 
+The OTP itself is valid for [OTP_VALIDITY_MINUTES], but we want to give user option
 to resend the OTP so we need to extend the expiration to bigger window by [OTP_RESEND_WINDOW_MULTIPLIER].
 """
 
