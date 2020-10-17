@@ -87,6 +87,14 @@ class DbTests(unittest.TestCase):
         credentials = ROLE_CREDENTIALS[user_role]
         self.login_with_credentials(credentials)
 
+    def login_with(self, email: str, password: str, user_id: int, user_role: UserRole):
+        with self.app.test_client() as client:
+            json = client.post('/user/login',
+                               json={'email': email, 'password': password}).json
+            token = json['auth_token']
+            self.auth_headers = {'Authorization': f'Bearer {token}'}
+            store_user_in_context(user_id, user_role)
+
     def _load_local_development_config(self):
         config_file = 'txmatching.web.local_config'
         if importing.find_spec(config_file):
