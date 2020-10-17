@@ -7,7 +7,7 @@ from txmatching.auth.crypto.jwt_crypto import decode_auth_token
 from txmatching.auth.data_types import UserRole, DecodedBearerToken, TokenType
 from txmatching.auth.exceptions import CredentialsMismatchException, InvalidIpAddressAccessException, \
     InvalidOtpException, InvalidAuthCallException
-from txmatching.auth.login_flow import credentials_login, _refresh_token, _otp_login
+from txmatching.auth.login_flow import credentials_login, _refresh_token, _otp_login, _resend_otp
 from txmatching.auth.service.service_auth_management import register_service
 from txmatching.auth.user.totp import generate_otp_for_user, verify_otp_for_user
 from txmatching.auth.user.user_auth_management import register_user
@@ -120,6 +120,26 @@ class TestLoginFlow(DbTests):
         wrong_otp = generate_otp_for_user(usr2)
 
         self.assertRaises(InvalidOtpException, lambda: _otp_login(wrong_otp, otp_token, conf))
+
+    def test__resend_otp(self):
+        db_usr, _ = self._create_user()
+        otp_token = DecodedBearerToken(db_usr.id, db_usr.role, TokenType.OTP)
+
+        def generate_and_send_otp_mock(usr: AppUserModel):
+            self.assertEqual(db_usr, usr)
+
+        with mock.patch('txmatching.auth.login_flow.generate_and_send_otp', generate_and_send_otp_mock):
+            _resend_otp(otp_token)
+
+    def test__resend_otp_should_fail_wrong_token(self):
+        db_usr, _ = self._create_user()
+        otp_token = DecodedBearerToken(db_usr.id, db_usr.role, TokenType.ACCESS)
+
+        def generate_and_send_otp_mock(usr: AppUserModel):
+            self.fail(f'This code should not be reached! With user {usr}')
+
+        with mock.patch('txmatching.auth.login_flow.generate_and_send_otp', generate_and_send_otp_mock):
+            self.assertRaises(InvalidAuthCallException, lambda: _resend_otp(otp_token))
 
     def _create_user(self, role: UserRole = UserRole.ADMIN, require_2fa: bool = True) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())
