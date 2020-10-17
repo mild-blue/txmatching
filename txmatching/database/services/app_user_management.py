@@ -23,11 +23,14 @@ def persist_user(user: AppUserModel):
     # verify that the user has correct countries set
     try:
         user.get_allowed_edit_countries()
-    except KeyError as ke:
+    except KeyError as key_error:
         # noinspection PyProtectedMember
+        # pylint: disable=protected-access
+        # because we want to print this error and the only way how to get original value
+        # is to access protected member
         raise ValueError(f'User has wrong format of allowed countries! '
                          f'Was {user._allowed_edit_countries} - see [AppUserModel._allowed_edit_countries]'
-                         f'for proper format.') from ke
+                         f'for proper format.') from key_error
 
     # insert the user
     db.session.add(user)

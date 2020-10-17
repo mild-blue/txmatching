@@ -71,7 +71,7 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Internal error, please contact support.', 'detail': str(error)}, 500
 
     @api.errorhandler(GuardException)
-    def handle_invalid_auth_call_exception(error: GuardException):
+    def handle_guard_exception(error: GuardException):
         _log_warning(error)
         return {'error': 'Access denied.', 'detail': str(error)}, 403
 

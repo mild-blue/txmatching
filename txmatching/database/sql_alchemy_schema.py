@@ -162,7 +162,7 @@ class AppUserModel(db.Model):
     to use Array, thus this field is formatted in following way:
     "Country,Country" - example: "CZE,ISR" - which should be parsed as
     ['CZE', 'ISR'] and as enum value [Country.CZE, Country.ISR]
-    
+
     Use [get_allowed_edit_countries] and [set_allowed_edit_countries] to set this property.
     """
     _split_literal = ','
