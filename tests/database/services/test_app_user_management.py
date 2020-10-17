@@ -21,7 +21,7 @@ class TestAppUserManagement(TestCase):
             require_2fa=False,
             _allowed_edit_countries=str(uuid4())
         )
-        self.assertRaises(KeyError, lambda: user.get_allowed_edit_countries())
+        self.assertRaises(ValueError, lambda: user.get_allowed_edit_countries())
         self.assertRaises(ValueError, lambda: persist_user(user))
 
 

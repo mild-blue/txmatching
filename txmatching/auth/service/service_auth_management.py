@@ -1,4 +1,5 @@
 import socket
+from typing import List
 
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
@@ -6,9 +7,10 @@ from txmatching.auth.exceptions import UserUpdateException
 from txmatching.database.services.app_user_management import persist_user, get_app_user_by_email, \
     update_password_for_user
 from txmatching.database.sql_alchemy_schema import AppUserModel
+from txmatching.utils.enums import Country
 
 
-def register_service(email: str, password: str, whitelisted_ip: str) -> AppUserModel:
+def register_service(email: str, password: str, allowed_countries: List[Country], whitelisted_ip: str) -> AppUserModel:
     """
     Registers new service for given email, password and whitelisted_ip.
     """
@@ -20,6 +22,7 @@ def register_service(email: str, password: str, whitelisted_ip: str) -> AppUserM
         role=UserRole.SERVICE,
         second_factor_material=whitelisted_ip
     )
+    user.set_allowed_edit_countries(set(allowed_countries))
     persist_user(user)
     return user
 

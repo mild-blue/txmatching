@@ -85,10 +85,15 @@ def _user_auth_handlers(api: Api):
         _log_warning(error)
         return {'error': 'Invalid request data.', 'detail': str(error)}, 400
 
-    @api.errorhandler(ValueError)
-    def handle_invalid_value_error(error: ValueError):
+    @api.errorhandler(KeyError)
+    def handle_key_error(error: KeyError):
         _log_warning(error)
-        return {'error': 'Invalid argument.', 'detail': str(error)}, 400
+        return {'error': 'Invalid request data.', 'detail': str(error)}, 400
+
+    @api.errorhandler(ValueError)
+    def handle_value_error(error: ValueError):
+        _log_warning(error)
+        return {'error': 'Invalid request data.', 'detail': str(error)}, 400
 
 
 def _default_error_handlers(api: Api):

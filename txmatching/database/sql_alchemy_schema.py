@@ -175,11 +175,10 @@ class AppUserModel(db.Model):
         if not self._allowed_edit_countries:
             return set()
 
-        return {Country[country_name] for country_name in self._allowed_edit_countries.split(self._split_literal)}
+        return {Country(country_value) for country_value in self._allowed_edit_countries.split(self._split_literal)}
 
     def set_allowed_edit_countries(self, countries: Set[Country]):
-        # we must use Enum.name as it is not easily possible to create Enum from the value
-        self._allowed_edit_countries = self._split_literal.join({country.name for country in countries})
+        self._allowed_edit_countries = self._split_literal.join({country.value for country in countries})
 
 
 class UploadedDataModel(db.Model):
