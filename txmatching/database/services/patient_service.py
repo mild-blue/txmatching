@@ -37,7 +37,7 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType, HLATyping,
                                                     PatientParameters)
 from txmatching.utils.enums import Country
-from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
+from txmatching.utils.hla_system.hla_transformations_store import parse_hla_raw_code_and_store_parsing_error_in_db
 
 logger = logging.getLogger(__name__)
 
@@ -179,13 +179,13 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
             else old_recipient.recipient_cutoff
 
         hla_antibodies = [
-            RecipientHLAAntibodyModel(recipient_id=recipient_update_dto.db_id,
-                                      raw_code=hla_antibody_dto.raw_code,
-                                      mfi=hla_antibody_dto.mfi,
-                                      cutoff=cutoff,
-                                      code=parse_hla_raw_code(hla_antibody_dto.raw_code)) for hla_antibody_dto
-            in
-            recipient_update_dto.hla_antibodies_preprocessed.hla_antibodies_list]
+            RecipientHLAAntibodyModel(
+                recipient_id=recipient_update_dto.db_id,
+                raw_code=hla_antibody_dto.raw_code,
+                mfi=hla_antibody_dto.mfi,
+                cutoff=cutoff,
+                code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_db_id, hla_antibody_dto.raw_code)
+            ) for hla_antibody_dto in recipient_update_dto.hla_antibodies_preprocessed.hla_antibodies_list]
 
         RecipientHLAAntibodyModel.query.filter(
             RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id).delete()
@@ -257,7 +257,7 @@ def _recipient_upload_dto_to_recipient_model(
 ) -> RecipientModel:
     hla_antibodies = [RecipientHLAAntibodyModel(
         raw_code=hla_antibody.name,
-        code=parse_hla_raw_code(hla_antibody.name),
+        code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_db_id, hla_antibody.name),
         cutoff=hla_antibody.cutoff,
         mfi=hla_antibody.mfi
     ) for hla_antibody in recipient.hla_antibodies_preprocessed]

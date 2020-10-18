@@ -10,6 +10,7 @@ from txmatching.patients.patient import DonorType, RecipientRequirements
 # pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
 from txmatching.utils.enums import Country, Sex
+from txmatching.utils.hla_system.hla_code_processing_result_detail import HlaCodeProcessingResultDetail
 
 
 class ConfigModel(db.Model):
@@ -166,4 +167,23 @@ class UploadedDataModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now(),
                            onupdate=func.now())
+    deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+
+class ParsingError(db.Model):
+    __tablename__ = 'parsing_error'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    txm_event_id = db.Column(db.Integer, ForeignKey('txm_event.id'), unique=False, nullable=False)
+    hla_code = db.Column(db.TEXT, unique=False, nullable=False)
+    hla_code_processing_result_detail = db.Column(db.Enum(HlaCodeProcessingResultDetail), unique=False, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        unique=False,
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now()
+    )
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
