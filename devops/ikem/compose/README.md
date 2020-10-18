@@ -1,10 +1,12 @@
 # Docker Compose Deployment
 
+
+
 ## Base Setup
 
-1. Create a folder on server, e.g./ `deployment`.
+1. Create a folder on server, e.g., `/srv/txmatch/deployment`.
 1. Create `.env` file in folder `deployment` based on `.env.template` file and set proper variables.
-1. Copy `redeploy-backend.sh` file into the folder `deployment` and set `GIT_TOKEN` variable in this file.
+1. Copy `redeploy-backend.sh` file into the folder `deployment` and set `GIT_TOKEN` variable in this file. 
 
 ## Start All
 1. For the first time, just get proper latest Git tag and call `BACKEND_TAG="LATEST_TAG_VALUE" docker-compose -f docker-compose.yml up -d`
@@ -21,3 +23,5 @@
 1. Destroy all: `docker-compose -f docker-compose.yml down`
 1. Stop service: `docker-compose -f docker-compose.yml stop SERVICE_NAME`
 1. Forward DB to localhost port 1234: `ssh -L 1234:localhost:5432 txmatch-USERNAME@172.17.3.14`
+1. Show running Docker containers: `docker ps`.
+1. Show service logs: `docker logs SERVICE_NAME`.
