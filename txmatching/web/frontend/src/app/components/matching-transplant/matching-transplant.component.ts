@@ -73,7 +73,7 @@ export class MatchingTransplantComponent implements OnInit {
       return '';
     }
 
-    if (this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.code === code)) {
+    if (this.transplant.r.hla_antibodies.hla_codes_over_cutoff.find(a => a === code)) {
       // donor antigen matches some recipient antibody
       return 'bad-matching';
     }
@@ -89,7 +89,7 @@ export class MatchingTransplantComponent implements OnInit {
   public getRecipientAntigenClass(code: string | null): string {
     if (this.transplant?.d && this.transplant.r && code
       && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.code === code)
-      && !this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.code === code)) {
+      && !this.transplant.r.hla_antibodies.hla_codes_over_cutoff.find(a => a === code)) {
       // recipient antigen matches some donor antigen
       // and code is not recipient antibody
       return 'matching';
@@ -113,7 +113,7 @@ export class MatchingTransplantComponent implements OnInit {
 
     const donorAntigensCodes = this.transplant.d.parameters.hla_typing.hla_types_list.map(a => a.code);
     const recipientAntigensCodes = this.transplant.r.parameters.hla_typing.hla_types_list.map(a => a.code);
-    const recipientAntibodiesCodes = this.transplant.r.hla_antibodies.hla_antibodies_list.map(a => a.code);
+    const recipientAntibodiesCodes = this.transplant.r.hla_antibodies.hla_codes_over_cutoff.map(a => a);
     const matchingAntigens = donorAntigensCodes.filter(a => recipientAntigensCodes.includes(a));
     const matchingAntibodies = recipientAntibodiesCodes.filter(a => donorAntigensCodes.includes(a));
 
@@ -147,8 +147,8 @@ export class MatchingTransplantComponent implements OnInit {
 
     // check if there is a match of recipient antibodies and donor antigens
     const donorAntigensCodes = this.transplant.d.parameters.hla_typing.hla_types_list.map(a => a.code);
-    for (const antibody of this.transplant.r.hla_antibodies.hla_antibodies_list) {
-      if (donorAntigensCodes.includes(antibody.code)) {
+    for (const antibody of this.transplant.r.hla_antibodies.hla_codes_over_cutoff) {
+      if (donorAntigensCodes.includes(antibody)) {
         this.totalScore = -1;
         return;
       }
