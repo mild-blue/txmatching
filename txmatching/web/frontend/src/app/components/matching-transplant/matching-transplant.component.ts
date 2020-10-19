@@ -40,11 +40,27 @@ export class MatchingTransplantComponent implements OnInit {
     return codes.filter(code => code.code?.startsWith(prefix));
   }
 
+  public filterPureCodes(codes: string[], prefix: string): string[] {
+    return codes.filter(code => code?.startsWith(prefix));
+  }
+
   public otherHLA(codes: Hla[]): Hla[] {
     // return codes that do not start with any of prefixes
     return codes.filter(i => {
       for (const prefix of this.prefixes) {
         if (!i.code || i.code.startsWith(prefix)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  public otherHLAPure(codes: string[]): string[] {
+    // return codes that do not start with any of prefixes
+    return codes.filter(i => {
+      for (const prefix of this.prefixes) {
+        if (!i || i.startsWith(prefix)) {
           return false;
         }
       }
