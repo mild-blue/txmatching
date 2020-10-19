@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   backend:
-    image: mildblue/txmatching:${BACKEND_TAG}
+    image: mildblue/txmatching:${VERSION_TAG}
     container_name: backend
     env_file:
       - .env
