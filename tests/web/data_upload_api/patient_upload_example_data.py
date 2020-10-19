@@ -173,7 +173,7 @@ VALID_UPLOAD_MULTIPLE_SAME_HLA_CODES = {
     'txm_event_name': TXM_EVENT_NAME
 }
 
-VAlid_UPLOAD_EXCEPTIONAL_CODES = {
+VALID_UPLOAD_EXCEPTIONAL_CODES = {
     'donors': [
         {
             'sex': 'M',
