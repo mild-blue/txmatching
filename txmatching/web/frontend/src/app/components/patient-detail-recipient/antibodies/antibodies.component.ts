@@ -96,7 +96,7 @@ export class AntibodiesComponent implements OnInit {
     if (!control) {
       return;
     }
-    this.antibodyValue = antibody.code;
+    this.antibodyValue = antibody.code ?? '';
     control.value = '';
     control.disabled = true;
   }
@@ -135,7 +135,7 @@ export class AntibodiesComponent implements OnInit {
     }
 
     this.allAntibodies = [...new Set(allAntibodies.map(a => a.code))].map(code => {
-      return { code, raw_code: code, mfi: 0 };
+      return { code, raw_code: code ?? '', mfi: 0 };
     }); // only unique
   }
 }

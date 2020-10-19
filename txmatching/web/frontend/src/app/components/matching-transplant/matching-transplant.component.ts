@@ -52,8 +52,8 @@ export class MatchingTransplantComponent implements OnInit {
     });
   }
 
-  public getDonorAntigenClass(code: string): string {
-    if (!this.transplant?.r) {
+  public getDonorAntigenClass(code: string | null): string {
+    if (!this.transplant?.r || !code) {
       return '';
     }
 
@@ -70,8 +70,8 @@ export class MatchingTransplantComponent implements OnInit {
     return '';
   }
 
-  public getRecipientAntigenClass(code: string): string {
-    if (this.transplant?.d && this.transplant.r
+  public getRecipientAntigenClass(code: string | null): string {
+    if (this.transplant?.d && this.transplant.r && code
       && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.code === code)
       && !this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.code === code)) {
       // recipient antigen matches some donor antigen
@@ -81,8 +81,8 @@ export class MatchingTransplantComponent implements OnInit {
     return '';
   }
 
-  public getRecipientAntibodyClass(code: string): string {
-    if (this.transplant?.d && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.code === code)) {
+  public getRecipientAntibodyClass(code: string | null): string {
+    if (this.transplant?.d && code && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.code === code)) {
       // recipient antibody matches some donor antigen
       return 'bad-matching';
     }
