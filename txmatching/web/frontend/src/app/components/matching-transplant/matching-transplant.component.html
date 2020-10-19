@@ -56,8 +56,8 @@
                     [class]="getRecipientAntigenClass(code.code)">{{ code.code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterCodes(transplant.r.hla_antibodies.hla_antibodies_list, prefix)"
-                    [class]="getRecipientAntibodyClass(code.code)">{{ code.code }}</app-code>
+          <app-code *ngFor="let code of filterPureCodes(transplant.r.hla_antibodies.hla_codes_over_cutoff, prefix)"
+                    [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
         </td>
         <td>{{ hlaScores ? hlaScores.get(prefix) : 0 }}</td>
       </tr>
@@ -72,8 +72,8 @@
                     [class]="getRecipientAntigenClass(code.code)">{{ code.code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of otherHLA(transplant.r.hla_antibodies.hla_antibodies_list)"
-                    [class]="getRecipientAntibodyClass(code.code)">{{ code.code }}</app-code>
+          <app-code *ngFor="let code of otherHLAPure(transplant.r.hla_antibodies.hla_codes_over_cutoff)"
+                    [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
         </td>
         <td>-</td>
       </tr>
