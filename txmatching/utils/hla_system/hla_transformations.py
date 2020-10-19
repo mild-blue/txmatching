@@ -9,6 +9,9 @@ import numpy as np
 from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
                                                    COMPATIBILITY_BROAD_CODES,
                                                    SPLIT_TO_BROAD)
+from txmatching.utils.hla_system.rel_dna_ser_exceptions import (
+    PARSE_HLA_CODE_EXCEPTIONS,
+    PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES)
 from txmatching.utils.hla_system.rel_dna_ser_parsing import HIGH_RES_TO_SPLIT
 
 logger = logging.getLogger(__name__)
@@ -93,6 +96,10 @@ def _high_res_to_split(high_res_code: str) -> Union[str, HlaCodeProcessingResult
 
 
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
+    maybe_exception_hla_code = PARSE_HLA_CODE_EXCEPTIONS.get(hla_raw_code)
+    if maybe_exception_hla_code:
+        return HlaCodeProcessingResult(maybe_exception_hla_code, HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
+
     if re.match(HIGH_RES_REGEX, hla_raw_code):
         hla_code_or_error = _high_res_to_split(hla_raw_code)
     else:
@@ -113,7 +120,6 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
         # format of split codes
         return HlaCodeProcessingResult(hla_code_or_error,
                                        HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)
-
     elif isinstance(hla_code_or_error, HlaCodeProcessingResultDetail):
         return HlaCodeProcessingResult(None, hla_code_or_error)
     else:
@@ -137,6 +143,9 @@ def preprocess_hla_code_in(hla_code_in: str) -> List[str]:
     if matched_multi_hla_codes:
         return [f'{matched_multi_hla_codes.group(1)}A1*{matched_multi_hla_codes.group(2)}',
                 f'{matched_multi_hla_codes.group(1)}B1*{matched_multi_hla_codes.group(3)}']
+    # Handle this case better and elsewhere: https://trello.com/c/GG7zPLyj
+    elif PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in):
+        return PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in)
     else:
         return [hla_code_in]
 
