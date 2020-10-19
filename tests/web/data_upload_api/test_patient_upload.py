@@ -4,7 +4,8 @@ from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
 from tests.web.data_upload_api.patient_upload_example_data import (
     TXM_EVENT_NAME, VALID_UPLOAD_1, VALID_UPLOAD_MISSING_FIELDS,
-    VALID_UPLOAD_MULTIPLE_SAME_HLA_CODES, VALID_UPLOAD_SPECIAL_HLA_CODES)
+    VALID_UPLOAD_MULTIPLE_SAME_HLA_CODES, VALID_UPLOAD_SPECIAL_HLA_CODES,
+    VAlid_UPLOAD_EXCEPTIONAL_CODES)
 from txmatching.auth.data_types import UserRole
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.sql_alchemy_schema import UploadedDataModel
@@ -64,4 +65,10 @@ class TestMatchingApi(DbTests):
         txm_event = self._upload_for_test(VALID_UPLOAD_MULTIPLE_SAME_HLA_CODES)
         recipient = txm_event.recipients_dict[1]
         expected_antibodies = {'DQA6', 'DQ8'}
+        self.assertSetEqual(expected_antibodies, set(recipient.hla_antibodies.hla_codes_over_cutoff))
+
+    def test_txm_event_patient_successful_upload_exceptional_hla_types(self):
+        txm_event = self._upload_for_test(VAlid_UPLOAD_EXCEPTIONAL_CODES)
+        recipient = txm_event.recipients_dict[1]
+        expected_antibodies = {'DR9', 'CW6', 'B82', 'CW4'}
         self.assertSetEqual(expected_antibodies, set(recipient.hla_antibodies.hla_codes_over_cutoff))
