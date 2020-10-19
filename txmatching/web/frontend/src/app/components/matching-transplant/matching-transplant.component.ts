@@ -37,14 +37,14 @@ export class MatchingTransplantComponent implements OnInit {
   }
 
   public filterCodes(codes: Hla[], prefix: string): Hla[] {
-    return codes.filter(code => code.code.startsWith(prefix));
+    return codes.filter(code => code.code?.startsWith(prefix));
   }
 
   public otherHLA(codes: Hla[]): Hla[] {
     // return codes that do not start with any of prefixes
     return codes.filter(i => {
       for (const prefix of this.prefixes) {
-        if (i.code.startsWith(prefix)) {
+        if (!i.code || i.code.startsWith(prefix)) {
           return false;
         }
       }
@@ -52,8 +52,8 @@ export class MatchingTransplantComponent implements OnInit {
     });
   }
 
-  public getDonorAntigenClass(code: string): string {
-    if (!this.transplant?.r) {
+  public getDonorAntigenClass(code: string | null): string {
+    if (!this.transplant?.r || !code) {
       return '';
     }
 
@@ -70,8 +70,8 @@ export class MatchingTransplantComponent implements OnInit {
     return '';
   }
 
-  public getRecipientAntigenClass(code: string): string {
-    if (this.transplant?.d && this.transplant.r
+  public getRecipientAntigenClass(code: string | null): string {
+    if (this.transplant?.d && this.transplant.r && code
       && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.code === code)
       && !this.transplant.r.hla_antibodies.hla_antibodies_list.find(a => a.code === code)) {
       // recipient antigen matches some donor antigen
@@ -81,8 +81,8 @@ export class MatchingTransplantComponent implements OnInit {
     return '';
   }
 
-  public getRecipientAntibodyClass(code: string): string {
-    if (this.transplant?.d && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.code === code)) {
+  public getRecipientAntibodyClass(code: string | null): string {
+    if (this.transplant?.d && code && this.transplant.d.parameters.hla_typing.hla_types_list.find(a => a.code === code)) {
       // recipient antibody matches some donor antigen
       return 'bad-matching';
     }
@@ -103,14 +103,14 @@ export class MatchingTransplantComponent implements OnInit {
 
     const map: Map<string, number> = new Map<string, number>();
     for (const prefix of this.prefixes) {
-      const prefixBadMatch = matchingAntibodies.length ? matchingAntibodies.filter(a => a.startsWith(prefix)).length : false;
+      const prefixBadMatch = matchingAntibodies.length ? matchingAntibodies.filter(a => a?.startsWith(prefix)).length : false;
 
       if (prefixBadMatch) {
         map.set(prefix, -1);
         continue;
       }
 
-      const score = matchingAntigens ? matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix] : 0;
+      const score = matchingAntigens ? matchingAntigens.filter(a => a?.startsWith(prefix)).length * antibodiesMultipliers[prefix] : 0;
       map.set(prefix, score);
     }
 

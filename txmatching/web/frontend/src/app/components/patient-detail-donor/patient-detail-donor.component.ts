@@ -115,7 +115,7 @@ export class PatientDetailDonorComponent extends ListItemDetailAbstractComponent
     }
 
     this.allAntigens = [...new Set(allAntigens.map(a => a.code))].map(code => {
-      return { code: code, raw_code: code };
+      return { code, raw_code: code ?? '' };
     }); // only unique
   }
 }
