@@ -8,7 +8,7 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_service import \
-    save_patients_from_excel_to_empty_txm_event
+    save_patients_from_excel_to_txm_event
 from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
                                                     TxmEventModel)
 from txmatching.patients.patient import TxmEvent
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         create_or_overwrite_txm_event(name='test')
         patients = parse_excel_data('patient_data_2020_07_obfuscated.xlsx')
         txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
-        save_patients_from_excel_to_empty_txm_event(patients, txm_event_db_id=txm_event.db_id)
+        save_patients_from_excel_to_txm_event(patients, txm_event_db_id=txm_event.db_id)
         add_users()
         result = solve_from_configuration(txm_event_db_id=txm_event.db_id,
                                           configuration=Configuration(max_sequence_length=100, max_cycle_length=100,

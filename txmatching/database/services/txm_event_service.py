@@ -6,6 +6,7 @@ from txmatching.database.sql_alchemy_schema import (DonorModel, RecipientModel,
                                                     TxmEventModel,
                                                     UploadedDataModel)
 from txmatching.patients.patient import TxmEvent
+from txmatching.utils.enums import Country
 from txmatching.utils.logged_user import get_current_user
 
 
@@ -33,12 +34,13 @@ def delete_txm_event(name: str):
     db.session.commit()
 
 
-def remove_donors_and_recipients_from_txm_event(name: str):
+def remove_donors_and_recipients_from_txm_event(name: str, country_code: Country):
     txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
     if not txm_event_model:
         raise InvalidArgumentException(f'No TXM event with name "{name}" found.')
-    DonorModel.query.filter(DonorModel.txm_event_id == txm_event_model.id).delete()
-    RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event_model.id).delete()
+    DonorModel.query.filter(DonorModel.txm_event_id == txm_event_model.id, DonorModel.country == country_code).delete()
+    RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event_model.id,
+                                RecipientModel.country == country_code).delete()
 
 
 def get_txm_event_id_for_current_user() -> int:

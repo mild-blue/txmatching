@@ -10,8 +10,7 @@ from txmatching.data_transfer_objects.patients.update_dtos.hla_code_update_dtos 
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.database.services.patient_service import (
-    save_patients_from_excel_to_empty_txm_event, update_donor,
-    update_recipient)
+    save_patients_from_excel_to_txm_event, update_donor, update_recipient)
 from txmatching.database.sql_alchemy_schema import (
     AppUserModel, ConfigModel, DonorModel, PairingResultModel,
     RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
@@ -26,7 +25,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_saving_patients_from_obfuscated_excel(self):
         patients = parse_excel_data(get_absolute_path('tests/test_utilities/patient_data_2020_07_obfuscated.xlsx'))
         txm_event = create_or_overwrite_txm_event('test')
-        save_patients_from_excel_to_empty_txm_event(patients, txm_event.db_id)
+        save_patients_from_excel_to_txm_event(patients, txm_event.db_id)
 
         configs = ConfigModel.query.all()
         recipients = RecipientModel.query.all()
