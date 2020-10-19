@@ -8,6 +8,7 @@ on:
 jobs:
   build_server:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
       - name: Set envs
@@ -33,6 +34,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: build_server
     steps:
       - name: Redeploy application
