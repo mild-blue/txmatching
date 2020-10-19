@@ -101,6 +101,7 @@ class RefreshTokenApi(Resource):
 @user_api.route('/change-password', methods=['PUT'])
 class PasswordChangeApi(Resource):
     input = user_api.model('PasswordChange', {
+        'current_password': fields.String(required=True, description='Current password.'),
         'new_password': fields.String(required=True, description='New password.')
     })
 
@@ -117,7 +118,7 @@ class PasswordChangeApi(Resource):
     @require_user_login()
     def put(self):
         data = request.get_json()
-        change_password(new_password=data.get('new_password'))
+        change_password(current_password=data['current_password'], new_password=data['new_password'])
         return {'status': 'ok'}, 200
 
 
