@@ -101,3 +101,6 @@ rebuild: conda-update build-fe
 # Sample: cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER='super-cool-txmatching' POSTGRES_PASSWORD='super-secret-pwd' POSTGRES_DB='txmatching' POSTGRES_URL='localhost:5432' python database/migrate_db.py
 migrate-db:
 	cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER=${POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} POSTGRES_DB=${POSTGRES_DB} POSTGRES_URL=${POSTGRES_URL} python database/migrate_db.py
+
+migrate-db-ikem:
+	cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER="DB_USER_FROM_BITWARDEN" POSTGRES_PASSWORD="DB_PASSWORD_FROM_BITWARDEN" POSTGRES_DB="txmatching" POSTGRES_URL="localhost:1234" python database/migrate_db.py
