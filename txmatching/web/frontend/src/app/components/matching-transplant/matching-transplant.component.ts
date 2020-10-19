@@ -37,14 +37,14 @@ export class MatchingTransplantComponent implements OnInit {
   }
 
   public filterCodes(codes: Hla[], prefix: string): Hla[] {
-    return codes.filter(code => code.code.startsWith(prefix));
+    return codes.filter(code => code.code?.startsWith(prefix));
   }
 
   public otherHLA(codes: Hla[]): Hla[] {
     // return codes that do not start with any of prefixes
     return codes.filter(i => {
       for (const prefix of this.prefixes) {
-        if (i.code.startsWith(prefix)) {
+        if (!i.code || i.code.startsWith(prefix)) {
           return false;
         }
       }
@@ -103,14 +103,14 @@ export class MatchingTransplantComponent implements OnInit {
 
     const map: Map<string, number> = new Map<string, number>();
     for (const prefix of this.prefixes) {
-      const prefixBadMatch = matchingAntibodies.length ? matchingAntibodies.filter(a => a.startsWith(prefix)).length : false;
+      const prefixBadMatch = matchingAntibodies.length ? matchingAntibodies.filter(a => a?.startsWith(prefix)).length : false;
 
       if (prefixBadMatch) {
         map.set(prefix, -1);
         continue;
       }
 
-      const score = matchingAntigens ? matchingAntigens.filter(a => a.startsWith(prefix)).length * antibodiesMultipliers[prefix] : 0;
+      const score = matchingAntigens ? matchingAntigens.filter(a => a?.startsWith(prefix)).length * antibodiesMultipliers[prefix] : 0;
       map.set(prefix, score);
     }
 

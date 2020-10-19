@@ -46,7 +46,7 @@ export interface RecipientRequirements {
 }
 
 export interface Hla {
-  code: string;
+  code: string | null;
   raw_code: string;
 }
 
