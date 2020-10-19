@@ -41,7 +41,7 @@ export class MatchingTransplantComponent implements OnInit {
   }
 
   public filterPureCodes(codes: string[], prefix: string): string[] {
-    return codes.filter(code => code?.startsWith(prefix));
+    return codes.filter(code => code.startsWith(prefix));
   }
 
   public otherHLA(codes: Hla[]): Hla[] {
@@ -60,7 +60,7 @@ export class MatchingTransplantComponent implements OnInit {
     // return codes that do not start with any of prefixes
     return codes.filter(i => {
       for (const prefix of this.prefixes) {
-        if (!i || i.startsWith(prefix)) {
+        if (i.startsWith(prefix)) {
           return false;
         }
       }
