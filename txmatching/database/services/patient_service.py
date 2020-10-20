@@ -413,10 +413,10 @@ def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO, txm_eve
     if patient_update.hla_typing:
         patient_update.hla_typing_preprocessed = HLATypingDTO([
             HLAType(
-                raw_code=parsed_code,
+                raw_code=preprocess_code,
                 code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_id, parsed_code)
             )
             for hla_type_update_dto in patient_update.hla_typing.hla_types_list
-            for parsed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
+            for preprocess_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
         ])
     return patient_update

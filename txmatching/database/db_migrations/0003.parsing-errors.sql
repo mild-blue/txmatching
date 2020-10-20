@@ -21,7 +21,7 @@ CREATE TABLE parsing_error
     updated_at                        TIMESTAMPTZ                       NOT NULL,
     deleted_at                        TIMESTAMPTZ,
     CONSTRAINT pk_parsing_error_id PRIMARY KEY (id),
-    CONSTRAINT fk_parsing_error_upload_data_id FOREIGN KEY (txm_event) REFERENCES config (id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT fk_parsing_error_txm_event_id FOREIGN KEY (txm_event) REFERENCES config (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TRIGGER trg_parsing_error_set_created_at
