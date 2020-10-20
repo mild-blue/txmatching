@@ -20,8 +20,7 @@ def find_possible_path_combinations_from_score_matrix(score_matrix: np.ndarray,
                                                       ) -> Iterable[List[DonorRecipientPairIdxOnly]]:
     """
     Returns iterator over the optimal list of possible path combinations. The result is a list of pairs. Each pair
-    consists of two integers which correspond to recipient, donor indices in the self.donors, resp. self.recipients
-    lists.
+    consists of two integers which correspond to recipient and donor indices.
 
     :param score_matrix: matrix of Score(i,j) for transplant from donor_i to recipient_j
             special values are:

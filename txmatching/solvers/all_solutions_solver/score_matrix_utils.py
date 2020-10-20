@@ -68,8 +68,7 @@ def find_all_sequences(score_matrix: np.ndarray,
     paths = []
 
     for bridge_index in bridge_indices:
-        bridge_paths = _find_all_paths_starting_with(bridge_index, compatible_donor_idxs_per_donor_idx,
-                                                     set(bridge_indices))
+        bridge_paths = _find_all_paths_starting_with(bridge_index, compatible_donor_idxs_per_donor_idx, set())
         paths.extend(bridge_paths)
 
     paths = [tuple(path) for path in paths if 1 < len(path) <= max_length]
@@ -105,7 +104,7 @@ def get_pairs_from_clique(clique,
     return _get_pairs_from_paths(circuit_list, donor_idx_to_recipient_idx)
 
 
-def _get_pairs_from_paths(paths: List[Tuple[int]],
+def _get_pairs_from_paths(paths: List[Path],
                           pair_index_to_recipient_index: Dict[int, int]) -> List[DonorRecipientPairIdxOnly]:
     return [DonorRecipientPairIdxOnly(path[i], pair_index_to_recipient_index[path[i + 1]])
             for path in paths for i in range(len(path) - 1)]

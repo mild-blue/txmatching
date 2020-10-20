@@ -50,7 +50,7 @@ class AllSolutionsSolver(SolverBase):
             matching = self._get_matching_from_path_combinations(possible_path_combination)
 
             valid_number_of_countries = max(
-                [transplant_round.country_count for transplant_round in
+                [transplant_round.country_count() for transplant_round in
                  matching.get_rounds()]) <= self.configuration.max_number_of_distinct_countries_in_round
             if valid_number_of_countries:
                 if matching not in matchings_to_return:
@@ -68,9 +68,9 @@ class AllSolutionsSolver(SolverBase):
 
         donors = list(self.donors_dict.values())
         recipients = list(self.recipients_dict.values())
-        found_pairs = frozenset(DonorRecipientPair(donors[found_pair_indeces_only.donor_idx],
-                                                   recipients[found_pair_indeces_only.recipient_idx])
-                                for found_pair_indeces_only in found_pairs_idxs_only)
+        found_pairs = frozenset(DonorRecipientPair(donors[found_pair_idxs_only.donor_idx],
+                                                   recipients[found_pair_idxs_only.recipient_idx])
+                                for found_pair_idxs_only in found_pairs_idxs_only)
         score = get_score_for_idx_pairs(self.score_matrix_array, found_pairs_idxs_only)
         return MatchingWithScore(found_pairs, score)
 
@@ -78,13 +78,14 @@ class AllSolutionsSolver(SolverBase):
     def _remove_rounds_with_too_many_countries(self, matching: MatchingWithScore) -> Optional[MatchingWithScore]:
         proper_rounds = [transplant_round for transplant_round in
                          matching.get_rounds() if
-                         transplant_round.country_count <= self.configuration.max_number_of_distinct_countries_in_round]
+                         transplant_round.country_count() <=
+                         self.configuration.max_number_of_distinct_countries_in_round]
 
         if len(proper_rounds) > 0:
             solution_pairs_enriched = frozenset(
                 donor_recipient for transplant_round in proper_rounds for donor_recipient
                 in
-                transplant_round.donor_recipient_list)
+                transplant_round.donor_recipient_pairs)
 
             score = self._get_score_for_enriched_pairs(solution_pairs_enriched)
             return MatchingWithScore(solution_pairs_enriched, score)

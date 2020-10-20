@@ -66,15 +66,15 @@ class TestMatching(TestCase):
 
     def _make_matching_from_donor_recipient_indices(self, donor_recipient_indices: List[Tuple[int, int]]) \
             -> Matching:
-        donor_recipient_list = frozenset(
+        donor_recipient_pairs = frozenset(
             DonorRecipientPair(self._donors[donor_index], self._recipients[recipient_index])
             for donor_index, recipient_index in donor_recipient_indices)
-        return Matching(donor_recipient_list)
+        return Matching(donor_recipient_pairs)
 
     def _transplant_round_to_indices(self, transplant_round: TransplantRound) -> frozenset:
         donor_recipient_indices = {(self._donors.index(donor_recipient.donor),
                                     self._recipients.index(donor_recipient.recipient))
-                                   for donor_recipient in transplant_round.donor_recipient_list}
+                                   for donor_recipient in transplant_round.donor_recipient_pairs}
         return frozenset(donor_recipient_indices)
 
     def test_get_cycles(self):
