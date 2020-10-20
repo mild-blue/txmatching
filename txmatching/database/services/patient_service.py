@@ -31,15 +31,19 @@ from txmatching.database.services.txm_event_service import \
 from txmatching.database.sql_alchemy_schema import (
     ConfigModel, DonorModel, RecipientAcceptableBloodModel,
     RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
-from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
-                                         RecipientRequirements, TxmEvent,
-                                         calculate_cutoff)
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLAType, HLATyping,
-                                                    PatientParameters)
+from txmatching.patients.patient import (
+    Donor, DonorType, Patient, Recipient,
+    RecipientRequirements, TxmEvent,
+    calculate_cutoff
+)
+from txmatching.patients.patient_parameters import (
+    HLAAntibodies, HLAAntibody,
+    HLAType, HLATyping,
+    PatientParameters
+)
 from txmatching.utils.enums import Country
-from txmatching.utils.hla_system.hla_transformations_store import parse_hla_raw_code_and_store_parsing_error_in_db
 from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code, preprocess_hla_code_in
+from txmatching.utils.hla_system.hla_transformations_store import parse_hla_raw_code_and_store_parsing_error_in_db
 
 logger = logging.getLogger(__name__)
 
@@ -280,8 +284,11 @@ def _recipient_upload_dto_to_recipient_model(
         country=country_code,
         blood=recipient.blood_group,
         hla_typing=dataclasses.asdict(HLATypingDTO(
-            [HLAType(raw_code=typing, code=parse_hla_raw_code(typing)) for typing in
-             recipient.hla_typing_preprocessed])),
+            [HLAType(
+                raw_code=typing,
+                code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_db_id, typing)
+            ) for typing in
+                recipient.hla_typing_preprocessed])),
         hla_antibodies=hla_antibodies,
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
@@ -326,7 +333,11 @@ def _donor_upload_dto_to_donor_model(
         country=country_code,
         blood=donor.blood_group,
         hla_typing=dataclasses.asdict(HLATypingDTO(
-            [HLAType(raw_code=typing, code=parse_hla_raw_code(typing)) for typing in donor.hla_typing_preprocessed])),
+            [HLAType(
+                raw_code=typing,
+                code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_db_id, typing)
+            ) for typing in
+                donor.hla_typing_preprocessed])),
         active=True,
         recipient=related_recipient,
         donor_type=donor.donor_type,
@@ -404,7 +415,7 @@ def _get_hla_code(code: Optional[str], raw_code: str) -> Optional[str]:
 
 def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO, txm_event_id: int):
     """
-    Try updates hla_typing_preprocessed.
+    Updates u patient's hla typing.
     This method is partially redundant to PatientUpdateDTO.__post_init__ so in case of update, update it too.
     :param patient_update: patient to be updated
     :param txm_event_id: txm event id
@@ -413,10 +424,10 @@ def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO, txm_eve
     if patient_update.hla_typing:
         patient_update.hla_typing_preprocessed = HLATypingDTO([
             HLAType(
-                raw_code=preprocess_code,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_id, preprocess_code)
+                raw_code=preprocessed_code,
+                code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_id, preprocessed_code)
             )
             for hla_type_update_dto in patient_update.hla_typing.hla_types_list
-            for preprocess_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
+            for preprocessed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
         ])
     return patient_update
