@@ -4,9 +4,9 @@ import datetime
 import logging
 import os
 import time
+from distutils.dir_util import copy_tree
 from typing import List
 
-from distutils.dir_util import copy_tree
 import jinja2
 import pdfkit
 from flask import request, send_from_directory
@@ -98,7 +98,7 @@ class Report(Resource):
                             score_dict[(pair.donor.db_id, pair.recipient.db_id)],
                             compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
                             pair.donor,
-                            pair.recipient) for pair in matching_round.donor_recipient_list])
+                            pair.recipient) for pair in matching_round.donor_recipient_pairs])
                 for matching_round in matching.get_rounds()],
             countries=matching.get_country_codes_counts(),
             score=matching.score(),

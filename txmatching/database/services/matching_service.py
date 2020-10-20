@@ -2,13 +2,12 @@ from typing import Dict, List, Tuple
 
 from dacite import from_dict
 
+from txmatching.data_transfer_objects.matchings.calculated_matchings_dto import \
+    CalculatedMatchingsDTO
 from txmatching.database.services.patient_service import get_txm_event
-from txmatching.database.services.services_for_solve import \
-    db_matchings_to_matching_list
 from txmatching.database.sql_alchemy_schema import PairingResultModel
-from txmatching.patients.patient import Donor, Recipient, TxmEvent
-from txmatching.solve_service.data_objects.calculated_matchings import \
-    CalculatedMatchings
+from txmatching.patients.patient import Donor, Recipient
+from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.utils.blood_groups import blood_groups_compatible
 
@@ -16,8 +15,9 @@ ScoreDict = Dict[Tuple[int, int], float]
 BloodCompatibleDict = Dict[Tuple[int, int], bool]
 
 
-def get_latest_matchings_and_score_matrix(txm_event_db_id: int) -> Tuple[
-    List[MatchingWithScore], ScoreDict, BloodCompatibleDict]:
+def get_latest_matchings_and_score_matrix(
+        txm_event_db_id: int
+) -> Tuple[List[MatchingWithScore], ScoreDict, BloodCompatibleDict]:
     last_pairing_result_model = PairingResultModel.query.order_by(PairingResultModel.updated_at.desc()).first()
 
     if last_pairing_result_model is None:
@@ -26,7 +26,7 @@ def get_latest_matchings_and_score_matrix(txm_event_db_id: int) -> Tuple[
 
     txm_event = get_txm_event(txm_event_db_id)
 
-    calculated_matchings = from_dict(data_class=CalculatedMatchings,
+    calculated_matchings = from_dict(data_class=CalculatedMatchingsDTO,
                                      data=last_pairing_result_model.calculated_matchings)
 
     all_matchings = _db_matchings_to_matching_list(calculated_matchings, txm_event.donors_dict,
@@ -45,3 +45,24 @@ def get_latest_matchings_and_score_matrix(txm_event_db_id: int) -> Tuple[
                              }
 
     return all_matchings, score_dict, compatible_blood_dict
+
+
+def _db_matchings_to_matching_list(
+        calculated_matchings: CalculatedMatchingsDTO,
+        donors_dict: Dict[int, Donor],
+        recipients_dict: Dict[int, Recipient],
+) -> List[MatchingWithScore]:
+    matching_list = []
+    for json_matching in calculated_matchings.matchings:
+        matching_list.append(
+            MatchingWithScore(
+                frozenset(DonorRecipientPair(donors_dict[donor_recipient_ids.donor],
+                                             recipients_dict[donor_recipient_ids.recipient])
+                          for donor_recipient_ids in json_matching.donors_recipients
+                          ),
+                json_matching.score,
+                json_matching.db_id
+            )
+
+        )
+    return matching_list

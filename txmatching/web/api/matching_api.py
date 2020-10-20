@@ -64,7 +64,7 @@ class CalculateFromConfig(Resource):
                                 score_dict[(pair.donor.db_id, pair.recipient.db_id)],
                                 compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
                                 pair.donor.medical_id,
-                                pair.recipient.medical_id) for pair in matching_round.donor_recipient_list])
+                                pair.recipient.medical_id) for pair in matching_round.donor_recipient_pairs])
                     for matching_round in matching.get_rounds()],
                 countries=matching.get_country_codes_counts(),
                 score=matching.score(),

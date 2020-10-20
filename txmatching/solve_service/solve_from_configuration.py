@@ -2,8 +2,6 @@ import logging
 from typing import Iterable, List
 
 from txmatching.configuration.configuration import Configuration
-from txmatching.database.services.matching_service import \
-    load_matching_for_config_from_db
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.filters.filter_from_config import filter_from_config
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
@@ -21,11 +19,8 @@ def solve_from_configuration(configuration: Configuration, txm_event_db_id: int)
                                        donors_dict=txm_event.donors_dict,
                                        recipients_dict=txm_event.recipients_dict,
                                        scorer=scorer)
-    matchings_in_db = load_matching_for_config_from_db(txm_event, configuration)
-    if matchings_in_db is not None:
-        all_solutions = matchings_in_db
-    else:
-        all_solutions = solver.solve()
+
+    all_solutions = solver.solve()
 
     matching_filter = filter_from_config(configuration)
     matchings_filtered = filter(matching_filter.keep, all_solutions)
