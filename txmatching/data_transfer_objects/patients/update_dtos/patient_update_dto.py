@@ -21,7 +21,7 @@ class PatientUpdateDTO:
         """
         if self.hla_typing:
             self.hla_typing_preprocessed = HLATypingDTO([
-                HLAType(parsed_code)
+                HLAType(preprocess_code)
                 for hla_type_update_dto in self.hla_typing.hla_types_list
-                for parsed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
+                for preprocess_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
             ])
