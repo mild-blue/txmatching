@@ -34,7 +34,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 5
     needs: build_server
     steps:
       - name: Redeploy application
