@@ -1,12 +1,12 @@
-import itertools
 from dataclasses import dataclass, field
 from typing import List, Optional
+
+import itertools
 
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
 from txmatching.utils.hla_system.hla_transformations import (
-    get_compatibility_broad_codes, get_mfi_from_multiple_hla_codes,
-    parse_hla_raw_code)
+    get_compatibility_broad_codes, get_mfi_from_multiple_hla_codes)
 
 Kilograms = float
 Centimeters = int
@@ -17,21 +17,11 @@ class HLAType:
     raw_code: str
     code: Optional[str] = None
 
-    def __post_init__(self):
-        if self.code is None:
-            code = parse_hla_raw_code(self.raw_code)
-            object.__setattr__(self, 'code', code)
-
 
 @dataclass
 class HLATyping:
     hla_types_list: List[HLAType] = field(default_factory=list)
     codes: Optional[List[str]] = None
-
-    def __post_init__(self):
-        if self.codes is None:
-            codes = [hla_type.code for hla_type in self.hla_types_list]
-            object.__setattr__(self, 'codes', codes)
 
     @property
     def compatibility_broad_resolution_codes(self) -> List[str]:
@@ -44,11 +34,6 @@ class HLAAntibody:
     mfi: int
     cutoff: int
     code: Optional[str] = None
-
-    def __post_init__(self):
-        if self.code is None:
-            code = parse_hla_raw_code(self.raw_code)
-            object.__setattr__(self, 'code', code)
 
 
 @dataclass

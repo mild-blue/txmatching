@@ -1,8 +1,8 @@
 import logging
-import math
 import re
 from typing import Dict, List, Tuple, Union
 
+import math
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
@@ -17,6 +17,7 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup
 from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.hla_table import ALL_SPLIT_BROAD_CODES
+from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 
 _valid_blood_groups = ['A', 'B', '0', 'AB']
 
@@ -69,15 +70,20 @@ def _parse_hla(hla_allele_str: str) -> List[HLAType]:
         logger.warning(f"Following codes are not in the antigen codes table: \n {', '.join(unknown_allele_codes)}")
         logger.warning(f'They were encountered in allele codes string {hla_allele_str}\n')
 
-    return [HLAType(raw_code) for raw_code in allele_codes]
+    return [HLAType(raw_code=raw_code, code=parse_hla_raw_code(raw_code)) for raw_code in allele_codes]
 
 
 def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
     allele_codes = _parse_hla(hla_allele_str)
     # value and cut_off are just temporary values for now
     return HLAAntibodies(
-        [HLAAntibody(mfi=DEFAULT_MFI, cutoff=DEFAULT_CUTOFF_FOR_EXCEL, raw_code=allele_code.raw_code) for
-         allele_code in allele_codes])
+        [HLAAntibody(
+            mfi=DEFAULT_MFI,
+            cutoff=DEFAULT_CUTOFF_FOR_EXCEL,
+            raw_code=allele_code.raw_code,
+            code=parse_hla_raw_code(allele_code.raw_code)
+        ) for
+            allele_code in allele_codes])
 
 
 def _country_code_from_id(patient_id: str) -> Country:

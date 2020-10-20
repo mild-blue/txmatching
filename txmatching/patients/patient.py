@@ -7,6 +7,7 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     PatientParameters)
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 
 DEFAULT_CUTOFF = 2000
 
@@ -85,6 +86,12 @@ def calculate_cutoff(hla_antibodies_list: List[HLAAntibody]) -> int:
     :param hla_antibodies_list: list of HLA antibodies.
     :return: Patient cutoff.
     """
+    raw_code = 'A1'
     return max(hla_antibodies_list,
                key=lambda antibody: antibody.cutoff,
-               default=HLAAntibody('A1', mfi=0, cutoff=DEFAULT_CUTOFF)).cutoff
+               default=HLAAntibody(
+                   raw_code=raw_code,
+                   mfi=0,
+                   cutoff=DEFAULT_CUTOFF,
+                   code=parse_hla_raw_code(raw_code)
+               )).cutoff

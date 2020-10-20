@@ -17,12 +17,3 @@ class RecipientUpdateDTO(PatientUpdateDTO):
     hla_antibodies: Optional[HLAAntibodiesDTO] = None
     recipient_requirements: Optional[RecipientRequirements] = None
     cutoff: Optional[int] = None
-
-    def __post_init__(self):
-        super().__post_init__()
-        if self.hla_antibodies:
-            self.hla_antibodies_preprocessed = HLAAntibodiesDTO([
-                HLAAntibodyDTO(parsed_code, hla_antibody_dto.mfi)
-                for hla_antibody_dto in self.hla_antibodies.hla_antibodies_list
-                for parsed_code in preprocess_hla_code_in(hla_antibody_dto.raw_code)
-            ])
