@@ -24,4 +24,4 @@
 1. Stop service: `docker-compose -f docker-compose.yml stop SERVICE_NAME`
 1. Forward DB to localhost port 1234: `ssh -L 1234:localhost:5432 txmatch-USERNAME@172.17.3.14`
 1. Show running Docker containers: `docker ps`.
-1. Show service logs: `docker logs SERVICE_NAME`.
+1. Show service logs: `docker logs --follow SERVICE_NAME`.
