@@ -16,6 +16,7 @@ from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
+from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto import PatientUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
@@ -38,6 +39,7 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     PatientParameters)
 from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.hla_transformations_store import parse_hla_raw_code_and_store_parsing_error_in_db
+from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code, preprocess_hla_code_in
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +141,7 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      parameters=base_patient.parameters,
                      related_donor_db_id=related_donor_db_id,
                      hla_antibodies=HLAAntibodies(
-                         [HLAAntibody(code=hla_antibody.code,
+                         [HLAAntibody(code=_get_hla_code(hla_antibody.code, hla_antibody.raw_code),
                                       mfi=hla_antibody.mfi,
                                       cutoff=hla_antibody.cutoff,
                                       raw_code=hla_antibody.raw_code)
@@ -156,6 +158,7 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
 
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
     # TODO do not delete https://trello.com/c/zseK1Zcf
+    recipient_update_dto = update_patient_preprocessed_typing(recipient_update_dto, txm_event_db_id)
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     if txm_event_db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to.')
@@ -205,6 +208,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
 
 def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
     # TODO do not delete https://trello.com/c/zseK1Zcf
+    donor_update_dto = update_patient_preprocessed_typing(donor_update_dto, txm_event_db_id)
     old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
     if txm_event_db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to')
@@ -265,7 +269,7 @@ def _recipient_upload_dto_to_recipient_model(
     transformed_hla_antibodies = [HLAAntibody(
         raw_code=hla_antibody.raw_code,
         mfi=hla_antibody.mfi,
-        code=hla_antibody.code,
+        code=_get_hla_code(hla_antibody.code, hla_antibody.raw_code),
         cutoff=hla_antibody.cutoff) for hla_antibody in hla_antibodies]
 
     acceptable_blood_groups = [] if recipient.acceptable_blood_groups is None \
@@ -275,7 +279,9 @@ def _recipient_upload_dto_to_recipient_model(
         medical_id=recipient.medical_id,
         country=country_code,
         blood=recipient.blood_group,
-        hla_typing=dataclasses.asdict(HLATypingDTO([HLAType(typing) for typing in recipient.hla_typing_preprocessed])),
+        hla_typing=dataclasses.asdict(HLATypingDTO(
+            [HLAType(raw_code=typing, code=parse_hla_raw_code(typing)) for typing in
+             recipient.hla_typing_preprocessed])),
         hla_antibodies=hla_antibodies,
         active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
@@ -319,7 +325,8 @@ def _donor_upload_dto_to_donor_model(
         medical_id=donor.medical_id,
         country=country_code,
         blood=donor.blood_group,
-        hla_typing=dataclasses.asdict(HLATypingDTO([HLAType(typing) for typing in donor.hla_typing_preprocessed])),
+        hla_typing=dataclasses.asdict(HLATypingDTO(
+            [HLAType(raw_code=typing, code=parse_hla_raw_code(typing)) for typing in donor.hla_typing_preprocessed])),
         active=True,
         recipient=related_recipient,
         donor_type=donor.donor_type,
@@ -389,3 +396,27 @@ def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_co
         txm_event_name=patient_upload_dto.txm_event_name
     )
     db.session.commit()
+
+
+def _get_hla_code(code: Optional[str], raw_code: str) -> Optional[str]:
+    return code if code is not None else parse_hla_raw_code(raw_code)
+
+
+def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO, txm_event_id: int):
+    """
+    Try updates hla_typing_preprocessed.
+    This method is partially redundant to PatientUpdateDTO.__post_init__ so in case of update, update it too.
+    :param patient_update: patient to be updated
+    :param txm_event_id: txm event id
+    :return: updated patient
+    """
+    if patient_update.hla_typing:
+        patient_update.hla_typing_preprocessed = HLATypingDTO([
+            HLAType(
+                raw_code=parsed_code,
+                code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_id, parsed_code)
+            )
+            for hla_type_update_dto in patient_update.hla_typing.hla_types_list
+            for parsed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
+        ])
+    return patient_update

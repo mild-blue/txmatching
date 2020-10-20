@@ -16,6 +16,9 @@ class PatientUpdateDTO:
     hla_typing: Optional[HLATypingUpdateDTO] = None
 
     def __post_init__(self):
+        """
+        This method is partially redundant to update_patient_preprocessed_typing so in case of update, update it too.
+        """
         if self.hla_typing:
             self.hla_typing_preprocessed = HLATypingDTO([
                 HLAType(parsed_code)

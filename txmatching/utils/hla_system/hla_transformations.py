@@ -114,6 +114,12 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
 
 def parse_hla_raw_code(hla_raw_code: str) -> Optional[str]:
+    """
+    This method is partially redundant to parse_hla_raw_code_and_store_parsing_error_in_db so in case of update,
+    update it too.
+    :param hla_raw_code:
+    :return:
+    """
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not parsing_result.maybe_hla_code:
         logger.error(f'HLA code processing of {hla_raw_code} was not successful: {parsing_result.result_detail}')
