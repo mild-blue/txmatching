@@ -72,6 +72,14 @@ class Report(Resource):
             abort(400, f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
 
         matching_range_limit = int(request.args.get(MATCHINGS_BELOW_CHOSEN))
+
+        if matching_range_limit < 0:
+            abort(
+                400,
+                f'Query argument {MATCHINGS_BELOW_CHOSEN} must be a positive number. '
+                f'Current value is {matching_range_limit}.'
+            )
+
         (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_id)
         all_matchings.sort(key=lambda m: m.order_id())  # lower ID -> better evaluation
 
