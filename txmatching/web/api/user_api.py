@@ -10,7 +10,7 @@ from txmatching.auth.auth_check import require_role
 from txmatching.auth.auth_management import change_password, register
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.login_flow import (credentials_login, otp_login,
-                                        refresh_token)
+                                        refresh_token, resend_otp)
 from txmatching.auth.user.topt_auth_check import allow_otp_request
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
@@ -50,7 +50,7 @@ class LoginApi(Resource):
         return _respond_token(auth_response)
 
 
-@user_api.route('/otp', methods=['POST'])
+@user_api.route('/otp', methods=['POST', 'PUT'])
 class OtpLoginApi(Resource):
     otp_input_model = user_api.model('OtpLogin', {
         'otp': fields.String(required=True, description='OTP for this login.'),
@@ -78,6 +78,25 @@ class OtpLoginApi(Resource):
         post_data = request.get_json()
         auth_response = otp_login(post_data.get('otp'))
         return _respond_token(auth_response)
+
+    @user_api.doc(security='bearer')
+    @user_api.response(code=200, model=StatusResponse, description='New OTP was generated and sent.')
+    @user_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @user_api.response(
+        code=403,
+        model=FailJson,
+        description='Access denied. You do not have rights to access this endpoint.'
+    )
+    @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @user_api.response(
+        code=503,
+        model=FailJson,
+        description='It was not possible to reach the SMS gate, thus the one time password could not be send.'
+    )
+    @allow_otp_request()
+    def put(self):
+        resend_otp()
+        return {'status': 'ok'}, 200
 
 
 @user_api.route('/refresh-token', methods=['GET'])
