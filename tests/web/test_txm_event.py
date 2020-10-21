@@ -10,11 +10,13 @@ from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_newest_txm_event_db_id
-from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
+from txmatching.database.sql_alchemy_schema import (ConfigModel,
+                                                    DonorModel,
                                                     PairingResultModel,
                                                     RecipientModel,
                                                     TxmEventModel,
-                                                    UploadedDataModel, AppUserModel)
+                                                    UploadedDataModel,
+                                                    AppUserModel)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.enums import Country, Sex
 from txmatching.web import TXM_EVENT_NAMESPACE, txm_event_api
