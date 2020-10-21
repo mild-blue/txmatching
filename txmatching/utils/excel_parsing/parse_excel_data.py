@@ -72,7 +72,7 @@ def _parse_hla(hla_allele_str: str) -> List[HLAType]:
 
     return [HLAType(
         raw_code=raw_code,
-        code=parse_hla_raw_code_and_store_parsing_error_in_db(None, raw_code)
+        code=parse_hla_raw_code_and_store_parsing_error_in_db(raw_code)
     ) for raw_code in allele_codes]
 
 
@@ -84,7 +84,7 @@ def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
             mfi=DEFAULT_MFI,
             cutoff=DEFAULT_CUTOFF_FOR_EXCEL,
             raw_code=allele_code.raw_code,
-            code=parse_hla_raw_code_and_store_parsing_error_in_db(None, allele_code.raw_code)
+            code=parse_hla_raw_code_and_store_parsing_error_in_db(allele_code.raw_code)
         ) for allele_code in allele_codes])
 
 

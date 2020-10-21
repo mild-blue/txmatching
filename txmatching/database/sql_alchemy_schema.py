@@ -175,7 +175,6 @@ class ParsingError(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    txm_event_id = db.Column(db.Integer, ForeignKey('txm_event.id'), unique=False, nullable=False)
     hla_code = db.Column(db.TEXT, unique=False, nullable=False)
     hla_code_processing_result_detail = db.Column(db.Enum(HlaCodeProcessingResultDetail), unique=False, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())

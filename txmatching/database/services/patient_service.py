@@ -162,7 +162,7 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
 
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
     # TODO do not delete https://trello.com/c/zseK1Zcf
-    recipient_update_dto = update_patient_preprocessed_typing(recipient_update_dto, txm_event_db_id)
+    recipient_update_dto = update_patient_preprocessed_typing(recipient_update_dto)
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     if txm_event_db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to.')
@@ -191,7 +191,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
                 raw_code=hla_antibody_dto.raw_code,
                 mfi=hla_antibody_dto.mfi,
                 cutoff=cutoff,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_db_id, hla_antibody_dto.raw_code)
+                code=parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody_dto.raw_code)
             ) for hla_antibody_dto in recipient_update_dto.hla_antibodies_preprocessed.hla_antibodies_list]
 
         RecipientHLAAntibodyModel.query.filter(
@@ -212,7 +212,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
 
 def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
     # TODO do not delete https://trello.com/c/zseK1Zcf
-    donor_update_dto = update_patient_preprocessed_typing(donor_update_dto, txm_event_db_id)
+    donor_update_dto = update_patient_preprocessed_typing(donor_update_dto)
     old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
     if txm_event_db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to')
@@ -265,7 +265,7 @@ def _recipient_upload_dto_to_recipient_model(
 ) -> RecipientModel:
     hla_antibodies = [RecipientHLAAntibodyModel(
         raw_code=hla_antibody.name,
-        code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_db_id, hla_antibody.name),
+        code=parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.name),
         cutoff=hla_antibody.cutoff,
         mfi=hla_antibody.mfi
     ) for hla_antibody in recipient.hla_antibodies_preprocessed]
@@ -286,7 +286,7 @@ def _recipient_upload_dto_to_recipient_model(
         hla_typing=dataclasses.asdict(HLATypingDTO(
             [HLAType(
                 raw_code=typing,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_db_id, typing)
+                code=parse_hla_raw_code_and_store_parsing_error_in_db(typing)
             ) for typing in
                 recipient.hla_typing_preprocessed])),
         hla_antibodies=hla_antibodies,
@@ -335,7 +335,7 @@ def _donor_upload_dto_to_donor_model(
         hla_typing=dataclasses.asdict(HLATypingDTO(
             [HLAType(
                 raw_code=typing,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_db_id, typing)
+                code=parse_hla_raw_code_and_store_parsing_error_in_db(typing)
             ) for typing in
                 donor.hla_typing_preprocessed])),
         active=True,
@@ -413,19 +413,18 @@ def _get_hla_code(code: Optional[str], raw_code: str) -> Optional[str]:
     return code if code is not None else parse_hla_raw_code(raw_code)
 
 
-def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO, txm_event_id: int):
+def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO):
     """
     Updates u patient's hla typing.
     This method is partially redundant to PatientUpdateDTO.__post_init__ so in case of update, update it too.
     :param patient_update: patient to be updated
-    :param txm_event_id: txm event id
     :return: updated patient
     """
     if patient_update.hla_typing:
         patient_update.hla_typing_preprocessed = HLATypingDTO([
             HLAType(
                 raw_code=preprocessed_code,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_id, preprocessed_code)
+                code=parse_hla_raw_code_and_store_parsing_error_in_db(preprocessed_code)
             )
             for hla_type_update_dto in patient_update.hla_typing.hla_types_list
             for preprocessed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)

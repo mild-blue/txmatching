@@ -53,9 +53,8 @@ class TestCodeParser(DbTests):
                                   f'{expected_result} with result {expected_result_detail}')
 
     def test_parsing_with_db_storing(self):
-        txm_event = txm_event_service.create_txm_event('parsing_test_txm_event')
         for code, _ in codes.items():
-            parse_hla_raw_code_and_store_parsing_error_in_db(txm_event.db_id, code)
+            parse_hla_raw_code_and_store_parsing_error_in_db(code)
         errors = ParsingError.query.all()
         self.assertEqual(6, len(errors))
 

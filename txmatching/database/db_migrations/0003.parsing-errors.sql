@@ -14,14 +14,12 @@ CREATE TYPE HLA_CODE_PROCESSING_RESULT_DETAIL AS ENUM (
 CREATE TABLE parsing_error
 (
     id                                BIGSERIAL                         NOT NULL,
-    txm_event_id                      BIGINT,
     hla_code                          TEXT                              NOT NULL,
     hla_code_processing_result_detail HLA_CODE_PROCESSING_RESULT_DETAIL NOT NULL,
     created_at                        TIMESTAMPTZ                       NOT NULL,
     updated_at                        TIMESTAMPTZ                       NOT NULL,
     deleted_at                        TIMESTAMPTZ,
-    CONSTRAINT pk_parsing_error_id PRIMARY KEY (id),
-    CONSTRAINT fk_parsing_error_txm_event_id FOREIGN KEY (txm_event) REFERENCES config (id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT pk_parsing_error_id PRIMARY KEY (id)
 );
 
 CREATE TRIGGER trg_parsing_error_set_created_at
