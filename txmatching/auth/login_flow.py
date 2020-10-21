@@ -87,7 +87,8 @@ def resend_otp():
 
 def _resend_otp(request_token: DecodedBearerToken):
     require_auth_condition(request_token.type == TokenType.OTP,
-                           f'In order to resend the OTP, the OTP token must be used, but was {request_token.type}')
+                           f'In order to resend the OTP, the OTP token must be used. Instead {request_token.type} '
+                           f'token was used.')
 
     user = get_app_user_by_id(request_token.user_id)
     require_auth_condition(user.role != UserRole.SERVICE, 'User can not have SERVICE role for OTP resent!')

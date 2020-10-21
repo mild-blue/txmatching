@@ -9,17 +9,21 @@ from txmatching.database.sql_alchemy_schema import AppUserModel
 
 logger = logging.getLogger(__name__)
 
-OTP_RESEND_WINDOW_MULTIPLIER = 10
+JWT_FOR_OTP_ACQUISITION_VALIDITY_TO_OTP_VALIDITY_MULTIPLIER = 3
 """
 How much time does the user have to ask for resending the OTP.
 """
 
-JWT_OTP_EXPIRATION_MINUTES = OTP_VALIDITY_MINUTES * OTP_RESEND_WINDOW_MULTIPLIER
+JWT_FOR_OTP_ACQUISITION_VALIDITY_MINUTES = \
+    OTP_VALIDITY_MINUTES * JWT_FOR_OTP_ACQUISITION_VALIDITY_TO_OTP_VALIDITY_MULTIPLIER
 """
 JWT with TokenType.OTP expiration.
 
 The OTP itself is valid for [OTP_VALIDITY_MINUTES], but we want to give user option
 to resend the OTP so we need to extend the expiration to bigger window by [OTP_RESEND_WINDOW_MULTIPLIER].
+
+Additional explanation how this works can be found on the Github.
+https://github.com/mild-blue/txmatching/pull/208#discussion_r507989217
 """
 
 
@@ -35,7 +39,7 @@ def user_login_flow(user: AppUserModel, jwt_expiration_days: int) -> BearerToken
             user_id=user.id,
             role=user.role,
             type=TokenType.OTP,
-            expiration=datetime.timedelta(minutes=JWT_OTP_EXPIRATION_MINUTES)
+            expiration=datetime.timedelta(minutes=JWT_FOR_OTP_ACQUISITION_VALIDITY_MINUTES)
         )
     else:
         token = BearerTokenRequest(

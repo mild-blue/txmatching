@@ -8,7 +8,7 @@ from txmatching.auth.exceptions import InvalidOtpException, InvalidAuthCallExcep
 from txmatching.auth.user.totp import generate_totp_seed, generate_otp_for_user, \
     verify_otp_for_user
 from txmatching.auth.user.user_auth import user_login_flow, user_otp_login, refresh_user_token, _send_sms_otp, \
-    JWT_OTP_EXPIRATION_MINUTES
+    JWT_FOR_OTP_ACQUISITION_VALIDITY_MINUTES
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
@@ -33,7 +33,7 @@ class TestUserAuth(TestCase):
             user_id=usr.id,
             role=usr.role,
             type=TokenType.OTP,
-            expiration=datetime.timedelta(minutes=JWT_OTP_EXPIRATION_MINUTES)
+            expiration=datetime.timedelta(minutes=JWT_FOR_OTP_ACQUISITION_VALIDITY_MINUTES)
         )
 
         def send_sms_mock(phone_number: str, message_body: str):
