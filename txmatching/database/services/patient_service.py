@@ -26,7 +26,7 @@ from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto i
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import \
-    remove_donors_and_recipients_from_txm_event
+    remove_donors_and_recipients_from_txm_event_for_country
 from txmatching.database.sql_alchemy_schema import (
     ConfigModel, DonorModel, RecipientAcceptableBloodModel,
     RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
@@ -380,7 +380,7 @@ def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_co
     :param country_code:
     :return:
     """
-    remove_donors_and_recipients_from_txm_event(patient_upload_dto.txm_event_name, country_code)
+    remove_donors_and_recipients_from_txm_event_for_country(patient_upload_dto.txm_event_name, country_code)
     _save_patients_to_existing_txm_event(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,

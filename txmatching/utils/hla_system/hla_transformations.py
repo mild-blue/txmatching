@@ -117,10 +117,7 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
         dpqb_match = re.match(DQ_DP_SEROLOGICAL_CODE_WITH_AB_REGEX, hla_code_or_error)
         if dpqb_match:
-            if dpqb_match.group(2) == 'A':
-                subtype_str = 'A'
-            else:
-                subtype_str = ''
+            subtype_str = 'A' if dpqb_match.group(2) == 'A' else ''
             hla_code_or_error = f'{dpqb_match.group(1)}{subtype_str}{int(dpqb_match.group(3))}'
 
         if hla_code_or_error in ALL_SPLIT_BROAD_CODES:

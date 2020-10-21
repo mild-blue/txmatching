@@ -34,7 +34,7 @@ def delete_txm_event(name: str):
     db.session.commit()
 
 
-def remove_donors_and_recipients_from_txm_event(name: str, country_code: Country):
+def remove_donors_and_recipients_from_txm_event_for_country(name: str, country_code: Country):
     txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
     if not txm_event_model:
         raise InvalidArgumentException(f'No TXM event with name "{name}" found.')
