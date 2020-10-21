@@ -9,7 +9,7 @@ from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code_w
 logger = logging.getLogger(__name__)
 
 
-def parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_id: int, hla_raw_code: str) -> Optional[str]:
+def parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_id: Optional[int], hla_raw_code: str) -> Optional[str]:
     """
     Method to store information about error during parsing HLA code.
     This method is partially redundant to parse_hla_raw_code so in case of update, update it too.
@@ -28,7 +28,7 @@ def parse_hla_raw_code_and_store_parsing_error_in_db(txm_event_id: int, hla_raw_
 
 
 def _store_parsing_error(
-        txm_event_id: int,
+        txm_event_id: Optional[int],
         hla_code: str,
         hla_code_processing_result_detail: HlaCodeProcessingResultDetail
 ):

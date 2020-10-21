@@ -14,7 +14,7 @@ CREATE TYPE HLA_CODE_PROCESSING_RESULT_DETAIL AS ENUM (
 CREATE TABLE parsing_error
 (
     id                                BIGSERIAL                         NOT NULL,
-    txm_event_id                      BIGINT                            NOT NULL,
+    txm_event_id                      BIGINT,
     hla_code                          TEXT                              NOT NULL,
     hla_code_processing_result_detail HLA_CODE_PROCESSING_RESULT_DETAIL NOT NULL,
     created_at                        TIMESTAMPTZ                       NOT NULL,
