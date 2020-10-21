@@ -413,7 +413,7 @@ def _get_hla_code(code: Optional[str], raw_code: str) -> Optional[str]:
     return code if code is not None else parse_hla_raw_code(raw_code)
 
 
-def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO):
+def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO) -> PatientUpdateDTO:
     """
     Updates u patient's hla typing.
     This method is partially redundant to PatientUpdateDTO.__post_init__ so in case of update, update it too.
