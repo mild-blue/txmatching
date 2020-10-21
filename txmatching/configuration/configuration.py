@@ -12,7 +12,6 @@ DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Count
 
 # pylint: disable=too-many-instance-attributes
 # I think it is reasonable to have many attributes here
-
 @dataclass
 class Configuration:
     """
