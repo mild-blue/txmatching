@@ -165,11 +165,12 @@ class AppUserModel(db.Model):
 
     Use [get_allowed_edit_countries] and [set_allowed_edit_countries] to set this property.
     """
-    _split_literal = ','
 
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+    _split_literal = ','
 
     def get_allowed_edit_countries(self) -> Set[Country]:
         if not self._allowed_edit_countries:

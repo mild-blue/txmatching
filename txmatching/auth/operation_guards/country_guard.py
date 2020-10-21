@@ -10,18 +10,17 @@ def guard_user_country_access_to_donor(user_id: int, donor_id: int):
     """
     Verify that the user has correct country to access the donor.
     """
-    _check_country(_get_user_checked(user_id), _get_resource_country_checked(donor_id, DonorModel))
+    guard_user_has_access_to_country(user_id, _get_resource_country_checked(donor_id, DonorModel))
 
 
 def guard_user_country_access_to_recipient(user_id: int, recipient_id: int):
     """
     Verify that the user has correct country to access the recipient.
     """
+    guard_user_has_access_to_country(user_id, _get_resource_country_checked(recipient_id, RecipientModel))
 
-    _check_country(_get_user_checked(user_id), _get_resource_country_checked(recipient_id, RecipientModel))
 
-
-def guard_user_has_access_to(user_id: int, country: Country):
+def guard_user_has_access_to_country(user_id: int, country: Country):
     """
     Verify that the user is allowed to access the country resources.
     """

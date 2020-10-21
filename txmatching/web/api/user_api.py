@@ -140,13 +140,13 @@ class RegistrationApi(Resource):
         email=fields.String(required=True, description='Email/username used for authentication.'),
         password=fields.String(required=True, description='User\'s password.'),
         role=fields.String(required=True, enum=[role.name for role in UserRole], description='User\'s role.'),
+        second_factor=fields.String(required=True,
+                                    description='2FA: Phone number for user account, '
+                                                'IP address for SERVICE account.'),
         allowed_countries=fields.List(required=True,
                                       description='Countries that the user has access to.',
                                       cls_or_instance=fields.String(enum=[country.value for country in Country])),
-        second_factor=fields.String(required=True,
-                                    description='2FA: Phone number for user account, '
-                                                'IP address for SERVICE account.')),
-                                        )
+    ))
 
     @user_api.doc(body=registration_model, security='bearer')
     @user_api.response(code=200, model=StatusResponse, description='User registered successfully.')

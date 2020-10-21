@@ -7,7 +7,7 @@ from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import GuardException
 from txmatching.auth.operation_guards.country_guard import guard_user_country_access_to_donor, \
-    guard_user_country_access_to_recipient
+    guard_user_country_access_to_recipient, guard_user_has_access_to_country
 from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.sql_alchemy_schema import AppUserModel
@@ -42,6 +42,16 @@ class TestCountryGuards(DbTests):
 
         query.get = get_mock
         return model
+
+    def test_guard_user_has_access_to(self):
+        patient_country = Country.CZE
+        user_id = self._create_user({patient_country, Country.ISR})
+        guard_user_has_access_to_country(user_id, patient_country)
+
+    def test_guard_user_has_access_to_should_fail(self):
+        patient_country = Country.CZE
+        user_id = self._create_user({country for country in Country if country != patient_country})
+        self.assertRaises(GuardException, lambda: guard_user_has_access_to_country(user_id, Country.CZE))
 
     def test_guard_user_country_access_to_donor(self):
         patient_country = Country.CZE

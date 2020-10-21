@@ -9,7 +9,7 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_role
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.operation_guards.country_guard import guard_user_has_access_to
+from txmatching.auth.operation_guards.country_guard import guard_user_has_access_to_country
 from txmatching.auth.service.service_auth_check import allow_service_role
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadDTOOut
@@ -113,8 +113,8 @@ class TxmEventUploadPatients(Resource):
 
         current_user_id = get_current_user_id()
         # check if user is allowed to modify resources to the country
-        guard_user_has_access_to(current_user_id, country_code)
-        # safe the original request to the database
+        guard_user_has_access_to_country(current_user_id, country_code)
+        # save the original request to the database
         save_original_data(patient_upload_dto.txm_event_name, current_user_id, request.json)
         # perform update operation
         update_txm_event_patients(patient_upload_dto, country_code)
