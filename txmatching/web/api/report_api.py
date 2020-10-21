@@ -35,6 +35,8 @@ logger = logging.getLogger(__name__)
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TMP_DIR = '/tmp/txmatching_reports'
 MATCHINGS_BELOW_CHOSEN = 'matchingsBelowChosen'
+MIN_MATCHINGS_BELOW_CHOSEN = 0
+MAX_MATCHINGS_BELOW_CHOSEN = 1000
 
 
 # pylint: disable=no-self-use
@@ -73,10 +75,11 @@ class Report(Resource):
 
         matching_range_limit = int(request.args.get(MATCHINGS_BELOW_CHOSEN))
 
-        if matching_range_limit < 0:
+        if matching_range_limit < MIN_MATCHINGS_BELOW_CHOSEN or matching_range_limit > MAX_MATCHINGS_BELOW_CHOSEN:
             abort(
                 400,
-                f'Query argument {MATCHINGS_BELOW_CHOSEN} must be a positive number. '
+                f'Query argument {MATCHINGS_BELOW_CHOSEN} must be in '
+                f'range [{MIN_MATCHINGS_BELOW_CHOSEN}, {MAX_MATCHINGS_BELOW_CHOSEN}]. '
                 f'Current value is {matching_range_limit}.'
             )
 

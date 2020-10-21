@@ -5,7 +5,7 @@ from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import REPORTS_NAMESPACE, report_api
-from txmatching.web.api.report_api import MATCHINGS_BELOW_CHOSEN
+from txmatching.web.api.report_api import MATCHINGS_BELOW_CHOSEN, MIN_MATCHINGS_BELOW_CHOSEN, MAX_MATCHINGS_BELOW_CHOSEN
 
 
 class TestMatchingApi(DbTests):
@@ -50,24 +50,61 @@ class TestMatchingApi(DbTests):
             get_absolute_path('/tests/test_utilities/patient_data_2020_07_obfuscated.xlsx'))
         self.api.add_namespace(report_api, path=f'/{REPORTS_NAMESPACE}')
 
-        # Negative number - failure
+        # Less than min value - failure
         with self.app.test_client() as client:
             solve_from_db(Configuration(), self.txm_event_db_id)
 
-            res = client.get(f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}=-1', headers=self.auth_headers)
+            res = client.get(
+                f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
+                headers=self.auth_headers
+            )
 
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
             self.assertEqual(
-                'Query argument matchingsBelowChosen must be a positive number. Current value is -1.',
+                'Query argument matchingsBelowChosen must be in range [0, 1000]. Current value is -1.',
                 res.json['message']
             )
 
-        # Zero - correct edge case
+        # More than min value - failure
         with self.app.test_client() as client:
             solve_from_db(Configuration(), self.txm_event_db_id)
 
-            res = client.get(f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}=0', headers=self.auth_headers)
+            res = client.get(
+                f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
+                headers=self.auth_headers
+            )
+
+            self.assertEqual(400, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+            self.assertEqual(
+                'Query argument matchingsBelowChosen must be in range [0, 1000]. Current value is 1001.',
+                res.json['message']
+            )
+
+        # MIN_MATCHINGS_BELOW_CHOSEN - correct edge case
+        with self.app.test_client() as client:
+            solve_from_db(Configuration(), self.txm_event_db_id)
+
+            res = client.get(
+                f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN}',
+                headers=self.auth_headers
+            )
+
+            self.assertEqual(200, res.status_code)
+            self.assertEqual('application/pdf', res.content_type)
+            self.assertIsNotNone(res.data)
+            self.assertTrue(res.content_length > 0)
+            self.assertIsNotNone(res.headers['x-filename'])
+
+        # MAX_MATCHINGS_BELOW_CHOSEN - correct edge case
+        with self.app.test_client() as client:
+            solve_from_db(Configuration(), self.txm_event_db_id)
+
+            res = client.get(
+                f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN}',
+                headers=self.auth_headers
+            )
 
             self.assertEqual(200, res.status_code)
             self.assertEqual('application/pdf', res.content_type)
