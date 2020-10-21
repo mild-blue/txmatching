@@ -1,6 +1,6 @@
 --
 -- file: 0003.add-country-to-user.sql
--- depends: 0001.initial-schema
+-- depends: 0002.drop-unique-recipient-antibodies
 --
 
 -- with '_' as prefix in order to indicate private field in the python
