@@ -369,7 +369,8 @@ def _save_patients_to_existing_txm_event(
     recipients_from_country = [recipient for recipient in txm_event.recipients if
                                recipient.country == country_code]
     if len(donors_from_country) > 0 or len(recipients_from_country) > 0:
-        raise InvalidArgumentException(f'Txm event "{txm_event_name}" is not empty, cannot send patients to database.')
+        raise InvalidArgumentException(f'Txm event "{txm_event_name}" already contains some patients from country'
+                                       f' {country_code}, cannot upload data')
 
     txm_event_db_id = txm_event.id
     recipient_models = [
