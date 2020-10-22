@@ -62,7 +62,7 @@ class DbTests(unittest.TestCase):
         return txm_event_db_id
 
     @staticmethod
-    def fill_db_with_patients(file=get_absolute_path('/tests/test_utilities/data.xlsx')) -> int:
+    def fill_db_with_patients(file=get_absolute_path('/tests/resources/data.xlsx')) -> int:
         patients = parse_excel_data(file)
         txm_event = create_or_overwrite_txm_event(name='test')
         save_patients_from_excel_to_txm_event(patients, txm_event_db_id=txm_event.db_id)

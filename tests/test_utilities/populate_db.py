@@ -99,7 +99,7 @@ if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         create_or_overwrite_txm_event(name='test')
-        patients = parse_excel_data('patient_data_2020_07_obfuscated.xlsx')
+        patients = parse_excel_data('../resources/patient_data_2020_07_obfuscated.xlsx')
         txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
         save_patients_from_excel_to_txm_event(patients, txm_event_db_id=txm_event.db_id)
         add_users()
