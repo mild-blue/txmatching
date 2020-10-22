@@ -29,6 +29,7 @@ def find_possible_path_combinations_from_score_matrix(score_matrix: np.ndarray,
             special values are:
     ORIGINAL_DONOR_RECIPIENT_SCORE = -2.0
     TRANSPLANT_IMPOSSIBLE_SCORE = -1.0
+    :param donors: List of all possible donors
     :param configuration
     """
     donor_idx_to_recipient_idx = get_donor_idx_to_recipient_idx(score_matrix)
