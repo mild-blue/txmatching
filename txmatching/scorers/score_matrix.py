@@ -1,3 +1,3 @@
-from typing import List
+import numpy as np
 
-ScoreMatrix = List[List[float]]
+ScoreMatrix = np.array
