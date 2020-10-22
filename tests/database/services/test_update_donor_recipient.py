@@ -23,7 +23,7 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 
 class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_saving_patients_from_obfuscated_excel(self):
-        patients = parse_excel_data(get_absolute_path('tests/test_utilities/patient_data_2020_07_obfuscated.xlsx'))
+        patients = parse_excel_data(get_absolute_path('tests/resources/patient_data_2020_07_obfuscated.xlsx'))
         txm_event = create_or_overwrite_txm_event('test')
         save_patients_from_excel_to_txm_event(patients, txm_event.db_id)
 
