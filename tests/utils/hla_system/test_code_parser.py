@@ -1,12 +1,14 @@
-import unittest
-
 import pandas as pd
 
+from tests.test_utilities.prepare_app import DbTests
+from txmatching.database.services import txm_event_service
+from txmatching.database.sql_alchemy_schema import ParsingError
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (
     HlaCodeProcessingResultDetail, get_mfi_from_multiple_hla_codes,
     parse_hla_raw_code, parse_hla_raw_code_with_details,
     preprocess_hla_code_in)
+from txmatching.utils.hla_system.hla_transformations_store import parse_hla_raw_code_and_store_parsing_error_in_db
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
 
 codes = {
@@ -39,7 +41,7 @@ codes = {
 }
 
 
-class TestCodeParser(unittest.TestCase):
+class TestCodeParser(DbTests):
     def test_parsing(self):
         for code, (expected_result, expected_result_detail) in codes.items():
             result = parse_hla_raw_code_with_details(code)
@@ -49,6 +51,12 @@ class TestCodeParser(unittest.TestCase):
                                   f'{code} was processed to {result.maybe_hla_code} '
                                   f'with result {result.result_detail} expected was: '
                                   f'{expected_result} with result {expected_result_detail}')
+
+    def test_parsing_with_db_storing(self):
+        for code, _ in codes.items():
+            parse_hla_raw_code_and_store_parsing_error_in_db(code)
+        errors = ParsingError.query.all()
+        self.assertEqual(6, len(errors))
 
     def test_parse_hla_ser(self):
         parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))

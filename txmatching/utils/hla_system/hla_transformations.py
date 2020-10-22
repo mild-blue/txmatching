@@ -1,11 +1,11 @@
 import logging
 import re
 from dataclasses import dataclass
-from enum import Enum
 from typing import List, Optional, Set, Union
 
 import numpy as np
 
+from txmatching.utils.hla_system.hla_code_processing_result_detail import HlaCodeProcessingResultDetail
 from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
                                                    COMPATIBILITY_BROAD_CODES,
                                                    SPLIT_TO_BROAD)
@@ -36,19 +36,6 @@ def broad_to_split(hla_code: str) -> List[str]:
 
 def split_to_broad(hla_code: str) -> str:
     return SPLIT_TO_BROAD.get(hla_code, hla_code)
-
-
-class HlaCodeProcessingResultDetail(str, Enum):
-    # still returning value
-    SUCCESSFULLY_PARSED = 'Code successfully parsed without anything unexpected'
-    UNEXPECTED_SPLIT_RES_CODE = 'Unknown HLA code, seems to be in split resolution'
-
-    # returning no value
-    MULTIPLE_SPLITS_FOUND = 'Multiple splits were found, unable to choose the right one.' \
-                            ' Immunologists shall be contacted'
-    UNKNOWN_TRANSFORMATION_TO_SPLIT = 'Unable to transform high resolution HLA code. Its transformation to split' \
-                                      ' code is unknown. Immunologists shall be contacted'
-    UNPARSABLE_HLA_CODE = 'Completely Unexpected HLA code'
 
 
 @dataclass
@@ -127,6 +114,12 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
 
 def parse_hla_raw_code(hla_raw_code: str) -> Optional[str]:
+    """
+    This method is partially redundant to parse_hla_raw_code_and_store_parsing_error_in_db so in case of update,
+    update it too.
+    :param hla_raw_code:
+    :return:
+    """
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not parsing_result.maybe_hla_code:
         logger.error(f'HLA code processing of {hla_raw_code} was not successful: {parsing_result.result_detail}')

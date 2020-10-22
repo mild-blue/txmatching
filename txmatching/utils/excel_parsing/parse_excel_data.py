@@ -1,8 +1,8 @@
 import logging
-import math
 import re
 from typing import Dict, List, Tuple, Union
 
+import math
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
@@ -18,6 +18,7 @@ from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup
 from txmatching.utils.excel_parsing.countries_for_excel import \
     country_code_from_id
 from txmatching.utils.hla_system.hla_table import ALL_SPLIT_BROAD_CODES
+from txmatching.utils.hla_system.hla_transformations_store import parse_hla_raw_code_and_store_parsing_error_in_db
 
 _valid_allele_codes = ALL_SPLIT_BROAD_CODES
 
@@ -67,15 +68,22 @@ def _parse_hla(hla_allele_str: str) -> List[HLAType]:
         logger.warning(f"Following codes are not in the antigen codes table: \n {', '.join(unknown_allele_codes)}")
         logger.warning(f'They were encountered in allele codes string {hla_allele_str}\n')
 
-    return [HLAType(raw_code) for raw_code in allele_codes]
+    return [HLAType(
+        raw_code=raw_code,
+        code=parse_hla_raw_code_and_store_parsing_error_in_db(raw_code)
+    ) for raw_code in allele_codes]
 
 
 def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
     allele_codes = _parse_hla(hla_allele_str)
     # value and cut_off are just temporary values for now
     return HLAAntibodies(
-        [HLAAntibody(mfi=DEFAULT_MFI, cutoff=DEFAULT_CUTOFF_FOR_EXCEL, raw_code=allele_code.raw_code) for
-         allele_code in allele_codes])
+        [HLAAntibody(
+            mfi=DEFAULT_MFI,
+            cutoff=DEFAULT_CUTOFF_FOR_EXCEL,
+            raw_code=allele_code.raw_code,
+            code=parse_hla_raw_code_and_store_parsing_error_in_db(allele_code.raw_code)
+        ) for allele_code in allele_codes])
 
 
 def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]]:
@@ -88,7 +96,7 @@ def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorExcelD
         donors.append(donor)
         recipient_id = row['RECIPIENT']
         if not pd.isna(recipient_id):
-            recipient = get_recipient_from_row(row, recipient_id)
+            recipient = _get_recipient_from_row(row, recipient_id)
             recipients.append(recipient)
         else:
             recipients.append(None)
@@ -107,7 +115,7 @@ def get_donor_from_row(row: Dict) -> DonorExcelDTO:
     return DonorExcelDTO(medical_id=donor_id, parameters=donor_params)
 
 
-def get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
+def _get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
     blood_group_recipient = _parse_blood_group(row['BLOOD GROUP recipient'])
     typization_recipient = _parse_hla(row['TYPIZATION RECIPIENT'])
     antibodies_recipient = _parse_hla_antibodies(row['luminex  cut-off (2000 MFI) varianta 2'])

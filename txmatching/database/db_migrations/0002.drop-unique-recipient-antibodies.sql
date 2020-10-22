@@ -1,5 +1,5 @@
 --
--- file: 0002.drop-unique-recipient-antibodies.sql
+-- file: txmatching/database/db_migrations/0002.drop-unique-recipient-antibodies.sql
 -- depends: 0001.initial-schema
 --
 
