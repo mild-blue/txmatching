@@ -101,7 +101,7 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
         b_match = re.match(B_SEROLOGICAL_CODE_WITH_W_REGEX, hla_code_or_error)
         if b_match:
-            hla_code_or_error = f'CW{int(b_match.group(1))}'
+            hla_code_or_error = f'BW{int(b_match.group(1))}'
 
         dpqb_match = re.match(DQ_DP_SEROLOGICAL_CODE_WITH_AB_REGEX, hla_code_or_error)
         if dpqb_match:
