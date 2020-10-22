@@ -4,6 +4,7 @@ from txmatching.utils.enums import Country
 
 TEST_PATIENT_ID_REGEX = re.compile(r'([0-9A-Z]{1,5})-([A-Z]{3})-([DR])')
 PV28_PATIENT_ID_REGEX = re.compile(r'([A-Z]*)-[A-Z\d]*')
+PV31_PATIENT_ID_REGEX = re.compile(r'CZ[RD]\d+')
 PV28_COUNTRY_DICT = {
     'P': Country.CZE,
     'W': Country.AUT,
@@ -15,6 +16,10 @@ JULY_2020_COUNTRY_REGEX = re.compile(r'P|D|(W-)[A-Z\d]*')
 
 
 def country_code_from_id(patient_id: str) -> Country:
+    match = re.match(PV31_PATIENT_ID_REGEX, patient_id)
+    if match:
+        return Country.CZE
+
     match = re.match(TEST_PATIENT_ID_REGEX, patient_id)
     if match:
         return Country[match.group(2)]
