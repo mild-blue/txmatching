@@ -116,8 +116,8 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
         if hla_code_or_error in ALL_SPLIT_BROAD_CODES:
             return HlaCodeProcessingResult(hla_code_or_error, HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
-        # Some split hla codes are missing in our table, therefore we still return hla_codes if they match expected
-        # format of split codes
+        # Some split HLA codes are missing in our table, therefore we still return the found HLA code if it matches
+        # expected format of split codes.
         return HlaCodeProcessingResult(hla_code_or_error,
                                        HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)
     elif isinstance(hla_code_or_error, HlaCodeProcessingResultDetail):
