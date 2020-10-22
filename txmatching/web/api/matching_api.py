@@ -18,12 +18,14 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import \
     Matchings
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
+from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import configuration_from_dict
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.database.services.txm_event_service import \
-    get_txm_event_for_current_user
-from txmatching.solve_service.solve_from_db import solve_from_db
+    get_txm_event_id_for_current_user
+from txmatching.solve_service.solve_from_configuration import \
+    solve_from_configuration
 from txmatching.web.api.namespaces import matching_api
 
 logger = logging.getLogger(__name__)
@@ -43,9 +45,10 @@ class CalculateFromConfig(Resource):
     @matching_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     def post(self) -> str:
-        txm_event_id = get_txm_event_for_current_user()
+        txm_event_id = get_txm_event_id_for_current_user()
         configuration = configuration_from_dict(request.json)
-        solve_from_db(configuration, txm_event_db_id=txm_event_id)
+        pairing_result = solve_from_configuration(configuration, txm_event_db_id=txm_event_id)
+        solver_service.save_pairing_result(pairing_result)
         matchings, score_dict, compatible_blood_dict = get_latest_matchings_and_score_matrix(txm_event_id)
 
         matching_dtos = [
@@ -54,10 +57,10 @@ class CalculateFromConfig(Resource):
                     RoundDTO(
                         transplants=[
                             TransplantDTOOut(
-                                score_dict[(donor.db_id, recipient.db_id)],
-                                compatible_blood_dict[(donor.db_id, recipient.db_id)],
-                                donor.medical_id,
-                                recipient.medical_id) for donor, recipient in matching_round.donor_recipient_list])
+                                score_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                                compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                                pair.donor.medical_id,
+                                pair.recipient.medical_id) for pair in matching_round.donor_recipient_pairs])
                     for matching_round in matching.get_rounds()],
                 countries=matching.get_country_codes_counts(),
                 score=matching.score(),

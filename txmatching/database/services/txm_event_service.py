@@ -41,7 +41,7 @@ def remove_donors_and_recipients_from_txm_event(name: str):
     RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event_model.id).delete()
 
 
-def get_txm_event_for_current_user() -> int:
+def get_txm_event_id_for_current_user() -> int:
     current_user_model = get_current_user()
     # TODO change in https://trello.com/c/xRmQhnqM
     if current_user_model.default_txm_event_id:

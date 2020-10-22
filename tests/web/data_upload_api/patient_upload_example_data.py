@@ -172,3 +172,53 @@ VALID_UPLOAD_MULTIPLE_SAME_HLA_CODES = {
     ],
     'txm_event_name': TXM_EVENT_NAME
 }
+
+VALID_UPLOAD_EXCEPTIONAL_CODES = {
+    'donors': [
+        {
+            'sex': 'M',
+            'donor_type': 'DONOR',
+            'hla_typing': [
+                'A2'
+            ],
+            'medical_id': 'TEST2',
+            'blood_group': 'A',
+            'year_of_birth': 1970,
+            'waiting_since': '2015-01-17',
+            'related_recipient_medical_id': 'TEST1'
+        }
+    ],
+    'country': 'ISR',
+    'recipients': [
+        {
+            'sex': 'M',
+            'hla_typing': [
+                'A1'
+            ],
+            'medical_id': 'TEST1',
+            'blood_group': 0,
+            'year_of_birth': 1945,
+            'hla_antibodies': [
+                {
+                    'mfi': 2350,
+                    'name': 'B*82:02',
+                    'cutoff': 2000
+                },
+                {
+                    'mfi': 2350,
+                    'name': 'DRB1*09:02',
+                    'cutoff': 2000
+                },
+                {
+                    'mfi': 2350,
+                    'name': 'C*04:03',
+                    'cutoff': 2000
+                }
+            ],
+            'acceptable_blood_groups': [
+                'A', 0
+            ]
+        }
+    ],
+    'txm_event_name': TXM_EVENT_NAME
+}

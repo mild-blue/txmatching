@@ -8,7 +8,7 @@ from txmatching.auth.data_types import UserRole, TokenType, BearerTokenRequest, 
 from txmatching.auth.exceptions import CredentialsMismatchException, require_auth_condition
 from txmatching.auth.request_context import get_request_token
 from txmatching.auth.service.service_auth import service_login_flow
-from txmatching.auth.user.user_auth import user_login_flow, refresh_user_token, user_otp_login
+from txmatching.auth.user.user_auth import user_login_flow, refresh_user_token, user_otp_login, generate_and_send_otp
 from txmatching.configuration.app_configuration.application_configuration import get_application_configuration, \
     ApplicationConfiguration
 from txmatching.database.services.app_user_management import get_app_user_by_email, get_app_user_by_id
@@ -76,3 +76,21 @@ def _encode_auth_token(token_request: BearerTokenRequest, jwt_secret: str) -> st
         expiration=token_request.expiration,
         jwt_secret=jwt_secret
     )
+
+
+def resend_otp():
+    """
+    Regenerate and resend OTP for the currently logged in user.
+    """
+    _resend_otp(get_request_token())
+
+
+def _resend_otp(request_token: DecodedBearerToken):
+    require_auth_condition(request_token.type == TokenType.OTP,
+                           f'In order to resend the OTP, the OTP token must be used. Instead {request_token.type} '
+                           f'token was used.')
+
+    user = get_app_user_by_id(request_token.user_id)
+    require_auth_condition(user.role != UserRole.SERVICE, 'User can not have SERVICE role for OTP resent!')
+
+    generate_and_send_otp(user)

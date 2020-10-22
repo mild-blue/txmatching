@@ -122,7 +122,7 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     }
 
     this.allAntigens = [...new Set(allAntigens.map(a => a.code))].map(code => {
-      return { code, raw_code: code };
+      return { code, raw_code: code ?? '' };
     }); // only unique
   }
 }

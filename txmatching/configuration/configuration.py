@@ -31,9 +31,9 @@ class Configuration:
     require_better_match_in_compatibility_index_or_blood_group: bool = False
     blood_group_compatibility_bonus: float = 0.0
     use_binary_scoring: bool = False
-    max_cycle_length: int = 100
-    max_sequence_length: int = 100
-    max_number_of_distinct_countries_in_round: int = 100
+    max_cycle_length: int = 4
+    max_sequence_length: int = 4
+    max_number_of_distinct_countries_in_round: int = 3
     required_patient_db_ids: List[PatientDbId] = field(default_factory=list)
     use_split_resolution: bool = False
     forbidden_country_combinations: List[ForbiddenCountryCombination] = field(

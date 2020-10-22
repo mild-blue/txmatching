@@ -1,13 +1,13 @@
-from typing import List, Dict
+from typing import Dict, List
 
-from txmatching.configuration.configuration import Configuration, ManualDonorRecipientScore
+from txmatching.configuration.configuration import (Configuration,
+                                                    ManualDonorRecipientScore)
 from txmatching.patients.patient import Donor, Recipient
-from txmatching.patients.patient_types import RecipientDbId, DonorDbId
+from txmatching.patients.patient_types import DonorDbId, RecipientDbId
+from txmatching.scorers.score_matrix import ScoreMatrix
 from txmatching.scorers.scorer_base import ScorerBase
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
 from txmatching.solvers.matching.matching import Matching
-
-ScoreMatrix = List[List[float]]
 
 
 class AdditiveScorer(ScorerBase):
@@ -27,7 +27,7 @@ class AdditiveScorer(ScorerBase):
             return manual_score
 
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Donor) -> float:
-        raise NotImplementedError("Has to be overridden")
+        raise NotImplementedError('Has to be overridden')
 
     def score(self, matching: Matching, donors_dict: Dict[DonorDbId, Donor],
               recipients_dict: Dict[RecipientDbId, Recipient]) -> float:
@@ -35,7 +35,7 @@ class AdditiveScorer(ScorerBase):
         Higher score means better matching
         """
         total_score = 0
-        for transplant in matching.donor_recipient_list:
+        for transplant in matching.get_donor_recipient_pairs():
             donor, recipient = transplant
             total_score += self.score_transplant(donor=donor, recipient=recipient,
                                                  original_donor=donors_dict[recipient.related_donor_db_id])
@@ -60,5 +60,5 @@ class AdditiveScorer(ScorerBase):
         return score
 
     @classmethod
-    def from_config(cls, configuration: Configuration) -> "AdditiveScorer":
-        raise NotImplementedError("Has to be overridden")
+    def from_config(cls, configuration: Configuration) -> 'AdditiveScorer':
+        raise NotImplementedError('Has to be overridden')

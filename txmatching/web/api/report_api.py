@@ -4,6 +4,7 @@ import datetime
 import logging
 import os
 import time
+from distutils.dir_util import copy_tree
 from typing import List
 
 import jinja2
@@ -24,7 +25,7 @@ from txmatching.database.services.config_service import \
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.database.services.txm_event_service import \
-    get_txm_event_for_current_user
+    get_txm_event_id_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
 from txmatching.utils.enums import HLA_TYPING_BONUS_PER_GENE_CODE_STR, HLATypes
 from txmatching.web.api.namespaces import report_api
@@ -62,7 +63,7 @@ class Report(Resource):
     @require_user_login()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
-        txm_event_id = get_txm_event_for_current_user()
+        txm_event_id = get_txm_event_id_for_current_user()
         matching_id = int(request.view_args['matching_id'])
         if request.args.get(MATCHINGS_BELOW_CHOSEN) is None or request.args.get(MATCHINGS_BELOW_CHOSEN) == '':
             abort(400, f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
@@ -90,10 +91,10 @@ class Report(Resource):
                 RoundReportDTO(
                     transplants=[
                         TransplantDTO(
-                            score_dict[(donor.db_id, recipient.db_id)],
-                            compatible_blood_dict[(donor.db_id, recipient.db_id)],
-                            donor,
-                            recipient) for donor, recipient in matching_round.donor_recipient_list])
+                            score_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                            compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                            pair.donor,
+                            pair.recipient) for pair in matching_round.donor_recipient_pairs])
                 for matching_round in matching.get_rounds()],
             countries=matching.get_country_codes_counts(),
             score=matching.score(),
@@ -104,6 +105,7 @@ class Report(Resource):
         configuration = latest_configuration_for_txm_event(txm_event_db_id=txm_event_id)
 
         Report.prepare_tmp_dir()
+        Report.copy_assets()
         Report.prune_old_reports()
 
         j2_env = Environment(
@@ -132,7 +134,12 @@ class Report(Resource):
             input=html_file_full_path,
             output_path=pdf_file_full_path,
             options={
-                'footer-center': '[page] / [topage]'
+                'footer-center': '[page] / [topage]',
+                'enable-local-file-access': '',
+                '--margin-top': '0',
+                '--margin-left': '0',
+                '--margin-right': '0',
+                '--margin-bottom': '0',
             }
         )
         if os.path.exists(html_file_full_path):
@@ -153,6 +160,13 @@ class Report(Resource):
     def prepare_tmp_dir():
         if not os.path.exists(TMP_DIR):
             os.makedirs(TMP_DIR)
+
+    @staticmethod
+    def copy_assets():
+        if os.path.exists(TMP_DIR):
+            old_dir = os.path.join(THIS_DIR, '../templates/assets/')
+            new_dir = TMP_DIR + '/assets/'
+            copy_tree(old_dir, new_dir)
 
     @staticmethod
     def prune_old_reports():

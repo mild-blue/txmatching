@@ -1,6 +1,6 @@
-from typing import List
+from typing import FrozenSet
 
-from txmatching.patients.donor_recipient_tuple import DonorRecipientTuple
+from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching import Matching
 
 
@@ -9,8 +9,8 @@ class MatchingWithScore(Matching):
     Set of disjoint TransplantRound's
     """
 
-    def __init__(self, donor_recipient_list: List[DonorRecipientTuple], score: float, order_id: int):
-        super().__init__(donor_recipient_list)
+    def __init__(self, donor_recipient_pairs: FrozenSet[DonorRecipientPair], score: float, order_id: int = 0):
+        super().__init__(donor_recipient_pairs)
         self._score = score
         self._order_id = order_id
 
@@ -22,3 +22,6 @@ class MatchingWithScore(Matching):
 
     def set_order_id(self, order_id: int):
         self._order_id = order_id
+
+    def __hash__(self):
+        return self.get_donor_recipient_pairs().__hash__()

@@ -15,10 +15,9 @@ from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType)
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup
-from txmatching.utils.enums import Country
+from txmatching.utils.excel_parsing.countries_for_excel import \
+    country_code_from_id
 from txmatching.utils.hla_system.hla_table import ALL_SPLIT_BROAD_CODES
-
-_valid_blood_groups = ['A', 'B', '0', 'AB']
 
 _valid_allele_codes = ALL_SPLIT_BROAD_CODES
 
@@ -27,18 +26,17 @@ _unknown_allele_codes = set()
 DEFAULT_CUTOFF_FOR_EXCEL = 2000
 DEFAULT_MFI = 10000
 
-TEST_PATIENT_ID_REGEX = re.compile(r'([0-9A-Z]{1,5})-([A-Z]{3})-([DR])')
-
 logger = logging.getLogger(__name__)
 
 
-def _parse_blood_group(blood_group_str: Union[str, int]) -> str:
+def _parse_blood_group(blood_group_str: Union[str, int]) -> BloodGroup:
     if isinstance(blood_group_str, float) and blood_group_str == 0.0:
-        blood_group_str = '0'
+        return BloodGroup.ZERO
     blood_group_str = str(blood_group_str).strip()
-    if blood_group_str not in _valid_blood_groups:
-        raise ValueError(f'Encountered invalid group in blood group string {blood_group_str}')
-    return blood_group_str
+    try:
+        return BloodGroup(blood_group_str)
+    except Exception as error:
+        raise ValueError(f'Encountered invalid group in blood group string {blood_group_str}') from error
 
 
 def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, int],
@@ -80,23 +78,6 @@ def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
          allele_code in allele_codes])
 
 
-def _country_code_from_id(patient_id: str) -> Country:
-    match = re.match(TEST_PATIENT_ID_REGEX, patient_id)
-    if match:
-        return Country[match.group(2)]
-    # Old excels from IKEM had the country distinction below
-    elif re.match('[PD][0-9]{4}', patient_id):
-        return Country.ISR
-
-    elif re.match('[PD][0-9]{1,2}', patient_id):
-        return Country.CZE
-
-    elif patient_id.startswith('W-'):
-        return Country.AUT
-
-    raise ValueError(f'Could not assign country code to {patient_id}')
-
-
 def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]]:
     logger.info('Parsing patient data from file')
     data = pd.read_excel(file_io, skiprows=1)
@@ -119,7 +100,7 @@ def get_donor_from_row(row: Dict) -> DonorExcelDTO:
     donor_id = row['DONOR']
     blood_group_donor = _parse_blood_group(row['BLOOD GROUP donor'])
     typization_donor = _parse_hla(row['TYPIZATION DONOR'])
-    country_code_donor = _country_code_from_id(donor_id)
+    country_code_donor = country_code_from_id(donor_id)
     donor_params = PatientParametersDTO(blood_group=blood_group_donor,
                                         hla_typing=HLATypingDTO(typization_donor),
                                         country_code=country_code_donor)
@@ -132,7 +113,7 @@ def get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
     antibodies_recipient = _parse_hla_antibodies(row['luminex  cut-off (2000 MFI) varianta 2'])
     acceptable_blood_groups_recipient = _parse_acceptable_blood_groups(row['Acceptable blood group'],
                                                                        blood_group_recipient)
-    country_code_recipient = _country_code_from_id(recipient_id)
+    country_code_recipient = country_code_from_id(recipient_id)
 
     recipient_params = PatientParametersDTO(blood_group=blood_group_recipient,
                                             hla_typing=HLATypingDTO(typization_recipient),
