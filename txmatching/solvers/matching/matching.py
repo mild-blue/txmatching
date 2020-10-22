@@ -1,87 +1,29 @@
-from typing import List
+from dataclasses import dataclass
+from typing import FrozenSet, List
 
 from txmatching.data_transfer_objects.matchings.matching_dto import CountryDTO
-from txmatching.patients.donor_recipient_tuple import DonorRecipientTuple
 from txmatching.patients.patient import DonorType
+from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_round import TransplantRound
 from txmatching.solvers.matching.transplant_sequence import TransplantSequence
 
 
+@dataclass
 class Matching:
     """
     Set of disjoint TransplantRound's
     """
+    matching_pairs: FrozenSet[DonorRecipientPair]
 
-    def __init__(self, donor_recipient_list: List[DonorRecipientTuple] = None):
-        # TODO list of TransplantRounds? https://trello.com/c/rVM316iW
-        self._donor_recipient_list = donor_recipient_list
-        self._initialize()
-
-    def __str__(self) -> str:
-        cycles = self.get_cycles()
-        sequences = self.get_sequences()
-
-        str_repr = '[Matching]'
-
-        if len(cycles) > 0:
-            str_repr += 'Cycles:\n'
-
-            for cycle in self.get_cycles():
-                str_repr += f'\t{cycle}\n'
-
-        if len(sequences) > 0:
-            str_repr = '\nSequences:\n'
-            for sequence in sequences:
-                str_repr += f'\t{sequence}\n'
-
-        return str_repr
-
-    @property
-    def donor_recipient_list(self):
-        return self._donor_recipient_list
-
-    def get_non_directed_count(self):
-        return len([donor for donor, _ in self._donor_recipient_list if donor.donor_type == DonorType.NON_DIRECTED])
-
-    def get_donors_for_country_count(self, country_code: str):
-        return len([donor.parameters.country_code for donor, _ in self._donor_recipient_list if
-                    donor.parameters.country_code == country_code])
-
-    def get_recipients_for_country_count(self, country_code: str):
-        return len([recipient.parameters.country_code for _, recipient in self._donor_recipient_list if
-                    recipient.parameters.country_code == country_code])
-
-    def get_country_codes_counts(self) -> List[CountryDTO]:
-        countries = {patient.parameters.country_code for donor_recipient in self._donor_recipient_list for patient in
-                     donor_recipient}
-
-        return [CountryDTO(country,
-                           self.get_donors_for_country_count(country),
-                           self.get_recipients_for_country_count(country)) for country in countries]
-
-    def get_bridging_donor_count(self):
-        return len(
-            [donor for donor, _ in self._donor_recipient_list if donor.donor_type == DonorType.BRIDGING_DONOR])
-
-    def get_cycles(self) -> List[TransplantCycle]:
-        return self._cycles
-
-    def get_sequences(self) -> List[TransplantSequence]:
-        return self._sequences
-
-    def get_rounds(self) -> List[TransplantRound]:
-        cycles = self.get_cycles()
-        sequences = self.get_sequences()
-        return cycles + sequences
-
-    def _initialize(self):
-        recipients = [recipient for _, recipient in self._donor_recipient_list]
-        donor_ids = [donor.db_id for donor, _ in self._donor_recipient_list]
+    def __post_init__(self):
+        matching_pairs = list(self.matching_pairs)
+        recipients = [pair.recipient for pair in matching_pairs]
+        donor_ids = [pair.donor.db_id for pair in matching_pairs]
 
         # Construct graph with vertices indexed by transplants
         # Edges tell us which transplant will come next
-        vertices = list(range(len(self._donor_recipient_list)))
+        vertices = list(range(len(matching_pairs)))
         edges = {recipient_index: donor_ids.index(recipient.related_donor_db_id) for recipient_index, recipient
                  in enumerate(recipients) if recipient.related_donor_db_id in donor_ids}
         reverse_edges = {dest_vertex: source_vertex for source_vertex, dest_vertex in edges.items()}
@@ -112,7 +54,44 @@ class Matching:
             else:
                 raise AssertionError('Next vertex is not None nor equal to start vertex')
 
-        self._cycles = list(TransplantCycle([self._donor_recipient_list[i] for i in cycle])
+        self._cycles = list(TransplantCycle([matching_pairs[i] for i in cycle])
                             for cycle in vertex_cycles)
-        self._sequences = list(TransplantSequence([self._donor_recipient_list[i] for i in seq])
+        self._sequences = list(TransplantSequence([matching_pairs[i] for i in seq])
                                for seq in vertex_sequences)
+
+    def get_donor_recipient_pairs(self):
+        return self.matching_pairs
+
+    def get_non_directed_count(self):
+        return len([donor for donor, _ in self.matching_pairs if donor.donor_type == DonorType.NON_DIRECTED])
+
+    def get_bridging_donor_count(self):
+        return len(
+            [donor for donor, _ in self.matching_pairs if donor.donor_type == DonorType.BRIDGING_DONOR])
+
+    def get_donors_for_country_count(self, country_code: str):
+        return len([pair.donor.parameters.country_code for pair in self.matching_pairs if
+                    pair.donor.parameters.country_code == country_code])
+
+    def get_recipients_for_country_count(self, country_code: str):
+        return len([pair.recipient.parameters.country_code for pair in self.matching_pairs if
+                    pair.recipient.parameters.country_code == country_code])
+
+    def get_country_codes_counts(self) -> List[CountryDTO]:
+        countries = {patient.parameters.country_code for donor_recipient in self.matching_pairs for patient in
+                     [donor_recipient.donor, donor_recipient.recipient]}
+
+        return [CountryDTO(country,
+                           self.get_donors_for_country_count(country),
+                           self.get_recipients_for_country_count(country)) for country in countries]
+
+    def get_cycles(self) -> List[TransplantCycle]:
+        return self._cycles
+
+    def get_sequences(self) -> List[TransplantSequence]:
+        return self._sequences
+
+    def get_rounds(self) -> List[TransplantRound]:
+        cycles = self.get_cycles()
+        sequences = self.get_sequences()
+        return cycles + sequences

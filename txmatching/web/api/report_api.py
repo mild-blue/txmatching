@@ -4,9 +4,9 @@ import datetime
 import logging
 import os
 import time
+from distutils.dir_util import copy_tree
 from typing import List
 
-from distutils.dir_util import copy_tree
 import jinja2
 import pdfkit
 from flask import request, send_from_directory
@@ -18,13 +18,14 @@ from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore)
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, MatchingReportDTO, RoundReportDTO, TransplantDTO)
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import FailJson
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
+    FailJson
 from txmatching.database.services.config_service import \
     latest_configuration_for_txm_event
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.database.services.txm_event_service import \
-    get_txm_event_for_current_user
+    get_txm_event_id_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
 from txmatching.utils.enums import HLA_TYPING_BONUS_PER_GENE_CODE_STR, HLATypes
 from txmatching.web.api.namespaces import report_api
@@ -65,7 +66,7 @@ class Report(Resource):
     @require_user_login()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
-        txm_event_id = get_txm_event_for_current_user()
+        txm_event_id = get_txm_event_id_for_current_user()
         matching_id = int(request.view_args['matching_id'])
         if request.args.get(MATCHINGS_BELOW_CHOSEN) is None or request.args.get(MATCHINGS_BELOW_CHOSEN) == '':
             abort(400, f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
@@ -94,10 +95,10 @@ class Report(Resource):
                 RoundReportDTO(
                     transplants=[
                         TransplantDTO(
-                            score_dict[(donor.db_id, recipient.db_id)],
-                            compatible_blood_dict[(donor.db_id, recipient.db_id)],
-                            donor,
-                            recipient) for donor, recipient in matching_round.donor_recipient_list])
+                            score_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                            compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                            pair.donor,
+                            pair.recipient) for pair in matching_round.donor_recipient_pairs])
                 for matching_round in matching.get_rounds()],
             countries=matching.get_country_codes_counts(),
             score=matching.score(),
@@ -155,8 +156,8 @@ class Report(Resource):
             attachment_filename=pdf_file_name
         )
 
-        response.headers["x-filename"] = pdf_file_name
-        response.headers["Access-Control-Expose-Headers"] = 'x-filename'
+        response.headers['x-filename'] = pdf_file_name
+        response.headers['Access-Control-Expose-Headers'] = 'x-filename'
         return response
 
     @staticmethod

@@ -1,6 +1,8 @@
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
-from txmatching.solve_service.solve_from_db import solve_from_db
+from txmatching.database.services import solver_service
+from txmatching.solve_service.solve_from_configuration import \
+    solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import REPORTS_NAMESPACE, report_api
 from txmatching.web.api.report_api import MATCHINGS_BELOW_CHOSEN
@@ -13,7 +15,8 @@ class TestMatchingApi(DbTests):
         self.api.add_namespace(report_api, path=f'/{REPORTS_NAMESPACE}')
 
         with self.app.test_client() as client:
-            solve_from_db(Configuration(), self.txm_event_db_id)
+            pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
+            solver_service.save_pairing_result(pairing_result)
 
             res = client.get(f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}=2', headers=self.auth_headers)
 

@@ -4,7 +4,9 @@ import unittest
 import numpy as np
 
 from tests.solvers.tabular_scorer import TabularScorer
-from txmatching.solvers.all_solutions_solver import AllSolutionsSolver
+from txmatching.configuration.configuration import Configuration
+from txmatching.solvers.all_solutions_solver.score_matrix_solver import \
+    find_possible_path_combinations_from_score_matrix
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 
@@ -20,19 +22,24 @@ class TestAllSolutionsSolver(unittest.TestCase):
     def test_solve(self):
         # TODO: Add more specific test https://trello.com/c/1Cdaujkx
         scorer = TabularScorer(score_matrix=self._score_matrix)
-        solver = AllSolutionsSolver(max_number_of_distinct_countries_in_round=1)
-        all_solutions = list(solver._solve(score_matrix=np.array(self._score_matrix)))
+        all_solutions = list(
+            find_possible_path_combinations_from_score_matrix(score_matrix=np.array(self._score_matrix),
+                                                              configuration=Configuration(
+                                                                  max_cycle_length=100,
+                                                                  max_sequence_length=100,
+                                                                  max_number_of_distinct_countries_in_round=100)
+                                                              )
+        )
         all_scores = []
         for solution in all_solutions:
-            solution_score = sum([scorer.score_transplant_ij(donor_index, recipient_index)
-                                  for (donor_index, recipient_index) in solution])
+            solution_score = sum([scorer.score_transplant_ij(pair.donor_idx, pair.recipient_idx)
+                                  for pair in solution])
             all_scores.append(solution_score)
 
-        self.assertEqual(max(all_scores), self._expected_max_score)
-        self.assertEqual(len(all_solutions), self._expected_num_solutions)
+        self.assertEqual(self._expected_num_solutions, len(all_solutions))
+        self.assertEqual(self._expected_max_score, max(all_scores))
 
     def test_solve_specific(self):
-
         score_matrix_test = np.array([[-2.0, -1.0, 10.2, 13.1],
                                       [0.2, -2.0, -1.0, 1],
                                       [0.1, 10.2, 10.3, -2.0],
@@ -40,6 +47,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
                                       [0.2, 0.4, -1.0, 0.5],
                                       [0.2, -1.0, -1.0, 0.5]])
 
-        test_solver = AllSolutionsSolver(max_number_of_distinct_countries_in_round=1)
-        solutions = test_solver._solve(score_matrix_test)
-        self.assertEqual(len(list(solutions)), 53)
+        solutions = find_possible_path_combinations_from_score_matrix(score_matrix_test,
+                                                                      Configuration(max_sequence_length=100,
+                                                                                    max_cycle_length=100))
+        self.assertEqual(43, len(list(solutions)))
