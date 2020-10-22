@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Dict, FrozenSet, Iterator, List, Optional
+from typing import Dict, Iterator, List
 
 from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor, Recipient
@@ -37,28 +37,14 @@ class AllSolutionsSolver(SolverBase):
         )
 
     def solve(self) -> Iterator[MatchingWithScore]:
-
-        matchings_to_return = set()
         possible_path_combinations = find_possible_path_combinations_from_score_matrix(
             score_matrix=self.score_matrix,
-            configuration=self.configuration
+            configuration=self.configuration,
+            donors=self.donors
         )
 
         for possible_path_combination in possible_path_combinations:
-            matching = self._get_matching_from_path_combinations(possible_path_combination)
-
-            valid_number_of_countries = max(
-                [transplant_round.country_count() for transplant_round in
-                 matching.get_rounds()]) <= self.configuration.max_number_of_distinct_countries_in_round
-            if valid_number_of_countries:
-                if matching not in matchings_to_return:
-                    yield matching
-                    matchings_to_return.add(matching)
-            else:
-                cleaned_matching = self._remove_rounds_with_too_many_countries(matching)
-                if cleaned_matching not in matchings_to_return:
-                    yield cleaned_matching
-                    matchings_to_return.add(cleaned_matching)
+            yield self._get_matching_from_path_combinations(possible_path_combination)
 
     def _get_matching_from_path_combinations(
             self, found_pairs_idxs_only: List[DonorRecipientPairIdxOnly]
@@ -68,30 +54,3 @@ class AllSolutionsSolver(SolverBase):
                                 for found_pair_idxs_only in found_pairs_idxs_only)
         score = get_score_for_idx_pairs(self.score_matrix, found_pairs_idxs_only)
         return MatchingWithScore(found_pairs, score)
-
-    # TODO This whole function will be removed in https://trello.com/c/AREDzFnQ, now quick fix to make it work
-    def _remove_rounds_with_too_many_countries(self, matching: MatchingWithScore) -> Optional[MatchingWithScore]:
-        proper_rounds = [transplant_round for transplant_round in
-                         matching.get_rounds() if
-                         transplant_round.country_count() <=
-                         self.configuration.max_number_of_distinct_countries_in_round]
-
-        if len(proper_rounds) > 0:
-            solution_pairs_enriched = frozenset(
-                donor_recipient for transplant_round in proper_rounds for donor_recipient
-                in
-                transplant_round.donor_recipient_pairs)
-
-            score = self._get_score_for_enriched_pairs(solution_pairs_enriched)
-            return MatchingWithScore(solution_pairs_enriched, score)
-        else:
-            return None
-
-    # TODO This whole function will be removed in https://trello.com/c/AREDzFnQ, no quick fix to make it work
-    def _get_score_for_enriched_pairs(self, solution_pairs_enriched: FrozenSet[DonorRecipientPair]) -> int:
-        return sum([
-            self.scorer.score_transplant(pair.donor,
-                                         pair.recipient,
-                                         self.donors_dict[pair.recipient.related_donor_db_id])
-            for pair in solution_pairs_enriched
-        ])
