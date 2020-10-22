@@ -77,9 +77,6 @@ setup-non-empty-db:
 	cd ..
 	cd tests/test_utilities; PYTHONPATH=../..:$PYTHONPATH python populate_db.py
 
-clean-db:
-	PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} -a -f ./tests/test_utilities/clean_db.sql
-
 lint:
 	pylint txmatching
 
