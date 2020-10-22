@@ -160,7 +160,11 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int]):
     :param mfis:
     :return:
     """
-    max_min_difference = (np.max(mfis) - np.min(mfis)) / np.min(mfis)
+    max_mfi = np.max(mfis)
+    min_mfi = np.min(mfis)
+    if min_mfi < 0:
+        raise ValueError(f'MFI has to be >=0. Obtained MFI="{min_mfi}".')
+    max_min_difference = (max_mfi - min_mfi) / min_mfi if min_mfi > 0 else max_mfi
     if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
         return np.mean(mfis)
     return 0
