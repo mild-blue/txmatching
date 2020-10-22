@@ -101,6 +101,7 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
         b_match = re.match(B_SEROLOGICAL_CODE_WITH_W_REGEX, hla_code_or_error)
         if b_match:
+            # doesn't actually do anything atm, but Bw is a special kind of antigen so we want to keep the branch here
             hla_code_or_error = f'BW{int(b_match.group(1))}'
 
         dpqb_match = re.match(DQ_DP_SEROLOGICAL_CODE_WITH_AB_REGEX, hla_code_or_error)
@@ -171,6 +172,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int]):
     min_mfi = np.min(mfis)
     if min_mfi < 0:
         raise ValueError(f'MFI has to be >=0. Obtained MFI={min_mfi}.')
+    # this should be +inf but max_mfi will do as well
     max_min_difference = (max_mfi - min_mfi) / min_mfi if min_mfi > 0 else max_mfi
     if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
         return np.mean(mfis)
