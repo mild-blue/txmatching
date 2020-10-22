@@ -4,6 +4,7 @@ from typing import Dict, List, Set, Tuple
 import numpy as np
 from graph_tool import Graph, topology
 
+from txmatching.patients.patient import Donor
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
 from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
@@ -45,7 +46,9 @@ def get_compatible_donor_idxs_per_donor_idx(score_matrix: np.ndarray,
 
 def find_all_cycles(n_donors: int,
                     compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
-                    max_length: int) -> List[Path]:
+                    max_length: int,
+                    donors: List[Donor],
+                    max_countries: int) -> List[Path]:
     """
     Circuits between pairs, each pair is denoted by it's pair = donor index
     """
@@ -53,7 +56,7 @@ def find_all_cycles(n_donors: int,
                                                                            compatible_donor_idxs_per_donor_idx)
     all_circuits = []
     for circuit in topology.all_circuits(donor_to_compatible_donor_graph):
-        if len(circuit) <= max_length:
+        if len(circuit) <= max_length and country_count_in_path(circuit, donors) <= max_countries:
             circuit_with_end = tuple(list(circuit) + [circuit[0]])
             all_circuits.append(circuit_with_end)
 
@@ -62,7 +65,9 @@ def find_all_cycles(n_donors: int,
 
 def find_all_sequences(score_matrix: np.ndarray,
                        compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
-                       max_length: int) -> List[Path]:
+                       max_length: int,
+                       donors: List[Donor],
+                       max_countries: int) -> List[Path]:
     bridge_indices = _get_bridge_indices(score_matrix)
 
     paths = []
@@ -71,9 +76,14 @@ def find_all_sequences(score_matrix: np.ndarray,
         bridge_paths = _find_all_paths_starting_with(bridge_index, compatible_donor_idxs_per_donor_idx, set())
         paths.extend(bridge_paths)
 
-    paths = [tuple(path) for path in paths if 1 < len(path) <= max_length]
+    paths = [tuple(path) for path in paths if 1 < len(path) <= max_length and
+             country_count_in_path(tuple(path), donors) <= max_countries]
 
     return paths
+
+
+def country_count_in_path(path: Path, donors: List[Donor]) -> int:
+    return len({donors[donor_idx].parameters.country_code for donor_idx in path})
 
 
 def keep_only_highest_scoring_paths(paths: List[Path],
@@ -134,6 +144,8 @@ def construct_path_intersection_graph(all_paths: List[Path]) -> Tuple[Graph, Dic
 
     graph.add_edge_list(compatible_paths)
     return graph, path_number_to_path
+
+
 # pylint: enable=too-many-locals
 
 
