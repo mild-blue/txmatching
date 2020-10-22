@@ -1,8 +1,8 @@
 import logging
+import math
 import re
 from typing import Dict, List, Tuple, Union
 
-import math
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
@@ -17,6 +17,8 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup
 from txmatching.utils.excel_parsing.countries_for_excel import \
     country_code_from_id
+from txmatching.utils.hla_system.hla_transformations_store import \
+    parse_hla_raw_code_and_store_parsing_error_in_db
 
 DEFAULT_CUTOFF_FOR_EXCEL = 2000
 DEFAULT_MFI = 10000
