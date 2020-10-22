@@ -10,7 +10,7 @@ from txmatching.web import matching_api, patient_api
 class TestSaveAndGetConfiguration(DbTests):
 
     def test_get_matchings(self):
-        self.fill_db_with_patients(get_absolute_path('/tests/resource/data.xlsx'))
+        self.fill_db_with_patients(get_absolute_path('/tests/resources/data.xlsx'))
         self.api.add_namespace(matching_api, path='/matching')
 
         with self.app.test_client() as client:

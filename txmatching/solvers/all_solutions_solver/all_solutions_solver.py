@@ -2,8 +2,6 @@ import logging
 from dataclasses import dataclass
 from typing import Dict, FrozenSet, Iterator, List, Optional
 
-import numpy as np
-
 from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
@@ -29,20 +27,20 @@ class AllSolutionsSolver(SolverBase):
     scorer: AdditiveScorer
 
     def __post_init__(self):
+        self.donors = list(self.donors_dict.values())
+        self.recipients = list(self.recipients_dict.values())
+
         self.score_matrix = self.scorer.get_score_matrix(
-            self.donors_dict,
-            self.recipients_dict
+            self.donors,
+            self.recipients,
+            self.donors_dict
         )
-        self.score_matrix_array = np.zeros((len(self.donors_dict), len(self.recipients_dict)))
-        for row_index, row in enumerate(self.score_matrix):
-            for column_index, value in enumerate(row):
-                self.score_matrix_array[row_index, column_index] = value
 
     def solve(self) -> Iterator[MatchingWithScore]:
 
         matchings_to_return = set()
         possible_path_combinations = find_possible_path_combinations_from_score_matrix(
-            score_matrix=self.score_matrix_array,
+            score_matrix=self.score_matrix,
             configuration=self.configuration
         )
 
@@ -65,13 +63,10 @@ class AllSolutionsSolver(SolverBase):
     def _get_matching_from_path_combinations(
             self, found_pairs_idxs_only: List[DonorRecipientPairIdxOnly]
     ) -> MatchingWithScore:
-
-        donors = list(self.donors_dict.values())
-        recipients = list(self.recipients_dict.values())
-        found_pairs = frozenset(DonorRecipientPair(donors[found_pair_idxs_only.donor_idx],
-                                                   recipients[found_pair_idxs_only.recipient_idx])
+        found_pairs = frozenset(DonorRecipientPair(self.donors[found_pair_idxs_only.donor_idx],
+                                                   self.recipients[found_pair_idxs_only.recipient_idx])
                                 for found_pair_idxs_only in found_pairs_idxs_only)
-        score = get_score_for_idx_pairs(self.score_matrix_array, found_pairs_idxs_only)
+        score = get_score_for_idx_pairs(self.score_matrix, found_pairs_idxs_only)
         return MatchingWithScore(found_pairs, score)
 
     # TODO This whole function will be removed in https://trello.com/c/AREDzFnQ, now quick fix to make it work
