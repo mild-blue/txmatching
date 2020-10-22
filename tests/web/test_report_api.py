@@ -11,7 +11,7 @@ from txmatching.web.api.report_api import MATCHINGS_BELOW_CHOSEN
 class TestMatchingApi(DbTests):
 
     def test_get_report(self):
-        self.txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/test_utilities/patient_data_2020_07_obfuscated.xlsx'))
+        self.txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx'))
         self.api.add_namespace(report_api, path=f'/{REPORTS_NAMESPACE}')
 
         with self.app.test_client() as client:
