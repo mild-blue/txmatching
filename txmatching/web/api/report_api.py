@@ -36,7 +36,7 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TMP_DIR = '/tmp/txmatching_reports'
 MATCHINGS_BELOW_CHOSEN = 'matchingsBelowChosen'
 MIN_MATCHINGS_BELOW_CHOSEN = 0
-MAX_MATCHINGS_BELOW_CHOSEN = 1000
+MAX_MATCHINGS_BELOW_CHOSEN = 100
 
 
 # pylint: disable=no-self-use
