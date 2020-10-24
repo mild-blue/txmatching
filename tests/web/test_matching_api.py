@@ -50,3 +50,18 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(recipient_update_dict['acceptable_blood_groups'], recipients[0]['acceptable_blood_groups'])
 
             self.assertIsNone(ConfigModel.query.get(1))
+
+    def test_correct_config_applied(self):
+        self.fill_db_with_patients(get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx'))
+        self.api.add_namespace(matching_api, path='/matching')
+
+        with self.app.test_client() as client:
+            conf_dto = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=1))
+
+            res = client.post('/matching/calculate-for-config', json=conf_dto, headers=self.auth_headers)
+            self.assertEqual(9, len(res.json))
+
+            conf_dto2 = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=50))
+
+            res2 = client.post('/matching/calculate-for-config', json=conf_dto2, headers=self.auth_headers)
+            self.assertEqual(503, len(res2.json))
