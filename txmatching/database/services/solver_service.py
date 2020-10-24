@@ -20,12 +20,14 @@ def save_pairing_result(pairing_result: PairingResult):
     )
 
     config_id = save_configuration_to_db(pairing_result.configuration, pairing_result.txm_event_db_id)
+
+
     pairing_result_model = PairingResultModel(
-        score_matrix=score_matrix_to_dto(pairing_result.score_matrix),
-        calculated_matchings=calculated_matchings_model,
-        config_id=config_id,
-        valid=True
-    )
+            score_matrix=score_matrix_to_dto(pairing_result.score_matrix),
+            calculated_matchings=calculated_matchings_model,
+            config_id=config_id,
+            valid=True
+        )
     db.session.add(pairing_result_model)
     db.session.commit()
 

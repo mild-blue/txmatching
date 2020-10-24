@@ -1,6 +1,6 @@
 import dataclasses
 import logging
-from typing import Dict, Iterator
+from typing import Dict
 
 from dacite import Config, from_dict
 
@@ -20,9 +20,8 @@ def configuration_from_dict(config_model: Dict) -> Configuration:
     return configuration
 
 
-def latest_configuration_for_txm_event(txm_event_db_id: int) -> Configuration:
-    current_config_model = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).order_by(
-        ConfigModel.id.desc()).first()
+def get_configuration_for_txm_event(txm_event_db_id: int) -> Configuration:
+    current_config_model = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).first()
     if current_config_model is None:
         return Configuration()
     else:
@@ -31,18 +30,19 @@ def latest_configuration_for_txm_event(txm_event_db_id: int) -> Configuration:
 
 def save_configuration_to_db(configuration: Configuration, txm_event_db_id: int) -> int:
     config_model = _configuration_to_config_model(configuration, txm_event_db_id)
-    for existing_config in get_config_models(txm_event_db_id):
-        if existing_config.parameters == config_model.parameters:
-            return existing_config.id
+    previous_config = get_config_model_for_txm_event(txm_event_db_id)
+    if previous_config:
+        db.session.delete(previous_config)
+        db.session.flush()
 
     db.session.add(config_model)
     db.session.commit()
     return config_model.id
 
 
-def get_config_models(txm_event_db_id: int) -> Iterator[ConfigModel]:
-    configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
-    return configs
+def get_config_model_for_txm_event(txm_event_db_id: int) -> ConfigModel:
+    config = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).first()
+    return config
 
 
 def _configuration_to_config_model(configuration: Configuration, txm_event_db_id: int) -> ConfigModel:
