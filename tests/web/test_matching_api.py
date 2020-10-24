@@ -1,5 +1,6 @@
 import dataclasses
 
+from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.sql_alchemy_schema import ConfigModel
@@ -59,9 +60,26 @@ class TestSaveAndGetConfiguration(DbTests):
             conf_dto = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=1))
 
             res = client.post('/matching/calculate-for-config', json=conf_dto, headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
             self.assertEqual(9, len(res.json))
 
             conf_dto2 = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=50))
 
             res2 = client.post('/matching/calculate-for-config', json=conf_dto2, headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
             self.assertEqual(503, len(res2.json))
+
+    def test_solver_multiple_txm_events(self):
+        self.fill_db_with_patients(get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx'))
+        self.api.add_namespace(matching_api, path='/matching')
+
+        with self.app.test_client() as client:
+            conf_dto = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=1))
+
+            res = client.post('/matching/calculate-for-config', json=conf_dto, headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+            create_or_overwrite_txm_event(name='test2')
+            res = client.post('/matching/calculate-for-config', json=conf_dto, headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+            self.assertEqual(0, len(res.json))
