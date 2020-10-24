@@ -65,9 +65,9 @@ class TestSaveAndGetConfiguration(DbTests):
 
             conf_dto2 = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=50))
 
-            res2 = client.post('/matching/calculate-for-config', json=conf_dto2, headers=self.auth_headers)
+            res = client.post('/matching/calculate-for-config', json=conf_dto2, headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-            self.assertEqual(503, len(res2.json))
+            self.assertEqual(503, len(res.json))
 
     def test_solver_multiple_txm_events(self):
         self.fill_db_with_patients(get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx'))
