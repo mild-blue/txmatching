@@ -1,6 +1,6 @@
 import dataclasses
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 from dacite import Config, from_dict
 
@@ -40,7 +40,7 @@ def save_configuration_to_db(configuration: Configuration, txm_event_db_id: int)
     return config_model.id
 
 
-def get_config_model_for_txm_event(txm_event_db_id: int) -> ConfigModel:
+def get_config_model_for_txm_event(txm_event_db_id: int) -> Optional[ConfigModel]:
     config = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).first()
     return config
 
