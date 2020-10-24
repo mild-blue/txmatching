@@ -9,4 +9,3 @@ class TransplantSequence(TransplantRound):
     bridging donor (i.e. someone left from previous matching, whose recipient already got a kidney (for example from
         non-directed), but who he did not give his to anyone
     """
-    # TODO proc tady mame tenhle file?

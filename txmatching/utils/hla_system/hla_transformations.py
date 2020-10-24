@@ -5,7 +5,8 @@ from typing import List, Optional, Set, Union
 
 import numpy as np
 
-from txmatching.utils.hla_system.hla_code_processing_result_detail import HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_code_processing_result_detail import \
+    HlaCodeProcessingResultDetail
 from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
                                                    COMPATIBILITY_BROAD_CODES,
                                                    SPLIT_TO_BROAD)
@@ -100,7 +101,8 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
         b_match = re.match(B_SEROLOGICAL_CODE_WITH_W_REGEX, hla_code_or_error)
         if b_match:
-            hla_code_or_error = f'CW{int(b_match.group(1))}'
+            # doesn't actually do anything atm, but Bw is a special kind of antigen so we want to keep the branch here
+            hla_code_or_error = f'BW{int(b_match.group(1))}'
 
         dpqb_match = re.match(DQ_DP_SEROLOGICAL_CODE_WITH_AB_REGEX, hla_code_or_error)
         if dpqb_match:
@@ -109,8 +111,8 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
         if hla_code_or_error in ALL_SPLIT_BROAD_CODES:
             return HlaCodeProcessingResult(hla_code_or_error, HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
-        # Some split hla codes are missing in our table, therefore we still return hla_codes if they match expected
-        # format of split codes
+        # Some split HLA codes are missing in our table, therefore we still return the found HLA code if it matches
+        # expected format of split codes.
         return HlaCodeProcessingResult(hla_code_or_error,
                                        HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)
     elif isinstance(hla_code_or_error, HlaCodeProcessingResultDetail):
@@ -166,7 +168,12 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int]):
     :param mfis:
     :return:
     """
-    max_min_difference = (np.max(mfis) - np.min(mfis)) / np.min(mfis)
+    max_mfi = np.max(mfis)
+    min_mfi = np.min(mfis)
+    if min_mfi < 0:
+        raise ValueError(f'MFI has to be >=0. Obtained MFI={min_mfi}.')
+    # this should be +inf but max_mfi will do as well
+    max_min_difference = (max_mfi - min_mfi) / min_mfi if min_mfi > 0 else max_mfi
     if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
         return np.mean(mfis)
     return 0
