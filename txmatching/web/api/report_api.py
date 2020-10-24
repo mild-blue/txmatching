@@ -21,7 +21,7 @@ from txmatching.data_transfer_objects.matchings.matching_dto import (
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services.config_service import \
-    latest_configuration_for_txm_event
+    get_configuration_for_txm_event
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.database.services.txm_event_service import \
@@ -102,7 +102,7 @@ class Report(Resource):
         ) for matching in matchings
         ]
 
-        configuration = latest_configuration_for_txm_event(txm_event_db_id=txm_event_id)
+        configuration = get_configuration_for_txm_event(txm_event_db_id=txm_event_id)
 
         Report.prepare_tmp_dir()
         Report.copy_assets()
