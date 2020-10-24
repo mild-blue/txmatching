@@ -21,7 +21,7 @@ def configuration_from_dict(config_model: Dict) -> Configuration:
 
 
 def get_configuration_for_txm_event(txm_event_db_id: int) -> Configuration:
-    current_config_model = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).first()
+    current_config_model = get_config_model_for_txm_event(txm_event_db_id)
     if current_config_model is None:
         return Configuration()
     else:

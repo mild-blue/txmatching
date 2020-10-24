@@ -23,7 +23,6 @@ def get_latest_matchings_and_score_matrix(
     configuration_id = get_config_model_for_txm_event(txm_event_db_id).id
     last_pairing_result_model = (PairingResultModel
                                  .query.filter(PairingResultModel.config_id == configuration_id)
-                                 .order_by(PairingResultModel.updated_at.desc())
                                  .first()
                                  )
 
