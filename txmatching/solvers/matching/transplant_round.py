@@ -28,8 +28,8 @@ class TransplantRound:
         return len(country_codes)
 
     def contains_patient_db_id(self, patient_db_id: int) -> bool:
-        for donor, recipient in self.donor_recipient_pairs:
-            if patient_db_id in {donor.db_id, recipient.db_id}:
+        for pair in self.donor_recipient_pairs:
+            if patient_db_id in {pair.donor.db_id, pair.recipient.db_id}:
                 return True
 
         return False

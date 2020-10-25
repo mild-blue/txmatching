@@ -5,7 +5,7 @@ import logging
 import os
 import time
 from distutils.dir_util import copy_tree
-from typing import List
+from typing import List, Tuple
 
 import jinja2
 import pdfkit
@@ -14,16 +14,16 @@ from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
 
 from txmatching.auth.user.user_auth_check import require_user_login
-from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
-                                                 ManualDonorRecipientScore)
+from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, MatchingReportDTO, RoundReportDTO, TransplantDTO)
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services.config_service import \
-    latest_configuration_for_txm_event
+    get_configuration_for_txm_event
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
+from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
@@ -65,7 +65,8 @@ class Report(Resource):
     @require_user_login()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
-        txm_event_id = get_txm_event_id_for_current_user()
+        txm_event_db_id = get_txm_event_id_for_current_user()
+        txm_event = get_txm_event(txm_event_db_id)
         matching_id = int(request.view_args['matching_id'])
         if request.args.get(MATCHINGS_BELOW_CHOSEN) is None or request.args.get(MATCHINGS_BELOW_CHOSEN) == '':
             abort(400, f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
@@ -80,7 +81,7 @@ class Report(Resource):
                 f'Current value is {matching_range_limit}.'
             )
 
-        (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_id)
+        (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_db_id)
         all_matchings.sort(key=lambda m: m.order_id())  # lower ID -> better evaluation
 
         requested_matching = list(filter(lambda matching: matching.order_id() == matching_id, all_matchings))
@@ -92,7 +93,8 @@ class Report(Resource):
                    all_matchings))
         matchings_under = list(
             filter(lambda matching: matching.order_id() > matching_id,
-                   all_matchings))[:matching_range_limit]
+                   all_matchings))[
+                          :matching_range_limit]
         other_matchings_to_include = matchings_over + matchings_under
         other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
@@ -113,7 +115,7 @@ class Report(Resource):
         ) for matching in matchings
         ]
 
-        configuration = latest_configuration_for_txm_event(txm_event_db_id=txm_event_id)
+        configuration = get_configuration_for_txm_event(txm_event_db_id=txm_event_db_id)
 
         Report.prepare_tmp_dir()
         Report.copy_assets()
@@ -127,11 +129,25 @@ class Report(Resource):
         now = datetime.datetime.now()
         now_formatted = now.strftime('%Y_%m_%d_%H_%M_%S')
 
+        required_patients_medical_ids = [txm_event.recipients_dict[recipient_db_id].medical_id
+                                         for recipient_db_id in configuration.required_patient_db_ids]
+
+        manual_donor_recipient_scores_with_medical_ids = [
+            (
+                txm_event.donors_dict[donor_recipient_score.donor_db_id].medical_id,
+                txm_event.recipients_dict[donor_recipient_score.recipient_db_id].medical_id,
+                donor_recipient_score.score
+            ) for donor_recipient_score in
+            configuration.manual_donor_recipient_scores
+        ]
+
         html = (j2_env.get_template('report.html').render(
             title='Matching Report',
             date=now.strftime('%d.%m.%Y %H:%M:%S'),
             configuration=configuration,
-            matchings=matching_dtos
+            matchings=matching_dtos,
+            required_patients_medical_ids=required_patients_medical_ids,
+            manual_donor_recipient_scores_with_medical_ids=manual_donor_recipient_scores_with_medical_ids
         ))
 
         html_file_full_path = os.path.join(TMP_DIR, f'report_{now_formatted}.html')
@@ -160,7 +176,8 @@ class Report(Resource):
             TMP_DIR,
             pdf_file_name,
             as_attachment=True,
-            attachment_filename=pdf_file_name
+            attachment_filename=pdf_file_name,
+            cache_timeout=0
         )
 
         response.headers['x-filename'] = pdf_file_name
@@ -193,9 +210,8 @@ def country_combination_filter(country_combination: ForbiddenCountryCombination)
     return f'{country_combination.donor_country} - {country_combination.recipient_country}'
 
 
-def donor_recipient_score_filter(donor_recipient_score: ManualDonorRecipientScore) -> str:
-    return f'Donor ({donor_recipient_score.donor_db_id}) - ' \
-           f'Recipient ({donor_recipient_score.recipient_db_id}) : {donor_recipient_score.score}'
+def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
+    return f'{donor_recipient_score[0]} -> {donor_recipient_score[1]} : {donor_recipient_score[2]}'
 
 
 def antigen_a_filter(codes: List[str]) -> List[str]:

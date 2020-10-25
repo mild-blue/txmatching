@@ -32,6 +32,11 @@ def find_possible_path_combinations_from_score_matrix(score_matrix: np.ndarray,
     :param donors: List of all possible donors
     :param configuration
     """
+    if len(score_matrix) == 0:
+        logger.info('Empty set of paths, returning empty iterator')
+        yield from ()
+        return
+
     donor_idx_to_recipient_idx = get_donor_idx_to_recipient_idx(score_matrix)
     highest_scoring_paths = get_highest_scoring_paths(score_matrix,
                                                       donor_idx_to_recipient_idx,

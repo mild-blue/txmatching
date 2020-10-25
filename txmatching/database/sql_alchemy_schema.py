@@ -10,7 +10,8 @@ from txmatching.patients.patient import DonorType, RecipientRequirements
 # pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
 from txmatching.utils.enums import Country, Sex
-from txmatching.utils.hla_system.hla_code_processing_result_detail import HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_code_processing_result_detail import \
+    HlaCodeProcessingResultDetail
 
 
 class ConfigModel(db.Model):
@@ -28,6 +29,7 @@ class ConfigModel(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
     pairing_results = relationship('PairingResultModel', backref='config', cascade='all, delete')
+    UniqueConstraint('txm_event_id')
 
 
 class PairingResultModel(db.Model):
@@ -42,6 +44,7 @@ class PairingResultModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    UniqueConstraint('config_id')
 
 
 class TxmEventModel(db.Model):
