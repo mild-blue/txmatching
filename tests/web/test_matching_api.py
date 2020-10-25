@@ -23,10 +23,89 @@ class TestSaveAndGetConfiguration(DbTests):
             res = client.post(f'{API_VERSION}/{MATCHING_NAMESPACE}/calculate-for-config',
                               json=conf_dto,
                               headers=self.auth_headers)
-            expected = [{'order_id': 1, 'score': 36.0, 'rounds': [{'transplants': [
-                {'score': 18.0, 'compatible_blood': True, 'donor': 'P21', 'recipient': 'P12'},
-                {'score': 18.0, 'compatible_blood': True, 'donor': 'P22', 'recipient': 'P11'}]}],
-                         'countries': [{'country_code': 'CZE', 'donor_count': 2, 'recipient_count': 2}]}]
+            expected = [
+                {
+                    'order_id': 1,
+                    'score': 36.0,
+                    'rounds': [
+                        {'transplants': [
+                            {
+                                'score': 18.0,
+                                'antigens_score': {
+                                    'A': 0,
+                                    'B': 0,
+                                    'DR': 9
+                                },
+                                'compatible_blood': True,
+                                'donor': 'P21',
+                                'recipient': 'P12',
+                                'donor_antigens': {
+                                    'A': ['A11'],
+                                    'B': ['B8'],
+                                    'DR': ['DR11'],
+                                    'OTHER': []
+                                },
+                                'recipient_antibodies': {
+                                    'A': [],
+                                    'B': ['B7'],
+                                    'DR': [],
+                                    'OTHER': [
+                                        'DQ5',
+                                        'DQ6'
+                                    ]
+                                },
+                                'recipient_antigens': {
+                                    'A': ['A3'],
+                                    'B': ['B7'],
+                                    'DR': ['DR11'],
+                                    'OTHER': []
+                                },
+                            },
+                            {
+                                'score': 18.0,
+                                'antigens_score': {
+                                    'A': 0,
+                                    'B': 0,
+                                    'DR': 9
+                                },
+                                'compatible_blood': True,
+                                'donor': 'P22',
+                                'recipient': 'P11',
+                                'donor_antigens': {
+                                    'A': ['A2'],
+                                    'B': ['B8'],
+                                    'DR': ['DR11'],
+                                    'OTHER': []
+                                },
+                                'recipient_antibodies': {
+                                    'A': [],
+                                    'B': ['B7'],
+                                    'DR': [],
+                                    'OTHER': [
+                                        'DQ5',
+                                        'DQ6'
+                                    ]
+                                },
+                                'recipient_antigens': {
+                                    'A': ['A3'],
+                                    'B': ['B7'],
+                                    'DR': ['DR11'],
+                                    'OTHER': []
+                                }
+                            }
+                        ]
+                        }
+                    ],
+                    'countries': [
+                        {
+                            'country_code': 'CZE',
+                            'donor_count': 2,
+                            'recipient_count': 2
+                        }
+                    ],
+                    'count_of_transplants': 2
+                }
+            ]
             self.assertEqual(expected, res.json)
 
     def test_get_patients(self):
