@@ -20,6 +20,8 @@ class HLATypes(str, Enum):
     DR = 'DR'
 
 
+HLA_TYPE_OTHER = 'OTHER'
+
 HLA_TYPING_BONUS_PER_GENE_CODE = {
     HLATypes.A: 1,
     HLATypes.B: 3,
