@@ -24,6 +24,7 @@ from txmatching.database.services.config_service import \
     get_configuration_for_txm_event
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
+from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
@@ -63,13 +64,14 @@ class Report(Resource):
     @require_user_login()
     # pylint: disable=too-many-locals
     def get(self, matching_id: int) -> str:
-        txm_event_id = get_txm_event_id_for_current_user()
+        txm_event_db_id = get_txm_event_id_for_current_user()
+        txm_event = get_txm_event(txm_event_db_id)
         matching_id = int(request.view_args['matching_id'])
         if request.args.get(MATCHINGS_BELOW_CHOSEN) is None or request.args.get(MATCHINGS_BELOW_CHOSEN) == '':
             abort(400, f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
 
         matching_range_limit = int(request.args.get(MATCHINGS_BELOW_CHOSEN))
-        (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_id)
+        (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_db_id)
         all_matchings.sort(key=lambda m: m.order_id())  # lower ID -> better evaluation
 
         requested_matching = list(filter(lambda matching: matching.order_id() == matching_id, all_matchings))
@@ -102,7 +104,7 @@ class Report(Resource):
         ) for matching in matchings
         ]
 
-        configuration = get_configuration_for_txm_event(txm_event_db_id=txm_event_id)
+        configuration = get_configuration_for_txm_event(txm_event_db_id=txm_event_db_id)
 
         Report.prepare_tmp_dir()
         Report.copy_assets()
@@ -116,11 +118,15 @@ class Report(Resource):
         now = datetime.datetime.now()
         now_formatted = now.strftime('%Y_%m_%d_%H_%M_%S')
 
+        required_patients_medical_ids = [txm_event.recipients_dict[recipient_db_id].medical_id
+                                         for recipient_db_id in configuration.required_patient_db_ids]
+
         html = (j2_env.get_template('report.html').render(
             title='Matching Report',
             date=now.strftime('%d.%m.%Y %H:%M:%S'),
             configuration=configuration,
-            matchings=matching_dtos
+            matchings=matching_dtos,
+            required_patients_medical_ids=required_patients_medical_ids
         ))
 
         html_file_full_path = os.path.join(TMP_DIR, f'report_{now_formatted}.html')

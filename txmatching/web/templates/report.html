@@ -427,7 +427,7 @@
         <ul>
             <li>
                 <div class="label">Enforce compatible blood group</div>
-                <div class="value">{{ yes_no(configuration.enforce_compatible_blood_group) }}</div>
+                <div class="value">{{ yes_no(configuration.require_compatible_blood_group) }}</div>
             </li>
             <li>
                 <div class="label">Minimum total score</div>
@@ -439,11 +439,11 @@
             </li>
             <li>
                 <div class="label">Require new donor having better match in compatibility index</div>
-                <div class="value">{{ yes_no(configuration.require_new_donor_having_better_match_in_compatibility_index) }}</div>
+                <div class="value">{{ yes_no(configuration.require_better_match_in_compatibility_index) }}</div>
             </li>
             <li>
                 <div class="label">Require new donor having better match in compatibility index or blood group</div>
-                <div class="value">{{ yes_no(configuration.require_new_donor_having_better_match_in_compatibility_index_or_blood_group) }}</div>
+                <div class="value">{{ yes_no(configuration.require_better_match_in_compatibility_index_or_blood_group) }}</div>
             </li>
             <li>
                 <div class="label">Blood group compatibility bonus</div>
@@ -463,20 +463,20 @@
             </li>
             <li>
                 <div class="label">Max number of distinct countries in round</div>
-                <div class="value"><strong>{{ configuration.max_number_of_distinct_counliies_in_round }}</strong></div>
+                <div class="value"><strong>{{ configuration.max_number_of_distinct_countries_in_round }}</strong></div>
             </li>
             <li>
-                <div class="label">Required patient db ids</div>
-                <div class="value"><strong>{{ configuration.required_patient_db_ids|join(', ') }}</strong></div>
+                <div class="label">Required patient ids</div>
+                <div class="value"><strong>{{ required_patients_medical_ids|join(', ') }}</strong></div>
             </li>
             <li>
                 <div class="label">Allow low high res incompatible</div>
                 <div class="value">{{ yes_no(configuration.use_split_resolution) }}</div>
             </li>
             <li>
-                <div class="label">Forbidden counliy combinations</div>
+                <div class="label">Forbidden country combinations</div>
                 <div class="value">
-                    <strong>{{ configuration.forbidden_counliy_combinations|map('counliy_combination_filter')|join(', ') }}</strong>
+                    <strong>{{ configuration.forbidden_country_combinations|map('country_combination_filter')|join(', ') }}</strong>
                 </div>
             </li>
             <li>
