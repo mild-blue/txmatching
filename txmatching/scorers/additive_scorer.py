@@ -1,5 +1,7 @@
 from typing import Dict, List
 
+import numpy as np
+
 from txmatching.configuration.configuration import (Configuration,
                                                     ManualDonorRecipientScore)
 from txmatching.patients.patient import Donor, Recipient
@@ -42,12 +44,16 @@ class AdditiveScorer(ScorerBase):
 
         return total_score
 
-    def get_score_matrix(self, donors: Dict[DonorDbId, Donor],
-                         recipients: Dict[RecipientDbId, Recipient]) -> ScoreMatrix:
-        score_matrix = [
-            [self._score_transplant_including_original_tuple(donor, recipient, donors[recipient.related_donor_db_id])
-             for recipient in recipients.values()]
-            for donor in donors.values()]
+    def get_score_matrix(self,
+                         donors: List[Donor],
+                         recipients: List[Recipient],
+                         donors_dict: Dict[DonorDbId, Donor]) -> ScoreMatrix:
+        score_matrix = np.array([
+            [self._score_transplant_including_original_tuple(donor,
+                                                             recipient,
+                                                             donors_dict[recipient.related_donor_db_id])
+             for recipient in recipients]
+            for donor in donors])
 
         return score_matrix
 

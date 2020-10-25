@@ -1,8 +1,8 @@
 import logging
+import math
 import re
 from typing import Dict, List, Tuple, Union
 
-import math
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
@@ -17,12 +17,8 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup
 from txmatching.utils.excel_parsing.countries_for_excel import \
     country_code_from_id
-from txmatching.utils.hla_system.hla_table import ALL_SPLIT_BROAD_CODES
-from txmatching.utils.hla_system.hla_transformations_store import parse_hla_raw_code_and_store_parsing_error_in_db
-
-_valid_allele_codes = ALL_SPLIT_BROAD_CODES
-
-_unknown_allele_codes = set()
+from txmatching.utils.hla_system.hla_transformations_store import \
+    parse_hla_raw_code_and_store_parsing_error_in_db
 
 DEFAULT_CUTOFF_FOR_EXCEL = 2000
 DEFAULT_MFI = 10000
@@ -58,15 +54,6 @@ def _parse_hla(hla_allele_str: str) -> List[HLAType]:
 
     allele_codes = re.split('[,. ()]+', hla_allele_str)
     allele_codes = [code.upper() for code in allele_codes if len(code) > 0]
-    checked_allele_codes = [code for code in allele_codes if code in _valid_allele_codes]
-    if len(checked_allele_codes) != len(allele_codes):
-        unknown_allele_codes = []
-        for code in allele_codes:
-            if code not in checked_allele_codes:
-                unknown_allele_codes.append(code)
-                _unknown_allele_codes.add(code)
-        logger.warning(f"Following codes are not in the antigen codes table: \n {', '.join(unknown_allele_codes)}")
-        logger.warning(f'They were encountered in allele codes string {hla_allele_str}\n')
 
     return [HLAType(
         raw_code=raw_code,

@@ -27,7 +27,7 @@ from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto i
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import \
-    remove_donors_and_recipients_from_txm_event
+    remove_donors_and_recipients_from_txm_event_for_country
 from txmatching.database.sql_alchemy_schema import (
     ConfigModel, DonorModel, RecipientAcceptableBloodModel,
     RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
@@ -90,12 +90,8 @@ def recipient_excel_dto_to_recipient_model(
     return patient_model
 
 
-def save_patients_from_excel_to_empty_txm_event(donors_recipients: Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]],
-                                                txm_event_db_id: int):
-    txm_event = get_txm_event(txm_event_db_id)
-    if len(txm_event.donors_dict) > 0 or len(txm_event.recipients_dict) > 0:
-        raise ValueError(f'Txm event "{txm_event}" is not empty, cannot send patients to database.')
-
+def save_patients_from_excel_to_txm_event(donors_recipients: Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]],
+                                          txm_event_db_id: int):
     maybe_recipient_models = [recipient_excel_dto_to_recipient_model(recipient, txm_event_db_id)
                               if recipient else None for recipient in donors_recipients[1]]
     recipient_models = [recipient_model for recipient_model in maybe_recipient_models if recipient_model]
@@ -369,8 +365,12 @@ def _save_patients_to_existing_txm_event(
     if not txm_event:
         raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.')
 
-    if len(txm_event.donors) > 0 or len(txm_event.recipients) > 0:
-        raise InvalidArgumentException(f'Txm event "{txm_event_name}" is not empty, cannot send patients to database.')
+    donors_from_country = [donor for donor in txm_event.donors if donor.country == country_code]
+    recipients_from_country = [recipient for recipient in txm_event.recipients if
+                               recipient.country == country_code]
+    if len(donors_from_country) > 0 or len(recipients_from_country) > 0:
+        raise InvalidArgumentException(f'Txm event "{txm_event_name}" already contains some patients from country'
+                                       f' {country_code}, cannot upload data')
 
     txm_event_db_id = txm_event.id
     recipient_models = [
@@ -399,7 +399,7 @@ def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_co
     :param country_code:
     :return:
     """
-    remove_donors_and_recipients_from_txm_event(patient_upload_dto.txm_event_name)
+    remove_donors_and_recipients_from_txm_event_for_country(patient_upload_dto.txm_event_name, country_code)
     _save_patients_to_existing_txm_event(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,

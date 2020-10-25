@@ -7,25 +7,35 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 
 
 class TestSolveFromDbAndItsSupportFunctionality(DbTests):
-    def test_caching_in_solve_from_configuration(self):
-        self.fill_db_with_patients()
-        self.assertEqual(1, len(list(solve_from_configuration(Configuration(), 1).calculated_matchings)))
+    def test_no_new_config_is_saved_if_one_already_exists(self):
+        txm_event_db_id = self.fill_db_with_patients_and_results()
+        self.assertEqual(1, len(list(solve_from_configuration(Configuration(), txm_event_db_id).calculated_matchings)))
 
     def test_solve_from_configuration(self):
-        self.fill_db_with_patients()
+        txm_event_db_id = self.fill_db_with_patients()
         configuration = Configuration(
             manual_donor_recipient_scores=[
                 ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=4, score=1.0)])
-        self.assertEqual(1, len(list(solve_from_configuration(configuration, 1).calculated_matchings)))
+        self.assertEqual(1, len(list(solve_from_configuration(configuration, txm_event_db_id).calculated_matchings)))
 
     def test_solve_from_configuration_multiple_countries(self):
-        self.fill_db_with_patients(get_absolute_path('/tests/test_utilities/data2.xlsx'))
-        configuration = Configuration(max_number_of_distinct_countries_in_round=1)
-        solutions = list(solve_from_configuration(configuration, 1).calculated_matchings)
+        txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data2.xlsx'))
+        max_country_count = 1
+        configuration = Configuration(max_number_of_distinct_countries_in_round=max_country_count)
+        solutions = list(solve_from_configuration(configuration, txm_event_db_id).calculated_matchings)
         self.assertEqual(1, len(solutions))
+        for round in solutions[0].get_rounds():
+            self.assertGreaterEqual(1, round.country_count())
 
     def test_solve_from_configuration_forbidden_countries(self):
-        self.fill_db_with_patients(get_absolute_path('/tests/test_utilities/data3.xlsx'))
+        txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data3.xlsx'))
         configuration = Configuration(max_number_of_distinct_countries_in_round=3)
-        solutions = list(solve_from_configuration(configuration, 1).calculated_matchings)
+        solutions = list(solve_from_configuration(configuration, txm_event_db_id).calculated_matchings)
         self.assertEqual(1, len(solutions))
+
+    def test_solve_from_example_dataset(self):
+        txm_event_db_id = self.fill_db_with_patients(
+            get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx'))
+        configuration = Configuration(use_split_resolution=True)
+        solutions = list(solve_from_configuration(configuration, txm_event_db_id).calculated_matchings)
+        self.assertEqual(1215, len(solutions))
