@@ -170,7 +170,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int]):
     """
     max_mfi = np.max(mfis)
     min_mfi = np.min(mfis)
-    # TODO MFI should not be below 0
+    # TODO MFI should not be below 0 https://trello.com/c/EhlrOvpD
     # if min_mfi < 0:
     #     raise ValueError(f'MFI has to be >=0. Obtained MFI={min_mfi}.')
     # this should be +inf but max_mfi will do as well
