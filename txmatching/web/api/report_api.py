@@ -35,6 +35,8 @@ logger = logging.getLogger(__name__)
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TMP_DIR = '/tmp/txmatching_reports'
 MATCHINGS_BELOW_CHOSEN = 'matchingsBelowChosen'
+MIN_MATCHINGS_BELOW_CHOSEN = 0
+MAX_MATCHINGS_BELOW_CHOSEN = 100
 
 
 # Query params:
@@ -69,6 +71,15 @@ class Report(Resource):
             abort(400, f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
 
         matching_range_limit = int(request.args.get(MATCHINGS_BELOW_CHOSEN))
+
+        if matching_range_limit < MIN_MATCHINGS_BELOW_CHOSEN or matching_range_limit > MAX_MATCHINGS_BELOW_CHOSEN:
+            abort(
+                400,
+                f'Query argument {MATCHINGS_BELOW_CHOSEN} must be in '
+                f'range [{MIN_MATCHINGS_BELOW_CHOSEN}, {MAX_MATCHINGS_BELOW_CHOSEN}]. '
+                f'Current value is {matching_range_limit}.'
+            )
+
         (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_id)
         all_matchings.sort(key=lambda m: m.order_id())  # lower ID -> better evaluation
 
