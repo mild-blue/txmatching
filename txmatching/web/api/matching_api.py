@@ -1,5 +1,5 @@
 # pylint: disable=no-self-use
-# can not, they are used for generating swagger which needs class
+# Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 
 import dataclasses
 import logging
@@ -32,15 +32,11 @@ from txmatching.web.api.namespaces import matching_api
 
 logger = logging.getLogger(__name__)
 
-LOGIN_FLASH_CATEGORY = 'LOGIN'
 
-
-# pylint: disable=no-self-use
-# the methods here need self due to the annotations
 @matching_api.route('/calculate-for-config', methods=['POST'])
 class CalculateFromConfig(Resource):
     @matching_api.doc(body=ConfigurationJson, security='bearer')
-    @matching_api.response(200, model=Matchings, description='List of all matching for given configuration')
+    @matching_api.response(200, model=Matchings, description='List of all matchings for given configuration.')
     @matching_api.response(code=400, model=FailJson, description='Wrong data format.')
     @matching_api.response(code=401, model=FailJson, description='Authentication failed.')
     @matching_api.response(

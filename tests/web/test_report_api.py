@@ -12,7 +12,8 @@ class TestMatchingApi(DbTests):
 
     def test_get_report(self):
         self.txm_event_db_id = self.fill_db_with_patients(
-            get_absolute_path('/tests/test_utilities/patient_data_2020_07_obfuscated.xlsx'))
+            get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx')
+        )
         self.api.add_namespace(report_api, path=f'/{REPORTS_NAMESPACE}')
         pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
         solver_service.save_pairing_result(pairing_result)

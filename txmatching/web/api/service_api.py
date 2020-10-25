@@ -1,20 +1,19 @@
 # pylint: disable=no-self-use
-# can not, they are used for generating swagger which needs class
-
+# Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 import logging
 
 from flask import jsonify
 from flask_restx import Resource, fields
 from sqlalchemy.exc import OperationalError
 
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import FailJson
+from txmatching.configuration.app_configuration.application_configuration import \
+    get_application_configuration
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
+    FailJson
 from txmatching.database.db import db
 from txmatching.web.api.namespaces import service_api
 
 logger = logging.getLogger(__name__)
-
-LOGIN_FLASH_CATEGORY = 'LOGIN'
 
 
 @service_api.route('/status', methods=['GET'])
@@ -24,7 +23,7 @@ class Status(Resource):
         'exception': fields.String(required=False, description='Additional indication what is wrong.')
     })
 
-    @service_api.response(code=200, model=status, description='Returns ok if service is healthy.')
+    @service_api.response(code=200, model=status, description='Returns ok if the service is healthy.')
     @service_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @service_api.response(code=503, model=status, description='Some services are failing.')
     def get(self):

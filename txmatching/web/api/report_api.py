@@ -1,5 +1,5 @@
 # pylint: disable=no-self-use
-# can not, they are used for generating swagger which needs class
+# Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 import datetime
 import logging
 import os
@@ -40,7 +40,6 @@ MIN_MATCHINGS_BELOW_CHOSEN = 0
 MAX_MATCHINGS_BELOW_CHOSEN = 100
 
 
-# pylint: disable=no-self-use
 # Query params:
 #   - matchingRangeLimit
 @report_api.route('/<matching_id>', methods=['GET'])
@@ -57,7 +56,7 @@ class Report(Resource):
             }
         }
     )
-    @report_api.response(code=200, model=None, description='Pdf report.')
+    @report_api.response(code=200, model=None, description='Generates PDF report.')
     @report_api.response(code=400, model=FailJson, description='Wrong data format.')
     @report_api.response(code=401, model=FailJson, description='Authentication failed.')
     @report_api.response(
@@ -96,8 +95,7 @@ class Report(Resource):
                    all_matchings))
         matchings_under = list(
             filter(lambda matching: matching.order_id() > matching_id,
-                   all_matchings))[
-                          :matching_range_limit]
+                   all_matchings))[:matching_range_limit]
         other_matchings_to_include = matchings_over + matchings_under
         other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
