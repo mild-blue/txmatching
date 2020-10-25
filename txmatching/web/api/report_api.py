@@ -176,7 +176,8 @@ class Report(Resource):
             TMP_DIR,
             pdf_file_name,
             as_attachment=True,
-            attachment_filename=pdf_file_name
+            attachment_filename=pdf_file_name,
+            cache_timeout=0
         )
 
         response.headers['x-filename'] = pdf_file_name
