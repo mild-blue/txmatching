@@ -29,21 +29,67 @@ class TestSaveAndGetConfiguration(DbTests):
                         {'transplants': [
                             {
                                 'score': 18.0,
-                                'antigen_score_a': 0,
-                                'antigen_score_b': 0,
-                                'antigen_score_dr': 9,
+                                'antigens_score': {
+                                    'A': 0,
+                                    'B': 0,
+                                    'DR': 9
+                                },
                                 'compatible_blood': True,
                                 'donor': 'P21',
-                                'recipient': 'P12'
+                                'recipient': 'P12',
+                                'donor_antigens': {
+                                    'A': ['A11'],
+                                    'B': ['B8'],
+                                    'DR': ['DR11'],
+                                    'OTHER': []
+                                },
+                                'recipient_antibodies': {
+                                    'A': [],
+                                    'B': ['B7'],
+                                    'DR': [],
+                                    'OTHER': [
+                                        'DQ5',
+                                        'DQ6'
+                                    ]
+                                },
+                                'recipient_antigens': {
+                                    'A': ['A3'],
+                                    'B': ['B7'],
+                                    'DR': ['DR11'],
+                                    'OTHER': []
+                                },
                             },
                             {
                                 'score': 18.0,
-                                'antigen_score_a': 0,
-                                'antigen_score_b': 0,
-                                'antigen_score_dr': 9,
+                                'antigens_score': {
+                                    'A': 0,
+                                    'B': 0,
+                                    'DR': 9
+                                },
                                 'compatible_blood': True,
                                 'donor': 'P22',
-                                'recipient': 'P11'
+                                'recipient': 'P11',
+                                'donor_antigens': {
+                                    'A': ['A2'],
+                                    'B': ['B8'],
+                                    'DR': ['DR11'],
+                                    'OTHER': []
+                                },
+                                'recipient_antibodies': {
+                                    'A': [],
+                                    'B': ['B7'],
+                                    'DR': [],
+                                    'OTHER': [
+                                        'DQ5',
+                                        'DQ6'
+                                    ]
+                                },
+                                'recipient_antigens': {
+                                    'A': ['A3'],
+                                    'B': ['B7'],
+                                    'DR': ['DR11'],
+                                    'OTHER': []
+                                }
                             }
                         ]
                         }

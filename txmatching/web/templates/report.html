@@ -581,12 +581,12 @@
                                 <tr>
                                     <td>A</td>
                                     <td>
-                                        {% for code in transplant.donor.parameters.hla_typing.codes|antigen_a_filter %}
+                                        {% for code in transplant.donor.parameters.hla_typing.hla_types_list|antigen_a_filter %}
                                             <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {% for code in transplant.recipient.parameters.hla_typing.codes|antigen_a_filter %}
+                                        {% for code in transplant.recipient.parameters.hla_typing.hla_types_list|antigen_a_filter %}
                                             <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
@@ -600,12 +600,12 @@
                                 <tr>
                                     <td>B</td>
                                     <td>
-                                        {% for code in transplant.donor.parameters.hla_typing.codes|antigen_b_filter %}
+                                        {% for code in transplant.donor.parameters.hla_typing.hla_types_list|antigen_b_filter %}
                                             <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {% for code in transplant.recipient.parameters.hla_typing.codes|antigen_b_filter %}
+                                        {% for code in transplant.recipient.parameters.hla_typing.hla_types_list|antigen_b_filter %}
                                             <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
@@ -619,12 +619,12 @@
                                 <tr>
                                     <td>DR</td>
                                     <td>
-                                        {% for code in transplant.donor.parameters.hla_typing.codes|antigen_dr_filter %}
+                                        {% for code in transplant.donor.parameters.hla_typing.hla_types_list|antigen_dr_filter %}
                                             <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {% for code in transplant.recipient.parameters.hla_typing.codes|antigen_dr_filter %}
+                                        {% for hla_type in transplant.recipient.parameters.hla_typing.hla_types_list|antigen_dr_filter %}
                                             <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
@@ -638,12 +638,12 @@
                                 <tr>
                                     <td>Other</td>
                                     <td>
-                                        {% for code in transplant.donor.parameters.hla_typing.codes|antigen_other_filter %}
+                                        {% for code in transplant.donor.parameters.hla_typing.hla_types_list|antigen_other_filter %}
                                             <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {% for code in transplant.recipient.parameters.hla_typing.codes|antigen_other_filter %}
+                                        {% for code in transplant.recipient.parameters.hla_typing.hla_types_list|antigen_other_filter %}
                                             <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>

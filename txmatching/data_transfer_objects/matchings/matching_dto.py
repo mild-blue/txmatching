@@ -6,15 +6,17 @@ from txmatching.patients.patient_types import MedicalId
 from txmatching.utils.enums import Country
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class TransplantDTOOut:
     score: float
     compatible_blood: bool
     donor: MedicalId
     recipient: MedicalId
-    antigen_score_a: float
-    antigen_score_b: float
-    antigen_score_dr: float
+    donor_antigens: dict  # dict[HLATypes, List[str]]
+    recipient_antigens: dict  # dict[HLATypes, List[str]]
+    recipient_antibodies: dict  # dict[HLATypes, List[str]]
+    antigens_score: dict  # dict[HLATypes, float]
 
 
 @dataclass

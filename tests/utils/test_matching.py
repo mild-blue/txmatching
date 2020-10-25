@@ -1,14 +1,15 @@
 import unittest
 
 from txmatching.patients.patient import Donor, Recipient, DonorType, RecipientRequirements
-from txmatching.patients.patient_parameters import PatientParameters, HLATyping, HLAType, HLAAntibodies
+from txmatching.patients.patient_parameters import PatientParameters, HLATyping, HLAType, HLAAntibodies, HLAAntibody
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_sequence import TransplantSequence
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex, HLATypes
-from txmatching.utils.matching import get_matching_hla_typing, calculate_antigen_score, get_count_of_transplants
+from txmatching.utils.matching import calculate_antigen_score, get_count_of_transplants, \
+    get_filtered_antigens, get_matching_hla_typing, get_other_antigens, get_filtered_antibodies, get_other_antibodies
 
 RAW_CODES = [
     'A1',
@@ -115,9 +116,29 @@ RECIPIENTS = [
     ),
 ]
 
+TEST_ANTIGENS = [
+    HLAType('A7'),
+    HLAType('B32'),
+    HLAType('DR40'),
+    HLAType('B5'),
+    HLAType('DR9'),
+    HLAType('A23')
+]
+
+TEST_ANTIBODIES = HLAAntibodies(
+    hla_antibodies_list=[
+        HLAAntibody('A7', 1200, 1000, 'A7'),
+        HLAAntibody('B32', 1200, 1000, 'B32'),
+        HLAAntibody('DR40', 1200, 1000, 'DR40'),
+        HLAAntibody('B5', 1200, 1000, 'B5'),
+        HLAAntibody('DR9', 1200, 1000, 'DR9'),
+        HLAAntibody('A23', 1200, 1000, 'A23')
+    ]
+)
+
 
 class TestMatching(unittest.TestCase):
-    def test_get_matching_hla_typing(self):
+    def test__get_matching_hla_typing(self):
         result = get_matching_hla_typing(DONORS[0], RECIPIENTS[0])
         result.sort()
         self.assertListEqual([RAW_CODES[1]], result)
@@ -198,3 +219,59 @@ class TestMatching(unittest.TestCase):
 
         result = get_count_of_transplants(matching)
         self.assertEquals(4, result)
+
+    def test_get_filtered_antigens(self):
+        result = get_filtered_antigens(
+            TEST_ANTIGENS,
+            HLATypes.A
+        )
+        result.sort()
+        self.assertEquals(['A23', 'A7'], result)
+
+        result = get_filtered_antigens(
+            TEST_ANTIGENS,
+            HLATypes.B
+        )
+        result.sort()
+        self.assertEquals(['B32', 'B5'], result)
+
+        result = get_filtered_antigens(
+            TEST_ANTIGENS,
+            HLATypes.DR
+        )
+        result.sort()
+        self.assertEquals(['DR40', 'DR9'], result)
+
+    def test_get_other_antigens(self):
+        result = get_other_antigens(
+            TEST_ANTIGENS
+        )
+        self.assertEquals([], result)
+
+    def test_get_filtered_antibodies(self):
+        result = get_filtered_antibodies(
+            TEST_ANTIBODIES,
+            HLATypes.A
+        )
+        result.sort()
+        self.assertEquals(['A23', 'A7'], result)
+
+        result = get_filtered_antibodies(
+            TEST_ANTIBODIES,
+            HLATypes.B
+        )
+        result.sort()
+        self.assertEquals(['B32', 'B5'], result)
+
+        result = get_filtered_antibodies(
+            TEST_ANTIBODIES,
+            HLATypes.DR
+        )
+        result.sort()
+        self.assertEquals(['DR40', 'DR9'], result)
+
+    def test_get_other_antibodies(self):
+        result = get_other_antibodies(
+            TEST_ANTIBODIES
+        )
+        self.assertEquals([], result)

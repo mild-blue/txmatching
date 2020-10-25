@@ -28,7 +28,8 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
 from txmatching.utils.enums import HLATypes
-from txmatching.utils.matching import calculate_antigen_score, get_count_of_transplants
+from txmatching.utils.matching import calculate_antigen_score, get_count_of_transplants, get_filtered_antigens, \
+    get_other_antigens, get_filtered_antibodies, get_other_antibodies
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -203,45 +204,27 @@ def donor_recipient_score_filter(donor_recipient_score: ManualDonorRecipientScor
 
 
 def antigen_a_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: x.upper().startswith(HLATypes.A.value), codes))
+    return get_filtered_antigens(codes, HLATypes.A.value)
 
 
 def antigen_b_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: x.upper().startswith(HLATypes.B.value), codes))
+    return get_filtered_antigens(codes, HLATypes.B.value)
 
 
 def antigen_dr_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), codes))
-
-
-def _start_with(value: str, values: List[str]) -> bool:
-    for val in values:
-        if value.upper().startswith(val):
-            return True
-    return False
-
-
-def antigen_other_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: not _start_with(x, [hla.value for hla in HLATypes]), codes))
+    return get_filtered_antigens(codes, HLATypes.DR.value)
 
 
 def antibody_a_filter(antibodies: HLAAntibodies) -> List[str]:
-    return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.A.value), antibodies.hla_codes_over_cutoff))]
+    return get_filtered_antibodies(antibodies, HLATypes.A.value)
 
 
 def antibody_b_filter(antibodies: HLAAntibodies) -> List[str]:
-    return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.B.value), antibodies.hla_codes_over_cutoff))]
+    return get_filtered_antibodies(antibodies, HLATypes.B.value)
 
 
 def antibody_dr_filter(antibodies: HLAAntibodies) -> List[str]:
-    return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), antibodies.hla_codes_over_cutoff))]
-
-
-def antibody_other_filter(antibodies: HLAAntibodies) -> List[str]:
-    return list(filter(lambda x: not _start_with(x, [hla.value for hla in HLATypes]), antibodies.hla_codes_over_cutoff))
+    return get_filtered_antibodies(antibodies, HLATypes.DR.value)
 
 
 def antigen_score_a_filter(transplant: TransplantDTO) -> int:
@@ -265,7 +248,7 @@ jinja2.filters.FILTERS['donor_recipient_score_filter'] = donor_recipient_score_f
 jinja2.filters.FILTERS['antigen_a_filter'] = antigen_a_filter
 jinja2.filters.FILTERS['antigen_b_filter'] = antigen_b_filter
 jinja2.filters.FILTERS['antigen_dr_filter'] = antigen_dr_filter
-jinja2.filters.FILTERS['antigen_other_filter'] = antigen_other_filter
+jinja2.filters.FILTERS['antigen_other_filter'] = get_other_antigens
 jinja2.filters.FILTERS['antigen_score_a_filter'] = antigen_score_a_filter
 jinja2.filters.FILTERS['antigen_score_b_filter'] = antigen_score_b_filter
 jinja2.filters.FILTERS['antigen_score_dr_filter'] = antigen_score_dr_filter
@@ -273,4 +256,4 @@ jinja2.filters.FILTERS['code_from_country_filter'] = code_from_country_filter
 jinja2.filters.FILTERS['antibody_a_filter'] = antibody_a_filter
 jinja2.filters.FILTERS['antibody_b_filter'] = antibody_b_filter
 jinja2.filters.FILTERS['antibody_dr_filter'] = antibody_dr_filter
-jinja2.filters.FILTERS['antibody_other_filter'] = antibody_other_filter
+jinja2.filters.FILTERS['antibody_other_filter'] = get_other_antibodies
