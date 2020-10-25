@@ -4,6 +4,8 @@ from dacite import from_dict
 
 from txmatching.data_transfer_objects.matchings.calculated_matchings_dto import \
     CalculatedMatchingsDTO
+from txmatching.database.services.config_service import \
+    get_config_model_for_txm_event
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.patients.patient import Donor, Recipient
@@ -18,7 +20,11 @@ BloodCompatibleDict = Dict[Tuple[int, int], bool]
 def get_latest_matchings_and_score_matrix(
         txm_event_db_id: int
 ) -> Tuple[List[MatchingWithScore], ScoreDict, BloodCompatibleDict]:
-    last_pairing_result_model = PairingResultModel.query.order_by(PairingResultModel.updated_at.desc()).first()
+    configuration_id = get_config_model_for_txm_event(txm_event_db_id).id
+    last_pairing_result_model = (PairingResultModel
+                                 .query.filter(PairingResultModel.config_id == configuration_id)
+                                 .first()
+                                 )
 
     if last_pairing_result_model is None:
         raise AssertionError('There are no latest matchings in the database, '

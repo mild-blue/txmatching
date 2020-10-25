@@ -41,7 +41,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(0, len(pairing_results))
         self.assertEqual(91, len(recipient_acceptable_bloods))
         self.assertEqual(1102, len(recipient_hla_antibodies))
-        self.assertEqual(4, len(app_users))
+        self.assertEqual(5, len(app_users))
 
         self.assertEqual(572,
                          len(list(solve_from_configuration(Configuration(max_cycle_length=100,

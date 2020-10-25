@@ -1,6 +1,7 @@
 import os
 import unittest
 from importlib import util as importing
+from typing import Dict
 
 from flask import Flask
 from flask_restx import Api
@@ -62,9 +63,9 @@ class DbTests(unittest.TestCase):
         return txm_event_db_id
 
     @staticmethod
-    def fill_db_with_patients(file=get_absolute_path('/tests/resources/data.xlsx')) -> int:
+    def fill_db_with_patients(file=get_absolute_path('/tests/resources/data.xlsx'), txm_event='test') -> int:
         patients = parse_excel_data(file)
-        txm_event = create_or_overwrite_txm_event(name='test')
+        txm_event = create_or_overwrite_txm_event(name=txm_event)
         save_patients_from_excel_to_txm_event(patients, txm_event_db_id=txm_event.db_id)
         return txm_event.db_id
 
@@ -74,15 +75,17 @@ class DbTests(unittest.TestCase):
         self.api.add_namespace(user_api, path='/user')
         self.login_with_role(UserRole.ADMIN)
 
-    def login_with_role(self, user_role: UserRole):
-        credentials = ROLE_CREDENTIALS[user_role]
-
+    def login_with_credentials(self, credentials: Dict):
         with self.app.test_client() as client:
             json = client.post('/user/login',
                                json={'email': credentials['email'], 'password': credentials['password']}).json
             token = json['auth_token']
             self.auth_headers = {'Authorization': f'Bearer {token}'}
-            store_user_in_context(credentials['id'], user_role)
+            store_user_in_context(credentials['id'], credentials['role'])
+
+    def login_with_role(self, user_role: UserRole):
+        credentials = ROLE_CREDENTIALS[user_role]
+        self.login_with_credentials(credentials)
 
     def _load_local_development_config(self):
         config_file = 'txmatching.web.local_config'
