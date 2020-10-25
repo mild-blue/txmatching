@@ -170,10 +170,11 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int]):
     """
     max_mfi = np.max(mfis)
     min_mfi = np.min(mfis)
-    if min_mfi < 0:
-        raise ValueError(f'MFI has to be >=0. Obtained MFI={min_mfi}.')
+    # TODO MFI should not be below 0
+    # if min_mfi < 0:
+    #     raise ValueError(f'MFI has to be >=0. Obtained MFI={min_mfi}.')
     # this should be +inf but max_mfi will do as well
-    max_min_difference = (max_mfi - min_mfi) / min_mfi if min_mfi > 0 else max_mfi
+    max_min_difference = (max_mfi - min_mfi) / min_mfi if min_mfi != 0 else max_mfi
     if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
         return np.mean(mfis)
     return 0

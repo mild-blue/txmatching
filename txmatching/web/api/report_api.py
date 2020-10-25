@@ -3,12 +3,12 @@
 import datetime
 import logging
 import os
-import time
 from distutils.dir_util import copy_tree
 from typing import List, Tuple
 
 import jinja2
 import pdfkit
+import time
 from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
@@ -82,8 +82,7 @@ class Report(Resource):
                    all_matchings))
         matchings_under = list(
             filter(lambda matching: matching.order_id() > matching_id,
-                   all_matchings))[
-                          :matching_range_limit]
+                   all_matchings))[:matching_range_limit]
         other_matchings_to_include = matchings_over + matchings_under
         other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
