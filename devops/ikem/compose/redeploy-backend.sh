@@ -38,6 +38,12 @@ function redeploy {
   docker ps
 }
 
+function run_db_migration() {
+  PROD_POSTGRES_USER=$(grep POSTGRES_USER ".env" | cut -d '=' -f2)
+  PROD_POSTGRES_PASSWORD=$(grep POSTGRES_PASSWORD ".env" | cut -d '=' -f2)
+  sudo docker exec –it "backend" /bin/bash -c "cd /app/txmatching;PROD_POSTGRES_USER=${PROD_POSTGRES_USER} PROD_POSTGRES_PASSWORD=${PROD_POSTGRES_PASSWORD} make migrate-db-prod"
+}
+
 echo "Getting latest version info from Git repository."
 PROJECT_CONFIGURATION="project-configuration"
 git clone https://${GIT_TOKEN}@github.com/mild-blue/${PROJECT_CONFIGURATION}.git || true
@@ -60,6 +66,15 @@ while true; do
     read -p "Do you want to redeploy backend with version ${VERSION_TAG} [yn]? " yn
     case $yn in
         [Yy]* ) redeploy "${VERSION_TAG}"; break;;
+        [Nn]* ) echo "Ok, exit."; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you want to run DB migrations [yn]? " yn
+    case $yn in
+        [Yy]* ) run_db_migration; break;;
         [Nn]* ) echo "Ok, exit."; break;;
         * ) echo "Please answer yes or no.";;
     esac
