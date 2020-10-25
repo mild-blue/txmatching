@@ -26,6 +26,8 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
+from txmatching.utils.enums import HLATypes
+from txmatching.utils.matching import calculate_antigen_score, get_count_of_transplants
 from txmatching.web.api.namespaces import matching_api
 
 logger = logging.getLogger(__name__)
@@ -61,14 +63,19 @@ class CalculateFromConfig(Resource):
                     RoundDTO(
                         transplants=[
                             TransplantDTOOut(
-                                score_dict[(pair.donor.db_id, pair.recipient.db_id)],
-                                compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
-                                pair.donor.medical_id,
-                                pair.recipient.medical_id) for pair in matching_round.donor_recipient_pairs])
+                                score=score_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                                compatible_blood=compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                                donor=pair.donor.medical_id,
+                                recipient=pair.recipient.medical_id,
+                                antigen_score_a=calculate_antigen_score(pair.donor, pair.recipient, HLATypes.A.value),
+                                antigen_score_b=calculate_antigen_score(pair.donor, pair.recipient, HLATypes.B.value),
+                                antigen_score_dr=calculate_antigen_score(pair.donor, pair.recipient, HLATypes.DR.value)
+                            ) for pair in matching_round.donor_recipient_pairs])
                     for matching_round in matching.get_rounds()],
                 countries=matching.get_country_codes_counts(),
                 score=matching.score(),
-                order_id=matching.order_id()
+                order_id=matching.order_id(),
+                count_of_transplants=get_count_of_transplants(matching)
             )) for matching in matchings
         ]
         if get_user_role() == UserRole.VIEWER:

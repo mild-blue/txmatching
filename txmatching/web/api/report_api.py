@@ -27,7 +27,8 @@ from txmatching.database.services.matching_service import \
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
-from txmatching.utils.enums import HLA_TYPING_BONUS_PER_GENE_CODE_STR, HLATypes
+from txmatching.utils.enums import HLATypes
+from txmatching.utils.matching import calculate_antigen_score, get_count_of_transplants
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -96,7 +97,7 @@ class Report(Resource):
         matchings_under = list(
             filter(lambda matching: matching.order_id() > matching_id,
                    all_matchings))[
-            :matching_range_limit]
+                          :matching_range_limit]
         other_matchings_to_include = matchings_over + matchings_under
         other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
@@ -113,7 +114,8 @@ class Report(Resource):
                 for matching_round in matching.get_rounds()],
             countries=matching.get_country_codes_counts(),
             score=matching.score(),
-            order_id=matching.order_id()
+            order_id=matching.order_id(),
+            count_of_transplants=get_count_of_transplants(matching)
         ) for matching in matchings
         ]
 
@@ -244,39 +246,20 @@ def antibody_other_filter(antibodies: HLAAntibodies) -> List[str]:
     return list(filter(lambda x: not _start_with(x, [hla.value for hla in HLATypes]), antibodies.hla_codes_over_cutoff))
 
 
-def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:
-    donor_hla_typing = transplant.donor.parameters.hla_typing.codes
-    recipient_hla_typing = transplant.recipient.parameters.hla_typing.codes
-    return list(set(donor_hla_typing) & set(recipient_hla_typing))
-
-
-def antigen_score(donor_recipient: TransplantDTO, antigen: HLATypes) -> int:
-    filtered = list(
-        filter(lambda x: x.upper().startswith(antigen.upper()), matching_hla_typing_filter(donor_recipient)))
-    return len(filtered) * HLA_TYPING_BONUS_PER_GENE_CODE_STR[antigen.upper()]
-
-
 def antigen_score_a_filter(transplant: TransplantDTO) -> int:
-    return antigen_score(transplant, HLATypes.A.value)
+    return calculate_antigen_score(transplant.donor, transplant.recipient, HLATypes.A.value)
 
 
 def antigen_score_b_filter(transplant: TransplantDTO) -> int:
-    return antigen_score(transplant, HLATypes.B.value)
+    return calculate_antigen_score(transplant.donor, transplant.recipient, HLATypes.B.value)
 
 
 def antigen_score_dr_filter(transplant: TransplantDTO) -> int:
-    return antigen_score(transplant, HLATypes.DR.value)
+    return calculate_antigen_score(transplant.donor, transplant.recipient, HLATypes.DR.value)
 
 
 def code_from_country_filter(countries: List[CountryDTO]) -> List[str]:
     return [country.country_code.value for country in countries]
-
-
-def sum_of_transplants(matching: MatchingReportDTO) -> int:
-    count_of_transplants = 0
-    for matching_round in matching.rounds:
-        count_of_transplants += len(matching_round.transplants)
-    return count_of_transplants
 
 
 jinja2.filters.FILTERS['country_combination_filter'] = country_combination_filter
@@ -285,7 +268,6 @@ jinja2.filters.FILTERS['antigen_a_filter'] = antigen_a_filter
 jinja2.filters.FILTERS['antigen_b_filter'] = antigen_b_filter
 jinja2.filters.FILTERS['antigen_dr_filter'] = antigen_dr_filter
 jinja2.filters.FILTERS['antigen_other_filter'] = antigen_other_filter
-jinja2.filters.FILTERS['matching_hla_typing_filter'] = matching_hla_typing_filter
 jinja2.filters.FILTERS['antigen_score_a_filter'] = antigen_score_a_filter
 jinja2.filters.FILTERS['antigen_score_b_filter'] = antigen_score_b_filter
 jinja2.filters.FILTERS['antigen_score_dr_filter'] = antigen_score_dr_filter
@@ -294,4 +276,3 @@ jinja2.filters.FILTERS['antibody_a_filter'] = antibody_a_filter
 jinja2.filters.FILTERS['antibody_b_filter'] = antibody_b_filter
 jinja2.filters.FILTERS['antibody_dr_filter'] = antibody_dr_filter
 jinja2.filters.FILTERS['antibody_other_filter'] = antibody_other_filter
-jinja2.filters.FILTERS['sum_of_transplants'] = sum_of_transplants

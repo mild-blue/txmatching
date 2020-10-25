@@ -501,7 +501,7 @@
             <ul class="matching-info">
                 <li>Score: <strong class="color-primary">{{ matching.score }}</strong></li>
                 <li>Rounds: <strong>{{ matching.rounds|length }}</strong></li>
-                <li>Transplants: <strong>{{ matching|sum_of_transplants }}</strong></li>
+                <li>Transplants: <strong>{{ matching.count_of_transplants }}</strong></li>
                 <li>Countries: <strong>{{ matching.countries|code_from_country_filter|join(', ') }}</strong></li>
             </ul>
         </div>

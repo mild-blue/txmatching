@@ -12,6 +12,9 @@ class TransplantDTOOut:
     compatible_blood: bool
     donor: MedicalId
     recipient: MedicalId
+    antigen_score_a: float
+    antigen_score_b: float
+    antigen_score_dr: float
 
 
 @dataclass
@@ -32,6 +35,7 @@ class MatchingDTO:
     rounds: List[RoundDTO]
     countries: List[CountryDTO]
     order_id: int
+    count_of_transplants: int
 
 
 @dataclass
@@ -53,3 +57,4 @@ class MatchingReportDTO:
     rounds: List[RoundReportDTO]
     countries: List[CountryDTO]
     order_id: int
+    count_of_transplants: int

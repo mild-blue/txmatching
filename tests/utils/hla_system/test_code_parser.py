@@ -1,7 +1,6 @@
 import pandas as pd
 
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.database.services import txm_event_service
 from txmatching.database.sql_alchemy_schema import ParsingError
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (

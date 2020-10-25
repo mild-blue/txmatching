@@ -21,10 +21,43 @@ class TestSaveAndGetConfiguration(DbTests):
                 max_number_of_distinct_countries_in_round=10))
 
             res = client.post('/matching/calculate-for-config', json=conf_dto, headers=self.auth_headers)
-            expected = [{'order_id': 1, 'score': 36.0, 'rounds': [{'transplants': [
-                {'score': 18.0, 'compatible_blood': True, 'donor': 'P21', 'recipient': 'P12'},
-                {'score': 18.0, 'compatible_blood': True, 'donor': 'P22', 'recipient': 'P11'}]}],
-                         'countries': [{'country_code': 'CZE', 'donor_count': 2, 'recipient_count': 2}]}]
+            expected = [
+                {
+                    'order_id': 1,
+                    'score': 36.0,
+                    'rounds': [
+                        {'transplants': [
+                            {
+                                'score': 18.0,
+                                'antigen_score_a': 0,
+                                'antigen_score_b': 0,
+                                'antigen_score_dr': 9,
+                                'compatible_blood': True,
+                                'donor': 'P21',
+                                'recipient': 'P12'
+                            },
+                            {
+                                'score': 18.0,
+                                'antigen_score_a': 0,
+                                'antigen_score_b': 0,
+                                'antigen_score_dr': 9,
+                                'compatible_blood': True,
+                                'donor': 'P22',
+                                'recipient': 'P11'
+                            }
+                        ]
+                        }
+                    ],
+                    'countries': [
+                        {
+                            'country_code': 'CZE',
+                            'donor_count': 2,
+                            'recipient_count': 2
+                        }
+                    ],
+                    'count_of_transplants': 2
+                }
+            ]
             self.assertEqual(expected, res.json)
 
     def test_get_patients(self):
