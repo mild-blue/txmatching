@@ -41,7 +41,7 @@ function redeploy {
 function run_db_migration() {
   PROD_POSTGRES_USER=$(grep POSTGRES_USER ".env" | cut -d '=' -f2)
   PROD_POSTGRES_PASSWORD=$(grep POSTGRES_PASSWORD ".env" | cut -d '=' -f2)
-  sudo docker exec –it "backend" /bin/bash -c "cd /app/txmatching;PROD_POSTGRES_USER=${PROD_POSTGRES_USER} PROD_POSTGRES_PASSWORD=${PROD_POSTGRES_PASSWORD} make migrate-db-prod"
+  docker exec --interactive --tty "backend" /bin/bash -c ". ~/.bashrc; conda activate txmatching; cd /app/txmatching; PYTHONPATH=.. POSTGRES_USER=${PROD_POSTGRES_USER} POSTGRES_PASSWORD=${PROD_POSTGRES_PASSWORD} POSTGRES_DB='txmatching' POSTGRES_URL='localhost:5432' python database/migrate_db.py"
 }
 
 echo "Getting latest version info from Git repository."
