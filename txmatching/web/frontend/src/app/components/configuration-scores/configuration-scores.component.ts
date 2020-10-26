@@ -1,10 +1,13 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { Donor, Patient, PatientList, Recipient } from '@app/model/Patient';
+import { Patient } from '@app/model/Patient';
 import { Configuration, DonorRecipientScore } from '@app/model/Configuration';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ConfigErrorStateMatcher, patientFullTextSearch, patientNameValidator } from '@app/directives/validators/configForm.directive';
+import { Donor } from '@app/model/Donor';
+import { Recipient } from '@app/model/Recipient';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-configuration-scores',

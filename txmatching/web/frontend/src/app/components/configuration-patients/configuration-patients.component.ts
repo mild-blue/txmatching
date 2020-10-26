@@ -1,11 +1,12 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Patient, PatientList } from '@app/model/Patient';
+import { Patient } from '@app/model/Patient';
 import { Configuration } from '@app/model/Configuration';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { patientFullTextSearch } from '@app/directives/validators/configForm.directive';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-configuration-patients',

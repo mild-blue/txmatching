@@ -1,33 +1,10 @@
 import { ListItem } from '@app/components/list-item/list-item.interface';
-
-export interface PatientList {
-  donors: Donor[];
-  recipients: Recipient[];
-}
-
-export interface PatientPair extends ListItem {
-  d: Donor;
-  r: Recipient;
-}
+import { Antigen } from '@app/model/Hla';
 
 export interface Patient extends ListItem {
   db_id: number;
   medical_id: string;
   parameters: PatientParameters;
-}
-
-export interface Recipient extends Patient {
-  acceptable_blood_groups: string[];
-  hla_antibodies: {
-    hla_antibodies_list: Antibody[];
-    hla_codes_over_cutoff: string[];
-  };
-  recipient_requirements: RecipientRequirements;
-}
-
-export interface Donor extends Patient {
-  donor_type: DonorType;
-  related_recipient_db_id: number;
 }
 
 export interface PatientParameters {
@@ -37,34 +14,6 @@ export interface PatientParameters {
   };
   country_code: string;
 }
-
-export interface RecipientRequirements {
-  require_better_match_in_compatibility_index: boolean;
-  require_better_match_in_compatibility_index_or_blood_group: boolean;
-  require_compatible_blood_group: boolean;
-
-  [key: string]: boolean;
-}
-
-export interface Hla {
-  code: string | null;
-  raw_code: string;
-}
-
-export interface Antigen extends Hla {
-}
-
-export interface Antibody extends Hla {
-  mfi: number;
-}
-
-export enum DonorType {
-  DONOR = 'DONOR',
-  BRIDGING_DONOR = 'BRIDGING_DONOR',
-  NON_DIRECTED = 'NON_DIRECTED'
-}
-
-export const patientsLSKey = 'patients';
 
 // recipient: [possible donors]
 const compatibleBloodGroups: { [key: string]: string[]; } = {
