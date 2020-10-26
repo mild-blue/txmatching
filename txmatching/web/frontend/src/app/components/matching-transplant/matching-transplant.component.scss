@@ -100,26 +100,4 @@
       border-right: none;
     }
   }
-
-  .footer-score {
-
-    td {
-      text-align: right;
-      background: $white !important;
-
-      &:not(:last-child) {
-        border: none !important;
-      }
-
-      &:last-child {
-        border-top: 3px solid $primary;
-      }
-    }
-
-    span {
-      font-size: 24px;
-      font-weight: 700;
-      color: $primary;
-    }
-  }
 }

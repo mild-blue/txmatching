@@ -48,40 +48,18 @@
       <tr *ngFor="let prefix of prefixes">
         <td>{{prefix}}</td>
         <td>
-          <app-code *ngFor="let code of filterCodes(transplant.d.parameters.hla_typing.hla_types_list, prefix)"
-                    [class]="getDonorAntigenClass(code.code)">{{ code.code }}</app-code>
+          <app-code *ngFor="let code of getCodesByPrefix(transplant.donor_antigens, prefix)"
+                    [class]="getDonorAntigenClass(code)">{{ code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterCodes(transplant.r.parameters.hla_typing.hla_types_list, prefix)"
-                    [class]="getRecipientAntigenClass(code.code)">{{ code.code }}</app-code>
+          <app-code *ngFor="let code of getCodesByPrefix(transplant.recipient_antigens, prefix)"
+                    [class]="getRecipientAntigenClass(code)">{{ code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterPureCodes(transplant.r.hla_antibodies.hla_codes_over_cutoff, prefix)"
+          <app-code *ngFor="let code of getCodesByPrefix(transplant.recipient_antibodies, prefix)"
                     [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
         </td>
-        <td>{{ hlaScores ? hlaScores.get(prefix) : 0 }}</td>
-      </tr>
-      <tr>
-        <td>Other</td>
-        <td>
-          <app-code *ngFor="let code of otherHLA(transplant.d.parameters.hla_typing.hla_types_list)"
-                    [class]="getDonorAntigenClass(code.code)">{{ code.code }}</app-code>
-        </td>
-        <td>
-          <app-code *ngFor="let code of otherHLA(transplant.r.parameters.hla_typing.hla_types_list)"
-                    [class]="getRecipientAntigenClass(code.code)">{{ code.code }}</app-code>
-        </td>
-        <td>
-          <app-code *ngFor="let code of otherHLAPure(transplant.r.hla_antibodies.hla_codes_over_cutoff)"
-                    [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
-        </td>
-        <td>-</td>
-      </tr>
-      <tr class="footer-score">
-        <td colspan="4">
-          Final score:
-        </td>
-        <td><span>{{ totalScore }}</span></td>
+        <td>{{ getHlaScoreByPrefix(prefix) }}</td>
       </tr>
       </tbody>
     </table>

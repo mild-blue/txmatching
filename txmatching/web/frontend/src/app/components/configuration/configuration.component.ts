@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, 
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Configuration } from '@app/model/Configuration';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { PatientList } from '@app/model/Patient';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-configuration',

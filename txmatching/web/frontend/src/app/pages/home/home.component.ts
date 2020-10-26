@@ -7,8 +7,8 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { Matching, Transplant } from '@app/model/Matching';
-import { compatibleBloodGroups, Donor, PatientList, Recipient } from '@app/model/Patient';
+import { Matching } from '@app/model/Matching';
+import { compatibleBloodGroups } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
@@ -17,6 +17,10 @@ import { ReportService } from '@app/services/report/report.service';
 import { DownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
 import { finalize, first } from 'rxjs/operators';
+import { Transplant } from '@app/model/Transplant';
+import { Donor } from '@app/model/Donor';
+import { Recipient } from '@app/model/Recipient';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-home',

@@ -1,8 +1,8 @@
 import { Component, ComponentFactoryResolver, ComponentRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { ListItemDirective } from '@app/directives/list-item/list-item.directive';
 import { ListItem, ListItemAbstractComponent } from '@app/components/list-item/list-item.interface';
-import { PatientList } from '@app/model/Patient';
 import { Configuration } from '@app/model/Configuration';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-item',

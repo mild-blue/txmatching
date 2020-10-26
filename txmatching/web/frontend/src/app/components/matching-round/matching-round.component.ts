@@ -1,8 +1,10 @@
 import { Component, Input } from '@angular/core';
-import { Round, Transplant } from '@app/model/Matching';
-import { DonorType, PatientList } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { AppConfiguration } from '@app/model/Configuration';
+import { Round } from '@app/model/Round';
+import { Transplant } from '@app/model/Transplant';
+import { DonorType } from '@app/model/Donor';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-matching-round',
