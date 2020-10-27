@@ -1,5 +1,4 @@
-from typing import Set
-from unittest import TestCase
+from typing import List
 from uuid import uuid4
 
 from tests.test_utilities.prepare_app import DbTests
@@ -11,40 +10,34 @@ from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.utils.enums import Country
 
 
-class TestAppUserManagement(TestCase):
-    def test_persist_user_with_wrong_countries(self):
-        user = AppUserModel(
-            email=str(uuid4()),
-            pass_hash=encode_password('password'),
-            role=UserRole.ADMIN,
-            second_factor_material=generate_totp_seed(),
-            require_2fa=False,
-            _allowed_edit_countries=str(uuid4())
-        )
-        self.assertRaises(ValueError, lambda: user.get_allowed_edit_countries())
-        self.assertRaises(ValueError, lambda: persist_user(user))
-
-
 class TestAppUserManagementWithDb(DbTests):
 
     def test_persist_user_with_some_countries(self):
-        self._run_countries_test({Country.CZE})
+        self._run_countries_test([Country.CZE])
 
     def test_persist_user_with_all_countries(self):
-        self._run_countries_test({country for country in Country})
+        # noinspection PyTypeChecker
+        # because Pycharm confuses Enum with strings sometimes
+        self._run_countries_test([country for country in Country])
 
-    def _run_countries_test(self, allowed_countries: Set[Country]):
+    def _run_countries_test(self, allowed_countries: List[Country]):
         user = AppUserModel(
             email=str(uuid4),
             pass_hash=encode_password('password'),
             role=UserRole.ADMIN,
             second_factor_material=generate_totp_seed(),
-            require_2fa=False
+            require_2fa=False,
+            allowed_edit_countries=allowed_countries
         )
-        user.set_allowed_edit_countries(allowed_countries)
-        self.assertEqual(allowed_countries, user.get_allowed_edit_countries())
+
+        self.assertEqual(len(allowed_countries), len(user.allowed_edit_countries))
+        for allowed in allowed_countries:
+            self.assertTrue(allowed in user.allowed_edit_countries)
 
         persist_user(user)
 
         db_user = get_app_user_by_email(user.email)
-        self.assertEqual(allowed_countries, db_user.get_allowed_edit_countries())
+
+        self.assertEqual(len(allowed_countries), len(db_user.allowed_edit_countries))
+        for allowed in allowed_countries:
+            self.assertTrue(allowed in db_user.allowed_edit_countries)

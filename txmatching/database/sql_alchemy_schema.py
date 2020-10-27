@@ -1,5 +1,4 @@
 import dataclasses
-from typing import Set
 
 from sqlalchemy import ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
@@ -155,31 +154,11 @@ class AppUserModel(db.Model):
     second_factor_material = db.Column(db.TEXT, unique=False, nullable=False)
     phone_number = db.Column(db.TEXT, unique=False, nullable=True, default=None)
     require_2fa = db.Column(db.BOOLEAN, unique=False, nullable=False, default=True)
-
-    _allowed_edit_countries = db.Column(db.TEXT, unique=False, nullable=False, default='')
-    """
-    Unfortunately SQLite (used for testing) does not allow us
-    to use Array, thus this field is formatted in following way:
-    "Country,Country" - example: "CZE,ISR" - which should be parsed as
-    ['CZE', 'ISR'] and as enum value [Country.CZE, Country.ISR]
-
-    Use [get_allowed_edit_countries] and [set_allowed_edit_countries] to set this property.
-    """
+    allowed_edit_countries = db.Column(db.JSON, unique=False, nullable=False, default=lambda: [])
 
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-
-    _split_literal = ','
-
-    def get_allowed_edit_countries(self) -> Set[Country]:
-        if not self._allowed_edit_countries:
-            return set()
-
-        return {Country(country_value) for country_value in self._allowed_edit_countries.split(self._split_literal)}
-
-    def set_allowed_edit_countries(self, countries: Set[Country]):
-        self._allowed_edit_countries = self._split_literal.join({country.value for country in countries})
 
 
 class UploadedDataModel(db.Model):

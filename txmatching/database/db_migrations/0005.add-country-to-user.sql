@@ -5,4 +5,4 @@
 
 -- with '_' as prefix in order to indicate private field in Python
 ALTER TABLE app_user
-    ADD COLUMN _allowed_edit_countries TEXT NOT NULL DEFAULT '';
+    ADD COLUMN allowed_edit_countries jsonb not null default '[]'::jsonb

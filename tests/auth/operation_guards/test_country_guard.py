@@ -1,4 +1,4 @@
-from typing import Set
+from typing import List
 from unittest import mock
 from uuid import uuid4
 
@@ -16,16 +16,19 @@ from txmatching.utils.enums import Country
 
 class TestCountryGuards(DbTests):
 
-    def _create_user(self, allowed_countries: Set[Country]) -> int:
+    def _create_user(self, allowed_countries: List[Country]) -> int:
         user = AppUserModel(
             email=str(uuid4),
             pass_hash=encode_password('password'),
             role=UserRole.ADMIN,
             second_factor_material=generate_totp_seed(),
-            require_2fa=False
+            require_2fa=False,
+            allowed_edit_countries=allowed_countries
         )
-        user.set_allowed_edit_countries(allowed_countries)
-        self.assertEqual(allowed_countries, user.get_allowed_edit_countries())
+        self.assertEqual(len(allowed_countries), len(user.allowed_edit_countries))
+        for allowed in allowed_countries:
+            self.assertTrue(allowed in user.allowed_edit_countries)
+
         return persist_user(user).id
 
     def _create_model_mock(self, patient_id: int, country: Country) -> mock:
@@ -45,19 +48,21 @@ class TestCountryGuards(DbTests):
 
     def test_guard_user_has_access_to(self):
         patient_country = Country.CZE
-        user_id = self._create_user({patient_country, Country.ISR})
+        user_id = self._create_user([patient_country, Country.ISR])
         guard_user_has_access_to_country(user_id, patient_country)
 
     def test_guard_user_has_access_to_should_fail(self):
         patient_country = Country.CZE
-        user_id = self._create_user({country for country in Country if country != patient_country})
+        # noinspection PyTypeChecker
+        # Pycharm enum/str problems
+        user_id = self._create_user([country for country in Country if country != patient_country])
         self.assertRaises(GuardException, lambda: guard_user_has_access_to_country(user_id, Country.CZE))
 
     def test_guard_user_country_access_to_donor(self):
         patient_country = Country.CZE
         patient_id = 10
 
-        user_id = self._create_user({patient_country, Country.ISR})
+        user_id = self._create_user([patient_country, Country.ISR])
         model_mock = self._create_model_mock(patient_id, patient_country)
 
         with mock.patch('txmatching.auth.operation_guards.country_guard.DonorModel', model_mock):
@@ -67,7 +72,7 @@ class TestCountryGuards(DbTests):
         patient_country = Country.CZE
         patient_id = 1
 
-        user_id = self._create_user({Country.IND, Country.ISR})
+        user_id = self._create_user([Country.IND, Country.ISR])
         model_mock = self._create_model_mock(patient_id, patient_country)
 
         with mock.patch('txmatching.auth.operation_guards.country_guard.DonorModel', model_mock):
@@ -77,7 +82,7 @@ class TestCountryGuards(DbTests):
         patient_country = Country.ISR
         patient_id = 12
 
-        user_id = self._create_user({patient_country, Country.ISR})
+        user_id = self._create_user([patient_country, Country.ISR])
         model_mock = self._create_model_mock(patient_id, patient_country)
 
         with mock.patch('txmatching.auth.operation_guards.country_guard.RecipientModel', model_mock):
@@ -87,7 +92,7 @@ class TestCountryGuards(DbTests):
         patient_country = Country.CZE
         patient_id = 15
 
-        user_id = self._create_user({Country.ISR})
+        user_id = self._create_user([Country.ISR])
         model_mock = self._create_model_mock(patient_id, patient_country)
 
         with mock.patch('txmatching.auth.operation_guards.country_guard.RecipientModel', model_mock):

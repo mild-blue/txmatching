@@ -344,9 +344,9 @@ class TestMatchingApi(DbTests):
             pass_hash=encode_password(user_pass),
             role=UserRole.SERVICE,
             second_factor_material='1.2.3.4',
-            require_2fa=False
+            require_2fa=False,
+            allowed_edit_countries=[country for country in Country if country != banned_country]
         )
-        usr.set_allowed_edit_countries({country for country in Country if country != banned_country})
         usr = persist_user(usr)
 
         txm_name = 'test'

@@ -71,7 +71,6 @@ def create_or_overwrite_txm_event(name: str) -> TxmEvent:
 
 
 def add_users():
-    all_countries = {country for country in Country}
     ConfigModel.query.delete()
     AppUserModel.query.delete()
     user_models = []
@@ -83,9 +82,9 @@ def add_users():
             second_factor_material=generate_totp_seed(),
             phone_number=user.get('phone_number'),
             require_2fa=user.get('require_2fa'),
-            default_txm_event_id=user.get('default_txm_event_id')
+            default_txm_event_id=user.get('default_txm_event_id'),
+            allowed_edit_countries=[country for country in Country]
         )
-        user_model.set_allowed_edit_countries(all_countries)
         user_models.append(user_model)
 
     _add_users(user_models)

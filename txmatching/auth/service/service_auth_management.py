@@ -20,9 +20,9 @@ def register_service(email: str, password: str, allowed_countries: List[Country]
         email=normalized_email,
         pass_hash=encode_password(password),
         role=UserRole.SERVICE,
-        second_factor_material=whitelisted_ip
+        second_factor_material=whitelisted_ip,
+        allowed_edit_countries=allowed_countries
     )
-    user.set_allowed_edit_countries(set(allowed_countries))
     persist_user(user)
     return user
 

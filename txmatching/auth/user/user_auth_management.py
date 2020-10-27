@@ -25,9 +25,9 @@ def register_user(email: str, password: str, allowed_countries: List[Country], r
         pass_hash=encode_password(password),
         role=role,
         second_factor_material=generate_totp_seed(),
-        phone_number=phone_number
+        phone_number=phone_number,
+        allowed_edit_countries=allowed_countries
     )
-    user.set_allowed_edit_countries(set(allowed_countries))
     persist_user(user)
     return user
 

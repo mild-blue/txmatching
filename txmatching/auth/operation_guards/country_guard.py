@@ -42,5 +42,5 @@ def _get_user_checked(user_id: int) -> AppUserModel:
 
 
 def _check_country(user: AppUserModel, country: Country):
-    if country not in user.get_allowed_edit_countries():
+    if country not in user.allowed_edit_countries:
         raise GuardException(f'User id {user.id} does not have access to {country}!')
