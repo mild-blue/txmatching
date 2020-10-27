@@ -5,6 +5,7 @@ from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
 # noinspection PyUnusedLocal
+# pylint: disable=unused-argument
 # will be used in the proper implementation
 def auth_failed_slow_down(user: Optional[AppUserModel]):
     """
