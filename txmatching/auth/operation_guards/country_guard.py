@@ -30,7 +30,7 @@ def guard_user_has_access_to_country(user_id: int, country: Country):
 def _get_resource_country_checked(patient_id: int, model: Union[Type[RecipientModel], Type[DonorModel]]) -> Country:
     patient = model.query.get(patient_id)
     if not patient:
-        raise InvalidArgumentException(f'{model.__name__} with id {patient} does not exist!')
+        raise InvalidArgumentException(f'{model.__name__} with id {patient_id} does not exist!')
     return patient.country
 
 

@@ -1,6 +1,6 @@
 --
--- file: 0003.add-country-to-user.sql
--- depends: 0002.drop-unique-recipient-antibodies
+-- file: 0005.add-country-to-user.sql
+-- depends: 0004.add-unique-configuration-for-txm-event
 --
 
 -- with '_' as prefix in order to indicate private field in Python
