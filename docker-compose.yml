@@ -4,13 +4,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: mildblue/txmatching
+    image: txmatching
     env_file:
       - .env.pub
     ports:
       - 8080:8080
     depends_on:
       - db
+    volumes:
+      - /var/log/txmatching:/logs
 
   db:
     image: postgres:12.2

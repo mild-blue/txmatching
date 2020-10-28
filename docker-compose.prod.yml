@@ -9,6 +9,8 @@ services:
     restart: always
     depends_on:
       - db
+    volumes:
+      - /var/log/txmatching:/logs
 
   db:
     image: postgres:12.2

@@ -24,15 +24,14 @@ from txmatching.web.api.service_api import service_api
 from txmatching.web.api.txm_event_api import txm_event_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.error_handler import register_error_handlers
+from txmatching.web.web_utils.logging_config import setup_logging
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'
 
 
 def create_app():
-    logging.basicConfig(level=logging.DEBUG,
-                        format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
-                        stream=sys.stdout)
+    setup_logging()
 
     app = Flask(__name__)
     # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
