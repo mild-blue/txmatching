@@ -85,6 +85,7 @@
 
       height: 100%;
       overflow-y: scroll;
+      scroll-behavior: smooth;
 
       &.aligned-top {
         border-top-left-radius: 0;

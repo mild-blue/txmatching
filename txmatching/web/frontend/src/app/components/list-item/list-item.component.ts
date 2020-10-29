@@ -4,6 +4,7 @@ import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
 import { ListItem, ListItemAbstractComponent, ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
+import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
 
 @Component({
   selector: 'app-item-list',
@@ -29,6 +30,8 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
 
   public activeAlignedTop: boolean = true;
   public activeAlignedBottom: boolean = false;
+
+  public scrollableDetailClass: string = scrollableDetailClass;
 
   constructor(private _componentFactoryResolver: ComponentFactoryResolver) {
   }

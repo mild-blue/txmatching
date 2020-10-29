@@ -203,16 +203,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private _prepareMatchings(m: Matching[]): Matching[] {
-    return m.map((matching, key) => {
-      matching.index = key + 1;
-      matching.isActive = key === 0;
-      matching.rounds.forEach(round => round.transplants = round.transplants.map(transplant => this._prepareTransplant(transplant)));
+    return m.map((matching, mKey) => {
+      matching.index = mKey + 1;
+      matching.isActive = mKey === 0;
+      matching.rounds.forEach((round, rKey) => round.transplants = round.transplants.map((transplant, tKey) => {
+        const index = +`${mKey + 1}${rKey + 1}${tKey + 1}`;
+        return this._prepareTransplant(transplant, index);
+      }));
       return matching;
     });
   }
 
-  private _prepareTransplant(t: Transplant): Transplant {
-    const transplant: Transplant = { ...t };
+  private _prepareTransplant(t: Transplant, index: number): Transplant {
+    const transplant: Transplant = { ...t, index };
 
     // try to find Donor and Recipient instances
     if (this.patients) {
