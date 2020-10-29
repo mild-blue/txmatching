@@ -50,6 +50,11 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
 
   public setActive(item: ListItem | undefined): void {
 
+    // return if clicked on the same item
+    if (this.activeItem === item) {
+      return;
+    }
+
     // deactivate activeItem if there is one
     if (this.activeItem) {
       this.activeItem.isActive = false;
@@ -61,7 +66,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
       item.isActive = true;
       this._loadDetailComponent();
       this._scrollToElement(item.index);
-      this.activeAlignedTop = item.index === 1;
+      this.activeAlignedTop = true;
     }
   }
 

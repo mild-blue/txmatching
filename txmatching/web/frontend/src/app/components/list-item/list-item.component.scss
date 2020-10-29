@@ -1,7 +1,7 @@
 @import "../../../styles/breakpoints";
 @import "../../../styles/variables";
 
-.list-item {
+.item-list {
   flex-grow: 1;
   position: relative;
 
@@ -12,7 +12,7 @@
   overflow-y: hidden;
   overflow-x: visible;
 
-  border-radius: $border-radius--wide;
+  border-radius: $border-radius--wide $border-radius--wide 0 0;
   box-shadow: $box-shadow--wide;
 
   @include media-breakpoint-down(md) {
