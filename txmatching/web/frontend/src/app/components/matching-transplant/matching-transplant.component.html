@@ -1,6 +1,6 @@
 <div *ngIf="transplant" class="transplant">
   <div class="transplant-header">
-    <app-patient-pair [pair]="transplant"></app-patient-pair>
+    <strong>Transplant <span *ngIf="index">#{{ index }}</span></strong>
 
     <div class="score">
       Score: <span>{{ totalScore }}</span>
