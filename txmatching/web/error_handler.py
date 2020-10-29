@@ -6,14 +6,11 @@ from dacite import DaciteError
 from flask_restx import Api
 from werkzeug.exceptions import HTTPException
 
-from txmatching.auth.exceptions import (CredentialsMismatchException,
-                                        InvalidArgumentException,
-                                        InvalidAuthCallException,
-                                        InvalidIpAddressAccessException,
-                                        InvalidJWTException,
-                                        InvalidOtpException,
-                                        UserUpdateException,
-                                        CouldNotSendOtpUsingSmsServiceException)
+from txmatching.auth.exceptions import (
+    CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
+    InvalidArgumentException, InvalidAuthCallException,
+    InvalidIpAddressAccessException, InvalidJWTException, InvalidOtpException,
+    UserUpdateException)
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +45,7 @@ def _user_auth_handlers(api: Api):
     def handle_could_not_send_otp(error: CouldNotSendOtpUsingSmsServiceException):
         _log_exception(error)
         return {
-                   'error': 'Service unavailable.',
+                   'error': 'SMS service unavailable.',
                    'detail': 'It was not possible to reach the SMS gate. Please contact support.'
                }, 503
 
