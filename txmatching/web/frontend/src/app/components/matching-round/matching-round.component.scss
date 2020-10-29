@@ -45,7 +45,7 @@
     }
 
     .indicator {
-      background: linear-gradient(to right, #ff0000, #fff200, #1e9600) no-repeat;
+      background: linear-gradient(to right, #ff8302, #fff200, #1e9600) no-repeat;
       background-size: 100vw;
       position: absolute;
       left: 100%;
@@ -54,6 +54,10 @@
       width: 20px;
 
       border-radius: 0 $border-radius $border-radius 0;
+
+      &.bad-matching {
+        background: #ff0000;
+      }
     }
 
   }
