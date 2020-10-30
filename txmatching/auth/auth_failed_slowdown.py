@@ -9,7 +9,7 @@ from txmatching.database.sql_alchemy_schema import AppUserModel
 # will be used in the proper implementation
 def auth_failed_slow_down(user: Optional[AppUserModel]):
     """
-    Slow downs request response if the authentication failed.
+    Slows down request response if the authentication failed.
     Should be used as a defense against attacker trying to bruteforce the passwords.
     """
     # sleep for 2 seconds before sending back the reply
