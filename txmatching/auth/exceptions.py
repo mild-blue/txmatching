@@ -56,6 +56,12 @@ class CouldNotSendOtpUsingSmsServiceException(AuthenticationException):
     """
 
 
+class GuardException(AuthenticationException):
+    """
+    Raised if some guard does not allow the perform the operation.
+    """
+
+
 class InvalidArgumentException(BaseTxmException):
     """
     Raised if invalid argument received.

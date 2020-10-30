@@ -7,6 +7,8 @@ from dacite import from_dict
 from flask import jsonify, request
 from flask_restx import Resource
 
+from txmatching.auth.operation_guards.country_guard import guard_user_country_access_to_recipient, \
+    guard_user_country_access_to_donor
 from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
@@ -23,6 +25,7 @@ from txmatching.database.services.patient_service import (get_txm_event,
                                                           update_recipient)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
+from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import patient_api
 
 logger = logging.getLogger(__name__)
@@ -59,6 +62,7 @@ class AlterRecipient(Resource):
     @require_user_edit_access()
     def put(self):
         recipient_update_dto = from_dict(data_class=RecipientUpdateDTO, data=request.json)
+        guard_user_country_access_to_recipient(user_id=get_current_user_id(), recipient_id=recipient_update_dto.db_id)
         return jsonify(update_recipient(recipient_update_dto, get_txm_event_id_for_current_user()))
 
 
@@ -75,4 +79,5 @@ class AlterDonor(Resource):
     @require_user_edit_access()
     def put(self):
         donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
+        guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
         return jsonify(update_donor(donor_update_dto, get_txm_event_id_for_current_user()))

@@ -21,4 +21,4 @@ def get_current_user() -> Optional[AppUserModel]:
 
     Can trow AttributeError if not executed inside the Flask context.
     """
-    return get_app_user_by_id(g.user_id)
+    return get_app_user_by_id(get_current_user_id())

@@ -25,6 +25,7 @@ def _get_db_connection_string() -> str:
         False
     )
 
+
 backend = get_backend(_get_db_connection_string())
 directory = os.path.dirname(os.path.realpath(__file__))
 migration_directory = os.path.join(directory, 'db_migrations')

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
@@ -7,9 +7,11 @@ from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.database.services.app_user_management import get_app_user_by_email, persist_user, \
     update_password_for_user
 from txmatching.database.sql_alchemy_schema import AppUserModel
+from txmatching.utils.enums import Country
 
 
-def register_user(email: str, password: str, role: UserRole, phone_number: str) -> AppUserModel:
+def register_user(email: str, password: str, allowed_countries: List[Country], role: UserRole,
+                  phone_number: str) -> AppUserModel:
     """
     Registers new user for given email, password and role.
     """
@@ -23,7 +25,8 @@ def register_user(email: str, password: str, role: UserRole, phone_number: str) 
         pass_hash=encode_password(password),
         role=role,
         second_factor_material=generate_totp_seed(),
-        phone_number=phone_number
+        phone_number=phone_number,
+        allowed_edit_countries=allowed_countries
     )
     persist_user(user)
     return user
