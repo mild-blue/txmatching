@@ -103,6 +103,6 @@ migrate-db:
 	cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER=${POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} POSTGRES_DB=${POSTGRES_DB} POSTGRES_URL=${POSTGRES_URL} python database/migrate_db.py
 
 
-# Migration task that can be used why migrating directly via SSH port forwarding that can be used in emergency cases.
+# Migration task that can be used when migrating directly via SSH port forwarding that can be used in emergency cases.
 migrate-db-prod:
-	cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER=${PROD_POSTGRES_USER} POSTGRES_PASSWORD=${PROD_POSTGRES_PASSWORD} POSTGRES_DB="txmatching" POSTGRES_URL="db:5432" python database/migrate_db.py
+	cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER=${PROD_POSTGRES_USER} POSTGRES_PASSWORD=${PROD_POSTGRES_PASSWORD} POSTGRES_DB="txmatching" POSTGRES_URL="localhost:1234" python database/migrate_db.py
