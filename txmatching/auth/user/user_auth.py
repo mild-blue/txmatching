@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from txmatching.auth.auth_failed_slowdown import auth_failed_slow_down
 from txmatching.auth.data_types import BearerTokenRequest, UserRole, TokenType, DecodedBearerToken
 from txmatching.auth.exceptions import InvalidOtpException, require_auth_condition
 from txmatching.auth.user.sms_service import send_sms
@@ -66,6 +67,7 @@ def user_otp_login(user: AppUserModel, otp: str, jwt_expiration_days: int) -> Be
     require_auth_condition(user.role != UserRole.SERVICE, f'OTP login request for {user.role}.')
 
     if not verify_otp_for_user(user, otp):
+        auth_failed_slow_down(user)
         raise InvalidOtpException(f'OTP is not valid for the user {user.email}')
 
     return BearerTokenRequest(

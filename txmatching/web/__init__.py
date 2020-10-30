@@ -99,13 +99,21 @@ def create_app():
         # serving main html which then asks for all javascript
         @app.route('/')
         def index_html():
-            return send_from_directory('frontend/dist/frontend', 'index.html')
+            response = send_from_directory('frontend/dist/frontend', 'index.html')
+            # prevent clickjacking
+            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+            response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+            return response
 
         # used only if the there's no other endpoint registered
         # we need it to load static resources for the frontend
         @app.route('/<path:path>', methods=['GET'])
         def static_proxy(path):
-            return send_from_directory('frontend/dist/frontend', path)
+            response = send_from_directory('frontend/dist/frontend', path)
+            # prevent clickjacking
+            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+            response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+            return response
 
     def enable_cors():
         @app.after_request
