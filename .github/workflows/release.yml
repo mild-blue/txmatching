@@ -43,7 +43,7 @@ jobs:
           git reset --hard origin/master
           echo "VERSION_TAG=${VERSION_TAG}" > version
           git add version
-          git diff-index --quiet HEAD || git commit version -m "New version of the TXMatching .env.enc file for version ${VERSION_TAG} added."
+          git diff-index --quiet HEAD || git commit version -m "New version ${VERSION_TAG} of the TXMatching added."
           git push
           cd ../..
           rm -rf project-configuration

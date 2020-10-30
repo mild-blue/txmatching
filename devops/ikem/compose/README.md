@@ -18,10 +18,10 @@
 ## Access DB from Localhost via Port-forwarding
 1. `ssh -L 1234:localhost:5432 txmatch-USERNAME@172.17.3.14` will make DB accessible on `localhost:1234`.
 
-## DB Migration
+## DB Migration from local machine in emergency cases
 
 1. Connect via `ssh -L 1234:localhost:5432 txmatch-USERNAME@172.17.3.14` to server.
-1. Execute `make migrate-db-ikem` in root directory. Credentials are stored in [Bitwarden](https://vault.bitwarden.com/#/vault).
+1. Execute `make migrate-db-prod` in root directory. Credentials are stored in [Bitwarden](https://vault.bitwarden.com/#/vault).
 
 ## Useful Commands
 
