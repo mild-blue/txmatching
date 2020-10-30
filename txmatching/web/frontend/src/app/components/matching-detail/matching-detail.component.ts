@@ -24,7 +24,6 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent {
     super();
 
     this._activeTransplantSubscription = this._uiInteractionsService.focusedTransplantId.subscribe(id => {
-      console.log('active transplant is', id);
       if (id) {
         this._scrollToTransplant(id);
       }
