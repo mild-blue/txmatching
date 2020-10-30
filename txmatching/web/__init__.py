@@ -30,7 +30,7 @@ LOGIN_MANAGER = None
 API_VERSION = '/v1'
 
 
-def create_app():
+def create_app() -> Flask:
     setup_logging()
 
     app = Flask(__name__)
