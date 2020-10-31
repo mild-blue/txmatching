@@ -1,4 +1,4 @@
-version: '3.7'
+# Do not forgot to update other docker-compose files, especially in project-configuration repository.version: '3.8'
 services:
   backend:
     build:
