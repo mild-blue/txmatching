@@ -11,6 +11,7 @@
 
       <div *ngIf="configuration && !configuration.use_binary_scoring"
            [style.background-position.%]="percentageScore(transplant)"
+           [class.bad-matching]="transplant.score === -1"
            class="indicator"></div>
 
     </div>
