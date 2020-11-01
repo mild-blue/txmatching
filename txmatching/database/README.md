@@ -1,7 +1,6 @@
 # DB Migrations via Yoyo
 
 Because we are using migrations via RAW SQL, we are using [Yoyo](https://ollycope.com/software/yoyo/latest/) library.
-There are prepared migration commands in main `Makefile`.
 
 ## Create DB migration
 
