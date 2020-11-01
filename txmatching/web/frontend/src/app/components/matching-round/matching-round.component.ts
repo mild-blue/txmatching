@@ -3,6 +3,7 @@ import { Round, Transplant } from '@app/model/Matching';
 import { DonorType, PatientList } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { AppConfiguration } from '@app/model/Configuration';
+import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 
 @Component({
   selector: 'app-matching-round',
@@ -17,6 +18,9 @@ export class MatchingRoundComponent {
   @Input() configuration?: AppConfiguration;
 
   public arrowRight = faAngleRight;
+
+  constructor(private _uiInteractionsService: UiInteractionsService) {
+  }
 
   get roundIndex(): string {
     const roundIndex = `${this.index}`;
@@ -46,5 +50,9 @@ export class MatchingRoundComponent {
 
     const maxScore = this.configuration.maximum_total_score;
     return 100 * (transplant.score ?? 0) / maxScore;
+  }
+
+  public setActiveTransplant(id: number): void {
+    this._uiInteractionsService.setFocusedTransplantId(id);
   }
 }

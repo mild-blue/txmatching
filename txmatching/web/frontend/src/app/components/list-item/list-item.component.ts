@@ -4,6 +4,7 @@ import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
 import { ListItem, ListItemAbstractComponent, ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
+import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
 
 @Component({
   selector: 'app-item-list',
@@ -30,6 +31,8 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   public activeAlignedTop: boolean = true;
   public activeAlignedBottom: boolean = false;
 
+  public scrollableDetailClass: string = scrollableDetailClass;
+
   constructor(private _componentFactoryResolver: ComponentFactoryResolver) {
   }
 
@@ -50,6 +53,11 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
 
   public setActive(item: ListItem | undefined): void {
 
+    // return if clicked on the same item
+    if (this.activeItem === item) {
+      return;
+    }
+
     // deactivate activeItem if there is one
     if (this.activeItem) {
       this.activeItem.isActive = false;
@@ -61,7 +69,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
       item.isActive = true;
       this._loadDetailComponent();
       this._scrollToElement(item.index);
-      this.activeAlignedTop = item.index === 1;
+      this.activeAlignedTop = true;
     }
   }
 

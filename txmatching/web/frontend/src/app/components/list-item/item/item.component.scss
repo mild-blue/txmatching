@@ -49,8 +49,6 @@
 
     z-index: 3;
 
-    pointer-events: none;
-
     &.first {
       margin-top: 0;
 
@@ -67,6 +65,7 @@
 
       height: calc(#{$border-radius--wide} * 2);
       width: $border-radius--wide;
+      pointer-events: none;
     }
 
     &::before {

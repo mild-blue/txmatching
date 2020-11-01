@@ -24,6 +24,7 @@
     margin: 2px 20px 2px 0;
     border-radius: $border-radius;
     position: relative;
+    cursor: pointer;
 
     background-color: $dark;
     color: $white;
@@ -32,6 +33,10 @@
 
     fa-icon {
       margin: 0 5px;
+    }
+
+    &:hover {
+      filter: brightness(0.8);
     }
 
     &.compatible {
