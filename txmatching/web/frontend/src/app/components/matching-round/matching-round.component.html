@@ -4,6 +4,7 @@
     <div *ngFor="let transplant of round.transplants"
          [class.compatible]="transplant.compatible_blood"
          [class.w-indicator]="configuration && !configuration.use_binary_scoring"
+         (click)="setActiveTransplant(transplant.index)"
          class="matching-round__transplant">
 
       <app-patient-pair [pair]="transplant"></app-patient-pair>

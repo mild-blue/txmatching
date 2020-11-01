@@ -1,16 +1,22 @@
+from uuid import uuid4
+
 from tests.test_utilities.prepare_app import DbTests
+from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import \
     TxmEventDTOIn
 from txmatching.database.db import db
+from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_newest_txm_event_db_id
-from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
+from txmatching.database.sql_alchemy_schema import (ConfigModel,
+                                                    DonorModel,
                                                     PairingResultModel,
                                                     RecipientModel,
                                                     TxmEventModel,
-                                                    UploadedDataModel)
+                                                    UploadedDataModel,
+                                                    AppUserModel)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.enums import Country, Sex
 from txmatching.web import TXM_EVENT_NAMESPACE, txm_event_api
@@ -326,6 +332,42 @@ class TestMatchingApi(DbTests):
         self.assertEqual(3, res.json['recipients_uploaded'])
         self.assertEqual(4, res.json['donors_uploaded'])
         self.assertEqual(1, len(UploadedDataModel.query.all()))
+
+    def test_txm_event_patient_upload_fails_on_wrong_country(self):
+        self.fill_db_with_patients_and_results()
+        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
+        banned_country = Country.CZE
+        # add user
+        user_pass = 'password'
+        usr = AppUserModel(
+            email=str(uuid4()),
+            pass_hash=encode_password(user_pass),
+            role=UserRole.SERVICE,
+            second_factor_material='1.2.3.4',
+            require_2fa=False,
+            allowed_edit_countries=[country for country in Country if country != banned_country]
+        )
+        usr = persist_user(usr)
+
+        txm_name = 'test'
+        upload_patients = {
+            'country': banned_country,
+            'txm_event_name': txm_name,
+            'donors': DONORS,
+            'recipients': RECIPIENTS
+        }
+
+        self.login_with(usr.email, user_pass, usr.id, usr.role)
+        with self.app.test_client() as client:
+            res = client.put(
+                f'/{TXM_EVENT_NAMESPACE}/patients',
+                headers=self.auth_headers,
+                json=upload_patients
+            )
+
+            self.assertEqual(403, res.status_code)
+            self.assertIsNotNone(res.json)
+            self.assertEqual('Access denied.', res.json['error'])
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         self.fill_db_with_patients_and_results()

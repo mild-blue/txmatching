@@ -14,6 +14,7 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
 from txmatching.patients.patient import TxmEvent
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
+from txmatching.utils.enums import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.web import create_app
 
@@ -81,7 +82,8 @@ def add_users():
             second_factor_material=generate_totp_seed(),
             phone_number=user.get('phone_number'),
             require_2fa=user.get('require_2fa'),
-            default_txm_event_id=user.get('default_txm_event_id')
+            default_txm_event_id=user.get('default_txm_event_id'),
+            allowed_edit_countries=[country for country in Country]
         )
         user_models.append(user_model)
 

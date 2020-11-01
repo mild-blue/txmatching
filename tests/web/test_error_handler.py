@@ -10,7 +10,8 @@ from txmatching.auth.exceptions import (CredentialsMismatchException,
                                         InvalidIpAddressAccessException,
                                         InvalidJWTException,
                                         InvalidOtpException,
-                                        UserUpdateException)
+                                        UserUpdateException,
+                                        GuardException)
 from txmatching.web import USER_NAMESPACE, user_api
 
 
@@ -71,6 +72,15 @@ class TestErrorHandler(DbTests):
             message=''
         )
 
+    def test_handle_guard_exception(self):
+        self._test_handler(
+            side_effect=GuardException,
+            status_code=403,
+            error='Access denied.',
+            detail='',
+            message=''
+        )
+
     def test_handle_invalid_argument_exception(self):
         self._test_handler(
             side_effect=InvalidArgumentException,
@@ -89,16 +99,27 @@ class TestErrorHandler(DbTests):
             message=''
         )
 
+    def test_handle_key_error(self):
+        self._test_handler(
+            side_effect=KeyError,
+            status_code=400,
+            error='Invalid request data.',
+            detail='',
+            message=''
+        )
+
     def test_handle_invalid_value_error(self):
         self._test_handler(
             side_effect=ValueError,
             status_code=400,
-            error='Invalid argument.',
+            error='Invalid request data.',
             detail='',
             message=''
         )
 
     def test_handle_http_exception(self):
+        # noinspection PyTypeChecker
+        # we submit detail=None on purpose
         self._test_handler(
             side_effect=HTTPException,
             status_code=500,

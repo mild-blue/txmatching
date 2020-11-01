@@ -22,11 +22,24 @@
     justify-content: space-between;
     align-items: center;
 
+    > div {
+      display: flex;
+      align-items: center;
+
+      strong {
+        margin-right: 20px;
+        color: $body-color--secondary;
+      }
+    }
+
     .score {
+      color: $body-color--secondary;
+
       span {
         font-size: 22px;
         font-weight: 700;
         color: $primary;
+        margin-left: 10px;
       }
     }
   }

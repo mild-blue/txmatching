@@ -2,6 +2,7 @@ import logging
 
 from flask import request
 
+from txmatching.auth.auth_failed_slowdown import auth_failed_slow_down
 from txmatching.auth.crypto.jwt_crypto import encode_auth_token
 from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.data_types import UserRole, TokenType, BearerTokenRequest, DecodedBearerToken
@@ -23,6 +24,8 @@ def credentials_login(email: str, password: str) -> str:
     """
     user = get_app_user_by_email(email)
     if not user or not password_matches_hash(user.pass_hash, password):
+        logger.warning(f'User {email} credentials mismatch during login.')
+        auth_failed_slow_down(user)
         raise CredentialsMismatchException()
 
     conf = get_application_configuration()

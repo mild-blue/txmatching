@@ -13,7 +13,9 @@ from txmatching.auth.exceptions import (CredentialsMismatchException,
                                         InvalidJWTException,
                                         InvalidOtpException,
                                         UserUpdateException,
-                                        CouldNotSendOtpUsingSmsServiceException)
+                                        CouldNotSendOtpUsingSmsServiceException,
+                                        GuardException)
+from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +70,11 @@ def _user_auth_handlers(api: Api):
         _log_warning(error)
         return {'error': 'Internal error, please contact support.', 'detail': str(error)}, 500
 
+    @api.errorhandler(GuardException)
+    def handle_guard_exception(error: GuardException):
+        _log_warning(error)
+        return {'error': 'Access denied.', 'detail': str(error)}, 403
+
     @api.errorhandler(InvalidArgumentException)
     def handle_invalid_argument_exception(error: InvalidArgumentException):
         _log_warning(error)
@@ -78,31 +85,49 @@ def _user_auth_handlers(api: Api):
         _log_warning(error)
         return {'error': 'Invalid request data.', 'detail': str(error)}, 400
 
-    @api.errorhandler(ValueError)
-    def handle_invalid_value_error(error: ValueError):
+    @api.errorhandler(KeyError)
+    def handle_key_error(error: KeyError):
         _log_warning(error)
-        return {'error': 'Invalid argument.', 'detail': str(error)}, 400
+        return {'error': 'Invalid request data.', 'detail': str(error)}, 400
+
+    @api.errorhandler(ValueError)
+    def handle_value_error(error: ValueError):
+        _log_warning(error)
+        return {'error': 'Invalid request data.', 'detail': str(error)}, 400
 
 
 def _default_error_handlers(api: Api):
     """
     Registers default top level handlers, must be registered last.
     """
+    is_prod = get_application_configuration().is_production
+
+    def strip_on_prod(description):
+        return description if not is_prod else 'An unknown error occurred. Contact administrator.'
 
     @api.errorhandler(HTTPException)
     def handle_http_exception(error: HTTPException):
         _log_exception(error)
-        return {'error': error.name, 'detail': error.description}, _get_code_from_error_else_500(error)
+        return {
+                   'error': error.name,
+                   'detail': strip_on_prod(error.description)
+               }, _get_code_from_error_else_500(error)
 
     @api.errorhandler(Exception)
     def handle_default_exception_error(error: Exception):
         _log_exception(error)
-        return {'error': 'Internal server error', 'detail': str(error)}, _get_code_from_error_else_500(error)
+        return {
+                   'error': 'Internal server error',
+                   'detail': strip_on_prod(str(error))
+               }, _get_code_from_error_else_500(error)
 
     @api.errorhandler
     def handle_default_error(error):
         _log_exception(error)
-        return {'error': error.name, 'detail': error.description}, _get_code_from_error_else_500(error)
+        return {
+                   'error': error.name,
+                   'detail': strip_on_prod(error.description)
+               }, _get_code_from_error_else_500(error)
 
 
 def _log_exception(ex: Exception):

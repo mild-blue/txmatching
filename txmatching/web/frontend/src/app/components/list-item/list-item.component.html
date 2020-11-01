@@ -1,4 +1,4 @@
-<div class="list-item">
+<div class="item-list">
   <div class="list">
     <div #list
          infinite-scroll
@@ -17,9 +17,9 @@
   <div class="detail">
     <div [class.aligned-bottom]="activeAlignedBottom"
          [class.aligned-top]="activeAlignedTop"
+         [class]="scrollableDetailClass"
          #detail
-         cdk-scrollable
-         class="detail-inner">
+         cdk-scrollable>
       <ng-template listItemDetail></ng-template>
     </div>
   </div>
