@@ -26,7 +26,4 @@ def migrate_db(db_uri: str):
     with backend.lock():
         # Apply any outstanding migrations
         backend.apply_migrations(backend.to_apply(migrations))
-
-        # Rollback all migrations - just sample
-        # backend.rollback_migrations(backend.to_rollback(migrations))
     logger.info("DB migrations applied.")
