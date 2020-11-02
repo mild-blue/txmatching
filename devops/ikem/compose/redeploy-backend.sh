@@ -19,16 +19,19 @@ is_running() {
 function redeploy {
   echo "Redeploying backend."
 
-  export BACKEND_TAG="${1}"
+  export VERSION_TAG="${1}"
 
-  echo "Pull mildblue/txmatching:${BACKEND_TAG} image."
-  docker pull "mildblue/txmatching:${BACKEND_TAG}"
+  echo "Removing unused Docker images"
+  docker image prune
+
+  echo "Pull mildblue/txmatching:${VERSION_TAG} image."
+  docker pull "mildblue/txmatching:${VERSION_TAG}"
 
   echo "Stop backend service."
   docker-compose -f docker-compose.yml stop backend
   docker-compose rm -f backend || true
 
-  echo "Deploying new backend version ${BACKEND_TAG}."
+  echo "Deploying new backend version ${VERSION_TAG}."
   docker-compose -f docker-compose.yml up -d backend
 
   echo "Checking pod status and waiting until ready."
@@ -39,21 +42,27 @@ function redeploy {
 }
 
 echo "Getting latest version info from Git repository."
-git clone https://${GIT_TOKEN}@github.com/mild-blue/txmatching.git || true
-cd txmatching
+PROJECT_CONFIGURATION="project-configuration"
+git clone https://${GIT_TOKEN}@github.com/mild-blue/${PROJECT_CONFIGURATION}.git || true
+cd "${PROJECT_CONFIGURATION}"
 git fetch --all
 git reset --hard origin/master
-LATEST_TAG=$(git describe --tags --abbrev=0)
 cd ..
 
-echo "Updating docker-compose.yml with version from Git repository."
-rm -rf docker-compose.yml
-cp txmatching/devops/compose/docker-compose.yml docker-compose.yml
+echo "Updating files from ${PROJECT_CONFIGURATION} Git repository."
+rm -rf "docker-compose.yml" ".env.enc" ".env" "version"
+cp "${PROJECT_CONFIGURATION}/txmatching/docker-compose.yml" "docker-compose.yml"
+cp "${PROJECT_CONFIGURATION}/txmatching/version" "version"
+
+read -p "Set txmatching encryption secret (stored in Bitwarden): " PASSWORD
+PASSWORD="${PASSWORD}" FILE="${PROJECT_CONFIGURATION}/txmatching/.env.enc" make -f "${PROJECT_CONFIGURATION}/Makefile" decrypt
+cp "${PROJECT_CONFIGURATION}/txmatching/.env" ".env"
+VERSION_TAG=$(grep VERSION_TAG "version" | cut -d '=' -f2)
 
 while true; do
-    read -p "Do you want to redeploy backend with version ${LATEST_TAG} [yn]?" yn
+    read -p "Do you want to redeploy backend with version ${VERSION_TAG} [yn]? " yn
     case $yn in
-        [Yy]* ) redeploy "${LATEST_TAG}"; break;;
+        [Yy]* ) redeploy "${VERSION_TAG}"; break;;
         [Nn]* ) echo "Ok, exit."; break;;
         * ) echo "Please answer yes or no.";;
     esac

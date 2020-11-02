@@ -22,6 +22,7 @@ RUN conda init bash
 # Do all your magic from here
 # Copy rest of the app
 COPY txmatching ./txmatching
+RUN mkdir -p /logs
 
 # Copy pre-built frontend
 COPY --from=frontend-build ./frontend/dist/frontend /app/txmatching/web/frontend/dist/frontend

@@ -44,3 +44,6 @@ yum install -y git
 firewall-cmd --zone=public --add-masquerade --permanent
 firewall-cmd --reload
 systemctl restart docker
+
+# 6. Create log folder for app
+mkdir -p /var/log/txmatching

@@ -1,4 +1,5 @@
-version: '3.7'
+# Do not forgot to update other docker-compose files, especially in project-configuration repository.
+version: '3.8'
 services:
   backend:
     image: mildblue/txmatching
@@ -9,6 +10,8 @@ services:
     restart: always
     depends_on:
       - db
+    volumes:
+      - /var/log/txmatching:/logs
 
   db:
     image: postgres:12.2
