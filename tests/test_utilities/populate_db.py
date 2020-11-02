@@ -67,7 +67,7 @@ def create_or_overwrite_txm_event(name: str) -> TxmEvent:
     txm_event_model = TxmEventModel(name=name)
     db.session.add(txm_event_model)
     db.session.commit()
-    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict={}, recipients_dict={})
+    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, all_donors=[], all_recipients=[])
 
 
 def add_users():
