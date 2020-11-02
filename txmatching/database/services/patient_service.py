@@ -48,60 +48,137 @@ from txmatching.utils.hla_system.hla_transformations_store import parse_hla_raw_
 logger = logging.getLogger(__name__)
 
 
-def donor_excel_dto_to_donor_model(donor: DonorExcelDTO,
-                                   recipient: Optional[RecipientModel],
-                                   txm_event_db_id: int) -> DonorModel:
-    maybe_recipient_id = recipient.id if recipient else None
-    donor_type = DonorType.DONOR if recipient else DonorType.NON_DIRECTED
-    donor_model = DonorModel(
-        medical_id=donor.medical_id,
-        country=donor.parameters.country_code,
-        blood=donor.parameters.blood_group,
-        hla_typing=dataclasses.asdict(donor.parameters.hla_typing),
-        active=True,
-        recipient_id=maybe_recipient_id,
-        donor_type=donor_type,
-        txm_event_id=txm_event_db_id
-    )
-    return donor_model
-
-
-def recipient_excel_dto_to_recipient_model(
-        recipient_excel_dto: RecipientExcelDTO,
+def save_patients_from_excel_to_txm_event(
+        donors_recipients: Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]],
         txm_event_db_id: int
-) -> RecipientModel:
-    patient_model = RecipientModel(
-        medical_id=recipient_excel_dto.medical_id,
-        country=recipient_excel_dto.parameters.country_code,
-        blood=recipient_excel_dto.parameters.blood_group,
-        hla_typing=dataclasses.asdict(recipient_excel_dto.parameters.hla_typing),
-        hla_antibodies=[RecipientHLAAntibodyModel(
-            raw_code=hla_antibody.raw_code,
-            code=hla_antibody.code,
-            cutoff=hla_antibody.cutoff,
-            mfi=hla_antibody.mfi
-        ) for hla_antibody in recipient_excel_dto.hla_antibodies.hla_antibodies_list],
-        active=True,
-        acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
-                          for blood in recipient_excel_dto.acceptable_blood_groups],
-        txm_event_id=txm_event_db_id,
-        recipient_cutoff=recipient_excel_dto.recipient_cutoff
-    )
-    return patient_model
-
-
-def save_patients_from_excel_to_txm_event(donors_recipients: Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]],
-                                          txm_event_db_id: int):
-    maybe_recipient_models = [recipient_excel_dto_to_recipient_model(recipient, txm_event_db_id)
+):
+    maybe_recipient_models = [_recipient_excel_dto_to_recipient_model(recipient, txm_event_db_id)
                               if recipient else None for recipient in donors_recipients[1]]
     recipient_models = [recipient_model for recipient_model in maybe_recipient_models if recipient_model]
     db.session.add_all(recipient_models)
     db.session.flush()
 
-    donor_models = [donor_excel_dto_to_donor_model(donor_dto, maybe_recipient_model, txm_event_db_id) for
+    donor_models = [_donor_excel_dto_to_donor_model(donor_dto, maybe_recipient_model, txm_event_db_id) for
                     donor_dto, maybe_recipient_model in zip(donors_recipients[0], maybe_recipient_models)]
     db.session.add_all(donor_models)
+    _remove_configs_from_txm_event_by_id(txm_event_db_id)
     db.session.commit()
+
+
+def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
+    # TODO do not delete https://trello.com/c/zseK1Zcf
+    recipient_update_dto = update_patient_preprocessed_typing(recipient_update_dto)
+    old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
+    if txm_event_db_id != old_recipient_model.txm_event_id:
+        raise InvalidArgumentException('Trying to update patient the user has no access to.')
+
+    recipient_update_dict = {}
+    if recipient_update_dto.acceptable_blood_groups:
+        acceptable_blood_models = [
+            RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient_update_dto.db_id) for blood
+            in
+            recipient_update_dto.acceptable_blood_groups]
+        RecipientAcceptableBloodModel.query.filter(
+            RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
+        db.session.add_all(acceptable_blood_models)
+    if recipient_update_dto.hla_antibodies:
+        # not the best approach: in case cutoff was different per antibody before it will be unified now, but
+        # but good for the moment
+        old_recipient = _get_recipient_from_recipient_model(old_recipient_model)
+        cutoff = recipient_update_dto.cutoff if recipient_update_dto.cutoff is not None \
+            else old_recipient.recipient_cutoff
+
+        hla_antibodies = [
+            RecipientHLAAntibodyModel(
+                recipient_id=recipient_update_dto.db_id,
+                raw_code=hla_antibody_dto.raw_code,
+                mfi=hla_antibody_dto.mfi,
+                cutoff=cutoff,
+                code=parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody_dto.raw_code)
+            ) for hla_antibody_dto in recipient_update_dto.hla_antibodies_preprocessed.hla_antibodies_list]
+
+        RecipientHLAAntibodyModel.query.filter(
+            RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id).delete()
+        db.session.add_all(hla_antibodies)
+    if recipient_update_dto.hla_typing:
+        recipient_update_dict['hla_typing'] = dataclasses.asdict(recipient_update_dto.hla_typing_preprocessed)
+    if recipient_update_dto.recipient_requirements:
+        recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
+            recipient_update_dto.recipient_requirements)
+    if recipient_update_dto.cutoff:
+        recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
+
+    RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
+    _remove_configs_from_txm_event_by_id(txm_event_db_id)
+    db.session.commit()
+    return _get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id))
+
+
+def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
+    # TODO do not delete https://trello.com/c/zseK1Zcf
+    donor_update_dto = update_patient_preprocessed_typing(donor_update_dto)
+    old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
+    if txm_event_db_id != old_donor_model.txm_event_id:
+        raise InvalidArgumentException('Trying to update patient the user has no access to')
+    ConfigModel.query.filter(
+        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
+
+    donor_update_dict = {}
+    if donor_update_dto.hla_typing:
+        donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing_preprocessed)
+    DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
+    _remove_configs_from_txm_event_by_id(txm_event_db_id)
+    db.session.commit()
+    return _get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
+
+
+def get_txm_event(txm_event_db_id: int) -> TxmEvent:
+    txm_event_model = TxmEventModel.query.get(txm_event_db_id)
+
+    active_donors = txm_event_model.donors
+    active_recipients = txm_event_model.recipients
+    donors_with_recipients = [(donor_model.recipient_id, _get_donor_from_donor_model(donor_model))
+                              for donor_model in active_donors]
+
+    donors_dict = {donor.db_id: donor for _, donor in donors_with_recipients}
+    donors_with_recipients_dict = {related_recipient_id: donor.db_id for related_recipient_id, donor in
+                                   donors_with_recipients if related_recipient_id}
+
+    recipients_dict = {
+        recipient_model.id: _get_recipient_from_recipient_model(
+            recipient_model, donors_with_recipients_dict[recipient_model.id])
+        for recipient_model in active_recipients}
+
+    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict=donors_dict,
+                    recipients_dict=recipients_dict)
+
+
+def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_code: Country):
+    """
+    Updates TXM event patients, i.e., removes current event donors and recipients and add new entities.
+    :param patient_upload_dto:
+    :param country_code:
+    :return:
+    """
+    remove_donors_and_recipients_from_txm_event_for_country(patient_upload_dto.txm_event_name, country_code)
+    _remove_configs_from_txm_event_by_name(patient_upload_dto.txm_event_name)
+    _save_patients_to_existing_txm_event(
+        donors=patient_upload_dto.donors,
+        recipients=patient_upload_dto.recipients,
+        country_code=country_code,
+        txm_event_name=patient_upload_dto.txm_event_name
+    )
+    db.session.commit()
+
+
+def _remove_configs_from_txm_event_by_id(txm_event_db_id: int):
+    ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).delete()
+
+
+def _remove_configs_from_txm_event_by_name(txm_event_name: int):
+    # pylint: disable=no-member
+    txm_query = db.session.query(TxmEventModel.id).filter(TxmEventModel.name == txm_event_name)
+    ConfigModel.query.filter(ConfigModel.txm_event_id.in_(txm_query.subquery())).delete(synchronize_session='fetch')
 
 
 def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> Patient:
@@ -156,92 +233,46 @@ def _get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      )
 
 
-def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
-    # TODO do not delete https://trello.com/c/zseK1Zcf
-    recipient_update_dto = update_patient_preprocessed_typing(recipient_update_dto)
-    old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
-    if txm_event_db_id != old_recipient_model.txm_event_id:
-        raise InvalidArgumentException('Trying to update patient the user has no access to.')
-    ConfigModel.query.filter(
-        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
-
-    recipient_update_dict = {}
-    if recipient_update_dto.acceptable_blood_groups:
-        acceptable_blood_models = [
-            RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient_update_dto.db_id) for blood
-            in
-            recipient_update_dto.acceptable_blood_groups]
-        RecipientAcceptableBloodModel.query.filter(
-            RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
-        db.session.add_all(acceptable_blood_models)
-    if recipient_update_dto.hla_antibodies:
-        # not the best approach: in case cutoff was different per antibody before it will be unified now, but
-        # but good for the moment
-        old_recipient = _get_recipient_from_recipient_model(old_recipient_model)
-        cutoff = recipient_update_dto.cutoff if recipient_update_dto.cutoff is not None \
-            else old_recipient.recipient_cutoff
-
-        hla_antibodies = [
-            RecipientHLAAntibodyModel(
-                recipient_id=recipient_update_dto.db_id,
-                raw_code=hla_antibody_dto.raw_code,
-                mfi=hla_antibody_dto.mfi,
-                cutoff=cutoff,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody_dto.raw_code)
-            ) for hla_antibody_dto in recipient_update_dto.hla_antibodies_preprocessed.hla_antibodies_list]
-
-        RecipientHLAAntibodyModel.query.filter(
-            RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id).delete()
-        db.session.add_all(hla_antibodies)
-    if recipient_update_dto.hla_typing:
-        recipient_update_dict['hla_typing'] = dataclasses.asdict(recipient_update_dto.hla_typing_preprocessed)
-    if recipient_update_dto.recipient_requirements:
-        recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
-            recipient_update_dto.recipient_requirements)
-    if recipient_update_dto.cutoff:
-        recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
-
-    RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
-    db.session.commit()
-    return _get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id))
+def _donor_excel_dto_to_donor_model(donor: DonorExcelDTO,
+                                    recipient: Optional[RecipientModel],
+                                    txm_event_db_id: int) -> DonorModel:
+    maybe_recipient_id = recipient.id if recipient else None
+    donor_type = DonorType.DONOR if recipient else DonorType.NON_DIRECTED
+    donor_model = DonorModel(
+        medical_id=donor.medical_id,
+        country=donor.parameters.country_code,
+        blood=donor.parameters.blood_group,
+        hla_typing=dataclasses.asdict(donor.parameters.hla_typing),
+        active=True,
+        recipient_id=maybe_recipient_id,
+        donor_type=donor_type,
+        txm_event_id=txm_event_db_id
+    )
+    return donor_model
 
 
-def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
-    # TODO do not delete https://trello.com/c/zseK1Zcf
-    donor_update_dto = update_patient_preprocessed_typing(donor_update_dto)
-    old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
-    if txm_event_db_id != old_donor_model.txm_event_id:
-        raise InvalidArgumentException('Trying to update patient the user has no access to')
-    ConfigModel.query.filter(
-        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
-
-    donor_update_dict = {}
-    if donor_update_dto.hla_typing:
-        donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing_preprocessed)
-    DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
-    db.session.commit()
-    return _get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
-
-
-def get_txm_event(txm_event_db_id: int) -> TxmEvent:
-    txm_event_model = TxmEventModel.query.get(txm_event_db_id)
-
-    active_donors = txm_event_model.donors
-    active_recipients = txm_event_model.recipients
-    donors_with_recipients = [(donor_model.recipient_id, _get_donor_from_donor_model(donor_model))
-                              for donor_model in active_donors]
-
-    donors_dict = {donor.db_id: donor for _, donor in donors_with_recipients}
-    donors_with_recipients_dict = {related_recipient_id: donor.db_id for related_recipient_id, donor in
-                                   donors_with_recipients if related_recipient_id}
-
-    recipients_dict = {
-        recipient_model.id: _get_recipient_from_recipient_model(
-            recipient_model, donors_with_recipients_dict[recipient_model.id])
-        for recipient_model in active_recipients}
-
-    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict=donors_dict,
-                    recipients_dict=recipients_dict)
+def _recipient_excel_dto_to_recipient_model(
+        recipient_excel_dto: RecipientExcelDTO,
+        txm_event_db_id: int
+) -> RecipientModel:
+    patient_model = RecipientModel(
+        medical_id=recipient_excel_dto.medical_id,
+        country=recipient_excel_dto.parameters.country_code,
+        blood=recipient_excel_dto.parameters.blood_group,
+        hla_typing=dataclasses.asdict(recipient_excel_dto.parameters.hla_typing),
+        hla_antibodies=[RecipientHLAAntibodyModel(
+            raw_code=hla_antibody.raw_code,
+            code=hla_antibody.code,
+            cutoff=hla_antibody.cutoff,
+            mfi=hla_antibody.mfi
+        ) for hla_antibody in recipient_excel_dto.hla_antibodies.hla_antibodies_list],
+        active=True,
+        acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
+                          for blood in recipient_excel_dto.acceptable_blood_groups],
+        txm_event_id=txm_event_db_id,
+        recipient_cutoff=recipient_excel_dto.recipient_cutoff
+    )
+    return patient_model
 
 
 def _parse_date_to_datetime(date: Optional[str]) -> Optional[datetime.datetime]:
@@ -390,23 +421,6 @@ def _save_patients_to_existing_txm_event(
         for donor in donors
     ]
     db.session.add_all(donor_models)
-
-
-def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_code: Country):
-    """
-    Updates TXM event patients, i.e., removes current event donors and recipients and add new entities.
-    :param patient_upload_dto:
-    :param country_code:
-    :return:
-    """
-    remove_donors_and_recipients_from_txm_event_for_country(patient_upload_dto.txm_event_name, country_code)
-    _save_patients_to_existing_txm_event(
-        donors=patient_upload_dto.donors,
-        recipients=patient_upload_dto.recipients,
-        country_code=country_code,
-        txm_event_name=patient_upload_dto.txm_event_name
-    )
-    db.session.commit()
 
 
 def _get_hla_code(code: Optional[str], raw_code: str) -> Optional[str]:
