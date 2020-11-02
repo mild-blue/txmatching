@@ -111,6 +111,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
 
     RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
+    _remove_configs_from_txm_event_by_id(txm_event_db_id)
     db.session.commit()
     return _get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id))
 
@@ -128,6 +129,7 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     if donor_update_dto.hla_typing:
         donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing_preprocessed)
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
+    _remove_configs_from_txm_event_by_id(txm_event_db_id)
     db.session.commit()
     return _get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
 

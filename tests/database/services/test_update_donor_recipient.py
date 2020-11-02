@@ -72,6 +72,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_update_recipient(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
 
+        configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
+        self.assertEqual(1, len(configs))
+
         self.assertSetEqual({'0', 'A'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
         self.assertSetEqual({'B7', 'DQ6', 'DQ5'},
                             {hla_antibody.code for hla_antibody in RecipientModel.query.get(1).hla_antibodies})
@@ -90,6 +93,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             db_id=1
         ), txm_event_db_id)
 
+        configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
+        self.assertEqual(0, len(configs))
+
         self.assertSetEqual({'AB'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
         self.assertSetEqual({'B42', 'DQ6', 'DQA1'}, {code.code for code in RecipientModel.query.get(1).hla_antibodies})
         self.assertTrue(
@@ -99,6 +105,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
 
     def test_update_donor(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
+
+        configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
+        self.assertEqual(1, len(configs))
 
         self.assertSetEqual({'A11',
                              'B8',
@@ -112,6 +121,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             ]),
             db_id=1
         ), txm_event_db_id)
+
+        configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
+        self.assertEqual(0, len(configs))
 
         self.assertSetEqual({'A11', 'DQ6', 'DQA1'},
                             {hla_type['code'] for hla_type in DonorModel.query.get(1).hla_typing['hla_types_list']})
