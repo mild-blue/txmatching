@@ -71,7 +71,6 @@ class RecipientModel(db.Model):
     country = db.Column(db.Enum(Country), unique=False, nullable=False)
     blood = db.Column(db.TEXT, unique=False, nullable=False)
     hla_typing = db.Column(db.JSON, unique=False, nullable=False)  # HLATyping is model of the JSON
-    active = db.Column(db.BOOLEAN, unique=False, nullable=False)
     recipient_requirements = db.Column(db.JSON, unique=False, nullable=False,
                                        default=dataclasses.asdict(RecipientRequirements()))
     recipient_cutoff = db.Column(db.Integer, unique=False, nullable=False)
