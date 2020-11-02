@@ -16,8 +16,8 @@ def solve_from_configuration(configuration: Configuration, txm_event_db_id: int)
     txm_event = get_txm_event(txm_event_db_id)
     scorer = scorer_from_configuration(configuration)
     solver = solver_from_configuration(configuration,
-                                       donors_dict=txm_event.donors_dict,
-                                       recipients_dict=txm_event.recipients_dict,
+                                       donors_dict=txm_event.active_donors_dict,
+                                       recipients_dict=txm_event.active_recipients_dict,
                                        scorer=scorer)
 
     all_solutions = solver.solve()

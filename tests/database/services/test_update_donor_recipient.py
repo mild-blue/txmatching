@@ -11,7 +11,8 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
     RecipientUpdateDTO
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import (
-    save_patients_from_excel_to_txm_event, update_donor, update_recipient)
+    get_txm_event, save_patients_from_excel_to_txm_event, update_donor,
+    update_recipient)
 from txmatching.database.sql_alchemy_schema import (
     AppUserModel, ConfigModel, DonorModel, PairingResultModel,
     RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
@@ -127,3 +128,22 @@ class TestUpdateDonorRecipient(DbTests):
 
         self.assertSetEqual({'A11', 'DQ6', 'DQA1'},
                             {hla_type['code'] for hla_type in DonorModel.query.get(1).hla_typing['hla_types_list']})
+
+    def test_update_donor_active(self):
+        txm_event_db_id = self.fill_db_with_patients_and_results()
+        db_id = 1
+        original_donor_model = DonorModel.query.get(db_id)
+        original_txm_event = get_txm_event(txm_event_db_id)
+        self.assertEqual(True, original_donor_model.active)
+        self.assertIn(original_donor_model.id, original_txm_event.active_donors_dict.keys())
+        self.assertIn(original_donor_model.recipient_id, original_txm_event.active_recipients_dict.keys())
+
+        update_donor(DonorUpdateDTO(
+            active=False,
+            db_id=db_id
+        ), txm_event_db_id)
+        new_txm_event = get_txm_event(txm_event_db_id)
+
+        self.assertEqual(False, DonorModel.query.get(db_id).active)
+        self.assertNotIn(db_id, new_txm_event.active_donors_dict.keys())
+        self.assertNotIn(original_donor_model.recipient_id, new_txm_event.active_recipients_dict.keys())
