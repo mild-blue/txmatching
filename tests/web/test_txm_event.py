@@ -328,7 +328,7 @@ class TestMatchingApi(DbTests):
 
         self.assertEqual(txm_name, txm_event.name)
         self.assertEqual(3, len(RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event.db_id).all()))
-        self.assertEqual(4, len(DonorModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()))
+        self.assertEqual(0, len(DonorModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()))
         self.assertEqual(3, res.json['recipients_uploaded'])
         self.assertEqual(4, res.json['donors_uploaded'])
         self.assertEqual(1, len(UploadedDataModel.query.all()))
