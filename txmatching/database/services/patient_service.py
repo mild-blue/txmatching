@@ -71,8 +71,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     if txm_event_db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to.')
-    ConfigModel.query.filter(
-        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
 
     recipient_update_dict = {}
     if recipient_update_dto.acceptable_blood_groups:
