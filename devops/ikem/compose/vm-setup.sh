@@ -39,11 +39,15 @@ yum install -y postgresql
 
 yum install -y git
 
-# 5. Setup firewall properly
+# 5. Install Make
+
+yum install -y make
+
+# 6. Setup firewall properly
 
 firewall-cmd --zone=public --add-masquerade --permanent
 firewall-cmd --reload
 systemctl restart docker
 
-# 6. Create log folder for app
+# 7. Create log folder for app
 mkdir -p /var/log/txmatching

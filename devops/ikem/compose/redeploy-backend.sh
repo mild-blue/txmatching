@@ -22,7 +22,7 @@ function redeploy {
   export VERSION_TAG="${1}"
 
   echo "Removing unused Docker images"
-  docker image prune
+  docker image prune -a
 
   echo "Pull mildblue/txmatching:${VERSION_TAG} image."
   docker pull "mildblue/txmatching:${VERSION_TAG}"
@@ -55,8 +55,10 @@ cp "${PROJECT_CONFIGURATION}/txmatching/docker-compose.yml" "docker-compose.yml"
 cp "${PROJECT_CONFIGURATION}/txmatching/version" "version"
 
 read -p "Set txmatching encryption secret (stored in Bitwarden): " PASSWORD
-PASSWORD="${PASSWORD}" FILE="${PROJECT_CONFIGURATION}/txmatching/.env.enc" make -f "${PROJECT_CONFIGURATION}/Makefile" decrypt
-cp "${PROJECT_CONFIGURATION}/txmatching/.env" ".env"
+cd "${PROJECT_CONFIGURATION}/txmatching"
+PASSWORD="${PASSWORD}" make -f "Makefile" decrypt-ikem
+cp ".env" "../../.env"
+cd ../..
 VERSION_TAG=$(grep VERSION_TAG "version" | cut -d '=' -f2)
 
 while true; do
