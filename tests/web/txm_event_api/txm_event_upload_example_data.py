@@ -30,13 +30,10 @@ DONORS = [
     },
     {
         # Missing related_recipient_medical_id and also all non required fields
-        'medical_id': 'Missing_non_required_fields',
+        'medical_id': 'donor_missing_non_required_fields',
         'blood_group': '0',
-        'hla_typing': [
-            'A1', 'A23'
-        ],
+        'hla_typing': [],
         'donor_type': DonorType.NON_DIRECTED.value,
-        'sex': Sex.M
     },
     {
         'medical_id': 'D4',
@@ -45,7 +42,7 @@ DONORS = [
             'A1'
         ],
         'donor_type': DonorType.DONOR.value,
-        'related_recipient_medical_id': 'Missing_non_required_fields_recipient',
+        'related_recipient_medical_id': 'recipient_missing_non_required_fields',
         'sex': Sex.M,
         'height': 145,
         'weight': 56,
@@ -108,18 +105,10 @@ RECIPIENTS = [
     },
     # missing non required fields
     {
-        'medical_id': 'Missing_non_required_fields_recipient',
+        'medical_id': 'recipient_missing_non_required_fields',
         'blood_group': '0',
-        'hla_typing': [
-            'A1', 'A23'
-        ],
-        'hla_antibodies': [
-            {
-                'name': 'B42',
-                'mfi': 2000,
-                'cutoff': 2300
-            }
-        ]
+        'hla_typing': [],
+        'hla_antibodies': []
     }
 ]
 

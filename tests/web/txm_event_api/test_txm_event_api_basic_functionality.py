@@ -7,6 +7,7 @@ from txmatching.data_transfer_objects.patients.txm_event_dto_in import \
     TxmEventDTOIn
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
+                                                    PairingResultModel,
                                                     RecipientModel,
                                                     TxmEventModel)
 from txmatching.utils.enums import Country
@@ -16,7 +17,6 @@ from txmatching.web import TXM_EVENT_NAMESPACE, txm_event_api
 class TestMatchingApi(DbTests):
 
     def test_txm_event_creation_successful(self):
-        self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
         txm_name = 'test2'
@@ -54,7 +54,6 @@ class TestMatchingApi(DbTests):
             self.assertEqual('TXM event "test2" already exists.', res.json['message'])
 
     def test_txm_event_creation_failure_invalid_role(self):
-        self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
         txm_name = 'test2'
@@ -80,7 +79,6 @@ class TestMatchingApi(DbTests):
             self.assertIsNotNone(res.json)
 
     def test_txm_event_creation_invalid_data(self):
-        self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
         self.login_with_role(UserRole.ADMIN)
@@ -101,9 +99,12 @@ class TestMatchingApi(DbTests):
 
     def test_txm_event_deletion(self):
         self.fill_db_with_patients_and_results()
-        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
-
         txm_name = 'test'
+        tmx_event_model = TxmEventModel.query.filter(TxmEventModel.name == txm_name).first()
+        self.assertEqual(1, len(tmx_event_model.configs[0].pairing_results))
+        self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name).first())
+        self.assertEqual(1, len(PairingResultModel.query.all()))
+        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
         self.login_with_role(UserRole.ADMIN)
 
@@ -117,9 +118,8 @@ class TestMatchingApi(DbTests):
             self.assertEqual(200, res.status_code)
             self.assertEqual('application/json', res.content_type)
 
-        tmx_event_db = TxmEventModel.query.filter(TxmEventModel.name == txm_name).first()
-        self.assertIsNone(tmx_event_db)
-
+        self.assertIsNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name).first())
+        self.assertEqual(0, len(PairingResultModel.query.all()))
         # Second deletion should fail
         with self.app.test_client() as client:
             res = client.delete(
@@ -131,7 +131,6 @@ class TestMatchingApi(DbTests):
             self.assertEqual('application/json', res.content_type)
 
     def test_txm_event_patient_upload_fails_on_wrong_country(self):
-        self.fill_db_with_patients_and_results()
         self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
         banned_country = Country.CZE
         # add user
@@ -165,3 +164,5 @@ class TestMatchingApi(DbTests):
             self.assertEqual(403, res.status_code)
             self.assertIsNotNone(res.json)
             self.assertEqual('Access denied.', res.json['error'])
+
+        self.assertEqual(0, len(TxmEventModel.query.filter(TxmEventModel.name == txm_name).all()))
