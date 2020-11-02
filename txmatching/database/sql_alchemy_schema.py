@@ -28,7 +28,7 @@ class ConfigModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    pairing_results = db.relationship('PairingResultModel', backref='recipient', passive_deletes=True)
+    pairing_results = db.relationship('PairingResultModel', backref='config', passive_deletes=True)
     UniqueConstraint('txm_event_id')
 
 
@@ -53,9 +53,9 @@ class TxmEventModel(db.Model):
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.TEXT, unique=True, nullable=False)
-    configs = db.relationship('ConfigModel', backref='config', passive_deletes=True)
-    donors = db.relationship('DonorModel', backref='donor', passive_deletes=True)
-    recipients = db.relationship('RecipientModel', backref='recipient', passive_deletes=True)
+    configs = db.relationship('ConfigModel', backref='txm_event', passive_deletes=True)
+    donors = db.relationship('DonorModel', backref='txm_event', passive_deletes=True)
+    recipients = db.relationship('RecipientModel', backref='txm_event', passive_deletes=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)

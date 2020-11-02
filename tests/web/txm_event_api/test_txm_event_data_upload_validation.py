@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from flask import Response
 
@@ -46,11 +46,6 @@ class TestMatchingApi(DbTests):
         self.assertSetEqual({'A9'}, set(txm_event.recipients_dict[1].hla_antibodies.hla_codes_over_cutoff))
         self._check_expected_errors_in_db(1)
 
-    def test_txm_event_patient_only_active_users_kept(self):
-        res, txm_event = self._txm_event_upload(donors_json=DONORS, recipients_json=RECIPIENTS)
-        self._check_response(res, 200)
-        txm_event = get_txm_event(txm_event.db_id)
-
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         txm_event_name = 'invalid_name'
         res, _ = self._txm_event_upload(donors_json=DONORS,
@@ -86,8 +81,7 @@ class TestMatchingApi(DbTests):
         res, _ = self._txm_event_upload(donors_json=SPECIAL_DONORS_INVALID_RECIPIENT_MEDICAL_ID,
                                         recipients_json=RECIPIENTS)
         self._check_response(res, 400,
-                             error_message='When recipient is not set, donor type must be "BRIDGING_DONOR" or'
-                                           ' "NON_DIRECTED".')
+                             error_message='Medical id of related recipient: "invalid_id" not found in recipients.')
 
     def test_txm_event_patient_failed_upload_duplicate_related_recipient_medical_id_in_donors(self):
 
@@ -110,6 +104,11 @@ class TestMatchingApi(DbTests):
         self.assertSetEqual(expected_typing,
                             {hla_type.code for hla_type in
                              recipient.parameters.hla_typing.hla_types_list})
+        donor = txm_event.donors_dict[1]
+        expected_antibodies = {'B7', 'DQA1', 'DQ6'}
+        self.assertSetEqual(expected_antibodies,
+                            {hla_antibody.code for hla_antibody in
+                             donor.parameters.hla_typing.hla_types_list})
         self._check_expected_errors_in_db(0)
 
     def test_txm_event_patient_successful_upload_multiple_same_hla_types(self):
@@ -133,10 +132,10 @@ class TestMatchingApi(DbTests):
         self.assertSetEqual(expected_antibodies, set(recipient.hla_antibodies.hla_codes_over_cutoff))
 
     def _txm_event_upload(self,
-                          donors_json=None,
-                          recipients_json=None,
-                          country=Country.CZE.value,
-                          txm_event_name=None) -> Tuple[Response, TxmEvent]:
+                          donors_json: Optional[List[Dict]] = None,
+                          recipients_json: Optional[List[Dict]] = None,
+                          country: str = Country.CZE.value,
+                          txm_event_name: Optional[str] = None) -> Tuple[Response, TxmEvent]:
         if recipients_json is None:
             recipients_json = []
         if donors_json is None:
