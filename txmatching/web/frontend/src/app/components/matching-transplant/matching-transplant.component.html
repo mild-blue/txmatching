@@ -6,9 +6,8 @@
       <app-patient-pair [pair]="transplant"></app-patient-pair>
     </div>
 
-    <div class="score">
-      Score: <span>{{ totalScore }}</span>
-    </div>
+    <app-score-indicator [configuration]="configuration"
+                         [score]="totalScore"></app-score-indicator>
   </div>
 
   <div class="transplant-content">

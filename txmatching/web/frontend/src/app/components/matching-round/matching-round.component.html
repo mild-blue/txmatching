@@ -9,10 +9,9 @@
 
       <app-patient-pair [pair]="transplant"></app-patient-pair>
 
-      <div *ngIf="configuration && !configuration.use_binary_scoring"
-           [style.background-position.%]="percentageScore(transplant)"
-           [class.bad-matching]="transplant.score === -1"
-           class="indicator"></div>
+      <app-score-indicator *ngIf="configuration && !configuration.use_binary_scoring"
+                           [configuration]="configuration"
+                           [score]="transplant.score"></app-score-indicator>
 
     </div>
   </div>

@@ -170,6 +170,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
       const detailComponentRef = detailViewContainerRef.createComponent<ListItemDetailAbstractComponent>(detailComponentFactory);
       detailComponentRef.instance.item = activeItem;
       detailComponentRef.instance.patients = this.patients;
+      detailComponentRef.instance.configuration = this.configuration;
     }
   }
 }

@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 import { PatientService } from '@app/services/patient/patient.service';
 import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
+import { Configuration } from '@app/model/Configuration';
 
 @Component({
   selector: 'app-matching-detail',
@@ -18,6 +19,7 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent {
 
   @Input() item?: Matching;
   @Input() patients?: PatientList;
+  @Input() configuration?: Configuration;
 
   constructor(private _patientsService: PatientService,
               private _uiInteractionsService: UiInteractionsService) {

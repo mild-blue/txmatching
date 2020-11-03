@@ -20,6 +20,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 
     background-color: $transplant-bg--incompatible;
     color: $transplant-color--incompatible;
