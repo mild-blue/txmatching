@@ -29,9 +29,8 @@ LOGIN_MANAGER = None
 API_VERSION = '/v1'
 
 
-def create_app(is_prod: bool = True) -> Flask:
-    if is_prod:
-        setup_logging()
+def create_app() -> Flask:
+    setup_logging()
 
     app = Flask(__name__)
     # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
