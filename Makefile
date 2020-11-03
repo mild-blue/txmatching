@@ -95,3 +95,6 @@ run-fe:
 	cd txmatching/web/frontend; npm run start
 
 rebuild: conda-update build-fe
+
+migrate-db:
+	cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER=${POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} POSTGRES_DB=${POSTGRES_DB} POSTGRES_URL=${POSTGRES_URL} python database/migrate_db.py
