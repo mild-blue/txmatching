@@ -75,9 +75,9 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
     this.activeItem = item;
     if (item?.index) {
       item.isActive = true;
-      this.activeAlignedTop = true;
       this._loadDetailComponent();
       this._scrollToElement(item.index);
+      this.activeAlignedTop = true;
 
       // save last clicked patient pair
       if (this.saveLastViewedItem && this._uiInteractionsService.getLastViewedItemId() !== item.index) {
@@ -166,14 +166,8 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
     this.displayedItems = [];
     this._addItemsBatchToView();
 
-    // set first or saved item as active
-    let newActiveItem = this.displayedItems[0];
-    if (this.saveLastViewedItem) {
-      const lastViewedId = this._uiInteractionsService.getLastViewedItemId();
-      const foundItem = this.items.find(item => item.index === lastViewedId);
-      newActiveItem = foundItem ?? newActiveItem;
-    }
-    this.setActive(newActiveItem);
+    // set first item as active
+    this.setActive(this.displayedItems[0]);
   }
 
   private _loadDetailComponent(): void {

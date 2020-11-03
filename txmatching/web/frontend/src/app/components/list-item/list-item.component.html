@@ -5,9 +5,10 @@
          class="list-inner"
          (scrolled)="onScrollDown()"
          [scrollWindow]="false">
-      <app-item *ngFor="let item of displayedItems; trackBy: trackListItem"
+      <app-item *ngFor="let item of displayedItems; trackBy: trackListItem; let i = index;"
                 [listItemComponent]="listItemComponent"
                 [isActive]="item === activeItem"
+                [index]="i"
                 [item]="item"
                 [patients]="patients"
                 [configuration]="configuration"
