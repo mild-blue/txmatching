@@ -55,5 +55,6 @@ def migrate_db(db_uri: Optional[str] = None):
         backend.apply_migrations(backend.to_apply(migrations))
     logger.info('DB migrations applied.')
 
+
 if __name__ == '__main__':
     migrate_db()
