@@ -10,6 +10,7 @@ export class ScoreIndicatorComponent implements OnInit {
 
   @Input() configuration?: Configuration;
   @Input() score?: number;
+  @Input() showScore?: boolean;
 
   constructor() {
   }

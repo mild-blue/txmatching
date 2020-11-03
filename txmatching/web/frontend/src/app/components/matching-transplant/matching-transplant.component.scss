@@ -3,17 +3,15 @@
 .transplant {
   display: flex;
   flex-direction: column;
-  border: 1px solid $border-color;
-  border-top: none;
-  border-radius: $border-radius--wide;
-  box-shadow: $box-shadow;
   margin: 0 auto $item-gap;
+
+  border-radius: $border-radius--wide;
+  box-shadow: $box-shadow--wide;
+  overflow: hidden;
 
   max-width: 960px;
 
   &-header {
-    border: 1px solid $border-color;
-    border-radius: $border-radius;
     padding: calc(#{$padding-y} / 2) $padding-x;
     font-weight: 700;
 
@@ -29,32 +27,6 @@
       background-color: $transplant-bg--compatible;
       color: $transplant-color--compatible;
     }
-
-    > div {
-      display: flex;
-      align-items: center;
-
-      strong {
-        margin-right: 20px;
-        //color: $body-color--secondary;
-      }
-    }
-
-    .score {
-      //color: $body-color--secondary;
-
-      span {
-        font-size: 22px;
-        font-weight: 700;
-        color: $primary;
-        margin-left: 10px;
-      }
-    }
-  }
-
-  &-content {
-    flex-grow: 1;
-    padding: 30px 30px 10px;
   }
 
   .small {
@@ -71,7 +43,10 @@
   }
 
   tr {
-    border-top: 1px solid $border-color;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $border-color;
+    }
 
     &:first-child {
       font-weight: 700;
@@ -79,24 +54,28 @@
     }
 
     &:last-child {
-      border-top: none;
+      td:first-child {
+        padding-bottom: $padding-y;
+      }
     }
 
     &.anti-header {
       td {
-        background: #f9f9f9;
-        font-size: 12px;
+        background: rgba($black, 0.015);
+        color: $body-color--secondary;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
         padding: 2px;
       }
     }
   }
 
   td {
-
     text-align: center;
     padding: 10px;
-    border-right: 1px solid $border-color;
     vertical-align: top;
+    border-right: 1px solid $border-color;
 
     .center-holder {
       width: 100%;
@@ -106,41 +85,34 @@
     }
 
     &:not([colspan]) {
-      width: 21.6666%;
+      // cant use calc
+      // "Any math expression of a complex type is treated as auto. Simple typed things continue to work as today."
+      width: 21.6666666%;
     }
 
     &:first-child {
       width: 20%;
       text-align: left;
+      font-size: 14px;
       font-weight: 700;
+      text-transform: uppercase;
+      color: $body-color--secondary;
+
+      padding-left: $padding-y;
     }
 
     &:last-child {
       width: 15%;
-      background: $gray-100;
+      font-weight: 700;
       border-right: none;
     }
-  }
 
-  .footer-score {
-
-    td {
-      text-align: right;
-      background: $white !important;
-
-      &:not(:last-child) {
-        border: none !important;
-      }
-
-      &:last-child {
-        border-top: 3px solid $primary;
-      }
+    &.border-t-none {
+      border-top: none;
     }
 
-    span {
-      font-size: 24px;
-      font-weight: 700;
-      color: $primary;
+    &.border-b-none {
+      border-bottom: none;
     }
   }
 }
