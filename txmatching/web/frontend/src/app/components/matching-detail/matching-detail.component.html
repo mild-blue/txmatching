@@ -1,14 +1,14 @@
 <div *ngIf="item && patients" class="matching-detail">
 
-  <div *ngFor="let round of item.rounds; let rIdx = index" class="round">
-    <h4>Round #{{ rIdx + 1 }}</h4>
-    <div *ngFor="let transplant of round.transplants; let tIdx = index"
-         class="transplant-holder"
-         id="transplant-{{transplant.index}}">
+  <div *ngFor="let round of item.rounds" class="round">
+    <h3>Round {{  round.index }}</h3>
+
+    <div *ngFor="let transplant of round.transplants"
+         id="transplant-{{transplant.index}}"
+         class="transplant-holder">
       <app-matching-transplant [patients]="patients"
                                [transplant]="transplant"
-                               [configuration]="configuration"
-                               [index]="tIdx + 1"></app-matching-transplant>
+                               [configuration]="configuration"></app-matching-transplant>
     </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
 <div *ngIf="round" class="matching-round">
-  <div class="index">{{ roundIndex }}</div>
+  <div class="index">{{ round.index }}</div>
   <div class="content">
     <div *ngFor="let transplant of round.transplants"
          [class.compatible]="transplant.compatible_blood"

@@ -1,19 +1,31 @@
 @import "../../../styles/variables";
 
 .matching-detail {
-  padding: $padding-y $padding-x;
+  padding: $padding-y $padding-x calc(#{$padding-y * 2});
 
   .round {
-    padding-bottom: $item-gap;
-    margin-bottom: $item-gap;
-
-    h4 {
-      text-transform: uppercase;
-      margin: 0;
-    }
+    padding-bottom: calc(#{$padding-y * 2});
+    margin: 5px;
 
     &:not(:last-child) {
-      border-bottom: 1px solid $border-color;
+      position: relative;
+
+      &::after {
+        content: '';
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(to right, rgba($body-color--secondary, 0.5) 10%, rgba($body-color--secondary, 0.3) 50%, rgba($white, 0));
+
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        border-radius: 4px;
+      }
+    }
+
+    h3 {
+      margin: 0 0 $padding-y;
+      color: $body-color--secondary;
     }
   }
 

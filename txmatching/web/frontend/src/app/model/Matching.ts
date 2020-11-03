@@ -10,6 +10,7 @@ export interface Matching extends ListItem {
 
 export interface Round {
   transplants: Transplant[];
+  index?: string;
 }
 
 export interface Transplant extends PatientPair {

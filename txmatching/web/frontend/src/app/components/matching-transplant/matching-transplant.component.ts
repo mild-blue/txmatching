@@ -14,7 +14,6 @@ export class MatchingTransplantComponent implements OnInit {
   @Input() configuration?: Configuration;
   @Input() transplant?: Transplant;
   @Input() patients?: PatientList;
-  @Input() index?: number;
 
   public hlaScores?: Map<string, number>;
   public totalScore: number = 0;
