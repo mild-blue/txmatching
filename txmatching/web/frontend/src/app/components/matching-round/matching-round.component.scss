@@ -26,8 +26,8 @@
     position: relative;
     cursor: pointer;
 
-    background-color: $dark;
-    color: $white;
+    background-color: $transplant-bg--incompatible;
+    color: $transplant-color--incompatible;
 
     font-weight: 400;
 
@@ -40,8 +40,19 @@
     }
 
     &.compatible {
-      background-color: $gray-300;
-      color: $black;
+      background-color: $transplant-bg--compatible;
+      color: $transplant-color--compatible;
+    }
+
+    .content {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+
+      .check {
+        color: $code-color--matching;
+        margin-left: 10px;
+      }
     }
 
     &.w-indicator {

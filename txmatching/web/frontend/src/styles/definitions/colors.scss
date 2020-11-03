@@ -24,6 +24,11 @@ $accent: #007bff;
 $success: #28a745;
 $danger: #dc3545;
 
+// === TRANSPLANT STATES === //
+$transplant-bg--compatible: $gray-300;
+$transplant-color--compatible: $black;
+$transplant-bg--incompatible: $dark;
+$transplant-color--incompatible: $white;
 
 // === ANTIBODIES & ANTIGENS CODES === //
 // basic code

@@ -1,5 +1,6 @@
 <div *ngIf="transplant" class="transplant">
-  <div class="transplant-header">
+  <div class="transplant-header"
+       [class.compatible]="transplant.compatible_blood">
     <div>
       <strong *ngIf="index">Transplant #{{index}}</strong>
       <app-patient-pair [pair]="transplant"></app-patient-pair>
