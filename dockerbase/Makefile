@@ -14,4 +14,4 @@ publish-conda-dependencies: build-conda-dependencies
 
 build: build-conda-base build-conda-dependencies
 
-publish: build
+publish: publish-conda-base publish-conda-dependencies
