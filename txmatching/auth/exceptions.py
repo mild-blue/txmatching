@@ -62,6 +62,12 @@ class GuardException(AuthenticationException):
     """
 
 
+class WrongTokenException(AuthenticationException):
+    """
+    Base class for Authentication related exceptions.
+    """
+
+
 class InvalidArgumentException(BaseTxmException):
     """
     Raised if invalid argument received.
