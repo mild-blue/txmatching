@@ -81,7 +81,8 @@ class TestMatchingApi(DbTests):
         res, _ = self._txm_event_upload(donors_json=SPECIAL_DONORS_INVALID_RECIPIENT_MEDICAL_ID,
                                         recipients_json=RECIPIENTS)
         self._check_response(res, 400,
-                             error_message='Medical id of related recipient: "invalid_id" not found in recipients.')
+                             error_message='Donor (medical id "D1") has related recipient (medical id "invalid_id"),'
+                                           ' which was not found among recipients.')
 
     def test_txm_event_patient_failed_upload_duplicate_related_recipient_medical_id_in_donors(self):
 
