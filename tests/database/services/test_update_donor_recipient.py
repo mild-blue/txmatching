@@ -131,8 +131,8 @@ class TestUpdateDonorRecipient(DbTests):
 
     def test_update_donor_active(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
-        db_id = 1
-        original_donor_model = DonorModel.query.get(db_id)
+        donor_db_id = 1
+        original_donor_model = DonorModel.query.get(donor_db_id)
         original_txm_event = get_txm_event(txm_event_db_id)
         self.assertEqual(True, original_donor_model.active)
         self.assertIn(original_donor_model.id, original_txm_event.active_donors_dict.keys())
@@ -140,10 +140,10 @@ class TestUpdateDonorRecipient(DbTests):
 
         update_donor(DonorUpdateDTO(
             active=False,
-            db_id=db_id
+            db_id=donor_db_id
         ), txm_event_db_id)
         new_txm_event = get_txm_event(txm_event_db_id)
 
-        self.assertEqual(False, DonorModel.query.get(db_id).active)
-        self.assertNotIn(db_id, new_txm_event.active_donors_dict.keys())
+        self.assertEqual(False, DonorModel.query.get(donor_db_id).active)
+        self.assertNotIn(donor_db_id, new_txm_event.active_donors_dict.keys())
         self.assertNotIn(original_donor_model.recipient_id, new_txm_event.active_recipients_dict.keys())
