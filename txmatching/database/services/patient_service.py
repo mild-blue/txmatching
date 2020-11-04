@@ -345,8 +345,8 @@ def _donor_upload_dto_to_donor_model(
                 maybe_related_recipient_medical_id = related_recipient.medical_id
             else:
                 raise InvalidArgumentException(
-                    f'Medical id of related recipient: "{donor.related_recipient_medical_id}" not found in recipients.'
-                )
+                    f'Donor (medical id "{donor.medical_id}") has related recipient (medical id '
+                    f'"{donor.related_recipient_medical_id}"), which was not found among recipients.')
         else:
             raise InvalidArgumentException(
                 f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" '
