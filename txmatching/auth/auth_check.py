@@ -2,11 +2,10 @@ import functools
 import logging
 from typing import Callable
 
-from flask import abort
-
-from txmatching.auth.data_types import UserRole, TokenType
-from txmatching.auth.request_context import get_request_token
-from txmatching.auth.request_context import store_user_in_context
+from txmatching.auth.data_types import TokenType, UserRole
+from txmatching.auth.exceptions import AuthenticationException
+from txmatching.auth.request_context import (get_request_token,
+                                             store_user_in_context)
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +21,12 @@ def require_role(*role_names: UserRole) -> Callable:
             token = get_request_token()
 
             if token.type != TokenType.ACCESS:
-                abort(403, description='Authentication failed.')
-            elif token.role not in role_names:
-                abort(403, description='Access denied. You do not have privileges to view this page. If you believe'
-                                       ' you are seeing this message by error, contact your administrator.')
+                raise AuthenticationException('Authentication failed.')
+            if token.role not in role_names:
+                raise AuthenticationException(
+                    'Access denied. You do not have privileges to view this page. If you believe you are seeing this'
+                    ' message by error, contact your administrator.'
+                )
 
             store_user_in_context(token.user_id, token.role)
             return original_route(*args, **kwargs)

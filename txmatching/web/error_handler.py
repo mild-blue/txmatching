@@ -7,10 +7,11 @@ from flask_restx import Api
 from werkzeug.exceptions import Forbidden, HTTPException
 
 from txmatching.auth.exceptions import (
-    CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
-    GuardException, InvalidArgumentException, InvalidAuthCallException,
-    InvalidIpAddressAccessException, InvalidJWTException, InvalidOtpException,
-    UserUpdateException)
+    AuthenticationException, CouldNotSendOtpUsingSmsServiceException,
+    CredentialsMismatchException, GuardException, InvalidArgumentException,
+    InvalidAuthCallException, InvalidIpAddressAccessException,
+    InvalidJWTException, InvalidOtpException, UserUpdateException,
+    WrongTokenException)
 from txmatching.configuration.app_configuration.application_configuration import \
     get_application_configuration
 
@@ -27,6 +28,8 @@ def register_error_handlers(api: Api):
     _default_error_handlers(api)
 
 
+# pylint: disable=too-many-locals
+# it is valid to have here all the possible handlers, even if they are many
 def _user_auth_handlers(api: Api):
     @api.errorhandler(InvalidJWTException)
     def handle_invalid_jwt_exception(error: InvalidJWTException):
@@ -79,6 +82,18 @@ def _user_auth_handlers(api: Api):
         """handle_guard_exception"""
         _log_warning(error)
         return {'error': 'Access denied.', 'detail': str(error)}, 403
+
+    @api.errorhandler(WrongTokenException)
+    def handle_wrong_token_exception(error: WrongTokenException):
+        """handle wrong token exception"""
+        _log_warning(error)
+        return {'error': 'Wrong token.', 'detail': str(error)}, 403
+
+    @api.errorhandler(AuthenticationException)
+    def handle_general_authentication_exception(error: AuthenticationException):
+        """general authentication exception"""
+        _log_warning(error)
+        return {'error': 'General authentication exception', 'detail': str(error)}, 403
 
     @api.errorhandler(InvalidArgumentException)
     def handle_invalid_argument_exception(error: InvalidArgumentException):
