@@ -9,7 +9,8 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_role
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.operation_guards.country_guard import guard_user_has_access_to_country
+from txmatching.auth.operation_guards.country_guard import \
+    guard_user_has_access_to_country
 from txmatching.auth.service.service_auth_check import allow_service_role
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadDTOOut
@@ -65,9 +66,8 @@ class TxmEventDeleteApi(Resource):
         params={
             'name': {
                 'description': 'Name of the TXM event to be deleted.',
-                'in': 'query',
-                'type': 'string',
-                'required': 'true'
+                'type': str,
+                'required': True
             }
         },
         security='bearer',

@@ -22,7 +22,8 @@ from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import register_error_handlers, user_api
+from txmatching.web import (API_VERSION, USER_NAMESPACE, add_all_namespaces,
+                            register_error_handlers)
 
 ROLE_CREDENTIALS = {
     UserRole.ADMIN: ADMIN_USER,
@@ -52,6 +53,7 @@ class DbTests(unittest.TestCase):
             os.remove(get_absolute_path(f'/tests/test_utilities/{self._database_name}'))
 
         self.app = Flask(__name__)
+        self.app.config['SERVER_NAME'] = 'test'
         self.app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self._database_name}'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.app.config['SQLALCHEMY_ECHO'] = False  # Enable if you want to see DB queries.
@@ -61,6 +63,18 @@ class DbTests(unittest.TestCase):
         self._load_local_development_config()
 
         db.create_all()
+
+        self.app.config['SERVER_NAME'] = 'test'
+        self.app.config['POSTGRES_USER'] = 'str'
+        self.app.config['POSTGRES_PASSWORD'] = 'str'
+        self.app.config['POSTGRES_DB'] = 'str'
+        self.app.config['POSTGRES_URL'] = 'str'
+        self.app.config['JWT_SECRET'] = 'str'
+        self.app.config['JWT_EXPIRATION_DAYS'] = 10
+        self.app.app_context().push()
+        self.api = Api(self.app)
+        add_all_namespaces(self.api)
+        register_error_handlers(self.api)
 
         add_users()
 
@@ -80,9 +94,7 @@ class DbTests(unittest.TestCase):
         return txm_event.db_id
 
     def _set_bearer_token(self):
-        self.api = Api(self.app)
         register_error_handlers(self.api)
-        self.api.add_namespace(user_api, path='/user')
         self.login_with_role(UserRole.ADMIN)
 
     def login_with_credentials(self, credentials: Dict):
@@ -99,7 +111,7 @@ class DbTests(unittest.TestCase):
 
     def login_with(self, email: str, password: str, user_id: int, user_role: UserRole):
         with self.app.test_client() as client:
-            json = client.post('/user/login',
+            json = client.post(f'{API_VERSION}/{USER_NAMESPACE}/login',
                                json={'email': email, 'password': password}).json
             token = json['auth_token']
             self.auth_headers = {'Authorization': f'Bearer {token}'}

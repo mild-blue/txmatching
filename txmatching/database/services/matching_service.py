@@ -20,7 +20,12 @@ BloodCompatibleDict = Dict[Tuple[int, int], bool]
 def get_latest_matchings_and_score_matrix(
         txm_event_db_id: int
 ) -> Tuple[List[MatchingWithScore], ScoreDict, BloodCompatibleDict]:
-    configuration_id = get_config_model_for_txm_event(txm_event_db_id).id
+    maybe_config_model = get_config_model_for_txm_event(txm_event_db_id)
+    if maybe_config_model is None:
+        raise AssertionError('There are no latest matchings in the database, '
+                             "didn't you forget to call solve_from_configuration()?")
+
+    configuration_id = maybe_config_model.id
     last_pairing_result_model = (PairingResultModel
                                  .query.filter(PairingResultModel.config_id == configuration_id)
                                  .first()

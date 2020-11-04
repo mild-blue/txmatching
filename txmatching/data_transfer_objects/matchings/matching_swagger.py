@@ -23,8 +23,8 @@ MatchingJson = matching_api.model('Matching', {
     'score': fields.Float(required=True),
     'rounds': fields.List(required=True, cls_or_instance=fields.Nested(RoundJson)),
     'countries': fields.List(required=True, cls_or_instance=fields.Nested(CountryInRoundJson)),
-    'db_id': fields.Integer(required=True)
+    'order_id': fields.Integer(required=True)
 
 })
 
-Matchings = fields.List(fields.Nested(MatchingJson))
+MatchingsJson = fields.List(fields.Nested(MatchingJson))

@@ -1,12 +1,12 @@
+import itertools
 from dataclasses import dataclass, field
 from typing import List, Optional
-
-import itertools
 
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
 from txmatching.utils.hla_system.hla_transformations import (
-    get_compatibility_broad_codes, get_mfi_from_multiple_hla_codes, parse_hla_raw_code)
+    get_compatibility_broad_codes, get_mfi_from_multiple_hla_codes,
+    parse_hla_raw_code)
 
 Kilograms = float
 Centimeters = int
@@ -81,4 +81,4 @@ class PatientParameters:
     sex: Optional[Sex] = None
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None
-    yob: Optional[int] = None
+    year_of_birth: Optional[int] = None
