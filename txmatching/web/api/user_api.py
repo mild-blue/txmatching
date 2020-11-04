@@ -145,7 +145,8 @@ class RegistrationApi(Resource):
                                                 'IP address for SERVICE account.'),
         allowed_countries=fields.List(required=True,
                                       description='Countries that the user has access to.',
-                                      cls_or_instance=fields.String(enum=[country.value for country in Country])),
+                                      cls_or_instance=fields.String(enum=[country.value for country in Country]),
+                                      example=['AUT', 'CZE']),
     ))
 
     @user_api.doc(body=registration_model, security='bearer')

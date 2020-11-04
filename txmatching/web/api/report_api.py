@@ -14,19 +14,23 @@ from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
 
 from txmatching.auth.user.user_auth_check import require_user_login
+from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, MatchingReportDTO, RoundReportDTO, TransplantDTO)
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
-from txmatching.database.services.config_service import \
-    get_configuration_for_txm_event
+from txmatching.database.services import solver_service
+from txmatching.database.services.config_service import (
+    get_config_model_for_txm_event, get_configuration_for_txm_event)
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
+from txmatching.solve_service.solve_from_configuration import \
+    solve_from_configuration
 from txmatching.utils.enums import HLA_TYPING_BONUS_PER_GENE_CODE_STR, HLATypes
 from txmatching.web.api.namespaces import report_api
 
@@ -49,9 +53,14 @@ class Report(Resource):
         params={
             MATCHINGS_BELOW_CHOSEN: {
                 'description': 'Number of matchings with lower score than chosen to include in report',
-                'in': 'query',
-                'type': 'integer',
-                'required': 'true'
+                'type': int,
+                'required': False
+            },
+            'matching_id': {
+                'description': 'Id of matching that was chosen',
+                'type': int,
+                'in': 'path',
+                'required': True
             }
         }
     )
@@ -80,7 +89,10 @@ class Report(Resource):
                 f'range [{MIN_MATCHINGS_BELOW_CHOSEN}, {MAX_MATCHINGS_BELOW_CHOSEN}]. '
                 f'Current value is {matching_range_limit}.'
             )
-
+        maybe_config_model = get_config_model_for_txm_event(txm_event_db_id)
+        if maybe_config_model is None:
+            pairing_result = solve_from_configuration(Configuration(), txm_event_db_id=txm_event_db_id)
+            solver_service.save_pairing_result(pairing_result)
         (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_db_id)
         all_matchings.sort(key=lambda m: m.order_id())  # lower ID -> better evaluation
 
