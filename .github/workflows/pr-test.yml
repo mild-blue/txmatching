@@ -1,0 +1,24 @@
+name: Check Pipeline
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  run_tests:
+    container:
+      image: mildblue/txmatching-conda-dependencies:latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run Linter
+        shell: bash
+        run: |
+          . ~/.bashrc && conda activate txmatching && pylint txmatching
+
+      - name: Execute tests
+        shell: bash -l {0}
+        run: |
+          . ~/.bashrc && conda activate txmatching && pylint txmatching && \
+          cd tests; export PYTHONPATH=../; python -m unittest discover -s . -t .
