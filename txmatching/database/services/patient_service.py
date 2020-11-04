@@ -182,7 +182,7 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
             hla_typing=dacite.from_dict(data_class=HLATyping, data=patient_model.hla_typing),
             height=patient_model.height,
             weight=patient_model.weight,
-            yob=patient_model.yob,
+            year_of_birth=patient_model.yob,
             sex=patient_model.sex
         ))
 

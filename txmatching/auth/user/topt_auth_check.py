@@ -1,9 +1,8 @@
 import functools
 from typing import Callable
 
-from flask_restx import abort
-
 from txmatching.auth.data_types import TokenType, UserRole
+from txmatching.auth.exceptions import WrongTokenUsedException
 from txmatching.auth.request_context import get_request_token
 
 
@@ -18,12 +17,10 @@ def allow_otp_request() -> Callable:
             token = get_request_token()
 
             if token.type != TokenType.OTP:
-                abort(403, error='Wrong token used.',
-                      description=f'{TokenType.OTP} token required, but {token.type} received!')
+                raise WrongTokenUsedException(f'{TokenType.OTP} token required, but {token.type} received!')
             # this case should never happen, but we must be careful
-            elif token.role == UserRole.SERVICE:
-                abort(403, error='Wrong token used.',
-                      description='OTP validation is only for user accounts.')
+            if token.role == UserRole.SERVICE:
+                raise WrongTokenUsedException('OTP validation is only for user accounts.')
 
             return original_route(*args, **kwargs)
 

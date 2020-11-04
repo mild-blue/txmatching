@@ -8,12 +8,12 @@ from txmatching.web.api.namespaces import patient_api
 HLAAntibody = patient_api.model('HlaAntibody', {
     'raw_code': fields.String(required=True),
     'mfi': fields.Integer(required=True),
-    'cutoff': fields.String(required=True),
+    'cutoff': fields.Integer(required=True),
     'code': fields.String(required=False)
 })
 
 HLAType = patient_api.model('HlaType', {
-    'code': fields.List(required=True, cls_or_instance=fields.String),
+    'code': fields.String(required=False),
     'raw_code': fields.String(required=True),
 })
 
@@ -29,7 +29,7 @@ HLAAntibodies = patient_api.model('HlaAntibodies', {
 
 PatientParametersModel = patient_api.model('PatientParameters', {
     'blood_group': fields.String(required=False, enum=[blood_group.value for blood_group in BloodGroup]),
-    'hla_typing': fields.List(required=False, cls_or_instance=fields.Nested(HLATyping)),
+    'hla_typing': fields.Nested(required=False, model=HLATyping),
     'country_code': fields.String(required=False, enum=[country.value for country in Country]),
     'sex': fields.String(required=False, enum=[sex.value for sex in Sex]),
     'height': fields.Integer(required=False),
@@ -44,6 +44,7 @@ RecipientRequirements = patient_api.model('RecipientRequirements', {
 })
 
 DonorModel = patient_api.model('DonorModel', {
+    'active': fields.Boolean(required=True, description='Whether the user shall be used in pairing calculation'),
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
     'parameters': fields.Nested(required=True, model=PatientParametersModel),
@@ -62,6 +63,7 @@ RecipientModel = patient_api.model('RecipientModel', {
     'recipient_requirements': fields.Nested(RecipientRequirements),
     'waiting_since': fields.DateTime(required=False),
     'previous_transplants': fields.Integer(required=False),
+    'recipient_cutoff': fields.Integer(required=False)
 })
 
 PatientsModel = patient_api.model('Patients', {
@@ -70,12 +72,12 @@ PatientsModel = patient_api.model('Patients', {
 })
 
 HLAAntibodyToUpdate = patient_api.model('HlaAntibodyToUpdate', {
-    'raw_code': fields.String(required=True),
-    'mfi': fields.Integer(required=True),
+    'raw_code': fields.String(required=True, example='A1'),
+    'mfi': fields.Integer(required=True, example=10000),
 })
 
 HLATypeToUpdate = patient_api.model('HlaTypeToUpdate', {
-    'raw_code': fields.String(required=True),
+    'raw_code': fields.String(required=True, example='A1'),
 })
 
 HLATypingToUpdate = patient_api.model('HlaTypingToUpdate', {
@@ -87,28 +89,37 @@ HLAAntibodiesToUpdate = patient_api.model('HlaAntibodiesToUpdate', {
 })
 
 RecipientModelToUpdate = patient_api.model('RecipientModelToUpdate', {
-    'db_id': fields.Integer(required=True, description='Database id of the patient'),
+    'db_id': fields.Integer(required=True, description='Database id of the patient', example=1),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(
         enum=[blood_group.value for blood_group in BloodGroup]),
                                            description='Provide full list of all the acceptable blood groups of the '
                                                        'patient, not just the change set'),
     'hla_typing': fields.Nested(HLATypingToUpdate, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
-                                            'the change set'),
+                                            'the change set',
+                                example={'hla_types_list': [{'raw_code': 'A1'}]}),
     'hla_antibodies': fields.Nested(HLAAntibodiesToUpdate, required=False,
                                     description='Provide full list of all the HLA antibodies of the patient, not just '
-                                                'the change set'),
+                                                'the change set',
+                                    example={'hla_antibodies_list': [
+                                        {
+                                            'raw_code': 'A1',
+                                            'mfi': 10000
+                                        }
+                                    ]}),
     'recipient_requirements': fields.Nested(RecipientRequirements, required=False,
                                             description='Provide the whole recipients requirements object, it will be'
-                                                        ' overwritten'),
+                                                        ' overwritten',
+                                            example={'require_better_match_in_compatibility_index': True}),
     'cutoff': fields.Integer(required=False)
 })
 
 DonorModelToUpdate = patient_api.model('DonorModelToUpdate', {
-    'db_id': fields.Integer(required=True, description='Database id of the patient'),
+    'db_id': fields.Integer(required=True, description='Database id of the patient', example=1),
     'hla_typing': fields.Nested(HLATypingToUpdate, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
-                                            'the change set'),
+                                            'the change set',
+                                example={'hla_types_list': [{'raw_code': 'A1'}]}),
     'active': fields.Boolean(required=False, description='Information, whether or not given donor shall be considered'
                                                          ' in exchange.')
 })

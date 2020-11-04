@@ -31,3 +31,5 @@ dependencies:
       - pdfkit==0.6.1
       - jinja2==2.11
       - yoyo-migrations==7.2.0
+      - openapi-spec-validator==0.2.9
+      - swagger-unittest==0.3.0

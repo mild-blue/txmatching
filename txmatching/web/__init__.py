@@ -81,13 +81,7 @@ def create_app() -> Flask:
             title='TX Matching API'
         )
         api.init_app(app, add_specs=enable_swagger)
-        api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
-        api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
-        api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
-        api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
-        api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
-        api.add_namespace(report_api, path=f'{API_VERSION}/{REPORTS_NAMESPACE}')
-        api.add_namespace(txm_event_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}')
+        add_all_namespaces(api)
 
         register_error_handlers(api)
 
@@ -140,3 +134,13 @@ def create_app() -> Flask:
         # finish configuration
         configure_apis(application_config)
         return app
+
+
+def add_all_namespaces(api: Api):
+    api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
+    api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
+    api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
+    api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
+    api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
+    api.add_namespace(report_api, path=f'{API_VERSION}/{REPORTS_NAMESPACE}')
+    api.add_namespace(txm_event_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}')
