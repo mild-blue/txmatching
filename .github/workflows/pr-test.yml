@@ -1,8 +1,9 @@
 name: Check Pipeline
 
 on:
-  pull_request:
-  workflow_dispatch:
+  push:
+    branches:
+      - base-image-with-dependencies
 
 jobs:
   run_tests:
