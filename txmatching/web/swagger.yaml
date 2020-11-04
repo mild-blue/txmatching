@@ -169,7 +169,7 @@ definitions:
         properties:
             active:
                 description: Information, whether or not given donor shall be considered
-                    in exchange
+                    in exchange.
                 type: boolean
             db_id:
                 description: Database id of the patient
@@ -1340,7 +1340,7 @@ produces:
 - application/json
 responses:
     AuthenticationException:
-        description: handle general authentication exception
+        description: general authentication exception
     CouldNotSendOtpUsingSmsServiceException:
         description: handle_could_not_send_otp
     CredentialsMismatchException:

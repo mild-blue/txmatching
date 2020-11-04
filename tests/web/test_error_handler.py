@@ -5,14 +5,14 @@ from werkzeug.exceptions import HTTPException
 
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.exceptions import (CredentialsMismatchException,
+                                        GuardException,
                                         InvalidArgumentException,
                                         InvalidAuthCallException,
                                         InvalidIpAddressAccessException,
                                         InvalidJWTException,
                                         InvalidOtpException,
-                                        UserUpdateException,
-                                        GuardException)
-from txmatching.web import USER_NAMESPACE, user_api
+                                        UserUpdateException)
+from txmatching.web import API_VERSION, USER_NAMESPACE, user_api
 
 
 class TestErrorHandler(DbTests):
@@ -146,12 +146,11 @@ class TestErrorHandler(DbTests):
             message: str,
             content_type: str = 'application/json'
     ):
-        self.api.add_namespace(user_api, path=f'/{USER_NAMESPACE}')
         with mock.patch('txmatching.web.api.user_api.LoginApi.post') as api_mock:
             api_mock.side_effect = side_effect()
             with self.app.test_client() as client:
                 res = client.post(
-                    f'/{USER_NAMESPACE}/login',
+                    f'{API_VERSION}/{USER_NAMESPACE}/login',
                     headers=self.auth_headers,
                     json={'email': 'admin@mild.blue', 'password': 'admin'}
                 )
