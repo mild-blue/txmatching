@@ -9,16 +9,11 @@ import logging
 import re
 import sys
 from copy import deepcopy
+from io import StringIO
 
 import jinja2
 import six
 import yaml
-from swagger_spec_validator.validator20 import validate_spec
-
-try:
-    from StringIO import StringIO
-except ImportError:  # Python 3
-    from io import StringIO
 
 
 class SwaggerParser(object):
@@ -33,7 +28,7 @@ class SwaggerParser(object):
         paths: dict of path with their actions, parameters, and responses.
     """
 
-    _HTTP_VERBS = set(['get', 'put', 'post', 'delete', 'options', 'head', 'patch'])
+    _HTTP_VERBS = {'get', 'put', 'post', 'delete', 'options', 'head', 'patch'}
 
     def __init__(self, swagger_path=None, swagger_dict=None, swagger_yaml=None, use_example=True):
         """Run parsing from either a file or a dict.
@@ -68,7 +63,6 @@ class SwaggerParser(object):
                 self.specification = swagger_dict
             else:
                 raise ValueError('You must specify a swagger_path or dict')
-            validate_spec(self.specification, '')
         except Exception as e:
             six.reraise(
                 ValueError,
@@ -205,7 +199,7 @@ class SwaggerParser(object):
         """Get example from the properties of an object defined inline.
 
         Args:
-            prop_spec: property specification you want an example of.
+            spec: property specification you want an example of.
 
         Returns:
             An example for the given spec
@@ -512,7 +506,7 @@ class SwaggerParser(object):
         """Validate the given value with the given property spec.
 
         Args:
-            properties_dict: specification of the property to check (From definition not route).
+            properties_spec: specification of the property to check (From definition not route).
             value: value to check.
 
         Returns:
@@ -617,7 +611,7 @@ class SwaggerParser(object):
         Returns:
             The definition name corresponding to the ref.
         """
-        p = re.compile('#\/definitions\/(.*)')
+        p = re.compile('#/definitions/(.*)')
         definition_name = re.sub(p, r'\1', ref)
         return definition_name
 

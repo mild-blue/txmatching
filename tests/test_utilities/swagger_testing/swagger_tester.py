@@ -4,19 +4,13 @@
 # skipping as this is just code for testing
 import json
 import logging
-import os
 import time
+from urllib.parse import urlencode
 
-import connexion
 import six
 from flask.testing import FlaskClient
 
 from tests.test_utilities.swagger_testing.swagger_parser import SwaggerParser
-
-try:
-    from urllib import urlencode
-except ImportError:  # Python 3
-    from urllib.parse import urlencode
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -54,7 +48,7 @@ def validate_definition(swagger_parser, valid_response, response):
 
     Args:
         swagger_parser: instance of swagger parser.
-        body: valid body answer from spec.
+        valid_response: valid response answer from spec.
         response: response of the request.
     """
     # additionalProperties do not match any definition because the keys
@@ -192,17 +186,17 @@ def get_method_from_action(client, action):
     return client.__getattribute__(action)
 
 
-def swagger_test(swagger_yaml_path=None, app_client: FlaskClient = None, authorize_error=None,
-                 wait_time_between_tests=0, use_example=True, dry_run=False,
-                 extra_headers={}):
+def swagger_test(swagger_yaml_path: str, app_client: FlaskClient = None, authorize_error=None,
+                 wait_time_between_tests=0, use_example=True,
+                 extra_headers=None):
     """Test the given swagger api.
 
-    Test with either a swagger.yaml path for a connexion app or with an API
+    Test with either a swagger.yaml path for with an API
     URL if you have a running API.
 
     Args:
         swagger_yaml_path: path of your YAML swagger file.
-        app_url: URL of the swagger api.
+        app_client: Client of the swagger api.
         authorize_error: dict containing the error you don't want to raise.
                          ex: {
                             'get': {
@@ -212,33 +206,33 @@ def swagger_test(swagger_yaml_path=None, app_client: FlaskClient = None, authori
                          Will ignore 404 when getting a pet.
         wait_time_between_tests: an number that will be used as waiting time between tests [in seconds].
         use_example: use example of your swagger file instead of generated data.
-        dry_run: don't actually execute the test, only show what would be sent
         extra_headers: additional headers you may want to send for all operations
 
     Raises:
         ValueError: In case you specify neither a swagger.yaml path or an app URL.
     """
+    if extra_headers is None:
+        extra_headers = {}
     for _ in swagger_test_yield(swagger_yaml_path=swagger_yaml_path,
                                 app_client=app_client,
                                 authorize_error=authorize_error,
                                 wait_time_between_tests=wait_time_between_tests,
                                 use_example=use_example,
-                                dry_run=dry_run,
                                 extra_headers=extra_headers):
         pass
 
 
-def swagger_test_yield(swagger_yaml_path=None, app_client: FlaskClient = None, authorize_error=None,
-                       wait_time_between_tests=0, use_example=True, dry_run=False,
-                       extra_headers={}):
+def swagger_test_yield(swagger_yaml_path: str, app_client: FlaskClient, authorize_error=None,
+                       wait_time_between_tests=0, use_example=True,
+                       extra_headers=None):
     """Test the given swagger api. Yield the action and operation done for each test.
 
-    Test with either a swagger.yaml path for a connexion app or with an API
+    Test with either a swagger.yaml path with an API
     URL if you have a running API.
 
     Args:
         swagger_yaml_path: path of your YAML swagger file.
-        app_url: URL of the swagger api.
+        app_client: Flask client of the swagger api.
         authorize_error: dict containing the error you don't want to raise.
                          ex: {
                             'get': {
@@ -248,7 +242,6 @@ def swagger_test_yield(swagger_yaml_path=None, app_client: FlaskClient = None, a
                          Will ignore 404 when getting a pet.
         wait_time_between_tests: an number that will be used as waiting time between tests [in seconds].
         use_example: use example of your swagger file instead of generated data.
-        dry_run: don't actually execute the test, only show what would be sent
         extra_headers: additional headers you may want to send for all operations
 
     Returns:
@@ -257,24 +250,14 @@ def swagger_test_yield(swagger_yaml_path=None, app_client: FlaskClient = None, a
     Raises:
         ValueError: In case you specify neither a swagger.yaml path or an app URL.
     """
+    if extra_headers is None:
+        extra_headers = {}
     if authorize_error is None:
         authorize_error = {}
 
-    # Init test
-    if swagger_yaml_path is not None and app_client is not None:
-        app_client = app_client
-        swagger_parser = SwaggerParser(swagger_yaml_path, use_example=use_example)
-    elif swagger_yaml_path is not None:
-        specification_dir = os.path.dirname(os.path.realpath(swagger_yaml_path))
-        app = connexion.App(__name__, port=8080, debug=True, specification_dir=specification_dir)
-        app.add_api(os.path.basename(swagger_yaml_path))
-        app_client = app.app.test_client()
-        swagger_parser = SwaggerParser(swagger_yaml_path, use_example=use_example)
-    else:
-        raise ValueError('You must either specify a swagger.yaml path or an app url')
+    swagger_parser = SwaggerParser(swagger_yaml_path, use_example=use_example)
 
-    print('Starting testrun against {0} or {1} using examples: '
-          '{2}'.format(swagger_yaml_path, app_client, use_example))
+    print(f'Starting testrun against {swagger_yaml_path} or {app_client} using examples: {use_example}')
 
     operation_sorted = {method: [] for method in _HTTP_METHODS}
 
