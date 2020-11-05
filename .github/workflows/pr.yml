@@ -20,7 +20,7 @@ jobs:
       # if this step fails, update the base docker image and push it
       - name: Verify Conda consistency
         run: |
-          diff -f conda.yaml /app/conda.yml
+          diff -f conda.yml /app/conda.yml
 
         # initialize conda binary, conda env must be
         # activated in each step again
