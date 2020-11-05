@@ -327,30 +327,27 @@ def _donor_upload_dto_to_donor_model(
         country_code: Country,
         txm_event_db_id: int
 ) -> DonorModel:
-    maybe_related_recipient_medical_id = None
-    related_recipient = None
-    if donor.donor_type == DonorType.DONOR:
-        if donor.related_recipient_medical_id:
-            related_recipient = recipient_models_dict.get(donor.related_recipient_medical_id, None)
-            if related_recipient:
-                maybe_related_recipient_medical_id = related_recipient.medical_id
-            else:
-                raise InvalidArgumentException(
-                    f'Donor (medical id "{donor.medical_id}") has related recipient (medical id '
-                    f'"{donor.related_recipient_medical_id}"), which was not found among recipients.')
-        else:
-            raise InvalidArgumentException(
-                f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" '
-                f'or "{DonorType.NON_DIRECTED}".'
-            )
-    else:
-        if donor.related_recipient_medical_id:
-            raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
+    maybe_related_recipient = recipient_models_dict.get(donor.related_recipient_medical_id, None)
 
-    assert (donor.related_recipient_medical_id
-            and maybe_related_recipient_medical_id == donor.related_recipient_medical_id
-            ) \
-           or (not donor.related_recipient_medical_id and not maybe_related_recipient_medical_id), \
+    if donor.donor_type == DonorType.DONOR and not donor.related_recipient_medical_id:
+        raise InvalidArgumentException(
+            f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" or "{DonorType.NON_DIRECTED}".'
+        )
+    if (donor.donor_type == DonorType.DONOR and
+            donor.related_recipient_medical_id and
+            maybe_related_recipient is None):
+        raise InvalidArgumentException(
+            f'Donor (medical id "{donor.medical_id}") has related recipient (medical id '
+            f'"{donor.related_recipient_medical_id}"), which was not found among recipients.'
+        )
+
+    if donor.donor_type != DonorType.DONOR and donor.related_recipient_medical_id is not None:
+        raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
+
+    maybe_related_recipient_medical_id = maybe_related_recipient.medical_id if maybe_related_recipient else None
+
+    assert (donor.related_recipient_medical_id is None or
+            maybe_related_recipient_medical_id == donor.related_recipient_medical_id), \
         f'Donor requires recipient medical id "{donor.related_recipient_medical_id}", ' \
         f'but received "{maybe_related_recipient_medical_id}" or related recipient must be None.'
 
@@ -365,7 +362,7 @@ def _donor_upload_dto_to_donor_model(
             ) for typing in
                 donor.hla_typing_preprocessed])),
         active=True,
-        recipient=related_recipient,
+        recipient=maybe_related_recipient,
         donor_type=donor.donor_type,
         weight=donor.weight,
         height=donor.height,
