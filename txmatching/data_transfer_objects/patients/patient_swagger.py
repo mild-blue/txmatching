@@ -101,12 +101,12 @@ RecipientModelToUpdate = patient_api.model('RecipientModelToUpdate', {
     'hla_antibodies': fields.Nested(HLAAntibodiesToUpdate, required=False,
                                     description='Provide full list of all the HLA antibodies of the patient, not just '
                                                 'the change set',
-                                    example={'hla_antibodies_list': [{
-                                        'raw_code': 'A1',
-                                        'mfi': 10000
-                                    }]
-                                    }
-                                    ),
+                                    example={'hla_antibodies_list': [
+                                        {
+                                            'raw_code': 'A1',
+                                            'mfi': 10000
+                                        }
+                                    ]}),
     'recipient_requirements': fields.Nested(RecipientRequirements, required=False,
                                             description='Provide the whole recipients requirements object, it will be'
                                                         ' overwritten',

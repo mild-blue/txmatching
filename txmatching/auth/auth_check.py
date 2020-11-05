@@ -3,7 +3,8 @@ import logging
 from typing import Callable
 
 from txmatching.auth.data_types import TokenType, UserRole
-from txmatching.auth.exceptions import AuthenticationException
+from txmatching.auth.exceptions import (AuthenticationException,
+                                        WrongTokenUsedException)
 from txmatching.auth.request_context import (get_request_token,
                                              store_user_in_context)
 
@@ -21,7 +22,7 @@ def require_role(*role_names: UserRole) -> Callable:
             token = get_request_token()
 
             if token.type != TokenType.ACCESS:
-                raise AuthenticationException('Authentication failed.')
+                raise WrongTokenUsedException(f'Wrong token type used, expected ACCESS, but was {token.type}.')
             if token.role not in role_names:
                 raise AuthenticationException(
                     'Access denied. You do not have privileges to view this page. If you believe you are seeing this'

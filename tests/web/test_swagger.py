@@ -17,4 +17,6 @@ class TestMatchingApi(unittest.TestCase):
         # can be used if one wantes to compare what is the issue
         # with open(get_absolute_path("tests/resources/test_swagger_new.json"), "w") as f:
         #     json.dump(new_swagger, f, ensure_ascii=False, indent=4)
-        self.assertDictEqual(old_swagger, new_swagger)
+        self.assertDictEqual(old_swagger, new_swagger, msg='Swagger generated not equal to current'
+                                                           'maybe you have simply forgotten to regenerate it in '
+                                                           'test_utilities/generate_swagger.py?')

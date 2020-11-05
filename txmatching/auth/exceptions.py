@@ -62,9 +62,9 @@ class GuardException(AuthenticationException):
     """
 
 
-class WrongTokenException(AuthenticationException):
+class WrongTokenUsedException(AuthenticationException):
     """
-    Base class for Authentication related exceptions.
+    Wrong token used set of exceptions
     """
 
 

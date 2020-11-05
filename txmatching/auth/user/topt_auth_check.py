@@ -2,7 +2,7 @@ import functools
 from typing import Callable
 
 from txmatching.auth.data_types import TokenType, UserRole
-from txmatching.auth.exceptions import WrongTokenException
+from txmatching.auth.exceptions import WrongTokenUsedException
 from txmatching.auth.request_context import get_request_token
 
 
@@ -17,10 +17,10 @@ def allow_otp_request() -> Callable:
             token = get_request_token()
 
             if token.type != TokenType.OTP:
-                raise WrongTokenException(f'{TokenType.OTP} token required, but {token.type} received!')
+                raise WrongTokenUsedException(f'{TokenType.OTP} token required, but {token.type} received!')
             # this case should never happen, but we must be careful
             if token.role == UserRole.SERVICE:
-                raise WrongTokenException('OTP validation is only for user accounts.')
+                raise WrongTokenUsedException('OTP validation is only for user accounts.')
 
             return original_route(*args, **kwargs)
 

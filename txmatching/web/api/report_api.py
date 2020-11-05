@@ -66,7 +66,7 @@ class Report(Resource):
         }
     )
     @report_api.response(code=200, model=None, description='Generates PDF report.')
-    @report_api.response(code=400, model=FailJson, description='Invalid argument exception')
+    @report_api.response(code=400, model=FailJson, description='Wrong arguments for report creation were provided')
     @report_api.response(code=401, model=FailJson, description='Authentication failed.')
     @report_api.response(code=403, model=FailJson,
                          description='Access denied. You do not have rights to access this endpoint.'

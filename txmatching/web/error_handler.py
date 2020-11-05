@@ -11,7 +11,7 @@ from txmatching.auth.exceptions import (
     CredentialsMismatchException, GuardException, InvalidArgumentException,
     InvalidAuthCallException, InvalidIpAddressAccessException,
     InvalidJWTException, InvalidOtpException, UserUpdateException,
-    WrongTokenException)
+    WrongTokenUsedException)
 from txmatching.configuration.app_configuration.application_configuration import \
     get_application_configuration
 
@@ -67,7 +67,6 @@ def _user_auth_handlers(api: Api):
     @api.errorhandler(UserUpdateException)
     def handle_user_update_exception(error: UserUpdateException):
         """handle_user_update_exception"""
-        logger.warning(f'It was not possible to update user. - {repr(error)}')
         _log_warning(error)
         return {'error': 'Invalid data submitted.', 'detail': str(error)}, 400
 
@@ -83,17 +82,17 @@ def _user_auth_handlers(api: Api):
         _log_warning(error)
         return {'error': 'Access denied.', 'detail': str(error)}, 403
 
-    @api.errorhandler(WrongTokenException)
-    def handle_wrong_token_exception(error: WrongTokenException):
-        """handle wrong token exception"""
+    @api.errorhandler(WrongTokenUsedException)
+    def handle_wrong_used_token_exception(error: WrongTokenUsedException):
+        """handle wrong token used exception"""
         _log_warning(error)
-        return {'error': 'Wrong token.', 'detail': str(error)}, 403
+        return {'error': 'Authentication denied. Wrong token used.', 'detail': str(error)}, 403
 
     @api.errorhandler(AuthenticationException)
     def handle_general_authentication_exception(error: AuthenticationException):
-        """general authentication exception"""
+        """handle general authentication exception"""
         _log_warning(error)
-        return {'error': 'General authentication exception', 'detail': str(error)}, 403
+        return {'error': 'Access denied', 'detail': str(error)}, 403
 
     @api.errorhandler(InvalidArgumentException)
     def handle_invalid_argument_exception(error: InvalidArgumentException):

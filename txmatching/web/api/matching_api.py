@@ -42,9 +42,11 @@ class CalculateFromConfig(Resource):
         model=FailJson,
         description='Access denied. You do not have rights to access this endpoint.'
     )
-    @matching_api.response(code=300, model=MatchingJson, description='This is actually never returned, just helper'
-                                                                     'response, to propagate MatchingJson to swagger'
-                                                                     'properly')
+    @matching_api.response(code=418,
+                           model=MatchingJson,
+                           description='This response is actually never returned, just helper'
+                                       'response, to propagate MatchingJson to swagger'
+                                       'properly (it is a bug in flask)')
     @matching_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     def post(self) -> str:

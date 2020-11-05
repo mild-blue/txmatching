@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # pylint: skip-file
+#  based on https://pypi.org/project/swagger-tester/ just raw code to test swagger somehow, some alterations were
+# made to make it work in our project. The project is under MIT license
 # skipping as this is just code for testing
 import codecs
 import datetime

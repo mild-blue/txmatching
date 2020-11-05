@@ -64,13 +64,6 @@ class DbTests(unittest.TestCase):
 
         db.create_all()
 
-        self.app.config['SERVER_NAME'] = 'test'
-        self.app.config['POSTGRES_USER'] = 'str'
-        self.app.config['POSTGRES_PASSWORD'] = 'str'
-        self.app.config['POSTGRES_DB'] = 'str'
-        self.app.config['POSTGRES_URL'] = 'str'
-        self.app.config['JWT_SECRET'] = 'str'
-        self.app.config['JWT_EXPIRATION_DAYS'] = 10
         self.app.app_context().push()
         self.api = Api(self.app)
         add_all_namespaces(self.api)

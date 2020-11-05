@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#  based on https://pypi.org/project/swagger-tester/ just raw code to test swagger somehow
+#  based on https://pypi.org/project/swagger-tester/ just raw code to test swagger somehow, some alterations were
+# made to make it work in our project. The project is under MIT license
 # pylint: skip-file
 # skipping as this is just code for testing
 import json
