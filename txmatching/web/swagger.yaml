@@ -344,7 +344,7 @@ definitions:
                 example: 2
                 type: integer
             recipient_db_id:
-                example: 2
+                example: 3
                 type: integer
             score:
                 type: number
@@ -825,11 +825,6 @@ paths:
                         items:
                             $ref: '#/definitions/Matching'
                         type: array
-                '300':
-                    description: This is actually never returned, just helperresponse,
-                        to propagate MatchingJson to swaggerproperly
-                    schema:
-                        $ref: '#/definitions/Matching'
                 '400':
                     description: Wrong data format.
                     schema:
@@ -843,6 +838,12 @@ paths:
                         endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
+                '418':
+                    description: This response is actually never returned, just helperresponse,
+                        to propagate MatchingJson to swaggerproperly (it is a bug
+                        in flask)
+                    schema:
+                        $ref: '#/definitions/Matching'
                 '500':
                     description: Unexpected error, see contents for details.
                     schema:
@@ -969,7 +970,7 @@ paths:
                 '200':
                     description: Generates PDF report.
                 '400':
-                    description: Invalid argument exception
+                    description: Wrong arguments for report creation were provided
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '401':
@@ -1340,7 +1341,7 @@ produces:
 - application/json
 responses:
     AuthenticationException:
-        description: general authentication exception
+        description: handle general authentication exception
     CouldNotSendOtpUsingSmsServiceException:
         description: handle_could_not_send_otp
     CredentialsMismatchException:
@@ -1375,8 +1376,8 @@ responses:
         description: handle_user_update_exception
     ValueError:
         description: handle_value_error
-    WrongTokenException:
-        description: handle wrong token exception
+    WrongTokenUsedException:
+        description: handle wrong token used exception
 swagger: '2.0'
 tags:
 -   name: user

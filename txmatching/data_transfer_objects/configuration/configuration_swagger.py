@@ -18,8 +18,10 @@ _default_configuration = Configuration()
 ConfigurationJson = matching_api.model(
     'Configuration',
     {
-        'scorer_constructor_name': fields.String(required=False, example=_default_configuration.scorer_constructor_name),
-        'solver_constructor_name': fields.String(required=False, example=_default_configuration.solver_constructor_name),
+        'scorer_constructor_name': fields.String(required=False,
+                                                 example=_default_configuration.scorer_constructor_name),
+        'solver_constructor_name': fields.String(required=False,
+                                                 example=_default_configuration.solver_constructor_name),
         'require_compatible_blood_group': fields.Boolean(required=False,
                                                          example=_default_configuration.require_compatible_blood_group),
         'minimum_total_score': fields.Float(required=False, example=_default_configuration.minimum_total_score),
