@@ -917,7 +917,7 @@ def _validate_post_body(actual_request_body, body_specification):
     text_is_accepted = any('text' in item for item in body_specification.get('consumes', []))
     json_is_accepted = any('json' in item for item in body_specification.get('consumes', []))
 
-    if actual_request_body is '' and not text_is_accepted:
+    if actual_request_body == '' and not text_is_accepted:
         msg = 'post body is an empty string, but text is not an accepted mime type'
         return False, msg
 
@@ -928,9 +928,11 @@ def _validate_post_body(actual_request_body, body_specification):
     # If only json is accepted, but the body is a string, we transform the
     # string to json and check it then (not sure if the server would accept
     # that string, though)
-    if (json_is_accepted and not
-    text_is_accepted and
-            type(actual_request_body).__name__ == 'str'):
+    if (
+            json_is_accepted and
+            not text_is_accepted and
+            type(actual_request_body).__name__ == 'str'
+    ):
         actual_request_body = json.loads(actual_request_body)
 
     # Handle empty body

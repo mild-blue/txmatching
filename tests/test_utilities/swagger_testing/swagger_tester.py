@@ -5,6 +5,7 @@
 import json
 import logging
 import time
+from typing import Dict, Set
 from urllib.parse import urlencode
 
 import six
@@ -186,9 +187,13 @@ def get_method_from_action(client, action):
     return client.__getattribute__(action)
 
 
-def swagger_test(swagger_yaml_path: str, app_client: FlaskClient = None, authorize_error=None,
-                 wait_time_between_tests=0, use_example=True,
-                 extra_headers=None):
+def swagger_test(swagger_yaml_path: str,
+                 expected_status_codes: Set[int],
+                 app_client: FlaskClient,
+                 special_status_code_for_paths=None,
+                 wait_time_between_tests: int = 0,
+                 use_example: bool = True,
+                 extra_headers: Dict[str, str] = None):
     """Test the given swagger api.
 
     Test with either a swagger.yaml path for with an API
@@ -197,7 +202,8 @@ def swagger_test(swagger_yaml_path: str, app_client: FlaskClient = None, authori
     Args:
         swagger_yaml_path: path of your YAML swagger file.
         app_client: Client of the swagger api.
-        authorize_error: dict containing the error you don't want to raise.
+        expected_status_codes: Expected status codes
+        special_status_code_for_paths: dict containing the error you don't want to raise.
                          ex: {
                             'get': {
                                 '/pet/': ['404']
@@ -211,38 +217,32 @@ def swagger_test(swagger_yaml_path: str, app_client: FlaskClient = None, authori
     Raises:
         ValueError: In case you specify neither a swagger.yaml path or an app URL.
     """
+
+    if special_status_code_for_paths is None:
+        special_status_code_for_paths = {}
     if extra_headers is None:
         extra_headers = {}
     for _ in swagger_test_yield(swagger_yaml_path=swagger_yaml_path,
                                 app_client=app_client,
-                                authorize_error=authorize_error,
+                                expected_status_codes=expected_status_codes,
+                                special_status_code_for_paths=special_status_code_for_paths,
                                 wait_time_between_tests=wait_time_between_tests,
                                 use_example=use_example,
                                 extra_headers=extra_headers):
         pass
 
 
-def swagger_test_yield(swagger_yaml_path: str, app_client: FlaskClient, authorize_error=None,
-                       wait_time_between_tests=0, use_example=True,
-                       extra_headers=None):
+def swagger_test_yield(swagger_yaml_path: str,
+                       expected_status_codes: Set[int],
+                       app_client: FlaskClient,
+                       special_status_code_for_paths: Dict[str, Dict[str, int]],
+                       wait_time_between_tests: int,
+                       use_example: bool,
+                       extra_headers: Dict[str, str]):
     """Test the given swagger api. Yield the action and operation done for each test.
 
     Test with either a swagger.yaml path with an API
     URL if you have a running API.
-
-    Args:
-        swagger_yaml_path: path of your YAML swagger file.
-        app_client: Flask client of the swagger api.
-        authorize_error: dict containing the error you don't want to raise.
-                         ex: {
-                            'get': {
-                                '/pet/': ['404']
-                            }
-                         }
-                         Will ignore 404 when getting a pet.
-        wait_time_between_tests: an number that will be used as waiting time between tests [in seconds].
-        use_example: use example of your swagger file instead of generated data.
-        extra_headers: additional headers you may want to send for all operations
 
     Returns:
         Yield between each test: (action, operation)
@@ -252,8 +252,8 @@ def swagger_test_yield(swagger_yaml_path: str, app_client: FlaskClient, authoriz
     """
     if extra_headers is None:
         extra_headers = {}
-    if authorize_error is None:
-        authorize_error = {}
+    if special_status_code_for_paths is None:
+        special_status_code_for_paths = {}
 
     swagger_parser = SwaggerParser(swagger_yaml_path, use_example=use_example)
 
@@ -294,15 +294,17 @@ def swagger_test_yield(swagger_yaml_path: str, app_client: FlaskClient, authoriz
                 client_name, response.status_code, action.upper(), url))
 
             # Check if authorize error
-            if (action in authorize_error and path in authorize_error[action]):
-                if response.status_code in authorize_error[action][path]:
-                    logger.info(
-                        u'Got expected authorized error on {0} with status {1}'.format(url, response.status_code))
+            if action in special_status_code_for_paths and path in special_status_code_for_paths[action]:
+                if response.status_code in special_status_code_for_paths[action][path]:
+                    logger.info(f'Got expected authorized error on {url} with status {response.status_code}')
                 else:
                     raise AssertionError(f'Invalid status code for path {path}, action {action} and body: {body}: '
                                          f'{response.status_code}')
+            elif response.status_code not in expected_status_codes:
+                raise AssertionError(f'Status code {response.status_code} was not expected '
+                                     f'for path {path}, action {action} and body: {body}: ')
 
-            if response.status_code is not 404:
+            if response.status_code != 404:
                 # Get valid request and response body
                 body_req = swagger_parser.get_send_request_correct_body(path, action)
 
