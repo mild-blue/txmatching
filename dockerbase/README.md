@@ -1,4 +1,4 @@
-# Docker base images
+# Docker Base Images
 
 This folder contains two docker images, that are used as a base for the TXMatching.
 
