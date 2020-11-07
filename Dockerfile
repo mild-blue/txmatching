@@ -15,7 +15,7 @@ WORKDIR /app
 
 # check that the base image has same conda as the repo
 COPY conda.yml conda.yml.repo
-RUN diff conda.yml conda.yml.repo
+RUN diff --strip-trailing-cr conda.yml conda.yml.repo
 
 # Do all your magic from here
 # Copy rest of the app
