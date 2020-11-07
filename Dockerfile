@@ -7,17 +7,15 @@ RUN npm i
 RUN npm run build-prod
 
 # Build backend
-FROM mildblue/txmatching-base AS backend-build
-LABEL description="Mild Blue - Transplant Kidney Matching"
+FROM mildblue/txmatching-conda-dependencies AS backend-build
+LABEL description="Mild Blue - TXMatching"
 LABEL project="mildblue:txmatching"
 
 WORKDIR /app
 
-# Install dependencies
-COPY conda.yml .
-RUN conda env create -f conda.yml
-# Register conda in the .bashrc
-RUN conda init bash
+# check that the base image has same conda as the repo
+COPY conda.yml conda.yml.repo
+RUN diff conda.yml conda.yml.repo
 
 # Do all your magic from here
 # Copy rest of the app
