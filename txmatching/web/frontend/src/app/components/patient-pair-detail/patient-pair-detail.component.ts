@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { PatientList, PatientPair } from '@app/model/Patient';
 import { PatientPairTab } from '@app/components/patient-pair-detail/patient-pair-detail.interface';
+import { Configuration } from '@app/model/Configuration';
 
 @Component({
   selector: 'app-patient-pair-detail',
@@ -12,6 +13,7 @@ export class PatientPairDetailComponent extends ListItemDetailAbstractComponent 
 
   @Input() item?: PatientPair;
   @Input() patients?: PatientList;
+  @Input() configuration?: Configuration;
 
   public activeTab: PatientPairTab = PatientPairTab.Pair;
   public tabs: typeof PatientPairTab = PatientPairTab;

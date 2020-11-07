@@ -9,7 +9,7 @@
   <div *ngIf="item" [ngSwitch]="activeTab">
     <div *ngSwitchCase="tabs.Pair"
          class="pair-detail__pair">
-      <app-matching-transplant [patients]="patients" [transplant]="item"></app-matching-transplant>
+      <app-matching-transplant [patients]="patients" [transplant]="item" [configuration]="configuration"></app-matching-transplant>
     </div>
     <app-patient-detail-donor *ngSwitchCase="tabs.Donor"
                               [item]="item.d"

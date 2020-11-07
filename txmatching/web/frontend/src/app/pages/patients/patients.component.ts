@@ -8,6 +8,8 @@ import { AlertService } from '@app/services/alert/alert.service';
 import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
 import { DownloadStatus } from '@app/components/header/header.interface';
+import { ConfigurationService } from '@app/services/configuration/configuration.service';
+import { Configuration } from '@app/model/Configuration';
 
 @Component({
   selector: 'app-patients',
@@ -28,8 +30,11 @@ export class PatientsComponent implements OnInit {
 
   public user?: User;
 
+  public configuration?: Configuration;
+
   constructor(private _authService: AuthService,
               private _alertService: AlertService,
+              private _configService: ConfigurationService,
               private _patientService: PatientService,
               private _logger: LoggerService) {
     this.activeListFilter = patientListFilters[0];
@@ -37,7 +42,12 @@ export class PatientsComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = this._authService.currentUserValue;
-    this._initPatients().then(this._initPairs.bind(this));
+
+    // init config and patients
+    this.loading = true;
+    Promise.all([this._initConfiguration(), this._initPatients()])
+    .then(this._initPairs.bind(this))
+    .finally(() => this.loading = false);
   }
 
   get patientsCount(): number {
@@ -87,7 +97,7 @@ export class PatientsComponent implements OnInit {
   }
 
   private async _initPatients(): Promise<void> {
-    this.loading = true;
+
     // try getting patients
     try {
       this.patients = await this._patientService.getPatients();
@@ -95,8 +105,16 @@ export class PatientsComponent implements OnInit {
     } catch (e) {
       this._alertService.error(`Error loading patients: "${e.message || e}"`);
       this._logger.error(`Error loading patients: "${e.message || e}"`);
-    } finally {
-      this.loading = false;
+    }
+  }
+
+  private async _initConfiguration(): Promise<void> {
+    try {
+      this.configuration = await this._configService.getConfiguration();
+      this._logger.log('Got config from server', [this.configuration]);
+    } catch (e) {
+      this._alertService.error(`Error loading configuration: "${e.message || e}"`);
+      this._logger.error(`Error loading configuration: "${e.message || e}"`);
     }
   }
 }
