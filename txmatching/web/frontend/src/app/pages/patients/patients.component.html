@@ -20,6 +20,7 @@
     <app-item-list *ngIf="!loading && patients && activeListFilter"
                    [listItemDetailComponent]="activeListFilter.detailComponent"
                    [listItemComponent]="activeListFilter.itemComponent"
+                   [useInfiniteScroll]="false"
                    [items]="getFilteredItems()"
                    [configuration]="undefined"
                    [patients]="patients"

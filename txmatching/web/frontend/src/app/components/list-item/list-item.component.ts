@@ -27,6 +27,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   @Input() listItemDetailComponent?: typeof ListItemDetailAbstractComponent;
 
   @Input() saveLastViewedItem: boolean = false;
+  @Input() useInfiniteScroll: boolean = true;
 
   public activeItem?: ListItem;
   public displayedItems: ListItem[] = [];
@@ -35,6 +36,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   public activeAlignedBottom: boolean = false;
 
   public scrollableDetailClass: string = scrollableDetailClass;
+  public enableSmoothScroll: boolean = true;
 
   constructor(private _componentFactoryResolver: ComponentFactoryResolver,
               private _uiInteractionsService: UiInteractionsService) {
@@ -163,8 +165,12 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   }
 
   private _reloadItems(): void {
-    this.displayedItems = [];
-    this._addItemsBatchToView();
+    if (this.useInfiniteScroll) {
+      this.displayedItems = [];
+      this._addItemsBatchToView();
+    } else if (!this.displayedItems.length) { // first loading
+      this.displayedItems = this.items;
+    }
 
     // set first or saved item as active
     let newActiveItem = this.displayedItems[0];
@@ -172,6 +178,16 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
       const lastViewedId = this._uiInteractionsService.getLastViewedItemId();
       const foundItem = this.items.find(item => item.index === lastViewedId);
       newActiveItem = foundItem ?? newActiveItem;
+
+      // will set saved item as active on page load
+      // disable smooth scroll
+      if (foundItem) {
+        this.enableSmoothScroll = false;
+        // enable again for smooth scroll on click
+        // 900ms seem enough
+        const enablingSmoothEffectTimeout = 900;
+        setTimeout(() => this.enableSmoothScroll = true, enablingSmoothEffectTimeout);
+      }
     }
     this.setActive(newActiveItem);
   }
