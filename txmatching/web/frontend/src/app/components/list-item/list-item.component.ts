@@ -61,6 +61,11 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
     }
   }
 
+  public handleItemClick(item: ListItem): void {
+    this.enableSmoothScroll = true;
+    this.setActive(item);
+  }
+
   public setActive(item: ListItem | undefined): void {
 
     // return if clicked on the same item
@@ -169,6 +174,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
       this.displayedItems = [];
       this._addItemsBatchToView();
     } else if (!this.displayedItems.length) { // first loading
+      this.enableSmoothScroll = false;
       this.displayedItems = this.items;
     }
 
@@ -178,16 +184,6 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
       const lastViewedId = this._uiInteractionsService.getLastViewedItemId();
       const foundItem = this.items.find(item => item.index === lastViewedId);
       newActiveItem = foundItem ?? newActiveItem;
-
-      // will set saved item as active on page load
-      // disable smooth scroll
-      if (foundItem) {
-        this.enableSmoothScroll = false;
-        // enable again for smooth scroll on click
-        // 900ms seem enough
-        const enablingSmoothEffectTimeout = 900;
-        setTimeout(() => this.enableSmoothScroll = true, enablingSmoothEffectTimeout);
-      }
     }
     this.setActive(newActiveItem);
   }
