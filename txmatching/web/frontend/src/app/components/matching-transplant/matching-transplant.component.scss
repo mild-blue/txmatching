@@ -23,6 +23,8 @@
     background-color: $transplant-bg--incompatible;
     color: $transplant-color--incompatible;
 
+    border-top-right-radius: calc(#{$border-radius--wide} + 10px); // fixes bug with show 1px of dark bg
+
     &.compatible {
       background-color: $transplant-bg--compatible;
       color: $transplant-color--compatible;
