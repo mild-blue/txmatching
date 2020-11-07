@@ -7,7 +7,9 @@
          (click)="setActiveTransplant(transplant.index)"
          class="matching-round__transplant">
 
-      <app-patient-pair [pair]="transplant"></app-patient-pair>
+      <div class="content">
+        <app-patient-pair [pair]="transplant"></app-patient-pair>
+      </div>
 
       <app-score-indicator *ngIf="configuration && !configuration.use_binary_scoring"
                            [configuration]="configuration"

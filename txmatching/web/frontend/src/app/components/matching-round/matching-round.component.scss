@@ -20,15 +20,11 @@
 
   &__transplant {
     display: inline-block;
-    padding: 8px 10px 5px;
     margin: 2px 20px 2px 0;
     border-radius: $border-radius;
     position: relative;
     cursor: pointer;
     overflow: hidden;
-
-    background-color: $transplant-bg--incompatible;
-    color: $transplant-color--incompatible;
 
     font-weight: 400;
 
@@ -40,24 +36,19 @@
       filter: brightness(0.8);
     }
 
-    &.compatible {
+    &.compatible .content {
       background-color: $transplant-bg--compatible;
       color: $transplant-color--compatible;
     }
 
-    .content {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-
-      .check {
-        color: $code-color--matching;
-        margin-left: 10px;
-      }
+    &.w-indicator {
+      padding-right: 20px;
     }
 
-    &.w-indicator {
-      padding-right: 35px;
+    .content {
+      padding: 8px 10px 5px;
+      background-color: $transplant-bg--incompatible;
+      color: $transplant-color--incompatible;
     }
   }
 }
