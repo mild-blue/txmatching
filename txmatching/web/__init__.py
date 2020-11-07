@@ -7,7 +7,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from txmatching.auth.crypto import bcrypt
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationConfiguration, build_db_connection_string,
-    get_application_configuration)
+    get_application_configuration, ApplicationEnvironment)
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
@@ -73,7 +73,7 @@ def create_app() -> Flask:
             }
         }
         # disable swagger when we're running in the production
-        enable_swagger = not application_configuration.is_production
+        enable_swagger = application_configuration.environment != ApplicationEnvironment.PRODUCTION
         api = Api(
             authorizations=authorizations,
             doc='/doc/' if enable_swagger else False,

@@ -66,7 +66,6 @@ class TestLoginFlow(DbTests):
         conf = mock.MagicMock()
         conf.jwt_expiration_days = get_application_configuration().jwt_expiration_days
         conf.jwt_secret = get_application_configuration().jwt_secret
-        conf.is_production = True
 
         def get_conf():
             return conf
