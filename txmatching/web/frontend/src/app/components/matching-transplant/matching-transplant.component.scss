@@ -96,10 +96,12 @@
       width: 20%;
       text-align: left;
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 400;
+      font-family: monospace;
       text-transform: uppercase;
       color: $body-color--secondary;
 
+      padding-top: 17px;
       padding-left: $padding-y;
     }
 
