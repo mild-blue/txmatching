@@ -10,7 +10,7 @@ jobs:
       # use our base container
       # note that when a new dependency is added,
       # the image must be rebuild and published again
-      image: mildblue/txmatching-conda-dependencies:latest
+      image: mildblue/txmatching-conda-dependencies:1.0.0
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2

@@ -80,7 +80,8 @@ if the package is not in the conda repo, put it in the `pip` part of yaml.
 
 **Note** that before the PR with new dependencies is submitted, one must build and publish new version of the
 `mildblue/txmatching-conda-dependencies` docker image. 
-To do that, go to `dockerbase` directory, login to container registry and execute `make publish`.
+To do that, go to `dockerbase` directory, login to container registry and see further information
+in the related [README](dockerbase/README.md).
 
 #### Updating Packages
 when someone updates and you pull new version from git do the following:

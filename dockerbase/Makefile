@@ -1,17 +1,16 @@
 build-conda-base:
-	docker pull mildblue/txmatching-conda-base:latest || true;
-	docker build -f Dockerfile.conda-base -t mildblue/txmatching-conda-base:latest .
+	docker build -f Dockerfile.conda-base -t "mildblue/txmatching-conda-base:${VERSION}" .
 
 publish-conda-base: build-conda-base
-	docker push mildblue/txmatching-conda-base:latest
+	docker push "mildblue/txmatching-conda-base:${VERSION}"
 
 build-conda-dependencies: build-conda-base
-	docker pull mildblue/txmatching-conda-dependencies:latest || true;
-	docker build -f Dockerfile.conda-dependencies -t mildblue/txmatching-conda-dependencies:latest ../
+	docker build -f Dockerfile.conda-dependencies -t "mildblue/txmatching-conda-dependencies:${VERSION}" ../
 
 publish-conda-dependencies: build-conda-dependencies
-	docker push mildblue/txmatching-conda-dependencies:latest
+	docker push "mildblue/txmatching-conda-dependencies:${VERSION}"
 
 build: build-conda-base build-conda-dependencies
 
+# call with VERSION=<version>
 publish: publish-conda-base publish-conda-dependencies
