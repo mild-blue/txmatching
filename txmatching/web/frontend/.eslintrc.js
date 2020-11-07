@@ -80,11 +80,11 @@ module.exports = {
           'public-field',
           'public-constructor',
           'protected-constructor',
-          'private-constructor',
+          'private-constructor'
           // getters & setters
-          'public-method',
-          'protected-method',
-          'private-method'
+          // 'public-method',
+          // 'protected-method',
+          // 'private-method'
         ]
       }
     ],

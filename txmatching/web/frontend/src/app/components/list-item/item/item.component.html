@@ -1,6 +1,6 @@
 <div class="list-item"
      [class.active]="isActive"
-     [class.first]="index === 0"
+     [class.first]="item && item.index === 1"
      [id]="item ? 'list-item-' + item.index : ''">
   <ng-template listItem></ng-template>
 </div>

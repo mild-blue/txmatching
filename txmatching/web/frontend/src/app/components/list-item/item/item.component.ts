@@ -17,7 +17,6 @@ export class ItemComponent implements OnInit, OnChanges {
 
   @Input() listItemComponent?: typeof ListItemAbstractComponent;
   @Input() isActive: boolean = false;
-  @Input() index?: number;
   @Input() item?: ListItem;
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;

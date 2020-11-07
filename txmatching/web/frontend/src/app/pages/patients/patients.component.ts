@@ -8,7 +8,6 @@ import { AlertService } from '@app/services/alert/alert.service';
 import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
 import { DownloadStatus } from '@app/components/header/header.interface';
-import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 
 @Component({
   selector: 'app-patients',
@@ -32,7 +31,6 @@ export class PatientsComponent implements OnInit {
   constructor(private _authService: AuthService,
               private _alertService: AlertService,
               private _patientService: PatientService,
-              private _uiInteractionsService: UiInteractionsService,
               private _logger: LoggerService) {
     this.activeListFilter = patientListFilters[0];
   }
@@ -69,7 +67,6 @@ export class PatientsComponent implements OnInit {
     }
 
     // add pairs
-    const pairs: PatientPair[] = [];
     for (const donor of this.patients.donors) {
       const recipient = this.patients.recipients.find(r => r.db_id === donor.related_recipient_db_id);
 
@@ -77,19 +74,12 @@ export class PatientsComponent implements OnInit {
         continue;
       }
 
-      pairs.push({
-        index: pairs.length + 1,
+      this.pairs.push({
+        index: this.pairs.length + 1,
         d: donor,
         r: recipient
       });
     }
-
-    // put last viewed pair as first
-    const lastViewedId = this._uiInteractionsService.getLastViewedItemId();
-    if (lastViewedId) {
-      pairs.sort((a, b) => a.index === lastViewedId ? -1 : b.index === lastViewedId ? 1 : 0);
-    }
-    this.pairs = pairs;
 
     // add indexes for list rendering
     this.patients.donors.forEach((d, key) => d.index = key + 1);
