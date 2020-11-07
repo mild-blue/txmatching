@@ -9,7 +9,7 @@ import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
 import { DownloadStatus } from '@app/components/header/header.interface';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
-import { Configuration } from '@app/model/Configuration';
+import { AppConfiguration } from '@app/model/Configuration';
 
 @Component({
   selector: 'app-patients',
@@ -30,7 +30,7 @@ export class PatientsComponent implements OnInit {
 
   public user?: User;
 
-  public configuration?: Configuration;
+  public configuration?: AppConfiguration;
 
   constructor(private _authService: AuthService,
               private _alertService: AlertService,

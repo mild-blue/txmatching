@@ -218,6 +218,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     round.transplants = r.transplants.map((transplant, tKey) =>
       this._prepareTransplant(transplant, +`${mIndex}${rIndex}${tKey + 1}`)
     );
+    round.donorType = this._getRoundDonorType(round);
     round.index = this._getRoundIndex(round, rIndex);
 
     return round;
@@ -246,20 +247,29 @@ export class HomeComponent implements OnInit, OnDestroy {
     return transplant;
   }
 
-  private _getRoundIndex(round: Round, order: number): string {
-    const roundIndex = `${order}`;
+  private _getRoundDonorType(round: Round): DonorType {
     if (!round.transplants.length) {
-      return roundIndex;
+      return DonorType.DONOR;
     }
 
     const firstTransplant = round.transplants[0];
     const donor = firstTransplant.d;
 
     if (donor) {
-      if (donor.donor_type === DonorType.BRIDGING_DONOR.valueOf()) {
+      return donor.donor_type;
+    }
+
+    return DonorType.DONOR;
+  }
+
+  private _getRoundIndex(round: Round, order: number): string {
+    const roundIndex = `${order}`;
+
+    if (round.donorType) {
+      if (round.donorType === DonorType.BRIDGING_DONOR.valueOf()) {
         return `${roundIndex}B`;
       }
-      if (donor.donor_type === DonorType.NON_DIRECTED.valueOf()) {
+      if (round.donorType === DonorType.NON_DIRECTED.valueOf()) {
         return `${roundIndex}N`;
       }
     }

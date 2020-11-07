@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { PatientList } from '@app/model/Patient';
+import { DonorType, PatientList } from '@app/model/Patient';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { Matching } from '@app/model/Matching';
 import { Subscription } from 'rxjs';
@@ -21,6 +21,8 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent {
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
+  public donorTypes: typeof DonorType = DonorType;
+
   constructor(private _patientsService: PatientService,
               private _uiInteractionsService: UiInteractionsService) {
     super();
@@ -30,6 +32,10 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent {
         this._scrollToTransplant(id);
       }
     });
+  }
+
+  public getDonorTypeLabel(type: DonorType): string {
+    return type === DonorType.BRIDGING_DONOR ? 'bridging donor' : type === DonorType.NON_DIRECTED ? 'non-directed donor' : '';
   }
 
   private _scrollToTransplant(id: number): void {
