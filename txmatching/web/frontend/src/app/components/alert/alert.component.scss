@@ -1,12 +1,10 @@
 @import "../../../styles/variables";
+@import "../../../styles/breakpoints";
 
 :host {
   position: fixed;
   top: $padding-y;
   right: $padding-x;
-
-  max-height: 110px;
-  overflow: hidden;
 }
 
 .alert + .alert {
@@ -17,15 +15,21 @@
   border: 1px solid transparent;
   border-radius: $border-radius;
 
-  height: 50px;
+  min-height: 50px;
+  max-width: 40vw;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
 
   padding: 10px 15px;
 
   opacity: 1;
   transition: none;
+
+  @include media-breakpoint-down(md) {
+    max-width: none;
+    margin-left: 20px;
+  }
 
   &.fade {
     opacity: 0;

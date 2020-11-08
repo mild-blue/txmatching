@@ -20,11 +20,11 @@
     <app-item-list *ngIf="!loading && patients && activeListFilter"
                    [listItemDetailComponent]="activeListFilter.detailComponent"
                    [listItemComponent]="activeListFilter.itemComponent"
-                   [useInfiniteScroll]="false"
                    [items]="getFilteredItems()"
-                   [configuration]="undefined"
+                   [configuration]="configuration"
                    [patients]="patients"
-                   [saveLastViewedItem]="true"></app-item-list>
+                   [saveLastViewedItem]="true"
+                   [useInfiniteScroll]="false"></app-item-list>
   </app-content>
 </section>
 

@@ -1,0 +1,11 @@
+FROM mildblue/txmatching-conda-base
+LABEL description="Mild Blue - TXMatching base image with conda dependencies installed."
+LABEL project="mildblue:txmatching"
+
+WORKDIR /app
+
+# Install dependencies
+COPY conda.yml .
+RUN conda env create -f conda.yml
+# Register conda in the .bashrc
+RUN conda init bash

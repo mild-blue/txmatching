@@ -18,6 +18,7 @@ export class ListItemAbstractComponent {
 export class ListItemDetailAbstractComponent {
   item?: ListItem;
   patients?: PatientList;
+  configuration?: Configuration;
 
   constructor(_patientService?: PatientService,
               _uiInteractionsService?: UiInteractionsService) {

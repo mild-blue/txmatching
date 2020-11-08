@@ -4,49 +4,56 @@ on:
   pull_request:
 
 jobs:
-  build_server:
+  run_tests:
     runs-on: ubuntu-latest
+    container:
+      # use our base container
+      # note that when a new dependency is added,
+      # the image must be rebuild and published again
+      image: mildblue/txmatching-conda-dependencies:1.0.0
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache conda
-        uses: actions/cache@v2
-        with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ hashFiles('conda.yml') }}
+      # verify that the conda.yaml (dependencies file) in the repository
+      # is the same as the one used in the docker image
+      # if this step fails, update the base docker image and push it
+      - name: Verify Conda consistency
+        run: |
+          diff -f conda.yml /app/conda.yml
 
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('conda.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install wkhtmltopdf
-        run: sudo apt-get install -y xfonts-base xfonts-75dpi && wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb && sudo dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb
-
-      - name: Install Conda
-        uses: goanpeca/setup-miniconda@v1.7.0
-        with:
-          activate-environment: txmatching
-          environment-file: conda.yml
-          use-only-tar-bz2: true
+        # initialize conda binary, conda env must be
+        # activated in each step again
+      - name: Setup Conda
+        # define that we want to use bash
+        # which is then reused
+        shell: bash
+        run: |
+          conda --version
+          conda env
+          conda list
+          conda init bash
+          source ~/.bashrc
 
       - name: Verify Conda installation
+        # use already existing instance of shell
         shell: bash -l {0}
         run: |
-          conda info
+          conda activate txmatching
           conda list
-          conda config --show-sources
-          conda config --show
 
       - name: Run Linter
         shell: bash -l {0}
+        # conda activate txmatching must be called again in order to
+        # activate it for the step
         run: |
+          conda activate txmatching
           pylint txmatching
 
       - name: Execute tests
         shell: bash -l {0}
         run: |
-          cd tests; export PYTHONPATH=../; python -m unittest discover -s . -t .
+          conda activate txmatching
+          cd tests
+          export PYTHONPATH=../
+          python -m unittest discover -s . -t .

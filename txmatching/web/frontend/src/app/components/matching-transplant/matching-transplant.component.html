@@ -1,13 +1,11 @@
 <div *ngIf="transplant" class="transplant">
-  <div class="transplant-header">
-    <div>
-      <strong *ngIf="index">Transplant #{{index}}</strong>
-      <app-patient-pair [pair]="transplant"></app-patient-pair>
-    </div>
+  <div class="transplant-header"
+       [class.compatible]="transplant.compatible_blood || pairBloodCompatible">
+    <app-patient-pair [pair]="transplant"></app-patient-pair>
 
-    <div class="score">
-      Score: <span>{{ totalScore }}</span>
-    </div>
+    <app-score-indicator [configuration]="configuration"
+                         [score]="totalScore"
+                         [showScore]="true"></app-score-indicator>
   </div>
 
   <div class="transplant-content">
@@ -16,16 +14,18 @@
       <tr>
         <td></td>
         <td>
+          Donor
           <div class="center-holder">
             <patient [patient]="transplant.d"></patient>
           </div>
         </td>
         <td colspan="2">
+          Recipient
           <div class="center-holder">
             <patient [patient]="transplant.r"></patient>
           </div>
         </td>
-        <td>Score</td>
+        <td></td>
       </tr>
       <tr>
         <td>Blood type</td>
@@ -39,7 +39,7 @@
             <app-code *ngFor="let bloodGroup of transplant.r.acceptable_blood_groups">{{ bloodGroup }}</app-code>
           </div>
         </td>
-        <td>-</td>
+        <td></td>
       </tr>
       <tr class="anti-header">
         <td></td>
@@ -79,12 +79,6 @@
                     [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
         </td>
         <td>-</td>
-      </tr>
-      <tr class="footer-score">
-        <td colspan="4">
-          Final score:
-        </td>
-        <td><span>{{ totalScore }}</span></td>
       </tr>
       </tbody>
     </table>

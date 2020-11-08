@@ -1,5 +1,5 @@
 FROM debian:buster-slim
-LABEL description="Mild Blue - Transplant Kidney Matching base image with conda. "
+LABEL description="Mild Blue - TXMatching base image with conda installed."
 LABEL project="mildblue:txmatching"
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -19,7 +19,7 @@ RUN apt-get update --fix-missing && \
     apt-get clean
 
 # copy local installation of miniconda
-COPY Miniconda3-4.8.3-Linux-x86_64.sh miniconda.sh
+COPY Miniconda3-4.8.5-Linux-x86_64.sh miniconda.sh
 # install miniconda
 RUN mv miniconda.sh ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \

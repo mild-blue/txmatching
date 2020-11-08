@@ -1,0 +1,9 @@
+<div [style.background-position.%]="percentage(score)"
+     [class.bad-matching]="score === -1"
+     [class.empty]="!showScore"
+     class="indicator">
+  <div *ngIf="showScore" class="score">
+    <span>score</span>
+    {{score}}
+  </div>
+</div>

@@ -1,11 +1,12 @@
-import { Component, Input, OnDestroy } from '@angular/core';
-import { PatientList } from '@app/model/Patient';
+import { Component, Input } from '@angular/core';
+import { DonorType, PatientList } from '@app/model/Patient';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { Matching } from '@app/model/Matching';
 import { Subscription } from 'rxjs';
 import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 import { PatientService } from '@app/services/patient/patient.service';
 import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
+import { Configuration } from '@app/model/Configuration';
 
 @Component({
   selector: 'app-matching-detail',
@@ -18,6 +19,9 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
 
   @Input() item?: Matching;
   @Input() patients?: PatientList;
+  @Input() configuration?: Configuration;
+
+  public donorTypes: typeof DonorType = DonorType;
 
   constructor(private _patientsService: PatientService,
               private _uiInteractionsService: UiInteractionsService) {
@@ -32,6 +36,16 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
 
   ngOnDestroy(): void {
     this._activeTransplantSubscription.unsubscribe();
+  }
+
+  public getDonorTypeLabel(type: DonorType): string {
+    if (type === DonorType.BRIDGING_DONOR) {
+      return 'bridging donor';
+    } else if (type === DonorType.NON_DIRECTED) {
+      return 'non-directed donor';
+    }
+
+    return '';
   }
 
   private _scrollToTransplant(id: number): void {

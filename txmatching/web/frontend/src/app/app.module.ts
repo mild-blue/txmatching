@@ -57,6 +57,7 @@ import { TabSwitchComponent } from './components/tab-switch/tab-switch.component
 import { AntibodiesComponent } from './components/patient-detail-recipient/antibodies/antibodies.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthenticationComponent } from './pages/authentication/authentication.component';
+import { ScoreIndicatorComponent } from './components/score-indicator/score-indicator.component';
 
 @NgModule({
   declarations: [
@@ -98,7 +99,8 @@ import { AuthenticationComponent } from './pages/authentication/authentication.c
     PatientPairComponent,
     TabSwitchComponent,
     AntibodiesComponent,
-    AuthenticationComponent
+    AuthenticationComponent,
+    ScoreIndicatorComponent
   ],
   imports: [
     BrowserModule,
