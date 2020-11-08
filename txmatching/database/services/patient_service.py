@@ -2,7 +2,7 @@ import collections
 import dataclasses
 import datetime
 import logging
-from typing import List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import dacite
 from sqlalchemy import and_
@@ -16,7 +16,8 @@ from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
     RecipientExcelDTO
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
-from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto import PatientUpdateDTO
+from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto import \
+    PatientUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
@@ -31,19 +32,17 @@ from txmatching.database.services.txm_event_service import \
 from txmatching.database.sql_alchemy_schema import (
     ConfigModel, DonorModel, RecipientAcceptableBloodModel,
     RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
-from txmatching.patients.patient import (
-    Donor, DonorType, Patient, Recipient,
-    RecipientRequirements, TxmEvent,
-    calculate_cutoff
-)
-from txmatching.patients.patient_parameters import (
-    HLAAntibodies, HLAAntibody,
-    HLAType, HLATyping,
-    PatientParameters
-)
+from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
+                                         RecipientRequirements, TxmEvent,
+                                         calculate_cutoff)
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
+                                                    HLAType, HLATyping,
+                                                    PatientParameters)
 from txmatching.utils.enums import Country
-from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code, preprocess_hla_code_in
-from txmatching.utils.hla_system.hla_transformations_store import parse_hla_raw_code_and_store_parsing_error_in_db
+from txmatching.utils.hla_system.hla_transformations import (
+    parse_hla_raw_code, preprocess_hla_code_in)
+from txmatching.utils.hla_system.hla_transformations_store import \
+    parse_hla_raw_code_and_store_parsing_error_in_db
 
 logger = logging.getLogger(__name__)
 
@@ -333,27 +332,36 @@ def _recipient_upload_dto_to_recipient_model(
 
 def _donor_upload_dto_to_donor_model(
         donor: DonorUploadDTO,
-        related_recipient: Optional[RecipientModel],
+        recipient_models_dict: Dict[str, RecipientModel],
         country_code: Country,
         txm_event_db_id: int
 ) -> DonorModel:
-    if related_recipient:
-        if donor.donor_type != DonorType.DONOR:
-            raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
-    else:
-        if donor.donor_type != DonorType.BRIDGING_DONOR and donor.donor_type != DonorType.NON_DIRECTED:
+    maybe_related_recipient_medical_id = None
+    related_recipient = None
+    if donor.donor_type == DonorType.DONOR:
+        if donor.related_recipient_medical_id:
+            related_recipient = recipient_models_dict.get(donor.related_recipient_medical_id, None)
+            if related_recipient:
+                maybe_related_recipient_medical_id = related_recipient.medical_id
+            else:
+                raise InvalidArgumentException(
+                    f'Donor (medical id "{donor.medical_id}") has related recipient (medical id '
+                    f'"{donor.related_recipient_medical_id}"), which was not found among recipients.')
+        else:
             raise InvalidArgumentException(
                 f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" '
-                f'or "{DonorType.NON_DIRECTED}".')
-
-    maybe_recipient_medical_id = related_recipient.medical_id if related_recipient else None
+                f'or "{DonorType.NON_DIRECTED}".'
+            )
+    else:
+        if donor.related_recipient_medical_id:
+            raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
 
     assert (donor.related_recipient_medical_id
-            and maybe_recipient_medical_id == donor.related_recipient_medical_id
+            and maybe_related_recipient_medical_id == donor.related_recipient_medical_id
             ) \
-           or (not donor.related_recipient_medical_id and not maybe_recipient_medical_id), \
+           or (not donor.related_recipient_medical_id and not maybe_related_recipient_medical_id), \
         f'Donor requires recipient medical id "{donor.related_recipient_medical_id}", ' \
-        f'but received "{maybe_recipient_medical_id}" or related recipient must be None.'
+        f'but received "{maybe_related_recipient_medical_id}" or related recipient must be None.'
 
     donor_model = DonorModel(
         medical_id=donor.medical_id,
@@ -415,7 +423,7 @@ def _save_patients_to_existing_txm_event(
     donor_models = [
         _donor_upload_dto_to_donor_model(
             donor=donor,
-            related_recipient=recipient_models_dict.get(donor.related_recipient_medical_id, None),
+            recipient_models_dict=recipient_models_dict,
             country_code=country_code,
             txm_event_db_id=txm_event_db_id)
         for donor in donors

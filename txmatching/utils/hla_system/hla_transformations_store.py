@@ -2,9 +2,11 @@ import logging
 from typing import Optional
 
 from txmatching.database.db import db
-from txmatching.database.sql_alchemy_schema import ParsingError
-from txmatching.utils.hla_system.hla_code_processing_result_detail import HlaCodeProcessingResultDetail
-from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code_with_details
+from txmatching.database.sql_alchemy_schema import ParsingErrorModel
+from txmatching.utils.hla_system.hla_code_processing_result_detail import \
+    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations import \
+    parse_hla_raw_code_with_details
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +32,7 @@ def _store_parsing_error(
         hla_code: str,
         hla_code_processing_result_detail: HlaCodeProcessingResultDetail
 ):
-    parsing_error = ParsingError(
+    parsing_error = ParsingErrorModel(
         hla_code=hla_code,
         hla_code_processing_result_detail=hla_code_processing_result_detail
     )
