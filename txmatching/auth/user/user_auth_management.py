@@ -1,3 +1,4 @@
+import re
 from typing import Optional, List
 
 from txmatching.auth.crypto.password_crypto import encode_password
@@ -53,9 +54,13 @@ def _assert_user_registration(normalized_email: str, password: str, role: Option
 
 
 def _assert_phone_number_validity(phone_number: str):
-    # TODO https://trello.com/c/0vOWw2Ua verify that this is phone number
     if not phone_number:
-        raise UserUpdateException('Invalid phone number.')
+        raise UserUpdateException('Empty phone number submitted!')
+    # no advanced validation, just check if the phone number
+    # starts with + and contains just the numbers
+    if not re.match(r'^\+\d+$', phone_number):
+        raise UserUpdateException(f'Invalid phone number! The following phone number '
+                                  f'is valid +420654789123. Received {phone_number}.')
 
 
 def _assert_user_password_validity(password: str):

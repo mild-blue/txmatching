@@ -47,7 +47,7 @@ class TestUserApi(DbTests):
             pass_hash=encode_password(password),
             role=UserRole.ADMIN,
             second_factor_material=generate_totp_seed(),
-            phone_number='123456',
+            phone_number='+420123456789',
             require_2fa=True
         )
         user = persist_user(user)
@@ -166,7 +166,7 @@ class TestUserApi(DbTests):
             'email': str(uuid4()),
             'password': str(uuid4()),
             'role': UserRole.ADMIN,
-            'second_factor': '123456',
+            'second_factor': '+420123456789',
             'allowed_countries': []
         }
         self.assertIsNone(get_app_user_by_email(new_user['email']))
@@ -183,7 +183,7 @@ class TestUserApi(DbTests):
             'email': str(uuid4()),
             'password': str(uuid4()),
             'role': UserRole.ADMIN,
-            'second_factor': '123456',
+            'second_factor': '+420123456789',
             'allowed_countries': ['MILDBLUE']
         }
         self.assertIsNone(get_app_user_by_email(new_user['email']))
@@ -200,7 +200,7 @@ class TestUserApi(DbTests):
             'email': str(uuid4()),
             'password': str(uuid4()),
             'role': UserRole.ADMIN,
-            'second_factor': '123456',
+            'second_factor': '+420123456789',
             'allowed_countries': []
         }
         self.assertIsNone(get_app_user_by_email(new_user['email']))
