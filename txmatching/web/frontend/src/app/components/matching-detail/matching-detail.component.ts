@@ -35,7 +35,13 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent {
   }
 
   public getDonorTypeLabel(type: DonorType): string {
-    return type === DonorType.BRIDGING_DONOR ? 'bridging donor' : type === DonorType.NON_DIRECTED ? 'non-directed donor' : '';
+    if (type === DonorType.BRIDGING_DONOR) {
+      return 'bridging donor';
+    } else if (type === DonorType.NON_DIRECTED) {
+      return 'non-directed donor';
+    }
+
+    return '';
   }
 
   private _scrollToTransplant(id: number): void {
