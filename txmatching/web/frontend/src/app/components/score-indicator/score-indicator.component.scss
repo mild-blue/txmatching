@@ -1,0 +1,40 @@
+@import "../../../styles/variables";
+
+.indicator {
+  background: linear-gradient(90deg, rgba(255, 164, 0, 1) 0%, rgba(255, 225, 76, 1) 15%, rgba(207, 231, 51, 1) 30%, rgba(152, 217, 97, 1) 75%, rgba(112, 196, 123, 1) 100%);
+  background-size: 100vw;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 15%;
+
+  &.bad-matching {
+    background: #ff0000;
+  }
+
+  &.empty {
+    width: 20px;
+    padding: 0;
+  }
+
+  .score {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+    height: 100%;
+
+    padding: 5px 15px;
+    color: $black !important;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    span {
+      font-size: 10px;
+      font-weight: 300;
+    }
+  }
+}

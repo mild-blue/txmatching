@@ -7,8 +7,8 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { Matching, Transplant } from '@app/model/Matching';
-import { compatibleBloodGroups, Donor, PatientList, Recipient } from '@app/model/Patient';
+import { Matching, Round, Transplant } from '@app/model/Matching';
+import { compatibleBloodGroups, Donor, DonorType, PatientList, Recipient } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
@@ -206,12 +206,22 @@ export class HomeComponent implements OnInit, OnDestroy {
     return m.map((matching, mKey) => {
       matching.index = mKey + 1;
       matching.isActive = mKey === 0;
-      matching.rounds.forEach((round, rKey) => round.transplants = round.transplants.map((transplant, tKey) => {
-        const index = +`${mKey + 1}${rKey + 1}${tKey + 1}`;
-        return this._prepareTransplant(transplant, index);
-      }));
+      matching.rounds = matching.rounds.map((round, rKey) => this._prepareRound(round, mKey + 1, rKey + 1));
+
       return matching;
     });
+  }
+
+  private _prepareRound(r: Round, mIndex: number, rIndex: number): Round {
+    const round: Round = { ...r };
+
+    round.transplants = r.transplants.map((transplant, tKey) =>
+      this._prepareTransplant(transplant, +`${mIndex}${rIndex}${tKey + 1}`)
+    );
+    round.donorType = this._getRoundDonorType(round);
+    round.index = this._getRoundIndex(round, rIndex);
+
+    return round;
   }
 
   private _prepareTransplant(t: Transplant, index: number): Transplant {
@@ -235,5 +245,35 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     return transplant;
+  }
+
+  private _getRoundDonorType(round: Round): DonorType {
+    if (!round.transplants.length) {
+      return DonorType.DONOR;
+    }
+
+    const firstTransplant = round.transplants[0];
+    const donor = firstTransplant.d;
+
+    if (donor) {
+      return donor.donor_type;
+    }
+
+    return DonorType.DONOR;
+  }
+
+  private _getRoundIndex(round: Round, order: number): string {
+    const roundIndex = `${order}`;
+
+    if (round.donorType) {
+      if (round.donorType === DonorType.BRIDGING_DONOR.valueOf()) {
+        return `${roundIndex}B`;
+      }
+      if (round.donorType === DonorType.NON_DIRECTED.valueOf()) {
+        return `${roundIndex}N`;
+      }
+    }
+
+    return roundIndex;
   }
 }

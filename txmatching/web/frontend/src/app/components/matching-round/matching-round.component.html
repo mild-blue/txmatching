@@ -1,5 +1,5 @@
 <div *ngIf="round" class="matching-round">
-  <div class="index">{{ roundIndex }}</div>
+  <div class="index">{{ round.index }}</div>
   <div class="content">
     <div *ngFor="let transplant of round.transplants"
          [class.compatible]="transplant.compatible_blood"
@@ -7,12 +7,13 @@
          (click)="setActiveTransplant(transplant.index)"
          class="matching-round__transplant">
 
-      <app-patient-pair [pair]="transplant"></app-patient-pair>
+      <div class="content">
+        <app-patient-pair [pair]="transplant"></app-patient-pair>
+      </div>
 
-      <div *ngIf="configuration && !configuration.use_binary_scoring"
-           [style.background-position.%]="percentageScore(transplant)"
-           [class.bad-matching]="transplant.score === -1"
-           class="indicator"></div>
+      <app-score-indicator *ngIf="configuration && !configuration.use_binary_scoring"
+                           [configuration]="configuration"
+                           [score]="transplant.score"></app-score-indicator>
 
     </div>
   </div>
