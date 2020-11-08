@@ -48,4 +48,5 @@ class Version(Resource):
     @service_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     def get(self):
         conf = get_application_configuration()
+        logger.debug(f'Application version: {conf.code_version} in environment {conf.environment}.')
         return jsonify({'version': conf.code_version, 'environment': conf.environment})
