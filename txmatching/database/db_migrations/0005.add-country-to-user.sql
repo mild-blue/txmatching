@@ -1,5 +1,5 @@
 --
--- file: 0005.add-country-to-user.sql
+-- file: txmatching/database/db_migrations/0005.add-country-to-user.sql
 -- depends: 0004.add-unique-configuration-for-txm-event
 --
 
