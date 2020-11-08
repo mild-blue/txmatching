@@ -109,4 +109,6 @@ DonorModelToUpdate = patient_api.model('DonorModelToUpdate', {
     'hla_typing': fields.Nested(HLATypingToUpdate, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
                                             'the change set'),
+    'active': fields.Boolean(required=False, description='Information, whether or not given donor shall be considered'
+                                                         ' in exchange.')
 })

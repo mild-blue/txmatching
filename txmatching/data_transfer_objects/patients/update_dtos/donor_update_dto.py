@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto import \
     PatientUpdateDTO
@@ -6,4 +7,4 @@ from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto im
 
 @dataclass
 class DonorUpdateDTO(PatientUpdateDTO):
-    pass
+    active: Optional[bool] = None

@@ -125,6 +125,8 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     donor_update_dict = {}
     if donor_update_dto.hla_typing:
         donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing_preprocessed)
+    if donor_update_dto.active is not None:
+        donor_update_dict['active'] = donor_update_dto.active
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
     _remove_configs_from_txm_event_by_id(txm_event_db_id)
     db.session.commit()
@@ -134,22 +136,12 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
 def get_txm_event(txm_event_db_id: int) -> TxmEvent:
     txm_event_model = TxmEventModel.query.get(txm_event_db_id)
 
-    active_donors = txm_event_model.donors
-    active_recipients = txm_event_model.recipients
-    donors_with_recipients = [(donor_model.recipient_id, _get_donor_from_donor_model(donor_model))
-                              for donor_model in active_donors]
+    all_donors = [_get_donor_from_donor_model(donor_model) for donor_model in txm_event_model.donors]
+    all_recipients = [_get_recipient_from_recipient_model(recipient_model, recipient_model.donor.id)
+                      for recipient_model in txm_event_model.recipients]
 
-    donors_dict = {donor.db_id: donor for _, donor in donors_with_recipients}
-    donors_with_recipients_dict = {related_recipient_id: donor.db_id for related_recipient_id, donor in
-                                   donors_with_recipients if related_recipient_id}
-
-    recipients_dict = {
-        recipient_model.id: _get_recipient_from_recipient_model(
-            recipient_model, donors_with_recipients_dict[recipient_model.id])
-        for recipient_model in active_recipients}
-
-    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict=donors_dict,
-                    recipients_dict=recipients_dict)
+    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, all_donors=all_donors,
+                    all_recipients=all_recipients)
 
 
 def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_code: Country):
@@ -202,7 +194,8 @@ def _get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
                  base_patient.medical_id,
                  parameters=base_patient.parameters,
                  donor_type=donor_model.donor_type,
-                 related_recipient_db_id=donor_model.recipient_id
+                 related_recipient_db_id=donor_model.recipient_id,
+                 active=donor_model.active
                  )
 
 
@@ -265,7 +258,6 @@ def _recipient_excel_dto_to_recipient_model(
             cutoff=hla_antibody.cutoff,
             mfi=hla_antibody.mfi
         ) for hla_antibody in recipient_excel_dto.hla_antibodies.hla_antibodies_list],
-        active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in recipient_excel_dto.acceptable_blood_groups],
         txm_event_id=txm_event_db_id,
@@ -316,7 +308,6 @@ def _recipient_upload_dto_to_recipient_model(
             ) for typing in
                 recipient.hla_typing_preprocessed])),
         hla_antibodies=hla_antibodies,
-        active=True,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in acceptable_blood_groups],
         txm_event_id=txm_event_db_id,
@@ -336,30 +327,27 @@ def _donor_upload_dto_to_donor_model(
         country_code: Country,
         txm_event_db_id: int
 ) -> DonorModel:
-    maybe_related_recipient_medical_id = None
-    related_recipient = None
-    if donor.donor_type == DonorType.DONOR:
-        if donor.related_recipient_medical_id:
-            related_recipient = recipient_models_dict.get(donor.related_recipient_medical_id, None)
-            if related_recipient:
-                maybe_related_recipient_medical_id = related_recipient.medical_id
-            else:
-                raise InvalidArgumentException(
-                    f'Donor (medical id "{donor.medical_id}") has related recipient (medical id '
-                    f'"{donor.related_recipient_medical_id}"), which was not found among recipients.')
-        else:
-            raise InvalidArgumentException(
-                f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" '
-                f'or "{DonorType.NON_DIRECTED}".'
-            )
-    else:
-        if donor.related_recipient_medical_id:
-            raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
+    maybe_related_recipient = recipient_models_dict.get(donor.related_recipient_medical_id, None)
 
-    assert (donor.related_recipient_medical_id
-            and maybe_related_recipient_medical_id == donor.related_recipient_medical_id
-            ) \
-           or (not donor.related_recipient_medical_id and not maybe_related_recipient_medical_id), \
+    if donor.donor_type == DonorType.DONOR and not donor.related_recipient_medical_id:
+        raise InvalidArgumentException(
+            f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" or "{DonorType.NON_DIRECTED}".'
+        )
+    if (donor.donor_type == DonorType.DONOR and
+            donor.related_recipient_medical_id and
+            maybe_related_recipient is None):
+        raise InvalidArgumentException(
+            f'Donor (medical id "{donor.medical_id}") has related recipient (medical id '
+            f'"{donor.related_recipient_medical_id}"), which was not found among recipients.'
+        )
+
+    if donor.donor_type != DonorType.DONOR and donor.related_recipient_medical_id is not None:
+        raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
+
+    maybe_related_recipient_medical_id = maybe_related_recipient.medical_id if maybe_related_recipient else None
+
+    assert (donor.related_recipient_medical_id is None or
+            maybe_related_recipient_medical_id == donor.related_recipient_medical_id), \
         f'Donor requires recipient medical id "{donor.related_recipient_medical_id}", ' \
         f'but received "{maybe_related_recipient_medical_id}" or related recipient must be None.'
 
@@ -374,7 +362,7 @@ def _donor_upload_dto_to_donor_model(
             ) for typing in
                 donor.hla_typing_preprocessed])),
         active=True,
-        recipient=related_recipient,
+        recipient=maybe_related_recipient,
         donor_type=donor.donor_type,
         weight=donor.weight,
         height=donor.height,
