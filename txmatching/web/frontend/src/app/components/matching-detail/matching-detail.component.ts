@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { DonorType, PatientList } from '@app/model/Patient';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { Matching } from '@app/model/Matching';
@@ -13,7 +13,7 @@ import { Configuration } from '@app/model/Configuration';
   templateUrl: './matching-detail.component.html',
   styleUrls: ['./matching-detail.component.scss']
 })
-export class MatchingDetailComponent extends ListItemDetailAbstractComponent {
+export class MatchingDetailComponent extends ListItemDetailAbstractComponent implements OnDestroy {
 
   private _activeTransplantSubscription: Subscription = new Subscription();
 
@@ -32,6 +32,10 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent {
         this._scrollToTransplant(id);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this._activeTransplantSubscription.unsubscribe();
   }
 
   public getDonorTypeLabel(type: DonorType): string {

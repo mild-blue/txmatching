@@ -22,7 +22,9 @@
                    [listItemComponent]="activeListFilter.itemComponent"
                    [items]="getFilteredItems()"
                    [configuration]="configuration"
-                   [patients]="patients"></app-item-list>
+                   [patients]="patients"
+                   [saveLastViewedItem]="true"
+                   [useInfiniteScroll]="false"></app-item-list>
   </app-content>
 </section>
 

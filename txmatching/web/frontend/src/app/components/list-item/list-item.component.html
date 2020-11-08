@@ -1,18 +1,6 @@
 <div class="item-list">
   <div class="list">
-    <div #list
-         infinite-scroll
-         class="list-inner"
-         (scrolled)="onScrollDown()"
-         [scrollWindow]="false">
-      <app-item *ngFor="let item of displayedItems; trackBy: trackListItem"
-                [listItemComponent]="listItemComponent"
-                [isActive]="item === activeItem"
-                [item]="item"
-                [patients]="patients"
-                [configuration]="configuration"
-                (click)="setActive(item)"></app-item>
-    </div>
+    <ng-container *ngIf="useInfiniteScroll then listInfinite; else listDefault"></ng-container>
   </div>
   <div class="detail">
     <div [class.aligned-bottom]="activeAlignedBottom"
@@ -24,3 +12,29 @@
     </div>
   </div>
 </div>
+
+<ng-template #listInfinite>
+  <div #list
+       infinite-scroll
+       class="list-inner"
+       (scrolled)="onScrollDown()"
+       [scrollWindow]="false">
+    <ng-container [ngTemplateOutlet]="itemList"></ng-container>
+  </div>
+</ng-template>
+
+<ng-template #listDefault>
+  <div #list class="list-inner" [class.smooth-scroll]="enableSmoothScroll">
+    <ng-container [ngTemplateOutlet]="itemList"></ng-container>
+  </div>
+</ng-template>
+
+<ng-template #itemList>
+  <app-item *ngFor="let item of displayedItems; trackBy: trackListItem"
+            [listItemComponent]="listItemComponent"
+            [isActive]="item === activeItem"
+            [item]="item"
+            [patients]="patients"
+            [configuration]="configuration"
+            (click)="handleItemClick(item)"></app-item>
+</ng-template>

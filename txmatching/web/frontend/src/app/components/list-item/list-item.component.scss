@@ -36,8 +36,11 @@
     &-inner {
       height: 100%;
       overflow-y: scroll;
-      scroll-behavior: smooth;
       position: relative;
+
+      &.smooth-scroll {
+        scroll-behavior: smooth;
+      }
     }
 
     &::before, &::after {
