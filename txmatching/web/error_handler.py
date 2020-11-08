@@ -15,7 +15,8 @@ from txmatching.auth.exceptions import (CredentialsMismatchException,
                                         UserUpdateException,
                                         CouldNotSendOtpUsingSmsServiceException,
                                         GuardException)
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
+from txmatching.configuration.app_configuration.application_configuration import get_application_configuration, \
+    ApplicationEnvironment
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +101,7 @@ def _default_error_handlers(api: Api):
     """
     Registers default top level handlers, must be registered last.
     """
-    is_prod = get_application_configuration().is_production
+    is_prod = get_application_configuration().environment == ApplicationEnvironment.PRODUCTION
 
     def strip_on_prod(description):
         return description if not is_prod else 'An unknown error occurred. Contact administrator.'
