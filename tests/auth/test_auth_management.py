@@ -38,7 +38,7 @@ class TestLoginFlow(DbTests):
     def _create_user(self, role: UserRole = UserRole.ADMIN) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())
         email = str(uuid4())
-        register_user(email, pwd, [], role, '456 678 645')
+        register_user(email, pwd, [], role, '+420456678645')
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
         self.assertIsNotNone(db_usr)
         return db_usr, pwd

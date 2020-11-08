@@ -141,8 +141,9 @@ class RegistrationApi(Resource):
         password=fields.String(required=True, description='User\'s password.'),
         role=fields.String(required=True, enum=[role.name for role in UserRole], description='User\'s role.'),
         second_factor=fields.String(required=True,
-                                    description='2FA: Phone number for user account, '
-                                                'IP address for SERVICE account.'),
+                                    description='2FA: Phone number for user account in standard format (see example), '
+                                                'IP address for SERVICE account.',
+                                    example='+420657123987'),
         allowed_countries=fields.List(required=True,
                                       description='Countries that the user has access to.',
                                       cls_or_instance=fields.String(enum=[country.value for country in Country])),
@@ -153,8 +154,7 @@ class RegistrationApi(Resource):
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
     @user_api.response(code=401, model=FailJson, description='Authentication failed.')
     @user_api.response(code=403, model=FailJson,
-                       description='Access denied. You do not have rights to access this endpoint.'
-                       )
+                       description='Access denied. You do not have rights to access this endpoint.')
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_role(UserRole.ADMIN)
     def post(self):
