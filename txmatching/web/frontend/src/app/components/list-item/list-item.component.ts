@@ -180,7 +180,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
 
     // set first or saved item as active
     let newActiveItem = this.displayedItems[0];
-    if (this.saveLastViewedItem) {
+    if (this.saveLastViewedItem && this.items.length) {
       const lastViewedId = this._uiInteractionsService.getLastViewedItemId();
       const foundItem = this.items.find(item => item.index === lastViewedId);
       newActiveItem = foundItem ?? newActiveItem;
