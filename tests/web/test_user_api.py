@@ -2,16 +2,20 @@ import datetime
 from unittest import mock
 from uuid import uuid4
 
-from tests.test_utilities.populate_db import USERS, ADMIN_USER
+from tests.test_utilities.populate_db import ADMIN_USER, USERS
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.auth.crypto.jwt_crypto import parse_request_token, encode_auth_token
+from txmatching.auth.crypto.jwt_crypto import (encode_auth_token,
+                                               parse_request_token)
 from txmatching.auth.crypto.password_crypto import encode_password
-from txmatching.auth.data_types import UserRole, TokenType
+from txmatching.auth.data_types import TokenType, UserRole
 from txmatching.auth.user.totp import generate_totp_seed
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
+from txmatching.configuration.app_configuration.application_configuration import \
+    get_application_configuration
 from txmatching.database.db import db
-from txmatching.database.services.app_user_management import persist_user, get_app_user_by_email
+from txmatching.database.services.app_user_management import (
+    get_app_user_by_email, persist_user)
 from txmatching.database.sql_alchemy_schema import AppUserModel
+from txmatching.web import API_VERSION, USER_NAMESPACE
 
 
 class TestUserApi(DbTests):
@@ -27,7 +31,7 @@ class TestUserApi(DbTests):
         email = str(uuid4())
         password = str(uuid4())
         with self.app.test_client() as client:
-            response = client.post('/user/login',
+            response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/login',
                                    json={'email': email, 'password': password})
             self.assertEqual(401, response.status_code)
             self.assertEqual('Authentication failed.', response.json['error'])
@@ -35,7 +39,7 @@ class TestUserApi(DbTests):
     def test_otp_login_without_header_should_fail(self):
         otp = str(uuid4())
         with self.app.test_client() as client:
-            response = client.post('/user/otp',
+            response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/otp',
                                    json={'otp': otp})
             self.assertEqual(401, response.status_code)
             self.assertEqual('Authentication failed.', response.json['error'])
@@ -64,7 +68,7 @@ class TestUserApi(DbTests):
 
         with mock.patch('txmatching.auth.user.user_auth.send_sms', send):
             with self.app.test_client() as client:
-                response = client.post('/user/login',
+                response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/login',
                                        json={'email': user.email, 'password': password})
                 self.assertEqual(200, response.status_code)
                 self.assertIsNotNone(self.generated_otp)
@@ -78,20 +82,20 @@ class TestUserApi(DbTests):
                 self.assertEqual(1, self.triggered_times)
 
                 # test malformed token without Bearer prefix
-                response = client.post('/user/otp',
+                response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/otp',
                                        json={'otp': self.generated_otp},
                                        headers={'Authorization': temp_otp_login_token})
                 self.assertEqual(401, response.status_code)
 
                 # test resending token
-                response = client.put('/user/otp',
+                response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/otp',
                                       headers={'Authorization': f'Bearer {temp_otp_login_token}'})
                 self.assertEqual(200, response.status_code)
                 self.assertEqual('ok', response.json['status'])
                 self.assertEqual(2, self.triggered_times)
 
                 # try to login with correct structure and valid token
-                response = client.post('/user/otp',
+                response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/otp',
                                        json={'otp': self.generated_otp},
                                        headers={'Authorization': f'Bearer {temp_otp_login_token}'})
                 self.assertEqual(200, response.status_code)
@@ -105,14 +109,14 @@ class TestUserApi(DbTests):
     def test_refresh_token(self):
         self.login_with_role(UserRole.ADMIN)
         with self.app.test_client() as client:
-            response = client.get('/user/refresh-token',
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/refresh-token',
                                   headers=self.auth_headers)
             self.assertEqual(200, response.status_code)
             self.assertIsNotNone(response.json.get('auth_token'))
 
     def test_refresh_token_should_fail_without_token(self):
         with self.app.test_client() as client:
-            response = client.get('/user/refresh-token')
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/refresh-token')
             self.assertEqual(401, response.status_code)
 
     def test_refresh_token_should_fail_with_otp_token(self):
@@ -124,7 +128,7 @@ class TestUserApi(DbTests):
             jwt_secret=get_application_configuration().jwt_secret
         )
         with self.app.test_client() as client:
-            response = client.get('/user/refresh-token',
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/refresh-token',
                                   headers={'Authorization': f'Bearer {otp_bearer}'})
             self.assertEqual(403, response.status_code)
 
@@ -136,7 +140,7 @@ class TestUserApi(DbTests):
             'new_password': admin_credentials['password'] + str(uuid4())
         }
         with self.app.test_client() as client:
-            response = client.put('/user/change-password',
+            response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/change-password',
                                   json=password_change_request,
                                   headers=self.auth_headers)
             self.assertEqual(200, response.status_code)
@@ -155,7 +159,7 @@ class TestUserApi(DbTests):
             'new_password': str(uuid4())
         }
         with self.app.test_client() as client:
-            response = client.put('/user/change-password',
+            response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/change-password',
                                   json=password_change_request,
                                   headers=self.auth_headers)
             self.assertEqual(401, response.status_code)
@@ -171,7 +175,7 @@ class TestUserApi(DbTests):
         }
         self.assertIsNone(get_app_user_by_email(new_user['email']))
         with self.app.test_client() as client:
-            response = client.post('/user/register', json=new_user,
+            response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/register', json=new_user,
                                    headers=self.auth_headers)
             self.assertEqual(403, response.status_code)
 
@@ -188,7 +192,7 @@ class TestUserApi(DbTests):
         }
         self.assertIsNone(get_app_user_by_email(new_user['email']))
         with self.app.test_client() as client:
-            response = client.post('/user/register', json=new_user,
+            response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/register', json=new_user,
                                    headers=self.auth_headers)
             self.assertEqual(400, response.status_code)
 
@@ -205,7 +209,7 @@ class TestUserApi(DbTests):
         }
         self.assertIsNone(get_app_user_by_email(new_user['email']))
         with self.app.test_client() as client:
-            response = client.post('/user/register', json=new_user,
+            response = client.post(f'{API_VERSION}/{USER_NAMESPACE}/register', json=new_user,
                                    headers=self.auth_headers)
             self.assertEqual(200, response.status_code)
 

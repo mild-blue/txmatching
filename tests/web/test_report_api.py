@@ -4,7 +4,7 @@ from txmatching.database.services import solver_service
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import REPORTS_NAMESPACE, report_api
+from txmatching.web import API_VERSION, REPORTS_NAMESPACE, report_api
 from txmatching.web.api.report_api import (MATCHINGS_BELOW_CHOSEN,
                                            MAX_MATCHINGS_BELOW_CHOSEN,
                                            MIN_MATCHINGS_BELOW_CHOSEN)
