@@ -21,8 +21,10 @@
                    [listItemDetailComponent]="activeListFilter.detailComponent"
                    [listItemComponent]="activeListFilter.itemComponent"
                    [items]="getFilteredItems()"
-                   [configuration]="undefined"
-                   [patients]="patients"></app-item-list>
+                   [configuration]="configuration"
+                   [patients]="patients"
+                   [saveLastViewedItem]="true"
+                   [useInfiniteScroll]="false"></app-item-list>
   </app-content>
 </section>
 

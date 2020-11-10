@@ -3,12 +3,12 @@
 import datetime
 import logging
 import os
+import time
 from distutils.dir_util import copy_tree
 from typing import List, Tuple
 
 import jinja2
 import pdfkit
-import time
 from flask import request, send_from_directory
 from flask_restx import Resource, abort
 from jinja2 import Environment, FileSystemLoader
@@ -36,7 +36,7 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TMP_DIR = '/tmp/txmatching_reports'
 MATCHINGS_BELOW_CHOSEN = 'matchingsBelowChosen'
 MIN_MATCHINGS_BELOW_CHOSEN = 0
-MAX_MATCHINGS_BELOW_CHOSEN = 100
+MAX_MATCHINGS_BELOW_CHOSEN = 20
 
 
 # Query params:
@@ -128,13 +128,13 @@ class Report(Resource):
         now = datetime.datetime.now()
         now_formatted = now.strftime('%Y_%m_%d_%H_%M_%S')
 
-        required_patients_medical_ids = [txm_event.recipients_dict[recipient_db_id].medical_id
+        required_patients_medical_ids = [txm_event.active_recipients_dict[recipient_db_id].medical_id
                                          for recipient_db_id in configuration.required_patient_db_ids]
 
         manual_donor_recipient_scores_with_medical_ids = [
             (
-                txm_event.donors_dict[donor_recipient_score.donor_db_id].medical_id,
-                txm_event.recipients_dict[donor_recipient_score.recipient_db_id].medical_id,
+                txm_event.active_donors_dict[donor_recipient_score.donor_db_id].medical_id,
+                txm_event.active_recipients_dict[donor_recipient_score.recipient_db_id].medical_id,
                 donor_recipient_score.score
             ) for donor_recipient_score in
             configuration.manual_donor_recipient_scores

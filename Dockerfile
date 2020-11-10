@@ -7,21 +7,20 @@ RUN npm i
 RUN npm run build-prod
 
 # Build backend
-FROM mildblue/txmatching-base AS backend-build
-LABEL description="Mild Blue - Transplant Kidney Matching"
+FROM mildblue/txmatching-conda-dependencies:1.0.0 AS backend-build
+LABEL description="Mild Blue - TXMatching"
 LABEL project="mildblue:txmatching"
 
 WORKDIR /app
 
-# Install dependencies
-COPY conda.yml .
-RUN conda env create -f conda.yml
-# Register conda in the .bashrc
-RUN conda init bash
+# check that the base image has same conda as the repo
+COPY conda.yml conda.yml.repo
+RUN diff --strip-trailing-cr conda.yml conda.yml.repo
 
 # Do all your magic from here
 # Copy rest of the app
 COPY txmatching ./txmatching
+RUN mkdir -p /logs
 
 # Copy pre-built frontend
 COPY --from=frontend-build ./frontend/dist/frontend /app/txmatching/web/frontend/dist/frontend
@@ -34,4 +33,4 @@ RUN echo $release_version > $RELEASE_FILE_PATH
 # Start the app - one must initialize shell beforehand
 CMD . ~/.bashrc && \
     conda activate txmatching && \
-    gunicorn --bind 0.0.0.0:8080 txmatching.web.app:app
+    gunicorn -c txmatching/web/gunicorn_configuration.py --bind 0.0.0.0:8080 txmatching.web.app:app

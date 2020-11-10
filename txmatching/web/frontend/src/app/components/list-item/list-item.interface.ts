@@ -1,6 +1,7 @@
 import { PatientList } from '@app/model/Patient';
 import { Configuration } from '@app/model/Configuration';
 import { PatientService } from '@app/services/patient/patient.service';
+import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 
 export interface ListItem {
   index: number;
@@ -17,8 +18,10 @@ export class ListItemAbstractComponent {
 export class ListItemDetailAbstractComponent {
   item?: ListItem;
   patients?: PatientList;
+  configuration?: Configuration;
 
-  constructor(_patientService?: PatientService) {
+  constructor(_patientService?: PatientService,
+              _uiInteractionsService?: UiInteractionsService) {
   }
 }
 

@@ -1,8 +1,13 @@
+import logging
 import os
+from typing import Optional
 
-from yoyo import read_migrations, get_backend
+from yoyo import get_backend, read_migrations
 
-from txmatching.configuration.app_configuration.application_configuration import build_db_connection_string
+from txmatching.configuration.app_configuration.application_configuration import \
+    build_db_connection_string
+
+logger = logging.getLogger(__name__)
 
 
 def _get_env_var(name: str) -> str:
@@ -25,20 +30,31 @@ def _get_db_connection_string() -> str:
         False
     )
 
-backend = get_backend(_get_db_connection_string())
-directory = os.path.dirname(os.path.realpath(__file__))
-migration_directory = os.path.join(directory, 'db_migrations')
-print(f'Applying DB migrations from {migration_directory}.')
-migrations = read_migrations(migration_directory)
 
-print('Applying DB migrations:')
-for migration in migrations:
-    print(migration.id)
+def migrate_db(db_uri: Optional[str] = None):
+    """
+    Runs db migrations.
+    :param db_uri
+    :return:
+    """
+    if not db_uri:
+        db_uri = _get_db_connection_string()
+    acceptable_db_uri = db_uri.replace('+psycopg2', '')
+    backend = get_backend(acceptable_db_uri)
+    directory = os.path.dirname(os.path.realpath(__file__))
+    migration_directory = os.path.join(directory, 'db_migrations')
+    logger.info(f'Applying DB migrations from {migration_directory}.')
+    migrations = read_migrations(migration_directory)
 
-with backend.lock():
-    # Apply any outstanding migrations
-    backend.apply_migrations(backend.to_apply(migrations))
+    logger.info('Applying DB migrations:')
+    for migration in migrations:
+        logger.info(migration.id)
 
-    # Rollback all migrations - just sample
-    # backend.rollback_migrations(backend.to_rollback(migrations))
-print("DB migrations applied.")
+    with backend.lock():
+        # Apply any outstanding migrations
+        backend.apply_migrations(backend.to_apply(migrations))
+    logger.info('DB migrations applied.')
+
+
+if __name__ == '__main__':
+    migrate_db()

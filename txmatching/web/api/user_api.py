@@ -15,6 +15,7 @@ from txmatching.auth.user.topt_auth_check import allow_otp_request
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
+from txmatching.utils.enums import Country
 from txmatching.web.api.namespaces import user_api
 
 logger = logging.getLogger(__name__)
@@ -46,7 +47,7 @@ class LoginApi(Resource):
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     def post(self):
         post_data = request.get_json()
-        auth_response = credentials_login(email=post_data.get('email'), password=post_data.get('password'))
+        auth_response = credentials_login(email=post_data['email'], password=post_data['password'])
         return _respond_token(auth_response)
 
 
@@ -140,23 +141,29 @@ class RegistrationApi(Resource):
         password=fields.String(required=True, description='User\'s password.'),
         role=fields.String(required=True, enum=[role.name for role in UserRole], description='User\'s role.'),
         second_factor=fields.String(required=True,
-                                    description='2FA: Phone number for user account, IP address for SERVICE account.')))
+                                    description='2FA: Phone number for user account in standard format (see example), '
+                                                'IP address for SERVICE account.',
+                                    example='+420657123987'),
+        allowed_countries=fields.List(required=True,
+                                      description='Countries that the user has access to.',
+                                      cls_or_instance=fields.String(enum=[country.value for country in Country])),
+    ))
 
     @user_api.doc(body=registration_model, security='bearer')
     @user_api.response(code=200, model=StatusResponse, description='User registered successfully.')
     @user_api.response(code=400, model=FailJson, description='Wrong data format.')
     @user_api.response(code=401, model=FailJson, description='Authentication failed.')
     @user_api.response(code=403, model=FailJson,
-                       description='Access denied. You do not have rights to access this endpoint.'
-                       )
+                       description='Access denied. You do not have rights to access this endpoint.')
     @user_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_role(UserRole.ADMIN)
     def post(self):
         post_data = request.get_json()
-        register(email=post_data.get('email'),
-                 password=post_data.get('password'),
-                 role=UserRole(post_data.get('role')),
-                 second_factor=post_data.get('second_factor'))
+        register(email=post_data['email'],
+                 password=post_data['password'],
+                 role=UserRole(post_data['role']),
+                 second_factor=post_data['second_factor'],
+                 allowed_countries=[Country(country_value) for country_value in post_data['allowed_countries']])
         return {'status': 'ok'}, 200
 
 

@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { antibodiesMultipliers, compatibleBloodGroups, Hla, PatientList } from '@app/model/Patient';
+import { Configuration } from '@app/model/Configuration';
 
 @Component({
   selector: 'app-matching-transplant',
@@ -10,6 +11,7 @@ import { antibodiesMultipliers, compatibleBloodGroups, Hla, PatientList } from '
 })
 export class MatchingTransplantComponent implements OnInit {
 
+  @Input() configuration?: Configuration;
   @Input() transplant?: Transplant;
   @Input() patients?: PatientList;
 

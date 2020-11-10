@@ -1,16 +1,19 @@
-version: '3.7'
+# Do not forgot to update other docker-compose files, especially in project-configuration repository.
+version: '3.8'
 services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    image: mildblue/txmatching
+    image: txmatching
     env_file:
       - .env.pub
     ports:
       - 8080:8080
     depends_on:
       - db
+    volumes:
+      - /var/log/txmatching:/logs
 
   db:
     image: postgres:12.2

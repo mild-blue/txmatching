@@ -5,6 +5,8 @@ from typing import Dict
 
 from flask import Flask
 from flask_restx import Api
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 
 from tests.test_utilities.populate_db import (ADMIN_USER, SERVICE_USER,
                                               VIEWER_USER, add_users,
@@ -28,6 +30,14 @@ ROLE_CREDENTIALS = {
     UserRole.EDITOR: None,
     UserRole.SERVICE: SERVICE_USER
 }
+
+
+# adds foreign key support to test database
+@event.listens_for(Engine, 'connect')
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute('PRAGMA foreign_keys=ON')
+    cursor.close()
 
 
 class DbTests(unittest.TestCase):
@@ -76,16 +86,24 @@ class DbTests(unittest.TestCase):
         self.login_with_role(UserRole.ADMIN)
 
     def login_with_credentials(self, credentials: Dict):
-        with self.app.test_client() as client:
-            json = client.post('/user/login',
-                               json={'email': credentials['email'], 'password': credentials['password']}).json
-            token = json['auth_token']
-            self.auth_headers = {'Authorization': f'Bearer {token}'}
-            store_user_in_context(credentials['id'], credentials['role'])
+        self.login_with(
+            email=credentials['email'],
+            password=credentials['password'],
+            user_id=credentials['id'],
+            user_role=credentials['role']
+        )
 
     def login_with_role(self, user_role: UserRole):
         credentials = ROLE_CREDENTIALS[user_role]
         self.login_with_credentials(credentials)
+
+    def login_with(self, email: str, password: str, user_id: int, user_role: UserRole):
+        with self.app.test_client() as client:
+            json = client.post('/user/login',
+                               json={'email': email, 'password': password}).json
+            token = json['auth_token']
+            self.auth_headers = {'Authorization': f'Bearer {token}'}
+            store_user_in_context(user_id, user_role)
 
     def _load_local_development_config(self):
         config_file = 'txmatching.web.local_config'

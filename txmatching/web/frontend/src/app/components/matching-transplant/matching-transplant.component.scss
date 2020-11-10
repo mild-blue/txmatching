@@ -3,37 +3,32 @@
 .transplant {
   display: flex;
   flex-direction: column;
-  border: 1px solid $border-color;
-  border-top: none;
-  border-radius: $border-radius--wide;
-  box-shadow: $box-shadow;
   margin: 0 auto $item-gap;
+
+  border-radius: $border-radius--wide;
+  box-shadow: $box-shadow--wide;
+  overflow: hidden;
 
   max-width: 960px;
 
   &-header {
-    background: $gray-100;
-    border: 1px solid $border-color;
-    border-radius: $border-radius--wide;
     padding: calc(#{$padding-y} / 2) $padding-x;
     font-weight: 700;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 
-    .score {
-      span {
-        font-size: 22px;
-        font-weight: 700;
-        color: $primary;
-      }
+    background-color: $transplant-bg--incompatible;
+    color: $transplant-color--incompatible;
+
+    border-top-right-radius: calc(#{$border-radius--wide} + 10px); // fixes bug with show 1px of dark bg
+
+    &.compatible {
+      background-color: $transplant-bg--compatible;
+      color: $transplant-color--compatible;
     }
-  }
-
-  &-content {
-    flex-grow: 1;
-    padding: 30px 30px 10px;
   }
 
   .small {
@@ -50,7 +45,10 @@
   }
 
   tr {
-    border-top: 1px solid $border-color;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $border-color;
+    }
 
     &:first-child {
       font-weight: 700;
@@ -58,24 +56,28 @@
     }
 
     &:last-child {
-      border-top: none;
+      td {
+        padding-bottom: $padding-y;
+      }
     }
 
     &.anti-header {
       td {
-        background: #f9f9f9;
-        font-size: 12px;
+        background: rgba($black, 0.015);
+        color: $body-color--secondary;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
         padding: 2px;
       }
     }
   }
 
   td {
-
     text-align: center;
     padding: 10px;
-    border-right: 1px solid $border-color;
     vertical-align: top;
+    border-right: 1px solid $border-color;
 
     .center-holder {
       width: 100%;
@@ -85,41 +87,36 @@
     }
 
     &:not([colspan]) {
-      width: 21.6666%;
+      // cant use calc
+      // "Any math expression of a complex type is treated as auto. Simple typed things continue to work as today."
+      width: 21.6666666%;
     }
 
     &:first-child {
       width: 20%;
       text-align: left;
-      font-weight: 700;
+      font-size: 14px;
+      font-weight: 400;
+      font-family: monospace;
+      text-transform: uppercase;
+      color: $body-color--secondary;
+
+      padding-top: 17px;
+      padding-left: $padding-y;
     }
 
     &:last-child {
       width: 15%;
-      background: $gray-100;
+      font-weight: 700;
       border-right: none;
     }
-  }
 
-  .footer-score {
-
-    td {
-      text-align: right;
-      background: $white !important;
-
-      &:not(:last-child) {
-        border: none !important;
-      }
-
-      &:last-child {
-        border-top: 3px solid $primary;
-      }
+    &.border-t-none {
+      border-top: none;
     }
 
-    span {
-      font-size: 24px;
-      font-weight: 700;
-      color: $primary;
+    &.border-b-none {
+      border-bottom: none;
     }
   }
 }

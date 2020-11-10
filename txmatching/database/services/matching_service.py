@@ -35,19 +35,20 @@ def get_latest_matchings_and_score_matrix(
     calculated_matchings = from_dict(data_class=CalculatedMatchingsDTO,
                                      data=last_pairing_result_model.calculated_matchings)
 
-    all_matchings = _db_matchings_to_matching_list(calculated_matchings, txm_event.donors_dict,
-                                                   txm_event.recipients_dict)
+    all_matchings = _db_matchings_to_matching_list(calculated_matchings, txm_event.active_donors_dict,
+                                                   txm_event.active_recipients_dict)
 
     score_matrix = last_pairing_result_model.score_matrix['score_matrix_dto']
     score_dict = {
         (donor_db_id, recipient_db_id): score for donor_db_id, row in
-        zip(txm_event.donors_dict, score_matrix) for recipient_db_id, score in zip(txm_event.recipients_dict, row)
+        zip(txm_event.active_donors_dict, score_matrix) for recipient_db_id, score in
+        zip(txm_event.active_recipients_dict, row)
     }
 
     compatible_blood_dict = {(donor_db_id, recipient_db_id): blood_groups_compatible(donor.parameters.blood_group,
                                                                                      recipient.parameters.blood_group)
-                             for donor_db_id, donor in txm_event.donors_dict.items()
-                             for recipient_db_id, recipient in txm_event.recipients_dict.items()
+                             for donor_db_id, donor in txm_event.active_donors_dict.items()
+                             for recipient_db_id, recipient in txm_event.active_recipients_dict.items()
                              }
 
     return all_matchings, score_dict, compatible_blood_dict

@@ -1,5 +1,3 @@
-import logging
-import sys
 from importlib import util as importing
 
 from flask import Flask, request, send_from_directory
@@ -7,8 +5,9 @@ from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from txmatching.auth.crypto import bcrypt
-from txmatching.configuration.app_configuration.application_configuration import ApplicationConfiguration, \
-    get_application_configuration, build_db_connection_string
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationConfiguration, build_db_connection_string,
+    get_application_configuration, ApplicationEnvironment)
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
@@ -24,15 +23,14 @@ from txmatching.web.api.service_api import service_api
 from txmatching.web.api.txm_event_api import txm_event_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.error_handler import register_error_handlers
+from txmatching.web.web_utils.logging_config import setup_logging
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'
 
 
-def create_app():
-    logging.basicConfig(level=logging.DEBUG,
-                        format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
-                        stream=sys.stdout)
+def create_app() -> Flask:
+    setup_logging()
 
     app = Flask(__name__)
     # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
@@ -75,7 +73,7 @@ def create_app():
             }
         }
         # disable swagger when we're running in the production
-        enable_swagger = not application_configuration.is_production
+        enable_swagger = application_configuration.environment != ApplicationEnvironment.PRODUCTION
         api = Api(
             authorizations=authorizations,
             doc='/doc/' if enable_swagger else False,
@@ -99,13 +97,21 @@ def create_app():
         # serving main html which then asks for all javascript
         @app.route('/')
         def index_html():
-            return send_from_directory('frontend/dist/frontend', 'index.html')
+            response = send_from_directory('frontend/dist/frontend', 'index.html')
+            # prevent clickjacking
+            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+            response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+            return response
 
         # used only if the there's no other endpoint registered
         # we need it to load static resources for the frontend
         @app.route('/<path:path>', methods=['GET'])
         def static_proxy(path):
-            return send_from_directory('frontend/dist/frontend', path)
+            response = send_from_directory('frontend/dist/frontend', path)
+            # prevent clickjacking
+            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+            response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+            return response
 
     def enable_cors():
         @app.after_request

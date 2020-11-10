@@ -15,9 +15,8 @@
   </ul>
 
   <ng-container *ngIf="isActive">
-    <app-matching-round *ngFor="let round of item.rounds; let i = index"
+    <app-matching-round *ngFor="let round of item.rounds"
                         [configuration]="configuration"
-                        [index]="i + 1"
                         [patients]="patients"
                         [round]="round"></app-matching-round>
   </ng-container>

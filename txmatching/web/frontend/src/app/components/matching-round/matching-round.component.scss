@@ -20,13 +20,11 @@
 
   &__transplant {
     display: inline-block;
-    padding: 8px 10px 5px;
     margin: 2px 20px 2px 0;
     border-radius: $border-radius;
     position: relative;
-
-    background-color: $dark;
-    color: $white;
+    cursor: pointer;
+    overflow: hidden;
 
     font-weight: 400;
 
@@ -34,28 +32,24 @@
       margin: 0 5px;
     }
 
-    &.compatible {
-      background-color: $gray-300;
-      color: $black;
+    &:hover {
+      filter: brightness(0.8);
+    }
+
+    &.compatible .content {
+      background-color: $transplant-bg--compatible;
+      color: $transplant-color--compatible;
     }
 
     &.w-indicator {
-      border-radius: $border-radius 0 0 $border-radius;
-      margin-right: 25px;
+      padding-right: 20px;
     }
 
-    .indicator {
-      background: linear-gradient(to right, #ff0000, #fff200, #1e9600) no-repeat;
-      background-size: 100vw;
-      position: absolute;
-      left: 100%;
-      top: 0;
-      height: 100%;
-      width: 20px;
-
-      border-radius: 0 $border-radius $border-radius 0;
+    .content {
+      padding: 8px 10px 5px;
+      background-color: $transplant-bg--incompatible;
+      color: $transplant-color--incompatible;
     }
-
   }
 }
 

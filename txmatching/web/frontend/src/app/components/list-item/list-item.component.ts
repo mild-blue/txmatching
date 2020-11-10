@@ -4,6 +4,8 @@ import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
 import { ListItem, ListItemAbstractComponent, ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
+import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
+import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 
 @Component({
   selector: 'app-item-list',
@@ -24,13 +26,20 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   @Input() listItemComponent?: typeof ListItemAbstractComponent;
   @Input() listItemDetailComponent?: typeof ListItemDetailAbstractComponent;
 
+  @Input() saveLastViewedItem: boolean = false;
+  @Input() useInfiniteScroll: boolean = true;
+
   public activeItem?: ListItem;
   public displayedItems: ListItem[] = [];
 
   public activeAlignedTop: boolean = true;
   public activeAlignedBottom: boolean = false;
 
-  constructor(private _componentFactoryResolver: ComponentFactoryResolver) {
+  public scrollableDetailClass: string = scrollableDetailClass;
+  public enableSmoothScroll: boolean = true;
+
+  constructor(private _componentFactoryResolver: ComponentFactoryResolver,
+              private _uiInteractionsService: UiInteractionsService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -46,9 +55,23 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
 
   ngAfterViewInit(): void {
     this._initAdjustingStylesOnScroll(this.list, this.detail);
+
+    if (this.activeItem) {
+      this._scrollToElement(this.activeItem.index);
+    }
+  }
+
+  public handleItemClick(item: ListItem): void {
+    this.enableSmoothScroll = true;
+    this.setActive(item);
   }
 
   public setActive(item: ListItem | undefined): void {
+
+    // return if clicked on the same item
+    if (this.activeItem === item) {
+      return;
+    }
 
     // deactivate activeItem if there is one
     if (this.activeItem) {
@@ -57,11 +80,16 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
 
     // activate new item
     this.activeItem = item;
-    if (item && item.index) {
+    if (item?.index) {
       item.isActive = true;
+      this.activeAlignedTop = true;
       this._loadDetailComponent();
       this._scrollToElement(item.index);
-      this.activeAlignedTop = item.index === 1;
+
+      // save last clicked patient pair
+      if (this.saveLastViewedItem && this._uiInteractionsService.getLastViewedItemId() !== item.index) {
+        this._uiInteractionsService.setLastViewedPair(item.index);
+      }
     }
   }
 
@@ -142,10 +170,22 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   }
 
   private _reloadItems(): void {
-    this.displayedItems = [];
-    this._addItemsBatchToView();
-    this.setActive(this.displayedItems[0]);
-    this._loadDetailComponent();
+    if (this.useInfiniteScroll) {
+      this.displayedItems = [];
+      this._addItemsBatchToView();
+    } else if (!this.displayedItems.length) { // first loading
+      this.enableSmoothScroll = false;
+      this.displayedItems = this.items;
+    }
+
+    // set first or saved item as active
+    let newActiveItem = this.displayedItems[0];
+    if (this.saveLastViewedItem && this.items.length) {
+      const lastViewedId = this._uiInteractionsService.getLastViewedItemId();
+      const foundItem = this.items.find(item => item.index === lastViewedId);
+      newActiveItem = foundItem ?? newActiveItem;
+    }
+    this.setActive(newActiveItem);
   }
 
   private _loadDetailComponent(): void {
@@ -162,6 +202,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
       const detailComponentRef = detailViewContainerRef.createComponent<ListItemDetailAbstractComponent>(detailComponentFactory);
       detailComponentRef.instance.item = activeItem;
       detailComponentRef.instance.patients = this.patients;
+      detailComponentRef.instance.configuration = this.configuration;
     }
   }
 }

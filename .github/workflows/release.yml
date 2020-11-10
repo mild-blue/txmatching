@@ -29,3 +29,22 @@ jobs:
           add_git_labels: true
           # push only if this is the build containing tags
           push: ${{ startsWith(github.ref, 'refs/tags/') }}
+
+      - name: Update configuration repository with new version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          VERSION_TAG="${GITHUB_REF:10}"
+          echo "Updating version to ${VERSION_TAG}."
+          git config --global user.email "github@mild.blue"
+          git config --global user.name "Gihub action"
+          git clone "https://${{ secrets.REPOSITORY_CLONE_ACCESS_TOKEN }}@github.com/mild-blue/project-configuration.git"
+          cd project-configuration/txmatching
+          git fetch --all
+          git reset --hard origin/master
+          echo "VERSION_TAG=${VERSION_TAG}" > version
+          git add version
+          git diff-index --quiet HEAD || git commit version -m "New version ${VERSION_TAG} of the TXMatching added."
+          git push
+          cd ../..
+          rm -rf project-configuration
+          echo "Version updated to ${VERSION_TAG}."

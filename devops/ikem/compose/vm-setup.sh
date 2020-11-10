@@ -39,8 +39,22 @@ yum install -y postgresql
 
 yum install -y git
 
-# 5. Setup firewall properly
+# 5. Install Make
 
+yum install -y make
+
+# 6. Setup firewall properly
+# Note: Port 31944 is specific port of backend set in docker-compose.yml
+
+systemctl stop docker
+firewall-cmd --permanent --direct --remove-chain ipv4 filter DOCKER-USER
+firewall-cmd --permanent --direct --remove-rules ipv4 filter DOCKER-USER
+firewall-cmd --permanent --direct --add-chain ipv4 filter DOCKER-USER
 firewall-cmd --zone=public --add-masquerade --permanent
+firewall-cmd --permanent --zone=trusted --change-interface=docker0
+firewall-cmd --permanent --zone=trusted --add-port=31944/tcp
 firewall-cmd --reload
-systemctl restart docker
+systemctl start docker
+
+# 7. Create log folder for app
+mkdir -p /var/log/txmatching

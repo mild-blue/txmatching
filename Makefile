@@ -96,8 +96,5 @@ run-fe:
 
 rebuild: conda-update build-fe
 
-# Updates DB to the latest migration.
-# NOTE: PROFILE=PATH_TO_PROFILE_CONF_FILE DB_NAME=NAME_OF_DB_TO_MIGRATE MIGRATION_NAME=NAME_OF_MIGRATION env variables must be specified
-# Sample: cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER='super-cool-txmatching' POSTGRES_PASSWORD='super-secret-pwd' POSTGRES_DB='txmatching' POSTGRES_URL='localhost:5432' python database/migrate_db.py
 migrate-db:
 	cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER=${POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} POSTGRES_DB=${POSTGRES_DB} POSTGRES_URL=${POSTGRES_URL} python database/migrate_db.py

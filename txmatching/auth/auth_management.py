@@ -1,9 +1,12 @@
+from typing import List
+
 from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.data_types import UserRole, TokenType
 from txmatching.auth.exceptions import require_auth_condition, CredentialsMismatchException
 from txmatching.auth.request_context import get_request_token
 from txmatching.auth.service.service_auth_management import register_service
 from txmatching.auth.user.user_auth_management import change_user_password, register_user
+from txmatching.utils.enums import Country
 from txmatching.database.services.app_user_management import get_app_user_by_id
 
 
@@ -28,11 +31,13 @@ def _change_password(user_id: int, current_password: str, new_password: str):
     change_user_password(user_id, new_password)
 
 
-def register(email: str, password: str, role: UserRole, second_factor: str):
+def register(email: str, password: str, role: UserRole, second_factor: str, allowed_countries: List[Country]):
     """
     Registers new user entity.
     """
     if role == UserRole.SERVICE:
-        register_service(email=email, password=password, whitelisted_ip=second_factor)
+        register_service(email=email, password=password, allowed_countries=allowed_countries,
+                         whitelisted_ip=second_factor)
     else:
-        register_user(email=email, password=password, role=role, phone_number=second_factor)
+        register_user(email=email, password=password, allowed_countries=allowed_countries, role=role,
+                      phone_number=second_factor)

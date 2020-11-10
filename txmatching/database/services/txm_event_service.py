@@ -24,7 +24,7 @@ def create_txm_event(name: str) -> TxmEvent:
     txm_event_model = TxmEventModel(name=name)
     db.session.add(txm_event_model)
     db.session.commit()
-    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, donors_dict={}, recipients_dict={})
+    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, all_donors=[], all_recipients=[])
 
 
 def delete_txm_event(name: str):
@@ -39,8 +39,8 @@ def remove_donors_and_recipients_from_txm_event_for_country(name: str, country_c
     if not txm_event_model:
         raise InvalidArgumentException(f'No TXM event with name "{name}" found.')
     DonorModel.query.filter(DonorModel.txm_event_id == txm_event_model.id, DonorModel.country == country_code).delete()
-    RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event_model.id,
-                                RecipientModel.country == country_code).delete()
+    RecipientModel.query.filter(and_(RecipientModel.txm_event_id == txm_event_model.id,
+                                     RecipientModel.country == country_code)).delete()
 
 
 def get_txm_event_id_for_current_user() -> int:

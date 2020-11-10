@@ -5,7 +5,9 @@ from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import REPORTS_NAMESPACE, report_api
-from txmatching.web.api.report_api import MATCHINGS_BELOW_CHOSEN, MIN_MATCHINGS_BELOW_CHOSEN, MAX_MATCHINGS_BELOW_CHOSEN
+from txmatching.web.api.report_api import (MATCHINGS_BELOW_CHOSEN,
+                                           MAX_MATCHINGS_BELOW_CHOSEN,
+                                           MIN_MATCHINGS_BELOW_CHOSEN)
 
 
 class TestMatchingApi(DbTests):
@@ -19,7 +21,7 @@ class TestMatchingApi(DbTests):
         solver_service.save_pairing_result(pairing_result)
 
         with self.app.test_client() as client:
-            res = client.get(f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}=2', headers=self.auth_headers)
+            res = client.get(f'/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}=2', headers=self.auth_headers)
 
             self.assertEqual(200, res.status_code)
             self.assertEqual('application/pdf', res.content_type)
@@ -55,35 +57,39 @@ class TestMatchingApi(DbTests):
         # Less than min value - failure
         with self.app.test_client() as client:
             res = client.get(
-                f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
+                f'/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
                 headers=self.auth_headers
             )
 
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
             self.assertEqual(
-                'Query argument matchingsBelowChosen must be in range [0, 100]. Current value is -1.',
+                f'Query argument matchingsBelowChosen must be in range '
+                f'[{MIN_MATCHINGS_BELOW_CHOSEN}, {MAX_MATCHINGS_BELOW_CHOSEN}].'
+                f' Current value is {MIN_MATCHINGS_BELOW_CHOSEN - 1}.',
                 res.json['message']
             )
 
         # More than max value - failure
         with self.app.test_client() as client:
             res = client.get(
-                f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
+                f'/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
                 headers=self.auth_headers
             )
 
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
             self.assertEqual(
-                'Query argument matchingsBelowChosen must be in range [0, 100]. Current value is 101.',
+                f'Query argument matchingsBelowChosen must be in range '
+                f'[{MIN_MATCHINGS_BELOW_CHOSEN}, {MAX_MATCHINGS_BELOW_CHOSEN}].'
+                f' Current value is {MAX_MATCHINGS_BELOW_CHOSEN + 1}.',
                 res.json['message']
             )
 
         # MIN_MATCHINGS_BELOW_CHOSEN - correct edge case
         with self.app.test_client() as client:
             res = client.get(
-                f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN}',
+                f'/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN}',
                 headers=self.auth_headers
             )
 
@@ -96,7 +102,7 @@ class TestMatchingApi(DbTests):
         # MAX_MATCHINGS_BELOW_CHOSEN - correct edge case
         with self.app.test_client() as client:
             res = client.get(
-                f'/{REPORTS_NAMESPACE}/298?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN}',
+                f'/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN}',
                 headers=self.auth_headers
             )
 

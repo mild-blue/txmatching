@@ -1,17 +1,33 @@
 @import "../../../styles/variables";
 
 .matching-detail {
-  padding: $padding-y $padding-x;
+  padding: $padding-y $padding-x calc(#{$padding-y * 2});
 
   .round {
-    padding-bottom: $item-gap;
+    padding-bottom: calc(#{$padding-y * 2});
+    margin: 5px;
 
-    h4 {
-      text-transform: uppercase;
+    &:not(:first-child) {
+      border-top: 4px solid rgba($body-color--secondary, 0.3);
     }
 
-    &:not(:last-child) {
-      border-bottom: 1px solid $border-color;
+    h3 {
+      margin: 0 0 $padding-y;
+      color: $body-color--secondary;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      span {
+        font-size: 14px;
+        font-weight: 300;
+        font-family: monospace;
+        color: rgba($body-color--secondary, 0.8);
+      }
     }
+  }
+
+  .transplant-holder {
+    padding-top: $padding-y;
   }
 }
