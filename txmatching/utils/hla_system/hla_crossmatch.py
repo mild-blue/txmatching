@@ -21,13 +21,20 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
     """
     if use_split_resolution:
         # in case some code is in broad resolution we treat it is as if all split resolution codes were present
-        donor_hla_typing_set = {split_code for code in donor_hla_typing.codes for split_code in
+        donor_hla_typing_set = {split_code for code_group in donor_hla_typing.codes_per_group.values() for code in
+                                code_group for split_code in
                                 broad_to_split(code)}
-        recipient_antibodies_set = {split_code for code in recipient_antibodies.hla_codes_over_cutoff for split_code in
-                                    broad_to_split(code)}
+        recipient_antibodies_set = {split_code
+                                    for code_group in recipient_antibodies.hla_codes_over_cutoff_per_group.values()
+                                    for code in code_group
+                                    for split_code in broad_to_split(code)
+                                    }
     else:
-        donor_hla_typing_set = {split_to_broad(code) for code in donor_hla_typing.codes}
-        recipient_antibodies_set = {split_to_broad(code) for code in recipient_antibodies.hla_codes_over_cutoff}
+        donor_hla_typing_set = {split_to_broad(code) for code_group in donor_hla_typing.codes_per_group.values()
+                                for code in code_group}
+        recipient_antibodies_set = {split_to_broad(code)
+                                    for code_group in recipient_antibodies.hla_codes_over_cutoff_per_group.values()
+                                    for code in code_group}
 
     common_codes = recipient_antibodies_set.intersection(donor_hla_typing_set)
     # if there are any common codes, positive crossmatch is found

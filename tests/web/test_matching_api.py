@@ -4,6 +4,7 @@ from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.sql_alchemy_schema import ConfigModel
+from txmatching.utils.enums import HLAGroups, MatchTypes
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, MATCHING_NAMESPACE, PATIENT_NAMESPACE
 
@@ -23,6 +24,24 @@ class TestSaveAndGetConfiguration(DbTests):
             res = client.post(f'{API_VERSION}/{MATCHING_NAMESPACE}/calculate-for-config',
                               json=conf_dto,
                               headers=self.auth_headers)
+
+            expected_ci = {
+                HLAGroups.A.name: {
+                    "donor_matches": {},
+                    "recipient_matches": {},
+                    "group_compatibility_index": 0.0
+                },
+                HLAGroups.B.name: {
+                    "donor_matches": {},
+                    "recipient_matches": {},
+                    "group_compatibility_index": 0.0
+                },
+                HLAGroups.DRB1.name: {
+                    "donor_matches": {"DR11": MatchTypes.BROAD.name},
+                    "recipient_matches": {"DR11": MatchTypes.BROAD.name},
+                    "group_compatibility_index": 18.0
+                }
+            }
             expected = [
                 {
                     'order_id': 1,
@@ -31,67 +50,17 @@ class TestSaveAndGetConfiguration(DbTests):
                         {'transplants': [
                             {
                                 'score': 18.0,
-                                'antigens_score': {
-                                    'A': 0,
-                                    'B': 0,
-                                    'DR': 9
-                                },
+                                'detailed_compatibility_index': expected_ci,
                                 'compatible_blood': True,
                                 'donor': 'P21',
-                                'recipient': 'P12',
-                                'donor_antigens': {
-                                    'A': ['A11'],
-                                    'B': ['B8'],
-                                    'DR': ['DR11'],
-                                    'OTHER': []
-                                },
-                                'recipient_antibodies': {
-                                    'A': [],
-                                    'B': ['B7'],
-                                    'DR': [],
-                                    'OTHER': [
-                                        'DQ5',
-                                        'DQ6'
-                                    ]
-                                },
-                                'recipient_antigens': {
-                                    'A': ['A3'],
-                                    'B': ['B7'],
-                                    'DR': ['DR11'],
-                                    'OTHER': []
-                                },
+                                'recipient': 'P12'
                             },
                             {
                                 'score': 18.0,
-                                'antigens_score': {
-                                    'A': 0,
-                                    'B': 0,
-                                    'DR': 9
-                                },
+                                'detailed_compatibility_index': expected_ci,
                                 'compatible_blood': True,
                                 'donor': 'P22',
-                                'recipient': 'P11',
-                                'donor_antigens': {
-                                    'A': ['A2'],
-                                    'B': ['B8'],
-                                    'DR': ['DR11'],
-                                    'OTHER': []
-                                },
-                                'recipient_antibodies': {
-                                    'A': [],
-                                    'B': ['B7'],
-                                    'DR': [],
-                                    'OTHER': [
-                                        'DQ5',
-                                        'DQ6'
-                                    ]
-                                },
-                                'recipient_antigens': {
-                                    'A': ['A3'],
-                                    'B': ['B7'],
-                                    'DR': ['DR11'],
-                                    'OTHER': []
-                                }
+                                'recipient': 'P11'
                             }
                         ]
                         }
@@ -106,7 +75,8 @@ class TestSaveAndGetConfiguration(DbTests):
                     'count_of_transplants': 2
                 }
             ]
-            self.assertEqual(expected, res.json)
+            self.maxDiff = None
+            self.assertListEqual(expected, res.json)
 
     def test_get_patients(self):
         self.fill_db_with_patients()

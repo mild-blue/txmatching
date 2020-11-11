@@ -88,7 +88,7 @@ definitions:
                 type: integer
             hla_typing:
                 description: HLA typing of the patient. Use high resolution if available.
-                example: &id001
+                example: &id002
                 - A1
                 - A32
                 - B7
@@ -220,7 +220,7 @@ definitions:
         - donor_country
         - recipient_country
         type: object
-    HLAAntibodies:
+    HLAAntibodyIn:
         properties:
             cutoff:
                 description: Default cutoff value for the specific patient and HLA
@@ -246,13 +246,21 @@ definitions:
                 items:
                     $ref: '#/definitions/HlaAntibody'
                 type: array
-            hla_codes_over_cutoff:
-                items:
-                    type: string
-                type: array
+            hla_codes_over_cutoff_per_group:
+                description: hla codes over cutoff split to hla groups
+                example: &id001
+                    A:
+                    - A1
+                    B:
+                    - B38
+                    DRB1:
+                    - DR7
+                    Other:
+                    - CW4
+                type: object
         required:
         - hla_antibodies_list
-        - hla_codes_over_cutoff
+        - hla_codes_over_cutoff_per_group
         type: object
     HlaAntibodiesToUpdate:
         properties:
@@ -309,16 +317,16 @@ definitions:
         type: object
     HlaTyping:
         properties:
-            codes:
-                items:
-                    type: string
-                type: array
+            codes_per_group:
+                description: hla codes split to hla groups
+                example: *id001
+                type: object
             hla_types_list:
                 items:
                     $ref: '#/definitions/HlaType'
                 type: array
         required:
-        - codes
+        - codes_per_group
         - hla_types_list
         type: object
     HlaTypingToUpdate:
@@ -355,6 +363,8 @@ definitions:
         type: object
     Matching:
         properties:
+            count_of_transplants:
+                type: integer
             countries:
                 items:
                     $ref: '#/definitions/Country'
@@ -368,6 +378,7 @@ definitions:
             score:
                 type: number
         required:
+        - count_of_transplants
         - countries
         - order_id
         - rounds
@@ -488,11 +499,11 @@ definitions:
                 description: Detected HLA antibodies of the patient. Use high resolution                                   if
                     available.
                 items:
-                    $ref: '#/definitions/HLAAntibodies'
+                    $ref: '#/definitions/HLAAntibodyIn'
                 type: array
             hla_typing:
                 description: HLA typing of the patient. Use high resolution if available.
-                example: *id001
+                example: *id002
                 items:
                     type: string
                 type: array
@@ -667,6 +678,32 @@ definitions:
         properties:
             compatible_blood:
                 type: boolean
+            detailed_compatibility_index:
+                description: Contains details for compatibility index for each HLA
+                    Group compatibility index is calculated for. Current groups are:['A',
+                    'B', 'DRB1']. The fields provided are:donor_matches, recipient_matches,
+                    group_compatibility_indexwhere donor_matches and recipient_matches
+                    are dicts of hla codes thatare the same for give transplant and
+                    that should be colored.The dict values are then type of match.
+                    Which is of the following types:['SPLIT', 'BROAD', 'HIGH_RES']
+                example:
+                    A:
+                        donor_matches:
+                            A1: SPLIT
+                            A23: BROAD
+                        group_compatibility_index: 2.0
+                        recipient_matches:
+                            A1: SPLIT
+                            A9: BROAD
+                    B:
+                        donor_matches: {}
+                        group_compatibility_index: 0.0
+                        recipient_matches: {}
+                    DRB1:
+                        donor_matches: {}
+                        group_compatibility_index: 0.0
+                        recipient_matches: {}
+                type: object
             donor:
                 type: string
             recipient:
@@ -675,6 +712,7 @@ definitions:
                 type: number
         required:
         - compatible_blood
+        - detailed_compatibility_index
         - donor
         - recipient
         - score

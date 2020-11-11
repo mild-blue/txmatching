@@ -2,7 +2,7 @@ from typing import FrozenSet, Iterable, List, Set, Tuple
 from unittest import TestCase
 
 from txmatching.patients.patient import Donor, Recipient
-from txmatching.patients.patient_parameters import PatientParameters
+from txmatching.patients.patient_parameters import PatientParameters, HLATyping
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching import Matching
 from txmatching.solvers.matching.transplant_round import TransplantRound
@@ -11,10 +11,14 @@ from txmatching.utils.enums import Country
 
 
 def _create_recipient(recipient_id: int, donor: Donor) -> Recipient:
-    return Recipient(recipient_id, f'R-{recipient_id}', related_donor_db_id=donor.db_id, parameters=PatientParameters(
-        country_code=Country.CZE, blood_group=BloodGroup.A
-    ),
-                     acceptable_blood_groups=list())
+    return Recipient(recipient_id,
+                     f'R-{recipient_id}',
+                     related_donor_db_id=donor.db_id,
+                     parameters=PatientParameters(
+                         country_code=Country.CZE, blood_group=BloodGroup.A, hla_typing=HLATyping(hla_types_list=[])
+                     ),
+                     acceptable_blood_groups=list()
+                     )
 
 
 def _inner_elements_to_frozenset(iterable: Iterable) -> Set[FrozenSet]:
@@ -25,7 +29,8 @@ class TestMatching(TestCase):
     def setUp(self) -> None:
         self._donors = [
             Donor(donor_index, f'D-{donor_index}',
-                  parameters=PatientParameters(blood_group=BloodGroup.A, country_code=Country.CZE))
+                  parameters=PatientParameters(blood_group=BloodGroup.A, country_code=Country.CZE,
+                                               hla_typing=HLATyping(hla_types_list=[])))
             for donor_index in range(10)]
         self._recipients = [_create_recipient(10 + donor_index, donor)
                             for donor_index, donor in enumerate(self._donors)]

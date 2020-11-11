@@ -19,7 +19,7 @@ TxmEventJsonOut = txm_event_api.model('TxmEvent', {
     'name': fields.String(required=True)
 })
 
-HlaAntibodiesJson = txm_event_api.model('HLAAntibodies', {
+HLAAntibodyJsonIn = txm_event_api.model('HLAAntibodyIn', {
     'name': fields.String(required=True, example='A32', description='HLA antibody name.'),
     'mfi': fields.Integer(required=True, example=2350, description='Mean fluorescence intensity. Use exact value.'),
     'cutoff': fields.Integer(required=True,
@@ -56,7 +56,7 @@ RecipientJsonIn = txm_event_api.model('RecipientInput', {
                                   description='Detected HLA antibodies of the patient. Use high resolution \
                                   if available.',
                                   cls_or_instance=fields.Nested(
-                                      HlaAntibodiesJson
+                                      HLAAntibodyJsonIn
                                   )),
     'sex': fields.String(required=False, description='Sex of the patient.', enum=[sex.value for sex in Sex]),
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),

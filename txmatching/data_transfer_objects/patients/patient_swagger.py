@@ -2,8 +2,15 @@ from flask_restx import fields
 
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, Sex
+from txmatching.utils.enums import Country, Sex, HLAGroups, HLA_OTHER_GROUPS_NAME
 from txmatching.web.api.namespaces import patient_api
+
+HLA_CODES_IN_GROUPS_EXAMPLE = {
+    HLAGroups.A.name: ["A1"],
+    HLAGroups.B.name: ["B38"],
+    HLAGroups.DRB1.name: ["DR7"],
+    HLA_OTHER_GROUPS_NAME: ["CW4"]
+}
 
 HLAAntibody = patient_api.model('HlaAntibody', {
     'raw_code': fields.String(required=True),
@@ -19,12 +26,15 @@ HLAType = patient_api.model('HlaType', {
 
 HLATyping = patient_api.model('HlaTyping', {
     'hla_types_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAType)),
-    'codes': fields.List(required=True, cls_or_instance=fields.String),
+    'codes_per_group': fields.Raw(required=True, description="hla codes split to hla groups",
+                                  example=HLA_CODES_IN_GROUPS_EXAMPLE),
 })
 
 HLAAntibodies = patient_api.model('HlaAntibodies', {
     'hla_antibodies_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAAntibody)),
-    'hla_codes_over_cutoff': fields.List(required=True, cls_or_instance=fields.String),
+    'hla_codes_over_cutoff_per_group': fields.Raw(required=True,
+                                                  description="hla codes over cutoff split to hla groups",
+                                                  example=HLA_CODES_IN_GROUPS_EXAMPLE),
 })
 
 PatientParametersModel = patient_api.model('PatientParameters', {

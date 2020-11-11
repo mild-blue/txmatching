@@ -24,11 +24,11 @@ from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
+from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import HLATypes, HLA_TYPE_OTHER
-from txmatching.utils.matching import calculate_antigen_score, get_count_of_transplants, get_filtered_antigens, \
-    get_other_antigens, get_filtered_antibodies, get_other_antibodies
+from txmatching.utils.hla_system.compatibility_index import \
+    compatibility_index_detailed
 from txmatching.web.api.namespaces import matching_api
 
 logger = logging.getLogger(__name__)
@@ -64,47 +64,10 @@ class CalculateFromConfig(Resource):
                                 compatible_blood=compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
                                 donor=pair.donor.medical_id,
                                 recipient=pair.recipient.medical_id,
-                                donor_antigens={
-                                    HLATypes.A.value: get_filtered_antigens(
-                                        pair.donor.parameters.hla_typing.hla_types_list,
-                                        HLATypes.A.value),
-                                    HLATypes.B.value: get_filtered_antigens(
-                                        pair.donor.parameters.hla_typing.hla_types_list,
-                                        HLATypes.B.value),
-                                    HLATypes.DR.value: get_filtered_antigens(
-                                        pair.donor.parameters.hla_typing.hla_types_list,
-                                        HLATypes.DR.value),
-                                    HLA_TYPE_OTHER: get_other_antigens(pair.donor.parameters.hla_typing.hla_types_list)
-                                },
-                                recipient_antigens={
-                                    HLATypes.A.value: get_filtered_antigens(
-                                        pair.recipient.parameters.hla_typing.hla_types_list,
-                                        HLATypes.A.value),
-                                    HLATypes.B.value: get_filtered_antigens(
-                                        pair.recipient.parameters.hla_typing.hla_types_list,
-                                        HLATypes.B.value),
-                                    HLATypes.DR.value: get_filtered_antigens(
-                                        pair.recipient.parameters.hla_typing.hla_types_list,
-                                        HLATypes.DR.value),
-                                    HLA_TYPE_OTHER: get_other_antigens(
-                                        pair.recipient.parameters.hla_typing.hla_types_list)
-                                },
-                                recipient_antibodies={
-                                    HLATypes.A.value: get_filtered_antibodies(pair.recipient.hla_antibodies,
-                                                                              HLATypes.A.value),
-                                    HLATypes.B.value: get_filtered_antibodies(pair.recipient.hla_antibodies,
-                                                                              HLATypes.B.value),
-                                    HLATypes.DR.value: get_filtered_antibodies(pair.recipient.hla_antibodies,
-                                                                               HLATypes.DR.value),
-                                    HLA_TYPE_OTHER: get_other_antibodies(pair.recipient.hla_antibodies)
-                                },
-                                antigens_score={
-                                    HLATypes.A.value: calculate_antigen_score(pair.donor, pair.recipient,
-                                                                              HLATypes.A.value),
-                                    HLATypes.B.value: calculate_antigen_score(pair.donor, pair.recipient,
-                                                                              HLATypes.B.value),
-                                    HLATypes.DR.value: calculate_antigen_score(pair.donor, pair.recipient,
-                                                                               HLATypes.DR.value)}
+                                detailed_compatibility_index=compatibility_index_detailed(
+                                    pair.donor.parameters.hla_typing,
+                                    pair.recipient.parameters.hla_typing
+                                )
                             ) for pair in matching_round.donor_recipient_pairs])
                     for matching_round in matching.get_rounds()],
                 countries=matching.get_country_codes_counts(),

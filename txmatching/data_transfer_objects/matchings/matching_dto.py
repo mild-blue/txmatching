@@ -1,22 +1,21 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Dict, List
 
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import MedicalId
-from txmatching.utils.enums import Country
-
-
+from txmatching.utils.enums import Country, HLAGroups
 # pylint: disable=too-many-instance-attributes
+from txmatching.utils.hla_system.compatibility_index import \
+    DetailedCompatibilityIndexForHLAGroup
+
+
 @dataclass
 class TransplantDTOOut:
     score: float
     compatible_blood: bool
     donor: MedicalId
     recipient: MedicalId
-    donor_antigens: dict  # dict[HLATypes, List[str]]
-    recipient_antigens: dict  # dict[HLATypes, List[str]]
-    recipient_antibodies: dict  # dict[HLATypes, List[str]]
-    antigens_score: dict  # dict[HLATypes, float]
+    detailed_compatibility_index: Dict[HLAGroups, DetailedCompatibilityIndexForHLAGroup]
 
 
 @dataclass
