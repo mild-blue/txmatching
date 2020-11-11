@@ -41,10 +41,11 @@ class TestMatchingApi(DbTests):
         self.assertEqual(1, len(UploadedDataModel.query.all()))
         self.assertSetEqual({BloodGroup.ZERO, BloodGroup.A},
                             set(blood for blood in txm_event.active_recipients_dict[1].acceptable_blood_groups))
-        self.assertEqual(HLATyping(hla_types_list=[HLAType('A1'), HLAType('A23')]),
+        self.assertEqual(HLATyping(hla_types_list=[HLAType('A1'), HLAType('A23'), HLAType('INVALID')]),
                          txm_event.active_donors_dict[1].parameters.hla_typing)
+        self.assertSetEqual({'A1', 'A23'}, set(txm_event.active_donors_dict[1].parameters.hla_typing.codes))
         self.assertSetEqual({'A9'}, set(txm_event.active_recipients_dict[1].hla_antibodies.hla_codes_over_cutoff))
-        self._check_expected_errors_in_db(1)
+        self._check_expected_errors_in_db(2)
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         txm_event_name = 'invalid_name'

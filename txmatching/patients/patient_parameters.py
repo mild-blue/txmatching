@@ -30,7 +30,7 @@ class HLATyping:
 
     def __post_init__(self):
         if self.codes is None:
-            codes = [hla_type.code for hla_type in self.hla_types_list]
+            codes = [hla_type.code for hla_type in self.hla_types_list if hla_type.code]
             object.__setattr__(self, 'codes', codes)
 
     @property
