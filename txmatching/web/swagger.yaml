@@ -849,12 +849,6 @@ paths:
                         endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
-                '418':
-                    description: This response is actually never returned, just helperresponse,
-                        to propagate MatchingJson to swaggerproperly (it is a bug
-                        in flask)
-                    schema:
-                        $ref: '#/definitions/Matching'
                 '500':
                     description: Unexpected error, see contents for details.
                     schema:

@@ -8,7 +8,7 @@ from txmatching.web import (API_VERSION, SERVICE_NAMESPACE,
                             TXM_EVENT_NAMESPACE, USER_NAMESPACE)
 
 
-class TestTester(DbTests):
+class TestSwaggerEndpoints(DbTests):
 
     def test_server_not_logged_in(self):
         special_status_codes_for_paths = {

@@ -14,8 +14,8 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
     ConfigurationJson
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, TransplantDTOOut)
-from txmatching.data_transfer_objects.matchings.matching_swagger import (
-    MatchingJson, MatchingsJson)
+from txmatching.data_transfer_objects.matchings.matching_swagger import \
+    MatchingJson
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 @matching_api.route('/calculate-for-config', methods=['POST'])
 class CalculateFromConfig(Resource):
     @matching_api.doc(body=ConfigurationJson, security='bearer')
-    @matching_api.response(200, model=MatchingsJson, description='List of all matchings for given configuration.')
+    @matching_api.response(200, model=[MatchingJson], description='List of all matchings for given configuration.')
     @matching_api.response(code=400, model=FailJson, description='Wrong data format.')
     @matching_api.response(code=401, model=FailJson, description='Authentication failed.')
     @matching_api.response(
@@ -42,11 +42,6 @@ class CalculateFromConfig(Resource):
         model=FailJson,
         description='Access denied. You do not have rights to access this endpoint.'
     )
-    @matching_api.response(code=418,
-                           model=MatchingJson,
-                           description='This response is actually never returned, just helper'
-                                       'response, to propagate MatchingJson to swagger'
-                                       'properly (it is a bug in flask)')
     @matching_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     def post(self) -> str:
