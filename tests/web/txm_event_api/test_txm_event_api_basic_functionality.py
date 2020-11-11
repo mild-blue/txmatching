@@ -11,7 +11,7 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
                                                     RecipientModel,
                                                     TxmEventModel)
 from txmatching.utils.enums import Country
-from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE, txm_event_api
+from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 
 
 class TestMatchingApi(DbTests):
@@ -91,7 +91,6 @@ class TestMatchingApi(DbTests):
             self.assertEqual('application/json', res.content_type)
             self.assertIsNotNone(res.json)
             self.assertEqual('Invalid request data.', res.json['error'])
-            self.assertEqual('missing value for field "name"', res.json['detail'])
             self.assertEqual('missing value for field "name"', res.json['message'])
 
     def test_txm_event_deletion(self):

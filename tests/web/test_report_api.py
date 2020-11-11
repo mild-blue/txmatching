@@ -4,7 +4,7 @@ from txmatching.database.services import solver_service
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import API_VERSION, REPORTS_NAMESPACE, report_api
+from txmatching.web import API_VERSION, REPORTS_NAMESPACE
 from txmatching.web.api.report_api import (MATCHINGS_BELOW_CHOSEN,
                                            MAX_MATCHINGS_BELOW_CHOSEN,
                                            MIN_MATCHINGS_BELOW_CHOSEN)
@@ -39,7 +39,7 @@ class TestMatchingApi(DbTests):
             res = client.get(f'{API_VERSION}/{REPORTS_NAMESPACE}/6666?{MATCHINGS_BELOW_CHOSEN}=2',
                              headers=self.auth_headers)
 
-            self.assertEqual(400, res.status_code)
+            self.assertEqual(401, res.status_code)
             self.assertEqual('application/json', res.content_type)
             self.assertEqual(
                 'Matching with id 6666 not found.',

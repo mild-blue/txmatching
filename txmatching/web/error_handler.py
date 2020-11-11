@@ -137,7 +137,7 @@ def _default_error_handlers(api: Api):
     """
     is_prod = get_application_configuration().environment == ApplicationEnvironment.PRODUCTION
 
-    def strip_on_prod(description):
+    def strip_on_prod(description: str):
         return description if not is_prod else 'An unknown error occurred. Contact administrator.'
 
     @api.errorhandler(HTTPException)
@@ -146,7 +146,7 @@ def _default_error_handlers(api: Api):
         _log_exception(error)
         return {
                    'error': error.name,
-                   'message': strip_on_prod(error.description)
+                   'message': strip_on_prod(str(error))
                }, _get_code_from_error_else_500(error)
 
     @api.errorhandler(Exception)

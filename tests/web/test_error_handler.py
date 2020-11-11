@@ -12,7 +12,7 @@ from txmatching.auth.exceptions import (CredentialsMismatchException,
                                         InvalidJWTException,
                                         InvalidOtpException,
                                         UserUpdateException)
-from txmatching.web import API_VERSION, USER_NAMESPACE, user_api
+from txmatching.web import API_VERSION, USER_NAMESPACE
 
 
 class TestErrorHandler(DbTests):
@@ -23,8 +23,7 @@ class TestErrorHandler(DbTests):
             side_effect=InvalidJWTException,
             status_code=401,
             error='Authentication failed.',
-            detail='Invalid JWT.',
-            message=''
+            message='Invalid JWT.'
         )
 
     def test_handle_credentials_mismatch_exception(self):
@@ -32,8 +31,7 @@ class TestErrorHandler(DbTests):
             side_effect=CredentialsMismatchException,
             status_code=401,
             error='Authentication failed.',
-            detail='Credentials mismatch.',
-            message=''
+            message='Credentials mismatch.'
         )
 
     def test_handle_invalid_otp_exception(self):
@@ -41,8 +39,7 @@ class TestErrorHandler(DbTests):
             side_effect=InvalidOtpException,
             status_code=401,
             error='Authentication failed.',
-            detail='Invalid OTP.',
-            message=''
+            message='Invalid OTP.'
         )
 
     def test_handle_invalid_ip_exception(self):
@@ -50,8 +47,7 @@ class TestErrorHandler(DbTests):
             side_effect=InvalidIpAddressAccessException,
             status_code=401,
             error='Authentication failed.',
-            detail='Used IP is not whitelisted.',
-            message=''
+            message='Used IP is not whitelisted.'
         )
 
     def test_handle_user_update_exception(self):
@@ -59,7 +55,6 @@ class TestErrorHandler(DbTests):
             side_effect=UserUpdateException,
             status_code=400,
             error='Invalid data submitted.',
-            detail='',
             message=''
         )
 
@@ -68,7 +63,6 @@ class TestErrorHandler(DbTests):
             side_effect=InvalidAuthCallException,
             status_code=500,
             error='Internal error, please contact support.',
-            detail='',
             message=''
         )
 
@@ -77,7 +71,6 @@ class TestErrorHandler(DbTests):
             side_effect=GuardException,
             status_code=403,
             error='Access denied.',
-            detail='',
             message=''
         )
 
@@ -86,7 +79,6 @@ class TestErrorHandler(DbTests):
             side_effect=InvalidArgumentException,
             status_code=400,
             error='Invalid argument.',
-            detail='',
             message=''
         )
 
@@ -95,7 +87,6 @@ class TestErrorHandler(DbTests):
             side_effect=DaciteError,
             status_code=400,
             error='Invalid request data.',
-            detail='',
             message=''
         )
 
@@ -104,7 +95,6 @@ class TestErrorHandler(DbTests):
             side_effect=KeyError,
             status_code=400,
             error='Invalid request data.',
-            detail='',
             message=''
         )
 
@@ -113,7 +103,6 @@ class TestErrorHandler(DbTests):
             side_effect=ValueError,
             status_code=400,
             error='Invalid request data.',
-            detail='',
             message=''
         )
 
@@ -124,7 +113,6 @@ class TestErrorHandler(DbTests):
             side_effect=HTTPException,
             status_code=500,
             error='Unknown Error',
-            detail=None,
             message='??? Unknown Error: None'
         )
 
@@ -133,7 +121,6 @@ class TestErrorHandler(DbTests):
             side_effect=Exception,
             status_code=500,
             error='Internal server error',
-            detail='',
             message=''
         )
 
@@ -142,7 +129,6 @@ class TestErrorHandler(DbTests):
             side_effect: any,
             status_code: int,
             error: str,
-            detail: str,
             message: str,
             content_type: str = 'application/json'
     ):
@@ -158,5 +144,4 @@ class TestErrorHandler(DbTests):
                 self.assertEqual(content_type, res.content_type)
                 self.assertIsNotNone(res.json)
                 self.assertEqual(error, res.json['error'])
-                self.assertEqual(detail, res.json['detail'])
                 self.assertEqual(message, res.json['message'])
