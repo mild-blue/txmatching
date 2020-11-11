@@ -1,15 +1,20 @@
 import unittest
 
-from txmatching.patients.patient import Donor, Recipient, DonorType, RecipientRequirements
-from txmatching.patients.patient_parameters import PatientParameters, HLATyping, HLAType, HLAAntibodies, HLAAntibody
+from txmatching.patients.patient import (Donor, DonorType, Recipient,
+                                         RecipientRequirements)
+from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
+                                                    HLAType, HLATyping,
+                                                    PatientParameters)
+from txmatching.scorers.matching import (
+    get_count_of_transplants,
+    get_matching_hla_typing,
+    calculate_compatibility_index_for_group)
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_sequence import TransplantSequence
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, Sex, HLATypes
-from txmatching.utils.matching import calculate_antigen_score, get_count_of_transplants, \
-    get_filtered_antigens, get_matching_hla_typing, get_other_antigens, get_filtered_antibodies, get_other_antibodies
+from txmatching.utils.enums import Country, HLAGroups, Sex
 
 RAW_CODES = [
     'A1',
@@ -23,7 +28,7 @@ RAW_CODES = [
 DONORS = [
     Donor(
         db_id=1,
-        medical_id="1",
+        medical_id='1',
         parameters=PatientParameters(
             blood_group=BloodGroup.A,
             country_code=Country.CZE,
@@ -31,19 +36,21 @@ DONORS = [
                 hla_types_list=[
                     HLAType(raw_code=RAW_CODES[0]),
                     HLAType(raw_code=RAW_CODES[1]),
+                    HLAType(raw_code="B44"),
+                    HLAType(raw_code="DR10")
                 ]
             ),
             sex=Sex.M,
             height=180,
             weight=70,
-            yob=1985
+            year_of_birth=1985
         ),
         related_recipient_db_id=None,
         donor_type=DonorType.DONOR
     ),
     Donor(
         db_id=2,
-        medical_id="2",
+        medical_id='2',
         parameters=PatientParameters(
             blood_group=BloodGroup.A,
             country_code=Country.CZE,
@@ -51,12 +58,13 @@ DONORS = [
                 hla_types_list=[
                     HLAType(raw_code=RAW_CODES[1]),
                     HLAType(raw_code=RAW_CODES[2]),
+                    HLAType(raw_code="DR10")
                 ]
             ),
             sex=Sex.M,
             height=180,
             weight=70,
-            yob=1985
+            year_of_birth=1985
         ),
         related_recipient_db_id=None,
         donor_type=DonorType.DONOR
@@ -66,7 +74,7 @@ DONORS = [
 RECIPIENTS = [
     Recipient(
         db_id=3,
-        medical_id="3",
+        medical_id='3',
         parameters=PatientParameters(
             blood_group=BloodGroup.A,
             country_code=Country.CZE,
@@ -74,12 +82,13 @@ RECIPIENTS = [
                 hla_types_list=[
                     HLAType(raw_code=RAW_CODES[1]),
                     HLAType(raw_code=RAW_CODES[2]),
+                    HLAType(raw_code="DR1")
                 ]
             ),
             sex=Sex.M,
             height=180,
             weight=70,
-            yob=1985
+            year_of_birth=1985
         ),
         related_donor_db_id=1,
         acceptable_blood_groups=[],
@@ -91,12 +100,14 @@ RECIPIENTS = [
     ),
     Recipient(
         db_id=4,
-        medical_id="4",
+        medical_id='4',
         parameters=PatientParameters(
             blood_group=BloodGroup.A,
             country_code=Country.CZE,
             hla_typing=HLATyping(
                 hla_types_list=[
+                    HLAType(raw_code="A3"),
+                    HLAType(raw_code="B38"),
                     HLAType(raw_code=RAW_CODES[4]),
                     HLAType(raw_code=RAW_CODES[5]),
                 ]
@@ -104,7 +115,7 @@ RECIPIENTS = [
             sex=Sex.M,
             height=180,
             weight=70,
-            yob=1985
+            year_of_birth=1985
         ),
         related_donor_db_id=1,
         acceptable_blood_groups=[],
@@ -117,12 +128,12 @@ RECIPIENTS = [
 ]
 
 TEST_ANTIGENS = [
-    HLAType('A7'),
-    HLAType('B32'),
-    HLAType('DR40'),
-    HLAType('B5'),
-    HLAType('DR9'),
-    HLAType('A23')
+    'A7',
+    'B32',
+    'DR40',
+    'B5',
+    'DR9',
+    'A23'
 ]
 
 TEST_ANTIBODIES = HLAAntibodies(
@@ -157,33 +168,33 @@ class TestMatching(unittest.TestCase):
 
     def test_calculate_antigen_score(self):
         # A32
-        result = calculate_antigen_score(DONORS[0], RECIPIENTS[0], HLATypes.A)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[0], HLAGroups.A)
         self.assertEquals(1, result)
 
-        result = calculate_antigen_score(DONORS[0], RECIPIENTS[0], HLATypes.B)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[0], HLAGroups.B)
         self.assertEquals(0, result)
 
-        result = calculate_antigen_score(DONORS[0], RECIPIENTS[0], HLATypes.DR)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[0], HLAGroups.DRB1)
         self.assertEquals(0, result)
 
         # No match
-        result = calculate_antigen_score(DONORS[0], RECIPIENTS[1], HLATypes.A)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[1], HLAGroups.A)
         self.assertEquals(0, result)
 
-        result = calculate_antigen_score(DONORS[0], RECIPIENTS[1], HLATypes.B)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[1], HLAGroups.B)
         self.assertEquals(0, result)
 
-        result = calculate_antigen_score(DONORS[0], RECIPIENTS[1], HLATypes.DR)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[1], HLAGroups.DRB1)
         self.assertEquals(0, result)
 
         # A32, B7
-        result = calculate_antigen_score(DONORS[1], RECIPIENTS[0], HLATypes.A)
-        self.assertEquals(1, result)
+        result = calculate_compatibility_index_for_group(DONORS[1], RECIPIENTS[0], HLAGroups.A)
+        self.assertEquals(2, result)
 
-        result = calculate_antigen_score(DONORS[1], RECIPIENTS[0], HLATypes.B)
-        self.assertEquals(3, result)
+        result = calculate_compatibility_index_for_group(DONORS[1], RECIPIENTS[0], HLAGroups.B)
+        self.assertEquals(6, result)
 
-        result = calculate_antigen_score(DONORS[1], RECIPIENTS[0], HLATypes.DR)
+        result = calculate_compatibility_index_for_group(DONORS[1], RECIPIENTS[0], HLAGroups.DRB1)
         self.assertEquals(0, result)
 
     def test_get_count_of_transplants(self):
@@ -220,58 +231,3 @@ class TestMatching(unittest.TestCase):
         result = get_count_of_transplants(matching)
         self.assertEquals(4, result)
 
-    def test_get_filtered_antigens(self):
-        result = get_filtered_antigens(
-            TEST_ANTIGENS,
-            HLATypes.A
-        )
-        result.sort()
-        self.assertEquals(['A23', 'A7'], result)
-
-        result = get_filtered_antigens(
-            TEST_ANTIGENS,
-            HLATypes.B
-        )
-        result.sort()
-        self.assertEquals(['B32', 'B5'], result)
-
-        result = get_filtered_antigens(
-            TEST_ANTIGENS,
-            HLATypes.DR
-        )
-        result.sort()
-        self.assertEquals(['DR40', 'DR9'], result)
-
-    def test_get_other_antigens(self):
-        result = get_other_antigens(
-            TEST_ANTIGENS
-        )
-        self.assertEquals([], result)
-
-    def test_get_filtered_antibodies(self):
-        result = get_filtered_antibodies(
-            TEST_ANTIBODIES,
-            HLATypes.A
-        )
-        result.sort()
-        self.assertEquals(['A23', 'A7'], result)
-
-        result = get_filtered_antibodies(
-            TEST_ANTIBODIES,
-            HLATypes.B
-        )
-        result.sort()
-        self.assertEquals(['B32', 'B5'], result)
-
-        result = get_filtered_antibodies(
-            TEST_ANTIBODIES,
-            HLATypes.DR
-        )
-        result.sort()
-        self.assertEquals(['DR40', 'DR9'], result)
-
-    def test_get_other_antibodies(self):
-        result = get_other_antibodies(
-            TEST_ANTIBODIES
-        )
-        self.assertEquals([], result)

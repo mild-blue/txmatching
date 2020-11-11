@@ -5,7 +5,7 @@ import logging
 import os
 import time
 from distutils.dir_util import copy_tree
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 import jinja2
 import pdfkit
@@ -32,12 +32,11 @@ from txmatching.database.services.matching_service import \
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
-from txmatching.patients.patient_parameters import HLAAntibodies
+from txmatching.scorers.matching import (get_count_of_transplants,
+                                         calculate_compatibility_index_for_group)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import HLATypes
-from txmatching.utils.matching import calculate_antigen_score, get_count_of_transplants, get_filtered_antigens, \
-    get_other_antigens, get_filtered_antibodies, get_other_antibodies
+from txmatching.utils.enums import HLAGroups, HLA_OTHER_GROUPS_NAME
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -246,40 +245,32 @@ def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
     return f'{donor_recipient_score[0]} -> {donor_recipient_score[1]} : {donor_recipient_score[2]}'
 
 
-def antigen_a_filter(codes: List[str]) -> List[str]:
-    return get_filtered_antigens(codes, HLATypes.A.value)
+def hla_code_a_filter(codes_by_groups: Dict[str, List[str]]) -> List[str]:
+    return codes_by_groups[HLAGroups.A]
 
 
-def antigen_b_filter(codes: List[str]) -> List[str]:
-    return get_filtered_antigens(codes, HLATypes.B.value)
+def hla_code_b_filter(codes_by_groups: Dict[str, List[str]]) -> List[str]:
+    return codes_by_groups[HLAGroups.B]
 
 
-def antigen_dr_filter(codes: List[str]) -> List[str]:
-    return get_filtered_antigens(codes, HLATypes.DR.value)
+def hla_code_dr_filter(codes_by_groups: Dict[str, List[str]]) -> List[str]:
+    return codes_by_groups[HLAGroups.DRB1]
 
 
-def antibody_a_filter(antibodies: HLAAntibodies) -> List[str]:
-    return get_filtered_antibodies(antibodies, HLATypes.A.value)
+def hla_code_other_filter(codes_by_groups: Dict[str, List[str]]) -> List[str]:
+    return codes_by_groups[HLA_OTHER_GROUPS_NAME]
 
 
-def antibody_b_filter(antibodies: HLAAntibodies) -> List[str]:
-    return get_filtered_antibodies(antibodies, HLATypes.B.value)
+def compatibility_index_a_filter(transplant: TransplantDTO) -> float:
+    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroups.A)
 
 
-def antibody_dr_filter(antibodies: HLAAntibodies) -> List[str]:
-    return get_filtered_antibodies(antibodies, HLATypes.DR.value)
+def compatibility_index_b_filter(transplant: TransplantDTO) -> float:
+    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroups.B)
 
 
-def antigen_score_a_filter(transplant: TransplantDTO) -> int:
-    return calculate_antigen_score(transplant.donor, transplant.recipient, HLATypes.A.value)
-
-
-def antigen_score_b_filter(transplant: TransplantDTO) -> int:
-    return calculate_antigen_score(transplant.donor, transplant.recipient, HLATypes.B.value)
-
-
-def antigen_score_dr_filter(transplant: TransplantDTO) -> int:
-    return calculate_antigen_score(transplant.donor, transplant.recipient, HLATypes.DR.value)
+def compatibility_index_dr_filter(transplant: TransplantDTO) -> float:
+    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroups.DRB1)
 
 
 def code_from_country_filter(countries: List[CountryDTO]) -> List[str]:
@@ -288,15 +279,11 @@ def code_from_country_filter(countries: List[CountryDTO]) -> List[str]:
 
 jinja2.filters.FILTERS['country_combination_filter'] = country_combination_filter
 jinja2.filters.FILTERS['donor_recipient_score_filter'] = donor_recipient_score_filter
-jinja2.filters.FILTERS['antigen_a_filter'] = antigen_a_filter
-jinja2.filters.FILTERS['antigen_b_filter'] = antigen_b_filter
-jinja2.filters.FILTERS['antigen_dr_filter'] = antigen_dr_filter
-jinja2.filters.FILTERS['antigen_other_filter'] = get_other_antigens
-jinja2.filters.FILTERS['antigen_score_a_filter'] = antigen_score_a_filter
-jinja2.filters.FILTERS['antigen_score_b_filter'] = antigen_score_b_filter
-jinja2.filters.FILTERS['antigen_score_dr_filter'] = antigen_score_dr_filter
+jinja2.filters.FILTERS['hla_code_a_filter'] = hla_code_a_filter
+jinja2.filters.FILTERS['hla_code_b_filter'] = hla_code_b_filter
+jinja2.filters.FILTERS['hla_code_dr_filter'] = hla_code_dr_filter
+jinja2.filters.FILTERS['hla_code_other_filter'] = hla_code_other_filter
+jinja2.filters.FILTERS['compatibility_index_a_filter'] = compatibility_index_a_filter
+jinja2.filters.FILTERS['compatibility_index_b_filter'] = compatibility_index_b_filter
+jinja2.filters.FILTERS['compatibility_index_dr_filter'] = compatibility_index_dr_filter
 jinja2.filters.FILTERS['code_from_country_filter'] = code_from_country_filter
-jinja2.filters.FILTERS['antibody_a_filter'] = antibody_a_filter
-jinja2.filters.FILTERS['antibody_b_filter'] = antibody_b_filter
-jinja2.filters.FILTERS['antibody_dr_filter'] = antibody_dr_filter
-jinja2.filters.FILTERS['antibody_other_filter'] = get_other_antibodies

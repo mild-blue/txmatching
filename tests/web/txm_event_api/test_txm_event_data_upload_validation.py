@@ -23,7 +23,7 @@ from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
 from txmatching.patients.patient import TxmEvent
 from txmatching.patients.patient_parameters import HLAType, HLATyping
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country
+from txmatching.utils.enums import Country, HLAGroups, HLA_OTHER_GROUPS_NAME
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 
 
@@ -43,8 +43,11 @@ class TestMatchingApi(DbTests):
                             set(blood for blood in txm_event.active_recipients_dict[1].acceptable_blood_groups))
         self.assertEqual(HLATyping(hla_types_list=[HLAType('A1'), HLAType('A23'), HLAType('INVALID')]),
                          txm_event.active_donors_dict[1].parameters.hla_typing)
-        self.assertSetEqual({'A1', 'A23'}, set(txm_event.active_donors_dict[1].parameters.hla_typing.codes))
-        self.assertSetEqual({'A9'}, set(txm_event.active_recipients_dict[1].hla_antibodies.hla_codes_over_cutoff))
+        self.assertSetEqual({'A1', 'A23'},
+                            set(txm_event.active_donors_dict[1].parameters.hla_typing.codes_per_group[
+                                    HLAGroups.A.name]))
+        self.assertSetEqual({'A9'}, set(
+            txm_event.active_recipients_dict[1].hla_antibodies.hla_codes_over_cutoff_per_group[HLAGroups.A.name]))
         self._check_expected_errors_in_db(2)
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
@@ -121,7 +124,8 @@ class TestMatchingApi(DbTests):
         txm_event = get_txm_event(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
         expected_antibodies = {'DQA6', 'DQ8'}
-        self.assertSetEqual(expected_antibodies, set(recipient.hla_antibodies.hla_codes_over_cutoff))
+        self.assertSetEqual(expected_antibodies,
+                            set(recipient.hla_antibodies.hla_codes_over_cutoff_per_group[HLA_OTHER_GROUPS_NAME]))
         self._check_expected_errors_in_db(0)
 
     def test_txm_event_patient_successful_upload_exceptional_hla_types(self):
@@ -131,7 +135,10 @@ class TestMatchingApi(DbTests):
         txm_event = get_txm_event(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
         expected_antibodies = {'DR9', 'CW6', 'B82', 'CW4'}
-        self.assertSetEqual(expected_antibodies, set(recipient.hla_antibodies.hla_codes_over_cutoff))
+        self.assertSetEqual(expected_antibodies,
+                            set(recipient.hla_antibodies.hla_codes_over_cutoff_per_group[HLAGroups.B.name] +
+                                recipient.hla_antibodies.hla_codes_over_cutoff_per_group[HLAGroups.DRB1.name] +
+                                recipient.hla_antibodies.hla_codes_over_cutoff_per_group[HLA_OTHER_GROUPS_NAME]))
 
     def _txm_event_upload(self,
                           donors_json: Optional[List[Dict]] = None,
