@@ -18,6 +18,7 @@ definitions:
                 example: 4
                 type: integer
             max_matchings_to_show_to_viewer:
+                example: 10
                 type: integer
             max_number_of_distinct_countries_in_round:
                 example: 3
@@ -188,8 +189,6 @@ definitions:
         type: object
     FailResponse:
         properties:
-            detail:
-                type: string
             error:
                 type: string
             message:
@@ -347,6 +346,7 @@ definitions:
                 example: 3
                 type: integer
             score:
+                example: 2.0
                 type: number
         required:
         - donor_db_id
@@ -1352,43 +1352,43 @@ produces:
 - application/json
 responses:
     AuthenticationException:
-        description: handle general authentication exception
+        description: general_authentication_exception
     CouldNotSendOtpUsingSmsServiceException:
-        description: handle_could_not_send_otp
+        description: could_not_send_otp
     CredentialsMismatchException:
-        description: handle_credentials_mismatch_exception
+        description: credentials_mismatch_exception
     DaciteError:
-        description: handle_dacite_exception
+        description: dacite_exception
     Exception:
-        description: handle_default_exception_error
+        description: default_exception_error
     Forbidden:
-        description: handle_access_denied
+        description: access_denied
     GuardException:
-        description: handle_guard_exception
+        description: guard_exception
     HTTPException:
-        description: handle_http_exception
+        description: http_exception
     InvalidArgumentException:
-        description: handle_invalid_argument_exception
+        description: invalid_argument_exception
     InvalidAuthCallException:
-        description: handle_invalid_auth_call_exception
+        description: invalid_auth_call_exception
     InvalidIpAddressAccessException:
-        description: handle_invalid_ip_exception
+        description: invalid_ip_exception
     InvalidJWTException:
-        description: invalid jwt exception
+        description: invalid_jwt_exception
     InvalidOtpException:
-        description: handle_invalid_otp_exception
+        description: invalid_otp_exception
     KeyError:
-        description: handle_key_error
+        description: key_error
     MaskError:
         description: When any error occurs on mask
     ParseError:
         description: When a mask can't be parsed
     UserUpdateException:
-        description: handle_user_update_exception
+        description: user_update_exception
     ValueError:
-        description: handle_value_error
+        description: value_error
     WrongTokenUsedException:
-        description: handle wrong token used exception
+        description: wrong_used_token_exception
 swagger: '2.0'
 tags:
 -   name: user

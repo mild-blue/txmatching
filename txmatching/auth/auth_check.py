@@ -22,7 +22,8 @@ def require_role(*role_names: UserRole) -> Callable:
             token = get_request_token()
 
             if token.type != TokenType.ACCESS:
-                raise WrongTokenUsedException(f'Wrong token type used, expected ACCESS, but was {token.type}.')
+                raise WrongTokenUsedException(
+                    f'Wrong token type used, expected TokenType.ACCESS, but was {token.type}.')
             if token.role not in role_names:
                 raise AuthenticationException(
                     'Access denied. You do not have privileges to view this page. If you believe you are seeing this'

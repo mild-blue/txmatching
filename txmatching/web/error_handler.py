@@ -10,11 +10,10 @@ from txmatching.auth.exceptions import (
     AuthenticationException, CouldNotSendOtpUsingSmsServiceException,
     CredentialsMismatchException, GuardException, InvalidArgumentException,
     InvalidAuthCallException, InvalidIpAddressAccessException,
-    InvalidJWTException, InvalidOtpException, UserUpdateException,
-    WrongTokenUsedException)
-from txmatching.configuration.app_configuration.application_configuration import \
-    get_application_configuration, \
-    ApplicationEnvironment
+    InvalidJWTException, InvalidOtpException, NotFoundException,
+    UserUpdateException, WrongTokenUsedException)
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationEnvironment, get_application_configuration)
 
 logger = logging.getLogger(__name__)
 
@@ -34,96 +33,102 @@ def register_error_handlers(api: Api):
 def _user_auth_handlers(api: Api):
     @api.errorhandler(InvalidJWTException)
     def handle_invalid_jwt_exception(error: InvalidJWTException):
-        """invalid jwt exception"""
+        """invalid_jwt_exception"""
         _log_warning(error)
-        return {'error': 'Authentication failed.', 'detail': 'Invalid JWT.'}, 401
+        return {'error': 'Authentication failed.', 'message': 'Invalid JWT.'}, 401
+
+    @api.errorhandler(NotFoundException)
+    def handle_not_found_exeption(error: NotFoundException):
+        """not_found_exception"""
+        _log_warning(error)
+        return {'error': 'Not Found', 'message': str(error)}, 401
 
     @api.errorhandler(CredentialsMismatchException)
     def handle_credentials_mismatch_exception(error: CredentialsMismatchException):
-        """handle_credentials_mismatch_exception"""
+        """credentials_mismatch_exception"""
         _log_warning(error)
-        return {'error': 'Authentication failed.', 'detail': 'Credentials mismatch.'}, 401
+        return {'error': 'Authentication failed.', 'message': 'Credentials mismatch.'}, 401
 
     @api.errorhandler(InvalidOtpException)
     def handle_invalid_otp_exception(error: InvalidOtpException):
-        """handle_invalid_otp_exception"""
+        """invalid_otp_exception"""
         _log_warning(error)
-        return {'error': 'Authentication failed.', 'detail': 'Invalid OTP.'}, 401
+        return {'error': 'Authentication failed.', 'message': 'Invalid OTP.'}, 401
 
     @api.errorhandler(CouldNotSendOtpUsingSmsServiceException)
     def handle_could_not_send_otp(error: CouldNotSendOtpUsingSmsServiceException):
-        """handle_could_not_send_otp"""
+        """could_not_send_otp"""
         _log_exception(error)
         return {
                    'error': 'Service unavailable.',
-                   'detail': 'It was not possible to reach the SMS gate. Please contact support.'
+                   'message': 'It was not possible to reach the SMS gate. Please contact support.'
                }, 503
 
     @api.errorhandler(InvalidIpAddressAccessException)
     def handle_invalid_ip_exception(error: InvalidIpAddressAccessException):
-        """handle_invalid_ip_exception"""
+        """invalid_ip_exception"""
         _log_warning(error)
-        return {'error': 'Authentication failed.', 'detail': 'Used IP is not whitelisted.'}, 401
+        return {'error': 'Authentication failed.', 'message': 'Used IP is not whitelisted.'}, 401
 
     @api.errorhandler(UserUpdateException)
     def handle_user_update_exception(error: UserUpdateException):
-        """handle_user_update_exception"""
+        """user_update_exception"""
         _log_warning(error)
-        return {'error': 'Invalid data submitted.', 'detail': str(error)}, 400
+        return {'error': 'Invalid data submitted.', 'message': str(error)}, 400
 
     @api.errorhandler(InvalidAuthCallException)
     def handle_invalid_auth_call_exception(error: InvalidAuthCallException):
-        """handle_invalid_auth_call_exception"""
+        """invalid_auth_call_exception"""
         _log_warning(error)
-        return {'error': 'Internal error, please contact support.', 'detail': str(error)}, 500
+        return {'error': 'Internal error, please contact support.', 'message': str(error)}, 500
 
     @api.errorhandler(GuardException)
     def handle_guard_exception(error: GuardException):
-        """handle_guard_exception"""
+        """guard_exception"""
         _log_warning(error)
-        return {'error': 'Access denied.', 'detail': str(error)}, 403
+        return {'error': 'Access denied.', 'message': str(error)}, 403
 
     @api.errorhandler(WrongTokenUsedException)
     def handle_wrong_used_token_exception(error: WrongTokenUsedException):
-        """handle wrong token used exception"""
+        """wrong_used_token_exception"""
         _log_warning(error)
-        return {'error': 'Authentication denied. Wrong token used.', 'detail': str(error)}, 403
+        return {'error': 'Authentication denied. Wrong token used.', 'message': str(error)}, 403
 
     @api.errorhandler(AuthenticationException)
     def handle_general_authentication_exception(error: AuthenticationException):
-        """handle general authentication exception"""
+        """general_authentication_exception"""
         _log_warning(error)
-        return {'error': 'Access denied', 'detail': str(error)}, 403
+        return {'error': 'Access denied', 'message': str(error)}, 403
 
     @api.errorhandler(InvalidArgumentException)
     def handle_invalid_argument_exception(error: InvalidArgumentException):
-        """handle_invalid_argument_exception"""
+        """invalid_argument_exception"""
         _log_warning(error)
-        return {'error': 'Invalid argument.', 'detail': str(error)}, 400
+        return {'error': 'Invalid argument.', 'message': str(error)}, 400
 
     @api.errorhandler(DaciteError)
     def handle_dacite_exception(error: DaciteError):
-        """handle_dacite_exception"""
+        """dacite_exception"""
         _log_warning(error)
-        return {'error': 'Invalid request data.', 'detail': str(error)}, 400
+        return {'error': 'Invalid request data.', 'message': str(error)}, 400
 
     @api.errorhandler(KeyError)
     def handle_key_error(error: KeyError):
-        """handle_key_error"""
+        """key_error"""
         _log_warning(error)
-        return {'error': 'Invalid request data.', 'detail': str(error)}, 400
+        return {'error': 'Invalid request data.', 'message': str(error)}, 400
 
     @api.errorhandler(ValueError)
     def handle_value_error(error: ValueError):
-        """handle_value_error"""
+        """value_error"""
         _log_warning(error)
-        return {'error': 'Invalid request data.', 'detail': str(error)}, 400
+        return {'error': 'Invalid request data.', 'message': str(error)}, 400
 
     @api.errorhandler(Forbidden)
     def handle_access_denied(error: Forbidden):
-        """handle_access_denied"""
+        """access_denied"""
         _log_warning(error)
-        return {'error': 'Access denied', 'detail': str(error.description)}, error.code
+        return {'error': 'Access denied', 'message': str(error.description)}, error.code
 
 
 def _default_error_handlers(api: Api):
@@ -137,29 +142,29 @@ def _default_error_handlers(api: Api):
 
     @api.errorhandler(HTTPException)
     def handle_http_exception(error: HTTPException):
-        """handle_http_exception"""
+        """http_exception"""
         _log_exception(error)
         return {
                    'error': error.name,
-                   'detail': strip_on_prod(error.description)
+                   'message': strip_on_prod(error.description)
                }, _get_code_from_error_else_500(error)
 
     @api.errorhandler(Exception)
     def handle_default_exception_error(error: Exception):
-        """handle_default_exception_error"""
+        """default_exception_error"""
         _log_exception(error)
         return {
                    'error': 'Internal server error',
-                   'detail': strip_on_prod(str(error))
+                   'message': strip_on_prod(str(error))
                }, _get_code_from_error_else_500(error)
 
     @api.errorhandler
     def handle_default_error(error):
-        """handle_default_error"""
+        """default_error"""
         _log_exception(error)
         return {
                    'error': error.name,
-                   'detail': strip_on_prod(error.description)
+                   'message': strip_on_prod(error.description)
                }, _get_code_from_error_else_500(error)
 
 

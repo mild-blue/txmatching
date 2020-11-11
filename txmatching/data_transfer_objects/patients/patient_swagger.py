@@ -72,12 +72,12 @@ PatientsModel = patient_api.model('Patients', {
 })
 
 HLAAntibodyToUpdate = patient_api.model('HlaAntibodyToUpdate', {
-    'raw_code': fields.String(required=True, example='A1'),
+    'raw_code': fields.String(required=True, example='A*:01:02'),
     'mfi': fields.Integer(required=True, example=10000),
 })
 
 HLATypeToUpdate = patient_api.model('HlaTypeToUpdate', {
-    'raw_code': fields.String(required=True, example='A1'),
+    'raw_code': fields.String(required=True, example='A*:01:02'),
 })
 
 HLATypingToUpdate = patient_api.model('HlaTypingToUpdate', {
@@ -97,13 +97,13 @@ RecipientModelToUpdate = patient_api.model('RecipientModelToUpdate', {
     'hla_typing': fields.Nested(HLATypingToUpdate, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
                                             'the change set',
-                                example={'hla_types_list': [{'raw_code': 'A1'}]}),
+                                example={'hla_types_list': [{'raw_code': 'A*:01:02'}]}),
     'hla_antibodies': fields.Nested(HLAAntibodiesToUpdate, required=False,
                                     description='Provide full list of all the HLA antibodies of the patient, not just '
                                                 'the change set',
                                     example={'hla_antibodies_list': [
                                         {
-                                            'raw_code': 'A1',
+                                            'raw_code': 'A*:01:02',
                                             'mfi': 10000
                                         }
                                     ]}),
@@ -119,7 +119,7 @@ DonorModelToUpdate = patient_api.model('DonorModelToUpdate', {
     'hla_typing': fields.Nested(HLATypingToUpdate, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
                                             'the change set',
-                                example={'hla_types_list': [{'raw_code': 'A1'}]}),
+                                example={'hla_types_list': [{'raw_code': 'A*:01:02'}]}),
     'active': fields.Boolean(required=False, description='Information, whether or not given donor shall be considered'
                                                          ' in exchange.')
 })

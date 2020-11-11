@@ -7,7 +7,7 @@ from txmatching.web.api.namespaces import matching_api
 ManualDonorRecipientScoreJson = matching_api.model('Manual Recipient Donor Score', {
     'donor_db_id': fields.Integer(required=True, example=2),
     'recipient_db_id': fields.Integer(required=True, example=3),
-    'score': fields.Float(required=True)
+    'score': fields.Float(required=True, example=2.0)
 })
 
 ForbiddenCountryCombination = matching_api.model('Forbidden Country Combination', {
@@ -52,6 +52,6 @@ ConfigurationJson = matching_api.model(
             ForbiddenCountryCombination)),
         'manual_donor_recipient_scores': fields.List(required=False, cls_or_instance=fields.Nested(
             ManualDonorRecipientScoreJson)),
-        'max_matchings_to_show_to_viewer': fields.Integer(required=False)
+        'max_matchings_to_show_to_viewer': fields.Integer(required=False, example=10)
     }
 )

@@ -67,7 +67,8 @@ class TxmEventDeleteApi(Resource):
             'name': {
                 'description': 'Name of the TXM event to be deleted.',
                 'type': str,
-                'required': True
+                'required': True,
+                'in': 'path'
             }
         },
         security='bearer',

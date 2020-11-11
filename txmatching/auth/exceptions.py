@@ -7,6 +7,12 @@ class BaseTxmException(Exception):
     """
 
 
+class NotFoundException(BaseTxmException):
+    """
+    Something was not found (probably something in the database).
+    """
+
+
 class AuthenticationException(BaseTxmException):
     """
     Base class for Authentication related exceptions.
@@ -64,7 +70,7 @@ class GuardException(AuthenticationException):
 
 class WrongTokenUsedException(AuthenticationException):
     """
-    Wrong token used set of exceptions
+    Raised if wrong token type was used.
     """
 
 

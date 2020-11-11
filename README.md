@@ -60,7 +60,7 @@ We'have a swagger UI running on `/doc/` route (so for example, `localhost:8080/d
 How to use it and some useful info [here on doc](https://flask-restx.readthedocs.io/en/latest/swagger.html).
 
 The swagger is also in the project. It is generated in `txmatching/web/swagger.yaml`. We always test that it is up to date
-in case any changes are made, one needs to regenerated it in `tests/test_utilities/generate-swagger.py`
+and in case any changes are made, one needs to regenerated it using `tests/test_utilities/generate-swagger.py`
 ## Dependencies Management
 We are using `conda` for managing dependencies as [graph-tool](https://graph-tool.skewed.de/)
 can be installed just from the `conda-forge` repository.
@@ -81,7 +81,7 @@ Try to put package to `dependencies` part of yaml, that are the packages install
 if the package is not in the conda repo, put it in the `pip` part of yaml.
 
 **Note** that before the PR with new dependencies is submitted, one must build and publish new version of the
-`mildblue/txmatching-conda-dependencies` docker image. 
+`mildblue/txmatching-conda-dependencies` docker image.
 To do that, go to `dockerbase` directory, login to container registry and see further information
 in the related [README](dockerbase/README.md).
 

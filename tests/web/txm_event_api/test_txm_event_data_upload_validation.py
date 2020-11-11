@@ -24,7 +24,7 @@ from txmatching.patients.patient import TxmEvent
 from txmatching.patients.patient_parameters import HLAType, HLATyping
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country
-from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE, txm_event_api
+from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 
 
 class TestMatchingApi(DbTests):
@@ -142,7 +142,6 @@ class TestMatchingApi(DbTests):
         if donors_json is None:
             donors_json = []
         self.fill_db_with_patients_and_results()
-        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
         txm_event_db_id = get_newest_txm_event_db_id()
         txm_event = get_txm_event(txm_event_db_id)
         if not txm_event_name:

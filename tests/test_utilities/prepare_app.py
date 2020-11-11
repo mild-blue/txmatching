@@ -87,7 +87,6 @@ class DbTests(unittest.TestCase):
         return txm_event.db_id
 
     def _set_bearer_token(self):
-        register_error_handlers(self.api)
         self.login_with_role(UserRole.ADMIN)
 
     def login_with_credentials(self, credentials: Dict):
