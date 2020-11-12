@@ -26,5 +26,3 @@ MatchingJson = matching_api.model('Matching', {
     'order_id': fields.Integer(required=True)
 
 })
-
-MatchingsJson = fields.List(fields.Nested(MatchingJson))

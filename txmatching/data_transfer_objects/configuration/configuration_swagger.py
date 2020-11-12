@@ -52,6 +52,9 @@ ConfigurationJson = matching_api.model(
             ForbiddenCountryCombination)),
         'manual_donor_recipient_scores': fields.List(required=False, cls_or_instance=fields.Nested(
             ManualDonorRecipientScoreJson)),
-        'max_matchings_to_show_to_viewer': fields.Integer(required=False, example=10)
+        'max_matchings_to_show_to_viewer': fields.Integer(
+            required=False,
+            example=_default_configuration.max_matchings_to_show_to_viewer
+        )
     }
 )
