@@ -27,21 +27,25 @@ EXAMPLE_DETAILED_SCORE = {
     }
 }
 
+DESCRIPTION_DETAILED_SCORE = f"""Contains details for compatibility index for each HLA Group compatibility
+ index is calculated for. Current groups are:
+{[group.name for group in HLA_GROUPS_GENE]}. The fields provided are:
+donor_matches, recipient_matches, group_compatibility_index
+where donor_matches and recipient_matches are dicts of hla codes that
+are the same for give transplant and that should be colored.
+The dict values are then type of match. Which is of the following types:
+{[match_type.name for match_type in MatchTypes]}"""
+
 TransplantJson = matching_api.model('Transplant', {
     'score': fields.Float(required=True),
     'compatible_blood': fields.Boolean(required=True),
     'donor': fields.String(required=True),
     'recipient': fields.String(required=True),
+    # Unfortulantely is raw as we want to have the model general it is not clear how many different hla_groups will
+    # we have and I do not know better way how to have here a dict with unspecified keys.
     'detailed_compatibility_index': fields.Raw(
         required=True,
-        description=f"Contains details for compatibility index for each HLA Group compatibility"
-                    f" index is calculated for. Current groups are:"
-                    f"{[group.name for group in HLA_GROUPS_GENE]}. The fields provided are:"
-                    f"donor_matches, recipient_matches, group_compatibility_index"
-                    f"where donor_matches and recipient_matches are dicts of hla codes that"
-                    f"are the same for give transplant and that should be colored."
-                    f"The dict values are then type of match. Which is of the following types:"
-                    f"{[match_type.name for match_type in MatchTypes]}",
+        description=DESCRIPTION_DETAILED_SCORE,
         example=EXAMPLE_DETAILED_SCORE),
 })
 

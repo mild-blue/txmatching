@@ -144,6 +144,33 @@ definitions:
             db_id:
                 description: Database id of the patient
                 type: integer
+            detailed_compatibility_index_with_related_recipient:
+                description: "Contains details for compatibility index for each HLA\
+                    \ Group compatibility\n index is calculated for. Current groups\
+                    \ are:\n['A', 'B', 'DRB1']. The fields provided are:\ndonor_matches,\
+                    \ recipient_matches, group_compatibility_index\nwhere donor_matches\
+                    \ and recipient_matches are dicts of hla codes that\nare the same\
+                    \ for give transplant and that should be colored.\nThe dict values\
+                    \ are then type of match. Which is of the following types:\n['SPLIT',\
+                    \ 'BROAD', 'HIGH_RES']"
+                example: &id004
+                    A:
+                        donor_matches:
+                            A1: SPLIT
+                            A23: BROAD
+                        group_compatibility_index: 2.0
+                        recipient_matches:
+                            A1: SPLIT
+                            A9: BROAD
+                    B:
+                        donor_matches: {}
+                        group_compatibility_index: 0.0
+                        recipient_matches: {}
+                    DRB1:
+                        donor_matches: {}
+                        group_compatibility_index: 0.0
+                        recipient_matches: {}
+                type: object
             donor_type:
                 enum:
                 - DONOR
@@ -159,6 +186,9 @@ definitions:
             related_recipient_db_id:
                 description: Database id of the related recipient
                 type: integer
+            score_with_related_recipient:
+                description: Score calculated with related recipient
+                type: number
         required:
         - active
         - db_id
@@ -181,9 +211,11 @@ definitions:
                 -   $ref: '#/definitions/HlaTypingToUpdate'
                 description: Provide full list of all the HLA types of the patient,
                     not just the change set
-                example:
+                example: &id003
                     hla_types_list:
                     -   raw_code: A*01:02
+                    -   raw_code: B7
+                    -   raw_code: DR11
         required:
         - db_id
         type: object
@@ -619,9 +651,7 @@ definitions:
                 -   $ref: '#/definitions/HlaTypingToUpdate'
                 description: Provide full list of all the HLA types of the patient,
                     not just the change set
-                example:
-                    hla_types_list:
-                    -   raw_code: A*01:02
+                example: *id003
             recipient_requirements:
                 allOf:
                 -   $ref: '#/definitions/RecipientRequirements'
@@ -679,30 +709,15 @@ definitions:
             compatible_blood:
                 type: boolean
             detailed_compatibility_index:
-                description: Contains details for compatibility index for each HLA
-                    Group compatibility index is calculated for. Current groups are:['A',
-                    'B', 'DRB1']. The fields provided are:donor_matches, recipient_matches,
-                    group_compatibility_indexwhere donor_matches and recipient_matches
-                    are dicts of hla codes thatare the same for give transplant and
-                    that should be colored.The dict values are then type of match.
-                    Which is of the following types:['SPLIT', 'BROAD', 'HIGH_RES']
-                example:
-                    A:
-                        donor_matches:
-                            A1: SPLIT
-                            A23: BROAD
-                        group_compatibility_index: 2.0
-                        recipient_matches:
-                            A1: SPLIT
-                            A9: BROAD
-                    B:
-                        donor_matches: {}
-                        group_compatibility_index: 0.0
-                        recipient_matches: {}
-                    DRB1:
-                        donor_matches: {}
-                        group_compatibility_index: 0.0
-                        recipient_matches: {}
+                description: "Contains details for compatibility index for each HLA\
+                    \ Group compatibility\n index is calculated for. Current groups\
+                    \ are:\n['A', 'B', 'DRB1']. The fields provided are:\ndonor_matches,\
+                    \ recipient_matches, group_compatibility_index\nwhere donor_matches\
+                    \ and recipient_matches are dicts of hla codes that\nare the same\
+                    \ for give transplant and that should be colored.\nThe dict values\
+                    \ are then type of match. Which is of the following types:\n['SPLIT',\
+                    \ 'BROAD', 'HIGH_RES']"
+                example: *id004
                 type: object
             donor:
                 type: string
