@@ -1,5 +1,7 @@
 from flask_restx import fields
 
+from txmatching.data_transfer_objects.matchings.matching_swagger import DESCRIPTION_DETAILED_SCORE, \
+    EXAMPLE_DETAILED_SCORE
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex, HLAGroups, HLA_OTHER_GROUPS_NAME
@@ -11,6 +13,10 @@ HLA_CODES_IN_GROUPS_EXAMPLE = {
     HLAGroups.DRB1.name: ["DR7"],
     HLA_OTHER_GROUPS_NAME: ["CW4"]
 }
+
+EXAMPLE_HLA_TYPING = {'hla_types_list': [{'raw_code': 'A*01:02'},
+                                         {'raw_code': 'B7'},
+                                         {'raw_code': 'DR11'}]}
 
 HLAAntibody = patient_api.model('HlaAntibody', {
     'raw_code': fields.String(required=True),
@@ -60,6 +66,11 @@ DonorModel = patient_api.model('DonorModel', {
     'parameters': fields.Nested(required=True, model=PatientParametersModel),
     'donor_type': fields.String(required=True, enum=[donor_type.value for donor_type in DonorType]),
     'related_recipient_db_id': fields.Integer(required=False, description='Database id of the related recipient'),
+    'score_with_related_recipient': fields.Float(required=False, description='Score calculated with related recipient'),
+    'detailed_compatibility_index_with_related_recipient': fields.Raw(
+        required=False,
+        description=DESCRIPTION_DETAILED_SCORE,
+        example=EXAMPLE_DETAILED_SCORE),
 })
 
 RecipientModel = patient_api.model('RecipientModel', {
@@ -107,7 +118,7 @@ RecipientModelToUpdate = patient_api.model('RecipientModelToUpdate', {
     'hla_typing': fields.Nested(HLATypingToUpdate, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
                                             'the change set',
-                                example={'hla_types_list': [{'raw_code': 'A*01:02'}]}),
+                                example=EXAMPLE_HLA_TYPING),
     'hla_antibodies': fields.Nested(HLAAntibodiesToUpdate, required=False,
                                     description='Provide full list of all the HLA antibodies of the patient, not just '
                                                 'the change set',
@@ -129,7 +140,7 @@ DonorModelToUpdate = patient_api.model('DonorModelToUpdate', {
     'hla_typing': fields.Nested(HLATypingToUpdate, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
                                             'the change set',
-                                example={'hla_types_list': [{'raw_code': 'A*01:02'}]}),
+                                example=EXAMPLE_HLA_TYPING),
     'active': fields.Boolean(required=False, description='Information, whether or not given donor shall be considered'
                                                          ' in exchange.')
 })

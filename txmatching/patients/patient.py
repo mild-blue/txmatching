@@ -7,6 +7,8 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     PatientParameters)
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.enums import HLAGroups
+from txmatching.utils.hla_system.compatibility_index import DetailedCompatibilityIndexForHLAGroup
 from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 
 DEFAULT_CUTOFF = 2000
@@ -36,6 +38,12 @@ class Donor(Patient):
     related_recipient_db_id: Optional[RecipientDbId] = None
     donor_type: DonorType = DonorType.DONOR
     active: bool = True
+
+
+class DonorDTO(Donor):
+    score_with_related_recipient: Optional[float] = None
+    detailed_compatibility_index_with_related_recipient: Optional[
+        Dict[HLAGroups, DetailedCompatibilityIndexForHLAGroup]] = None
 
 
 @dataclass
@@ -75,12 +83,6 @@ class TxmEvent:
     all_recipients: List[Recipient]
     active_donors_dict: Optional[Dict[DonorDbId, Donor]] = None
     active_recipients_dict: Optional[Dict[RecipientDbId, Recipient]] = None
-
-    def to_lists_for_fe(self) -> Dict:
-        return {
-            'donors': self.all_donors,
-            'recipients': self.all_recipients
-        }
 
     def __post_init__(self):
         if not self.active_donors_dict:

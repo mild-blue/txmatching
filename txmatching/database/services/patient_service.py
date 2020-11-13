@@ -27,6 +27,7 @@ from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in 
 from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
+from txmatching.database.services.config_service import get_configuration_for_txm_event
 from txmatching.database.services.txm_event_service import \
     remove_donors_and_recipients_from_txm_event_for_country
 from txmatching.database.sql_alchemy_schema import (
@@ -34,11 +35,13 @@ from txmatching.database.sql_alchemy_schema import (
     RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
 from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
                                          RecipientRequirements, TxmEvent,
-                                         calculate_cutoff)
+                                         calculate_cutoff, DonorDTO)
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType, HLATyping,
                                                     PatientParameters)
+from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.enums import Country
+from txmatching.utils.hla_system.compatibility_index import compatibility_index_detailed
 from txmatching.utils.hla_system.hla_transformations import (
     parse_hla_raw_code, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations_store import \
@@ -440,3 +443,32 @@ def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO) -> Pati
             for preprocessed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
         ])
     return patient_update
+
+def to_lists_for_fe(txm_event: TxmEvent) -> Dict:
+    return {
+        'donors': [donor_to_donor_dto(donor, txm_event.all_recipients, txm_event.db_id) for donor in
+                   txm_event.all_donors],
+        'recipients': txm_event.all_recipients
+    }
+
+
+def donor_to_donor_dto(donor: Donor,
+                       all_recipients: List[Recipient],
+                       txm_event_db_id: int) -> DonorDTO:
+    donor_dto = DonorDTO(db_id=donor.db_id,
+                         medical_id=donor.medical_id,
+                         parameters=donor.parameters,
+                         donor_type=donor.donor_type,
+                         related_recipient_db_id=donor.related_recipient_db_id,
+                         active=donor.active
+                         )
+    if donor.related_recipient_db_id:
+        related_recipient = next(recipient for recipient in all_recipients if
+                                 recipient.db_id == donor.related_recipient_db_id)
+        donor_dto.detailed_compatibility_index_with_related_recipient = compatibility_index_detailed(
+            donor_hla_typing=donor.parameters.hla_typing,
+            recipient_hla_typing=related_recipient.parameters.hla_typing)
+        configuration = get_configuration_for_txm_event(txm_event_db_id)
+        scorer = scorer_from_configuration(configuration)
+        donor_dto.score_with_related_recipient = scorer.score_transplant(donor, related_recipient, None)
+    return donor_dto

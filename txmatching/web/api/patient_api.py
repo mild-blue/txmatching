@@ -22,7 +22,7 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services.patient_service import (get_txm_event,
                                                           update_donor,
-                                                          update_recipient)
+                                                          update_recipient, to_lists_for_fe)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.utils.logged_user import get_current_user_id
@@ -45,7 +45,7 @@ class AllPatients(Resource):
     @require_user_login()
     def get(self) -> str:
         txm_event = get_txm_event(get_txm_event_id_for_current_user())
-        return jsonify(txm_event.to_lists_for_fe())
+        return jsonify(to_lists_for_fe(txm_event))
 
 
 @patient_api.route('/recipient', methods=['PUT'])
