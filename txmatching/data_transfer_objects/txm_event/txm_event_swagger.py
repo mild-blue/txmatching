@@ -89,7 +89,7 @@ UploadPatientsJson = txm_event_api.model(
 
 FailJson = txm_event_api.model('FailResponse', {
     'error': fields.String(required=True),
-    'detail': fields.String(required=False),
+    'message': fields.String(required=False),
 })
 
 PatientUploadSuccessJson = txm_event_api.model('PatientUploadSuccessResponse', {

@@ -20,7 +20,7 @@ from txmatching.web.api.namespaces import configuration_api
 logger = logging.getLogger(__name__)
 
 
-@configuration_api.route('/', methods=['GET'])
+@configuration_api.route('', methods=['GET'])
 class ConfigurationApi(Resource):
 
     @configuration_api.doc(security='bearer')

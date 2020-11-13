@@ -11,13 +11,12 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
                                                     RecipientModel,
                                                     TxmEventModel)
 from txmatching.utils.enums import Country
-from txmatching.web import TXM_EVENT_NAMESPACE, txm_event_api
+from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 
 
 class TestMatchingApi(DbTests):
 
     def test_txm_event_creation_successful(self):
-        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
         txm_name = 'test2'
 
@@ -26,7 +25,7 @@ class TestMatchingApi(DbTests):
         # Successful creation
         with self.app.test_client() as client:
             res = client.post(
-                f'/{TXM_EVENT_NAMESPACE}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}',
                 headers=self.auth_headers,
                 json=TxmEventDTOIn(name=txm_name).__dict__
             )
@@ -43,7 +42,7 @@ class TestMatchingApi(DbTests):
         # Duplicate creation
         with self.app.test_client() as client:
             res = client.post(
-                f'/{TXM_EVENT_NAMESPACE}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}',
                 headers=self.auth_headers,
                 json=TxmEventDTOIn(name=txm_name).__dict__
             )
@@ -54,7 +53,6 @@ class TestMatchingApi(DbTests):
             self.assertEqual('TXM event "test2" already exists.', res.json['message'])
 
     def test_txm_event_creation_failure_invalid_role(self):
-        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
         txm_name = 'test2'
 
@@ -69,7 +67,7 @@ class TestMatchingApi(DbTests):
     def _validate_invalid_access_for_event_creation(self, txm_name: str):
         with self.app.test_client() as client:
             res = client.post(
-                f'/{TXM_EVENT_NAMESPACE}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}',
                 headers=self.auth_headers,
                 json=TxmEventDTOIn(name=txm_name).__dict__
             )
@@ -79,13 +77,12 @@ class TestMatchingApi(DbTests):
             self.assertIsNotNone(res.json)
 
     def test_txm_event_creation_invalid_data(self):
-        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
         self.login_with_role(UserRole.ADMIN)
 
         with self.app.test_client() as client:
             res = client.post(
-                f'/{TXM_EVENT_NAMESPACE}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}',
                 headers=self.auth_headers,
                 json={'invalid': 'data'}
             )
@@ -94,7 +91,6 @@ class TestMatchingApi(DbTests):
             self.assertEqual('application/json', res.content_type)
             self.assertIsNotNone(res.json)
             self.assertEqual('Invalid request data.', res.json['error'])
-            self.assertEqual('missing value for field "name"', res.json['detail'])
             self.assertEqual('missing value for field "name"', res.json['message'])
 
     def test_txm_event_deletion(self):
@@ -104,14 +100,13 @@ class TestMatchingApi(DbTests):
         self.assertEqual(1, len(tmx_event_model.configs[0].pairing_results))
         self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name).first())
         self.assertEqual(1, len(PairingResultModel.query.all()))
-        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
 
         self.login_with_role(UserRole.ADMIN)
 
         # Successful deletion
         with self.app.test_client() as client:
             res = client.delete(
-                f'/{TXM_EVENT_NAMESPACE}/{txm_name}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_name}',
                 headers=self.auth_headers
             )
 
@@ -123,7 +118,7 @@ class TestMatchingApi(DbTests):
         # Second deletion should fail
         with self.app.test_client() as client:
             res = client.delete(
-                f'/{TXM_EVENT_NAMESPACE}/{txm_name}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_name}',
                 headers=self.auth_headers
             )
 
@@ -131,7 +126,6 @@ class TestMatchingApi(DbTests):
             self.assertEqual('application/json', res.content_type)
 
     def test_txm_event_patient_upload_fails_on_wrong_country(self):
-        self.api.add_namespace(txm_event_api, path=f'/{TXM_EVENT_NAMESPACE}')
         banned_country = Country.CZE
         # add user
         user_pass = 'password'
@@ -156,7 +150,7 @@ class TestMatchingApi(DbTests):
         self.login_with(usr.email, user_pass, usr.id, usr.role)
         with self.app.test_client() as client:
             res = client.put(
-                f'/{TXM_EVENT_NAMESPACE}/patients',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/patients',
                 headers=self.auth_headers,
                 json=upload_patients
             )

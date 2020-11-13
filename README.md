@@ -59,6 +59,8 @@ PATIENT_DATA_PATH=/home/user/path/to/your/patient_data.xlsx
 We'have a swagger UI running on `/doc/` route (so for example, `localhost:8080/doc/`).
 How to use it and some useful info [here on doc](https://flask-restx.readthedocs.io/en/latest/swagger.html).
 
+The swagger is also in the project. It is generated in `txmatching/web/swagger.yaml`. We always test that it is up to date
+and in case any changes are made, one needs to regenerated it using `tests/test_utilities/generate-swagger.py`
 ## Dependencies Management
 We are using `conda` for managing dependencies as [graph-tool](https://graph-tool.skewed.de/)
 can be installed just from the `conda-forge` repository.
@@ -73,13 +75,13 @@ This must be execute every time when you try to use new terminal.
 
 #### Adding New dependencies
 To add new package put `<package>` to `conda.yml` and execute `make conda-update`.
-Please try to install specific version which you put to `conda.yml` in order to guarantee that whole team has same 
+Please try to install specific version which you put to `conda.yml` in order to guarantee that whole team has same
 packages versions.
 Try to put package to `dependencies` part of yaml, that are the packages installed from conda repository,
 if the package is not in the conda repo, put it in the `pip` part of yaml.
 
 **Note** that before the PR with new dependencies is submitted, one must build and publish new version of the
-`mildblue/txmatching-conda-dependencies` docker image. 
+`mildblue/txmatching-conda-dependencies` docker image.
 To do that, go to `dockerbase` directory, login to container registry and see further information
 in the related [README](dockerbase/README.md).
 
@@ -110,7 +112,7 @@ To obtain configuration in the code, one should call `get_application_configurat
  from [application_configuration.py](txmatching/configuration/app_configuration/application_configuration.py).
 
 ## Graph Tool
-Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't 
+Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't
 easily be installed via pip and you have to use for example conda to install it.
 This is the reason we're using Conda. There's also no package for Windows, thus we support only
 mac and linux.
@@ -132,7 +134,7 @@ run tests
 For detailed FE related stuff see [README.md](txmatching/web/frontend/README.md).
 
 #### Build FE for BE
-In order to build FE for the app one must run `make build-fe`. 
+In order to build FE for the app one must run `make build-fe`.
 One must do that ever time when something was changed in the FE code in order to have up to date FE.
-What this does is that it builds FE code to `txmatching/web/frontend/dist/frontend` directory, 
+What this does is that it builds FE code to `txmatching/web/frontend/dist/frontend` directory,
 where it is picked up by the Flask.

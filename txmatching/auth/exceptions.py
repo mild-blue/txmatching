@@ -7,6 +7,12 @@ class BaseTxmException(Exception):
     """
 
 
+class NotFoundException(BaseTxmException):
+    """
+    Something was not found (probably something in the database).
+    """
+
+
 class AuthenticationException(BaseTxmException):
     """
     Base class for Authentication related exceptions.
@@ -59,6 +65,12 @@ class CouldNotSendOtpUsingSmsServiceException(AuthenticationException):
 class GuardException(AuthenticationException):
     """
     Raised if some guard does not allow the perform the operation.
+    """
+
+
+class WrongTokenUsedException(AuthenticationException):
+    """
+    Raised if wrong token type was used.
     """
 
 

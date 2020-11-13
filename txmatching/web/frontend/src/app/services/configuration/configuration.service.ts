@@ -13,7 +13,7 @@ export class ConfigurationService {
 
   public async getConfiguration(): Promise<AppConfiguration> {
     return this._http.get<AppConfiguration>(
-      `${environment.apiUrl}/configuration/`
+      `${environment.apiUrl}/configuration`
     ).pipe().toPromise();
   }
 }

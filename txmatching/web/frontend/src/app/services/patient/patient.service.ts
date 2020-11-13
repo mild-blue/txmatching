@@ -16,7 +16,7 @@ export class PatientService {
 
   public async getPatients(): Promise<PatientList> {
     return this._http.get<PatientList>(
-      `${environment.apiUrl}/patients/`
+      `${environment.apiUrl}/patients`
     ).pipe(first()).toPromise();
   }
 

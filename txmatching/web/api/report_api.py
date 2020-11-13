@@ -10,23 +10,29 @@ from typing import List, Tuple
 import jinja2
 import pdfkit
 from flask import request, send_from_directory
-from flask_restx import Resource, abort
+from flask_restx import Resource
 from jinja2 import Environment, FileSystemLoader
 
+from txmatching.auth.exceptions import (InvalidArgumentException,
+                                        NotFoundException)
 from txmatching.auth.user.user_auth_check import require_user_login
+from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, MatchingReportDTO, RoundReportDTO, TransplantDTO)
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
-from txmatching.database.services.config_service import \
-    get_configuration_for_txm_event
+from txmatching.database.services import solver_service
+from txmatching.database.services.config_service import (
+    get_config_model_for_txm_event, get_configuration_for_txm_event)
 from txmatching.database.services.matching_service import \
     get_latest_matchings_and_score_matrix
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.patients.patient_parameters import HLAAntibodies
+from txmatching.solve_service.solve_from_configuration import \
+    solve_from_configuration
 from txmatching.utils.enums import HLA_TYPING_BONUS_PER_GENE_CODE_STR, HLATypes
 from txmatching.web.api.namespaces import report_api
 
@@ -49,14 +55,19 @@ class Report(Resource):
         params={
             MATCHINGS_BELOW_CHOSEN: {
                 'description': 'Number of matchings with lower score than chosen to include in report',
-                'in': 'query',
-                'type': 'integer',
-                'required': 'true'
+                'type': int,
+                'required': True
+            },
+            'matching_id': {
+                'description': 'Id of matching that was chosen',
+                'type': int,
+                'in': 'path',
+                'required': True
             }
         }
     )
     @report_api.response(code=200, model=None, description='Generates PDF report.')
-    @report_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @report_api.response(code=404, model=FailJson, description='Matching for provided id was not found')
     @report_api.response(code=401, model=FailJson, description='Authentication failed.')
     @report_api.response(code=403, model=FailJson,
                          description='Access denied. You do not have rights to access this endpoint.'
@@ -69,24 +80,26 @@ class Report(Resource):
         txm_event = get_txm_event(txm_event_db_id)
         matching_id = int(request.view_args['matching_id'])
         if request.args.get(MATCHINGS_BELOW_CHOSEN) is None or request.args.get(MATCHINGS_BELOW_CHOSEN) == '':
-            abort(400, f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
+            raise InvalidArgumentException(f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
 
         matching_range_limit = int(request.args.get(MATCHINGS_BELOW_CHOSEN))
 
         if matching_range_limit < MIN_MATCHINGS_BELOW_CHOSEN or matching_range_limit > MAX_MATCHINGS_BELOW_CHOSEN:
-            abort(
-                400,
+            raise InvalidArgumentException(
                 f'Query argument {MATCHINGS_BELOW_CHOSEN} must be in '
                 f'range [{MIN_MATCHINGS_BELOW_CHOSEN}, {MAX_MATCHINGS_BELOW_CHOSEN}]. '
                 f'Current value is {matching_range_limit}.'
             )
-
+        maybe_config_model = get_config_model_for_txm_event(txm_event_db_id)
+        if maybe_config_model is None:
+            pairing_result = solve_from_configuration(Configuration(), txm_event_db_id=txm_event_db_id)
+            solver_service.save_pairing_result(pairing_result)
         (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_db_id)
         all_matchings.sort(key=lambda m: m.order_id())  # lower ID -> better evaluation
 
         requested_matching = list(filter(lambda matching: matching.order_id() == matching_id, all_matchings))
         if len(requested_matching) == 0:
-            abort(404, f'Matching with id {matching_id} not found.')
+            raise NotFoundException(f'Matching with id {matching_id} not found.')
 
         matchings_over = list(
             filter(lambda matching: matching.order_id() < matching_id,

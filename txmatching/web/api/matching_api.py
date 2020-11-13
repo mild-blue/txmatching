@@ -15,7 +15,7 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     MatchingDTO, RoundDTO, TransplantDTOOut)
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
-    Matchings
+    MatchingJson
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 @matching_api.route('/calculate-for-config', methods=['POST'])
 class CalculateFromConfig(Resource):
     @matching_api.doc(body=ConfigurationJson, security='bearer')
-    @matching_api.response(200, model=Matchings, description='List of all matchings for given configuration.')
+    @matching_api.response(200, model=[MatchingJson], description='List of all matchings for given configuration.')
     @matching_api.response(code=400, model=FailJson, description='Wrong data format.')
     @matching_api.response(code=401, model=FailJson, description='Authentication failed.')
     @matching_api.response(
