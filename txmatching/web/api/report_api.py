@@ -107,8 +107,7 @@ class Report(Resource):
                    all_matchings))
         matchings_under = list(
             filter(lambda matching: matching.order_id() > matching_id,
-                   all_matchings))[
-                          :matching_range_limit]
+                   all_matchings))[:matching_range_limit]
         other_matchings_to_include = matchings_over + matchings_under
         other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include

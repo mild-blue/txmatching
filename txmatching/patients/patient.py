@@ -89,7 +89,7 @@ class TxmEvent:
             self.active_donors_dict = {donor.db_id: donor for donor in self.all_donors if donor.active}
         if not self.active_recipients_dict:
             self.active_recipients_dict = {recipient.db_id: recipient for recipient in self.all_recipients if
-                                           recipient.db_id in self.active_donors_dict}
+                                           recipient.related_donor_db_id in self.active_donors_dict}
 
 
 def calculate_cutoff(hla_antibodies_list: List[HLAAntibody]) -> int:
