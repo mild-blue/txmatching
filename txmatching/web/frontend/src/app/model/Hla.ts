@@ -10,6 +10,19 @@ export interface Antibody extends Hla {
   mfi: number;
 }
 
+export interface DetailedCompatibilityIndexForHlaGroup {
+  donor_matches: Map<string, HlaMatchType>;
+  recipient_matches: Map<string, HlaMatchType>;
+  group_compatibility_index: number;
+}
+
+enum HlaMatchType {
+  SPLIT = 'SPLIT',
+  BROAD = 'BROAD',
+  HIGH_RES = 'HIGH_RES'
+}
+
+// todo: delete?
 export interface HlaCodesSorted {
   A: string[];
   B: string[];
