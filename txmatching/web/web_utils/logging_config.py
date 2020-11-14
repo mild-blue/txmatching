@@ -11,6 +11,7 @@ LOGGING_CONFIG = {
         'txmatching': {
             'level': 'NOTSET',
             'handlers': ['debug_console_handler', 'info_rotating_file_handler', 'error_file_handler'],
+            'propagate': False
         }
     },
     'handlers': {
