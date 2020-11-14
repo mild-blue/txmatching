@@ -60,7 +60,7 @@ def _user_auth_handlers(api: Api):
         """could_not_send_otp"""
         _log_exception(error)
         return {
-                   'error': 'Service unavailable.',
+                   'error': 'SMS service unavailable.',
                    'message': 'It was not possible to reach the SMS gate. Please contact support.'
                }, 503
 
