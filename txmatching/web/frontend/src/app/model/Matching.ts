@@ -1,5 +1,6 @@
 import { ListItem } from '@app/components/list-item/list-item.interface';
-import { DonorType, PatientPair } from '@app/model/Patient';
+import { PatientPair } from '@app/model/PatientPair';
+import { DonorType } from '@app/model/Donor';
 
 export interface Matching extends ListItem {
   order_id: number;

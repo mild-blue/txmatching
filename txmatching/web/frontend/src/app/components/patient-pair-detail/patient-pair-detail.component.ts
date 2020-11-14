@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
-import { PatientList, PatientPair } from '@app/model/Patient';
 import { PatientPairTab } from '@app/components/patient-pair-detail/patient-pair-detail.interface';
 import { Configuration } from '@app/model/Configuration';
+import { PatientPair } from '@app/model/PatientPair';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-patient-pair-detail',
