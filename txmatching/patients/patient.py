@@ -40,6 +40,7 @@ class Donor(Patient):
     active: bool = True
 
 
+@dataclass
 class DonorDTO(Donor):
     score_with_related_recipient: Optional[float] = None
     detailed_compatibility_index_with_related_recipient: Optional[
