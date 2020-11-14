@@ -619,7 +619,7 @@
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        {% for hla_type in transplant.recipient.parameters.hla_typing.hla_types_list|antigen_dr_filter %}
+                                        {% for code in transplant.recipient.parameters.hla_typing.hla_types_list|antigen_dr_filter %}
                                             <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
                                         {% endfor %}
                                     </td>
