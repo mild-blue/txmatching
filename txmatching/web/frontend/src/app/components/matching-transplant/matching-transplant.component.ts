@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Transplant } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { antibodiesMultipliers, compatibleBloodGroups } from '@app/model/Patient';
 import { Configuration } from '@app/model/Configuration';
 import { PatientList } from '@app/model/PatientList';
 import { Hla } from '@app/model/Hla';
+import { Transplant } from '@app/model/Transplant';
 
 @Component({
   selector: 'app-matching-transplant',

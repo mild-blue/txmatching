@@ -1,5 +1,5 @@
 import { PatientPair } from '@app/model/PatientPair';
-import { HlaCodesScore, HlaCodesSorted } from '@app/model/Hla';
+import { DetailedCompatibilityIndexForHlaGroup } from '@app/model/Hla';
 
 // TODO: remove question marks
 export interface Transplant extends PatientPair {
@@ -8,9 +8,12 @@ export interface Transplant extends PatientPair {
   donor?: string;
   recipient?: string;
 
-  antigens_score?: HlaCodesScore;
+  detailed_compatibility_index?: Map<string, DetailedCompatibilityIndexForHlaGroup>;
 
-  donor_antigens?: HlaCodesSorted;
-  recipient_antigens?: HlaCodesSorted;
-  recipient_antibodies?: HlaCodesSorted;
+  // todo delete
+  // antigens_score?: HlaCodesScore;
+  //
+  // donor_antigens?: HlaCodesSorted;
+  // recipient_antigens?: HlaCodesSorted;
+  // recipient_antibodies?: HlaCodesSorted;
 }

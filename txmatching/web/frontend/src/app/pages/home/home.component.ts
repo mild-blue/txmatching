@@ -7,7 +7,7 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { Matching, Round, Transplant } from '@app/model/Matching';
+import { Matching } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
@@ -20,6 +20,8 @@ import { PatientList } from '@app/model/PatientList';
 import { Donor, DonorType } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
 import { compatibleBloodGroups } from '@app/model/Patient';
+import { Transplant } from '@app/model/Transplant';
+import { Round } from '@app/model/Round';
 
 @Component({
   selector: 'app-home',
