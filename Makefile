@@ -77,6 +77,14 @@ setup-non-empty-db:
 	cd ..
 	cd tests/test_utilities; PYTHONPATH=../..:$PYTHONPATH python populate_db.py
 
+setup-empty-db:
+	docker-compose stop db || true
+	docker-compose rm -f db || true
+	docker volume rm txmatching_txmatching-postgres || true
+	docker-compose up -d db
+	sleep 2
+	make migrate-db
+
 lint:
 	pylint txmatching
 
