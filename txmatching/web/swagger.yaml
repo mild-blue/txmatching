@@ -1,0 +1,1396 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+    Configuration:
+        properties:
+            blood_group_compatibility_bonus:
+                type: number
+            forbidden_country_combinations:
+                items:
+                    $ref: '#/definitions/Forbidden Country Combination'
+                type: array
+            manual_donor_recipient_scores:
+                items:
+                    $ref: '#/definitions/Manual Recipient Donor Score'
+                type: array
+            max_cycle_length:
+                example: 4
+                type: integer
+            max_matchings_to_show_to_viewer:
+                example: 10
+                type: integer
+            max_number_of_distinct_countries_in_round:
+                example: 3
+                type: integer
+            max_sequence_length:
+                example: 4
+                type: integer
+            maximum_total_score:
+                example: 26.0
+                type: number
+            minimum_total_score:
+                type: number
+            require_better_match_in_compatibility_index:
+                type: boolean
+            require_better_match_in_compatibility_index_or_blood_group:
+                type: boolean
+            require_compatible_blood_group:
+                type: boolean
+            required_patient_db_ids:
+                items:
+                    type: integer
+                type: array
+            scorer_constructor_name:
+                example: HLAAdditiveScorer
+                type: string
+            solver_constructor_name:
+                example: AllSolutionsSolver
+                type: string
+            use_binary_scoring:
+                type: boolean
+            use_split_resolution:
+                type: boolean
+        type: object
+    Country:
+        properties:
+            country_code:
+                type: string
+            donor_count:
+                type: integer
+            recipient_count:
+                type: integer
+        required:
+        - country_code
+        - donor_count
+        - recipient_count
+        type: object
+    DonorInput:
+        properties:
+            blood_group:
+                enum:
+                - A
+                - B
+                - AB
+                - '0'
+                example: A
+                type: string
+            donor_type:
+                enum:
+                - DONOR
+                - BRIDGING_DONOR
+                - NON_DIRECTED
+                example: DONOR
+                type: string
+            height:
+                description: Height of the patient in centimeters.
+                example: 178
+                type: integer
+            hla_typing:
+                description: HLA typing of the patient. Use high resolution if available.
+                example: &id001
+                - A1
+                - A32
+                - B7
+                - B51
+                - DR11
+                - DR15
+                - A*02:03
+                - A*11:01:35
+                - DPA1*01:07
+                - DRB4*01:01
+                - DQB1*02:01:01:01
+                items:
+                    type: string
+                type: array
+            medical_id:
+                description: Medical ID of the patient. This ID is unique thorough
+                    the system and can be used for the identification of a specific
+                    patient in your system. Typically, this is the patient ID used
+                    in your internal system.
+                example: D1037
+                type: string
+            related_recipient_medical_id:
+                description: Medical ID of the related recipient, empty for bridging
+                    and non-directed donors.
+                example: R1037
+                type: string
+            sex:
+                description: Sex of the patient.
+                enum:
+                - M
+                - F
+                example: M
+                type: string
+            weight:
+                description: Weight of the patient in kilograms.
+                example: 78.4
+                type: number
+            year_of_birth:
+                description: Year of birth of the patient.
+                example: 1945
+                type: integer
+        required:
+        - blood_group
+        - donor_type
+        - hla_typing
+        - medical_id
+        type: object
+    DonorModel:
+        properties:
+            active:
+                description: Whether the user shall be used in pairing calculation
+                type: boolean
+            db_id:
+                description: Database id of the patient
+                type: integer
+            donor_type:
+                enum:
+                - DONOR
+                - BRIDGING_DONOR
+                - NON_DIRECTED
+                example: DONOR
+                type: string
+            medical_id:
+                description: Medical id of the patient
+                type: string
+            parameters:
+                $ref: '#/definitions/PatientParameters'
+            related_recipient_db_id:
+                description: Database id of the related recipient
+                type: integer
+        required:
+        - active
+        - db_id
+        - donor_type
+        - medical_id
+        - parameters
+        type: object
+    DonorModelToUpdate:
+        properties:
+            active:
+                description: Information, whether or not given donor shall be considered
+                    in exchange.
+                type: boolean
+            db_id:
+                description: Database id of the patient
+                example: 1
+                type: integer
+            hla_typing:
+                allOf:
+                -   $ref: '#/definitions/HlaTypingToUpdate'
+                description: Provide full list of all the HLA types of the patient,
+                    not just the change set
+                example:
+                    hla_types_list:
+                    -   raw_code: A*01:02
+        required:
+        - db_id
+        type: object
+    FailResponse:
+        properties:
+            error:
+                type: string
+            message:
+                type: string
+        required:
+        - error
+        type: object
+    Forbidden Country Combination:
+        properties:
+            donor_country:
+                enum:
+                - CZE
+                - ISR
+                - AUT
+                - CAN
+                - IND
+                example: CZE
+                type: string
+            recipient_country:
+                enum:
+                - CZE
+                - ISR
+                - AUT
+                - CAN
+                - IND
+                example: CZE
+                type: string
+        required:
+        - donor_country
+        - recipient_country
+        type: object
+    HLAAntibodies:
+        properties:
+            cutoff:
+                description: Default cutoff value for the specific patient and HLA
+                    antibody.
+                example: 2000
+                type: integer
+            mfi:
+                description: Mean fluorescence intensity. Use exact value.
+                example: 2350
+                type: integer
+            name:
+                description: HLA antibody name.
+                example: A32
+                type: string
+        required:
+        - cutoff
+        - mfi
+        - name
+        type: object
+    HlaAntibodies:
+        properties:
+            hla_antibodies_list:
+                items:
+                    $ref: '#/definitions/HlaAntibody'
+                type: array
+            hla_codes_over_cutoff:
+                items:
+                    type: string
+                type: array
+        required:
+        - hla_antibodies_list
+        - hla_codes_over_cutoff
+        type: object
+    HlaAntibodiesToUpdate:
+        properties:
+            hla_antibodies_list:
+                items:
+                    $ref: '#/definitions/HlaAntibodyToUpdate'
+                type: array
+        required:
+        - hla_antibodies_list
+        type: object
+    HlaAntibody:
+        properties:
+            code:
+                type: string
+            cutoff:
+                type: integer
+            mfi:
+                type: integer
+            raw_code:
+                type: string
+        required:
+        - cutoff
+        - mfi
+        - raw_code
+        type: object
+    HlaAntibodyToUpdate:
+        properties:
+            mfi:
+                example: 10000
+                type: integer
+            raw_code:
+                example: A*01:02
+                type: string
+        required:
+        - mfi
+        - raw_code
+        type: object
+    HlaType:
+        properties:
+            code:
+                type: string
+            raw_code:
+                type: string
+        required:
+        - raw_code
+        type: object
+    HlaTypeToUpdate:
+        properties:
+            raw_code:
+                example: A*01:02
+                type: string
+        required:
+        - raw_code
+        type: object
+    HlaTyping:
+        properties:
+            codes:
+                items:
+                    type: string
+                type: array
+            hla_types_list:
+                items:
+                    $ref: '#/definitions/HlaType'
+                type: array
+        required:
+        - codes
+        - hla_types_list
+        type: object
+    HlaTypingToUpdate:
+        properties:
+            hla_types_list:
+                items:
+                    $ref: '#/definitions/HlaTypeToUpdate'
+                type: array
+        required:
+        - hla_types_list
+        type: object
+    LoginSuccessResponse:
+        properties:
+            auth_token:
+                type: string
+        required:
+        - auth_token
+        type: object
+    Manual Recipient Donor Score:
+        properties:
+            donor_db_id:
+                example: 2
+                type: integer
+            recipient_db_id:
+                example: 3
+                type: integer
+            score:
+                example: 2.0
+                type: number
+        required:
+        - donor_db_id
+        - recipient_db_id
+        - score
+        type: object
+    Matching:
+        properties:
+            countries:
+                items:
+                    $ref: '#/definitions/Country'
+                type: array
+            order_id:
+                type: integer
+            rounds:
+                items:
+                    $ref: '#/definitions/Round'
+                type: array
+            score:
+                type: number
+        required:
+        - countries
+        - order_id
+        - rounds
+        - score
+        type: object
+    NewTxmEvent:
+        properties:
+            name:
+                type: string
+        required:
+        - name
+        type: object
+    OtpLogin:
+        properties:
+            otp:
+                description: OTP for this login.
+                type: string
+        required:
+        - otp
+        type: object
+    PasswordChange:
+        properties:
+            current_password:
+                description: Current password.
+                type: string
+            new_password:
+                description: New password.
+                type: string
+        required:
+        - current_password
+        - new_password
+        type: object
+    PatientParameters:
+        properties:
+            blood_group:
+                enum:
+                - A
+                - B
+                - AB
+                - '0'
+                example: A
+                type: string
+            country_code:
+                enum:
+                - CZE
+                - ISR
+                - AUT
+                - CAN
+                - IND
+                example: CZE
+                type: string
+            height:
+                type: integer
+            hla_typing:
+                $ref: '#/definitions/HlaTyping'
+            sex:
+                enum:
+                - M
+                - F
+                example: M
+                type: string
+            weight:
+                type: number
+            year_of_birth:
+                type: integer
+        type: object
+    PatientUploadSuccessResponse:
+        properties:
+            donors_uploaded:
+                description: Number of donors successfully loaded into the application.
+                type: integer
+            recipients_uploaded:
+                description: Number of recipients successfully loaded into the application.
+                type: integer
+        required:
+        - donors_uploaded
+        - recipients_uploaded
+        type: object
+    Patients:
+        properties:
+            donors:
+                items:
+                    $ref: '#/definitions/DonorModel'
+                type: array
+            recipients:
+                items:
+                    $ref: '#/definitions/RecipientModel'
+                type: array
+        type: object
+    RecipientInput:
+        properties:
+            acceptable_blood_groups:
+                description: Acceptable blood groups for the patient. Leave empty
+                    to use                                             compatible
+                    blood groups.
+                items:
+                    enum:
+                    - A
+                    - B
+                    - AB
+                    - '0'
+                    example: A
+                    type: string
+                type: array
+            blood_group:
+                enum:
+                - A
+                - B
+                - AB
+                - '0'
+                example: A
+                type: string
+            height:
+                description: Height of the patient in centimeters.
+                example: 178
+                type: integer
+            hla_antibodies:
+                description: Detected HLA antibodies of the patient. Use high resolution                                   if
+                    available.
+                items:
+                    $ref: '#/definitions/HLAAntibodies'
+                type: array
+            hla_typing:
+                description: HLA typing of the patient. Use high resolution if available.
+                example: *id001
+                items:
+                    type: string
+                type: array
+            medical_id:
+                description: Medical ID of the patient. This ID is unique thorough
+                    the system and can be used for the identification of a specific
+                    patient in your system. Typically, this is the patient ID used
+                    in your internal system.
+                example: R1037
+                type: string
+            previous_transplants:
+                description: Number of previous kidney transplants.
+                type: integer
+            sex:
+                description: Sex of the patient.
+                enum:
+                - M
+                - F
+                example: M
+                type: string
+            waiting_since:
+                description: Date since when the patient has been on waiting list.
+                    Use format YYYY-MM-DD.
+                example: '2015-01-17'
+                format: date
+                type: string
+            weight:
+                description: Weight of the patient in kilograms.
+                example: 78.4
+                type: number
+            year_of_birth:
+                description: Year of birth of the patient.
+                example: 1945
+                type: integer
+        required:
+        - blood_group
+        - hla_antibodies
+        - hla_typing
+        - medical_id
+        type: object
+    RecipientModel:
+        properties:
+            acceptable_blood_groups:
+                items:
+                    enum:
+                    - A
+                    - B
+                    - AB
+                    - '0'
+                    example: A
+                    type: string
+                type: array
+            db_id:
+                description: Database id of the patient
+                type: integer
+            hla_antibodies:
+                $ref: '#/definitions/HlaAntibodies'
+            medical_id:
+                description: Medical id of the patient
+                type: string
+            parameters:
+                $ref: '#/definitions/PatientParameters'
+            previous_transplants:
+                type: integer
+            recipient_cutoff:
+                type: integer
+            recipient_requirements:
+                $ref: '#/definitions/RecipientRequirements'
+            related_donor_db_id:
+                description: Database id of the related donor
+                type: integer
+            waiting_since:
+                format: date-time
+                type: string
+        required:
+        - db_id
+        - hla_antibodies
+        - medical_id
+        - parameters
+        - related_donor_db_id
+        type: object
+    RecipientModelToUpdate:
+        properties:
+            acceptable_blood_groups:
+                description: Provide full list of all the acceptable blood groups
+                    of the patient, not just the change set
+                items:
+                    enum:
+                    - A
+                    - B
+                    - AB
+                    - '0'
+                    example: A
+                    type: string
+                type: array
+            cutoff:
+                type: integer
+            db_id:
+                description: Database id of the patient
+                example: 1
+                type: integer
+            hla_antibodies:
+                allOf:
+                -   $ref: '#/definitions/HlaAntibodiesToUpdate'
+                description: Provide full list of all the HLA antibodies of the patient,
+                    not just the change set
+                example:
+                    hla_antibodies_list:
+                    -   mfi: 10000
+                        raw_code: A*01:02
+            hla_typing:
+                allOf:
+                -   $ref: '#/definitions/HlaTypingToUpdate'
+                description: Provide full list of all the HLA types of the patient,
+                    not just the change set
+                example:
+                    hla_types_list:
+                    -   raw_code: A*01:02
+            recipient_requirements:
+                allOf:
+                -   $ref: '#/definitions/RecipientRequirements'
+                description: Provide the whole recipients requirements object, it
+                    will be overwritten
+                example:
+                    require_better_match_in_compatibility_index: true
+        required:
+        - db_id
+        type: object
+    RecipientRequirements:
+        properties:
+            require_better_match_in_compatibility_index:
+                type: boolean
+            require_better_match_in_compatibility_index_or_blood_group:
+                type: boolean
+            require_compatible_blood_group:
+                type: boolean
+        required:
+        - require_better_match_in_compatibility_index
+        - require_better_match_in_compatibility_index_or_blood_group
+        - require_compatible_blood_group
+        type: object
+    Round:
+        properties:
+            transplants:
+                items:
+                    $ref: '#/definitions/Transplant'
+                type: array
+        type: object
+    ServiceStatus:
+        properties:
+            exception:
+                description: Additional indication what is wrong.
+                type: string
+            status:
+                description: Indication of service's health.
+                enum:
+                - OK
+                - Failing
+                example: OK
+                type: string
+        required:
+        - status
+        type: object
+    StatusResponse:
+        properties:
+            status:
+                type: string
+        required:
+        - status
+        type: object
+    Transplant:
+        properties:
+            compatible_blood:
+                type: boolean
+            donor:
+                type: string
+            recipient:
+                type: string
+            score:
+                type: number
+        required:
+        - compatible_blood
+        - donor
+        - recipient
+        - score
+        type: object
+    TxmEvent:
+        properties:
+            name:
+                type: string
+        required:
+        - name
+        type: object
+    UploadPatients:
+        properties:
+            country:
+                enum:
+                - CZE
+                - ISR
+                - AUT
+                - CAN
+                - IND
+                example: CZE
+                type: string
+            donors:
+                items:
+                    $ref: '#/definitions/DonorInput'
+                type: array
+            recipients:
+                items:
+                    $ref: '#/definitions/RecipientInput'
+                type: array
+            txm_event_name:
+                description: The TXM event name has to be provided by an ADMIN.
+                example: 2020-10-CZE-ISR-AUT
+                type: string
+        required:
+        - country
+        - donors
+        - recipients
+        - txm_event_name
+        type: object
+    UserLogin:
+        properties:
+            email:
+                description: Email of the user to login.
+                type: string
+            password:
+                description: User's password.
+                type: string
+        required:
+        - email
+        - password
+        type: object
+    UserRegistration:
+        properties:
+            allowed_countries:
+                description: Countries that the user has access to.
+                example:
+                - AUT
+                - CZE
+                items:
+                    enum:
+                    - CZE
+                    - ISR
+                    - AUT
+                    - CAN
+                    - IND
+                    example: CZE
+                    type: string
+                type: array
+            email:
+                description: Email/username used for authentication.
+                type: string
+            password:
+                description: User's password.
+                type: string
+            role:
+                description: User's role.
+                enum:
+                - ADMIN
+                - VIEWER
+                - EDITOR
+                - SERVICE
+                example: ADMIN
+                type: string
+            second_factor:
+                description: '2FA: Phone number for user account in standard format
+                    (see example), IP address for SERVICE account.'
+                example: '+420657123987'
+                type: string
+        required:
+        - allowed_countries
+        - email
+        - password
+        - role
+        - second_factor
+        type: object
+    Version:
+        properties:
+            environment:
+                description: Environment the code was build for.
+                enum:
+                - PRODUCTION
+                - STAGING
+                - DEVELOPMENT
+                - UNKNOWN
+                example: PRODUCTION
+                type: string
+            version:
+                description: Version of the running code.
+                type: string
+        required:
+        - environment
+        - version
+        type: object
+host: test
+info:
+    title: API
+    version: '1.0'
+paths:
+    /v1/configuration:
+        get:
+            operationId: get_configuration_api
+            responses:
+                '200':
+                    description: Returns the latest matching configuration for the
+                        current user.
+                    schema:
+                        $ref: '#/definitions/Configuration'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - configuration
+    /v1/matching/calculate-for-config:
+        post:
+            operationId: post_calculate_from_config
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/Configuration'
+            responses:
+                '200':
+                    description: List of all matchings for given configuration.
+                    schema:
+                        items:
+                            $ref: '#/definitions/Matching'
+                        type: array
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - matching
+    /v1/patients:
+        get:
+            operationId: get_all_patients
+            responses:
+                '200':
+                    description: List of donors and list of recipients.
+                    schema:
+                        $ref: '#/definitions/Patients'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
+    /v1/patients/donor:
+        put:
+            operationId: put_alter_donor
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/DonorModelToUpdate'
+            responses:
+                '200':
+                    description: Updates single donor.
+                    schema:
+                        $ref: '#/definitions/DonorModel'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
+    /v1/patients/recipient:
+        put:
+            operationId: put_alter_recipient
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/RecipientModelToUpdate'
+            responses:
+                '200':
+                    description: Updates single recipient.
+                    schema:
+                        $ref: '#/definitions/RecipientModel'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
+    /v1/reports/{matching_id}:
+        get:
+            operationId: get_report
+            parameters:
+            -   description: Id of matching that was chosen
+                in: path
+                name: matching_id
+                required: true
+                type: integer
+            -   description: Number of matchings with lower score than chosen to include
+                    in report
+                in: query
+                name: matchingsBelowChosen
+                required: true
+                type: integer
+            responses:
+                '200':
+                    description: Generates PDF report.
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '404':
+                    description: Matching for provided id was not found
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - reports
+    /v1/service/status:
+        get:
+            operationId: get_status
+            responses:
+                '200':
+                    description: Returns ok if the service is healthy.
+                    schema:
+                        $ref: '#/definitions/ServiceStatus'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '503':
+                    description: Some services are failing.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            tags:
+            - service
+    /v1/service/version:
+        get:
+            operationId: get_version
+            responses:
+                '200':
+                    description: Returns version of the code
+                    schema:
+                        $ref: '#/definitions/Version'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            tags:
+            - service
+    /v1/txm-event:
+        post:
+            description: Endpoint that lets an ADMIN create a new TXM event. The ADMIN
+                should specify TXM event name.
+            operationId: post_txm_event_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/NewTxmEvent'
+            responses:
+                '201':
+                    description: Returns the newly created TXM event object.
+                    schema:
+                        $ref: '#/definitions/TxmEvent'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '409':
+                    description: Non-unique patients provided.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - txm-event
+    /v1/txm-event/patients:
+        put:
+            description: This endpoint allows the country editor to upload patient
+                data for given                         TXM event. TXM event name has
+                to be provided by an ADMIN. The endpoint removes all patients                         from
+                respective country in case there were any.
+            operationId: put_txm_event_upload_patients
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/UploadPatients'
+            responses:
+                '200':
+                    description: Success.
+                    schema:
+                        $ref: '#/definitions/PatientUploadSuccessResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - txm-event
+    /v1/txm-event/{name}:
+        delete:
+            description: Endpoint that lets an ADMIN delete existing TXM event. The
+                ADMIN should know the TXM event name.
+            operationId: delete_txm_event_delete_api
+            parameters:
+            -   description: Name of the TXM event to be deleted.
+                in: path
+                name: name
+                required: true
+                type: string
+            responses:
+                '200':
+                    description: Returns status code representing result of TXM event
+                        object deletion.
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - txm-event
+    /v1/user/change-password:
+        put:
+            operationId: put_password_change_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/PasswordChange'
+            responses:
+                '200':
+                    description: Password changed successfully.
+                    schema:
+                        $ref: '#/definitions/StatusResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - user
+    /v1/user/login:
+        post:
+            operationId: post_login_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/UserLogin'
+            responses:
+                '200':
+                    description: 'Login successful. JWT generated. User must attach
+                        the token to every request in the "Authorization" header with
+                        the prefix "Bearer". Example: "Authorization: Bearer some_token",
+                        where some_token is the token received in the response.'
+                    schema:
+                        $ref: '#/definitions/LoginSuccessResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            tags:
+            - user
+    /v1/user/otp:
+        post:
+            operationId: post_otp_login_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/OtpLogin'
+            responses:
+                '200':
+                    description: OTP validation was successful. JWT generated.
+                    schema:
+                        $ref: '#/definitions/LoginSuccessResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '503':
+                    description: It was not possible to reach the SMS gate, thus the
+                        one time password could not be send.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - user
+        put:
+            operationId: put_otp_login_api
+            responses:
+                '200':
+                    description: New OTP was generated and sent.
+                    schema:
+                        $ref: '#/definitions/StatusResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '503':
+                    description: It was not possible to reach the SMS gate, thus the
+                        one time password could not be send.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - user
+    /v1/user/refresh-token:
+        get:
+            operationId: get_refresh_token_api
+            responses:
+                '200':
+                    description: Token successfully refreshed.
+                    schema:
+                        $ref: '#/definitions/LoginSuccessResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - user
+    /v1/user/register:
+        post:
+            operationId: post_registration_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/UserRegistration'
+            responses:
+                '200':
+                    description: User registered successfully.
+                    schema:
+                        $ref: '#/definitions/StatusResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - user
+produces:
+- application/json
+responses:
+    AuthenticationException:
+        description: general_authentication_exception
+    CouldNotSendOtpUsingSmsServiceException:
+        description: could_not_send_otp
+    CredentialsMismatchException:
+        description: credentials_mismatch_exception
+    DaciteError:
+        description: dacite_exception
+    Exception:
+        description: default_exception_error
+    Forbidden:
+        description: access_denied
+    GuardException:
+        description: guard_exception
+    HTTPException:
+        description: http_exception
+    InvalidArgumentException:
+        description: invalid_argument_exception
+    InvalidAuthCallException:
+        description: invalid_auth_call_exception
+    InvalidIpAddressAccessException:
+        description: invalid_ip_exception
+    InvalidJWTException:
+        description: invalid_jwt_exception
+    InvalidOtpException:
+        description: invalid_otp_exception
+    KeyError:
+        description: key_error
+    MaskError:
+        description: When any error occurs on mask
+    NotFoundException:
+        description: not_found_exception
+    ParseError:
+        description: When a mask can't be parsed
+    UserUpdateException:
+        description: user_update_exception
+    ValueError:
+        description: value_error
+    WrongTokenUsedException:
+        description: wrong_used_token_exception
+swagger: '2.0'
+tags:
+-   name: user
+-   name: service
+-   name: matching
+-   name: patients
+-   name: configuration
+-   name: reports
+-   name: txm-event

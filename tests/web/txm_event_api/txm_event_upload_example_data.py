@@ -6,7 +6,7 @@ DONORS = [
         'medical_id': 'D1',
         'blood_group': 'A',
         'hla_typing': [
-            'A1', 'A23'
+            'A1', 'A23', 'Invalid'
         ],
         'donor_type': DonorType.DONOR.value,
         'related_recipient_medical_id': 'R1',

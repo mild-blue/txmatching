@@ -7,8 +7,8 @@ from dacite import from_dict
 from flask import jsonify, request
 from flask_restx import Resource
 
-from txmatching.auth.operation_guards.country_guard import guard_user_country_access_to_recipient, \
-    guard_user_country_access_to_donor
+from txmatching.auth.operation_guards.country_guard import (
+    guard_user_country_access_to_donor, guard_user_country_access_to_recipient)
 from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
@@ -31,7 +31,7 @@ from txmatching.web.api.namespaces import patient_api
 logger = logging.getLogger(__name__)
 
 
-@patient_api.route('/', methods=['GET'])
+@patient_api.route('', methods=['GET'])
 class AllPatients(Resource):
 
     @patient_api.doc(security='bearer')
