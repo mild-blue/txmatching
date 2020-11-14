@@ -67,16 +67,6 @@ redeploy:
 logs:
 	docker-compose -f docker-compose.prod.yml logs --follow backend
 
-setup-non-empty-db:
-	docker-compose stop db || true
-	docker-compose rm -f db || true
-	docker volume rm txmatching_txmatching-postgres || true
-	docker-compose up -d db
-	sleep 2
-	make migrate-db
-	cd ..
-	cd tests/test_utilities; PYTHONPATH=../..:$PYTHONPATH python populate_db.py
-
 setup-empty-db:
 	docker-compose stop db || true
 	docker-compose rm -f db || true
@@ -84,6 +74,11 @@ setup-empty-db:
 	docker-compose up -d db
 	sleep 2
 	make migrate-db
+
+setup-non-empty-db:
+	make setup-empty-db
+	cd ..
+	cd tests/test_utilities; PYTHONPATH=../..:$PYTHONPATH python populate_db.py
 
 lint:
 	pylint txmatching
