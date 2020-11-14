@@ -8,7 +8,6 @@ import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
 import { Matching, Round, Transplant } from '@app/model/Matching';
-import { compatibleBloodGroups, Donor, DonorType, PatientList, Recipient } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
@@ -17,6 +16,10 @@ import { ReportService } from '@app/services/report/report.service';
 import { DownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
 import { finalize, first } from 'rxjs/operators';
+import { PatientList } from '@app/model/PatientList';
+import { Donor, DonorType } from '@app/model/Donor';
+import { Recipient } from '@app/model/Recipient';
+import { compatibleBloodGroups } from '@app/model/Patient';
 
 @Component({
   selector: 'app-home',

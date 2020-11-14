@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { Round } from '@app/model/Matching';
-import { PatientList } from '@app/model/Patient';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { AppConfiguration } from '@app/model/Configuration';
 import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-matching-round',
