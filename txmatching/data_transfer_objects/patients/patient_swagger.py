@@ -51,9 +51,10 @@ HLATyping = patient_api.model('HlaTyping', {
 
 HLAAntibodies = patient_api.model('HlaAntibodies', {
     'hla_antibodies_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAAntibody)),
-    'hla_codes_over_cutoff_per_group': fields.Raw(required=True,
-                                                  description='hla codes over cutoff split to hla groups',
-                                                  example=HLA_CODES_IN_GROUPS_EXAMPLE),
+    'hla_codes_over_cutoff_per_group': fields.List(required=True,
+                                                   description='hla codes split to hla groups',
+                                                   example=HLA_CODES_IN_GROUPS_EXAMPLE,
+                                                   cls_or_instance=fields.Nested(HlaCodesInGroup)),
 })
 
 PatientParametersModel = patient_api.model('PatientParameters', {

@@ -308,7 +308,7 @@ definitions:
                     $ref: '#/definitions/HlaAntibody'
                 type: array
             hla_codes_over_cutoff_per_group:
-                description: hla codes over cutoff split to hla groups
+                description: hla codes split to hla groups
                 example: &id001
                 -   hla_codes:
                     - A1
@@ -322,7 +322,9 @@ definitions:
                 -   hla_codes:
                     - CW4
                     hla_group: Other
-                type: object
+                items:
+                    $ref: '#/definitions/HlaCodesInGroups'
+                type: array
         required:
         - hla_antibodies_list
         - hla_codes_over_cutoff_per_group
