@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import List
 
 from txmatching.patients.patient_parameters import HLATyping
 from txmatching.utils.enums import (HLA_GROUPS_GENE,
@@ -16,46 +16,53 @@ from txmatching.utils.hla_system.hla_transformations import (broad_to_split,
 
 
 @dataclass
+class HLAMatch:
+    hla_code: str
+    match_type: MatchTypes
+
+
+@dataclass
 class DetailedCompatibilityIndexForHLAGroup:
-    donor_matches: Dict[str, MatchTypes]
-    recipient_matches: Dict[str, MatchTypes]
+    hla_group: HLAGroups
+    donor_matches: List[HLAMatch]
+    recipient_matches: List[HLAMatch]
     group_compatibility_index: float
 
 
 def compatibility_index(donor_hla_typing: HLATyping,
                         recipient_hla_typing: HLATyping) -> float:
     return sum([ci_index_for_group.group_compatibility_index for ci_index_for_group
-                in compatibility_index_detailed(donor_hla_typing, recipient_hla_typing).values()
+                in compatibility_index_detailed(donor_hla_typing, recipient_hla_typing)
                 ])
 
 
 def compatibility_index_detailed(donor_hla_typing: HLATyping,
                                  recipient_hla_typing: HLATyping
-                                 ) -> Dict[HLAGroups, DetailedCompatibilityIndexForHLAGroup]:
+                                 ) -> List[DetailedCompatibilityIndexForHLAGroup]:
     """
     The "compatibility index" is terminus technicus defined by immunologist:
     we calculate number of matches per Compatibility HLA indices and add bonus according
      to number of matches and the HLA code.
     This function thus should not be modified unless after consulting with immunologists.
     """
-    hla_compatibility_index_dict = dict()
+    hla_compatibility_index_detailed = []
     for hla_group in HLA_GROUPS_GENE:
-        donor_matches = dict()
-        recipient_matches = dict()
+        donor_matches = []
+        recipient_matches = []
         donor_split_codes = _hla_types_for_gene_group(donor_hla_typing, hla_group)
         recipient_split_codes = _hla_types_for_gene_group(recipient_hla_typing, hla_group)
         group_compatibility_index = 0.0
-        for split_code in donor_split_codes:
+        for split_code in donor_split_codes.copy():
             if split_code in recipient_split_codes:
                 donor_split_codes.remove(split_code)
                 recipient_split_codes.remove(split_code)
 
-                donor_matches[split_code] = MatchTypes.SPLIT
-                recipient_matches[split_code] = MatchTypes.SPLIT
+                donor_matches.append(HLAMatch(split_code, MatchTypes.SPLIT))
+                recipient_matches.append(HLAMatch(split_code, MatchTypes.SPLIT))
                 group_compatibility_index += MATCH_TYPE_BONUS[MatchTypes.SPLIT] * HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS[
                     hla_group]
 
-        for split_code, broad_code in zip(donor_split_codes, get_broad_codes(donor_split_codes)):
+        for split_code, broad_code in zip(donor_split_codes.copy(), get_broad_codes(donor_split_codes)):
             if broad_code in get_broad_codes(recipient_split_codes):
                 if broad_code in recipient_split_codes:
                     recipient_match_code = broad_code
@@ -66,22 +73,25 @@ def compatibility_index_detailed(donor_hla_typing: HLATyping,
 
                 recipient_split_codes.remove(recipient_match_code)
                 donor_split_codes.remove(split_code)
-                donor_matches[split_code] = MatchTypes.BROAD
-                recipient_matches[recipient_match_code] = MatchTypes.BROAD
+                donor_matches.append(HLAMatch(split_code, MatchTypes.BROAD))
+                recipient_matches.append(HLAMatch(recipient_match_code, MatchTypes.BROAD))
                 group_compatibility_index += MATCH_TYPE_BONUS[MatchTypes.BROAD] * HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS[
                     hla_group]
 
-        hla_compatibility_index_dict[hla_group] = DetailedCompatibilityIndexForHLAGroup(
+        hla_compatibility_index_detailed.append(DetailedCompatibilityIndexForHLAGroup(
+            hla_group=hla_group,
             donor_matches=donor_matches,
             recipient_matches=recipient_matches,
             group_compatibility_index=group_compatibility_index
         )
+        )
 
-    return hla_compatibility_index_dict
+    return hla_compatibility_index_detailed
 
 
 def _hla_types_for_gene_group(donor_hla_typing: HLATyping, hla_group: HLAGroups) -> List[str]:
-    hla_codes = donor_hla_typing.codes_per_group[hla_group.name].copy()
+    hla_codes = next(codes_per_group.hla_codes for codes_per_group in donor_hla_typing.codes_per_group if
+                     codes_per_group.hla_group == hla_group).copy()
 
     if len(hla_codes) not in {1, 2}:
         raise AssertionError(f'Invalid list of alleles for gene {hla_group.name} - there have to be 1 or 2 per gene.'

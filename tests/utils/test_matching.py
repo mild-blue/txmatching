@@ -6,9 +6,8 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType, HLATyping,
                                                     PatientParameters)
 from txmatching.scorers.matching import (
-    get_count_of_transplants,
-    get_matching_hla_typing,
-    calculate_compatibility_index_for_group)
+    calculate_compatibility_index_for_group, get_count_of_transplants,
+    get_matching_hla_typing)
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
@@ -36,8 +35,8 @@ DONORS = [
                 hla_types_list=[
                     HLAType(raw_code=RAW_CODES[0]),
                     HLAType(raw_code=RAW_CODES[1]),
-                    HLAType(raw_code="B44"),
-                    HLAType(raw_code="DR10")
+                    HLAType(raw_code='B44'),
+                    HLAType(raw_code='DR10')
                 ]
             ),
             sex=Sex.M,
@@ -58,7 +57,7 @@ DONORS = [
                 hla_types_list=[
                     HLAType(raw_code=RAW_CODES[1]),
                     HLAType(raw_code=RAW_CODES[2]),
-                    HLAType(raw_code="DR10")
+                    HLAType(raw_code='DR10')
                 ]
             ),
             sex=Sex.M,
@@ -82,7 +81,7 @@ RECIPIENTS = [
                 hla_types_list=[
                     HLAType(raw_code=RAW_CODES[1]),
                     HLAType(raw_code=RAW_CODES[2]),
-                    HLAType(raw_code="DR1")
+                    HLAType(raw_code='DR1')
                 ]
             ),
             sex=Sex.M,
@@ -106,8 +105,8 @@ RECIPIENTS = [
             country_code=Country.CZE,
             hla_typing=HLATyping(
                 hla_types_list=[
-                    HLAType(raw_code="A3"),
-                    HLAType(raw_code="B38"),
+                    HLAType(raw_code='A3'),
+                    HLAType(raw_code='B38'),
                     HLAType(raw_code=RAW_CODES[4]),
                     HLAType(raw_code=RAW_CODES[5]),
                 ]
@@ -149,7 +148,7 @@ TEST_ANTIBODIES = HLAAntibodies(
 
 
 class TestMatching(unittest.TestCase):
-    def test__get_matching_hla_typing(self):
+    def test_get_matching_hla_typing(self):
         result = get_matching_hla_typing(DONORS[0], RECIPIENTS[0])
         result.sort()
         self.assertListEqual([RAW_CODES[1]], result)
@@ -230,4 +229,3 @@ class TestMatching(unittest.TestCase):
 
         result = get_count_of_transplants(matching)
         self.assertEquals(4, result)
-

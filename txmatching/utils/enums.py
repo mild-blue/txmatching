@@ -1,6 +1,7 @@
 import re
+from dataclasses import dataclass
 from enum import Enum
-from typing import List, Dict
+from typing import List
 
 
 class Country(str, Enum):
@@ -38,6 +39,9 @@ HLA_GROUP_SPLIT_CODE_REGEX = {
 
 HLA_GROUPS_GENE = [HLAGroups.A, HLAGroups.B, HLAGroups.DRB1]
 HLA_OTHER_GROUPS_NAME = 'Other'
+
+HLA_GROUPS_NAMES_WTIH_OTHER = [group.name for group in HLA_GROUPS_GENE] + [HLA_OTHER_GROUPS_NAME]
+
 HLA_GROUPS_OTHER = [HLAGroups.CW, HLAGroups.DP, HLAGroups.DQ, HLAGroups.OTHER_DR]
 
 HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS = {
@@ -60,7 +64,13 @@ MATCH_TYPE_BONUS = {
 }
 
 
-def split_to_hla_groups(hla_codes: List[str]) -> Dict[str, List[str]]:
+@dataclass
+class CodesPerGroup:
+    hla_group: str
+    hla_codes: List[str]
+
+
+def split_to_hla_groups(hla_codes: List[str]) -> List[CodesPerGroup]:
     hla_codes_in_groups = dict()
     for hla_group in HLA_GROUPS_GENE:
         hla_codes_in_groups[hla_group.name] = []
@@ -74,4 +84,5 @@ def split_to_hla_groups(hla_codes: List[str]) -> Dict[str, List[str]]:
                 break
         if not match_found:
             hla_codes_in_groups[HLA_OTHER_GROUPS_NAME] += [hla_code]
-    return hla_codes_in_groups
+    return [CodesPerGroup(hla_group, hla_codes_in_group) for hla_group, hla_codes_in_group in
+            hla_codes_in_groups.items()]

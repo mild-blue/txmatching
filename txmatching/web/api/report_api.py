@@ -5,7 +5,7 @@ import logging
 import os
 import time
 from distutils.dir_util import copy_tree
-from typing import List, Tuple, Dict
+from typing import List, Tuple
 
 import jinja2
 import pdfkit
@@ -30,11 +30,12 @@ from txmatching.database.services.matching_service import \
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
-from txmatching.scorers.matching import (get_count_of_transplants,
-                                         calculate_compatibility_index_for_group)
+from txmatching.scorers.matching import (
+    calculate_compatibility_index_for_group, get_count_of_transplants)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import HLAGroups, HLA_OTHER_GROUPS_NAME
+from txmatching.utils.enums import (HLA_OTHER_GROUPS_NAME, CodesPerGroup,
+                                    HLAGroups)
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -229,20 +230,28 @@ def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
     return f'{donor_recipient_score[0]} -> {donor_recipient_score[1]} : {donor_recipient_score[2]}'
 
 
-def hla_code_a_filter(codes_by_groups: Dict[str, List[str]]) -> List[str]:
-    return codes_by_groups[HLAGroups.A]
+def hla_code_a_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
+    return next(
+        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
+        codes_per_group.hla_group == HLAGroups.A.name)
 
 
-def hla_code_b_filter(codes_by_groups: Dict[str, List[str]]) -> List[str]:
-    return codes_by_groups[HLAGroups.B]
+def hla_code_b_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
+    return next(
+        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
+        codes_per_group.hla_group == HLAGroups.B.name)
 
 
-def hla_code_dr_filter(codes_by_groups: Dict[str, List[str]]) -> List[str]:
-    return codes_by_groups[HLAGroups.DRB1]
+def hla_code_dr_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
+    return next(
+        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
+        codes_per_group.hla_group == HLAGroups.DRB1.name)
 
 
-def hla_code_other_filter(codes_by_groups: Dict[str, List[str]]) -> List[str]:
-    return codes_by_groups[HLA_OTHER_GROUPS_NAME]
+def hla_code_other_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
+    return next(
+        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
+        codes_per_group.hla_group == HLA_OTHER_GROUPS_NAME)
 
 
 def compatibility_index_a_filter(transplant: TransplantDTO) -> float:
