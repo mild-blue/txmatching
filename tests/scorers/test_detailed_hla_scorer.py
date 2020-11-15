@@ -9,7 +9,8 @@ from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, HLAGroups, MatchTypes
 from txmatching.utils.hla_system.compatibility_index import (
-    DetailedCompatibilityIndexForHLAGroup, compatibility_index_detailed)
+    DetailedCompatibilityIndexForHLAGroup, HLAMatch,
+    compatibility_index_detailed)
 
 
 class TestHlaScorer(unittest.TestCase):
@@ -18,18 +19,26 @@ class TestHlaScorer(unittest.TestCase):
         calculated_detailed_score = compatibility_index_detailed(donor_parameters_Joe.hla_typing,
                                                                  recipient_parameters_Jack.hla_typing)
 
-        expected = {
-            HLAGroups.A: DetailedCompatibilityIndexForHLAGroup(donor_matches={'A23': MatchTypes.BROAD},
-                                                               recipient_matches={'A9': MatchTypes.BROAD},
-                                                               group_compatibility_index=1.0),
-            HLAGroups.B: DetailedCompatibilityIndexForHLAGroup(donor_matches={'B62': MatchTypes.BROAD},
-                                                               recipient_matches={'B77': MatchTypes.BROAD},
-                                                               group_compatibility_index=3.0),
-            HLAGroups.DRB1: DetailedCompatibilityIndexForHLAGroup(
-                donor_matches={'DR4': MatchTypes.SPLIT, 'DR11': MatchTypes.BROAD},
-                recipient_matches={'DR4': MatchTypes.SPLIT, 'DR11': MatchTypes.BROAD}, group_compatibility_index=18.0)}
+        expected = [
+                       DetailedCompatibilityIndexForHLAGroup(
+                           hla_group=HLAGroups.A,
+                           donor_matches=[HLAMatch('A23', MatchTypes.BROAD)],
+                           recipient_matches=[HLAMatch('A9', MatchTypes.BROAD)],
+                           group_compatibility_index=1.0),
+                       DetailedCompatibilityIndexForHLAGroup(
+                           hla_group=HLAGroups.B,
+                           donor_matches=[HLAMatch('B62', MatchTypes.BROAD)],
+                           recipient_matches=[HLAMatch('B77', MatchTypes.BROAD)],
+                           group_compatibility_index=3.0),
+                       DetailedCompatibilityIndexForHLAGroup(
+                           hla_group=HLAGroups.DRB1,
+                           donor_matches=[HLAMatch('DR4', MatchTypes.SPLIT), HLAMatch('DR11', MatchTypes.SPLIT)],
+                           recipient_matches=[HLAMatch('DR4', MatchTypes.SPLIT),
+                                              HLAMatch('DR11', MatchTypes.SPLIT)],
+                           group_compatibility_index=18.0)
+        ]
         self.maxDiff = None
-        self.assertDictEqual(expected, calculated_detailed_score)
+        self.assertListEqual(expected, calculated_detailed_score)
 
     def test_scorer_on_some_patients(self):
         scorer = HLAAdditiveScorer()

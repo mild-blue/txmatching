@@ -627,7 +627,7 @@ bad-matching
                             {% endfor %}
                         </td>
                         <td>
-                            {% for hla_type in
+                            {% for code in
                             transplant.recipient.parameters.hla_typing.codes_per_group|hla_code_dr_filter %}
                             <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
                             {% endfor %}
