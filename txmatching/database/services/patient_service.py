@@ -444,6 +444,7 @@ def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO) -> Pati
         ])
     return patient_update
 
+
 def to_lists_for_fe(txm_event: TxmEvent) -> Dict:
     return {
         'donors': [donor_to_donor_dto(donor, txm_event.all_recipients, txm_event.db_id) for donor in

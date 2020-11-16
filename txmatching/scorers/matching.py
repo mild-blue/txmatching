@@ -3,7 +3,8 @@ from typing import List
 from txmatching.patients.patient import Patient
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.utils.enums import HLAGroups
-from txmatching.utils.hla_system.compatibility_index import compatibility_index_detailed
+from txmatching.utils.hla_system.compatibility_index import \
+    compatibility_index_detailed
 
 
 def get_matching_hla_typing(donor: Patient, recipient: Patient) -> List[str]:
@@ -15,7 +16,7 @@ def get_matching_hla_typing(donor: Patient, recipient: Patient) -> List[str]:
     """
     scores = compatibility_index_detailed(donor.parameters.hla_typing,
                                           recipient.parameters.hla_typing)
-    return [code for ci_detail_group in scores.values() for code in ci_detail_group.recipient_matches.keys()]
+    return list({match.hla_code for ci_detail_group in scores for match in ci_detail_group.recipient_matches})
 
 
 def calculate_compatibility_index_for_group(donor: Patient, recipient: Patient, hla_group: HLAGroups) -> float:
@@ -29,7 +30,8 @@ def calculate_compatibility_index_for_group(donor: Patient, recipient: Patient, 
 
     scores = compatibility_index_detailed(donor.parameters.hla_typing,
                                           recipient.parameters.hla_typing)
-    return scores[hla_group].group_compatibility_index
+    return next(group_ci_detailed.group_compatibility_index for group_ci_detailed in scores if
+                group_ci_detailed.hla_group == hla_group)
 
 
 def get_count_of_transplants(matching: MatchingWithScore) -> int:

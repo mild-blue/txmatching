@@ -1,22 +1,33 @@
 from flask_restx import fields
 
-from txmatching.data_transfer_objects.matchings.matching_swagger import DESCRIPTION_DETAILED_SCORE, \
-    EXAMPLE_DETAILED_SCORE
+from txmatching.data_transfer_objects.matchings.matching_swagger import (
+    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE, DetailedScoreForGroup)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, Sex, HLAGroups, HLA_OTHER_GROUPS_NAME
+from txmatching.utils.enums import (HLA_GROUPS_NAMES_WTIH_OTHER,
+                                    HLA_OTHER_GROUPS_NAME, Country, HLAGroups,
+                                    Sex)
 from txmatching.web.api.namespaces import patient_api
 
-HLA_CODES_IN_GROUPS_EXAMPLE = {
-    HLAGroups.A.name: ["A1"],
-    HLAGroups.B.name: ["B38"],
-    HLAGroups.DRB1.name: ["DR7"],
-    HLA_OTHER_GROUPS_NAME: ["CW4"]
-}
+HLA_CODES_IN_GROUPS_EXAMPLE = [
+    {'hla_group': HLAGroups.A.name,
+     'hla_codes': ['A1']},
+    {'hla_group': HLAGroups.B.name,
+     'hla_codes': ['B38']},
+    {'hla_group': HLAGroups.DRB1.name,
+     'hla_codes': ['DR7']},
+    {'hla_group': HLA_OTHER_GROUPS_NAME,
+     'hla_codes': ['CW4']}
+]
 
 EXAMPLE_HLA_TYPING = {'hla_types_list': [{'raw_code': 'A*01:02'},
                                          {'raw_code': 'B7'},
                                          {'raw_code': 'DR11'}]}
+
+HlaCodesInGroup = patient_api.model('HlaCodesInGroups', {
+    'hla_group': fields.String(required=True, enum=[group for group in HLA_GROUPS_NAMES_WTIH_OTHER]),
+    'hla_codes': fields.List(required=True, cls_or_instance=fields.String)
+})
 
 HLAAntibody = patient_api.model('HlaAntibody', {
     'raw_code': fields.String(required=True),
@@ -32,15 +43,18 @@ HLAType = patient_api.model('HlaType', {
 
 HLATyping = patient_api.model('HlaTyping', {
     'hla_types_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAType)),
-    'codes_per_group': fields.Raw(required=True, description="hla codes split to hla groups",
-                                  example=HLA_CODES_IN_GROUPS_EXAMPLE),
+    'codes_per_group': fields.List(required=True,
+                                   description='hla codes split to hla groups',
+                                   example=HLA_CODES_IN_GROUPS_EXAMPLE,
+                                   cls_or_instance=fields.Nested(HlaCodesInGroup)),
 })
 
 HLAAntibodies = patient_api.model('HlaAntibodies', {
     'hla_antibodies_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAAntibody)),
-    'hla_codes_over_cutoff_per_group': fields.Raw(required=True,
-                                                  description="hla codes over cutoff split to hla groups",
-                                                  example=HLA_CODES_IN_GROUPS_EXAMPLE),
+    'hla_codes_over_cutoff_per_group': fields.List(required=True,
+                                                   description='hla codes split to hla groups',
+                                                   example=HLA_CODES_IN_GROUPS_EXAMPLE,
+                                                   cls_or_instance=fields.Nested(HlaCodesInGroup)),
 })
 
 PatientParametersModel = patient_api.model('PatientParameters', {
@@ -67,10 +81,11 @@ DonorModel = patient_api.model('DonorModel', {
     'donor_type': fields.String(required=True, enum=[donor_type.value for donor_type in DonorType]),
     'related_recipient_db_id': fields.Integer(required=False, description='Database id of the related recipient'),
     'score_with_related_recipient': fields.Float(required=False, description='Score calculated with related recipient'),
-    'detailed_compatibility_index_with_related_recipient': fields.Raw(
+    'detailed_compatibility_index_with_related_recipient': fields.List(
         required=False,
         description=DESCRIPTION_DETAILED_SCORE,
-        example=EXAMPLE_DETAILED_SCORE),
+        example=EXAMPLE_DETAILED_SCORE,
+        cls_or_instance=fields.Nested(DetailedScoreForGroup)),
 })
 
 RecipientModel = patient_api.model('RecipientModel', {

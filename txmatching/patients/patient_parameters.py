@@ -1,9 +1,10 @@
 import itertools
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict
+from typing import List, Optional
 
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, Sex, split_to_hla_groups
+from txmatching.utils.enums import (CodesPerGroup, Country, Sex,
+                                    split_to_hla_groups)
 from txmatching.utils.hla_system.hla_transformations import (
     get_mfi_from_multiple_hla_codes, parse_hla_raw_code)
 
@@ -25,7 +26,7 @@ class HLAType:
 @dataclass
 class HLATyping:
     hla_types_list: List[HLAType]
-    codes_per_group: Optional[Dict[str, List[str]]] = None
+    codes_per_group: Optional[List[CodesPerGroup]] = None
 
     def __post_init__(self):
         if self.codes_per_group is None:
@@ -49,7 +50,7 @@ class HLAAntibody:
 @dataclass
 class HLAAntibodies:
     hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
-    hla_codes_over_cutoff_per_group: Dict[str, List[str]] = field(default_factory=list)
+    hla_codes_over_cutoff_per_group: List[CodesPerGroup] = field(default_factory=list)
 
     def __init__(self, hla_antibodies_list: List[HLAAntibody] = None):
         if hla_antibodies_list is None:

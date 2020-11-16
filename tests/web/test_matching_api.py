@@ -25,23 +25,32 @@ class TestSaveAndGetConfiguration(DbTests):
                               json=conf_dto,
                               headers=self.auth_headers)
 
-            expected_ci = {
-                HLAGroups.A.name: {
-                    "donor_matches": {},
-                    "recipient_matches": {},
-                    "group_compatibility_index": 0.0
+            expected_ci = [
+                {
+                    'hla_group': HLAGroups.A.name,
+                    'donor_matches': [],
+                    'recipient_matches': [],
+                    'group_compatibility_index': 0.0
                 },
-                HLAGroups.B.name: {
-                    "donor_matches": {},
-                    "recipient_matches": {},
-                    "group_compatibility_index": 0.0
+                {
+                    'hla_group': HLAGroups.B.name,
+                    'donor_matches': [],
+                    'recipient_matches': [],
+                    'group_compatibility_index': 0.0
                 },
-                HLAGroups.DRB1.name: {
-                    "donor_matches": {"DR11": MatchTypes.BROAD.name},
-                    "recipient_matches": {"DR11": MatchTypes.BROAD.name},
-                    "group_compatibility_index": 18.0
+                {
+                    'hla_group': HLAGroups.DRB1.name,
+                    'donor_matches': [{'hla_code': 'DR11',
+                                       'match_type': MatchTypes.SPLIT.name},
+                                      {'hla_code': 'DR11',
+                                       'match_type': MatchTypes.SPLIT.name}],
+                    'recipient_matches': [{'hla_code': 'DR11',
+                                           'match_type': MatchTypes.SPLIT.name},
+                                          {'hla_code': 'DR11',
+                                           'match_type': MatchTypes.SPLIT.name}],
+                    'group_compatibility_index': 18.0
                 }
-            }
+            ]
             expected = [
                 {
                     'order_id': 1,
