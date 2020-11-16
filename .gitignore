@@ -313,3 +313,4 @@ dmypy.json
 txmatching/web/csv_uploads
 devops/compose/project-configuration
 devops/compose/docker-compose.yml
+.DS_Store
