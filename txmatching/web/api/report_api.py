@@ -36,8 +36,7 @@ from txmatching.scorers.matching import (
     calculate_compatibility_index_for_group, get_count_of_transplants)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import (HLA_OTHER_GROUPS_NAME, CodesPerGroup,
-                                    HLAGroups)
+from txmatching.utils.enums import CodesPerGroup, HLAGroups
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -249,25 +248,25 @@ def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
 def hla_code_a_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
     return next(
         codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroups.A.name)
+        codes_per_group.hla_group == HLAGroups.A)
 
 
 def hla_code_b_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
     return next(
         codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroups.B.name)
+        codes_per_group.hla_group == HLAGroups.B)
 
 
 def hla_code_dr_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
     return next(
         codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroups.DRB1.name)
+        codes_per_group.hla_group == HLAGroups.DRB1)
 
 
 def hla_code_other_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
     return next(
         codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLA_OTHER_GROUPS_NAME)
+        codes_per_group.hla_group == HLAGroups.Other)
 
 
 def compatibility_index_a_filter(transplant: TransplantDTO) -> float:
