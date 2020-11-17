@@ -197,6 +197,10 @@ definitions:
                     group_compatibility_index: 0.0
                     hla_group: DRB1
                     recipient_matches: []
+                -   donor_matches: []
+                    group_compatibility_index: 0.0
+                    hla_group: Other
+                    recipient_matches: []
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array
@@ -374,6 +378,8 @@ definitions:
                 - SPLIT
                 - BROAD
                 - HIGH_RES
+                - NONE
+                - ANTIBODY
                 example: SPLIT
                 type: string
         required:
