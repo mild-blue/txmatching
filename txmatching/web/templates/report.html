@@ -93,7 +93,7 @@
 
     .header h1 {
         margin: 0;
-        color: #e2001a;
+        color: {{ color }};
         font-size: 32px;
     }
 
@@ -110,13 +110,13 @@
     }
 
     .logo img {
-        width: 50px;
+        height: 50px;
     }
 
     .logo h2 {
         margin: 0 0 0 20px;
         padding-left: 20px;
-        color: #e2001a;
+        color: {{ color }};
         line-height: 1;
         font-size: 18px;
         position: relative;
@@ -129,7 +129,7 @@
         top: 0;
         width: 3px;
         height: 100%;
-        background: #e2001a;
+        background: {{ color }};
     }
 
     /* Date */
@@ -398,7 +398,7 @@
     }
 
     .color-primary {
-        color: #e2001a !important;
+        color: {{ color }} !important;
     }
 
 </style>
@@ -408,7 +408,7 @@
         <h1>{{ title }}</h1>
 
         <div class="logo">
-            <img alt="logo" src="./assets/logo_ikem.svg"/>
+            <img alt="logo" src="{{ logo }}"/>
             <h2>
                 Transplant<br>Matching
             </h2>

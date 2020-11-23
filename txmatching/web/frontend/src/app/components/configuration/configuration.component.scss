@@ -45,7 +45,7 @@
       margin-right: $padding-x;
 
       &:hover {
-        color: $primary;
+        color: var(--primary-color);
       }
     }
   }

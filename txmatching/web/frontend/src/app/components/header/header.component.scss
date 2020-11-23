@@ -70,7 +70,7 @@ header {
         color: $body-color--secondary;
 
         &.active {
-          color: $primary;
+          color: var(--primary-color);
         }
       }
     }
@@ -159,7 +159,7 @@ header {
         a {
           border-radius: $border-radius--wide;
           color: $white;
-          background-color: $primary;
+          background-color: var(--primary-color);
 
           padding: 0 10px;
           margin-top: 10px;
@@ -174,7 +174,7 @@ header {
           align-items: center;
 
           &:hover {
-            background-color: darken($primary, 10%);
+            background-color: hsl(var(--primary-color), 10%);
           }
         }
       }
