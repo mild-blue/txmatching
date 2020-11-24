@@ -231,8 +231,8 @@ class Report(Resource):
     @staticmethod
     def get_theme() -> Tuple[str, str]:
         conf = get_application_configuration()
-        return (LOGO_IKEM, COLOR_IKEM) if conf.environment == ApplicationEnvironment.PRODUCTION \
-            else (LOGO_MILD_BLUE, COLOR_MILD_BLUE)
+        return (LOGO_MILD_BLUE, COLOR_MILD_BLUE) if conf.environment == ApplicationEnvironment.STAGING \
+            else (LOGO_IKEM, COLOR_IKEM)
 
 
 def country_combination_filter(country_combination: ForbiddenCountryCombination) -> str:

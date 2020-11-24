@@ -5,7 +5,6 @@ import {LoggerService} from '@app/services/logger/logger.service';
 import {User} from '@app/model/User';
 import {Router} from '@angular/router';
 import {VersionService} from "./services/version/version.service";
-import {Version} from "./model/Version";
 import {DEVELOPMENT, THEMES} from "./themes";
 
 @Component({
@@ -37,22 +36,18 @@ export class AppComponent implements OnDestroy {
   }
 
   setTheme() {
-    this._versionService.getEnvironment().then((value: Version) => {
-      // @ts-ignore
-      let theme = THEMES[value.environment]
+    const environment = this._versionService.getEnvironment()
+    // @ts-ignore
+    let theme = THEMES[environment]
 
-      if (!theme) {
-        this._logger.error(`Could not find theme '${value.environment}' -> setting default '${DEVELOPMENT}'.`)
-        theme = THEMES[DEVELOPMENT]
-      }
+    if (!theme) {
+      theme = THEMES[DEVELOPMENT]
+    }
 
-      Object.keys(theme).forEach(key =>
-        document.documentElement.style.setProperty(`--${key}`, theme[key])
-      );
-
-    }).catch((reason: any) => {
-      this._logger.error('Could not set theme.', reason)
-    })
+    // @ts-ignore
+    Object.keys(theme).forEach(key =>
+      document.documentElement.style.setProperty(`--${key}`, theme[key])
+    );
   }
 
   ngOnDestroy() {

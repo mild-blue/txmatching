@@ -10,15 +10,28 @@ import {Version} from "../../model/Version";
 })
 export class VersionService {
 
+  private environment: string | null = null;
+
   constructor(
     private _http: HttpClient,
-              private _logger: LoggerService
+    private _logger: LoggerService
   ) {
   }
 
-  public async getEnvironment(): Promise<Version> {
-    return this._http.get<Version>(
+  public getEnvironment(): string | null {
+    if (this.environment) {
+      return this.environment
+    }
+
+    const promise = this._http.get<Version>(
       `${environment.apiUrl}/service/version`
     ).pipe(first()).toPromise();
+
+    promise.then((value: Version) => {
+      this.environment = value.environment
+    }).catch((reason: any) => {
+      this._logger.error('Could not set theme.', reason)
+    })
+    return this.environment
   }
 }
