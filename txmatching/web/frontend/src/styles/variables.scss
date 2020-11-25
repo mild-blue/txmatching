@@ -32,12 +32,3 @@ $item-gap: calc(#{$box-shadow--wide-size} / 2);
 
 // FORM
 $input-border-radius: calc(#{$border-radius--wide} / 3);
-
-
-:root {
-  --primary-color: $primary-ikem;
-  --logo-background-image: none;
-  --logo-background-size: 0 0;
-  --logo-width: 0;
-  --logo-height: 0;
-}
