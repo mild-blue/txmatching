@@ -1,11 +1,12 @@
-import {Component, OnDestroy} from '@angular/core';
-import {AuthService} from '@app/services/auth/auth.service';
-import {Subscription} from 'rxjs';
-import {LoggerService} from '@app/services/logger/logger.service';
-import {User} from '@app/model/User';
-import {Router} from '@angular/router';
-import {VersionService} from "./services/version/version.service";
-import {DEVELOPMENT, THEMES} from "./themes";
+import { Component, OnDestroy } from '@angular/core';
+import { AuthService } from '@app/services/auth/auth.service';
+import { Subscription } from 'rxjs';
+import { LoggerService } from '@app/services/logger/logger.service';
+import { User } from '@app/model/User';
+import { Router } from '@angular/router';
+import { VersionService } from './services/version/version.service';
+import { development, theme } from './model/Theme';
+import { finalize, first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -32,22 +33,25 @@ export class AppComponent implements OnDestroy {
       }
     });
 
-    this.setTheme()
+    this.setTheme();
   }
 
   setTheme() {
-    const environment = this._versionService.getEnvironment()
-    // @ts-ignore
-    let theme = THEMES[environment]
-
-    if (!theme) {
-      theme = THEMES[DEVELOPMENT]
-    }
-
-    // @ts-ignore
-    Object.keys(theme).forEach(key =>
-      document.documentElement.style.setProperty(`--${key}`, theme[key])
-    );
+    let currentTheme = theme[development];
+    this._versionService.initEnvironment().pipe(
+      first(),
+      finalize(() => {
+        Object.keys(currentTheme).forEach(key =>
+          document.body.style.setProperty(`--${key}`, currentTheme[key])
+        );
+      })
+    ).subscribe(
+      (environment: string) => {
+        currentTheme = theme[environment];
+      },
+      (error: string) => {
+        this._logger.error('Could not set theme.', [error]);
+      });
   }
 
   ngOnDestroy() {
