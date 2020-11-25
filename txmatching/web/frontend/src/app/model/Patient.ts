@@ -1,5 +1,5 @@
 import { ListItem } from '@app/components/list-item/list-item.interface';
-import { Antigen } from '@app/model/Hla';
+import { Antigen, HlaGroupCodes } from '@app/model/Hla';
 
 export interface Patient extends ListItem {
   db_id: number;
@@ -10,6 +10,7 @@ export interface Patient extends ListItem {
 export interface PatientParameters {
   blood_group: string;
   hla_typing: {
+    codes_per_group: HlaGroupCodes[];
     hla_types_list: Antigen[];
   };
   country_code: string;

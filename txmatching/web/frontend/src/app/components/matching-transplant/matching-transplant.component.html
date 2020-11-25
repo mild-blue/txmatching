@@ -48,21 +48,21 @@
         <td>Antibodies</td>
         <td></td>
       </tr>
-      <tr *ngFor="let prefix of prefixes">
-        <td>{{prefix}}</td>
+      <tr *ngFor="let compatibilityIndex of transplant.detailed_compatibility_index">
+        <td>{{ compatibilityIndex.hla_group }}</td>
         <td>
-          <app-code *ngFor="let code of filterCodes(transplant.d.parameters.hla_typing.hla_types_list, prefix)"
-                    [class]="getDonorAntigenClass(code.code)">{{ code.code }}</app-code>
+          <app-code *ngFor="let code of getGroupCodes(transplant.d.parameters.hla_typing.codes_per_group, compatibilityIndex.hla_group)"
+                    [class]="getDonorAntigenClass(code)">{{ code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterCodes(transplant.r.parameters.hla_typing.hla_types_list, prefix)"
+          <app-code *ngFor="let code of filterCodes(transplant.r.parameters.hla_typing.hla_types_list, row.hla_group)"
                     [class]="getRecipientAntigenClass(code.code)">{{ code.code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterPureCodes(transplant.r.hla_antibodies.hla_codes_over_cutoff, prefix)"
+          <app-code *ngFor="let code of filterPureCodes(transplant.r.hla_antibodies.hla_codes_over_cutoff_per_group, row.hla_group)"
                     [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
         </td>
-        <td>{{ hlaScores ? hlaScores.get(prefix) : 0 }}</td>
+        <td>{{ compatibilityIndex.group_compatibility_index }}</td>
       </tr>
       <tr>
         <td>Other</td>
