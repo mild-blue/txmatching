@@ -19,10 +19,10 @@
   align-items: center;
 
   &.primary {
-    background-color: $primary;
+    background-color: var(--primary-color);
 
     &:hover {
-      background-color: darken($primary, 10%);
+      background-color: hsl(var(--primary-color), 10%);
     }
   }
 

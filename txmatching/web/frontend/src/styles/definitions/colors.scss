@@ -1,5 +1,6 @@
 // === BRAND COLORS === //
-$brand-red: #e2001a;
+$brand-ikem: #e2001a;
+$brand-mild-blue: #2D4496;
 $brand-grey-dark: #dddddd;
 $brand-grey-darker: #666666;
 
@@ -19,7 +20,6 @@ $black: #000000;
 $white: #ffffff;
 $light: #f9f9f9;
 $dark: $brand-grey-darker;
-$primary: $brand-red;
 $accent: #007bff;
 $success: #28a745;
 $danger: #dc3545;
@@ -29,10 +29,6 @@ $transplant-bg--compatible: $gray-200;
 $transplant-color--compatible: $black;
 $transplant-bg--incompatible: $dark;
 $transplant-color--incompatible: $light;
-//$transplant-bg--compatible: $gray-200;
-//$transplant-color--compatible: $success;
-//$transplant-bg--incompatible: $gray-200;
-//$transplant-color--incompatible: $black;
 
 // === ANTIBODIES & ANTIGENS CODES === //
 // basic code

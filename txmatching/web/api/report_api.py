@@ -16,6 +16,8 @@ from jinja2 import Environment, FileSystemLoader
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         NotFoundException)
 from txmatching.auth.user.user_auth_check import require_user_login
+from txmatching.configuration.app_configuration.application_configuration import get_application_configuration, \
+    ApplicationEnvironment
 from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.matchings.matching_dto import (
@@ -43,6 +45,12 @@ TMP_DIR = '/tmp/txmatching_reports'
 MATCHINGS_BELOW_CHOSEN = 'matchingsBelowChosen'
 MIN_MATCHINGS_BELOW_CHOSEN = 0
 MAX_MATCHINGS_BELOW_CHOSEN = 20
+
+LOGO_IKEM = './assets/logo_ikem.svg'
+COLOR_IKEM = '#e2001a'
+
+LOGO_MILD_BLUE = './assets/logo_mild_blue.svg'
+COLOR_MILD_BLUE = '#2D4496'
 
 
 # Query params:
@@ -153,13 +161,16 @@ class Report(Resource):
             configuration.manual_donor_recipient_scores
         ]
 
+        logo, color = Report.get_theme()
         html = (j2_env.get_template('report.html').render(
             title='Matching Report',
             date=now.strftime('%d.%m.%Y %H:%M:%S'),
             configuration=configuration,
             matchings=matching_dtos,
             required_patients_medical_ids=required_patients_medical_ids,
-            manual_donor_recipient_scores_with_medical_ids=manual_donor_recipient_scores_with_medical_ids
+            manual_donor_recipient_scores_with_medical_ids=manual_donor_recipient_scores_with_medical_ids,
+            logo=logo,
+            color=color
         ))
 
         html_file_full_path = os.path.join(TMP_DIR, f'report_{now_formatted}.html')
@@ -216,6 +227,12 @@ class Report(Resource):
                 if os.path.isfile(os.path.join(TMP_DIR, filename)):
                     print(filename)
                     os.remove(os.path.join(TMP_DIR, filename))
+
+    @staticmethod
+    def get_theme() -> Tuple[str, str]:
+        conf = get_application_configuration()
+        return (LOGO_MILD_BLUE, COLOR_MILD_BLUE) if conf.environment == ApplicationEnvironment.STAGING \
+            else (LOGO_IKEM, COLOR_IKEM)
 
 
 def country_combination_filter(country_combination: ForbiddenCountryCombination) -> str:
