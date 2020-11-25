@@ -17,6 +17,7 @@ export class AppComponent implements OnDestroy {
 
   private _userSubscription?: Subscription;
   public user?: User;
+  public isThemeSet: boolean = false;
 
   constructor(
     private _authService: AuthService,
@@ -44,6 +45,7 @@ export class AppComponent implements OnDestroy {
         Object.keys(currentTheme).forEach(key =>
           document.body.style.setProperty(`--${key}`, currentTheme[key])
         );
+        this.isThemeSet = true;
       })
     ).subscribe(
       (environment: string) => {
