@@ -13,25 +13,6 @@ from txmatching.utils.enums import Country
 
 
 class TestUserCrudWithDb(DbTests):
-    def _create_and_get(self, role: UserRole = UserRole.ADMIN) -> Tuple[AppUserModel, str]:
-        pwd = str(uuid4())
-        email = str(uuid4()) + "abc"
-
-        app_config = mock.MagicMock()
-        app_config.environment = ApplicationEnvironment.PRODUCTION
-
-        def get_app_config():
-            return app_config
-
-        with mock.patch('txmatching.auth.user.user_auth_management.get_application_configuration', get_app_config):
-            # check that we normalize email to lower
-            register_user(email.upper(), pwd, [Country.CZE], role, '+420456678645')
-
-        db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
-        self.assertIsNotNone(db_usr)
-        self.assertNotEqual(pwd, db_usr.pass_hash)
-        self.assertTrue(db_usr.require_2fa)
-        return db_usr, pwd
 
     def test_register_user(self):
         db_usr, pwd = self._create_and_get()
@@ -83,3 +64,23 @@ class TestUserCrudWithDb(DbTests):
     def test_create_as_service(self):
         self.assertRaises(InvalidAuthCallException,
                           lambda: register_user(str(uuid4()), str(uuid4()), [], UserRole.SERVICE, '+123456789'))
+
+    def _create_and_get(self, role: UserRole = UserRole.ADMIN) -> Tuple[AppUserModel, str]:
+        pwd = str(uuid4())
+        email = str(uuid4()) + "abc"
+
+        app_config = mock.MagicMock()
+        app_config.environment = ApplicationEnvironment.PRODUCTION
+
+        def get_app_config():
+            return app_config
+
+        with mock.patch('txmatching.auth.user.user_auth_management.get_application_configuration', get_app_config):
+            # check that we normalize email to lower
+            register_user(email.upper(), pwd, [Country.CZE], role, '+420456678645')
+
+        db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
+        self.assertIsNotNone(db_usr)
+        self.assertNotEqual(pwd, db_usr.pass_hash)
+        self.assertTrue(db_usr.require_2fa)
+        return db_usr, pwd
