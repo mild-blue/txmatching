@@ -10,7 +10,7 @@ from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import TokenType, UserRole
 from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.configuration.app_configuration.application_configuration import \
-    get_application_configuration
+    get_application_configuration, ApplicationEnvironment
 from txmatching.database.db import db
 from txmatching.database.services.app_user_management import (
     get_app_user_by_email, persist_user)
@@ -217,8 +217,8 @@ class TestUserApi(DbTests):
         self.assertEqual(new_user['email'], user.email)
         self.assertEqual(new_user['role'], user.role)
         self.assertEqual(new_user['second_factor'], user.phone_number)
-        # check that 2fa by default is enabled
-        self.assertTrue(user.require_2fa)
+        self.assertEqual(get_application_configuration().environment
+                         == ApplicationEnvironment.PRODUCTION, user.require_2fa)
         # disable 2fa and try to login
         user.require_2fa = False
         db.session.commit()

@@ -5,6 +5,8 @@ from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import UserUpdateException, require_auth_condition
 from txmatching.auth.user.totp import generate_totp_seed
+from txmatching.configuration.app_configuration.application_configuration import get_application_configuration, \
+    ApplicationEnvironment
 from txmatching.database.services.app_user_management import get_app_user_by_email, persist_user, \
     update_password_for_user
 from txmatching.database.sql_alchemy_schema import AppUserModel
@@ -27,7 +29,8 @@ def register_user(email: str, password: str, allowed_countries: List[Country], r
         role=role,
         second_factor_material=generate_totp_seed(),
         phone_number=phone_number,
-        allowed_edit_countries=allowed_countries
+        allowed_edit_countries=allowed_countries,
+        require_2fa=get_application_configuration().environment == ApplicationEnvironment.PRODUCTION
     )
     persist_user(user)
     return user

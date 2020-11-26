@@ -11,7 +11,8 @@ from txmatching.auth.login_flow import credentials_login, _refresh_token, _otp_l
 from txmatching.auth.service.service_auth_management import register_service
 from txmatching.auth.user.totp import generate_otp_for_user, verify_otp_for_user
 from txmatching.auth.user.user_auth_management import register_user
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
+from txmatching.configuration.app_configuration.application_configuration import get_application_configuration, \
+    ApplicationEnvironment
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.utils.enums import Country
@@ -144,7 +145,15 @@ class TestLoginFlow(DbTests):
     def _create_user(self, role: UserRole = UserRole.ADMIN, require_2fa: bool = True) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())
         email = str(uuid4())
-        register_user(email, pwd, [Country.CZE], role, '+420456678645')
+
+        app_config = mock.MagicMock()
+        app_config.environment = ApplicationEnvironment.PRODUCTION
+
+        def get_app_config():
+            return app_config
+
+        with mock.patch('txmatching.auth.user.user_auth_management.get_application_configuration', get_app_config):
+            register_user(email, pwd, [Country.CZE], role, '+420456678645')
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
         self.assertIsNotNone(db_usr)
         self.assertNotEqual(pwd, db_usr.pass_hash)

@@ -1,4 +1,5 @@
 from typing import Tuple
+from unittest import mock
 from uuid import uuid4
 
 from tests.test_utilities.prepare_app import DbTests
@@ -7,6 +8,7 @@ from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import CredentialsMismatchException
 from txmatching.auth.user.user_auth_management import register_user
+from txmatching.configuration.app_configuration.application_configuration import ApplicationEnvironment
 from txmatching.database.services.app_user_management import get_app_user_by_id
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
@@ -38,7 +40,15 @@ class TestLoginFlow(DbTests):
     def _create_user(self, role: UserRole = UserRole.ADMIN) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())
         email = str(uuid4())
-        register_user(email, pwd, [], role, '+420456678645')
+
+        app_config = mock.MagicMock()
+        app_config.environment = ApplicationEnvironment.PRODUCTION
+
+        def get_app_config():
+            return app_config
+
+        with mock.patch('txmatching.auth.user.user_auth_management.get_application_configuration', get_app_config):
+            register_user(email, pwd, [], role, '+420456678645')
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
         self.assertIsNotNone(db_usr)
         return db_usr, pwd
