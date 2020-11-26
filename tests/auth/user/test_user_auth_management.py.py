@@ -48,7 +48,7 @@ class TestUserCrudWithDb(DbTests):
 
         with mock.patch('txmatching.auth.user.user_auth_management.get_application_configuration', get_app_config):
             # check that we normalize email to lower
-            register_user(str(uuid4()), str(uuid4()), [], UserRole.ADMIN, '+420456678645')
+            register_user(email, str(uuid4()), [], UserRole.ADMIN, '+420456678645')
 
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
         self.assertIsNotNone(db_usr)

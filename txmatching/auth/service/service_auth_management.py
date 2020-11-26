@@ -49,7 +49,7 @@ def _assert_service_registration(normalized_email: str, password: str, whitelist
 
 
 def _assert_service_password_validity(password: str):
-    # TODO https://trello.com/c/eivSt018y define our password policies for the services
+    # TODO https://trello.com/c/ivSt018y define our password policies for the services
     if not password:
         raise UserUpdateException('Invalid password.')
 
