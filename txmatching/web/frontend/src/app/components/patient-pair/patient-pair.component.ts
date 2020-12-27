@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { PatientPair } from '@app/model/PatientPair';
+import { Donor } from '@app/model/Donor';
+import { Recipient } from '@app/model/Recipient';
 
 @Component({
   selector: 'app-patient-pair',
@@ -8,7 +9,8 @@ import { PatientPair } from '@app/model/PatientPair';
 })
 export class PatientPairComponent implements OnInit {
 
-  @Input() pair?: PatientPair;
+  @Input() donor?: Donor;
+  @Input() recipient?: Recipient;
 
   constructor() {
   }

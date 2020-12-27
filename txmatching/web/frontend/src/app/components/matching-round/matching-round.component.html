@@ -8,7 +8,7 @@
          class="matching-round__transplant">
 
       <div class="content">
-        <app-patient-pair [pair]="transplant"></app-patient-pair>
+        <app-patient-pair [donor]="transplant.d" [recipient]="transplant.r"></app-patient-pair>
       </div>
 
       <app-score-indicator *ngIf="configuration && !configuration.use_binary_scoring"

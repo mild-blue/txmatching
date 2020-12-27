@@ -4,6 +4,7 @@ import { PatientPairTab } from '@app/components/patient-pair-detail/patient-pair
 import { Configuration } from '@app/model/Configuration';
 import { PatientPair } from '@app/model/PatientPair';
 import { PatientList } from '@app/model/PatientList';
+import { compatibleBloodGroups } from '@app/model/Patient';
 
 @Component({
   selector: 'app-patient-pair-detail',
@@ -31,4 +32,11 @@ export class PatientPairDetailComponent extends ListItemDetailAbstractComponent 
     this.activeTab = Object.values(this.tabs).find(t => t === tab) as PatientPairTab;
   }
 
+  get isBloodCompatible(): boolean {
+    if (!this.item) {
+      return false;
+    }
+
+    return compatibleBloodGroups[this.item.r.parameters.blood_group].includes(this.item.d.parameters.blood_group);
+  }
 }
