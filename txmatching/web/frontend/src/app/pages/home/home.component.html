@@ -1,6 +1,8 @@
 <app-header [user]="user"
             [downloadStatus]="downloadStatus"
-            (downloadAction)="downloadReport()"></app-header>
+            [uploadStatus]="uploadStatus"
+            (downloadAction)="downloadReport()"
+            (uploadAction)="uploadPatients()"></app-header>
 
 <section class="home">
   <app-container>

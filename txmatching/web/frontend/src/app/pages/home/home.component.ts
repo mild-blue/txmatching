@@ -14,9 +14,10 @@ import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
 import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
 import { ReportService } from '@app/services/report/report.service';
-import { DownloadStatus } from '@app/components/header/header.interface';
+import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
 import { finalize, first } from 'rxjs/operators';
+import { UploadService } from '@app/services/upload/upload.service';
 
 @Component({
   selector: 'app-home',
@@ -29,6 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private _matchingSubscription?: Subscription;
   private _patientsSubscription?: Subscription;
   private _downloadInProgress: boolean = false;
+  private _uploadInProgress: boolean = false;
 
   public loading: boolean = false;
 
@@ -50,6 +52,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               private _matchingService: MatchingService,
               private _patientService: PatientService,
               private _reportService: ReportService,
+              private _uploadService: UploadService,
               private _logger: LoggerService) {
   }
 
@@ -72,12 +75,19 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.user ? this.user.decoded.role === Role.VIEWER : false;
   }
 
-  get downloadStatus(): DownloadStatus {
+  get downloadStatus(): UploadDownloadStatus {
     const activeMatchingExists = !this.loading && this.getActiveMatching() !== undefined;
     if (!activeMatchingExists) {
-      return DownloadStatus.disabled;
+      return UploadDownloadStatus.disabled;
     }
-    return this._downloadInProgress ? DownloadStatus.loading : DownloadStatus.enabled;
+    return this._downloadInProgress ? UploadDownloadStatus.loading : UploadDownloadStatus.enabled;
+  }
+
+  get uploadStatus(): UploadDownloadStatus {
+    if (this.loading) {
+      return UploadDownloadStatus.disabled;
+    }
+    return this._uploadInProgress ? UploadDownloadStatus.loading : UploadDownloadStatus.enabled;
   }
 
   get showConfiguration(): boolean {
@@ -115,6 +125,34 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       (error: Error) => {
         this._alertService.error(`<strong>Error downloading PDF:</strong> ${error.message}`);
+      });
+  }
+
+  public async uploadPatients(): Promise<void> {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.dispatchEvent(new MouseEvent('click'));
+    input.addEventListener('change', () => this._handleUpload(input));
+  }
+
+  private _handleUpload(input: HTMLInputElement): void {
+    const fileToUpload = input.files?.item(0);
+    if (!fileToUpload) {
+      return;
+    }
+
+    this._uploadInProgress = true;
+    this._uploadService.uploadFile(fileToUpload).pipe(
+      first(),
+      finalize(() => this._uploadInProgress = false)
+    )
+    .subscribe(
+      () => {
+        this._alertService.success('Patients uploaded successfully');
+      },
+      (e: Error) => {
+        this._alertService.error(`Error uploading patients: "${e.message || e}"`);
+        this._logger.error(`Error uploading patients: "${e.message || e}"`);
       });
   }
 

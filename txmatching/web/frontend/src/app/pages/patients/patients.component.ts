@@ -7,7 +7,7 @@ import { LoggerService } from '@app/services/logger/logger.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
-import { DownloadStatus } from '@app/components/header/header.interface';
+import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
 import { AppConfiguration } from '@app/model/Configuration';
 
@@ -26,7 +26,7 @@ export class PatientsComponent implements OnInit {
 
   public loading: boolean = false;
   public error: boolean = false;
-  public downloadStatus: DownloadStatus = DownloadStatus.hidden;
+  public downloadStatus: UploadDownloadStatus = UploadDownloadStatus.hidden;
 
   public user?: User;
 
