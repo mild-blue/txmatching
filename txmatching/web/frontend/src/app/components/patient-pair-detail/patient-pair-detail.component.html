@@ -11,6 +11,8 @@
          class="pair-detail__pair">
       <app-matching-transplant [patients]="patients"
                                [transplant]="item"
+                               [score]="item.d.score_with_related_recipient"
+                               [detailedCompatibilityIndex]="item.d.detailed_compatibility_index_with_related_recipient"
                                [configuration]="configuration"></app-matching-transplant>
     </div>
     <app-patient-detail-donor *ngSwitchCase="tabs.Donor"
