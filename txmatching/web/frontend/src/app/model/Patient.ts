@@ -17,17 +17,15 @@ export interface PatientParameters {
 }
 
 // recipient: [possible donors]
-const compatibleBloodGroups: { [key: string]: string[]; } = {
+export const compatibleBloodGroups: { [key: string]: string[]; } = {
   0: ['0'],
   A: ['0', 'A'],
   B: ['0', 'B'],
   AB: ['0', 'A', 'B', 'AB']
 };
 
-const antibodiesMultipliers: { [key: string]: number; } = {
+export const antibodiesMultipliers: { [key: string]: number; } = {
   A: 1,
   B: 3,
   DR: 9
 };
-
-export { compatibleBloodGroups, antibodiesMultipliers };
