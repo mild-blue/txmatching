@@ -20,22 +20,37 @@ class TestHlaScorer(unittest.TestCase):
                                                                  recipient_parameters_Jack.hla_typing)
 
         expected = [
-                       DetailedCompatibilityIndexForHLAGroup(
-                           hla_group=HLAGroups.A,
-                           donor_matches=[HLAMatch('A23', MatchTypes.BROAD)],
-                           recipient_matches=[HLAMatch('A9', MatchTypes.BROAD)],
-                           group_compatibility_index=1.0),
-                       DetailedCompatibilityIndexForHLAGroup(
-                           hla_group=HLAGroups.B,
-                           donor_matches=[HLAMatch('B62', MatchTypes.BROAD)],
-                           recipient_matches=[HLAMatch('B77', MatchTypes.BROAD)],
-                           group_compatibility_index=3.0),
-                       DetailedCompatibilityIndexForHLAGroup(
-                           hla_group=HLAGroups.DRB1,
-                           donor_matches=[HLAMatch('DR4', MatchTypes.SPLIT), HLAMatch('DR11', MatchTypes.SPLIT)],
-                           recipient_matches=[HLAMatch('DR4', MatchTypes.SPLIT),
-                                              HLAMatch('DR11', MatchTypes.SPLIT)],
-                           group_compatibility_index=18.0)
+            DetailedCompatibilityIndexForHLAGroup(
+                hla_group=HLAGroups.A,
+                donor_matches=[HLAMatch('A23', MatchTypes.BROAD),
+                               HLAMatch('A26', MatchTypes.BROAD.NONE)],
+                recipient_matches=[HLAMatch('A9', MatchTypes.BROAD),
+                                   HLAMatch('A30', MatchTypes.BROAD.NONE)],
+                group_compatibility_index=1.0),
+            DetailedCompatibilityIndexForHLAGroup(
+                hla_group=HLAGroups.B,
+                donor_matches=[HLAMatch('B62', MatchTypes.BROAD),
+                               HLAMatch('B38', MatchTypes.NONE)],
+                recipient_matches=[HLAMatch('B77', MatchTypes.BROAD),
+                                   HLAMatch('B14', MatchTypes.NONE)],
+                group_compatibility_index=3.0),
+            DetailedCompatibilityIndexForHLAGroup(
+                hla_group=HLAGroups.DRB1,
+                donor_matches=[HLAMatch('DR4', MatchTypes.SPLIT), HLAMatch('DR11', MatchTypes.SPLIT)],
+                recipient_matches=[HLAMatch('DR4', MatchTypes.SPLIT),
+                                   HLAMatch('DR11', MatchTypes.SPLIT)],
+                group_compatibility_index=18.0),
+            DetailedCompatibilityIndexForHLAGroup(hla_group=HLAGroups.Other,
+                                                  donor_matches=[HLAMatch(hla_code='DR52', match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code='DR53', match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code='DQ7', match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code='DQ8', match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code='DP2', match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code='DP10', match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code='CW9', match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code='CW12', match_type=MatchTypes.NONE)],
+                                                  recipient_matches=[], group_compatibility_index=0.0)
+
         ]
         self.maxDiff = None
         self.assertListEqual(expected, calculated_detailed_score)

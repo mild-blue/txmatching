@@ -4,9 +4,8 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE, DetailedScoreForGroup)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import (HLA_GROUPS_NAMES_WTIH_OTHER,
-                                    HLA_OTHER_GROUPS_NAME, Country, HLAGroups,
-                                    Sex)
+from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER, Country,
+                                    HLAGroups, Sex)
 from txmatching.web.api.namespaces import patient_api
 
 HLA_CODES_IN_GROUPS_EXAMPLE = [
@@ -16,7 +15,7 @@ HLA_CODES_IN_GROUPS_EXAMPLE = [
      'hla_codes': ['B38']},
     {'hla_group': HLAGroups.DRB1.name,
      'hla_codes': ['DR7']},
-    {'hla_group': HLA_OTHER_GROUPS_NAME,
+    {'hla_group': HLAGroups.Other.name,
      'hla_codes': ['CW4']}
 ]
 
@@ -25,7 +24,7 @@ EXAMPLE_HLA_TYPING = {'hla_types_list': [{'raw_code': 'A*01:02'},
                                          {'raw_code': 'DR11'}]}
 
 HlaCodesInGroup = patient_api.model('HlaCodesInGroups', {
-    'hla_group': fields.String(required=True, enum=[group for group in HLA_GROUPS_NAMES_WTIH_OTHER]),
+    'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),
     'hla_codes': fields.List(required=True, cls_or_instance=fields.String)
 })
 

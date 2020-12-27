@@ -1,6 +1,6 @@
 from flask_restx import fields
 
-from txmatching.utils.enums import (HLA_GROUPS_NAMES_WTIH_OTHER, HLAGroups,
+from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER, HLAGroups,
                                     MatchTypes)
 from txmatching.web.api.namespaces import matching_api
 
@@ -29,6 +29,11 @@ EXAMPLE_DETAILED_SCORE = [
      'donor_matches': [],
      'recipient_matches': [],
      'group_compatibility_index': 0.0
+     },
+    {'hla_group': HLAGroups.Other.name,
+     'donor_matches': [],
+     'recipient_matches': [],
+     'group_compatibility_index': 0.0
      }
 ]
 
@@ -41,7 +46,7 @@ HlaCodeMatch = matching_api.model('HlaCodeMatch', {
 })
 
 DetailedScoreForGroup = matching_api.model('DetailedScoreForGroup', {
-    'hla_group': fields.String(required=True, enum=[group for group in HLA_GROUPS_NAMES_WTIH_OTHER]),
+    'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),
     'donor_matches': fields.List(required=True, cls_or_instance=fields.Nested(HlaCodeMatch)),
     'recipient_matches': fields.List(required=True, cls_or_instance=fields.Nested(HlaCodeMatch)),
     'group_compatibility_index': fields.Float(required=True, example=2.0)
@@ -52,7 +57,7 @@ TransplantJson = matching_api.model('Transplant', {
     'compatible_blood': fields.Boolean(required=True),
     'donor': fields.String(required=True),
     'recipient': fields.String(required=True),
-    # Unfortulantely is raw as we want to have the model general it is not clear how many different hla_groups will
+    # Unfortunately is raw as we want to have the model general it is not clear how many different hla_groups will
     # we have and I do not know better way how to have here a dict with unspecified keys.
     'detailed_compatibility_index': fields.List(
         required=True,

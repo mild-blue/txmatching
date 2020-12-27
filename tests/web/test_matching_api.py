@@ -28,14 +28,26 @@ class TestSaveAndGetConfiguration(DbTests):
             expected_ci = [
                 {
                     'hla_group': HLAGroups.A.name,
-                    'donor_matches': [],
-                    'recipient_matches': [],
+                    'donor_matches': [{'hla_code': 'A11',
+                                       'match_type': MatchTypes.NONE.name},
+                                      {'hla_code': 'A11',
+                                       'match_type': MatchTypes.NONE.name}],
+                    'recipient_matches': [{'hla_code': 'A3',
+                                           'match_type': MatchTypes.NONE.name},
+                                          {'hla_code': 'A3',
+                                           'match_type': MatchTypes.NONE.name}],
                     'group_compatibility_index': 0.0
                 },
                 {
                     'hla_group': HLAGroups.B.name,
-                    'donor_matches': [],
-                    'recipient_matches': [],
+                    'donor_matches': [{'hla_code': 'B8',
+                                       'match_type': MatchTypes.NONE.name},
+                                      {'hla_code': 'B8',
+                                       'match_type': MatchTypes.NONE.name}],
+                    'recipient_matches': [{'hla_code': 'B7',
+                                           'match_type': MatchTypes.NONE.name},
+                                          {'hla_code': 'B7',
+                                           'match_type': MatchTypes.NONE.name}],
                     'group_compatibility_index': 0.0
                 },
                 {
@@ -49,8 +61,59 @@ class TestSaveAndGetConfiguration(DbTests):
                                           {'hla_code': 'DR11',
                                            'match_type': MatchTypes.SPLIT.name}],
                     'group_compatibility_index': 18.0
-                }
+                },
+                {
+                    'hla_group': HLAGroups.Other.name,
+                    'donor_matches': [],
+                    'recipient_matches': [],
+                    'group_compatibility_index': 0.0
+                },
             ]
+            expected_ci2 = [
+                {
+                    'hla_group': HLAGroups.A.name,
+                    'donor_matches': [{'hla_code': 'A2',
+                                       'match_type': MatchTypes.NONE.name},
+                                      {'hla_code': 'A2',
+                                       'match_type': MatchTypes.NONE.name}],
+                    'recipient_matches': [{'hla_code': 'A3',
+                                           'match_type': MatchTypes.NONE.name},
+                                          {'hla_code': 'A3',
+                                           'match_type': MatchTypes.NONE.name}],
+                    'group_compatibility_index': 0.0
+                },
+                {
+                    'hla_group': HLAGroups.B.name,
+                    'donor_matches': [{'hla_code': 'B8',
+                                       'match_type': MatchTypes.NONE.name},
+                                      {'hla_code': 'B8',
+                                       'match_type': MatchTypes.NONE.name}],
+                    'recipient_matches': [{'hla_code': 'B7',
+                                           'match_type': MatchTypes.NONE.name},
+                                          {'hla_code': 'B7',
+                                           'match_type': MatchTypes.NONE.name}],
+                    'group_compatibility_index': 0.0
+                },
+                {
+                    'hla_group': HLAGroups.DRB1.name,
+                    'donor_matches': [{'hla_code': 'DR11',
+                                       'match_type': MatchTypes.SPLIT.name},
+                                      {'hla_code': 'DR11',
+                                       'match_type': MatchTypes.SPLIT.name}],
+                    'recipient_matches': [{'hla_code': 'DR11',
+                                           'match_type': MatchTypes.SPLIT.name},
+                                          {'hla_code': 'DR11',
+                                           'match_type': MatchTypes.SPLIT.name}],
+                    'group_compatibility_index': 18.0
+                },
+                {
+                    'hla_group': HLAGroups.Other.name,
+                    'donor_matches': [],
+                    'recipient_matches': [],
+                    'group_compatibility_index': 0.0
+                },
+            ]
+
             expected = [
                 {
                     'order_id': 1,
@@ -66,7 +129,7 @@ class TestSaveAndGetConfiguration(DbTests):
                             },
                             {
                                 'score': 18.0,
-                                'detailed_compatibility_index': expected_ci,
+                                'detailed_compatibility_index': expected_ci2,
                                 'compatible_blood': True,
                                 'donor': 'P22',
                                 'recipient': 'P11'
