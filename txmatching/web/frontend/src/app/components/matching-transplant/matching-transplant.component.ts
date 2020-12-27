@@ -1,37 +1,26 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { PatientService } from '@app/services/patient/patient.service';
-import { compatibleBloodGroups } from '@app/model/Patient';
 import { Configuration } from '@app/model/Configuration';
-import { PatientList } from '@app/model/PatientList';
 import { DetailedCompatibilityIndex, HlaMatchType } from '@app/model/Hla';
-import { Transplant } from '@app/model/Transplant';
+import { Recipient } from '@app/model/Recipient';
+import { Donor } from '@app/model/Donor';
 
 @Component({
   selector: 'app-matching-transplant',
   templateUrl: './matching-transplant.component.html',
   styleUrls: ['./matching-transplant.component.scss']
 })
-export class MatchingTransplantComponent implements OnInit {
+export class MatchingTransplantComponent {
 
   @Input() configuration?: Configuration;
-  @Input() transplant?: Transplant;
-  @Input() patients?: PatientList;
 
   @Input() score?: number;
+  @Input() donor?: Donor;
+  @Input() recipient?: Recipient;
+  @Input() isBloodCompatible?: boolean;
   @Input() detailedCompatibilityIndex?: DetailedCompatibilityIndex[];
 
   constructor(private _patientService: PatientService) {
-  }
-
-  ngOnInit() {
-  }
-
-  get pairBloodCompatible(): boolean {
-    if (!this.transplant) {
-      return false;
-    }
-
-    return compatibleBloodGroups[this.transplant.r.parameters.blood_group].includes(this.transplant.d.parameters.blood_group);
   }
 
   public getHlaClass(match: HlaMatchType): string {
@@ -49,7 +38,7 @@ export class MatchingTransplantComponent implements OnInit {
   }
 
   public getAntibodiesCodes(group: string): string[] {
-    const recipientAntibodiesGroups = this.transplant?.r.hla_antibodies.hla_codes_over_cutoff_per_group;
+    const recipientAntibodiesGroups = this.recipient?.hla_antibodies.hla_codes_over_cutoff_per_group;
     if (!recipientAntibodiesGroups) {
       return [];
     }

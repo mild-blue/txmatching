@@ -9,8 +9,9 @@
   <div *ngIf="item" [ngSwitch]="activeTab">
     <div *ngSwitchCase="tabs.Pair"
          class="pair-detail__pair">
-      <app-matching-transplant [patients]="patients"
-                               [transplant]="item"
+      <app-matching-transplant [donor]="item.d"
+                               [recipient]="item.r"
+                               [isBloodCompatible]="isBloodCompatible"
                                [score]="item.d.score_with_related_recipient"
                                [detailedCompatibilityIndex]="item.d.detailed_compatibility_index_with_related_recipient"
                                [configuration]="configuration"></app-matching-transplant>

@@ -6,9 +6,10 @@
     <div *ngFor="let transplant of round.transplants"
          id="transplant-{{transplant.index}}"
          class="transplant-holder">
-      <app-matching-transplant [patients]="patients"
-                               [transplant]="transplant"
+      <app-matching-transplant [donor]="transplant.d"
+                               [recipient]="transplant.r"
                                [score]="transplant.score"
+                               [isBloodCompatible]="transplant.compatible_blood"
                                [detailedCompatibilityIndex]="transplant.detailed_compatibility_index"
                                [configuration]="configuration"></app-matching-transplant>
     </div>
