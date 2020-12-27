@@ -148,7 +148,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     )
     .subscribe(
       () => {
-        this._alertService.success('Patients uploaded successfully');
+        this._alertService.success('Patients were uploaded successfully.',
+          'Recalculate matchings',
+          () => {
+            if (this.configuration) {
+              this.calculate(this.configuration);
+            }
+          });
       },
       (e: Error) => {
         this._alertService.error(`Error uploading patients: "${e.message || e}"`);

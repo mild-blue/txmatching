@@ -16,7 +16,7 @@ export class UploadService {
     const formData: FormData = new FormData();
     formData.append('fileKey', file, file.name);
     return this._http.post<File>(
-      `${environment.apiUrl}/upload/`,
+      `${environment.apiUrl}/upload`,
       formData
     ).pipe(
       map((response: Object) => {
