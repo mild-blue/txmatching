@@ -43,6 +43,7 @@
       <mat-chip-list #antigensChipList>
         <mat-chip *ngFor="let a of selectedAntigens"
                   (removed)="removeAntigen(a)"
+                  [title]="'Raw code: ' + a.raw_code"
                   [removable]="true">
           {{a.code}}
           <mat-icon matChipRemove>cancel</mat-icon>
