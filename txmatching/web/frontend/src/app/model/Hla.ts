@@ -35,21 +35,3 @@ export enum HlaMatchType {
   NONE = 'NONE',
   ANTIBODY = 'ANTIBODY'
 }
-
-// todo: delete?
-// export interface HlaCodesSorted {
-//   A: string[];
-//   B: string[];
-//   DR: string[];
-//   OTHER: string[];
-//
-//   [key: string]: string[];
-// }
-//
-// export interface HlaCodesScore {
-//   A: number;
-//   B: number;
-//   DR: number;
-//
-//   [key: string]: number;
-// }
