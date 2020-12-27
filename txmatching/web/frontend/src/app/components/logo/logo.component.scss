@@ -5,14 +5,18 @@
   justify-content: center;
   align-items: center;
 
-  img {
-    width: 80px;
+  .logo-image {
+    background-image: var(--logo-background-image);
+    background-size: var(--logo-background-size);
+    background-repeat: no-repeat;
+    width: var(--logo-width);
+    height: var(--logo-height);
   }
 
   h2 {
     margin: 0 0 0 $item-gap;
     padding-left: $item-gap;
-    color: $primary;
+    color: var(--primary-color);
     line-height: 1;
     font-size: 22px;
     position: relative;
@@ -24,7 +28,7 @@
       top: 0;
       width: 3px;
       height: 100%;
-      background: $primary;
+      background: var(--primary-color);
     }
   }
 }

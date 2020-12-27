@@ -44,4 +44,15 @@
       }
     }
   }
+
+  .info-text {
+    a {
+      font-weight: bold;
+      color: inherit;
+
+      &:visited, &:hover, &:active {
+        color: inherit;
+      }
+    }
+  }
 }

@@ -22,7 +22,7 @@ function redeploy {
   export VERSION_TAG="${1}"
 
   echo "Removing unused Docker images"
-  docker image prune -a
+  docker image prune -af
 
   echo "Pull mildblue/txmatching:${VERSION_TAG} image."
   docker pull "mildblue/txmatching:${VERSION_TAG}"

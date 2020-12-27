@@ -47,10 +47,10 @@
 
       &.active {
         button {
-          color: $primary;
+          color: var(--primary-color);
 
           &::after {
-            background: $primary;
+            background: var(--primary-color);
             opacity: 1;
           }
         }

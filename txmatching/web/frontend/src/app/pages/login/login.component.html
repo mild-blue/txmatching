@@ -18,9 +18,11 @@
         </label>
 
         <app-button type="submit" [loading]="loading">Submit</app-button>
-
       </form>
     </div>
+  </div>
+  <div class="info-text" *ngIf="showInfoText">Contact us for access on
+    <a href="mailto:txmatching@mild.blue?subject=TXMatching Access Request">txmatching@mild.blue</a>
   </div>
 </div>
 
