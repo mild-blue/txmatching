@@ -51,34 +51,19 @@
       <tr *ngFor="let compatibilityIndex of transplant.detailed_compatibility_index">
         <td>{{ compatibilityIndex.hla_group }}</td>
         <td>
-          <app-code *ngFor="let code of getGroupCodes(transplant.d.parameters.hla_typing.codes_per_group, compatibilityIndex.hla_group)"
-                    [class]="getDonorAntigenClass(code)">{{ code }}</app-code>
+          <app-code *ngFor="let match of compatibilityIndex.donor_matches"
+                    [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterCodes(transplant.r.parameters.hla_typing.hla_types_list, row.hla_group)"
-                    [class]="getRecipientAntigenClass(code.code)">{{ code.code }}</app-code>
+          <app-code *ngFor="let match of compatibilityIndex.recipient_matches"
+                    [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of filterPureCodes(transplant.r.hla_antibodies.hla_codes_over_cutoff_per_group, row.hla_group)"
-                    [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
+          <app-code *ngFor="let code of getAntibodiesCodes(compatibilityIndex.hla_group)">
+            {{ code }}
+          </app-code>
         </td>
         <td>{{ compatibilityIndex.group_compatibility_index }}</td>
-      </tr>
-      <tr>
-        <td>Other</td>
-        <td>
-          <app-code *ngFor="let code of otherHLA(transplant.d.parameters.hla_typing.hla_types_list)"
-                    [class]="getDonorAntigenClass(code.code)">{{ code.code }}</app-code>
-        </td>
-        <td>
-          <app-code *ngFor="let code of otherHLA(transplant.r.parameters.hla_typing.hla_types_list)"
-                    [class]="getRecipientAntigenClass(code.code)">{{ code.code }}</app-code>
-        </td>
-        <td>
-          <app-code *ngFor="let code of otherHLAPure(transplant.r.hla_antibodies.hla_codes_over_cutoff)"
-                    [class]="getRecipientAntibodyClass(code)">{{ code }}</app-code>
-        </td>
-        <td>-</td>
       </tr>
       </tbody>
     </table>

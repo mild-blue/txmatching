@@ -19,8 +19,8 @@ export interface DetailedCompatibilityIndex {
 }
 
 export interface HlaMatch {
-  code: string;
-  type: HlaMatchType;
+  hla_code: string;
+  match_type: HlaMatchType;
 }
 
 export interface HlaGroupCodes {
@@ -28,10 +28,12 @@ export interface HlaGroupCodes {
   hla_codes: string[];
 }
 
-enum HlaMatchType {
+export enum HlaMatchType {
   SPLIT = 'SPLIT',
   BROAD = 'BROAD',
-  HIGH_RES = 'HIGH_RES'
+  HIGH_RES = 'HIGH_RES',
+  NONE = 'NONE',
+  ANTIBODY = 'ANTIBODY'
 }
 
 // todo: delete?
