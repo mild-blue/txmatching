@@ -8,6 +8,8 @@
          class="transplant-holder">
       <app-matching-transplant [patients]="patients"
                                [transplant]="transplant"
+                               [score]="transplant.score"
+                               [detailedCompatibilityIndex]="transplant.detailed_compatibility_index"
                                [configuration]="configuration"></app-matching-transplant>
     </div>
   </div>

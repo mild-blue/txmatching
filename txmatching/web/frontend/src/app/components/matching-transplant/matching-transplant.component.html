@@ -4,12 +4,12 @@
     <app-patient-pair [pair]="transplant"></app-patient-pair>
 
     <app-score-indicator [configuration]="configuration"
-                         [score]="totalScore"
+                         [score]="score"
                          [showScore]="true"></app-score-indicator>
   </div>
 
   <div class="transplant-content">
-    <table>
+    <table *ngIf="detailedCompatibilityIndex">
       <tbody>
       <tr>
         <td></td>
@@ -48,7 +48,7 @@
         <td>Antibodies</td>
         <td></td>
       </tr>
-      <tr *ngFor="let compatibilityIndex of transplant.detailed_compatibility_index">
+      <tr *ngFor="let compatibilityIndex of detailedCompatibilityIndex">
         <td>{{ compatibilityIndex.hla_group }}</td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.donor_matches"
