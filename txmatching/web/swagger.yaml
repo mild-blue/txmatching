@@ -168,6 +168,10 @@ definitions:
             active:
                 description: Whether the user shall be used in pairing calculation
                 type: boolean
+            compatible_blood_with_related_recipient:
+                description: Indicator whether Donor and related recipients have compatible
+                    blood groups
+                type: boolean
             db_id:
                 description: Database id of the patient
                 type: integer

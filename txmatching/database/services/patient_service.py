@@ -40,6 +40,7 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType, HLATyping,
                                                     PatientParameters)
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
+from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.compatibility_index import compatibility_index_detailed
 from txmatching.utils.hla_system.hla_transformations import (
@@ -472,4 +473,8 @@ def donor_to_donor_dto(donor: Donor,
         configuration = get_configuration_for_txm_event(txm_event_db_id)
         scorer = scorer_from_configuration(configuration)
         donor_dto.score_with_related_recipient = scorer.score_transplant(donor, related_recipient, None)
+        donor_dto.compatible_blood_with_related_recipient = blood_groups_compatible(
+            donor.parameters.blood_group,
+            related_recipient.parameters.blood_group
+        )
     return donor_dto

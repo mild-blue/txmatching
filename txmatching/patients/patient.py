@@ -44,7 +44,7 @@ class Donor(Patient):
 class DonorDTO(Donor):
     score_with_related_recipient: Optional[float] = None
     detailed_compatibility_index_with_related_recipient: Optional[List[DetailedCompatibilityIndexForHLAGroup]] = None
-
+    compatible_blood_with_related_recipient: Optional[str] = None
 
 @dataclass
 class RecipientRequirements:

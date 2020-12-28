@@ -80,6 +80,10 @@ DonorModel = patient_api.model('DonorModel', {
     'donor_type': fields.String(required=True, enum=[donor_type.value for donor_type in DonorType]),
     'related_recipient_db_id': fields.Integer(required=False, description='Database id of the related recipient'),
     'score_with_related_recipient': fields.Float(required=False, description='Score calculated with related recipient'),
+    'compatible_blood_with_related_recipient': fields.Boolean(
+        required=False,
+        description='Indicator whether Donor and related recipients have compatible blood groups'
+    ),
     'detailed_compatibility_index_with_related_recipient': fields.List(
         required=False,
         description=DESCRIPTION_DETAILED_SCORE,
