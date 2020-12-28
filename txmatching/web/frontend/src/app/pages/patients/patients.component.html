@@ -8,10 +8,6 @@
         Patients
         <app-count [count]="patientsCount"></app-count>
       </h1>
-      <app-tab-switch *ngIf="!loading && patients && activeListFilter"
-                      [tabs]="tabs"
-                      [activeTab]="activeListFilter.type"
-                      (tabClicked)="setActiveFilter($event)"></app-tab-switch>
     </div>
   </app-container>
 
