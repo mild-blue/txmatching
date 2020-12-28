@@ -134,7 +134,7 @@ class TestSaveAndGetConfiguration(DbTests):
                     {'transplants': [
                         {
                             'score': 18.0,
-                            'antibody_matches': expected_antibodies,
+                            'detailed_antibody_matches': expected_antibodies,
                             'detailed_compatibility_index': expected_ci,
                             'compatible_blood': True,
                             'donor': 'P21',
@@ -142,7 +142,7 @@ class TestSaveAndGetConfiguration(DbTests):
                         },
                         {
                             'score': 18.0,
-                            'antibody_matches': expected_antibodies,
+                            'detailed_antibody_matches': expected_antibodies,
                             'detailed_compatibility_index': expected_ci2,
                             'compatible_blood': True,
                             'donor': 'P22',
@@ -165,9 +165,10 @@ class TestSaveAndGetConfiguration(DbTests):
         self.assertListEqual(expected_ci, res.json[0]["rounds"][0]["transplants"][0]['detailed_compatibility_index'])
         self.assertListEqual(expected_ci2, res.json[0]["rounds"][0]["transplants"][1]['detailed_compatibility_index'])
         self.assertCountEqual(expected_antibodies[3]["antibody_matches"],
-                              res.json[0]["rounds"][0]["transplants"][1]['antibody_matches'][3]["antibody_matches"])
+                              res.json[0]["rounds"][0]["transplants"][1]['detailed_antibody_matches'][3][
+                                  "antibody_matches"])
         self.assertEqual(expected_antibodies[3]["hla_group"],
-                              res.json[0]["rounds"][0]["transplants"][1]['antibody_matches'][3]["hla_group"])
+                         res.json[0]["rounds"][0]["transplants"][1]['detailed_antibody_matches'][3]["hla_group"])
 
 
 def test_get_patients(self):
