@@ -22,7 +22,7 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services.patient_service import (get_txm_event,
                                                           update_donor,
-                                                          update_recipient, to_lists_for_fe)
+                                                          update_recipient, to_lists_for_fe, donor_to_donor_dto)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.utils.logged_user import get_current_user_id
@@ -80,4 +80,10 @@ class AlterDonor(Resource):
     def put(self):
         donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
-        return jsonify(update_donor(donor_update_dto, get_txm_event_id_for_current_user()))
+        txm_event_db_id = get_txm_event_id_for_current_user()
+        all_recipients = get_txm_event(txm_event_db_id).all_recipients
+        return jsonify(donor_to_donor_dto(
+            update_donor(donor_update_dto, get_txm_event_id_for_current_user()),
+            all_recipients,
+            txm_event_db_id)
+        )

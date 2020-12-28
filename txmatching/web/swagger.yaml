@@ -2,6 +2,39 @@ basePath: /
 consumes:
 - application/json
 definitions:
+    AntibodiesPerGroup:
+        properties:
+            antibody_matches:
+                items:
+                    $ref: '#/definitions/AntibodyMatch'
+                type: array
+            hla_group:
+                enum:
+                - A
+                - B
+                - DRB1
+                - Other
+                example: A
+                type: string
+        required:
+        - antibody_matches
+        - hla_group
+        type: object
+    AntibodyMatch:
+        properties:
+            hla_code:
+                example: A11
+                type: string
+            match_type:
+                enum:
+                - NONE
+                - MATCH
+                example: NONE
+                type: string
+        required:
+        - hla_code
+        - match_type
+        type: object
     Configuration:
         properties:
             blood_group_compatibility_bonus:
@@ -215,6 +248,10 @@ definitions:
                 - NON_DIRECTED
                 example: DONOR
                 type: string
+            matching_antibodies_with_related_recipient:
+                items:
+                    $ref: '#/definitions/AntibodiesPerGroup'
+                type: array
             medical_id:
                 description: Medical id of the patient
                 type: string
@@ -230,6 +267,7 @@ definitions:
         - active
         - db_id
         - donor_type
+        - matching_antibodies_with_related_recipient
         - medical_id
         - parameters
         type: object
@@ -788,6 +826,10 @@ definitions:
         properties:
             compatible_blood:
                 type: boolean
+            detailed_antibody_matches:
+                items:
+                    $ref: '#/definitions/AntibodiesPerGroup'
+                type: array
             detailed_compatibility_index:
                 description: 'Contains details for compatibility index for each HLA
                     Group compatibility
@@ -805,6 +847,7 @@ definitions:
                 type: number
         required:
         - compatible_blood
+        - detailed_antibody_matches
         - detailed_compatibility_index
         - donor
         - recipient

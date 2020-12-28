@@ -1,7 +1,7 @@
 from flask_restx import fields
 
 from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER, HLAGroups,
-                                    MatchTypes)
+                                    MatchTypes, AntibodyMatchTypes)
 from txmatching.web.api.namespaces import matching_api
 
 EXAMPLE_DETAILED_SCORE = [
@@ -52,6 +52,16 @@ DetailedScoreForGroup = matching_api.model('DetailedScoreForGroup', {
     'group_compatibility_index': fields.Float(required=True, example=2.0)
 })
 
+AntibodyMatch = matching_api.model('AntibodyMatch', {
+    'hla_code': fields.String(required=True, example="A11"),
+    'match_type': fields.String(required=True, enum=[match_type.name for match_type in AntibodyMatchTypes])
+})
+
+AntibodiesPerGroup = matching_api.model('AntibodiesPerGroup', {
+    'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),
+    'antibody_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatch))
+})
+
 TransplantJson = matching_api.model('Transplant', {
     'score': fields.Float(required=True),
     'compatible_blood': fields.Boolean(required=True),
@@ -64,6 +74,7 @@ TransplantJson = matching_api.model('Transplant', {
         description=DESCRIPTION_DETAILED_SCORE,
         example=EXAMPLE_DETAILED_SCORE,
         cls_or_instance=fields.Nested(DetailedScoreForGroup)),
+    'detailed_antibody_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntibodiesPerGroup)),
 })
 
 CountryInRoundJson = matching_api.model('Country', {

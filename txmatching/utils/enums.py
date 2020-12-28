@@ -53,11 +53,17 @@ HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS = {
 }
 
 
+class AntibodyMatchTypes(str, Enum):
+    NONE = 'NONE'
+    MATCH = 'MATCH'
+
+
 class MatchTypes(str, Enum):
     SPLIT = 'SPLIT'
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
+    # TODO This is not used. Either remove or implement. See https://github.com/mild-blue/txmatching/issues/280
     ANTIBODY = 'ANTIBODY'
 
 

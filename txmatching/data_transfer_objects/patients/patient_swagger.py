@@ -1,7 +1,7 @@
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
-    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE, DetailedScoreForGroup)
+    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE, DetailedScoreForGroup, AntibodiesPerGroup)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER, Country,
@@ -89,6 +89,8 @@ DonorModel = patient_api.model('DonorModel', {
         description=DESCRIPTION_DETAILED_SCORE,
         example=EXAMPLE_DETAILED_SCORE,
         cls_or_instance=fields.Nested(DetailedScoreForGroup)),
+    'matching_antibodies_with_related_recipient': fields.List(required=True,
+                                                              cls_or_instance=fields.Nested(AntibodiesPerGroup)),
 })
 
 RecipientModel = patient_api.model('RecipientModel', {

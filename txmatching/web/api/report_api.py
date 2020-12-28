@@ -28,7 +28,7 @@ from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     get_config_model_for_txm_event, get_configuration_for_txm_event)
 from txmatching.database.services.matching_service import \
-    get_latest_matchings_and_score_matrix
+    get_latest_matchings_detailed
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
@@ -103,19 +103,20 @@ class Report(Resource):
         if maybe_config_model is None:
             pairing_result = solve_from_configuration(Configuration(), txm_event_db_id=txm_event_db_id)
             solver_service.save_pairing_result(pairing_result)
-        (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_db_id)
-        all_matchings.sort(key=lambda m: m.order_id())  # lower ID -> better evaluation
+        latest_matchings_detailed = get_latest_matchings_detailed(txm_event_db_id)
+        # lower ID -> better evaluation
+        sorted_matchings = sorted(latest_matchings_detailed.matchings, key=lambda m: m.order_id())
 
-        requested_matching = list(filter(lambda matching: matching.order_id() == matching_id, all_matchings))
+        requested_matching = list(filter(lambda matching: matching.order_id() == matching_id, sorted_matchings))
         if len(requested_matching) == 0:
             raise NotFoundException(f'Matching with id {matching_id} not found.')
 
         matchings_over = list(
             filter(lambda matching: matching.order_id() < matching_id,
-                   all_matchings))
+                   sorted_matchings))
         matchings_under = list(
             filter(lambda matching: matching.order_id() > matching_id,
-                   all_matchings))[:matching_range_limit]
+                   sorted_matchings))[:matching_range_limit]
         other_matchings_to_include = matchings_over + matchings_under
         other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
@@ -125,8 +126,9 @@ class Report(Resource):
                 RoundReportDTO(
                     transplants=[
                         TransplantDTO(
-                            score_dict[(pair.donor.db_id, pair.recipient.db_id)],
-                            compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                            latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
+                            latest_matchings_detailed.blood_compatibility_tuples[
+                                (pair.donor.db_id, pair.recipient.db_id)],
                             pair.donor,
                             pair.recipient) for pair in matching_round.donor_recipient_pairs])
                 for matching_round in matching.get_rounds()],

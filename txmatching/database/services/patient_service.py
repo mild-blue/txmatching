@@ -43,6 +43,7 @@ from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.compatibility_index import compatibility_index_detailed
+from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies
 from txmatching.utils.hla_system.hla_transformations import (
     parse_hla_raw_code, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations_store import \
@@ -476,5 +477,10 @@ def donor_to_donor_dto(donor: Donor,
         donor_dto.compatible_blood_with_related_recipient = blood_groups_compatible(
             donor.parameters.blood_group,
             related_recipient.parameters.blood_group
+        )
+        donor_dto.matching_antibodies_with_related_recipient = get_crossmatched_antibodies(
+            donor.parameters.hla_typing,
+            related_recipient.hla_antibodies,
+            configuration.use_split_resolution
         )
     return donor_dto
