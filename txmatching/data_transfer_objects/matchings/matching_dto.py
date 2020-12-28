@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import List, Set
+from typing import List
 
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import MedicalId
-from txmatching.utils.enums import Country, HLAGroups, AntibodyMatchTypes
+from txmatching.utils.enums import Country
 # pylint: disable=too-many-instance-attributes
 from txmatching.utils.hla_system.compatibility_index import \
     DetailedCompatibilityIndexForHLAGroup

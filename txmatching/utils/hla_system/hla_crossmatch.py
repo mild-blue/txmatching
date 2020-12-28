@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Set
+from typing import List
 
 from txmatching.patients.patient_parameters import HLAAntibodies, HLATyping
 from txmatching.utils.enums import AntibodyMatchTypes, HLAGroups
