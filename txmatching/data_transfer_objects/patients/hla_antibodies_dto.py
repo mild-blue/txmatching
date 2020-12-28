@@ -11,7 +11,7 @@ class HLAAntibodyDTO:
 
     def __post_init__(self):
         if self.mfi < 0:
-            raise InvalidArgumentException("MFI cannot be negative")
+            raise InvalidArgumentException("MFI should never be negative")
 
 
 @dataclass
