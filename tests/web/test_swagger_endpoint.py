@@ -5,7 +5,7 @@ from tests.test_utilities.populate_db import ADMIN_WITH_DEFAULT_TXM_EVENT
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import (API_VERSION, SERVICE_NAMESPACE,
-                            TXM_EVENT_NAMESPACE, USER_NAMESPACE)
+                            TXM_EVENT_NAMESPACE, USER_NAMESPACE, PATIENT_NAMESPACE)
 
 
 class TestSwaggerEndpoints(DbTests):
@@ -34,6 +34,7 @@ class TestSwaggerEndpoints(DbTests):
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/change-password': [401],
                 f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/patients': [403],
+                f'{API_VERSION[1:]}/{PATIENT_NAMESPACE}/add-patients-file': [400]
             }
         }
         # we need this user as we need the report to be generated from filled txm event, but we create an empty

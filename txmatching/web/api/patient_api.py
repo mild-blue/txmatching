@@ -7,23 +7,26 @@ from dacite import from_dict
 from flask import jsonify, request
 from flask_restx import Resource
 
+from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.auth.operation_guards.country_guard import (
     guard_user_country_access_to_donor, guard_user_country_access_to_recipient)
 from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
     DonorJson, PatientsJson, RecipientJson, RecipientModelToUpdateJson, DonorModelToUpdateJson)
+from txmatching.data_transfer_objects.patients.patient_upload_dto_out import PatientUploadDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
-    FailJson
+    FailJson, PatientUploadSuccessJson
 from txmatching.database.services.patient_service import (get_txm_event,
                                                           update_donor,
                                                           update_recipient, to_lists_for_fe, donor_to_donor_dto)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
+from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import patient_api
 
@@ -86,3 +89,37 @@ class AlterDonor(Resource):
             all_recipients,
             txm_event_db_id)
         )
+
+
+@patient_api.route('/add-patients-file', methods=['PUT'])
+class AddPatientsFile(Resource):
+
+    @patient_api.doc(security='bearer',
+                     params={"file": {
+                         "name": "file",
+                         "in": "formData",
+                         "description": "excel file to upload data",
+                         "required": True,
+                         "type": "file"
+                     }
+                     }
+                     )
+    @patient_api.response(code=200, model=PatientUploadSuccessJson, description='Success.')
+    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @patient_api.response(code=403, model=FailJson,
+                          description='Access denied. You do not have rights to access this endpoint.'
+                          )
+    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @require_user_edit_access()
+    def put(self):
+        file = request.files['file']
+
+        if file.filename.endswith(".xlsx"):
+            donors, recipients = parse_excel_data(file)
+            return jsonify(PatientUploadDTOOut(
+                recipients_uploaded=len(recipients),
+                donors_uploaded=len(donors)
+            ))
+        else:
+            raise InvalidArgumentException("Unexpected file format")
