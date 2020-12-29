@@ -27,8 +27,8 @@ class AllSolutionsSolver(SolverBase):
     scorer: AdditiveScorer
 
     def __post_init__(self):
-        self.donors = list(self.donors_dict.values())
-        self.recipients = list(self.recipients_dict.values())
+        self.donors = sorted(list(self.donors_dict.values()), key=lambda x: x.medical_id[:-4])
+        self.recipients = sorted(list(self.recipients_dict.values()), key=lambda x: x.medical_id[-3:])
 
         self.score_matrix = self.scorer.get_score_matrix(
             self.donors,

@@ -1,3 +1,8 @@
+import json
+
+import dacite
+import dataclasses
+
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
@@ -52,6 +57,27 @@ class TestUpdateDonorRecipient(DbTests):
         recipient_hla_antibodies = RecipientHLAAntibodyModel.query.all()
         app_users = AppUserModel.query.all()
 
+        txm_event = get_txm_event(txm_event.db_id)
+
+        recipients_tuples = [(
+            r.medical_id,
+            r.parameters.country_code,
+            r.parameters.blood_group,
+            [a.code for a in r.hla_antibodies.hla_antibodies_list],
+            [a.code for a in r.parameters.hla_typing.hla_types_list],
+            r.acceptable_blood_groups
+        )
+            for r in txm_event.active_recipients_dict.values()]
+
+        donors_tuples = [(
+            r.medical_id,
+            r.parameters.country_code,
+            r.parameters.blood_group,
+            [a.code for a in r.parameters.hla_typing.hla_types_list],
+            txm_event.active_recipients_dict[r.related_recipient_db_id].medical_id if r.related_recipient_db_id else ""
+        )
+            for r in txm_event.active_donors_dict.values()]
+
         self.assertEqual(0, len(configs))
         self.assertEqual(34, len(recipients))
         self.assertEqual(38, len(donors))
@@ -60,15 +86,59 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(1059, len(recipient_hla_antibodies))
         self.assertEqual(5, len(app_users))
 
-        self.assertEqual(
-            572,
-            len(list(solve_from_configuration(Configuration(
-                max_cycle_length=100,
-                max_sequence_length=100,
-                max_number_of_distinct_countries_in_round=100),
-                txm_event.db_id).calculated_matchings)
-                )
-        )
+        all_matchings = list(solve_from_configuration(Configuration(
+            max_cycle_length=100,
+            max_sequence_length=100,
+            max_number_of_distinct_countries_in_round=100),
+            txm_event.db_id).calculated_matchings)
+
+        self.assertCountEqual(['128A-IND-D', '148A-CZE-D', '133A-CZE-D', '126A-CAN-D', '158A-IND-D'],
+                              [pair.donor.medical_id for pair in all_matchings[0].matching_pairs])
+
+        self.assertCountEqual(['158A-IND-D', '133A-CZE-D', '128A-IND-D'],
+                              [pair.donor.medical_id for pair in all_matchings[-1].matching_pairs])
+
+        matching_tuples = [[(t.donor.medical_id, t.recipient.medical_id)
+                            for t in res.get_donor_recipient_pairs()] for res in all_matchings]
+
+        self.maxDiff = None
+        # with open(get_absolute_path('tests/resources/recipients_tuples.json'), 'w') as f:
+        #     json.dump(recipients_tuples, f)
+        # with open(get_absolute_path('tests/resources/donors_tuples.json'), 'w') as f:
+        #     json.dump(donors_tuples, f)
+        # with open(get_absolute_path('tests/resources/patient_data_2020_07_obfuscated_multi_country.json'), 'w') as f:
+        #     json.dump(matching_tuples, f)
+
+        with open(get_absolute_path('tests/resources/recipients_tuples.json')) as f:
+            expected_recipients_tuples = json.load(f)
+        with open(get_absolute_path('tests/resources/donors_tuples.json')) as f:
+            expected_donors_tuples = json.load(f)
+        with open(get_absolute_path('tests/resources/patient_data_2020_07_obfuscated_multi_country.json')) as f:
+            expected_matching_tuples = json.load(f)
+
+        expected_recipients_tuples = [(tup[0], tup[1], tup[2], frozenset(tup[3]),
+                                       frozenset(tup[4]), frozenset(tup[5])
+                                       ) for tup in expected_recipients_tuples]
+        recipients_tuples = [(tup[0], tup[1], tup[2], frozenset(tup[3]),
+                              frozenset(tup[4]), frozenset(tup[5])
+                              ) for tup in recipients_tuples]
+
+        expected_donors_tuples = [(tup[0], tup[1], tup[2], frozenset(tup[3]), tup[4]) for tup in
+                                  expected_donors_tuples]
+        donors_tuples = [(tup[0], tup[1], tup[2], frozenset(tup[3]), tup[4]) for tup in donors_tuples]
+
+        expected_matching_tuples = {frozenset(tuple(tt) for tt in tup) for tup in expected_matching_tuples}
+
+        for i, r in enumerate(recipients_tuples):
+            self.assertTrue(r in expected_recipients_tuples, f"Error in round {i}: {r} not found")
+
+        for i, d in enumerate(donors_tuples):
+            self.assertTrue(d in expected_donors_tuples, f"Error in round {i}: {d} not found")
+
+        for i, m in enumerate(matching_tuples):
+            self.assertTrue(frozenset(m) in expected_matching_tuples, f"Error in round {i}: {m} not found")
+
+        self.assertEqual(572, len(all_matchings))
 
     def test_update_recipient(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
