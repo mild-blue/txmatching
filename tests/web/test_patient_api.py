@@ -13,4 +13,4 @@ class TestPatientService(DbTests):
         self.assertEqual(200, res.status_code)
         for donor in res.json["donors"]:
             if donor["related_recipient_db_id"]:
-                self.assertIn("detailed_compatibility_index_with_related_recipient", donor)
+                self.assertIn("detailed_score_with_related_recipient", donor)

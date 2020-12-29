@@ -13,7 +13,7 @@ from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_sequence import TransplantSequence
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, HLAGroups, Sex
+from txmatching.utils.enums import Country, HLAGroup, Sex
 
 RAW_CODES = [
     'A1',
@@ -167,33 +167,33 @@ class TestMatching(unittest.TestCase):
 
     def test_calculate_antigen_score(self):
         # A32
-        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[0], HLAGroups.A)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[0], HLAGroup.A)
         self.assertEquals(1, result)
 
-        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[0], HLAGroups.B)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[0], HLAGroup.B)
         self.assertEquals(0, result)
 
-        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[0], HLAGroups.DRB1)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[0], HLAGroup.DRB1)
         self.assertEquals(0, result)
 
         # No match
-        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[1], HLAGroups.A)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[1], HLAGroup.A)
         self.assertEquals(0, result)
 
-        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[1], HLAGroups.B)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[1], HLAGroup.B)
         self.assertEquals(0, result)
 
-        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[1], HLAGroups.DRB1)
+        result = calculate_compatibility_index_for_group(DONORS[0], RECIPIENTS[1], HLAGroup.DRB1)
         self.assertEquals(0, result)
 
         # A32, B7
-        result = calculate_compatibility_index_for_group(DONORS[1], RECIPIENTS[0], HLAGroups.A)
+        result = calculate_compatibility_index_for_group(DONORS[1], RECIPIENTS[0], HLAGroup.A)
         self.assertEquals(2, result)
 
-        result = calculate_compatibility_index_for_group(DONORS[1], RECIPIENTS[0], HLAGroups.B)
+        result = calculate_compatibility_index_for_group(DONORS[1], RECIPIENTS[0], HLAGroup.B)
         self.assertEquals(6, result)
 
-        result = calculate_compatibility_index_for_group(DONORS[1], RECIPIENTS[0], HLAGroups.DRB1)
+        result = calculate_compatibility_index_for_group(DONORS[1], RECIPIENTS[0], HLAGroup.DRB1)
         self.assertEquals(0, result)
 
     def test_get_count_of_transplants(self):

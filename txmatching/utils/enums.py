@@ -17,7 +17,7 @@ class Sex(str, Enum):
     F = 'F'
 
 
-class HLAGroups(str, Enum):
+class HLAGroup(str, Enum):
     A = 'A'
     B = 'B'
     DRB1 = 'DRB1'
@@ -28,29 +28,34 @@ class HLAGroups(str, Enum):
     Other = 'Other'
 
 
-HLA_GROUPS_GENE = [HLAGroups.A, HLAGroups.B, HLAGroups.DRB1]
-HLA_GROUPS_OTHER = [HLAGroups.CW, HLAGroups.DP, HLAGroups.DQ, HLAGroups.OTHER_DR]
-HLA_GROUPS_NAMES_WITH_OTHER = [group for group in HLA_GROUPS_GENE] + [HLAGroups.Other]
+HLA_GROUPS_GENE = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
+HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR]
+HLA_GROUPS_NAMES_WITH_OTHER = [group for group in HLA_GROUPS_GENE] + [HLAGroup.Other]
 
 HLA_GROUP_SPLIT_CODE_REGEX = {
-    HLAGroups.A: r'^A\d*',
-    HLAGroups.B: r'^B\d*',
-    HLAGroups.CW: r'CW\d*',
-    HLAGroups.DRB1: r'DR(?!5([123]))',
-    HLAGroups.DP: r'DP\d*',
-    HLAGroups.DQ: r'DQ\d*',
-    HLAGroups.OTHER_DR: r'DR5[123]'
+    HLAGroup.A: r'^A\d*',
+    HLAGroup.B: r'^B\d*',
+    HLAGroup.CW: r'CW\d*',
+    HLAGroup.DRB1: r'DR(?!5([123]))',
+    HLAGroup.DP: r'DP\d*',
+    HLAGroup.DQ: r'DQ\d*',
+    HLAGroup.OTHER_DR: r'DR5[123]'
 }
 
-HLA_GROUP_SPLIT_CODE_REGEX[HLAGroups.Other] = '|'.join(
+HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.Other] = '|'.join(
     HLA_GROUP_SPLIT_CODE_REGEX[hla_group] for hla_group in HLA_GROUPS_OTHER)
 
 HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS = {
-    HLAGroups.A: 1.0,
-    HLAGroups.B: 3.0,
-    HLAGroups.DRB1: 9.0,
-    HLAGroups.Other: 0.0
+    HLAGroup.A: 1.0,
+    HLAGroup.B: 3.0,
+    HLAGroup.DRB1: 9.0,
+    HLAGroup.Other: 0.0
 }
+
+
+class AntibodyMatchTypes(str, Enum):
+    NONE = 'NONE'
+    MATCH = 'MATCH'
 
 
 class MatchTypes(str, Enum):
@@ -58,6 +63,7 @@ class MatchTypes(str, Enum):
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
+    # TODO This is not used. Either remove or implement. See https://github.com/mild-blue/txmatching/issues/280
     ANTIBODY = 'ANTIBODY'
 
 
@@ -70,7 +76,7 @@ MATCH_TYPE_BONUS = {
 
 @dataclass
 class CodesPerGroup:
-    hla_group: HLAGroups
+    hla_group: HLAGroup
     hla_codes: List[str]
 
 
