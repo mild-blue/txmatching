@@ -37,7 +37,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                                           'match_type': 'NONE'}],
                                     'hla_group': 'Other'}]
 
-        expected_ci = [
+        expected_score = [
             {
                 'hla_group': HLAGroup.A.name,
                 'donor_matches': [{'hla_code': 'A11',
@@ -48,6 +48,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                        'match_type': MatchTypes.NONE.name},
                                       {'hla_code': 'A3',
                                        'match_type': MatchTypes.NONE.name}],
+                'antibody_matches': expected_antibodies[0],
                 'group_compatibility_index': 0.0
             },
             {
@@ -60,6 +61,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                        'match_type': MatchTypes.NONE.name},
                                       {'hla_code': 'B7',
                                        'match_type': MatchTypes.NONE.name}],
+                'antibody_matches': expected_antibodies[1],
                 'group_compatibility_index': 0.0
             },
             {
@@ -72,16 +74,18 @@ class TestSaveAndGetConfiguration(DbTests):
                                        'match_type': MatchTypes.SPLIT.name},
                                       {'hla_code': 'DR11',
                                        'match_type': MatchTypes.SPLIT.name}],
+                'antibody_matches': expected_antibodies[2],
                 'group_compatibility_index': 18.0
             },
             {
                 'hla_group': HLAGroup.Other.name,
                 'donor_matches': [],
                 'recipient_matches': [],
-                'group_compatibility_index': 0.0
+                'group_compatibility_index': 0.0,
+                'antibody_matches': expected_antibodies[3],
             },
         ]
-        expected_ci2 = [
+        expected_score2 = [
             {
                 'hla_group': HLAGroup.A.name,
                 'donor_matches': [{'hla_code': 'A2',
@@ -92,6 +96,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                        'match_type': MatchTypes.NONE.name},
                                       {'hla_code': 'A3',
                                        'match_type': MatchTypes.NONE.name}],
+                'antibody_matches': expected_antibodies[0],
                 'group_compatibility_index': 0.0
             },
             {
@@ -104,6 +109,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                        'match_type': MatchTypes.NONE.name},
                                       {'hla_code': 'B7',
                                        'match_type': MatchTypes.NONE.name}],
+                'antibody_matches': expected_antibodies[1],
                 'group_compatibility_index': 0.0
             },
             {
@@ -116,12 +122,14 @@ class TestSaveAndGetConfiguration(DbTests):
                                        'match_type': MatchTypes.SPLIT.name},
                                       {'hla_code': 'DR11',
                                        'match_type': MatchTypes.SPLIT.name}],
+                'antibody_matches': expected_antibodies[2],
                 'group_compatibility_index': 18.0
             },
             {
                 'hla_group': HLAGroup.Other.name,
                 'donor_matches': [],
                 'recipient_matches': [],
+                'antibody_matches': expected_antibodies[3],
                 'group_compatibility_index': 0.0
             },
         ]
@@ -134,16 +142,14 @@ class TestSaveAndGetConfiguration(DbTests):
                     {'transplants': [
                         {
                             'score': 18.0,
-                            'detailed_antibody_matches': expected_antibodies,
-                            'detailed_compatibility_index': expected_ci,
+                            'detailed_score_per_group': expected_score,
                             'compatible_blood': True,
                             'donor': 'P21',
                             'recipient': 'P12'
                         },
                         {
                             'score': 18.0,
-                            'detailed_antibody_matches': expected_antibodies,
-                            'detailed_compatibility_index': expected_ci2,
+                            'detailed_score_per_group': expected_score2,
                             'compatible_blood': True,
                             'donor': 'P22',
                             'recipient': 'P11'
@@ -161,14 +167,31 @@ class TestSaveAndGetConfiguration(DbTests):
                 'count_of_transplants': 2
             }
         ]
+
         self.maxDiff = None
-        self.assertListEqual(expected_ci, res.json[0]["rounds"][0]["transplants"][0]['detailed_compatibility_index'])
-        self.assertListEqual(expected_ci2, res.json[0]["rounds"][0]["transplants"][1]['detailed_compatibility_index'])
+
         self.assertCountEqual(expected_antibodies[3]["antibody_matches"],
-                              res.json[0]["rounds"][0]["transplants"][1]['detailed_antibody_matches'][3][
+                              res.json[0]["rounds"][0]["transplants"][1]['detailed_score_per_group'][3][
                                   "antibody_matches"])
         self.assertEqual(expected_antibodies[3]["hla_group"],
-                         res.json[0]["rounds"][0]["transplants"][1]['detailed_antibody_matches'][3]["hla_group"])
+                         res.json[0]["rounds"][0]["transplants"][1]['detailed_score_per_group'][3]["hla_group"])
+
+        self.assertListEqual(expected_score[0]['donor_matches'],
+                             res.json[0]["rounds"][0]["transplants"][0]['detailed_score_per_group'][0][
+                                 'donor_matches'
+                             ])
+        self.assertListEqual(expected_score2[0]['donor_matches'],
+                             res.json[0]["rounds"][0]["transplants"][1]['detailed_score_per_group'][0][
+                                 'donor_matches'
+                             ])
+        self.assertListEqual(expected_score[0]['recipient_matches'],
+                             res.json[0]["rounds"][0]["transplants"][0]['detailed_score_per_group'][0][
+                                 'recipient_matches'
+                             ])
+        self.assertListEqual(expected_score2[0]['recipient_matches'],
+                             res.json[0]["rounds"][0]["transplants"][1]['detailed_score_per_group'][0][
+                                 'recipient_matches'
+                             ])
 
 
 def test_get_patients(self):

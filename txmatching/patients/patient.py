@@ -7,10 +7,7 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     PatientParameters)
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.hla_system.compatibility_index import \
-    DetailedCompatibilityIndexForHLAGroup
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
-from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatchForHLAGroup
 from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 
 DEFAULT_CUTOFF = 2000

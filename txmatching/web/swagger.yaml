@@ -132,11 +132,9 @@ definitions:
                 example: &id004
                 -   antibody_matches:
                     -   hla_code: A9
-                        match_type: !!python/object/apply:txmatching.utils.enums.AntibodyMatchTypes
-                        - NONE
+                        match_type: NONE
                     -   hla_code: A1
-                        match_type: !!python/object/apply:txmatching.utils.enums.AntibodyMatchTypes
-                        - MATCH
+                        match_type: MATCH
                     donor_matches:
                     -   hla_code: A23
                         match_type: BROAD
