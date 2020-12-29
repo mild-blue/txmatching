@@ -51,7 +51,8 @@ def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, in
 def _parse_hla(hla_allele_str: str) -> List[HLAType]:
     if 'neg' in hla_allele_str.lower():
         return []
-
+    # remove codes in brackets, they are only in detail all the split codes for broade in front of the bracket
+    hla_allele_str = re.sub(r'\(.*?\)', '', hla_allele_str)
     allele_codes = re.split('[,. ()]+', hla_allele_str)
     allele_codes = [code.upper() for code in allele_codes if len(code) > 0]
 

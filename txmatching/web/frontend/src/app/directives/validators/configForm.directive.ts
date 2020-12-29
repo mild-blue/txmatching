@@ -1,6 +1,7 @@
 import { AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn } from '@angular/forms';
-import { Hla, Patient } from '@app/model/Patient';
+import { Patient } from '@app/model/Patient';
 import { ErrorStateMatcher } from '@angular/material/core';
+import { Hla } from '@app/model/Hla';
 
 export function patientNameValidator(patients: Patient[]): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {

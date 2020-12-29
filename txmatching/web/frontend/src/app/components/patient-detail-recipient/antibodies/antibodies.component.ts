@@ -1,10 +1,12 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
-import { Antibody, Hla, PatientList, Recipient } from '@app/model/Patient';
 import { Observable } from 'rxjs';
 import { ENTER } from '@angular/cdk/keycodes';
 import { ConfigErrorStateMatcher, hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { map, startWith } from 'rxjs/operators';
+import { Recipient } from '@app/model/Recipient';
+import { Antibody, Hla } from '@app/model/Hla';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-antibodies',
@@ -62,11 +64,11 @@ export class AntibodiesComponent implements OnInit {
     const code = antibody instanceof Object ? antibody.code : antibody;
     const formattedCode = code.trim().toUpperCase();
 
-    this.recipient.hla_antibodies.hla_antibodies_list.push({
-      code: formattedCode,
-      raw_code: formattedCode,
-      mfi
-    });
+    // this.recipient.hla_antibodies.hla_antibodies_list.push({
+    //   code: formattedCode,
+    //   raw_code: formattedCode,
+    //   mfi
+    // });
 
     // reset form
     this.form.reset();
@@ -134,8 +136,8 @@ export class AntibodiesComponent implements OnInit {
       allAntibodies.push(...r.hla_antibodies.hla_antibodies_list);
     }
 
-    this.allAntibodies = [...new Set(allAntibodies.map(a => a.code))].map(code => {
-      return { code, raw_code: code ?? '', mfi: 0 };
-    }); // only unique
+    // this.allAntibodies = [...new Set(allAntibodies.map(a => a.code))].map(code => {
+    //   return { code, raw_code: code ?? '', mfi: 0 };
+    // }); // only unique
   }
 }

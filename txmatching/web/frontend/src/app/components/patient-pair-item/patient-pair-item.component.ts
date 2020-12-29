@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ListItemAbstractComponent } from '@app/components/list-item/list-item.interface';
-import { PatientPair } from '@app/model/Patient';
+import { PatientPair } from '@app/model/PatientPair';
 
 @Component({
   selector: 'app-patient-pair-item',
