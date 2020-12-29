@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 from typing import List
 
-from txmatching.data_transfer_objects.matchings.matching_swagger import AntibodyMatch
 from txmatching.utils.enums import HLAGroup
 from txmatching.utils.hla_system.compatibility_index import HLAMatch
+from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatch
 
 
 @dataclass

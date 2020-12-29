@@ -2,24 +2,6 @@ basePath: /
 consumes:
 - application/json
 definitions:
-    AntibodiesPerGroup:
-        properties:
-            antibody_matches:
-                items:
-                    $ref: '#/definitions/AntibodyMatch'
-                type: array
-            hla_group:
-                enum:
-                - A
-                - B
-                - DRB1
-                - Other
-                example: A
-                type: string
-        required:
-        - antibody_matches
-        - hla_group
-        type: object
     AntibodyMatch:
         properties:
             hla_code:
@@ -100,6 +82,10 @@ definitions:
         type: object
     DetailedScoreForGroup:
         properties:
+            antibody_matches:
+                items:
+                    $ref: '#/definitions/AntibodyMatch'
+                type: array
             donor_matches:
                 items:
                     $ref: '#/definitions/HlaCodeMatch'
@@ -120,10 +106,91 @@ definitions:
                     $ref: '#/definitions/HlaCodeMatch'
                 type: array
         required:
+        - antibody_matches
         - donor_matches
         - group_compatibility_index
         - hla_group
         - recipient_matches
+        type: object
+    Donor:
+        properties:
+            active:
+                description: Whether the user shall be used in pairing calculation
+                type: boolean
+            compatible_blood_with_related_recipient:
+                description: Indicator whether Donor and related recipients have compatible
+                    blood groups
+                type: boolean
+            db_id:
+                description: Database id of the patient
+                type: integer
+            detailed_score_with_related_recipient:
+                description: 'Contains details for compatibility index for each HLA
+                    Group compatibility
+
+                    index is calculated for.'
+                example: &id004
+                -   antibody_matches:
+                    -   hla_code: A9
+                        match_type: !!python/object/apply:txmatching.utils.enums.AntibodyMatchTypes
+                        - NONE
+                    -   hla_code: A1
+                        match_type: !!python/object/apply:txmatching.utils.enums.AntibodyMatchTypes
+                        - MATCH
+                    donor_matches:
+                    -   hla_code: A23
+                        match_type: BROAD
+                    -   hla_code: A1
+                        match_type: SPLIT
+                    group_compatibility_index: 2.0
+                    hla_group: A
+                    recipient_matches:
+                    -   hla_code: A9
+                        match_type: BROAD
+                    -   hla_code: A1
+                        match_type: SPLIT
+                -   antibody_matches: []
+                    donor_matches: []
+                    group_compatibility_index: 0.0
+                    hla_group: B
+                    recipient_matches: []
+                -   antibody_matches: []
+                    donor_matches: []
+                    group_compatibility_index: 0.0
+                    hla_group: DRB1
+                    recipient_matches: []
+                -   antibody_matches: []
+                    donor_matches: []
+                    group_compatibility_index: 0.0
+                    hla_group: Other
+                    recipient_matches: []
+                items:
+                    $ref: '#/definitions/DetailedScoreForGroup'
+                type: array
+            donor_type:
+                enum:
+                - DONOR
+                - BRIDGING_DONOR
+                - NON_DIRECTED
+                example: DONOR
+                type: string
+            medical_id:
+                description: Medical id of the patient
+                type: string
+            parameters:
+                $ref: '#/definitions/PatientParameters'
+            related_recipient_db_id:
+                description: Database id of the related recipient
+                type: integer
+            score_with_related_recipient:
+                description: Score calculated with related recipient
+                type: number
+        required:
+        - active
+        - db_id
+        - donor_type
+        - medical_id
+        - parameters
         type: object
     DonorInput:
         properties:
@@ -195,81 +262,6 @@ definitions:
         - donor_type
         - hla_typing
         - medical_id
-        type: object
-    DonorModel:
-        properties:
-            active:
-                description: Whether the user shall be used in pairing calculation
-                type: boolean
-            compatible_blood_with_related_recipient:
-                description: Indicator whether Donor and related recipients have compatible
-                    blood groups
-                type: boolean
-            db_id:
-                description: Database id of the patient
-                type: integer
-            detailed_compatibility_index_with_related_recipient:
-                description: 'Contains details for compatibility index for each HLA
-                    Group compatibility
-
-                    index is calculated for.'
-                example: &id004
-                -   donor_matches:
-                    -   hla_code: A23
-                        match_type: BROAD
-                    -   hla_code: A1
-                        match_type: SPLIT
-                    group_compatibility_index: 2.0
-                    hla_group: A
-                    recipient_matches:
-                    -   hla_code: A9
-                        match_type: BROAD
-                    -   hla_code: A1
-                        match_type: SPLIT
-                -   donor_matches: []
-                    group_compatibility_index: 0.0
-                    hla_group: B
-                    recipient_matches: []
-                -   donor_matches: []
-                    group_compatibility_index: 0.0
-                    hla_group: DRB1
-                    recipient_matches: []
-                -   donor_matches: []
-                    group_compatibility_index: 0.0
-                    hla_group: Other
-                    recipient_matches: []
-                items:
-                    $ref: '#/definitions/DetailedScoreForGroup'
-                type: array
-            donor_type:
-                enum:
-                - DONOR
-                - BRIDGING_DONOR
-                - NON_DIRECTED
-                example: DONOR
-                type: string
-            matching_antibodies_with_related_recipient:
-                items:
-                    $ref: '#/definitions/AntibodiesPerGroup'
-                type: array
-            medical_id:
-                description: Medical id of the patient
-                type: string
-            parameters:
-                $ref: '#/definitions/PatientParameters'
-            related_recipient_db_id:
-                description: Database id of the related recipient
-                type: integer
-            score_with_related_recipient:
-                description: Score calculated with related recipient
-                type: number
-        required:
-        - active
-        - db_id
-        - donor_type
-        - matching_antibodies_with_related_recipient
-        - medical_id
-        - parameters
         type: object
     DonorModelToUpdate:
         properties:
@@ -611,12 +603,53 @@ definitions:
         properties:
             donors:
                 items:
-                    $ref: '#/definitions/DonorModel'
+                    $ref: '#/definitions/Donor'
                 type: array
             recipients:
                 items:
-                    $ref: '#/definitions/RecipientModel'
+                    $ref: '#/definitions/Recipient'
                 type: array
+        type: object
+    Recipient:
+        properties:
+            acceptable_blood_groups:
+                items:
+                    enum:
+                    - A
+                    - B
+                    - AB
+                    - '0'
+                    example: A
+                    type: string
+                type: array
+            db_id:
+                description: Database id of the patient
+                type: integer
+            hla_antibodies:
+                $ref: '#/definitions/HlaAntibodies'
+            medical_id:
+                description: Medical id of the patient
+                type: string
+            parameters:
+                $ref: '#/definitions/PatientParameters'
+            previous_transplants:
+                type: integer
+            recipient_cutoff:
+                type: integer
+            recipient_requirements:
+                $ref: '#/definitions/RecipientRequirements'
+            related_donor_db_id:
+                description: Database id of the related donor
+                type: integer
+            waiting_since:
+                format: date-time
+                type: string
+        required:
+        - db_id
+        - hla_antibodies
+        - medical_id
+        - parameters
+        - related_donor_db_id
         type: object
     RecipientInput:
         properties:
@@ -693,47 +726,6 @@ definitions:
         - hla_antibodies
         - hla_typing
         - medical_id
-        type: object
-    RecipientModel:
-        properties:
-            acceptable_blood_groups:
-                items:
-                    enum:
-                    - A
-                    - B
-                    - AB
-                    - '0'
-                    example: A
-                    type: string
-                type: array
-            db_id:
-                description: Database id of the patient
-                type: integer
-            hla_antibodies:
-                $ref: '#/definitions/HlaAntibodies'
-            medical_id:
-                description: Medical id of the patient
-                type: string
-            parameters:
-                $ref: '#/definitions/PatientParameters'
-            previous_transplants:
-                type: integer
-            recipient_cutoff:
-                type: integer
-            recipient_requirements:
-                $ref: '#/definitions/RecipientRequirements'
-            related_donor_db_id:
-                description: Database id of the related donor
-                type: integer
-            waiting_since:
-                format: date-time
-                type: string
-        required:
-        - db_id
-        - hla_antibodies
-        - medical_id
-        - parameters
-        - related_donor_db_id
         type: object
     RecipientModelToUpdate:
         properties:
@@ -826,11 +818,7 @@ definitions:
         properties:
             compatible_blood:
                 type: boolean
-            detailed_antibody_matches:
-                items:
-                    $ref: '#/definitions/AntibodiesPerGroup'
-                type: array
-            detailed_compatibility_index:
+            detailed_score_per_group:
                 description: 'Contains details for compatibility index for each HLA
                     Group compatibility
 
@@ -847,8 +835,7 @@ definitions:
                 type: number
         required:
         - compatible_blood
-        - detailed_antibody_matches
-        - detailed_compatibility_index
+        - detailed_score_per_group
         - donor
         - recipient
         - score
@@ -1073,7 +1060,7 @@ paths:
                 '200':
                     description: Updates single donor.
                     schema:
-                        $ref: '#/definitions/DonorModel'
+                        $ref: '#/definitions/Donor'
                 '400':
                     description: Wrong data format.
                     schema:
@@ -1108,7 +1095,7 @@ paths:
                 '200':
                     description: Updates single recipient.
                     schema:
-                        $ref: '#/definitions/RecipientModel'
+                        $ref: '#/definitions/Recipient'
                 '400':
                     description: Wrong data format.
                     schema:

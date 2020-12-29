@@ -12,8 +12,7 @@ from txmatching.auth.operation_guards.country_guard import (
 from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
-    DonorModel, DonorModelToUpdate, PatientsModel, RecipientModel,
-    RecipientModelToUpdate)
+    DonorJson, PatientsJson, RecipientJson, RecipientModelToUpdateJson, DonorModelToUpdateJson)
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
@@ -35,7 +34,7 @@ logger = logging.getLogger(__name__)
 class AllPatients(Resource):
 
     @patient_api.doc(security='bearer')
-    @patient_api.response(code=200, model=PatientsModel, description='List of donors and list of recipients.')
+    @patient_api.response(code=200, model=PatientsJson, description='List of donors and list of recipients.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
     @patient_api.response(code=403, model=FailJson,
@@ -51,8 +50,8 @@ class AllPatients(Resource):
 @patient_api.route('/recipient', methods=['PUT'])
 class AlterRecipient(Resource):
 
-    @patient_api.doc(body=RecipientModelToUpdate, security='bearer')
-    @patient_api.response(code=200, model=RecipientModel, description='Updates single recipient.')
+    @patient_api.doc(body=RecipientModelToUpdateJson, security='bearer')
+    @patient_api.response(code=200, model=RecipientJson, description='Updates single recipient.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
     @patient_api.response(code=403, model=FailJson,
@@ -68,8 +67,8 @@ class AlterRecipient(Resource):
 
 @patient_api.route('/donor', methods=['PUT'])
 class AlterDonor(Resource):
-    @patient_api.doc(body=DonorModelToUpdate, security='bearer')
-    @patient_api.response(code=200, model=DonorModel, description='Updates single donor.')
+    @patient_api.doc(body=DonorModelToUpdateJson, security='bearer')
+    @patient_api.response(code=200, model=DonorJson, description='Updates single donor.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
     @patient_api.response(code=403, model=FailJson,

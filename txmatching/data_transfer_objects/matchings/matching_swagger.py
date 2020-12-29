@@ -49,22 +49,22 @@ EXAMPLE_DETAILED_SCORE = [
 DESCRIPTION_DETAILED_SCORE = """Contains details for compatibility index for each HLA Group compatibility
 index is calculated for."""
 
-HlaCodeMatch = matching_api.model('HlaCodeMatch', {
+HlaCodeMatchJson = matching_api.model('HlaCodeMatch', {
     'hla_code': fields.String(required=True),
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in MatchTypes])
 })
 
-AntibodyMatch = matching_api.model('AntibodyMatch', {
+AntibodyMatchJson = matching_api.model('AntibodyMatch', {
     'hla_code': fields.String(required=True, example="A11"),
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in AntibodyMatchTypes])
 })
 
-DetailedScoreForGroup = matching_api.model('DetailedScoreForGroup', {
+DetailedScoreForGroupJson = matching_api.model('DetailedScoreForGroup', {
     'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),
-    'donor_matches': fields.List(required=True, cls_or_instance=fields.Nested(HlaCodeMatch)),
-    'recipient_matches': fields.List(required=True, cls_or_instance=fields.Nested(HlaCodeMatch)),
+    'donor_matches': fields.List(required=True, cls_or_instance=fields.Nested(HlaCodeMatchJson)),
+    'recipient_matches': fields.List(required=True, cls_or_instance=fields.Nested(HlaCodeMatchJson)),
     'group_compatibility_index': fields.Float(required=True, example=2.0),
-    'antibody_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatch))
+    'antibody_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatchJson))
 })
 
 TransplantJson = matching_api.model('Transplant', {
@@ -78,7 +78,7 @@ TransplantJson = matching_api.model('Transplant', {
         required=True,
         description=DESCRIPTION_DETAILED_SCORE,
         example=EXAMPLE_DETAILED_SCORE,
-        cls_or_instance=fields.Nested(DetailedScoreForGroup))
+        cls_or_instance=fields.Nested(DetailedScoreForGroupJson))
 })
 
 CountryInRoundJson = matching_api.model('Country', {
