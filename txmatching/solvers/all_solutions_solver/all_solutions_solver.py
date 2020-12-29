@@ -27,8 +27,10 @@ class AllSolutionsSolver(SolverBase):
     scorer: AdditiveScorer
 
     def __post_init__(self):
-        self.donors = sorted(list(self.donors_dict.values()), key=lambda x: x.medical_id[:-4])
-        self.recipients = sorted(list(self.recipients_dict.values()), key=lambda x: x.medical_id[-3:])
+        # TODO figure out why sorting matters in solver. And try to remove this dependency or to understand it better
+        #  https://github.com/mild-blue/txmatching/issues/286
+        self.donors = sorted(list(self.donors_dict.values()), key=lambda x: x.medical_id)
+        self.recipients = sorted(list(self.recipients_dict.values()), key=lambda x: x.medical_id)
 
         self.score_matrix = self.scorer.get_score_matrix(
             self.donors,

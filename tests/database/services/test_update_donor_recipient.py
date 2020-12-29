@@ -31,8 +31,11 @@ from txmatching.utils.logged_user import get_current_user_id
 
 class TestUpdateDonorRecipient(DbTests):
     def test_saving_patients_from_obfuscated_excel(self):
-        patients = parse_excel_data(get_absolute_path('tests/resources/patient_data_2020_07_obfuscated.xlsx'))
         txm_event = create_or_overwrite_txm_event('test')
+        patients = parse_excel_data(
+            get_absolute_path('tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'),
+            txm_event.name,
+            None)
 
         # Insert config and validates that it is stored into DB
         user_id = get_current_user_id()
@@ -47,7 +50,7 @@ class TestUpdateDonorRecipient(DbTests):
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()
         self.assertEqual(1, len(configs))
 
-        save_patients_from_excel_to_txm_event(patients, txm_event.db_id)
+        save_patients_from_excel_to_txm_event(patients)
 
         configs = ConfigModel.query.all()
         recipients = RecipientModel.query.all()
@@ -81,10 +84,12 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(0, len(configs))
         self.assertEqual(34, len(recipients))
         self.assertEqual(38, len(donors))
+        self.assertEqual(3, len({donor.country for donor in donors}))
+        self.assertEqual(3, len({recipient.country for recipient in recipients}))
         self.assertEqual(0, len(pairing_results))
         self.assertEqual(91, len(recipient_acceptable_bloods))
         self.assertEqual(1059, len(recipient_hla_antibodies))
-        self.assertEqual(5, len(app_users))
+        self.assertEqual(6, len(app_users))
 
         all_matchings = list(solve_from_configuration(Configuration(
             max_cycle_length=100,

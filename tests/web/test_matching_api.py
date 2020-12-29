@@ -220,7 +220,7 @@ def test_save_recipient(self):
 
 
 def test_correct_config_applied(self):
-    self.fill_db_with_patients(get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx'))
+    self.fill_db_with_patients(get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'))
 
     with self.app.test_client() as client:
         conf_dto = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=1))
@@ -241,7 +241,7 @@ def test_correct_config_applied(self):
 
 
 def test_solver_multiple_txm_events(self):
-    self.fill_db_with_patients(get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx'))
+    self.fill_db_with_patients(get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'))
 
     with self.app.test_client() as client:
         conf_dto = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=1))

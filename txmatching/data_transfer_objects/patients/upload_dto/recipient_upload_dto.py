@@ -18,12 +18,12 @@ class RecipientUploadDTO:
     blood_group: BloodGroup
     hla_typing: List[str]
     hla_antibodies: List[HLAAntibodiesUploadDTO]
-    sex: Optional[Sex]
-    height: Optional[Centimeters]
-    weight: Optional[Kilograms]
-    year_of_birth: Optional[int]
-    waiting_since: Optional[str]
-    previous_transplants: Optional[int]
+    sex: Optional[Sex] = None
+    height: Optional[Centimeters] = None
+    weight: Optional[Kilograms] = None
+    year_of_birth: Optional[int] = None
+    waiting_since: Optional[str] = None
+    previous_transplants: Optional[int] = None
 
     def __post_init__(self):
         self.hla_typing_preprocessed = preprocess_hla_codes_in(self.hla_typing)

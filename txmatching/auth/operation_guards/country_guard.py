@@ -27,6 +27,10 @@ def guard_user_has_access_to_country(user_id: int, country: Country):
     _check_country(_get_user_checked(user_id), country)
 
 
+def get_user_default_country(user_id: int) -> Country:
+    return _get_user_checked(user_id).allowed_edit_countries[0]
+
+
 def _get_resource_country_checked(patient_id: int, model: Union[Type[RecipientModel], Type[DonorModel]]) -> Country:
     patient = model.query.get(patient_id)
     if not patient:
@@ -43,4 +47,4 @@ def _get_user_checked(user_id: int) -> AppUserModel:
 
 def _check_country(user: AppUserModel, country: Country):
     if country not in user.allowed_edit_countries:
-        raise GuardException(f'User id {user.id} does not have access to {country}!')
+        raise GuardException(f'User with email {user.email} does not have access to {country}!')

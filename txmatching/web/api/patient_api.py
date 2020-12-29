@@ -9,7 +9,8 @@ from flask_restx import Resource
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.auth.operation_guards.country_guard import (
-    guard_user_country_access_to_donor, guard_user_country_access_to_recipient)
+    guard_user_country_access_to_donor, guard_user_country_access_to_recipient, guard_user_has_access_to_country,
+    get_user_default_country)
 from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
@@ -23,7 +24,8 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson, PatientUploadSuccessJson
 from txmatching.database.services.patient_service import (get_txm_event,
                                                           update_donor,
-                                                          update_recipient, to_lists_for_fe, donor_to_donor_dto)
+                                                          update_recipient, to_lists_for_fe, donor_to_donor_dto,
+                                                          save_patients_from_excel_to_txm_event)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
@@ -114,12 +116,27 @@ class AddPatientsFile(Resource):
     @require_user_edit_access()
     def put(self):
         file = request.files['file']
+        txm_event_db_id = get_txm_event_id_for_current_user()
+        txm_event_name = get_txm_event(txm_event_db_id).name
+        user_id = get_current_user_id()
 
-        if file.filename.endswith(".xlsx"):
-            donors, recipients = parse_excel_data(file)
-            return jsonify(PatientUploadDTOOut(
-                recipients_uploaded=len(recipients),
-                donors_uploaded=len(donors)
-            ))
+        if file.filename.endswith("multi_country.xlsx"):
+            parsed_data = parse_excel_data(file, txm_event_name, None)
+        elif file.filename.endswith(".xlsx"):
+            parsed_data = parse_excel_data(file, txm_event_name, get_user_default_country(user_id))
+
+        elif file.filename.endswith(".csv"):
+            # TODO parse csv according to aggreement with Austria https://github.com/mild-blue/txmatching/issues/287
+            raise InvalidArgumentException("We cannot parse csv at the moment")
         else:
             raise InvalidArgumentException("Unexpected file format")
+
+        for parsed_country_data in parsed_data:
+            guard_user_has_access_to_country(user_id=user_id, country=parsed_country_data.country)
+        # TODO save uploaded file to database for further investigation
+        #  https://github.com/mild-blue/txmatching/issues/288
+        save_patients_from_excel_to_txm_event(parsed_data)
+        return jsonify(PatientUploadDTOOut(
+            recipients_uploaded=sum(len(parsed_data_country.recipients) for parsed_data_country in parsed_data),
+            donors_uploaded=sum(len(parsed_data_country.donors) for parsed_data_country in parsed_data))
+        )

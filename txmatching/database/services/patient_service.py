@@ -2,7 +2,7 @@ import collections
 import dataclasses
 import datetime
 import logging
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 import dacite
 from sqlalchemy import and_
@@ -52,23 +52,6 @@ from txmatching.utils.hla_system.hla_transformations_store import \
     parse_hla_raw_code_and_store_parsing_error_in_db
 
 logger = logging.getLogger(__name__)
-
-
-def save_patients_from_excel_to_txm_event(
-        donors_recipients: Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]],
-        txm_event_db_id: int
-):
-    maybe_recipient_models = [_recipient_excel_dto_to_recipient_model(recipient, txm_event_db_id)
-                              if recipient else None for recipient in donors_recipients[1]]
-    recipient_models = [recipient_model for recipient_model in maybe_recipient_models if recipient_model]
-    db.session.add_all(recipient_models)
-    db.session.flush()
-
-    donor_models = [_donor_excel_dto_to_donor_model(donor_dto, maybe_recipient_model, txm_event_db_id) for
-                    donor_dto, maybe_recipient_model in zip(donors_recipients[0], maybe_recipient_models)]
-    db.session.add_all(donor_models)
-    _remove_configs_from_txm_event_by_id(txm_event_db_id)
-    db.session.commit()
 
 
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
@@ -151,29 +134,38 @@ def get_txm_event(txm_event_db_id: int) -> TxmEvent:
                     all_recipients=all_recipients)
 
 
-def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_code: Country):
+def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn,
+                              remove_from_country: bool = True):
     """
     Updates TXM event patients, i.e., removes current event donors and recipients and add new entities.
     :param patient_upload_dto:
     :param country_code:
+    :param remove_from_country:
     :return:
     """
-    remove_donors_and_recipients_from_txm_event_for_country(patient_upload_dto.txm_event_name, country_code)
+    if remove_from_country:
+        remove_donors_and_recipients_from_txm_event_for_country(patient_upload_dto.txm_event_name,
+                                                                patient_upload_dto.country)
     _remove_configs_from_txm_event_by_name(patient_upload_dto.txm_event_name)
     _save_patients_to_existing_txm_event(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,
-        country_code=country_code,
+        country_code=patient_upload_dto.country,
         txm_event_name=patient_upload_dto.txm_event_name
     )
     db.session.commit()
+
+
+def save_patients_from_excel_to_txm_event(patient_upload_dtos: List[PatientUploadDTOIn]):
+    for patient_upload_dto in patient_upload_dtos:
+        update_txm_event_patients(patient_upload_dto, remove_from_country=False)
 
 
 def _remove_configs_from_txm_event_by_id(txm_event_db_id: int):
     ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).delete()
 
 
-def _remove_configs_from_txm_event_by_name(txm_event_name: int):
+def _remove_configs_from_txm_event_by_name(txm_event_name: str):
     # pylint: disable=no-member
     txm_query = db.session.query(TxmEventModel.id).filter(TxmEventModel.name == txm_event_name)
     ConfigModel.query.filter(ConfigModel.txm_event_id.in_(txm_query.subquery())).delete(synchronize_session='fetch')
@@ -398,13 +390,6 @@ def _save_patients_to_existing_txm_event(
     txm_event = TxmEventModel.query.filter(TxmEventModel.name == txm_event_name).first()
     if not txm_event:
         raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.')
-
-    donors_from_country = [donor for donor in txm_event.donors if donor.country == country_code]
-    recipients_from_country = [recipient for recipient in txm_event.recipients if
-                               recipient.country == country_code]
-    if len(donors_from_country) > 0 or len(recipients_from_country) > 0:
-        raise InvalidArgumentException(f'Txm event "{txm_event_name}" already contains some patients from country'
-                                       f' {country_code}, cannot upload data')
 
     txm_event_db_id = txm_event.id
     recipient_models = [

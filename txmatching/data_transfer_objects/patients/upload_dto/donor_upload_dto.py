@@ -16,10 +16,10 @@ class DonorUploadDTO:
     hla_typing: List[str]
     donor_type: str
     related_recipient_medical_id: Optional[str]
-    sex: Optional[Sex]
-    height: Optional[Centimeters]
-    weight: Optional[Kilograms]
-    year_of_birth: Optional[int]
+    sex: Optional[Sex] = None
+    height: Optional[Centimeters] = None
+    weight: Optional[Kilograms] = None
+    year_of_birth: Optional[int] = None
 
     def __post_init__(self):
         self.hla_typing_preprocessed = preprocess_hla_codes_in(self.hla_typing)

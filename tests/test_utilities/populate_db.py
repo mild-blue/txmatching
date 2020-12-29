@@ -54,8 +54,17 @@ ADMIN_WITH_DEFAULT_TXM_EVENT = {
     'require_2fa': False,
     'default_txm_event_id': 1
 }
+
+EDITOR_WITH_ONLY_ONE_COUNTRY = {
+    'email': 'editor_only_one_country@example.com',
+    'password': 'admin',
+    'role': UserRole.EDITOR,
+    'require_2fa': False,
+    'default_txm_event_id': 1,
+    'allowed_edit_countries': [Country.CZE]
+}
 USERS = [
-    ADMIN_USER, SERVICE_USER, OTP_USER, ADMIN_WITH_DEFAULT_TXM_EVENT, VIEWER_USER
+    ADMIN_USER, SERVICE_USER, OTP_USER, ADMIN_WITH_DEFAULT_TXM_EVENT, VIEWER_USER, EDITOR_WITH_ONLY_ONE_COUNTRY
 ]
 
 
@@ -75,6 +84,8 @@ def add_users():
     AppUserModel.query.delete()
     user_models = []
     for user in USERS:
+        if 'allowed_edit_countries' not in user:
+            user['allowed_edit_countries'] = [country for country in Country]
         user_model = AppUserModel(
             email=user.get('email'),
             pass_hash=encode_password(user.get('password')),
@@ -83,7 +94,7 @@ def add_users():
             phone_number=user.get('phone_number'),
             require_2fa=user.get('require_2fa'),
             default_txm_event_id=user.get('default_txm_event_id'),
-            allowed_edit_countries=[country for country in Country]
+            allowed_edit_countries=user.get('allowed_edit_countries')
         )
         user_models.append(user_model)
 
@@ -102,9 +113,10 @@ if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         create_or_overwrite_txm_event(name='test')
-        patients = parse_excel_data('../resources/patient_data_2020_07_obfuscated.xlsx')
+        patients = parse_excel_data('../resources/patient_data_2020_07_obfuscated_multi_country.xlsx', country=None,
+                                    txm_event_name='test')
         txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
-        save_patients_from_excel_to_txm_event(patients, txm_event_db_id=txm_event.db_id)
+        save_patients_from_excel_to_txm_event(patients)
         add_users()
         result = solve_from_configuration(txm_event_db_id=txm_event.db_id,
                                           configuration=Configuration(max_sequence_length=100, max_cycle_length=100,

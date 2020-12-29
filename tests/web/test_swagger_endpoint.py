@@ -23,7 +23,7 @@ class TestSwaggerEndpoints(DbTests):
 
     def test_server_logged_in(self):
         self.txm_event_db_id = self.fill_db_with_patients(
-            get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx')
+            get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx')
         )
         special_status_code_for_paths = {
             'post': {
