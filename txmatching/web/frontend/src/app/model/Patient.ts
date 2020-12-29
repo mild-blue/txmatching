@@ -15,17 +15,3 @@ export interface PatientParameters {
   };
   country_code: string;
 }
-
-// recipient: [possible donors]
-export const compatibleBloodGroups: { [key: string]: string[]; } = {
-  0: ['0'],
-  A: ['0', 'A'],
-  B: ['0', 'B'],
-  AB: ['0', 'A', 'B', 'AB']
-};
-
-export const antibodiesMultipliers: { [key: string]: number; } = {
-  A: 1,
-  B: 3,
-  DR: 9
-};

@@ -8,7 +8,7 @@
   </div>
 
   <div class="transplant-content">
-    <table *ngIf="donor && recipient && detailedCompatibilityIndex">
+    <table *ngIf="donor && recipient && detailedScorePerGroup">
       <tbody>
       <tr>
         <td></td>
@@ -47,7 +47,7 @@
         <td>Antibodies</td>
         <td></td>
       </tr>
-      <tr *ngFor="let compatibilityIndex of detailedCompatibilityIndex">
+      <tr *ngFor="let compatibilityIndex of detailedScorePerGroup">
         <td>{{ compatibilityIndex.hla_group }}</td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.donor_matches"
@@ -58,9 +58,8 @@
                     [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let code of getAntibodiesCodes(compatibilityIndex.hla_group)">
-            {{ code }}
-          </app-code>
+          <app-code *ngFor="let match of compatibilityIndex.antibody_matches"
+                    [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>{{ compatibilityIndex.group_compatibility_index }}</td>
       </tr>

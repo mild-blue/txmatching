@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { PatientService } from '@app/services/patient/patient.service';
 import { Configuration } from '@app/model/Configuration';
-import { DetailedCompatibilityIndex, HlaMatchType } from '@app/model/Hla';
+import { DetailedScorePerGroup, HlaMatchType } from '@app/model/Hla';
 import { Recipient } from '@app/model/Recipient';
 import { Donor } from '@app/model/Donor';
 
@@ -18,7 +18,7 @@ export class MatchingTransplantComponent {
   @Input() donor?: Donor;
   @Input() recipient?: Recipient;
   @Input() isBloodCompatible?: boolean;
-  @Input() detailedCompatibilityIndex?: DetailedCompatibilityIndex[];
+  @Input() detailedScorePerGroup?: DetailedScorePerGroup[];
 
   constructor(private _patientService: PatientService) {
   }
@@ -35,15 +35,5 @@ export class MatchingTransplantComponent {
     }
 
     return '';
-  }
-
-  public getAntibodiesCodes(group: string): string[] {
-    const recipientAntibodiesGroups = this.recipient?.hla_antibodies.hla_codes_over_cutoff_per_group;
-    if (!recipientAntibodiesGroups) {
-      return [];
-    }
-
-    const currentGroup = recipientAntibodiesGroups.find(g => g.hla_group === group);
-    return currentGroup?.hla_codes ?? [];
   }
 }

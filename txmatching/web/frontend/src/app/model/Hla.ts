@@ -11,10 +11,11 @@ export interface Antibody extends Hla {
   cutoff: number;
 }
 
-export interface DetailedCompatibilityIndex {
+export interface DetailedScorePerGroup {
   hla_group: string;
   donor_matches: HlaMatch[];
   recipient_matches: HlaMatch[];
+  antibody_matches: HlaMatch[];
   group_compatibility_index: number;
 }
 
