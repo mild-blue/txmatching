@@ -9,6 +9,7 @@ from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.hla_system.compatibility_index import \
     DetailedCompatibilityIndexForHLAGroup
+from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatchForHLAGroup
 from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 
@@ -44,9 +45,8 @@ class Donor(Patient):
 @dataclass
 class DonorDTO(Donor):
     score_with_related_recipient: Optional[float] = None
-    detailed_compatibility_index_with_related_recipient: Optional[List[DetailedCompatibilityIndexForHLAGroup]] = None
+    detailed_score_with_related_recipient: Optional[List[DetailedScoreForHLAGroup]] = None
     compatible_blood_with_related_recipient: Optional[str] = None
-    matching_antibodies_with_related_recipient: Optional[List[AntibodyMatchForHLAGroup]] = None
 
 
 @dataclass

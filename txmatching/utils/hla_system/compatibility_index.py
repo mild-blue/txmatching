@@ -4,7 +4,7 @@ from typing import List
 from txmatching.patients.patient_parameters import HLATyping
 from txmatching.utils.enums import (HLA_GROUPS_GENE,
                                     HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS,
-                                    MATCH_TYPE_BONUS, HLAGroups, MatchTypes)
+                                    MATCH_TYPE_BONUS, HLAGroup, MatchTypes)
 # Traditionally one can calculate index of incompatibility (IK) - the higher IK the higher incompatibility.
 # You calculate it by calculating the number of differences in A, B, DR alleles and look up the corresponding
 # column in the incompatibility index table.
@@ -23,7 +23,7 @@ class HLAMatch:
 
 @dataclass
 class DetailedCompatibilityIndexForHLAGroup:
-    hla_group: HLAGroups
+    hla_group: HLAGroup
     donor_matches: List[HLAMatch]
     recipient_matches: List[HLAMatch]
     group_compatibility_index: float
@@ -32,13 +32,13 @@ class DetailedCompatibilityIndexForHLAGroup:
 def compatibility_index(donor_hla_typing: HLATyping,
                         recipient_hla_typing: HLATyping) -> float:
     return sum([ci_index_for_group.group_compatibility_index for ci_index_for_group
-                in compatibility_index_detailed(donor_hla_typing, recipient_hla_typing)
+                in get_detailed_compatibility_index(donor_hla_typing, recipient_hla_typing)
                 ])
 
 
-def compatibility_index_detailed(donor_hla_typing: HLATyping,
-                                 recipient_hla_typing: HLATyping
-                                 ) -> List[DetailedCompatibilityIndexForHLAGroup]:
+def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
+                                     recipient_hla_typing: HLATyping
+                                     ) -> List[DetailedCompatibilityIndexForHLAGroup]:
     """
     The "compatibility index" is terminus technicus defined by immunologist:
     we calculate number of matches per Compatibility HLA indices and add bonus according
@@ -56,7 +56,7 @@ def compatibility_index_detailed(donor_hla_typing: HLATyping,
             hla_group=hla_group
         )
         )
-    hla_group = HLAGroups.Other
+    hla_group = HLAGroup.Other
     donor_split_codes = _hla_codes_for_hla_group(donor_hla_typing, hla_group)
     recipient_split_codes = _hla_codes_for_hla_group(recipient_hla_typing, hla_group)
     hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_split_codes(
@@ -75,7 +75,7 @@ def _match_through_split_codes(current_compatibility_index: float,
                                recipient_matches: List[HLAMatch],
                                donor_split_codes: List[str],
                                recipient_split_codes: List[str],
-                               hla_group: HLAGroups):
+                               hla_group: HLAGroup):
     for split_code in donor_split_codes.copy():
         if split_code in recipient_split_codes:
             donor_split_codes.remove(split_code)
@@ -93,7 +93,7 @@ def _match_through_broad_codes(current_compatibility_index: float,
                                recipient_matches: List[HLAMatch],
                                donor_split_codes: List[str],
                                recipient_split_codes: List[str],
-                               hla_group: HLAGroups):
+                               hla_group: HLAGroup):
     for split_code, broad_code in zip(donor_split_codes.copy(), get_broad_codes(donor_split_codes)):
         if broad_code in get_broad_codes(recipient_split_codes):
             if broad_code in recipient_split_codes:
@@ -118,7 +118,7 @@ def _match_through_broad_codes(current_compatibility_index: float,
 def _get_ci_for_recipient_donor_split_codes(
         donor_split_codes: List[str],
         recipient_split_codes: List[str],
-        hla_group: HLAGroups) -> DetailedCompatibilityIndexForHLAGroup:
+        hla_group: HLAGroup) -> DetailedCompatibilityIndexForHLAGroup:
     donor_matches = []
     recipient_matches = []
 
@@ -148,7 +148,7 @@ def _get_ci_for_recipient_donor_split_codes(
     )
 
 
-def _hla_codes_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroups) -> List[str]:
+def _hla_codes_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[str]:
     hla_codes = _hla_codes_for_hla_group(donor_hla_typing, hla_group)
 
     if len(hla_codes) not in {1, 2}:
@@ -160,6 +160,6 @@ def _hla_codes_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGro
     return hla_codes
 
 
-def _hla_codes_for_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroups) -> List[str]:
+def _hla_codes_for_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[str]:
     return next(codes_per_group.hla_codes for codes_per_group in donor_hla_typing.codes_per_group if
                 codes_per_group.hla_group == hla_group).copy()

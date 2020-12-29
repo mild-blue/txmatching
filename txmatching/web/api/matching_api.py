@@ -22,6 +22,7 @@ from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import configuration_from_dict
 from txmatching.database.services.matching_service import \
     get_latest_matchings_detailed
+from txmatching.database.services.patient_service import get_detailed_score
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.scorers.matching import get_count_of_transplants
@@ -63,11 +64,13 @@ class CalculateFromConfig(Resource):
                                     (pair.donor.db_id, pair.recipient.db_id)],
                                 donor=pair.donor.medical_id,
                                 recipient=pair.recipient.medical_id,
-                                detailed_compatibility_index=latest_matchings_detailed.detailed_score_tuples[
-                                    (pair.donor.db_id, pair.recipient.db_id)],
-                                detailed_antibody_matches=latest_matchings_detailed.antibody_matches_tuples[
-                                    (pair.donor.db_id, pair.recipient.db_id)],
-                            ) for pair in matching_round.donor_recipient_pairs],)
+                                detailed_score_per_group=get_detailed_score(
+                                    latest_matchings_detailed.detailed_score_tuples[
+                                        (pair.donor.db_id, pair.recipient.db_id)],
+                                    latest_matchings_detailed.antibody_matches_tuples[
+                                        (pair.donor.db_id, pair.recipient.db_id)]
+                                )
+                            ) for pair in matching_round.donor_recipient_pairs], )
                     for matching_round in matching.get_rounds()],
                 countries=matching.get_country_codes_counts(),
                 score=matching.score(),

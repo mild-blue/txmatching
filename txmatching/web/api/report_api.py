@@ -36,7 +36,7 @@ from txmatching.scorers.matching import (
     calculate_compatibility_index_for_group, get_count_of_transplants)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import CodesPerGroup, HLAGroups
+from txmatching.utils.enums import CodesPerGroup, HLAGroup
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -250,37 +250,37 @@ def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
 def hla_code_a_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
     return next(
         codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroups.A)
+        codes_per_group.hla_group == HLAGroup.A)
 
 
 def hla_code_b_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
     return next(
         codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroups.B)
+        codes_per_group.hla_group == HLAGroup.B)
 
 
 def hla_code_dr_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
     return next(
         codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroups.DRB1)
+        codes_per_group.hla_group == HLAGroup.DRB1)
 
 
 def hla_code_other_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
     return next(
         codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroups.Other)
+        codes_per_group.hla_group == HLAGroup.Other)
 
 
 def compatibility_index_a_filter(transplant: TransplantDTO) -> float:
-    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroups.A)
+    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroup.A)
 
 
 def compatibility_index_b_filter(transplant: TransplantDTO) -> float:
-    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroups.B)
+    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroup.B)
 
 
 def compatibility_index_dr_filter(transplant: TransplantDTO) -> float:
-    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroups.DRB1)
+    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroup.DRB1)
 
 
 def code_from_country_filter(countries: List[CountryDTO]) -> List[str]:

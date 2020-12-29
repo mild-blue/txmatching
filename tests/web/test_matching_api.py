@@ -4,7 +4,7 @@ from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.sql_alchemy_schema import ConfigModel
-from txmatching.utils.enums import HLAGroups, MatchTypes
+from txmatching.utils.enums import HLAGroup, MatchTypes
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, MATCHING_NAMESPACE, PATIENT_NAMESPACE
 
@@ -39,7 +39,7 @@ class TestSaveAndGetConfiguration(DbTests):
 
         expected_ci = [
             {
-                'hla_group': HLAGroups.A.name,
+                'hla_group': HLAGroup.A.name,
                 'donor_matches': [{'hla_code': 'A11',
                                    'match_type': MatchTypes.NONE.name},
                                   {'hla_code': 'A11',
@@ -51,7 +51,7 @@ class TestSaveAndGetConfiguration(DbTests):
                 'group_compatibility_index': 0.0
             },
             {
-                'hla_group': HLAGroups.B.name,
+                'hla_group': HLAGroup.B.name,
                 'donor_matches': [{'hla_code': 'B8',
                                    'match_type': MatchTypes.NONE.name},
                                   {'hla_code': 'B8',
@@ -63,7 +63,7 @@ class TestSaveAndGetConfiguration(DbTests):
                 'group_compatibility_index': 0.0
             },
             {
-                'hla_group': HLAGroups.DRB1.name,
+                'hla_group': HLAGroup.DRB1.name,
                 'donor_matches': [{'hla_code': 'DR11',
                                    'match_type': MatchTypes.SPLIT.name},
                                   {'hla_code': 'DR11',
@@ -75,7 +75,7 @@ class TestSaveAndGetConfiguration(DbTests):
                 'group_compatibility_index': 18.0
             },
             {
-                'hla_group': HLAGroups.Other.name,
+                'hla_group': HLAGroup.Other.name,
                 'donor_matches': [],
                 'recipient_matches': [],
                 'group_compatibility_index': 0.0
@@ -83,7 +83,7 @@ class TestSaveAndGetConfiguration(DbTests):
         ]
         expected_ci2 = [
             {
-                'hla_group': HLAGroups.A.name,
+                'hla_group': HLAGroup.A.name,
                 'donor_matches': [{'hla_code': 'A2',
                                    'match_type': MatchTypes.NONE.name},
                                   {'hla_code': 'A2',
@@ -95,7 +95,7 @@ class TestSaveAndGetConfiguration(DbTests):
                 'group_compatibility_index': 0.0
             },
             {
-                'hla_group': HLAGroups.B.name,
+                'hla_group': HLAGroup.B.name,
                 'donor_matches': [{'hla_code': 'B8',
                                    'match_type': MatchTypes.NONE.name},
                                   {'hla_code': 'B8',
@@ -107,7 +107,7 @@ class TestSaveAndGetConfiguration(DbTests):
                 'group_compatibility_index': 0.0
             },
             {
-                'hla_group': HLAGroups.DRB1.name,
+                'hla_group': HLAGroup.DRB1.name,
                 'donor_matches': [{'hla_code': 'DR11',
                                    'match_type': MatchTypes.SPLIT.name},
                                   {'hla_code': 'DR11',
@@ -119,7 +119,7 @@ class TestSaveAndGetConfiguration(DbTests):
                 'group_compatibility_index': 18.0
             },
             {
-                'hla_group': HLAGroups.Other.name,
+                'hla_group': HLAGroup.Other.name,
                 'donor_matches': [],
                 'recipient_matches': [],
                 'group_compatibility_index': 0.0

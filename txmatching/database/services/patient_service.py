@@ -42,8 +42,10 @@ from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.enums import Country
-from txmatching.utils.hla_system.compatibility_index import compatibility_index_detailed
-from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies
+from txmatching.utils.hla_system.compatibility_index import get_detailed_compatibility_index, \
+    DetailedCompatibilityIndexForHLAGroup
+from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
+from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies, AntibodyMatchForHLAGroup
 from txmatching.utils.hla_system.hla_transformations import (
     parse_hla_raw_code, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations_store import \
@@ -468,9 +470,7 @@ def donor_to_donor_dto(donor: Donor,
     if donor.related_recipient_db_id:
         related_recipient = next(recipient for recipient in all_recipients if
                                  recipient.db_id == donor.related_recipient_db_id)
-        donor_dto.detailed_compatibility_index_with_related_recipient = compatibility_index_detailed(
-            donor_hla_typing=donor.parameters.hla_typing,
-            recipient_hla_typing=related_recipient.parameters.hla_typing)
+
         configuration = get_configuration_for_txm_event(txm_event_db_id)
         scorer = scorer_from_configuration(configuration)
         donor_dto.score_with_related_recipient = scorer.score_transplant(donor, related_recipient, None)
@@ -478,9 +478,35 @@ def donor_to_donor_dto(donor: Donor,
             donor.parameters.blood_group,
             related_recipient.parameters.blood_group
         )
-        donor_dto.matching_antibodies_with_related_recipient = get_crossmatched_antibodies(
+        antibodies = get_crossmatched_antibodies(
             donor.parameters.hla_typing,
             related_recipient.hla_antibodies,
             configuration.use_split_resolution
         )
+        compatibility_index_detailed = get_detailed_compatibility_index(
+            donor_hla_typing=donor.parameters.hla_typing,
+            recipient_hla_typing=related_recipient.parameters.hla_typing)
+        donor_dto.detailed_score_with_related_recipient = get_detailed_score(
+            compatibility_index_detailed,
+            antibodies
+        )
+
     return donor_dto
+
+
+def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityIndexForHLAGroup],
+                       antibodies: List[AntibodyMatchForHLAGroup]) -> List[DetailedScoreForHLAGroup]:
+    assert len(antibodies) == len(compatibility_index_detailed)
+    detailed_scores = []
+    for antibody_group, compatibility_index_detailed_group in zip(antibodies, compatibility_index_detailed):
+        assert antibody_group.hla_group == compatibility_index_detailed_group.hla_group
+        detailed_scores.append(
+            DetailedScoreForHLAGroup(
+                recipient_matches=compatibility_index_detailed_group.recipient_matches,
+                hla_group=compatibility_index_detailed_group.hla_group,
+                group_compatibility_index=compatibility_index_detailed_group.group_compatibility_index,
+                antibody_matches=antibody_group.antibody_matches,
+                donor_matches=compatibility_index_detailed_group.donor_matches
+            )
+        )
+    return detailed_scores

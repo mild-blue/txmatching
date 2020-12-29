@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from txmatching.patients.patient_parameters import HLAAntibodies, HLATyping
-from txmatching.utils.enums import AntibodyMatchTypes, HLAGroups
+from txmatching.utils.enums import AntibodyMatchTypes, HLAGroup
 from txmatching.utils.hla_system.hla_transformations import (broad_to_split,
                                                              split_to_broad)
 
@@ -16,7 +16,7 @@ class AntibodyMatch:
 
 @dataclass
 class AntibodyMatchForHLAGroup:
-    hla_group: HLAGroups
+    hla_group: HLAGroup
     antibody_matches: List[AntibodyMatch]
 
 

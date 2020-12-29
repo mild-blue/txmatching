@@ -14,7 +14,7 @@ from txmatching.patients.patient import Donor, Recipient
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.utils.blood_groups import blood_groups_compatible
-from txmatching.utils.hla_system.compatibility_index import compatibility_index_detailed, \
+from txmatching.utils.hla_system.compatibility_index import get_detailed_compatibility_index, \
     DetailedCompatibilityIndexForHLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies
 
@@ -66,8 +66,8 @@ def get_latest_matchings_detailed(txm_event_db_id: int) -> LatestMatchingsDetail
                              }
 
     detailed_compatibility_index_dict = {
-        (donor_db_id, recipient_db_id): compatibility_index_detailed(donor.parameters.hla_typing,
-                                                                     recipient.parameters.hla_typing)
+        (donor_db_id, recipient_db_id): get_detailed_compatibility_index(donor.parameters.hla_typing,
+                                                                         recipient.parameters.hla_typing)
         for donor_db_id, donor in txm_event.active_donors_dict.items()
         for recipient_db_id, recipient in txm_event.active_recipients_dict.items()
     }

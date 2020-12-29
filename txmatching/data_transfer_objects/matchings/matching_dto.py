@@ -7,6 +7,7 @@ from txmatching.utils.enums import Country
 # pylint: disable=too-many-instance-attributes
 from txmatching.utils.hla_system.compatibility_index import \
     DetailedCompatibilityIndexForHLAGroup
+from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatchForHLAGroup
 
 
@@ -16,8 +17,7 @@ class TransplantDTOOut:
     compatible_blood: bool
     donor: MedicalId
     recipient: MedicalId
-    detailed_compatibility_index: List[DetailedCompatibilityIndexForHLAGroup]
-    detailed_antibody_matches: List[AntibodyMatchForHLAGroup]
+    detailed_score_per_group: List[DetailedScoreForHLAGroup]
 
 
 @dataclass

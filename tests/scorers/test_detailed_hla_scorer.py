@@ -7,40 +7,40 @@ from txmatching.patients.patient_parameters import (HLAType, HLATyping,
                                                     PatientParameters)
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, HLAGroups, MatchTypes
+from txmatching.utils.enums import Country, HLAGroup, MatchTypes
 from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, HLAMatch,
-    compatibility_index_detailed)
+    get_detailed_compatibility_index)
 
 
 class TestHlaScorer(unittest.TestCase):
 
     def test_get_genotype(self):
-        calculated_detailed_score = compatibility_index_detailed(donor_parameters_Joe.hla_typing,
-                                                                 recipient_parameters_Jack.hla_typing)
+        calculated_detailed_score = get_detailed_compatibility_index(donor_parameters_Joe.hla_typing,
+                                                                     recipient_parameters_Jack.hla_typing)
 
         expected = [
             DetailedCompatibilityIndexForHLAGroup(
-                hla_group=HLAGroups.A,
+                hla_group=HLAGroup.A,
                 donor_matches=[HLAMatch('A23', MatchTypes.BROAD),
                                HLAMatch('A26', MatchTypes.BROAD.NONE)],
                 recipient_matches=[HLAMatch('A9', MatchTypes.BROAD),
                                    HLAMatch('A30', MatchTypes.BROAD.NONE)],
                 group_compatibility_index=1.0),
             DetailedCompatibilityIndexForHLAGroup(
-                hla_group=HLAGroups.B,
+                hla_group=HLAGroup.B,
                 donor_matches=[HLAMatch('B62', MatchTypes.BROAD),
                                HLAMatch('B38', MatchTypes.NONE)],
                 recipient_matches=[HLAMatch('B77', MatchTypes.BROAD),
                                    HLAMatch('B14', MatchTypes.NONE)],
                 group_compatibility_index=3.0),
             DetailedCompatibilityIndexForHLAGroup(
-                hla_group=HLAGroups.DRB1,
+                hla_group=HLAGroup.DRB1,
                 donor_matches=[HLAMatch('DR4', MatchTypes.SPLIT), HLAMatch('DR11', MatchTypes.SPLIT)],
                 recipient_matches=[HLAMatch('DR4', MatchTypes.SPLIT),
                                    HLAMatch('DR11', MatchTypes.SPLIT)],
                 group_compatibility_index=18.0),
-            DetailedCompatibilityIndexForHLAGroup(hla_group=HLAGroups.Other,
+            DetailedCompatibilityIndexForHLAGroup(hla_group=HLAGroup.Other,
                                                   donor_matches=[HLAMatch(hla_code='DR52', match_type=MatchTypes.NONE),
                                                                  HLAMatch(hla_code='DR53', match_type=MatchTypes.NONE),
                                                                  HLAMatch(hla_code='DQ7', match_type=MatchTypes.NONE),

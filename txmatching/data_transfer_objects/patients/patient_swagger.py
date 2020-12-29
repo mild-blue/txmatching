@@ -1,21 +1,21 @@
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
-    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE, DetailedScoreForGroup, AntibodiesPerGroup)
+    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE, DetailedScoreForGroup)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER, Country,
-                                    HLAGroups, Sex)
+                                    HLAGroup, Sex)
 from txmatching.web.api.namespaces import patient_api
 
 HLA_CODES_IN_GROUPS_EXAMPLE = [
-    {'hla_group': HLAGroups.A.name,
+    {'hla_group': HLAGroup.A.name,
      'hla_codes': ['A1']},
-    {'hla_group': HLAGroups.B.name,
+    {'hla_group': HLAGroup.B.name,
      'hla_codes': ['B38']},
-    {'hla_group': HLAGroups.DRB1.name,
+    {'hla_group': HLAGroup.DRB1.name,
      'hla_codes': ['DR7']},
-    {'hla_group': HLAGroups.Other.name,
+    {'hla_group': HLAGroup.Other.name,
      'hla_codes': ['CW4']}
 ]
 
@@ -84,13 +84,11 @@ DonorModel = patient_api.model('DonorModel', {
         required=False,
         description='Indicator whether Donor and related recipients have compatible blood groups'
     ),
-    'detailed_compatibility_index_with_related_recipient': fields.List(
+    'detailed_score_with_related_recipient': fields.List(
         required=False,
         description=DESCRIPTION_DETAILED_SCORE,
         example=EXAMPLE_DETAILED_SCORE,
         cls_or_instance=fields.Nested(DetailedScoreForGroup)),
-    'matching_antibodies_with_related_recipient': fields.List(required=True,
-                                                              cls_or_instance=fields.Nested(AntibodiesPerGroup)),
 })
 
 RecipientModel = patient_api.model('RecipientModel', {
