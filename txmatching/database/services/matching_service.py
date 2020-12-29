@@ -5,7 +5,6 @@ from dacite import from_dict
 
 from txmatching.data_transfer_objects.matchings.calculated_matchings_dto import \
     CalculatedMatchingsDTO
-from txmatching.data_transfer_objects.matchings.matching_dto import AntibodyMatchForHLAGroup
 from txmatching.database.services.config_service import \
     get_config_model_for_txm_event, get_configuration_for_txm_event
 from txmatching.database.services.patient_service import get_txm_event
@@ -16,7 +15,7 @@ from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.hla_system.compatibility_index import get_detailed_compatibility_index, \
     DetailedCompatibilityIndexForHLAGroup
-from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies
+from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies, AntibodyMatchForHLAGroup
 
 
 @dataclass
