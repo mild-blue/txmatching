@@ -1,11 +1,16 @@
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import DonorUploadDTO
-from txmatching.data_transfer_objects.patients.upload_dto.hla_antibodies_upload_dto import HLAAntibodiesUploadDTO
-from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import PatientUploadDTOIn
-from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import RecipientUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
+    DonorUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dto.hla_antibodies_upload_dto import \
+    HLAAntibodiesUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import \
+    PatientUploadDTOIn
+from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
+    RecipientUploadDTO
 from txmatching.database.db import db
-from txmatching.database.services.patient_service import update_txm_event_patients
+from txmatching.database.services.patient_service import \
+    update_txm_event_patients
 from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
