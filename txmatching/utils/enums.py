@@ -63,8 +63,6 @@ class MatchTypes(str, Enum):
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
-    # TODO This is not used. Either remove or implement. See https://github.com/mild-blue/txmatching/issues/280
-    ANTIBODY = 'ANTIBODY'
 
 
 MATCH_TYPE_BONUS = {
