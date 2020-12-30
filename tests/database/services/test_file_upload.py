@@ -51,23 +51,23 @@ class TestUpdateDonorRecipient(DbTests):
         txm_event = get_txm_event(txm_event.db_id)
 
         recipients_tuples = [(
-            r.medical_id,
-            r.parameters.country_code,
-            r.parameters.blood_group,
-            [a.code for a in r.hla_antibodies.hla_antibodies_list],
-            [a.code for a in r.parameters.hla_typing.hla_types_list],
-            r.acceptable_blood_groups
+            recipient.medical_id,
+            recipient.parameters.country_code,
+            recipient.parameters.blood_group,
+            [hla_code.code for hla_code in recipient.hla_antibodies.hla_antibodies_list],
+            [hla_code.code for hla_code in recipient.parameters.hla_typing.hla_types_list],
+            recipient.acceptable_blood_groups
         )
-            for r in txm_event.active_recipients_dict.values()]
+            for recipient in txm_event.active_recipients_dict.values()]
 
         donors_tuples = [(
-            r.medical_id,
-            r.parameters.country_code,
-            r.parameters.blood_group,
-            [a.code for a in r.parameters.hla_typing.hla_types_list],
-            txm_event.active_recipients_dict[r.related_recipient_db_id].medical_id if r.related_recipient_db_id else ''
+            donor.medical_id,
+            donor.parameters.country_code,
+            donor.parameters.blood_group,
+            [hla_code.code for hla_code in donor.parameters.hla_typing.hla_types_list],
+            txm_event.active_recipients_dict[donor.related_recipient_db_id].medical_id if donor.related_recipient_db_id else ''
         )
-            for r in txm_event.active_donors_dict.values()]
+            for donor in txm_event.active_donors_dict.values()]
 
         self.assertEqual(0, len(configs))
         self.assertEqual(34, len(recipients))
@@ -86,8 +86,8 @@ class TestUpdateDonorRecipient(DbTests):
             txm_event.db_id).calculated_matchings)
         self.assertEqual(358, len(all_matchings))
 
-        matching_tuples = [[(t.donor.medical_id, t.recipient.medical_id)
-                            for t in res.get_donor_recipient_pairs()] for res in all_matchings]
+        matching_tuples = [[(found_pair.donor.medical_id, found_pair.recipient.medical_id)
+                            for found_pair in res.get_donor_recipient_pairs()] for res in all_matchings]
 
         self.maxDiff = None
         # This commented out code serves the purpose to re-create the files in case something in the data changes
@@ -118,11 +118,11 @@ class TestUpdateDonorRecipient(DbTests):
 
         expected_matching_tuples = {frozenset(tuple(tt) for tt in tup) for tup in expected_matching_tuples}
 
-        for i, r in enumerate(recipients_tuples):
-            self.assertTrue(r in expected_recipients_tuples, f'Error in round {i}: {r} not found')
+        for i, recipient in enumerate(recipients_tuples):
+            self.assertTrue(recipient in expected_recipients_tuples, f'Error in round {i}: {recipient} not found')
 
-        for i, d in enumerate(donors_tuples):
-            self.assertTrue(d in expected_donors_tuples, f'Error in round {i}: {d} not found')
+        for i, donor in enumerate(donors_tuples):
+            self.assertTrue(donor in expected_donors_tuples, f'Error in round {i}: {donor} not found')
 
-        for i, m in enumerate(matching_tuples):
-            self.assertTrue(frozenset(m) in expected_matching_tuples, f'Error in round {i}: {m} not found')
+        for i, matching in enumerate(matching_tuples):
+            self.assertTrue(frozenset(matching) in expected_matching_tuples, f'Error in round {i}: {matching} not found')
