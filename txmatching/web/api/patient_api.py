@@ -9,23 +9,24 @@ from flask_restx import Resource
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.auth.operation_guards.country_guard import (
-    guard_user_country_access_to_donor, guard_user_country_access_to_recipient, guard_user_has_access_to_country,
-    get_user_default_country)
+    get_user_default_country, guard_user_country_access_to_donor,
+    guard_user_country_access_to_recipient, guard_user_has_access_to_country)
 from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
-    DonorJson, PatientsJson, RecipientJson, RecipientModelToUpdateJson, DonorModelToUpdateJson)
-from txmatching.data_transfer_objects.patients.patient_upload_dto_out import PatientUploadDTOOut
+    DonorJson, DonorModelToUpdateJson, PatientsJson, RecipientJson,
+    RecipientModelToUpdateJson)
+from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
+    PatientUploadDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
-    FailJson, PatientUploadSuccessJson
-from txmatching.database.services.patient_service import (get_txm_event,
-                                                          update_donor,
-                                                          update_recipient, to_lists_for_fe, donor_to_donor_dto,
-                                                          save_patients_from_excel_to_txm_event)
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
+    FailJson, PatientUploadSuccessJson)
+from txmatching.database.services.patient_service import (
+    donor_to_donor_dto, get_txm_event, save_patients_from_excel_to_txm_event,
+    to_lists_for_fe, update_donor, update_recipient)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
@@ -97,12 +98,12 @@ class AlterDonor(Resource):
 class AddPatientsFile(Resource):
 
     @patient_api.doc(security='bearer',
-                     params={"file": {
-                         "name": "file",
-                         "in": "formData",
-                         "description": "excel file to upload data",
-                         "required": True,
-                         "type": "file"
+                     params={'file': {
+                         'name': 'file',
+                         'in': 'formData',
+                         'description': 'Excel file to upload data.',
+                         'required': True,
+                         'type': 'file'
                      }
                      }
                      )
@@ -120,16 +121,16 @@ class AddPatientsFile(Resource):
         txm_event_name = get_txm_event(txm_event_db_id).name
         user_id = get_current_user_id()
 
-        if file.filename.endswith("multi_country.xlsx"):
+        if file.filename.endswith('multi_country.xlsx'):
             parsed_data = parse_excel_data(file, txm_event_name, None)
-        elif file.filename.endswith(".xlsx"):
+        elif file.filename.endswith('.xlsx'):
             parsed_data = parse_excel_data(file, txm_event_name, get_user_default_country(user_id))
 
-        elif file.filename.endswith(".csv"):
-            # TODO parse csv according to aggreement with Austria https://github.com/mild-blue/txmatching/issues/287
-            raise InvalidArgumentException("We cannot parse csv at the moment")
+        elif file.filename.endswith('.csv'):
+            # TODO parse csv according to agreement with Austria https://github.com/mild-blue/txmatching/issues/287
+            raise InvalidArgumentException('We cannot parse csv at the moment.')
         else:
-            raise InvalidArgumentException("Unexpected file format")
+            raise InvalidArgumentException('Unexpected file format.')
 
         for parsed_country_data in parsed_data:
             guard_user_has_access_to_country(user_id=user_id, country=parsed_country_data.country)
