@@ -18,6 +18,10 @@ from txmatching.utils.enums import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.web import create_app
 
+ALLOWED_EDIT_COUNTRIES = 'allowed_edit_countries'
+PATIENT_DATA_OBFUSCATED = 'tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'
+
+
 logger = logging.getLogger(__name__)
 ADMIN_USER = {
     'email': 'admin@example.com',
@@ -61,7 +65,7 @@ EDITOR_WITH_ONLY_ONE_COUNTRY = {
     'role': UserRole.EDITOR,
     'require_2fa': False,
     'default_txm_event_id': 1,
-    'allowed_edit_countries': [Country.CZE]
+    ALLOWED_EDIT_COUNTRIES: [Country.CZE]
 }
 USERS = [
     ADMIN_USER, SERVICE_USER, OTP_USER, ADMIN_WITH_DEFAULT_TXM_EVENT, VIEWER_USER, EDITOR_WITH_ONLY_ONE_COUNTRY
@@ -84,8 +88,8 @@ def add_users():
     AppUserModel.query.delete()
     user_models = []
     for user in USERS:
-        if 'allowed_edit_countries' not in user:
-            user['allowed_edit_countries'] = [country for country in Country]
+        if ALLOWED_EDIT_COUNTRIES not in user:
+            user[ALLOWED_EDIT_COUNTRIES] = [country for country in Country]
         user_model = AppUserModel(
             email=user.get('email'),
             pass_hash=encode_password(user.get('password')),
@@ -94,7 +98,7 @@ def add_users():
             phone_number=user.get('phone_number'),
             require_2fa=user.get('require_2fa'),
             default_txm_event_id=user.get('default_txm_event_id'),
-            allowed_edit_countries=user.get('allowed_edit_countries')
+            allowed_edit_countries=user.get(ALLOWED_EDIT_COUNTRIES)
         )
         user_models.append(user_model)
 
@@ -113,7 +117,7 @@ if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         create_or_overwrite_txm_event(name='test')
-        patients = parse_excel_data('../resources/patient_data_2020_07_obfuscated_multi_country.xlsx', country=None,
+        patients = parse_excel_data(PATIENT_DATA_OBFUSCATED, country=None,
                                     txm_event_name='test')
         txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
         save_patients_from_excel_to_txm_event(patients)

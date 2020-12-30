@@ -1,3 +1,4 @@
+from tests.test_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.services import solver_service
@@ -14,7 +15,7 @@ class TestMatchingApi(DbTests):
 
     def test_get_report(self):
         self.txm_event_db_id = self.fill_db_with_patients(
-            get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx')
+            get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
         pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
         solver_service.save_pairing_result(pairing_result)
@@ -31,7 +32,7 @@ class TestMatchingApi(DbTests):
 
     def test_get_report_with_invalid_matching_id(self):
         self.txm_event_db_id = self.fill_db_with_patients(
-            get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'))
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
         pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
         solver_service.save_pairing_result(pairing_result)
 
@@ -48,7 +49,7 @@ class TestMatchingApi(DbTests):
 
     def test_get_report_with_invalid_matching_below_chosen_argument(self):
         self.txm_event_db_id = self.fill_db_with_patients(
-            get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'))
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
         pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
         solver_service.save_pairing_result(pairing_result)
 

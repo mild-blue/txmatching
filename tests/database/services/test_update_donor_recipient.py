@@ -3,7 +3,7 @@ import json
 import dacite
 import dataclasses
 
-from tests.test_utilities.populate_db import create_or_overwrite_txm_event
+from tests.test_utilities.populate_db import create_or_overwrite_txm_event, PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
@@ -33,7 +33,7 @@ class TestUpdateDonorRecipient(DbTests):
     def test_saving_patients_from_obfuscated_excel(self):
         txm_event = create_or_overwrite_txm_event('test')
         patients = parse_excel_data(
-            get_absolute_path('tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'),
+            get_absolute_path(PATIENT_DATA_OBFUSCATED),
             txm_event.name,
             None)
 
@@ -107,6 +107,7 @@ class TestUpdateDonorRecipient(DbTests):
                             for t in res.get_donor_recipient_pairs()] for res in all_matchings]
 
         self.maxDiff = None
+        # This commented out code serves the purpose to re-create the files in case something in the data changes
         # with open(get_absolute_path('tests/resources/recipients_tuples.json'), 'w') as f:
         #     json.dump(recipients_tuples, f)
         # with open(get_absolute_path('tests/resources/donors_tuples.json'), 'w') as f:

@@ -1,7 +1,7 @@
 from swagger_unittest import swagger_test
 
 from tests.test_utilities.generate_swagger import PATH_TO_SWAGGER_YAML
-from tests.test_utilities.populate_db import ADMIN_WITH_DEFAULT_TXM_EVENT
+from tests.test_utilities.populate_db import ADMIN_WITH_DEFAULT_TXM_EVENT, PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import (API_VERSION, SERVICE_NAMESPACE,
@@ -23,7 +23,7 @@ class TestSwaggerEndpoints(DbTests):
 
     def test_server_logged_in(self):
         self.txm_event_db_id = self.fill_db_with_patients(
-            get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx')
+            get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
         special_status_code_for_paths = {
             'post': {

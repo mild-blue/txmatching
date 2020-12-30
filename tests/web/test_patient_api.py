@@ -1,6 +1,7 @@
 import os
 
-from tests.test_utilities.populate_db import EDITOR_WITH_ONLY_ONE_COUNTRY, create_or_overwrite_txm_event
+from tests.test_utilities.populate_db import EDITOR_WITH_ONLY_ONE_COUNTRY, create_or_overwrite_txm_event, \
+    PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE
@@ -10,7 +11,7 @@ class TestPatientService(DbTests):
 
     def test_get_patients(self):
         self.fill_db_with_patients(
-            get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'))
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{PATIENT_NAMESPACE}',
                              headers=self.auth_headers)
@@ -39,7 +40,7 @@ class TestPatientService(DbTests):
         self.assertEqual("User with email editor_only_one_country@example.com does not have access to CAN!",
                          res.json["message"])
 
-    def _upload_data(self, file='/tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'):
+    def _upload_data(self, file=PATIENT_DATA_OBFUSCATED):
         create_or_overwrite_txm_event(name="test")
         with self.app.test_client() as client:
             data = {

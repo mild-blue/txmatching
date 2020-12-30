@@ -139,7 +139,6 @@ def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn,
     """
     Updates TXM event patients, i.e., removes current event donors and recipients and add new entities.
     :param patient_upload_dto:
-    :param country_code:
     :param remove_from_country:
     :return:
     """
