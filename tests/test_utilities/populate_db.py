@@ -16,6 +16,7 @@ from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.enums import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
+from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import create_app
 
 ALLOWED_EDIT_COUNTRIES = 'allowed_edit_countries'
@@ -117,7 +118,7 @@ if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         create_or_overwrite_txm_event(name='test')
-        patients = parse_excel_data(PATIENT_DATA_OBFUSCATED, country=None,
+        patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), country=None,
                                     txm_event_name='test')
         txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
         save_patients_from_excel_to_txm_event(patients)
