@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
 import { ListItemAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { Matching } from '@app/model/Matching';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-matching-item',

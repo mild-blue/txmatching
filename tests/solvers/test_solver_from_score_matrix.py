@@ -7,7 +7,7 @@ import numpy as np
 from tests.solvers.tabular_scorer import TabularScorer
 from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor
-from txmatching.patients.patient_parameters import PatientParameters
+from txmatching.patients.patient_parameters import PatientParameters, HLATyping
 from txmatching.solvers.all_solutions_solver.score_matrix_solver import \
     find_possible_path_combinations_from_score_matrix
 from txmatching.utils.blood_groups import BloodGroup
@@ -65,7 +65,8 @@ def _get_donors_for_score_matrix(score_matrix: np.array) -> List[Donor]:
     for _ in range(len(score_matrix)):
         donors.append(Donor(
             parameters=PatientParameters(country_code=Country.CZE,
-                                         blood_group=BloodGroup.ZERO
+                                         blood_group=BloodGroup.ZERO,
+                                         hla_typing=HLATyping(hla_types_list=[])
                                          ),
             db_id=1,
             medical_id='test'

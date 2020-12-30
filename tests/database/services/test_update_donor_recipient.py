@@ -57,7 +57,7 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(38, len(donors))
         self.assertEqual(0, len(pairing_results))
         self.assertEqual(91, len(recipient_acceptable_bloods))
-        self.assertEqual(1102, len(recipient_hla_antibodies))
+        self.assertEqual(1059, len(recipient_hla_antibodies))
         self.assertEqual(5, len(app_users))
 
         self.assertEqual(
