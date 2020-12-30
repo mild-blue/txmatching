@@ -29,6 +29,7 @@ from txmatching.database.services.patient_service import (
     to_lists_for_fe, update_donor, update_recipient)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
+from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import patient_api
@@ -117,14 +118,16 @@ class AddPatientsFile(Resource):
     @require_user_edit_access()
     def put(self):
         file = request.files['file']
+        file_bytes = file.read()
         txm_event_db_id = get_txm_event_id_for_current_user()
         txm_event_name = get_txm_event(txm_event_db_id).name
         user_id = get_current_user_id()
+        save_uploaded_file(file_bytes, file.filename, txm_event_db_id, user_id)
 
         if file.filename.endswith('multi_country.xlsx'):
             parsed_data = parse_excel_data(file, txm_event_name, None)
         elif file.filename.endswith('.xlsx'):
-            parsed_data = parse_excel_data(file, txm_event_name, get_user_default_country(user_id))
+            parsed_data = parse_excel_data(file_bytes, txm_event_name, get_user_default_country(user_id))
 
         elif file.filename.endswith('.csv'):
             # TODO parse csv according to agreement with Austria https://github.com/mild-blue/txmatching/issues/287
@@ -134,8 +137,7 @@ class AddPatientsFile(Resource):
 
         for parsed_country_data in parsed_data:
             guard_user_has_access_to_country(user_id=user_id, country=parsed_country_data.country)
-        # TODO save uploaded file to database for further investigation
-        #  https://github.com/mild-blue/txmatching/issues/288
+
         save_patients_from_excel_to_txm_event(parsed_data)
         return jsonify(PatientUploadDTOOut(
             recipients_uploaded=sum(len(parsed_data_country.recipients) for parsed_data_country in parsed_data),

@@ -3,6 +3,7 @@ import os
 from tests.test_utilities.populate_db import EDITOR_WITH_ONLY_ONE_COUNTRY, create_or_overwrite_txm_event, \
     PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app import DbTests
+from txmatching.database.sql_alchemy_schema import UploadedFileModel
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE
 
@@ -26,6 +27,13 @@ class TestPatientService(DbTests):
         self.assertEqual(200, res.status_code)
         self.assertEqual(34, res.json["recipients_uploaded"])
         self.assertEqual(38, res.json["donors_uploaded"])
+
+        uploaded_files = UploadedFileModel.query.all()
+        self.assertEqual(1, len(uploaded_files))
+        self.assertEqual(os.path.basename(PATIENT_DATA_OBFUSCATED), uploaded_files[0].file_name)
+        with open(get_absolute_path(PATIENT_DATA_OBFUSCATED), 'rb') as f:
+            expected_uploaded_file = f.read()
+        self.assertEqual(expected_uploaded_file, uploaded_files[0].file)
 
     def test_upload_patients_via_invalid_file(self):
         res = self._upload_data('/tests/resources/test_file')
