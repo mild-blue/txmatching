@@ -190,3 +190,23 @@ class ParsingErrorModel(db.Model):
         onupdate=func.now()
     )
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+
+class UploadedFileModel(db.Model):
+    __tablename__ = 'uploaded_file'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    file_name = db.Column(db.TEXT, unique=False, nullable=False)
+    file = db.Column(db.LargeBinary, unique=False, nullable=False)
+    txm_event_id = db.Column(db.Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('app_user.id', ondelete='CASCADE'), unique=False, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        unique=False,
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+    deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
