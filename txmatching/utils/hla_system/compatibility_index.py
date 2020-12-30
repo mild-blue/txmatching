@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import List
 
+import logging
+
 from txmatching.patients.patient_parameters import HLATyping
 from txmatching.utils.enums import (HLA_GROUPS_GENE,
                                     HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS,
@@ -13,6 +15,12 @@ from txmatching.utils.enums import (HLA_GROUPS_GENE,
 # For each matching allele a certain bonus is added to compatibility index depending on the allele type.
 from txmatching.utils.hla_system.hla_transformations import (broad_to_split,
                                                              get_broad_codes)
+
+logger = logging.getLogger(__name__)
+
+
+class InvalidNumberOfAllelesError(Exception):
+    pass
 
 
 @dataclass
@@ -152,9 +160,10 @@ def _hla_codes_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGro
     hla_codes = _hla_codes_for_hla_group(donor_hla_typing, hla_group)
 
     if len(hla_codes) not in {1, 2}:
-        raise AssertionError(
+        logger.error(
             f'Invalid list of alleles for gene {hla_group.name} - there have to be 1 or 2 per gene.'
             f'\nList of patient_alleles: {donor_hla_typing.codes_per_group}')
+        return hla_codes
     if len(hla_codes) == 1:
         return hla_codes + hla_codes
     return hla_codes

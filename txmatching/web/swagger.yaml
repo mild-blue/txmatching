@@ -411,7 +411,6 @@ definitions:
                 - BROAD
                 - HIGH_RES
                 - NONE
-                - ANTIBODY
                 example: SPLIT
                 type: string
         required:
@@ -1051,7 +1050,7 @@ paths:
             - multipart/form-data
             operationId: put_add_patients_file
             parameters:
-            -   description: excel file to upload data
+            -   description: Excel file to upload data.
                 in: formData
                 name: file
                 required: true
