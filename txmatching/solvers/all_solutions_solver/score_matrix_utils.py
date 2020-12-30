@@ -89,8 +89,8 @@ def country_count_in_path(path: Path, donors: List[Donor]) -> int:
 def keep_only_highest_scoring_paths(paths: List[Path],
                                     score_matrix: np.ndarray,
                                     donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
-    def group_key(path: Path):
-        return sorted(path)
+    def group_key(path: Path) -> List[int]:
+        return sorted(list(set(path)))
 
     paths_grouped = [list(group) for _, group in groupby(sorted(paths, key=group_key), group_key)]
 
