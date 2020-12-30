@@ -7,7 +7,7 @@ import numpy as np
 from tests.solvers.tabular_scorer import TabularScorer
 from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor
-from txmatching.patients.patient_parameters import PatientParameters, HLATyping
+from txmatching.patients.patient_parameters import HLATyping, PatientParameters
 from txmatching.solvers.all_solutions_solver.score_matrix_solver import \
     find_possible_path_combinations_from_score_matrix
 from txmatching.utils.blood_groups import BloodGroup
@@ -22,7 +22,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
             self._score_matrix = json.load(sample_score_matrix_file)
 
         self._expected_max_score = 92.0
-        self._expected_num_solutions = 1886
+        self._expected_num_solutions = 1766
 
     def test_solve(self):
         # TODO: Add more specific test https://trello.com/c/1Cdaujkx
@@ -57,7 +57,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
                                                                       _get_donors_for_score_matrix(score_matrix_test),
                                                                       Configuration(max_sequence_length=100,
                                                                                     max_cycle_length=100))
-        self.assertEqual(43, len(list(solutions)))
+        self.assertEqual(36, len(list(solutions)))
 
 
 def _get_donors_for_score_matrix(score_matrix: np.array) -> List[Donor]:

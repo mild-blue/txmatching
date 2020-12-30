@@ -1,4 +1,5 @@
-from tests.test_utilities.populate_db import create_or_overwrite_txm_event, PATIENT_DATA_OBFUSCATED
+from tests.test_utilities.populate_db import (PATIENT_DATA_OBFUSCATED,
+                                              create_or_overwrite_txm_event)
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import (Configuration,
                                                     ManualDonorRecipientScore)
@@ -39,7 +40,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         configuration = Configuration(use_split_resolution=True)
         solutions = list(solve_from_configuration(configuration, txm_event_db_id).calculated_matchings)
-        self.assertEqual(1215, len(solutions))
+        self.assertEqual(872, len(solutions))
 
     def test_solver_no_patients(self):
         create_or_overwrite_txm_event(name='test')
