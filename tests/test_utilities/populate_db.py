@@ -118,11 +118,13 @@ if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         create_or_overwrite_txm_event(name='test')
-        patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), country=None,
-                                    txm_event_name='test')
         txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
-        save_patients_from_excel_to_txm_event(patients)
         add_users()
+        patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), country=None,
+                                    txm_event_name='mock_data_CZE_CAN_IND')
+
+        save_patients_from_excel_to_txm_event(patients)
+
         result = solve_from_configuration(txm_event_db_id=txm_event.db_id,
                                           configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
                                                                       use_split_resolution=True))
