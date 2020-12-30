@@ -55,7 +55,7 @@ class TestPatientService(DbTests):
         res = self._upload_data('/tests/resources/test_file')
 
         self.assertEqual(400, res.status_code)
-        self.assertEqual('Unexpected file format', res.json['message'])
+        self.assertEqual('Unexpected file format.', res.json['message'])
 
     def test_upload_patients_forbidden_country(self):
         self.login_with_credentials(EDITOR_WITH_ONLY_ONE_COUNTRY)
