@@ -1,6 +1,6 @@
 import dataclasses
 
-from tests.test_utilities.populate_db import create_or_overwrite_txm_event
+from tests.test_utilities.populate_db import create_or_overwrite_txm_event, PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.sql_alchemy_schema import ConfigModel
@@ -220,7 +220,7 @@ def test_save_recipient(self):
 
 
 def test_correct_config_applied(self):
-    self.fill_db_with_patients(get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx'))
+    self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
 
     with self.app.test_client() as client:
         conf_dto = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=1))
@@ -241,7 +241,7 @@ def test_correct_config_applied(self):
 
 
 def test_solver_multiple_txm_events(self):
-    self.fill_db_with_patients(get_absolute_path('/tests/resources/patient_data_2020_07_obfuscated.xlsx'))
+    self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
 
     with self.app.test_client() as client:
         conf_dto = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=1))

@@ -1045,6 +1045,43 @@ paths:
             -   bearer: []
             tags:
             - patients
+    /v1/patients/add-patients-file:
+        put:
+            consumes:
+            - multipart/form-data
+            operationId: put_add_patients_file
+            parameters:
+            -   description: Excel file to upload data.
+                in: formData
+                name: file
+                required: true
+                type: file
+            responses:
+                '200':
+                    description: Success.
+                    schema:
+                        $ref: '#/definitions/PatientUploadSuccessResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
     /v1/patients/donor:
         put:
             operationId: put_alter_donor

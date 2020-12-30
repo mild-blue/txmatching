@@ -16,8 +16,8 @@ from jinja2 import Environment, FileSystemLoader
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         NotFoundException)
 from txmatching.auth.user.user_auth_check import require_user_login
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration, \
-    ApplicationEnvironment
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationEnvironment, get_application_configuration)
 from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.matchings.matching_dto import (
@@ -229,7 +229,6 @@ class Report(Resource):
         for filename in os.listdir(TMP_DIR):
             if os.path.getmtime(os.path.join(TMP_DIR, filename)) < now - 1 * 86400:  # 1 day
                 if os.path.isfile(os.path.join(TMP_DIR, filename)):
-                    print(filename)
                     os.remove(os.path.join(TMP_DIR, filename))
 
     @staticmethod

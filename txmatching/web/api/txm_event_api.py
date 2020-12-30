@@ -118,7 +118,7 @@ class TxmEventUploadPatients(Resource):
         # save the original request to the database
         save_original_data(patient_upload_dto.txm_event_name, current_user_id, request.json)
         # perform update operation
-        update_txm_event_patients(patient_upload_dto, country_code)
+        update_txm_event_patients(patient_upload_dto)
         return jsonify(PatientUploadDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),
             donors_uploaded=len(patient_upload_dto.donors)
