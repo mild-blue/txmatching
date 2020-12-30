@@ -27,12 +27,15 @@ npm install -g @angular/cli
 
 It will globally install Angular on your machine.
 
+Navigate to `txmatching/web/frontend` before running the commands bellow.
+
 ## Before starting dev server
 After downloading a new version of frontend app, you need to run `npm install` in case there is a need to install additional modules.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `ng serve` for a dev server. You can alternatively run `npm run start`.
+Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 

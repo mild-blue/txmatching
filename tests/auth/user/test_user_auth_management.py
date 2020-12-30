@@ -4,8 +4,10 @@ from uuid import uuid4
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.exceptions import UserUpdateException, InvalidAuthCallException
-from txmatching.auth.user.user_auth_management import register_user, change_user_password
+from txmatching.auth.exceptions import (InvalidAuthCallException,
+                                        UserUpdateException)
+from txmatching.auth.user.user_auth_management import (change_user_password,
+                                                       register_user)
 from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.utils.enums import Country
 
@@ -13,7 +15,7 @@ from txmatching.utils.enums import Country
 class TestUserCrudWithDb(DbTests):
     def _create_and_get(self, role: UserRole = UserRole.ADMIN) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())
-        email = str(uuid4()) + "abc"
+        email = str(uuid4()) + 'abc'
         # check that we normalize email to lower
         register_user(email.upper(), pwd, [Country.CZE], role, '+420456678645')
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
