@@ -125,7 +125,7 @@ class AddPatientsFile(Resource):
         save_uploaded_file(file_bytes, file.filename, txm_event_db_id, user_id)
 
         if file.filename.endswith('multi_country.xlsx'):
-            parsed_data = parse_excel_data(file, txm_event_name, None)
+            parsed_data = parse_excel_data(file_bytes, txm_event_name, None)
         elif file.filename.endswith('.xlsx'):
             parsed_data = parse_excel_data(file_bytes, txm_event_name, get_user_default_country(user_id))
 

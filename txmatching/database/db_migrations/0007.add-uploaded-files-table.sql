@@ -1,6 +1,6 @@
 --
 -- file: txmatching/database/db_migrations/0007.add-uploaded-files-table.sql
--- depends: 0006.add-country-to-user
+-- depends: 0006.remove-active-column-from-recipient
 --
 
 CREATE TABLE uploaded_file
@@ -13,7 +13,7 @@ CREATE TABLE uploaded_file
     created_at   TIMESTAMPTZ NOT NULL,
     updated_at   TIMESTAMPTZ NOT NULL,
     deleted_at   TIMESTAMPTZ,
-    CONSTRAINT pk_uploaded_file_id PRIMARY KEY (id)
+    CONSTRAINT pk_uploaded_file_id PRIMARY KEY (id),
     CONSTRAINT fk_uploaded_file_txm_event_id_txm_event_id FOREIGN KEY (txm_event_id) REFERENCES txm_event(id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_uploaded_file_user_id_app_user_id FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
