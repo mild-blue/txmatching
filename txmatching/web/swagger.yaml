@@ -411,7 +411,6 @@ definitions:
                 - BROAD
                 - HIGH_RES
                 - NONE
-                - ANTIBODY
                 example: SPLIT
                 type: string
         required:
