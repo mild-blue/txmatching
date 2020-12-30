@@ -38,3 +38,19 @@ recipient_parameters_Jack = PatientParameters(blood_group=BloodGroup.A,
                                               ),
                                               country_code=Country.CZE
                                               )
+
+
+recipient_parameters_Wrong = PatientParameters(blood_group=BloodGroup.A,
+                                              hla_typing=HLATyping(
+                                                  [
+                                                      HLAType('A9'),
+                                                      HLAType('A30'),
+                                                      HLAType('A31'),
+                                                      HLAType('B14'),
+                                                      HLAType('B77'),
+                                                      HLAType('DR4'),
+                                                      HLAType('DR11')
+                                                  ]
+                                              ),
+                                              country_code=Country.CZE
+                                              )
