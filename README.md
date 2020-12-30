@@ -101,9 +101,9 @@ For pdf generation, a [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) is r
 
 `cd /tmp`
 
-`wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb` (choose your version)
+`wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb` (choose your version)
 
-`sudo dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb` (of the correct version that you want to install)
+`sudo dpkg -i wkhtmltox_0.12.6-1.focal_amd64.deb` (of the correct version that you want to install)
 
 `wkhtmltopdf --version` (to check that it worked)
 
