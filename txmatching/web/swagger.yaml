@@ -846,6 +846,9 @@ definitions:
         type: object
     UploadPatients:
         properties:
+            add_to_existing_patients:
+                default: false
+                type: boolean
             country:
                 enum:
                 - CZE

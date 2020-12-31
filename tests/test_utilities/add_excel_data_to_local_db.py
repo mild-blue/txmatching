@@ -26,19 +26,20 @@ if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         txm_event_db_id = create_or_overwrite_txm_event(name=TXM_EVENT_NAME).db_id
-        patients = parse_excel_data(os.path.join(PATH_TO_DATA_FOR_UPLOAD, 'czech_data.xlsx'))
-        save_patients_from_excel_to_txm_event(patients, txm_event_db_id=txm_event_db_id)
-        logging.info(f'successfully parsed czech patients {len(patients[0]) + len(patients[1])}')
-        patients = parse_excel_data(os.path.join(PATH_TO_DATA_FOR_UPLOAD, 'austria_data.xlsx'))
-        save_patients_from_excel_to_txm_event(patients, txm_event_db_id=txm_event_db_id)
-        logging.info(f'successfully parsed austrian patients {len(patients[0]) + len(patients[1])}')
+        patients = parse_excel_data(os.path.join(PATH_TO_DATA_FOR_UPLOAD, 'czech_data.xlsx'),
+                                    txm_event_name=TXM_EVENT_NAME, country=None)
+        save_patients_from_excel_to_txm_event(patients)
+        logging.info(f'successfully parsed czech patients')
+        patients = parse_excel_data(os.path.join(PATH_TO_DATA_FOR_UPLOAD, 'austria_data.xlsx'),
+                                    txm_event_name=TXM_EVENT_NAME, country=None)
+        save_patients_from_excel_to_txm_event(patients)
+        logging.info(f'successfully parsed austrian patients')
 
         with open(os.path.join(PATH_TO_DATA_FOR_UPLOAD, 'israel_data.json')) as json_file:
             data_json = json.load(json_file)
 
         patient_upload_dto = from_dict(data_class=PatientUploadDTOIn, data=data_json, config=Config(cast=[Enum]))
-        country_code = patient_upload_dto.country
-        update_txm_event_patients(patient_upload_dto, country_code)
+        update_txm_event_patients(patient_upload_dto)
         logging.info(
             f'successfully parsed israeli patients '
             f'{len(patient_upload_dto.donors) + len(patient_upload_dto.recipients)}')

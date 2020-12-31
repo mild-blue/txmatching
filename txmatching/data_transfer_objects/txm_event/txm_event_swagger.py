@@ -83,7 +83,8 @@ UploadPatientsJson = txm_event_api.model(
         )),
         'recipients': fields.List(required=True, cls_or_instance=fields.Nested(
             RecipientJsonIn
-        ))
+        )),
+        'add_to_existing_patients': fields.Boolean(required=False, default=False)
     }
 )
 
