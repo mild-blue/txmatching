@@ -1,17 +1,21 @@
 import logging
-import re
-from typing import Dict, List, Union, Optional
-
 import math
+import re
+from typing import Dict, List, Optional, Union
+
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
-from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import DonorUploadDTO
-from txmatching.data_transfer_objects.patients.upload_dto.hla_antibodies_upload_dto import HLAAntibodiesUploadDTO
-from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import PatientUploadDTOIn
-from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import RecipientUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
+    DonorUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dto.hla_antibodies_upload_dto import \
+    HLAAntibodiesUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import \
+    PatientUploadDTOIn
+from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
+    RecipientUploadDTO
 from txmatching.patients.patient import DonorType
-from txmatching.utils.blood_groups import BloodGroup, COMPATIBLE_BLOOD_GROUPS
+from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup
 from txmatching.utils.enums import Country
 from txmatching.utils.excel_parsing.countries_for_excel import \
     country_code_from_id
@@ -74,6 +78,7 @@ def _get_donor_upload_dto_from_row(row: Dict,
     if related_recipient:
         donor_type = DonorType.DONOR
     else:
+        # TODO this is not true, some are altruists, but this information is not available in the Excel at the moment
         donor_type = DonorType.BRIDGING_DONOR
     return DonorUploadDTO(medical_id=donor_id,
                           blood_group=blood_group,
