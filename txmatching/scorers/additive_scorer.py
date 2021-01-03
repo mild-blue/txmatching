@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import numpy as np
 
@@ -21,14 +21,14 @@ class AdditiveScorer(ScorerBase):
         else:
             self._manual_donor_recipient_scores = dict()
 
-    def score_transplant(self, donor: Donor, recipient: Recipient, original_donor: Donor) -> float:
+    def score_transplant(self, donor: Donor, recipient: Recipient, original_donor: Optional[Donor]) -> float:
         manual_score = self._manual_donor_recipient_scores.get((donor.db_id, recipient.db_id))
         if manual_score is None:
             return self.score_transplant_calculated(donor, recipient, original_donor)
         else:
             return manual_score
 
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Donor) -> float:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Optional[Donor]) -> float:
         raise NotImplementedError('Has to be overridden')
 
     def score(self, matching: Matching, donors_dict: Dict[DonorDbId, Donor],

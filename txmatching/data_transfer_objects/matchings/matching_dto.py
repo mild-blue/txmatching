@@ -4,6 +4,8 @@ from typing import List
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import MedicalId
 from txmatching.utils.enums import Country
+# pylint: disable=too-many-instance-attributes
+from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 
 
 @dataclass
@@ -12,6 +14,7 @@ class TransplantDTOOut:
     compatible_blood: bool
     donor: MedicalId
     recipient: MedicalId
+    detailed_score_per_group: List[DetailedScoreForHLAGroup]
 
 
 @dataclass
@@ -32,6 +35,7 @@ class MatchingDTO:
     rounds: List[RoundDTO]
     countries: List[CountryDTO]
     order_id: int
+    count_of_transplants: int
 
 
 @dataclass
@@ -53,3 +57,4 @@ class MatchingReportDTO:
     rounds: List[RoundReportDTO]
     countries: List[CountryDTO]
     order_id: int
+    count_of_transplants: int

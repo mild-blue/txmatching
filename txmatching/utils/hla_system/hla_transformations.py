@@ -8,7 +8,6 @@ import numpy as np
 from txmatching.utils.hla_system.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
-                                                   COMPATIBILITY_BROAD_CODES,
                                                    SPLIT_TO_BROAD)
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import (
     PARSE_HLA_CODE_EXCEPTIONS,
@@ -156,8 +155,8 @@ def preprocess_hla_codes_in(hla_codes_in: List[str]) -> List[str]:
     return [parsed_code for hla_code_in in hla_codes_in for parsed_code in preprocess_hla_code_in(hla_code_in)]
 
 
-def get_compatibility_broad_codes(hla_codes: List[str]) -> List[str]:
-    return [split_to_broad(hla_code) for hla_code in hla_codes if split_to_broad(hla_code) in COMPATIBILITY_BROAD_CODES]
+def get_broad_codes(hla_codes: List[str]) -> List[str]:
+    return [split_to_broad(hla_code) for hla_code in hla_codes]
 
 
 def get_mfi_from_multiple_hla_codes(mfis: List[int]):
@@ -171,7 +170,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int]):
     max_mfi = np.max(mfis)
     min_mfi = np.min(mfis)
     if min_mfi < 0:
-        raise ValueError(f'MFI has to be >=0. Obtained MFI={min_mfi}.')
+        raise AssertionError(f'MFI has to be always >=0. The data shall be validated on input. Obtained MFI={min_mfi}.')
     # this should be +inf but max_mfi will do as well
     max_min_difference = (max_mfi - min_mfi) / min_mfi if min_mfi > 0 else max_mfi
     if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:

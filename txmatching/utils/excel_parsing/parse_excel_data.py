@@ -1,27 +1,27 @@
 import logging
 import math
 import re
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
-from txmatching.data_transfer_objects.patients.donor_excel_dto import \
-    DonorExcelDTO
-from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
-    HLATypingDTO, PatientParametersDTO)
-from txmatching.data_transfer_objects.patients.recipient_excel_dto import \
-    RecipientExcelDTO
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLAType)
+from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
+    DonorUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dto.hla_antibodies_upload_dto import \
+    HLAAntibodiesUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import \
+    PatientUploadDTOIn
+from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
+    RecipientUploadDTO
+from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup
+from txmatching.utils.enums import Country
 from txmatching.utils.excel_parsing.countries_for_excel import \
     country_code_from_id
-from txmatching.utils.hla_system.hla_transformations_store import \
-    parse_hla_raw_code_and_store_parsing_error_in_db
 
 DEFAULT_CUTOFF_FOR_EXCEL = 2000
-DEFAULT_MFI = 10000
+DEFAULT_MFI = 4 * DEFAULT_CUTOFF_FOR_EXCEL
 
 logger = logging.getLogger(__name__)
 
@@ -48,72 +48,89 @@ def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, in
     return list(acceptable_blood_groups.union(basic_acceptable_blood_groups))
 
 
-def _parse_hla(hla_allele_str: str) -> List[HLAType]:
-    if 'neg' in hla_allele_str.lower():
+def _parse_hla(hla_codes_str: str) -> List[str]:
+    if 'neg' in hla_codes_str.lower():
         return []
+    # remove codes in brackets, they are only in detail all the split codes for broade in front of the bracket
+    hla_codes_str = re.sub(r'\(.*?\)', '', hla_codes_str)
+    hla_codes = re.split('[,. ()]+', hla_codes_str)
+    hla_codes = [code.upper() for code in hla_codes if len(code) > 0]
 
-    allele_codes = re.split('[,. ()]+', hla_allele_str)
-    allele_codes = [code.upper() for code in allele_codes if len(code) > 0]
-
-    return [HLAType(
-        raw_code=raw_code,
-        code=parse_hla_raw_code_and_store_parsing_error_in_db(raw_code)
-    ) for raw_code in allele_codes]
+    return hla_codes
 
 
-def _parse_hla_antibodies(hla_allele_str: str) -> HLAAntibodies:
-    allele_codes = _parse_hla(hla_allele_str)
+def _parse_hla_antibodies(hla_allele_str: str) -> List[HLAAntibodiesUploadDTO]:
+    hla_codes = _parse_hla(hla_allele_str)
     # value and cut_off are just temporary values for now
-    return HLAAntibodies(
-        [HLAAntibody(
-            mfi=DEFAULT_MFI,
-            cutoff=DEFAULT_CUTOFF_FOR_EXCEL,
-            raw_code=allele_code.raw_code,
-            code=parse_hla_raw_code_and_store_parsing_error_in_db(allele_code.raw_code)
-        ) for allele_code in allele_codes])
+    return [HLAAntibodiesUploadDTO(
+        mfi=DEFAULT_MFI,
+        cutoff=DEFAULT_CUTOFF_FOR_EXCEL,
+        name=hla_code
+    ) for hla_code in hla_codes]
 
 
-def parse_excel_data(file_io: Union[str, FileStorage]) -> Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]]:
+def _get_donor_upload_dto_from_row(row: Dict,
+                                   related_recipient: Optional[RecipientUploadDTO]) -> DonorUploadDTO:
+    donor_id = row['DONOR']
+    blood_group = _parse_blood_group(row['BLOOD GROUP donor'])
+    hla_typing = _parse_hla(row['TYPIZATION DONOR'])
+
+    if related_recipient:
+        donor_type = DonorType.DONOR
+    else:
+        # TODO this is not true, some are altruists, but this information is not available in the Excel at the moment
+        donor_type = DonorType.BRIDGING_DONOR
+    return DonorUploadDTO(medical_id=donor_id,
+                          blood_group=blood_group,
+                          donor_type=donor_type,
+                          hla_typing=hla_typing,
+                          related_recipient_medical_id=related_recipient.medical_id if related_recipient else None,
+                          )
+
+
+def _get_recipient_upload_dto_from_row(row: Dict) -> Optional[RecipientUploadDTO]:
+    recipient_id = row['RECIPIENT']
+    if pd.isna(recipient_id):
+        return None
+    else:
+        blood_group = _parse_blood_group(row['BLOOD GROUP recipient'])
+        hla_typing = _parse_hla(row['TYPIZATION RECIPIENT'])
+        antibodies_recipient = _parse_hla_antibodies(row['luminex  cut-off (2000 MFI) varianta 2'])
+        acceptable_blood_groups_recipient = _parse_acceptable_blood_groups(row['Acceptable blood group'],
+                                                                           blood_group=blood_group)
+
+        return RecipientUploadDTO(medical_id=recipient_id,
+                                  hla_antibodies=antibodies_recipient,
+                                  acceptable_blood_groups=acceptable_blood_groups_recipient,
+                                  hla_typing=hla_typing,
+                                  blood_group=blood_group
+                                  )
+
+
+def parse_excel_data(file_io: Union[str, FileStorage],
+                     txm_event_name: str,
+                     country: Optional[Country]) -> List[PatientUploadDTOIn]:
     logger.info('Parsing patient data from file')
     data = pd.read_excel(file_io, skiprows=1)
-    donors = list()
-    recipients = list()
+    parsed_data = dict()
+
     for _, row in data.iterrows():
-        donor = get_donor_from_row(row)
-        donors.append(donor)
-        recipient_id = row['RECIPIENT']
-        if not pd.isna(recipient_id):
-            recipient = _get_recipient_from_row(row, recipient_id)
-            recipients.append(recipient)
+        recipient = _get_recipient_upload_dto_from_row(row)
+        donor = _get_donor_upload_dto_from_row(row, recipient)
+        if country:
+            row_country = country
         else:
-            recipients.append(None)
+            row_country = country_code_from_id(donor.medical_id)
+        if row_country in parsed_data:
+            parsed_data[row_country].donors += [donor]
+            if recipient:
+                parsed_data[row_country].recipients += [recipient]
+        else:
+            parsed_data[row_country] = PatientUploadDTOIn(
+                txm_event_name=txm_event_name,
+                country=row_country,
+                donors=[donor],
+                recipients=[recipient] if recipient else []
+            )
 
-    return donors, recipients
-
-
-def get_donor_from_row(row: Dict) -> DonorExcelDTO:
-    donor_id = row['DONOR']
-    blood_group_donor = _parse_blood_group(row['BLOOD GROUP donor'])
-    typization_donor = _parse_hla(row['TYPIZATION DONOR'])
-    country_code_donor = country_code_from_id(donor_id)
-    donor_params = PatientParametersDTO(blood_group=blood_group_donor,
-                                        hla_typing=HLATypingDTO(typization_donor),
-                                        country_code=country_code_donor)
-    return DonorExcelDTO(medical_id=donor_id, parameters=donor_params)
-
-
-def _get_recipient_from_row(row: Dict, recipient_id: str) -> RecipientExcelDTO:
-    blood_group_recipient = _parse_blood_group(row['BLOOD GROUP recipient'])
-    typization_recipient = _parse_hla(row['TYPIZATION RECIPIENT'])
-    antibodies_recipient = _parse_hla_antibodies(row['luminex  cut-off (2000 MFI) varianta 2'])
-    acceptable_blood_groups_recipient = _parse_acceptable_blood_groups(row['Acceptable blood group'],
-                                                                       blood_group_recipient)
-    country_code_recipient = country_code_from_id(recipient_id)
-
-    recipient_params = PatientParametersDTO(blood_group=blood_group_recipient,
-                                            hla_typing=HLATypingDTO(typization_recipient),
-                                            country_code=country_code_recipient)
-    return RecipientExcelDTO(medical_id=recipient_id, parameters=recipient_params,
-                             hla_antibodies=antibodies_recipient,
-                             acceptable_blood_groups=acceptable_blood_groups_recipient,
-                             recipient_cutoff=DEFAULT_CUTOFF_FOR_EXCEL)
+    return list(parsed_data.values())

@@ -7,8 +7,7 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { Matching, Round, Transplant } from '@app/model/Matching';
-import { compatibleBloodGroups, Donor, DonorType, PatientList, Recipient } from '@app/model/Patient';
+import { Matching } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
@@ -17,6 +16,10 @@ import { ReportService } from '@app/services/report/report.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
 import { finalize, first } from 'rxjs/operators';
+import { PatientList } from '@app/model/PatientList';
+import { DonorType } from '@app/model/Donor';
+import { Transplant } from '@app/model/Transplant';
+import { Round } from '@app/model/Round';
 import { UploadService } from '@app/services/upload/upload.service';
 
 @Component({
@@ -240,12 +243,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _isDonorBloodCompatible(donor: Donor, recipient: Recipient): boolean {
-    const donorBloodGroup = donor.parameters.blood_group;
-    const recipientBloodGroup = recipient.parameters.blood_group;
-    return compatibleBloodGroups[recipientBloodGroup].includes(donorBloodGroup);
-  }
-
   private _prepareMatchings(m: Matching[]): Matching[] {
     return m.map((matching, mKey) => {
       matching.index = mKey + 1;
@@ -282,10 +279,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (foundRecipient) {
         transplant.r = foundRecipient;
       }
-    }
-
-    if (transplant.d && transplant.r) {
-      transplant.compatible_blood = this._isDonorBloodCompatible(transplant.d, transplant.r);
     }
 
     return transplant;

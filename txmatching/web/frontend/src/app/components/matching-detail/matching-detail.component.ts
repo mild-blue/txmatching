@@ -1,5 +1,4 @@
 import { Component, Input, OnDestroy } from '@angular/core';
-import { DonorType, PatientList } from '@app/model/Patient';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { Matching } from '@app/model/Matching';
 import { Subscription } from 'rxjs';
@@ -7,6 +6,8 @@ import { UiInteractionsService } from '@app/services/ui-interactions/ui-interact
 import { PatientService } from '@app/services/patient/patient.service';
 import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
 import { Configuration } from '@app/model/Configuration';
+import { PatientList } from '@app/model/PatientList';
+import { DonorType } from '@app/model/Donor';
 
 @Component({
   selector: 'app-matching-detail',

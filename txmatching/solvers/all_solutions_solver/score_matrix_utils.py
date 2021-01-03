@@ -89,7 +89,10 @@ def country_count_in_path(path: Path, donors: List[Donor]) -> int:
 def keep_only_highest_scoring_paths(paths: List[Path],
                                     score_matrix: np.ndarray,
                                     donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
-    paths_grouped = [list(group) for _, group in groupby(sorted(paths, key=frozenset), frozenset)]
+    def group_key(path: Path) -> List[int]:
+        return sorted(list(set(path)))
+
+    paths_grouped = [list(group) for _, group in groupby(sorted(paths, key=group_key), group_key)]
 
     paths_filtered = [
         max(path_group,
@@ -116,8 +119,12 @@ def get_pairs_from_clique(clique,
 
 def _get_pairs_from_paths(paths: List[Path],
                           pair_index_to_recipient_index: Dict[int, int]) -> List[DonorRecipientPairIdxOnly]:
-    return [DonorRecipientPairIdxOnly(path[i], pair_index_to_recipient_index[path[i + 1]])
-            for path in paths for i in range(len(path) - 1)]
+    return [pair for path in paths for pair in _get_pairs_from_path(path, pair_index_to_recipient_index)]
+
+
+def _get_pairs_from_path(path: Path, pair_index_to_recipient_index: Dict[int, int]) -> List[DonorRecipientPairIdxOnly]:
+    return [DonorRecipientPairIdxOnly(path[i], pair_index_to_recipient_index[path[i + 1]]) for i in
+            range(len(path) - 1)]
 
 
 # pylint: disable=too-many-locals
