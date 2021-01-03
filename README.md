@@ -95,6 +95,21 @@ make conda-update
 
 For pdf generation, a [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) is required to be installed.
 
+`sudo apt update`
+
+`sudo apt install wget xfonts-75dpi`
+
+`cd /tmp`
+
+`wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb` (choose your version)
+
+`sudo dpkg -i wkhtmltox_0.12.6-1.focal_amd64.deb` (of the correct version that you want to install)
+
+`wkhtmltopdf --version` (to check that it worked)
+
+
+
+
 ## Git Hooks
 there are some githooks in this project. It is advised to use them. After installing dependecies in conda it should be enough to run
 ```

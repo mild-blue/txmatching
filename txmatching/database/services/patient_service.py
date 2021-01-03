@@ -2,7 +2,7 @@ import collections
 import dataclasses
 import datetime
 import logging
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 import dacite
 from sqlalchemy import and_
@@ -27,6 +27,7 @@ from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in 
 from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
+from txmatching.database.services.config_service import get_configuration_for_txm_event
 from txmatching.database.services.txm_event_service import \
     remove_donors_and_recipients_from_txm_event_for_country
 from txmatching.database.sql_alchemy_schema import (
@@ -34,34 +35,23 @@ from txmatching.database.sql_alchemy_schema import (
     RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
 from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
                                          RecipientRequirements, TxmEvent,
-                                         calculate_cutoff)
+                                         calculate_cutoff, DonorDTO)
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType, HLATyping,
                                                     PatientParameters)
+from txmatching.scorers.scorer_from_config import scorer_from_configuration
+from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.enums import Country
+from txmatching.utils.hla_system.compatibility_index import get_detailed_compatibility_index, \
+    DetailedCompatibilityIndexForHLAGroup
+from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
+from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies, AntibodyMatchForHLAGroup
 from txmatching.utils.hla_system.hla_transformations import (
     parse_hla_raw_code, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations_store import \
     parse_hla_raw_code_and_store_parsing_error_in_db
 
 logger = logging.getLogger(__name__)
-
-
-def save_patients_from_excel_to_txm_event(
-        donors_recipients: Tuple[List[DonorExcelDTO], List[RecipientExcelDTO]],
-        txm_event_db_id: int
-):
-    maybe_recipient_models = [_recipient_excel_dto_to_recipient_model(recipient, txm_event_db_id)
-                              if recipient else None for recipient in donors_recipients[1]]
-    recipient_models = [recipient_model for recipient_model in maybe_recipient_models if recipient_model]
-    db.session.add_all(recipient_models)
-    db.session.flush()
-
-    donor_models = [_donor_excel_dto_to_donor_model(donor_dto, maybe_recipient_model, txm_event_db_id) for
-                    donor_dto, maybe_recipient_model in zip(donors_recipients[0], maybe_recipient_models)]
-    db.session.add_all(donor_models)
-    _remove_configs_from_txm_event_by_id(txm_event_db_id)
-    db.session.commit()
 
 
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
@@ -144,29 +134,37 @@ def get_txm_event(txm_event_db_id: int) -> TxmEvent:
                     all_recipients=all_recipients)
 
 
-def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn, country_code: Country):
+def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn,
+                              remove_from_country: bool = True):
     """
     Updates TXM event patients, i.e., removes current event donors and recipients and add new entities.
     :param patient_upload_dto:
-    :param country_code:
+    :param remove_from_country:
     :return:
     """
-    remove_donors_and_recipients_from_txm_event_for_country(patient_upload_dto.txm_event_name, country_code)
+    if remove_from_country:
+        remove_donors_and_recipients_from_txm_event_for_country(patient_upload_dto.txm_event_name,
+                                                                patient_upload_dto.country)
     _remove_configs_from_txm_event_by_name(patient_upload_dto.txm_event_name)
     _save_patients_to_existing_txm_event(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,
-        country_code=country_code,
+        country_code=patient_upload_dto.country,
         txm_event_name=patient_upload_dto.txm_event_name
     )
     db.session.commit()
+
+
+def save_patients_from_excel_to_txm_event(patient_upload_dtos: List[PatientUploadDTOIn]):
+    for patient_upload_dto in patient_upload_dtos:
+        update_txm_event_patients(patient_upload_dto, remove_from_country=False)
 
 
 def _remove_configs_from_txm_event_by_id(txm_event_db_id: int):
     ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).delete()
 
 
-def _remove_configs_from_txm_event_by_name(txm_event_name: int):
+def _remove_configs_from_txm_event_by_name(txm_event_name: str):
     # pylint: disable=no-member
     txm_query = db.session.query(TxmEventModel.id).filter(TxmEventModel.name == txm_event_name)
     ConfigModel.query.filter(ConfigModel.txm_event_id.in_(txm_query.subquery())).delete(synchronize_session='fetch')
@@ -392,13 +390,6 @@ def _save_patients_to_existing_txm_event(
     if not txm_event:
         raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.')
 
-    donors_from_country = [donor for donor in txm_event.donors if donor.country == country_code]
-    recipients_from_country = [recipient for recipient in txm_event.recipients if
-                               recipient.country == country_code]
-    if len(donors_from_country) > 0 or len(recipients_from_country) > 0:
-        raise InvalidArgumentException(f'Txm event "{txm_event_name}" already contains some patients from country'
-                                       f' {country_code}, cannot upload data')
-
     txm_event_db_id = txm_event.id
     recipient_models = [
         _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
@@ -440,3 +431,66 @@ def update_patient_preprocessed_typing(patient_update: PatientUpdateDTO) -> Pati
             for preprocessed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
         ])
     return patient_update
+
+
+def to_lists_for_fe(txm_event: TxmEvent) -> Dict:
+    return {
+        'donors': [donor_to_donor_dto(donor, txm_event.all_recipients, txm_event.db_id) for donor in
+                   txm_event.all_donors],
+        'recipients': txm_event.all_recipients
+    }
+
+
+def donor_to_donor_dto(donor: Donor,
+                       all_recipients: List[Recipient],
+                       txm_event_db_id: int) -> DonorDTO:
+    donor_dto = DonorDTO(db_id=donor.db_id,
+                         medical_id=donor.medical_id,
+                         parameters=donor.parameters,
+                         donor_type=donor.donor_type,
+                         related_recipient_db_id=donor.related_recipient_db_id,
+                         active=donor.active
+                         )
+    if donor.related_recipient_db_id:
+        related_recipient = next(recipient for recipient in all_recipients if
+                                 recipient.db_id == donor.related_recipient_db_id)
+
+        configuration = get_configuration_for_txm_event(txm_event_db_id)
+        scorer = scorer_from_configuration(configuration)
+        donor_dto.score_with_related_recipient = scorer.score_transplant(donor, related_recipient, None)
+        donor_dto.compatible_blood_with_related_recipient = blood_groups_compatible(
+            donor.parameters.blood_group,
+            related_recipient.parameters.blood_group
+        )
+        antibodies = get_crossmatched_antibodies(
+            donor.parameters.hla_typing,
+            related_recipient.hla_antibodies,
+            configuration.use_split_resolution
+        )
+        compatibility_index_detailed = get_detailed_compatibility_index(
+            donor_hla_typing=donor.parameters.hla_typing,
+            recipient_hla_typing=related_recipient.parameters.hla_typing)
+        donor_dto.detailed_score_with_related_recipient = get_detailed_score(
+            compatibility_index_detailed,
+            antibodies
+        )
+
+    return donor_dto
+
+
+def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityIndexForHLAGroup],
+                       antibodies: List[AntibodyMatchForHLAGroup]) -> List[DetailedScoreForHLAGroup]:
+    assert len(antibodies) == len(compatibility_index_detailed)
+    detailed_scores = []
+    for antibody_group, compatibility_index_detailed_group in zip(antibodies, compatibility_index_detailed):
+        assert antibody_group.hla_group == compatibility_index_detailed_group.hla_group
+        detailed_scores.append(
+            DetailedScoreForHLAGroup(
+                recipient_matches=compatibility_index_detailed_group.recipient_matches,
+                hla_group=compatibility_index_detailed_group.hla_group,
+                group_compatibility_index=compatibility_index_detailed_group.group_compatibility_index,
+                antibody_matches=antibody_group.antibody_matches,
+                donor_matches=compatibility_index_detailed_group.donor_matches
+            )
+        )
+    return detailed_scores

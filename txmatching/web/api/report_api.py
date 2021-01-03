@@ -16,8 +16,8 @@ from jinja2 import Environment, FileSystemLoader
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         NotFoundException)
 from txmatching.auth.user.user_auth_check import require_user_login
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration, \
-    ApplicationEnvironment
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationEnvironment, get_application_configuration)
 from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.matchings.matching_dto import (
@@ -28,14 +28,15 @@ from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     get_config_model_for_txm_event, get_configuration_for_txm_event)
 from txmatching.database.services.matching_service import \
-    get_latest_matchings_and_score_matrix
+    get_latest_matchings_detailed
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
-from txmatching.patients.patient_parameters import HLAAntibodies
+from txmatching.scorers.matching import (
+    calculate_compatibility_index_for_group, get_count_of_transplants)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import HLA_TYPING_BONUS_PER_GENE_CODE_STR, HLATypes
+from txmatching.utils.enums import CodesPerGroup, HLAGroup
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -102,19 +103,20 @@ class Report(Resource):
         if maybe_config_model is None:
             pairing_result = solve_from_configuration(Configuration(), txm_event_db_id=txm_event_db_id)
             solver_service.save_pairing_result(pairing_result)
-        (all_matchings, score_dict, compatible_blood_dict) = get_latest_matchings_and_score_matrix(txm_event_db_id)
-        all_matchings.sort(key=lambda m: m.order_id())  # lower ID -> better evaluation
+        latest_matchings_detailed = get_latest_matchings_detailed(txm_event_db_id)
+        # lower ID -> better evaluation
+        sorted_matchings = sorted(latest_matchings_detailed.matchings, key=lambda m: m.order_id())
 
-        requested_matching = list(filter(lambda matching: matching.order_id() == matching_id, all_matchings))
+        requested_matching = list(filter(lambda matching: matching.order_id() == matching_id, sorted_matchings))
         if len(requested_matching) == 0:
             raise NotFoundException(f'Matching with id {matching_id} not found.')
 
         matchings_over = list(
             filter(lambda matching: matching.order_id() < matching_id,
-                   all_matchings))
+                   sorted_matchings))
         matchings_under = list(
             filter(lambda matching: matching.order_id() > matching_id,
-                   all_matchings))[:matching_range_limit]
+                   sorted_matchings))[:matching_range_limit]
         other_matchings_to_include = matchings_over + matchings_under
         other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
@@ -124,14 +126,16 @@ class Report(Resource):
                 RoundReportDTO(
                     transplants=[
                         TransplantDTO(
-                            score_dict[(pair.donor.db_id, pair.recipient.db_id)],
-                            compatible_blood_dict[(pair.donor.db_id, pair.recipient.db_id)],
+                            latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
+                            latest_matchings_detailed.blood_compatibility_tuples[
+                                (pair.donor.db_id, pair.recipient.db_id)],
                             pair.donor,
                             pair.recipient) for pair in matching_round.donor_recipient_pairs])
                 for matching_round in matching.get_rounds()],
             countries=matching.get_country_codes_counts(),
             score=matching.score(),
-            order_id=matching.order_id()
+            order_id=matching.order_id(),
+            count_of_transplants=get_count_of_transplants(matching)
         ) for matching in matchings
         ]
 
@@ -225,7 +229,6 @@ class Report(Resource):
         for filename in os.listdir(TMP_DIR):
             if os.path.getmtime(os.path.join(TMP_DIR, filename)) < now - 1 * 86400:  # 1 day
                 if os.path.isfile(os.path.join(TMP_DIR, filename)):
-                    print(filename)
                     os.remove(os.path.join(TMP_DIR, filename))
 
     @staticmethod
@@ -243,96 +246,53 @@ def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
     return f'{donor_recipient_score[0]} -> {donor_recipient_score[1]} : {donor_recipient_score[2]}'
 
 
-def antigen_a_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: x.upper().startswith(HLATypes.A.value), codes))
+def hla_code_a_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
+    return next(
+        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
+        codes_per_group.hla_group == HLAGroup.A)
 
 
-def antigen_b_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: x.upper().startswith(HLATypes.B.value), codes))
+def hla_code_b_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
+    return next(
+        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
+        codes_per_group.hla_group == HLAGroup.B)
 
 
-def antigen_dr_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), codes))
+def hla_code_dr_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
+    return next(
+        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
+        codes_per_group.hla_group == HLAGroup.DRB1)
 
 
-def _start_with(value: str, values: List[str]) -> bool:
-    for val in values:
-        if value.upper().startswith(val):
-            return True
-    return False
+def hla_code_other_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
+    return next(
+        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
+        codes_per_group.hla_group == HLAGroup.Other)
 
 
-def antigen_other_filter(codes: List[str]) -> List[str]:
-    return list(filter(lambda x: not _start_with(x, [hla.value for hla in HLATypes]), codes))
+def compatibility_index_a_filter(transplant: TransplantDTO) -> float:
+    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroup.A)
 
 
-def antibody_a_filter(antibodies: HLAAntibodies) -> List[str]:
-    return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.A.value), antibodies.hla_codes_over_cutoff))]
+def compatibility_index_b_filter(transplant: TransplantDTO) -> float:
+    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroup.B)
 
 
-def antibody_b_filter(antibodies: HLAAntibodies) -> List[str]:
-    return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.B.value), antibodies.hla_codes_over_cutoff))]
-
-
-def antibody_dr_filter(antibodies: HLAAntibodies) -> List[str]:
-    return [code for code in
-            list(filter(lambda x: x.upper().startswith(HLATypes.DR.value), antibodies.hla_codes_over_cutoff))]
-
-
-def antibody_other_filter(antibodies: HLAAntibodies) -> List[str]:
-    return list(filter(lambda x: not _start_with(x, [hla.value for hla in HLATypes]), antibodies.hla_codes_over_cutoff))
-
-
-def matching_hla_typing_filter(transplant: TransplantDTO) -> List[str]:
-    donor_hla_typing = transplant.donor.parameters.hla_typing.codes
-    recipient_hla_typing = transplant.recipient.parameters.hla_typing.codes
-    return list(set(donor_hla_typing) & set(recipient_hla_typing))
-
-
-def antigen_score(donor_recipient: TransplantDTO, antigen: HLATypes) -> int:
-    filtered = list(
-        filter(lambda x: x.upper().startswith(antigen.upper()), matching_hla_typing_filter(donor_recipient)))
-    return len(filtered) * HLA_TYPING_BONUS_PER_GENE_CODE_STR[antigen.upper()]
-
-
-def antigen_score_a_filter(transplant: TransplantDTO) -> int:
-    return antigen_score(transplant, HLATypes.A.value)
-
-
-def antigen_score_b_filter(transplant: TransplantDTO) -> int:
-    return antigen_score(transplant, HLATypes.B.value)
-
-
-def antigen_score_dr_filter(transplant: TransplantDTO) -> int:
-    return antigen_score(transplant, HLATypes.DR.value)
+def compatibility_index_dr_filter(transplant: TransplantDTO) -> float:
+    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroup.DRB1)
 
 
 def code_from_country_filter(countries: List[CountryDTO]) -> List[str]:
     return [country.country_code.value for country in countries]
 
 
-def sum_of_transplants(matching: MatchingReportDTO) -> int:
-    count_of_transplants = 0
-    for matching_round in matching.rounds:
-        count_of_transplants += len(matching_round.transplants)
-    return count_of_transplants
-
-
 jinja2.filters.FILTERS['country_combination_filter'] = country_combination_filter
 jinja2.filters.FILTERS['donor_recipient_score_filter'] = donor_recipient_score_filter
-jinja2.filters.FILTERS['antigen_a_filter'] = antigen_a_filter
-jinja2.filters.FILTERS['antigen_b_filter'] = antigen_b_filter
-jinja2.filters.FILTERS['antigen_dr_filter'] = antigen_dr_filter
-jinja2.filters.FILTERS['antigen_other_filter'] = antigen_other_filter
-jinja2.filters.FILTERS['matching_hla_typing_filter'] = matching_hla_typing_filter
-jinja2.filters.FILTERS['antigen_score_a_filter'] = antigen_score_a_filter
-jinja2.filters.FILTERS['antigen_score_b_filter'] = antigen_score_b_filter
-jinja2.filters.FILTERS['antigen_score_dr_filter'] = antigen_score_dr_filter
+jinja2.filters.FILTERS['hla_code_a_filter'] = hla_code_a_filter
+jinja2.filters.FILTERS['hla_code_b_filter'] = hla_code_b_filter
+jinja2.filters.FILTERS['hla_code_dr_filter'] = hla_code_dr_filter
+jinja2.filters.FILTERS['hla_code_other_filter'] = hla_code_other_filter
+jinja2.filters.FILTERS['compatibility_index_a_filter'] = compatibility_index_a_filter
+jinja2.filters.FILTERS['compatibility_index_b_filter'] = compatibility_index_b_filter
+jinja2.filters.FILTERS['compatibility_index_dr_filter'] = compatibility_index_dr_filter
 jinja2.filters.FILTERS['code_from_country_filter'] = code_from_country_filter
-jinja2.filters.FILTERS['antibody_a_filter'] = antibody_a_filter
-jinja2.filters.FILTERS['antibody_b_filter'] = antibody_b_filter
-jinja2.filters.FILTERS['antibody_dr_filter'] = antibody_dr_filter
-jinja2.filters.FILTERS['antibody_other_filter'] = antibody_other_filter
-jinja2.filters.FILTERS['sum_of_transplants'] = sum_of_transplants

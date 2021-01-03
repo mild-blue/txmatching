@@ -1,10 +1,10 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { PatientList } from '@app/model/Patient';
 import { Configuration, CountryCombination } from '@app/model/Configuration';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ConfigErrorStateMatcher, countryFullTextSearch, countryNameValidator } from '@app/directives/validators/configForm.directive';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-configuration-countries',

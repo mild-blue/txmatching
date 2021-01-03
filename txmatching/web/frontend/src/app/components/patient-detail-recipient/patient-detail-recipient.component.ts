@@ -1,12 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
-import { Antibody, Antigen, PatientList, Recipient } from '@app/model/Patient';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { PatientService } from '@app/services/patient/patient.service';
 import { map, startWith } from 'rxjs/operators';
 import { hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { ENTER, SPACE } from '@angular/cdk/keycodes';
+import { Recipient } from '@app/model/Recipient';
+import { Antigen } from '@app/model/Hla';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-patient-detail-recipient',

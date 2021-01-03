@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { matchingBatchSize } from '@app/model/Matching';
-import { PatientList } from '@app/model/Patient';
 import { AppConfiguration } from '@app/model/Configuration';
 import { ListItem, ListItemAbstractComponent, ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
 import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
 import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
+import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-item-list',

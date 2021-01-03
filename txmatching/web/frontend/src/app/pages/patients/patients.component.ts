@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { PatientList, PatientPair } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
 import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientListFilter, patientListFilters, PatientListFilterType } from '@app/pages/patients/patients.interface';
@@ -10,6 +9,8 @@ import { AuthService } from '@app/services/auth/auth.service';
 import { DownloadStatus } from '@app/components/header/header.interface';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
 import { AppConfiguration } from '@app/model/Configuration';
+import { PatientList } from '@app/model/PatientList';
+import { PatientPair } from '@app/model/PatientPair';
 
 @Component({
   selector: 'app-patients',

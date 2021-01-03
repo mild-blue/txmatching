@@ -1,3 +1,5 @@
+from typing import Optional
+
 from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.patients.patient import Donor, Recipient
@@ -16,10 +18,13 @@ class HLAAdditiveScorer(AdditiveScorer):
 
     # pylint: disable=too-many-return-statements
     # it seems that it is reasonable to want many return statements here as it is still well readable
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Donor) -> float:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Optional[Donor]) -> float:
         donor_recipient_ci = compatibility_index(donor.parameters.hla_typing, recipient.parameters.hla_typing)
-        related_donor_recipient_ci = compatibility_index(original_donor.parameters.hla_typing,
-                                                         recipient.parameters.hla_typing)
+        if original_donor:
+            related_donor_recipient_ci = compatibility_index(original_donor.parameters.hla_typing,
+                                                             recipient.parameters.hla_typing)
+        else:
+            related_donor_recipient_ci = 0.0
 
         # We can't do exchanges between some countries
 
