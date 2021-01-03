@@ -14,12 +14,12 @@ export class UploadService {
 
   public uploadFile(file: File): Observable<boolean> {
     const formData: FormData = new FormData();
-    formData.append('fileKey', file, file.name);
-    return this._http.post<File>(
-      `${environment.apiUrl}/upload`,
+    formData.append('file', file, file.name);
+    return this._http.put<File>(
+      `${environment.apiUrl}/patients/add-patients-file`,
       formData
     ).pipe(
-      map((response: Object) => {
+      map(() => {
         return true;
       })
     );
