@@ -7,7 +7,7 @@ import { map, startWith } from 'rxjs/operators';
 import { hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Recipient } from '@app/model/Recipient';
-import { Antigen } from '@app/model/Hla';
+import { Antibody, Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
 
 @Component({

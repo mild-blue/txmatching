@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
-import { Antibody, Hla, PatientList, Recipient } from '@app/model/Patient';
 import { Observable } from 'rxjs';
 import { ENTER } from '@angular/cdk/keycodes';
 import { ConfigErrorStateMatcher, hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { map, startWith } from 'rxjs/operators';
+import { PatientList } from '@app/model/PatientList';
+import { Recipient } from '@app/model/Recipient';
+import { Antibody, Hla } from '@app/model/Hla';
 
 @Component({
   selector: 'app-antibodies',
@@ -66,7 +68,8 @@ export class AntibodiesComponent implements OnInit {
     this.antibodyAdded.emit({
       code: formattedCode,
       raw_code: formattedCode,
-      mfi
+      mfi,
+      cutoff: 0
     });
 
     // reset form
@@ -136,7 +139,7 @@ export class AntibodiesComponent implements OnInit {
     }
 
     this.allAntibodies = [...new Set(allAntibodies.map(a => a.code))].map(code => {
-      return { code, raw_code: code ?? '', mfi: 0 };
+      return { code, raw_code: code ?? '', mfi: 0, cutoff: 0 };
     }); // only unique
   }
 }

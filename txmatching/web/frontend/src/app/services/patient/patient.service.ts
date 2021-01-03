@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Antibody, Donor, PatientList, Recipient } from '@app/model/Patient';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { first } from 'rxjs/operators';
 import { LoggerService } from '@app/services/logger/logger.service';
+import { PatientList } from '@app/model/PatientList';
+import { Donor } from '@app/model/Donor';
+import { Recipient } from '@app/model/Recipient';
+import { Antibody } from '@app/model/Hla';
 
 @Injectable({
   providedIn: 'root'
