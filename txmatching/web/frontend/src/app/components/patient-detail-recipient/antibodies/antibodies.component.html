@@ -10,6 +10,7 @@
       </div>
       <mat-chip-list *ngIf="selectedAntibodies.length > 0">
         <mat-chip *ngFor="let a of selectedAntibodies"
+                  [title]="'Raw code: ' + a.raw_code"
                   (removed)="removeAntibody(a)">
 
           <div class="antibody-chip">
