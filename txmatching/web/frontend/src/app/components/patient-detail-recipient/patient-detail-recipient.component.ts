@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
-import { Antigen, PatientList, Recipient } from '@app/model/Patient';
+import { Antibody, Antigen, PatientList, Recipient } from '@app/model/Patient';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { PatientService } from '@app/services/patient/patient.service';
@@ -99,15 +99,27 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     }
   }
 
-  public handleSave(): void {
+  public handleNewAntibody(antibody: Antibody): void {
+    if (!this.item) {
+      return;
+    }
+    this.handleSave([antibody]);
+  }
+
+  public handleSave(newAntibodies?: Antibody[]): void {
     if (!this.item) {
       return;
     }
 
     this.loading = true;
     this.success = false;
-    this._patientService.saveRecipient(this.item)
-    .then(() => this.success = true)
+    const oldAntibodies = this.item.hla_antibodies.hla_antibodies_list;
+    const antibodies = newAntibodies ? [...oldAntibodies, ...newAntibodies] : oldAntibodies;
+    this._patientService.saveRecipient(this.item, antibodies)
+    .then((recipient) => {
+      this.success = true;
+      this.item = recipient;
+    })
     .finally(() => this.loading = false);
   }
 

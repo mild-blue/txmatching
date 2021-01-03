@@ -73,7 +73,7 @@
   </form>
 
   <!-- Antibodies -->
-  <app-antibodies [recipient]="item" [patients]="patients"></app-antibodies>
+  <app-antibodies [recipient]="item" [patients]="patients" (antibodyAdded)="handleNewAntibody($event)"></app-antibodies>
 
   <div class="save-button">
     <app-button (click)="handleSave()"
