@@ -65,7 +65,8 @@ class TestUpdateDonorRecipient(DbTests):
             donor.parameters.country_code,
             donor.parameters.blood_group,
             [hla_code.code for hla_code in donor.parameters.hla_typing.hla_types_list],
-            txm_event.active_recipients_dict[donor.related_recipient_db_id].medical_id if donor.related_recipient_db_id else ''
+            txm_event.active_recipients_dict[
+                donor.related_recipient_db_id].medical_id if donor.related_recipient_db_id else ''
         )
             for donor in txm_event.active_donors_dict.values()]
 
@@ -125,4 +126,5 @@ class TestUpdateDonorRecipient(DbTests):
             self.assertTrue(donor in expected_donors_tuples, f'Error in round {i}: {donor} not found')
 
         for i, matching in enumerate(matching_tuples):
-            self.assertTrue(frozenset(matching) in expected_matching_tuples, f'Error in round {i}: {matching} not found')
+            self.assertTrue(frozenset(matching) in expected_matching_tuples,
+                            f'Error in round {i}: {matching} not found')

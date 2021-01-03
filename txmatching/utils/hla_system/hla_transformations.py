@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI = 2
 
 HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*[A-Z]?$')
+HIGH_RES_REGEX_ENDING_WITH_N = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*N$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
 HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'([A-Za-z]{1,3})\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
 
@@ -147,6 +148,9 @@ def preprocess_hla_code_in(hla_code_in: str) -> List[str]:
     # Handle this case better and elsewhere: https://trello.com/c/GG7zPLyj
     elif PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in):
         return PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in)
+    elif re.match(HIGH_RES_REGEX_ENDING_WITH_N, hla_code_in):
+        # Ignore high res codes ending with N as the allels are invalid
+        return []
     else:
         return [hla_code_in]
 
