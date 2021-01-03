@@ -2,7 +2,8 @@ import re
 import unittest
 
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
-from txmatching.utils.hla_system.hla_transformations import HIGH_RES_REGEX
+from txmatching.utils.hla_system.hla_transformations import (
+    HIGH_RES_REGEX, HIGH_RES_REGEX_ENDING_WITH_N)
 
 
 class TestHlaTable(unittest.TestCase):
@@ -20,8 +21,6 @@ class TestHlaTable(unittest.TestCase):
         self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'B*11'))
         self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'C*11:45:32'))
         self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'KW*22'))
-        self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'KV*23N'))
-        self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'C*11:45N'))
         self.assertIsNone(re.match(HIGH_RES_REGEX, 'C11'))
         self.assertIsNone(re.match(HIGH_RES_REGEX, '12983289'))
         self.assertIsNone(re.match(HIGH_RES_REGEX, 'C*11:45:3'))
@@ -32,3 +31,7 @@ class TestHlaTable(unittest.TestCase):
         self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'A*68:06'))
         self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'B*46:10'))
         self.assertIsNotNone(re.match(HIGH_RES_REGEX, 'A*02:719'))
+        self.assertIsNotNone(re.match(HIGH_RES_REGEX_ENDING_WITH_N, 'C*11:45N'))
+        self.assertIsNotNone(re.match(HIGH_RES_REGEX_ENDING_WITH_N, 'KV*23N'))
+        self.assertIsNone(re.match(HIGH_RES_REGEX_ENDING_WITH_N, 'DPB1*1110:01'))
+        self.assertIsNotNone(re.match(HIGH_RES_REGEX_ENDING_WITH_N, 'DPB1*1110:01N'))

@@ -109,7 +109,8 @@ def _get_recipient_upload_dto_from_row(row: Dict) -> Optional[RecipientUploadDTO
 
 def parse_excel_data(file_io: Union[str, FileStorage],
                      txm_event_name: str,
-                     country: Optional[Country]) -> List[PatientUploadDTOIn]:
+                     country: Optional[Country],
+                     add_to_existing_patients: bool = True) -> List[PatientUploadDTOIn]:
     logger.info('Parsing patient data from file')
     data = pd.read_excel(file_io, skiprows=1)
     parsed_data = dict()
@@ -130,7 +131,8 @@ def parse_excel_data(file_io: Union[str, FileStorage],
                 txm_event_name=txm_event_name,
                 country=row_country,
                 donors=[donor],
-                recipients=[recipient] if recipient else []
+                recipients=[recipient] if recipient else [],
+                add_to_existing_patients=add_to_existing_patients
             )
 
     return list(parsed_data.values())

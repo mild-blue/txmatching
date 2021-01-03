@@ -14,3 +14,4 @@ class PatientUploadDTOIn:
     txm_event_name: str
     donors: List[DonorUploadDTO]
     recipients: List[RecipientUploadDTO]
+    add_to_existing_patients: bool = False
