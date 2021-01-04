@@ -51,15 +51,15 @@
         <td>{{ compatibilityIndex.hla_group }}</td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.donor_matches"
-                    [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
+                    [class]="getAntigenMatchClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.recipient_matches"
-                    [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
+                    [class]="getAntigenMatchClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.antibody_matches"
-                    [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
+                    [class]="getAntibodyMatchClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>{{ compatibilityIndex.group_compatibility_index }}</td>
       </tr>

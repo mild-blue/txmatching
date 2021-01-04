@@ -43,6 +43,7 @@
       <mat-chip-list #antigensChipList>
         <mat-chip *ngFor="let a of selectedAntigens"
                   (removed)="removeAntigen(a)"
+                  [title]="'Raw code: ' + a.raw_code"
                   [removable]="true">
           {{a.code}}
           <mat-icon matChipRemove>cancel</mat-icon>
@@ -72,7 +73,7 @@
   </form>
 
   <!-- Antibodies -->
-  <app-antibodies [recipient]="item" [patients]="patients"></app-antibodies>
+  <app-antibodies [recipient]="item" [patients]="patients" (antibodyAdded)="handleNewAntibody($event)"></app-antibodies>
 
   <div class="save-button">
     <app-button (click)="handleSave()"

@@ -3,9 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { first } from 'rxjs/operators';
 import { LoggerService } from '@app/services/logger/logger.service';
+import { PatientList } from '@app/model/PatientList';
 import { Donor } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
-import { PatientList } from '@app/model/PatientList';
+import { Antibody } from '@app/model/Hla';
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +36,7 @@ export class PatientService {
     ).pipe(first()).toPromise();
   }
 
-  public async saveRecipient(recipient: Recipient): Promise<Recipient> {
+  public async saveRecipient(recipient: Recipient, antibodies: Antibody[]): Promise<Recipient> {
     this._logger.log('Saving recipient', [recipient]);
     return this._http.put<Recipient>(
       `${environment.apiUrl}/patients/recipient`,
@@ -46,7 +47,7 @@ export class PatientService {
           hla_types_list: recipient.parameters.hla_typing.hla_types_list
         },
         hla_antibodies: {
-          hla_antibodies_list: recipient.hla_antibodies.hla_antibodies_list
+          hla_antibodies_list: antibodies
         },
         recipient_requirements: recipient.recipient_requirements
       }

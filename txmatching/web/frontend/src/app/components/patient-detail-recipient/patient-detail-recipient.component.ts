@@ -7,7 +7,7 @@ import { map, startWith } from 'rxjs/operators';
 import { hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
 import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Recipient } from '@app/model/Recipient';
-import { Antigen } from '@app/model/Hla';
+import { Antibody, Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
 
 @Component({
@@ -101,15 +101,27 @@ export class PatientDetailRecipientComponent extends ListItemDetailAbstractCompo
     }
   }
 
-  public handleSave(): void {
+  public handleNewAntibody(antibody: Antibody): void {
+    if (!this.item) {
+      return;
+    }
+    this.handleSave([antibody]);
+  }
+
+  public handleSave(newAntibodies?: Antibody[]): void {
     if (!this.item) {
       return;
     }
 
     this.loading = true;
     this.success = false;
-    this._patientService.saveRecipient(this.item)
-    .then(() => this.success = true)
+    const oldAntibodies = this.item.hla_antibodies.hla_antibodies_list;
+    const antibodies = newAntibodies ? [...oldAntibodies, ...newAntibodies] : oldAntibodies;
+    this._patientService.saveRecipient(this.item, antibodies)
+    .then((recipient) => {
+      this.success = true;
+      this.item = recipient;
+    })
     .finally(() => this.loading = false);
   }
 

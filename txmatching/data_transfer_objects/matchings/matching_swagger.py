@@ -1,7 +1,7 @@
 from flask_restx import fields
 
-from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER, HLAGroup,
-                                    MatchTypes, AntibodyMatchTypes)
+from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER,
+                                    AntibodyMatchTypes, HLAGroup, MatchTypes)
 from txmatching.web.api.namespaces import matching_api
 
 EXAMPLE_DETAILED_SCORE = [
@@ -49,20 +49,20 @@ EXAMPLE_DETAILED_SCORE = [
 DESCRIPTION_DETAILED_SCORE = """Contains details for compatibility index for each HLA Group compatibility
 index is calculated for."""
 
-HlaCodeMatchJson = matching_api.model('HlaCodeMatch', {
+AntigenMatchJson = matching_api.model('AntigenMatch', {
     'hla_code': fields.String(required=True),
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in MatchTypes])
 })
 
 AntibodyMatchJson = matching_api.model('AntibodyMatch', {
-    'hla_code': fields.String(required=True, example="A11"),
+    'hla_code': fields.String(required=True, example='A11'),
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in AntibodyMatchTypes])
 })
 
 DetailedScoreForGroupJson = matching_api.model('DetailedScoreForGroup', {
     'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),
-    'donor_matches': fields.List(required=True, cls_or_instance=fields.Nested(HlaCodeMatchJson)),
-    'recipient_matches': fields.List(required=True, cls_or_instance=fields.Nested(HlaCodeMatchJson)),
+    'donor_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntigenMatchJson)),
+    'recipient_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntigenMatchJson)),
     'group_compatibility_index': fields.Float(required=True, example=2.0),
     'antibody_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatchJson))
 })

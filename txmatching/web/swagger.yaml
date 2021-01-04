@@ -17,6 +17,22 @@ definitions:
         - hla_code
         - match_type
         type: object
+    AntigenMatch:
+        properties:
+            hla_code:
+                type: string
+            match_type:
+                enum:
+                - SPLIT
+                - BROAD
+                - HIGH_RES
+                - NONE
+                example: SPLIT
+                type: string
+        required:
+        - hla_code
+        - match_type
+        type: object
     Configuration:
         properties:
             blood_group_compatibility_bonus:
@@ -88,7 +104,7 @@ definitions:
                 type: array
             donor_matches:
                 items:
-                    $ref: '#/definitions/HlaCodeMatch'
+                    $ref: '#/definitions/AntigenMatch'
                 type: array
             group_compatibility_index:
                 example: 2.0
@@ -103,7 +119,7 @@ definitions:
                 type: string
             recipient_matches:
                 items:
-                    $ref: '#/definitions/HlaCodeMatch'
+                    $ref: '#/definitions/AntigenMatch'
                 type: array
         required:
         - antibody_matches
@@ -400,22 +416,6 @@ definitions:
         required:
         - mfi
         - raw_code
-        type: object
-    HlaCodeMatch:
-        properties:
-            hla_code:
-                type: string
-            match_type:
-                enum:
-                - SPLIT
-                - BROAD
-                - HIGH_RES
-                - NONE
-                example: SPLIT
-                type: string
-        required:
-        - hla_code
-        - match_type
         type: object
     HlaCodesInGroups:
         properties:
@@ -846,6 +846,9 @@ definitions:
         type: object
     UploadPatients:
         properties:
+            add_to_existing_patients:
+                default: false
+                type: boolean
             country:
                 enum:
                 - CZE
