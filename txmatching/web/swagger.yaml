@@ -17,6 +17,22 @@ definitions:
         - hla_code
         - match_type
         type: object
+    AntigenMatch:
+        properties:
+            hla_code:
+                type: string
+            match_type:
+                enum:
+                - SPLIT
+                - BROAD
+                - HIGH_RES
+                - NONE
+                example: SPLIT
+                type: string
+        required:
+        - hla_code
+        - match_type
+        type: object
     Configuration:
         properties:
             blood_group_compatibility_bonus:
@@ -400,22 +416,6 @@ definitions:
         required:
         - mfi
         - raw_code
-        type: object
-    HlaCodeMatch:
-        properties:
-            hla_code:
-                type: string
-            match_type:
-                enum:
-                - SPLIT
-                - BROAD
-                - HIGH_RES
-                - NONE
-                example: SPLIT
-                type: string
-        required:
-        - hla_code
-        - match_type
         type: object
     HlaCodesInGroups:
         properties:
