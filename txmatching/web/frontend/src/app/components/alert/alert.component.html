@@ -5,7 +5,7 @@
   <div class="content">
     <span [innerHTML]="alert.message"></span>
     <div *ngIf="alert.action && alert.actionLabel" class="action">
-      <a href="#" (click)="handleAlertActionClick(alert)">{{ alert.actionLabel }}</a>
+      <button (click)="handleAlertActionClick(alert)">{{ alert.actionLabel }}</button>
     </div>
   </div>
 

@@ -11,6 +11,7 @@ import { ConfigurationService } from '@app/services/configuration/configuration.
 import { AppConfiguration } from '@app/model/Configuration';
 import { PatientList } from '@app/model/PatientList';
 import { PatientPair } from '@app/model/PatientPair';
+import { UploadService } from '@app/services/upload/upload.service';
 
 @Component({
   selector: 'app-patients',
@@ -38,6 +39,7 @@ export class PatientsComponent implements OnInit {
               private _alertService: AlertService,
               private _configService: ConfigurationService,
               private _patientService: PatientService,
+              private _uploadService: UploadService,
               private _logger: LoggerService) {
     this.activeListFilter = patientListFilters[0];
   }
@@ -47,9 +49,7 @@ export class PatientsComponent implements OnInit {
 
     // init config and patients
     this.loading = true;
-    Promise.all([this._initConfiguration(), this._initPatients()])
-    .then(this._initPairs.bind(this))
-    .finally(() => this.loading = false);
+    Promise.all([this._initConfiguration(), this._initPatients()]).finally(() => this.loading = false);
   }
 
   get patientsCount(): number {
@@ -71,6 +71,10 @@ export class PatientsComponent implements OnInit {
     }
 
     return this.pairs;
+  }
+
+  public uploadPatients(): void {
+    this._uploadService.uploadFile('Refresh patients', this._initPatients.bind(this));
   }
 
   private _initPairs(): void {
@@ -100,13 +104,30 @@ export class PatientsComponent implements OnInit {
 
   private async _initPatients(): Promise<void> {
 
+    // if not already loading before Promise.all
+    let loadingWasSwitchedOn = false;
+    if (!this.loading) {
+      this.loading = true;
+      loadingWasSwitchedOn = true;
+    }
+
     // try getting patients
     try {
       this.patients = await this._patientService.getPatients();
       this._logger.log('Got patients from server', [this.patients]);
+
+      // Init pairs
+      this._initPairs();
     } catch (e) {
       this._alertService.error(`Error loading patients: "${e.message || e}"`);
       this._logger.error(`Error loading patients: "${e.message || e}"`);
+    } finally {
+      this._logger.log('End of loading patients');
+
+      // So we do not switch off loading called before Promise.all
+      if (loadingWasSwitchedOn) {
+        this.loading = false;
+      }
     }
   }
 

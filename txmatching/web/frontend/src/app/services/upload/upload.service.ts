@@ -29,7 +29,6 @@ export class UploadService {
   }
 
   private _handleUpload(file: File, callbackLabel?: string, callbackAction?: Function): void {
-
     const formData: FormData = new FormData();
     formData.append('file', file, file.name);
 
