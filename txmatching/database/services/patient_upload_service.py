@@ -171,6 +171,8 @@ def _save_patients_to_existing_txm_event(
 
     txm_event = get_txm_event(txm_event_db_id)
 
+    check_existing_ids_for_duplicates(txm_event, donors, recipients)
+
     txm_event_db_id = txm_event.db_id
     recipient_models = [
         _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
