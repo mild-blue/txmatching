@@ -88,7 +88,7 @@ definitions:
                 type: array
             donor_matches:
                 items:
-                    $ref: '#/definitions/HlaCodeMatch'
+                    $ref: '#/definitions/AntigenMatch'
                 type: array
             group_compatibility_index:
                 example: 2.0
@@ -103,7 +103,7 @@ definitions:
                 type: string
             recipient_matches:
                 items:
-                    $ref: '#/definitions/HlaCodeMatch'
+                    $ref: '#/definitions/AntigenMatch'
                 type: array
         required:
         - antibody_matches
