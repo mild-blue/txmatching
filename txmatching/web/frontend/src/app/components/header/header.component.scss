@@ -87,8 +87,7 @@ header {
     }
 
     &.hidden {
-      pointer-events: none;
-      opacity: 0;
+      display: none;
     }
 
     button {

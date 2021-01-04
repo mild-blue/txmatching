@@ -28,6 +28,7 @@ export class PatientsComponent implements OnInit {
   public loading: boolean = false;
   public error: boolean = false;
   public downloadStatus: UploadDownloadStatus = UploadDownloadStatus.hidden;
+  public uploadStatus: UploadDownloadStatus = UploadDownloadStatus.enabled;
 
   public user?: User;
 
