@@ -131,34 +131,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  public async uploadPatients(): Promise<void> {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.dispatchEvent(new MouseEvent('click'));
-    input.addEventListener('change', () => this._handleUpload(input));
-  }
-
-  private _handleUpload(input: HTMLInputElement): void {
-    const fileToUpload = input.files?.item(0);
-    if (!fileToUpload) {
-      return;
-    }
-
-    this._uploadInProgress = true;
-    this._uploadService.uploadFile(fileToUpload).pipe(
-      first(),
-      finalize(() => this._uploadInProgress = false)
-    )
-    .subscribe(
-      () => {
-        this._alertService.success(
-          'Patients were uploaded successfully.',
-          'Recalculate matchings', this._initMatchings.bind(this));
-      },
-      (e: Error) => {
-        this._alertService.error(`Error uploading patients: "${e.message || e}"`);
-        this._logger.error(`Error uploading patients: "${e.message || e}"`);
-      });
+  public uploadPatients(): void {
+    this._uploadService.uploadFile('Recalculate matchings', this._initMatchings.bind(this));
   }
 
   public async calculate(configuration: Configuration): Promise<void> {
