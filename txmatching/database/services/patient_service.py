@@ -27,25 +27,27 @@ from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in 
 from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
-from txmatching.database.services.config_service import get_configuration_for_txm_event
+from txmatching.database.services.config_service import \
+    get_configuration_for_txm_event
 from txmatching.database.services.txm_event_service import \
     remove_donors_and_recipients_from_txm_event_for_country
 from txmatching.database.sql_alchemy_schema import (
     ConfigModel, DonorModel, RecipientAcceptableBloodModel,
     RecipientHLAAntibodyModel, RecipientModel, TxmEventModel)
-from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
-                                         RecipientRequirements, TxmEvent,
-                                         calculate_cutoff, DonorDTO)
+from txmatching.patients.patient import (Donor, DonorDTO, DonorType, Patient,
+                                         Recipient, RecipientRequirements,
+                                         TxmEvent, calculate_cutoff)
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
                                                     HLAType, HLATyping,
                                                     PatientParameters)
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.enums import Country
-from txmatching.utils.hla_system.compatibility_index import get_detailed_compatibility_index, \
-    DetailedCompatibilityIndexForHLAGroup
+from txmatching.utils.hla_system.compatibility_index import (
+    DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index)
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
-from txmatching.utils.hla_system.hla_crossmatch import get_crossmatched_antibodies, AntibodyMatchForHLAGroup
+from txmatching.utils.hla_system.hla_crossmatch import (
+    AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
 from txmatching.utils.hla_system.hla_transformations import (
     parse_hla_raw_code, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations_store import \
@@ -134,15 +136,14 @@ def get_txm_event(txm_event_db_id: int) -> TxmEvent:
                     all_recipients=all_recipients)
 
 
-def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn,
-                              remove_from_country: bool = True):
+def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn):
     """
     Updates TXM event patients, i.e., removes current event donors and recipients and add new entities.
     :param patient_upload_dto:
     :param remove_from_country:
     :return:
     """
-    if remove_from_country:
+    if not patient_upload_dto.add_to_existing_patients:
         remove_donors_and_recipients_from_txm_event_for_country(patient_upload_dto.txm_event_name,
                                                                 patient_upload_dto.country)
     _remove_configs_from_txm_event_by_name(patient_upload_dto.txm_event_name)
@@ -157,7 +158,7 @@ def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn,
 
 def save_patients_from_excel_to_txm_event(patient_upload_dtos: List[PatientUploadDTOIn]):
     for patient_upload_dto in patient_upload_dtos:
-        update_txm_event_patients(patient_upload_dto, remove_from_country=False)
+        update_txm_event_patients(patient_upload_dto)
 
 
 def _remove_configs_from_txm_event_by_id(txm_event_db_id: int):

@@ -161,7 +161,7 @@ class TestPatientService(DbTests):
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()
         self.assertEqual(1, len(configs))
 
-        update_txm_event_patients(PATIENT_UPLOAD_DTO, Country.CZE)
+        update_txm_event_patients(PATIENT_UPLOAD_DTO)
 
         # Validate that all configs of particular TXM event are deleted.
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()
