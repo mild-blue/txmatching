@@ -14,4 +14,13 @@ export interface PatientParameters {
     hla_types_list: Antigen[];
   };
   country_code: string;
+  sex?: PatientSexType;
+  height?: number;
+  weight?: number;
+  year_of_birth?: number;
+}
+
+export enum PatientSexType {
+  M = 'M',
+  F = 'F'
 }

@@ -63,6 +63,51 @@
         </td>
         <td>{{ compatibilityIndex.group_compatibility_index }}</td>
       </tr>
+      <!-- More info -->
+      <tr class="anti-header" *ngIf="showPacientDetail">
+        <td></td>
+        <td>Donor</td>
+        <td colspan="2">Recipient</td>
+        <td></td>
+      </tr>
+      <tr *ngIf="showPacientDetail">
+        <td>More info</td>
+        <td>
+          <small>
+            <div *ngIf="donor.parameters.sex">
+              Sex: <strong>{{getSexName(donor.parameters.sex)}}</strong>
+            </div>
+            <div *ngIf="donor.parameters.height">
+              Height: <strong>{{donor.parameters.height}} cm</strong>
+            </div>
+            <div *ngIf="donor.parameters.weight">
+              Weight: <strong>{{donor.parameters.weight}} kg</strong>
+            </div>
+            <div *ngIf="donor.parameters.year_of_birth">
+              Born: <strong>{{donor.parameters.year_of_birth}}</strong>
+              ({{getPacientAge(donor.parameters.year_of_birth)}} years old)
+            </div>
+          </small>
+        </td>
+        <td colspan="2">
+          <small>
+            <div *ngIf="recipient.parameters.sex">
+              Sex: <strong>{{getSexName(recipient.parameters.sex)}}</strong>
+            </div>
+            <div *ngIf="recipient.parameters.height">
+              Height: <strong>{{recipient.parameters.height}} cm</strong>
+            </div>
+            <div *ngIf="recipient.parameters.weight">
+              Weight: <strong>{{recipient.parameters.weight}} kg</strong>
+            </div>
+            <div *ngIf="recipient.parameters.year_of_birth">
+              Born: <strong>{{recipient.parameters.year_of_birth}}</strong>
+              ({{getPacientAge(recipient.parameters.year_of_birth)}} years old)
+            </div>
+          </small>
+        </td>
+        <td></td>
+      </tr>
       </tbody>
     </table>
   </div>

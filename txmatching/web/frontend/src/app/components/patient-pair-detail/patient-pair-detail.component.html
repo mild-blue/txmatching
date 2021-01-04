@@ -14,7 +14,8 @@
                                [isBloodCompatible]="item.d.compatible_blood_with_related_recipient"
                                [score]="item.d.score_with_related_recipient"
                                [detailedScorePerGroup]="item.d.detailed_score_with_related_recipient"
-                               [configuration]="configuration"></app-matching-transplant>
+                               [configuration]="configuration"
+                               [showPacientDetail]="true"></app-matching-transplant>
     </div>
     <app-patient-detail-donor *ngSwitchCase="tabs.Donor"
                               [item]="item.d"
