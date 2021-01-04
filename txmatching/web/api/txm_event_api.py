@@ -23,7 +23,7 @@ from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in 
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson, TxmEventJsonIn, TxmEventJsonOut,
     UploadPatientsJson)
-from txmatching.database.services.patient_service import \
+from txmatching.database.services.patient_upload_service import \
     update_txm_event_patients
 from txmatching.database.services.txm_event_service import (create_txm_event,
                                                             delete_txm_event,

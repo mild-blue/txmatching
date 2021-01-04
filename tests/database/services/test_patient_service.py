@@ -9,7 +9,7 @@ from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in 
 from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
-from txmatching.database.services.patient_service import \
+from txmatching.database.services.patient_upload_service import \
     update_txm_event_patients
 from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.patients.patient import DonorType

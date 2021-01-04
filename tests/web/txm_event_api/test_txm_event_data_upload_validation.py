@@ -15,9 +15,8 @@ from tests.web.txm_event_api.txm_event_upload_example_data import (
     SPECIAL_RECIPIENTS_WAITING_SINCE_DATE_INVALID)
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
-from txmatching.database.services.patient_service import get_txm_event
-from txmatching.database.services.txm_event_service import \
-    get_newest_txm_event_db_id
+from txmatching.database.services.txm_event_service import (
+    get_newest_txm_event_db_id, get_txm_event)
 from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
                                                     UploadedDataModel)
 from txmatching.patients.patient import Patient, Recipient, TxmEvent

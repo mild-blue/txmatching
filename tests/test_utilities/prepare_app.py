@@ -16,7 +16,7 @@ from txmatching.auth.data_types import UserRole
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.services import solver_service
-from txmatching.database.services.patient_service import \
+from txmatching.database.services.patient_upload_service import \
     save_patients_from_excel_to_txm_event
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration

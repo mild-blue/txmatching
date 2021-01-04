@@ -7,7 +7,7 @@ from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.services.app_user_management import persist_user
-from txmatching.database.services.patient_service import \
+from txmatching.database.services.patient_upload_service import \
     save_patients_from_excel_to_txm_event
 from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
                                                     TxmEventModel)
@@ -21,7 +21,6 @@ from txmatching.web import create_app
 
 ALLOWED_EDIT_COUNTRIES = 'allowed_edit_countries'
 PATIENT_DATA_OBFUSCATED = 'tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'
-
 
 logger = logging.getLogger(__name__)
 ADMIN_USER = {
@@ -114,18 +113,22 @@ def _add_users(users: List[AppUserModel]):
     assert len(AppUserModel.query.all()) == len(users)
 
 
+def populate_db():
+    create_or_overwrite_txm_event(name='test')
+    txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
+    add_users()
+    patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), country=None,
+                                txm_event_name='mock_data_CZE_CAN_IND')
+
+    save_patients_from_excel_to_txm_event(patients)
+
+    result = solve_from_configuration(txm_event_db_id=txm_event.db_id,
+                                      configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
+                                                                  use_split_resolution=True))
+    logger.info(f'Successfully stored {len(list(result.calculated_matchings))} matchings into the database.')
+
+
 if __name__ == '__main__':
     app = create_app()
     with app.app_context():
-        create_or_overwrite_txm_event(name='test')
-        txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
-        add_users()
-        patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), country=None,
-                                    txm_event_name='mock_data_CZE_CAN_IND')
-
-        save_patients_from_excel_to_txm_event(patients)
-
-        result = solve_from_configuration(txm_event_db_id=txm_event.db_id,
-                                          configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
-                                                                      use_split_resolution=True))
-        logger.info(f'Successfully stored {len(list(result.calculated_matchings))} matchings into the database.')
+        populate_db()

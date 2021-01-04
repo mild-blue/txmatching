@@ -6,8 +6,9 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
-from txmatching.database.services.patient_service import (
-    get_txm_event, save_patients_from_excel_to_txm_event)
+from txmatching.database.services.patient_upload_service import \
+    save_patients_from_excel_to_txm_event
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.database.sql_alchemy_schema import (
     AppUserModel, ConfigModel, DonorModel, PairingResultModel,
     RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
