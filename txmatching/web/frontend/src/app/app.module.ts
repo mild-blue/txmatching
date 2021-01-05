@@ -49,7 +49,6 @@ import { PatientPairDetailComponent } from './components/patient-pair-detail/pat
 import { ListItemDirective } from './directives/list-item/list-item.directive';
 import { ListItemDetailDirective } from './directives/list-item-detail/list-item-detail.directive';
 import { ItemComponent } from './components/list-item/item/item.component';
-import { PatientItemComponent } from './components/patient-item/patient-item.component';
 import { PatientPairComponent } from './components/patient-pair/patient-pair.component';
 import { TabSwitchComponent } from './components/tab-switch/tab-switch.component';
 import { AntibodiesComponent } from './components/patient-recipient-detail/antibodies/antibodies.component';
@@ -57,8 +56,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthenticationComponent } from './pages/authentication/authentication.component';
 import { ScoreIndicatorComponent } from './components/score-indicator/score-indicator.component';
 import { PatientDonorItemComponent } from './components/patient-donor-item/patient-donor-item.component';
-import { PatientDetailDonorComponent } from '@app/components/patient-donor-detail/patient-detail-donor.component';
-import { PatientDetailRecipientComponent } from '@app/components/patient-recipient-detail/patient-detail-recipient.component';
+import { PatientDonorDetailComponent } from '@app/components/patient-donor-detail/patient-donor-detail.component';
+import { PatientRecipientDetailComponent } from '@app/components/patient-recipient-detail/patient-recipient-detail.component';
 
 @NgModule({
   declarations: [
@@ -94,9 +93,8 @@ import { PatientDetailRecipientComponent } from '@app/components/patient-recipie
     ListItemDirective,
     ListItemDetailDirective,
     ItemComponent,
-    PatientItemComponent,
-    PatientDetailDonorComponent,
-    PatientDetailRecipientComponent,
+    PatientDonorDetailComponent,
+    PatientRecipientDetailComponent,
     PatientPairComponent,
     TabSwitchComponent,
     AntibodiesComponent,

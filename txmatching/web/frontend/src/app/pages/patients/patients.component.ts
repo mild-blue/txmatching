@@ -14,7 +14,7 @@ import { Donor, DonorType } from '@app/model/Donor';
 import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
 import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
 import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
-import { PatientDetailDonorComponent } from '@app/components/patient-donor-detail/patient-detail-donor.component';
+import { PatientDonorDetailComponent } from '@app/components/patient-donor-detail/patient-donor-detail.component';
 
 @Component({
   selector: 'app-patients',
@@ -81,17 +81,16 @@ export class PatientsComponent implements OnInit {
         });
       } else {
         // donor without recipient
-
         items.push({
           ...donor,
           index: items.length + 1,
           itemComponent: PatientDonorItemComponent,
-          detailComponent: PatientDetailDonorComponent
+          detailComponent: PatientDonorDetailComponent
         });
       }
     }
 
-    this.items = [...items]; // make a copy, not reference
+    this.items = [...items]; // make a copy, not a reference
   }
 
   private async _initPatients(): Promise<void> {
