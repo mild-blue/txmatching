@@ -5,7 +5,7 @@ import logging
 import os
 import time
 from distutils.dir_util import copy_tree
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 import jinja2
 import pdfkit
@@ -20,20 +20,19 @@ from txmatching.configuration.app_configuration.application_configuration import
     ApplicationEnvironment, get_application_configuration)
 from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
-from txmatching.data_transfer_objects.matchings.matching_dto import (
-    CountryDTO, MatchingReportDTO, RoundReportDTO, TransplantDTO)
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     get_config_model_for_txm_event, get_configuration_for_txm_event)
 from txmatching.database.services.matching_service import \
-    get_latest_matchings_detailed
+    get_latest_matchings_detailed, create_matching_dtos
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
+from txmatching.patients.patient import Patient, Donor, Recipient
 from txmatching.scorers.matching import (
-    calculate_compatibility_index_for_group, get_count_of_transplants)
+    calculate_compatibility_index_for_group)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.enums import CodesPerGroup, HLAGroup
@@ -63,7 +62,7 @@ class Report(Resource):
         security='bearer',
         params={
             MATCHINGS_BELOW_CHOSEN: {
-                'description': 'Number of matchings with lower score than chosen to include in report',
+                'description': 'Number of matchings with lower score than chosen to include in report.',
                 'type': int,
                 'required': True
             },
@@ -76,7 +75,7 @@ class Report(Resource):
         }
     )
     @report_api.response(code=200, model=None, description='Generates PDF report.')
-    @report_api.response(code=404, model=FailJson, description='Matching for provided id was not found')
+    @report_api.response(code=404, model=FailJson, description='Matching for provided id was not found.')
     @report_api.response(code=401, model=FailJson, description='Authentication failed.')
     @report_api.response(code=403, model=FailJson,
                          description='Access denied. You do not have rights to access this endpoint.'
@@ -99,6 +98,7 @@ class Report(Resource):
                 f'range [{MIN_MATCHINGS_BELOW_CHOSEN}, {MAX_MATCHINGS_BELOW_CHOSEN}]. '
                 f'Current value is {matching_range_limit}.'
             )
+
         maybe_config_model = get_config_model_for_txm_event(txm_event_db_id)
         if maybe_config_model is None:
             pairing_result = solve_from_configuration(Configuration(), txm_event_db_id=txm_event_db_id)
@@ -121,23 +121,7 @@ class Report(Resource):
         other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
 
-        matching_dtos = [MatchingReportDTO(
-            rounds=[
-                RoundReportDTO(
-                    transplants=[
-                        TransplantDTO(
-                            latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
-                            latest_matchings_detailed.blood_compatibility_tuples[
-                                (pair.donor.db_id, pair.recipient.db_id)],
-                            pair.donor,
-                            pair.recipient) for pair in matching_round.donor_recipient_pairs])
-                for matching_round in matching.get_rounds()],
-            countries=matching.get_country_codes_counts(),
-            score=matching.score(),
-            order_id=matching.order_id(),
-            count_of_transplants=get_count_of_transplants(matching)
-        ) for matching in matchings
-        ]
+        matching_dtos = create_matching_dtos(latest_matchings_detailed, matchings)
 
         configuration = get_configuration_for_txm_event(txm_event_db_id=txm_event_db_id)
 
@@ -173,6 +157,8 @@ class Report(Resource):
             matchings=matching_dtos,
             required_patients_medical_ids=required_patients_medical_ids,
             manual_donor_recipient_scores_with_medical_ids=manual_donor_recipient_scores_with_medical_ids,
+            all_donors={x.medical_id: x for x in txm_event.all_donors},
+            all_recipients={x.medical_id: x for x in txm_event.all_recipients},
             logo=logo,
             color=color
         ))
@@ -196,6 +182,7 @@ class Report(Resource):
                 '--margin-bottom': '0',
             }
         )
+
         if os.path.exists(html_file_full_path):
             os.remove(html_file_full_path)
 
@@ -246,44 +233,61 @@ def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
     return f'{donor_recipient_score[0]} -> {donor_recipient_score[1]} : {donor_recipient_score[2]}'
 
 
-def hla_code_a_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
+def get_hla_codes_of_group(codes_per_groups: List[CodesPerGroup], group: HLAGroup) -> List[str]:
     return next(
         codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroup.A)
+        codes_per_group.hla_group == group)
+
+
+def hla_code_a_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
+    return get_hla_codes_of_group(codes_per_groups, HLAGroup.A)
 
 
 def hla_code_b_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
-    return next(
-        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroup.B)
+    return get_hla_codes_of_group(codes_per_groups, HLAGroup.B)
 
 
 def hla_code_dr_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
-    return next(
-        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroup.DRB1)
+    return get_hla_codes_of_group(codes_per_groups, HLAGroup.DRB1)
 
 
 def hla_code_other_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
-    return next(
-        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == HLAGroup.Other)
+    return get_hla_codes_of_group(codes_per_groups, HLAGroup.Other)
 
 
-def compatibility_index_a_filter(transplant: TransplantDTO) -> float:
-    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroup.A)
+def compatibility_index_a_filter(_: any, donor: Patient, recipient: Patient) -> float:
+    return calculate_compatibility_index_for_group(donor, recipient, HLAGroup.A)
 
 
-def compatibility_index_b_filter(transplant: TransplantDTO) -> float:
-    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroup.B)
+def compatibility_index_b_filter(_: any, donor: Patient, recipient: Patient) -> float:
+    return calculate_compatibility_index_for_group(donor, recipient, HLAGroup.B)
 
 
-def compatibility_index_dr_filter(transplant: TransplantDTO) -> float:
-    return calculate_compatibility_index_for_group(transplant.donor, transplant.recipient, HLAGroup.DRB1)
+def compatibility_index_dr_filter(_: any, donor: Donor, recipient: Recipient) -> float:
+    return calculate_compatibility_index_for_group(donor, recipient, HLAGroup.DRB1)
 
 
-def code_from_country_filter(countries: List[CountryDTO]) -> List[str]:
-    return [country.country_code.value for country in countries]
+def country_code_from_country_filter(countries: List[dict]) -> List[str]:
+    return [country['country_code'].value for country in countries]
+
+
+def country_code_from_medical_id_filter(medical_id: str) -> str:
+    return medical_id.split('-')[1]
+
+
+def patient_by_medical_id_filter(medical_id: str, patients: Dict[str, Patient]) -> Patient:
+    return patients[medical_id]
+
+
+def hla_score_group_filter(scores_per_groups: List[dict], hla_group: str) -> dict:
+    return list(filter(lambda scores_per_group: scores_per_group['hla_group'].value.upper() == hla_group.upper(),
+                       scores_per_groups))[0]
+
+
+def hla_code_score_group_filter(scores_per_groups: List[dict], hla_group: str, recipient: bool) -> List[str]:
+    score = hla_score_group_filter(scores_per_groups, hla_group)
+    matches = score['recipient_matches'] if recipient else score['donor_matches']
+    return [match['hla_code'] for match in matches]
 
 
 jinja2.filters.FILTERS['country_combination_filter'] = country_combination_filter
@@ -295,4 +299,7 @@ jinja2.filters.FILTERS['hla_code_other_filter'] = hla_code_other_filter
 jinja2.filters.FILTERS['compatibility_index_a_filter'] = compatibility_index_a_filter
 jinja2.filters.FILTERS['compatibility_index_b_filter'] = compatibility_index_b_filter
 jinja2.filters.FILTERS['compatibility_index_dr_filter'] = compatibility_index_dr_filter
-jinja2.filters.FILTERS['code_from_country_filter'] = code_from_country_filter
+jinja2.filters.FILTERS['country_code_from_country_filter'] = country_code_from_country_filter
+jinja2.filters.FILTERS['country_code_from_medical_id_filter'] = country_code_from_medical_id_filter
+jinja2.filters.FILTERS['patient_by_medical_id_filter'] = patient_by_medical_id_filter
+jinja2.filters.FILTERS['hla_code_score_group_filter'] = hla_code_score_group_filter

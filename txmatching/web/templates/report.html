@@ -6,27 +6,27 @@ No
 {% endif %}
 {% endmacro %}
 
-{% macro donor_antigen_class(code, transplant) %}
-{% if code in transplant.recipient.hla_antibodies.hla_antibodies_list %}
+{% macro donor_antigen_class(code, recipient) %}
+{% if code in recipient.hla_antibodies.hla_antibodies_list %}
 {# donor antigen matches some recipient antibody #}
 bad-matching
-{% elif code in transplant.recipient.parameters.hla_typing.codes_per_group %}
+{% elif code in recipient.parameters.hla_typing.codes_per_group %}
 {# donor antigen matches some recipient antigen #}
 matching
 {% endif %}
 {% endmacro %}
 
-{% macro recipient_antigen_class(code, transplant) %}
-{% if code in transplant.donor.parameters.hla_typing.codes_per_group
-and code not in transplant.recipient.hla_antibodies.hla_antibodies_list %}
+{% macro recipient_antigen_class(code, donor, recipient) %}
+{% if code in donor.parameters.hla_typing.codes_per_group
+and code not in recipient.hla_antibodies.hla_antibodies_list %}
 {# recipient antigen matches some donor antigen
 and code is not recipient antibody #}
 matching
 {% endif %}
 {% endmacro %}
 
-{% macro recipient_antibody_class(code, transplant) %}
-{% if code in transplant.donor.parameters.hla_typing.codes_per_group %}
+{% macro recipient_antibody_class(code, donor) %}
+{% if code in donor.parameters.hla_typing.codes_per_group %}
 {# recipient antibody matches some donor antigen #}
 bad-matching
 {% endif %}
@@ -503,7 +503,7 @@ bad-matching
             <li>Score: <strong class="color-primary">{{ matching.score }}</strong></li>
             <li>Rounds: <strong>{{ matching.rounds|length }}</strong></li>
             <li>Transplants: <strong>{{ matching.count_of_transplants }}</strong></li>
-            <li>Countries: <strong>{{ matching.countries|code_from_country_filter|join(', ') }}</strong></li>
+            <li>Countries: <strong>{{ matching.countries|country_code_from_country_filter|join(', ') }}</strong></li>
         </ul>
     </div>
 
@@ -534,9 +534,9 @@ bad-matching
                             <div class="center-holder">
                                 <div class="patient">
                                     <div class="flag">
-                                        <img src="assets/countries/{{ transplant.donor.parameters.country_code.name }}.png"/>
+                                        <img src="assets/countries/{{ transplant.donor|country_code_from_medical_id_filter }}.png"/>
                                     </div>
-                                    {{ transplant.donor.medical_id }}
+                                    {{ transplant.donor }}
                                 </div>
                             </div>
                         </td>
@@ -544,9 +544,9 @@ bad-matching
                             <div class="center-holder">
                                 <div class="patient">
                                     <div class="flag">
-                                        <img src="assets/countries/{{ transplant.recipient.parameters.country_code.name }}.png"/>
+                                        <img src="assets/countries/{{ transplant.recipient|country_code_from_medical_id_filter }}.png"/>
                                     </div>
-                                    {{ transplant.recipient.medical_id }}
+                                    {{ transplant.recipient }}
                                 </div>
                             </div>
                         </td>
@@ -556,16 +556,16 @@ bad-matching
                         <td>Blood type</td>
                         <td>
                             <div class="code {% if transplant.compatible_blood %}matching{% endif %}">
-                                {{ transplant.donor.parameters.blood_group }}
+                                {{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.blood_group }}
                             </div>
                         </td>
                         <td colspan="2">
                             <div class="code {% if transplant.compatible_blood %}matching{% endif %}">
-                                {{ transplant.recipient.parameters.blood_group }}
+                                {{ (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.blood_group  }}
                             </div>
                             <div class="small">
                                 Acceptable:
-                                {% for code in transplant.recipient.acceptable_blood_groups %}
+                                {% for code in (transplant.recipient|patient_by_medical_id_filter(all_recipients)).acceptable_blood_groups %}
                                 <div class="code">{{ code }}</div>
                                 {% endfor %}
                             </div>
@@ -582,81 +582,76 @@ bad-matching
                     <tr>
                         <td>A</td>
                         <td>
-                            {% for code in transplant.donor.parameters.hla_typing.codes_per_group|hla_code_a_filter %}
-                            <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
+                            {% for code in transplant.detailed_score_per_group|hla_code_score_group_filter('A', false) %}
+                              <div class="code {{ donor_antigen_class(code, (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}">{{ code }}</div>
                             {% endfor %}
                         </td>
                         <td>
-                            {% for code in transplant.recipient.parameters.hla_typing.codes_per_group|hla_code_a_filter
-                            %}
-                            <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
+                          {% for code in transplant.detailed_score_per_group|hla_code_score_group_filter('A', true) %}
+                            <div class="code {{ recipient_antigen_class(code, (transplant.donor|patient_by_medical_id_filter(all_donors)), (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}">{{ code }}</div>
                             {% endfor %}
                         </td>
                         <td>
-                            {% for code in transplant.recipient.hla_antibodies.hla_codes_over_cutoff_per_group|hla_code_a_filter %}
-                            <div class="code {{ recipient_antibody_class(code, transplant) }}">{{ code }}</div>
+                            {% for code in (transplant.recipient|patient_by_medical_id_filter(all_recipients)).hla_antibodies.hla_codes_over_cutoff_per_group|hla_code_a_filter %}
+                            <div class="code {{ recipient_antibody_class(code, (transplant.donor|patient_by_medical_id_filter(all_donors))) }}">{{ code }}</div>
                             {% endfor %}
                         </td>
-                        <td>{{ transplant|compatibility_index_a_filter }}</td>
+                        <td>{{ ''|compatibility_index_a_filter((transplant.donor|patient_by_medical_id_filter(all_donors)), (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}</td>
                     </tr>
                     <tr>
                         <td>B</td>
                         <td>
-                            {% for code in transplant.donor.parameters.hla_typing.codes_per_group|hla_code_b_filter %}
-                            <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
+                          {% for code in transplant.detailed_score_per_group|hla_code_score_group_filter('B', false) %}
+                            <div class="code {{ donor_antigen_class(code, (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}">{{ code }}</div>
+                          {% endfor %}
+                        </td>
+                        <td>
+                          {% for code in transplant.detailed_score_per_group|hla_code_score_group_filter('B', true) %}
+                            <div class="code {{ recipient_antigen_class(code, (transplant.donor|patient_by_medical_id_filter(all_donors)), (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}">{{ code }}</div>
                             {% endfor %}
                         </td>
                         <td>
-                            {% for code in transplant.recipient.parameters.hla_typing.codes_per_group|hla_code_b_filter
-                            %}
-                            <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
-                            {% endfor %}
+                          {% for code in (transplant.recipient|patient_by_medical_id_filter(all_recipients)).hla_antibodies.hla_codes_over_cutoff_per_group|hla_code_b_filter %}
+                            <div class="code {{ recipient_antibody_class(code, (transplant.donor|patient_by_medical_id_filter(all_donors))) }}">{{ code }}</div>
+                          {% endfor %}
                         </td>
-                        <td>
-                            {% for code in transplant.recipient.hla_antibodies.hla_codes_over_cutoff_per_group|hla_code_b_filter %}
-                            <div class="code {{ recipient_antibody_class(code, transplant) }}">{{ code }}</div>
-                            {% endfor %}
-                        </td>
-                        <td>{{ transplant|compatibility_index_b_filter }}</td>
+                      <td>{{ ''|compatibility_index_b_filter((transplant.donor|patient_by_medical_id_filter(all_donors)), (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}</td>
                     </tr>
                     <tr>
                         <td>DR</td>
                         <td>
-                            {% for code in transplant.donor.parameters.hla_typing.codes_per_group|hla_code_dr_filter %}
-                            <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
-                            {% endfor %}
+                          {% for code in transplant.detailed_score_per_group|hla_code_score_group_filter('DRB1', false) %}
+                            <div class="code {{ donor_antigen_class(code, (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}">{{ code }}</div>
+                          {% endfor %}
                         </td>
                         <td>
-                            {% for code in
-                            transplant.recipient.parameters.hla_typing.codes_per_group|hla_code_dr_filter %}
-                            <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
-                            {% endfor %}
+                          {% for code in transplant.detailed_score_per_group|hla_code_score_group_filter('DRB1', true) %}
+                            <div class="code {{ recipient_antigen_class(code, (transplant.donor|patient_by_medical_id_filter(all_donors)), (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}">{{ code }}</div>
+                          {% endfor %}
                         </td>
                         <td>
-                            {% for code in transplant.recipient.hla_antibodies.hla_codes_over_cutoff_per_group|hla_code_dr_filter %}
-                            <div class="code {{ recipient_antibody_class(code, transplant) }}">{{ code }}</div>
-                            {% endfor %}
+                          {% for code in (transplant.recipient|patient_by_medical_id_filter(all_recipients)).hla_antibodies.hla_codes_over_cutoff_per_group|hla_code_dr_filter %}
+                            <div class="code {{ recipient_antibody_class(code, (transplant.donor|patient_by_medical_id_filter(all_donors))) }}">{{ code }}</div>
+                          {% endfor %}
                         </td>
-                        <td>{{ transplant|compatibility_index_dr_filter }}</td>
+                      <td>{{ ''|compatibility_index_dr_filter((transplant.donor|patient_by_medical_id_filter(all_donors)), (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}</td>
                     </tr>
                     <tr>
                         <td>Other</td>
                         <td>
-                            {% for code in transplant.donor.parameters.hla_typing.codes_per_group|hla_code_other_filter
-                            %}
-                            <div class="code {{ donor_antigen_class(code, transplant) }}">{{ code }}</div>
-                            {% endfor %}
+                          {% for code in transplant.detailed_score_per_group|hla_code_score_group_filter('Other', false) %}
+                            <div class="code {{ donor_antigen_class(code, (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}">{{ code }}</div>
+                          {% endfor %}
                         </td>
                         <td>
-                            {% for code in
-                            transplant.recipient.parameters.hla_typing.codes_per_group|hla_code_other_filter %}
-                            <div class="code {{ recipient_antigen_class(code, transplant) }}">{{ code }}</div>
-                            {% endfor %}
+                          {% for code in transplant.detailed_score_per_group|hla_code_score_group_filter('Other', true) %}
+                            <div class="code {{ recipient_antigen_class(code, (transplant.donor|patient_by_medical_id_filter(all_donors)), (transplant.recipient|patient_by_medical_id_filter(all_recipients))) }}">{{ code }}</div>
+                          {% endfor %}
                         </td>
                         <td>
-                            {% for code in transplant.recipient.hla_antibodies.hla_codes_over_cutoff_per_group|hla_code_other_filter %}
-                            <div class="code {{ recipient_antibody_class(code, transplant) }}">{{ code }}</div>
-                            {% endfor %}
+                          {% for code in (transplant.recipient|patient_by_medical_id_filter(all_recipients)).hla_antibodies.hla_codes_over_cutoff_per_group|hla_code_other_filter %}
+                            <div class="code {{ recipient_antibody_class(code, (transplant.donor|patient_by_medical_id_filter(all_donors))) }}">{{ code }}</div>
+                          {% endfor %}
                         </td>
                         <td>-</td>
                     </tr>
