@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { PatientService } from '@app/services/patient/patient.service';
-import { ListItem } from '@app/components/list-item/list-item.interface';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { User } from '@app/model/User';
@@ -26,6 +25,7 @@ export class PatientsComponent implements OnInit {
 
   public patients?: PatientList;
   public pairs: PatientPair[] = [];
+  public items: (Donor | PatientPair)[] = [];
 
   public loading: boolean = false;
   public error: boolean = false;
@@ -52,50 +52,46 @@ export class PatientsComponent implements OnInit {
     Promise.all([this._initConfiguration(), this._initPatients()]).finally(() => this.loading = false);
   }
 
-  get patientsCount(): number {
-    return this.patients ? this.patients.donors.length + this.patients.recipients.length : 0;
-  }
-
-  public getItems(): ListItem[] {
-    let donors: Donor[] = [];
-    if (this.patients) {
-      donors = this.patients.donors.filter(d => d.donor_type !== DonorType.DONOR).map((d, key) => {
-        d.index = key + 1;
-        d.itemComponent = PatientDonorItemComponent;
-        d.detailComponent = PatientDetailDonorComponent;
-
-        return d;
-      });
-    }
-
-    return [...this.pairs, ...donors];
-  }
-
   public uploadPatients(): void {
     this._uploadService.uploadFile('Refresh patients', this._initPatients.bind(this));
   }
 
-  private _initPairs(): void {
+  private _initItems(): void {
     if (!this.patients) {
       return;
     }
 
-    // add pairs
+    const items: (Donor | PatientPair)[] = [];
     for (const donor of this.patients.donors) {
-      const recipient = this.patients.recipients.find(r => r.db_id === donor.related_recipient_db_id);
+      if (donor.donor_type === DonorType.DONOR) {
+        // if donor with recipient
 
-      if (!recipient) {
-        continue;
+        // find recipient
+        const recipient = this.patients.recipients.find(r => r.db_id === donor.related_recipient_db_id);
+        if (!recipient) {
+          continue;
+        }
+
+        items.push({
+          index: items.length + 1,
+          d: donor,
+          r: recipient,
+          itemComponent: PatientPairItemComponent,
+          detailComponent: PatientPairDetailComponent
+        });
+      } else {
+        // donor without recipient
+
+        items.push({
+          ...donor,
+          index: items.length + 1,
+          itemComponent: PatientDonorItemComponent,
+          detailComponent: PatientDetailDonorComponent
+        });
       }
-
-      this.pairs.push({
-        index: this.pairs.length + 1,
-        d: donor,
-        r: recipient,
-        itemComponent: PatientPairItemComponent,
-        detailComponent: PatientPairDetailComponent
-      });
     }
+
+    this.items = [...items]; // make a copy, not reference
   }
 
   private async _initPatients(): Promise<void> {
@@ -112,8 +108,8 @@ export class PatientsComponent implements OnInit {
       this.patients = await this._patientService.getPatients();
       this._logger.log('Got patients from server', [this.patients]);
 
-      // Init pairs
-      this._initPairs();
+      // Init list items
+      this._initItems();
     } catch (e) {
       this._alertService.error(`Error loading patients: "${e.message || e}"`);
       this._logger.error(`Error loading patients: "${e.message || e}"`);
