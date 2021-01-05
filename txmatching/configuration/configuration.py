@@ -51,7 +51,7 @@ class Configuration:
     max_sequence_length: int = 4
     max_number_of_distinct_countries_in_round: int = 3
     required_patient_db_ids: List[PatientDbId] = field(default_factory=list)
-    use_split_resolution: bool = False
+    use_split_resolution: bool = True
     forbidden_country_combinations: List[ForbiddenCountryCombination] = field(
         default_factory=lambda: DEFAULT_FORBIDDEN_COUNTRY_LIST)
     manual_donor_recipient_scores: List[ManualDonorRecipientScore] = field(default_factory=list)

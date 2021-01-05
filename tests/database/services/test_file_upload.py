@@ -83,7 +83,9 @@ class TestUpdateDonorRecipient(DbTests):
         all_matchings = list(solve_from_configuration(Configuration(
             max_cycle_length=100,
             max_sequence_length=100,
-            max_number_of_distinct_countries_in_round=100),
+            max_number_of_distinct_countries_in_round=100,
+            use_split_resolution=False
+        ),
             txm_event.db_id).calculated_matchings)
         self.assertEqual(358, len(all_matchings))
 
