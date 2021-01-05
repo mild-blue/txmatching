@@ -5,7 +5,7 @@ import logging
 import os
 import time
 from distutils.dir_util import copy_tree
-from typing import List, Tuple, Dict
+from typing import Dict, List, Tuple
 
 import jinja2
 import pdfkit
@@ -25,8 +25,8 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     get_config_model_for_txm_event, get_configuration_for_txm_event)
-from txmatching.database.services.matching_service import \
-    get_latest_matchings_detailed, create_matching_dtos
+from txmatching.database.services.matching_service import (
+    create_matching_dtos, get_latest_matchings_detailed)
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
@@ -234,10 +234,6 @@ def country_code_from_country_filter(countries: List[dict]) -> List[str]:
     return [country['country_code'].value for country in countries]
 
 
-def country_code_from_medical_id_filter(medical_id: str) -> str:
-    return medical_id.split('-')[1]
-
-
 def patient_by_medical_id_filter(medical_id: str, patients: Dict[str, Patient]) -> Patient:
     return patients[medical_id]
 
@@ -250,6 +246,5 @@ jinja2.filters.FILTERS.update({
     'country_combination_filter': country_combination_filter,
     'donor_recipient_score_filter': donor_recipient_score_filter,
     'country_code_from_country_filter': country_code_from_country_filter,
-    'country_code_from_medical_id_filter': country_code_from_medical_id_filter,
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
 })

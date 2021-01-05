@@ -520,7 +520,7 @@ bad-matching
                             <div class="center-holder">
                                 <div class="patient">
                                     <div class="flag">
-                                        <img src="assets/countries/{{ transplant.donor|country_code_from_medical_id_filter }}.png"/>
+                                        <img src="assets/countries/{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
                                     </div>
                                     {{ transplant.donor }}
                                 </div>
@@ -530,7 +530,7 @@ bad-matching
                             <div class="center-holder">
                                 <div class="patient">
                                     <div class="flag">
-                                        <img src="assets/countries/{{ transplant.recipient|country_code_from_medical_id_filter }}.png"/>
+                                        <img src="assets/countries/{{ (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value }}.png"/>
                                     </div>
                                     {{ transplant.recipient }}
                                 </div>
