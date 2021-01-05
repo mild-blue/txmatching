@@ -1,6 +1,9 @@
-name: CI/CD
+name: CD
 
 on:
+  # manual dispatch
+  workflow_dispatch:
+  # run deployment on every push to master
   push:
     branches:
       - master

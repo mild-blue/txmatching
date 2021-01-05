@@ -101,3 +101,6 @@ rebuild: conda-update build-fe
 
 migrate-db:
 	cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER=${POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} POSTGRES_DB=${POSTGRES_DB} POSTGRES_URL=${POSTGRES_URL} python database/migrate_db.py
+
+generate-swagger:
+	PYTHONPATH=$${PYTHONPATH:-.} python tests/test_utilities/generate_swagger.py

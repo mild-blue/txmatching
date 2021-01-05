@@ -1,15 +1,16 @@
+import dataclasses
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
-
+from typing import Dict, List, Tuple, Union
 from dacite import from_dict
-
 from txmatching.data_transfer_objects.matchings.calculated_matchings_dto import \
     CalculatedMatchingsDTO
+from txmatching.data_transfer_objects.matchings.matching_dto import MatchingDTO, RoundDTO, TransplantDTOOut
 from txmatching.database.services.config_service import \
     get_config_model_for_txm_event, get_configuration_for_txm_event
-from txmatching.database.services.patient_service import get_txm_event
+from txmatching.database.services.patient_service import get_txm_event, get_detailed_score
 from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.patients.patient import Donor, Recipient
+from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.utils.blood_groups import blood_groups_compatible
@@ -34,10 +35,11 @@ def get_latest_matchings_detailed(txm_event_db_id: int) -> LatestMatchingsDetail
                              "didn't you forget to call solve_from_configuration()?")
     configuration = get_configuration_for_txm_event(txm_event_db_id)
     configuration_id = maybe_config_model.id
-    last_pairing_result_model = (PairingResultModel
-                                 .query.filter(PairingResultModel.config_id == configuration_id)
-                                 .first()
-                                 )
+    last_pairing_result_model = (
+        PairingResultModel
+            .query.filter(PairingResultModel.config_id == configuration_id)
+            .first()
+    )
 
     if last_pairing_result_model is None:
         raise AssertionError('There are no latest matchings in the database, '
@@ -80,11 +82,13 @@ def get_latest_matchings_detailed(txm_event_db_id: int) -> LatestMatchingsDetail
         for recipient_db_id, recipient in txm_event.active_recipients_dict.items()
     }
 
-    return LatestMatchingsDetailed(all_matchings,
-                                   score_dict,
-                                   compatible_blood_dict,
-                                   detailed_compatibility_index_dict,
-                                   antibody_matches_dict)
+    return LatestMatchingsDetailed(
+        all_matchings,
+        score_dict,
+        compatible_blood_dict,
+        detailed_compatibility_index_dict,
+        antibody_matches_dict
+    )
 
 
 def _db_matchings_to_matching_list(
@@ -106,3 +110,37 @@ def _db_matchings_to_matching_list(
 
         )
     return matching_list
+
+
+def create_matching_dtos(
+        latest_matchings_detailed: LatestMatchingsDetailed,
+        matchings: List[MatchingWithScore]
+) -> List[Union[tuple, dict]]:
+    """
+    Method that creates common DTOs for FE and reports.
+    """
+    return [
+        dataclasses.asdict(MatchingDTO(
+            rounds=[
+                RoundDTO(
+                    transplants=[
+                        TransplantDTOOut(
+                            score=latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
+                            compatible_blood=latest_matchings_detailed.blood_compatibility_tuples[
+                                (pair.donor.db_id, pair.recipient.db_id)],
+                            donor=pair.donor.medical_id,
+                            recipient=pair.recipient.medical_id,
+                            detailed_score_per_group=get_detailed_score(
+                                latest_matchings_detailed.detailed_score_tuples[
+                                    (pair.donor.db_id, pair.recipient.db_id)],
+                                latest_matchings_detailed.antibody_matches_tuples[
+                                    (pair.donor.db_id, pair.recipient.db_id)]
+                            )
+                        ) for pair in matching_round.donor_recipient_pairs], )
+                for matching_round in matching.get_rounds()],
+            countries=matching.get_country_codes_counts(),
+            score=matching.score(),
+            order_id=matching.order_id(),
+            count_of_transplants=get_count_of_transplants(matching)
+        )) for matching in matchings
+    ]
