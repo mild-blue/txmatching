@@ -76,7 +76,7 @@ header {
     }
   }
 
-  .download {
+  .download, .upload {
     margin-right: $padding-x;
     opacity: 1;
     transition: opacity 0.5s ease;
@@ -87,8 +87,7 @@ header {
     }
 
     &.hidden {
-      pointer-events: none;
-      opacity: 0;
+      display: none;
     }
 
     button {

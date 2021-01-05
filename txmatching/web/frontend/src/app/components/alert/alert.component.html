@@ -2,6 +2,12 @@
      class="{{getClass(alert)}}"
      (mouseenter)="onMouseEnter(alert)"
      (mouseleave)="onMouseLeave(alert)">
-  <span [innerHTML]="alert.message"></span>
-  <a class="close" (click)="removeAlert(alert)">&times;</a>
+  <div class="content">
+    <span [innerHTML]="alert.message"></span>
+    <div *ngIf="alert.action && alert.actionLabel" class="action">
+      <button (click)="handleAlertActionClick(alert)">{{ alert.actionLabel }}</button>
+    </div>
+  </div>
+
+  <a href="#" class="close" (click)="removeAlert(alert)">&times;</a>
 </div>
