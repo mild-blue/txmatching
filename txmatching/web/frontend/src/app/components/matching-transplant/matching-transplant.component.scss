@@ -37,6 +37,20 @@
     margin-left: 10px;
   }
 
+  .patient-info {
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: $font-weight;
+
+    span + span {
+      &::before {
+        content: '●';
+        margin: 0 5px;
+        color: var(--primary-color);
+      }
+    }
+  }
+
   table {
     width: 100%;
     max-width: 1200px;
