@@ -1,7 +1,11 @@
 name: Check Pipeline
 
 on:
+  workflow_dispatch:
   pull_request:
+    branches:
+      - main
+
 
 jobs:
   run_tests:
@@ -12,6 +16,8 @@ jobs:
       # the image must be rebuild and published again
       image: mildblue/txmatching-conda-dependencies:1.0.1
     timeout-minutes: 10
+    # disable run if the PR is draft
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
 
