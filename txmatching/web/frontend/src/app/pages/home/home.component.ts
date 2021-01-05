@@ -46,9 +46,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   public configIcon = faCog;
   public configOpened: boolean = false;
 
-  public listItemComponent: typeof MatchingItemComponent = MatchingItemComponent;
-  public listItemDetailComponent: typeof MatchingDetailComponent = MatchingDetailComponent;
-
   constructor(private _authService: AuthService,
               private _configService: ConfigurationService,
               private _alertService: AlertService,
@@ -217,6 +214,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     return m.map((matching, mKey) => {
       matching.index = mKey + 1;
       matching.isActive = mKey === 0;
+      matching.itemComponent = MatchingItemComponent;
+      matching.detailComponent = MatchingDetailComponent;
       matching.rounds = matching.rounds.map((round, rKey) => this._prepareRound(round, mKey + 1, rKey + 1));
 
       return matching;

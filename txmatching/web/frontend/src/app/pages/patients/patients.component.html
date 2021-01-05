@@ -15,10 +15,8 @@
 
   <app-content>
     <h3 *ngIf="!loading && !pairs.length">No patients were found.</h3>
-    <app-item-list *ngIf="!loading && pairs.length && activeListFilter"
-                   [listItemDetailComponent]="activeListFilter.detailComponent"
-                   [listItemComponent]="activeListFilter.itemComponent"
-                   [items]="getFilteredItems()"
+    <app-item-list *ngIf="!loading && pairs.length"
+                   [items]="getItems()"
                    [configuration]="configuration"
                    [patients]="patients"
                    [saveLastViewedItem]="true"
