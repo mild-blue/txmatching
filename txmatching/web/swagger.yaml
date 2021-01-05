@@ -2,42 +2,42 @@ basePath: /
 consumes:
 - application/json
 definitions:
-  AntibodyMatch:
-    properties:
-      hla_code:
-        example: A11
-        type: string
-      match_type:
-        enum:
-          - NONE
-          - MATCH
-        example: NONE
-        type: string
-    required:
-      - hla_code
-      - match_type
-    type: object
-  AntigenMatch:
-    properties:
-      hla_code:
-        type: string
-      match_type:
-        enum:
-          - SPLIT
-          - BROAD
-          - HIGH_RES
-          - NONE
-        example: SPLIT
-        type: string
-    required:
-      - hla_code
-      - match_type
-    type: object
-  Configuration:
-    properties:
-      blood_group_compatibility_bonus:
-        type: number
-      forbidden_country_combinations:
+    AntibodyMatch:
+        properties:
+            hla_code:
+                example: A11
+                type: string
+            match_type:
+                enum:
+                    - NONE
+                    - MATCH
+                example: NONE
+                type: string
+        required:
+            - hla_code
+            - match_type
+        type: object
+    AntigenMatch:
+        properties:
+            hla_code:
+                type: string
+            match_type:
+                enum:
+                    - SPLIT
+                    - BROAD
+                    - HIGH_RES
+                    - NONE
+                example: SPLIT
+                type: string
+        required:
+            - hla_code
+            - match_type
+        type: object
+    Configuration:
+        properties:
+            blood_group_compatibility_bonus:
+                type: number
+            forbidden_country_combinations:
                 items:
                     $ref: '#/definitions/Forbidden Country Combination'
                 type: array
@@ -104,7 +104,7 @@ definitions:
                 type: array
             donor_matches:
                 items:
-                  $ref: '#/definitions/AntigenMatch'
+                    $ref: '#/definitions/AntigenMatch'
                 type: array
             group_compatibility_index:
                 example: 2.0
@@ -119,7 +119,7 @@ definitions:
                 type: string
             recipient_matches:
                 items:
-                  $ref: '#/definitions/AntigenMatch'
+                    $ref: '#/definitions/AntigenMatch'
                 type: array
         required:
         - antibody_matches
