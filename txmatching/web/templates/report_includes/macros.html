@@ -1,0 +1,19 @@
+{% macro yes_no(value) %}
+  {% if value %}
+    <strong>Yes</strong>
+  {% else %}
+    No
+  {% endif %}
+{% endmacro %}
+
+{% macro antigen_class(code) %}
+  {% if code != 'NONE' %}
+    matching
+  {% endif %}
+{% endmacro %}
+
+{% macro antibody_class(code) %}
+  {% if code == 'MATCH' %}
+    bad-matching
+  {% endif %}
+{% endmacro %}

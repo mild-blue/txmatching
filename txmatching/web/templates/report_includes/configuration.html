@@ -1,0 +1,67 @@
+{% from 'report_includes/macros.html' import yes_no %}
+
+<div class="box">
+  <div class="configuration">
+    <h1>Configuration</h1>
+    <ul>
+      <li>
+        <div class="label">Require compatible blood group</div>
+        <div class="value">{{ yes_no(configuration.require_compatible_blood_group) }}</div>
+      </li>
+      <li>
+        <div class="label">Require new donor having better CI match than original donor</div>
+        <div class="value">{{ yes_no(configuration.require_better_match_in_compatibility_index) }}</div>
+      </li>
+      <li>
+        <div class="label">Require new donor having better CI match than original donor or blood group match
+        </div>
+        <div class="value">{{ yes_no(configuration.require_better_match_in_compatibility_index_or_blood_group) }}
+        </div>
+      </li>
+      <li>
+        <div class="label">Use binary scoring</div>
+        <div class="value">{{ yes_no(configuration.use_binary_scoring) }}</div>
+      </li>
+      <li>
+        <div class="label">Use split resolution</div>
+        <div class="value">{{ yes_no(configuration.use_split_resolution) }}</div>
+      </li>
+      <li>
+        <div class="label">Minimum transplant score</div>
+        <div class="value"><strong>{{ configuration.minimum_total_score }}</strong></div>
+      </li>
+      <li>
+        <div class="label">Max countries in round</div>
+        <div class="value"><strong>{{ configuration.max_number_of_distinct_countries_in_round }}</strong></div>
+      </li>
+      <li>
+        <div class="label">Max cycle length</div>
+        <div class="value"><strong>{{ configuration.max_cycle_length }}</strong></div>
+      </li>
+      <li>
+        <div class="label">Max sequence length</div>
+        <div class="value"><strong>{{ configuration.max_sequence_length }}</strong></div>
+      </li>
+      <li>
+        <div class="label">Compatible blood group bonus</div>
+        <div class="value"><strong>{{ configuration.blood_group_compatibility_bonus }}</strong></div>
+      </li>
+      <li>
+        <div class="label">Forbidden country combinations</div>
+        <div class="value">
+          <strong>{{ configuration.forbidden_country_combinations|map('country_combination_filter')|join(', ') }}</strong>
+        </div>
+      </li>
+      <li>
+        <div class="label">Manual donor recipient scores</div>
+        <div class="value">
+          <strong>{{ manual_donor_recipient_scores_with_medical_ids|map('donor_recipient_score_filter')|join(', ') }}</strong>
+        </div>
+      </li>
+      <li>
+        <div class="label">Required patient ids</div>
+        <div class="value"><strong>{{ required_patients_medical_ids|join(', ') }}</strong></div>
+      </li>
+    </ul>
+  </div>
+</div>
