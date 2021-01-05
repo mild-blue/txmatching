@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { PatientService } from '@app/services/patient/patient.service';
 import { Configuration } from '@app/model/Configuration';
-import { DetailedScorePerGroup, HlaMatchType } from '@app/model/Hla';
+import { AntibodyMatchType, AntigenMatchType, DetailedScorePerGroup } from '@app/model/Hla';
 import { Recipient } from '@app/model/Recipient';
 import { Donor } from '@app/model/Donor';
 import { Patient } from '@app/model/Patient';
@@ -24,15 +24,19 @@ export class MatchingTransplantComponent {
   constructor(private _patientService: PatientService) {
   }
 
-  public getHlaClass(match: HlaMatchType): string {
-    if (match === HlaMatchType.ANTIBODY) {
-      // donor antigen matches some recipient antibody
-      return 'bad-matching';
-    }
-
-    if (match === HlaMatchType.BROAD || match === HlaMatchType.HIGH_RES || match === HlaMatchType.SPLIT) {
+  public getAntigenMatchClass(match: AntigenMatchType): string {
+    if (match === AntigenMatchType.BROAD || match === AntigenMatchType.HIGH_RES || match === AntigenMatchType.SPLIT) {
       // donor antigen matches some recipient antigen
       return 'matching';
+    }
+
+    return '';
+  }
+
+  public getAntibodyMatchClass(match: AntibodyMatchType): string {
+    if (match === AntibodyMatchType.MATCH) {
+      // recipient antibody matches some donor antigen
+      return 'bad-matching';
     }
 
     return '';
