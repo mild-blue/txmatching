@@ -13,15 +13,22 @@ export interface Antibody extends Hla {
 
 export interface DetailedScorePerGroup {
   hla_group: string;
-  donor_matches: HlaMatch[];
-  recipient_matches: HlaMatch[];
-  antibody_matches: HlaMatch[];
+  donor_matches: AntigenMatch[];
+  recipient_matches: AntigenMatch[];
+  antibody_matches: AntibodyMatch[];
   group_compatibility_index: number;
 }
 
 export interface HlaMatch {
   hla_code: string;
-  match_type: HlaMatchType;
+}
+
+export interface AntigenMatch extends HlaMatch {
+  match_type: AntigenMatchType;
+}
+
+export interface AntibodyMatch extends HlaMatch {
+  match_type: AntibodyMatchType;
 }
 
 export interface HlaGroupCodes {
@@ -29,10 +36,14 @@ export interface HlaGroupCodes {
   hla_codes: string[];
 }
 
-export enum HlaMatchType {
+export enum AntigenMatchType {
   SPLIT = 'SPLIT',
   BROAD = 'BROAD',
   HIGH_RES = 'HIGH_RES',
   NONE = 'NONE',
-  ANTIBODY = 'ANTIBODY'
+}
+
+export enum AntibodyMatchType {
+  NONE = 'NONE',
+  MATCH = 'MATCH',
 }

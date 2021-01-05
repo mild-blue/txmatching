@@ -17,11 +17,21 @@
           <div class="center-holder">
             <patient [patient]="donor"></patient>
           </div>
+          <div class="patient-info">
+            <span title="Sex" *ngIf="donor.parameters.sex">{{donor.parameters.sex}}</span>
+            <span title="Year of Birth" *ngIf="donor.parameters.year_of_birth">{{donor.parameters.year_of_birth}}</span>
+            <span title="Height/Weight" *ngIf="getPatientHeightAndWeight(donor)">{{getPatientHeightAndWeight(donor)}}</span>
+          </div>
         </td>
         <td colspan="2">
           Recipient
           <div class="center-holder">
             <patient [patient]="recipient"></patient>
+          </div>
+          <div class="patient-info">
+            <span title="Sex" *ngIf="recipient.parameters.sex">{{recipient.parameters.sex}}</span>
+            <span title="Year of Birth" *ngIf="recipient.parameters.year_of_birth">{{recipient.parameters.year_of_birth}}</span>
+            <span title="Height/Weight" *ngIf="getPatientHeightAndWeight(recipient)">{{getPatientHeightAndWeight(recipient)}}</span>
           </div>
         </td>
         <td></td>
@@ -51,15 +61,15 @@
         <td>{{ compatibilityIndex.hla_group }}</td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.donor_matches"
-                    [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
+                    [class]="getAntigenMatchClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.recipient_matches"
-                    [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
+                    [class]="getAntigenMatchClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.antibody_matches"
-                    [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
+                    [class]="getAntibodyMatchClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>{{ compatibilityIndex.group_compatibility_index }}</td>
       </tr>
