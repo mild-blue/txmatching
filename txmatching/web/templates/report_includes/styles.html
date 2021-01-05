@@ -113,11 +113,21 @@
     }
 
     /* Configuration */
+    .configuration {
+        display: flex;
+        justify-content: space-between;
+        -webkit-box-align: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
     .configuration ul li {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        height: 25px;
 
         /* wkhtmltopdf */
         display: -webkit-box;
@@ -130,12 +140,14 @@
     }
 
     .configuration .label {
-        width: 50%;
+        margin-right: 40px;
+        /* wkhtmltopdf otherwise sometimes wraps in a wrong place */
+        white-space: nowrap;
     }
 
     .configuration .value {
-        width: 50%;
-        text-align: right;
+        /* wkhtmltopdf otherwise sometimes wraps in a wrong place */
+        white-space: nowrap;
     }
 
     /* Matching */

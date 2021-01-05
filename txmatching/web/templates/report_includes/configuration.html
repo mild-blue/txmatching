@@ -1,8 +1,8 @@
 {% from 'report_includes/macros.html' import yes_no %}
 
 <div class="box">
+  <h1>Configuration</h1>
   <div class="configuration">
-    <h1>Configuration</h1>
     <ul>
       <li>
         <div class="label">Require compatible blood group</div>
@@ -26,6 +26,8 @@
         <div class="label">Use split resolution</div>
         <div class="value">{{ yes_no(configuration.use_split_resolution) }}</div>
       </li>
+    </ul>
+    <ul>
       <li>
         <div class="label">Minimum transplant score</div>
         <div class="value"><strong>{{ configuration.minimum_total_score }}</strong></div>
@@ -49,18 +51,18 @@
       <li>
         <div class="label">Forbidden country combinations</div>
         <div class="value">
-          <strong>{{ configuration.forbidden_country_combinations|map('country_combination_filter')|join(', ') }}</strong>
+          <strong>{{ configuration.forbidden_country_combinations|map('country_combination_filter')|join('<br>') }}</strong>
         </div>
       </li>
       <li>
         <div class="label">Manual donor recipient scores</div>
         <div class="value">
-          <strong>{{ manual_donor_recipient_scores_with_medical_ids|map('donor_recipient_score_filter')|join(', ') }}</strong>
+          <strong>{{ manual_donor_recipient_scores_with_medical_ids|map('donor_recipient_score_filter')|join('<br>') }}</strong>
         </div>
       </li>
       <li>
         <div class="label">Required patient ids</div>
-        <div class="value"><strong>{{ required_patients_medical_ids|join(', ') }}</strong></div>
+        <div class="value"><strong>{{ required_patients_medical_ids|join('<br>') }}</strong></div>
       </li>
     </ul>
   </div>
