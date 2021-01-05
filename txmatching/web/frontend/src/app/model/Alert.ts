@@ -13,6 +13,8 @@ export class Alert {
   type?: AlertType;
   message?: string;
   fade?: boolean;
+  action?: Function;
+  actionLabel?: string;
 
   constructor(init?: Partial<Alert>) {
     this.uuid = uuid.v4();

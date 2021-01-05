@@ -15,20 +15,20 @@ export class AlertService {
     return this._subject.asObservable().pipe(filter(x => x && x.id === id));
   }
 
-  public success(message: string): void {
-    this.alert(new Alert({ type: AlertType.Success, message }));
+  public success(message: string, actionLabel?: string, action?: Function): void {
+    this.alert(new Alert({ type: AlertType.Success, message, actionLabel, action }));
   }
 
-  public error(message: string): void {
-    this.alert(new Alert({ type: AlertType.Error, message }));
+  public error(message: string, actionLabel?: string, action?: Function): void {
+    this.alert(new Alert({ type: AlertType.Error, message, actionLabel, action }));
   }
 
-  public info(message: string): void {
-    this.alert(new Alert({ type: AlertType.Info, message }));
+  public info(message: string, actionLabel?: string, action?: Function): void {
+    this.alert(new Alert({ type: AlertType.Info, message, actionLabel, action }));
   }
 
-  public warn(message: string): void {
-    this.alert(new Alert({ type: AlertType.Warning, message }));
+  public warn(message: string, actionLabel?: string, action?: Function): void {
+    this.alert(new Alert({ type: AlertType.Warning, message, actionLabel, action }));
   }
 
   public alert(alert: Alert): void {

@@ -1,4 +1,4 @@
-export enum DownloadStatus {
+export enum UploadDownloadStatus {
   enabled,
   disabled,
   hidden,
