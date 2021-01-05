@@ -30,12 +30,12 @@ from txmatching.database.services.matching_service import \
 from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
-from txmatching.patients.patient import Patient, Donor, Recipient
+from txmatching.patients.patient import Patient
 from txmatching.scorers.matching import (
     calculate_compatibility_index_for_group)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import CodesPerGroup, HLAGroup
+from txmatching.utils.enums import HLAGroup
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -157,8 +157,8 @@ class Report(Resource):
             matchings=matching_dtos,
             required_patients_medical_ids=required_patients_medical_ids,
             manual_donor_recipient_scores_with_medical_ids=manual_donor_recipient_scores_with_medical_ids,
-            all_donors={x.medical_id: x for x in txm_event.all_donors},
-            all_recipients={x.medical_id: x for x in txm_event.all_recipients},
+            all_donors={donor.medical_id: donor for donor in txm_event.all_donors},
+            all_recipients={recipient.medical_id: recipient for recipient in txm_event.all_recipients},
             logo=logo,
             color=color
         ))
@@ -233,38 +233,8 @@ def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
     return f'{donor_recipient_score[0]} -> {donor_recipient_score[1]} : {donor_recipient_score[2]}'
 
 
-def get_hla_codes_of_group(codes_per_groups: List[CodesPerGroup], group: HLAGroup) -> List[str]:
-    return next(
-        codes_per_group.hla_codes for codes_per_group in codes_per_groups if
-        codes_per_group.hla_group == group)
-
-
-def hla_code_a_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
-    return get_hla_codes_of_group(codes_per_groups, HLAGroup.A)
-
-
-def hla_code_b_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
-    return get_hla_codes_of_group(codes_per_groups, HLAGroup.B)
-
-
-def hla_code_dr_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
-    return get_hla_codes_of_group(codes_per_groups, HLAGroup.DRB1)
-
-
-def hla_code_other_filter(codes_per_groups: List[CodesPerGroup]) -> List[str]:
-    return get_hla_codes_of_group(codes_per_groups, HLAGroup.Other)
-
-
-def compatibility_index_a_filter(_: any, donor: Patient, recipient: Patient) -> float:
-    return calculate_compatibility_index_for_group(donor, recipient, HLAGroup.A)
-
-
-def compatibility_index_b_filter(_: any, donor: Patient, recipient: Patient) -> float:
-    return calculate_compatibility_index_for_group(donor, recipient, HLAGroup.B)
-
-
-def compatibility_index_dr_filter(_: any, donor: Donor, recipient: Recipient) -> float:
-    return calculate_compatibility_index_for_group(donor, recipient, HLAGroup.DRB1)
+def compatibility_index_filter(group: HLAGroup, donor: Patient, recipient: Patient) -> float:
+    return calculate_compatibility_index_for_group(donor, recipient, group)
 
 
 def country_code_from_country_filter(countries: List[dict]) -> List[str]:
@@ -284,22 +254,9 @@ def hla_score_group_filter(scores_per_groups: List[dict], hla_group: str) -> dic
                        scores_per_groups))[0]
 
 
-def hla_code_score_group_filter(scores_per_groups: List[dict], hla_group: str, recipient: bool) -> List[str]:
-    score = hla_score_group_filter(scores_per_groups, hla_group)
-    matches = score['recipient_matches'] if recipient else score['donor_matches']
-    return [match['hla_code'] for match in matches]
-
-
 jinja2.filters.FILTERS['country_combination_filter'] = country_combination_filter
 jinja2.filters.FILTERS['donor_recipient_score_filter'] = donor_recipient_score_filter
-jinja2.filters.FILTERS['hla_code_a_filter'] = hla_code_a_filter
-jinja2.filters.FILTERS['hla_code_b_filter'] = hla_code_b_filter
-jinja2.filters.FILTERS['hla_code_dr_filter'] = hla_code_dr_filter
-jinja2.filters.FILTERS['hla_code_other_filter'] = hla_code_other_filter
-jinja2.filters.FILTERS['compatibility_index_a_filter'] = compatibility_index_a_filter
-jinja2.filters.FILTERS['compatibility_index_b_filter'] = compatibility_index_b_filter
-jinja2.filters.FILTERS['compatibility_index_dr_filter'] = compatibility_index_dr_filter
 jinja2.filters.FILTERS['country_code_from_country_filter'] = country_code_from_country_filter
 jinja2.filters.FILTERS['country_code_from_medical_id_filter'] = country_code_from_medical_id_filter
 jinja2.filters.FILTERS['patient_by_medical_id_filter'] = patient_by_medical_id_filter
-jinja2.filters.FILTERS['hla_code_score_group_filter'] = hla_code_score_group_filter
+jinja2.filters.FILTERS['compatibility_index_filter'] = compatibility_index_filter
