@@ -43,11 +43,11 @@ export class MatchingTransplantComponent {
     let w = patient.parameters.weight;
 
     if (h && w) {
-      return h + '/' + w;
+      return `${h}/${w}`;
     } else if (h) {
-      return h.toString();
+      return `${h}/-`;
     } else if (w) {
-      return w.toString();
+      return `-/${w}`;
     } else {
       return null;
     }
