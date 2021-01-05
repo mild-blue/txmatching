@@ -31,11 +31,8 @@ from txmatching.database.services.patient_service import get_txm_event
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.patients.patient import Patient
-from txmatching.scorers.matching import (
-    calculate_compatibility_index_for_group)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import HLAGroup
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -233,10 +230,6 @@ def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
     return f'{donor_recipient_score[0]} -> {donor_recipient_score[1]} : {donor_recipient_score[2]}'
 
 
-def compatibility_index_filter(group: HLAGroup, donor: Patient, recipient: Patient) -> float:
-    return calculate_compatibility_index_for_group(donor, recipient, group)
-
-
 def country_code_from_country_filter(countries: List[dict]) -> List[str]:
     return [country['country_code'].value for country in countries]
 
@@ -253,10 +246,10 @@ def hla_score_group_filter(scores_per_groups: List[dict], hla_group: str) -> dic
     return list(filter(lambda scores_per_group: scores_per_group['hla_group'].value.upper() == hla_group.upper(),
                        scores_per_groups))[0]
 
-
-jinja2.filters.FILTERS['country_combination_filter'] = country_combination_filter
-jinja2.filters.FILTERS['donor_recipient_score_filter'] = donor_recipient_score_filter
-jinja2.filters.FILTERS['country_code_from_country_filter'] = country_code_from_country_filter
-jinja2.filters.FILTERS['country_code_from_medical_id_filter'] = country_code_from_medical_id_filter
-jinja2.filters.FILTERS['patient_by_medical_id_filter'] = patient_by_medical_id_filter
-jinja2.filters.FILTERS['compatibility_index_filter'] = compatibility_index_filter
+jinja2.filters.FILTERS.update({
+    'country_combination_filter': country_combination_filter,
+    'donor_recipient_score_filter': donor_recipient_score_filter,
+    'country_code_from_country_filter': country_code_from_country_filter,
+    'country_code_from_medical_id_filter': country_code_from_medical_id_filter,
+    'patient_by_medical_id_filter': patient_by_medical_id_filter,
+})
