@@ -4,7 +4,7 @@ import { Configuration } from '@app/model/Configuration';
 import { DetailedScorePerGroup, HlaMatchType } from '@app/model/Hla';
 import { Recipient } from '@app/model/Recipient';
 import { Donor } from '@app/model/Donor';
-import { PatientSexType } from '@app/model/Patient';
+import { Patient } from '@app/model/Patient';
 
 @Component({
   selector: 'app-matching-transplant',
@@ -20,7 +20,6 @@ export class MatchingTransplantComponent {
   @Input() recipient?: Recipient;
   @Input() isBloodCompatible?: boolean;
   @Input() detailedScorePerGroup?: DetailedScorePerGroup[];
-  @Input() showPacientDetail?: boolean;
 
   constructor(private _patientService: PatientService) {
   }
@@ -39,18 +38,18 @@ export class MatchingTransplantComponent {
     return '';
   }
 
-  public getPacientAge(year_of_birth: number): number {
-    return new Date().getFullYear() - year_of_birth;
-  }
+  public getPatientHeightAndWeight(patient: Patient): string | null {
+    let h = patient.parameters.height;
+    let w = patient.parameters.weight;
 
-  public getSexName(sex: PatientSexType): string {
-    switch (sex) {
-      case PatientSexType.F:
-        return 'Female';
-      case PatientSexType.M:
-        return 'Male';
-      default:
-        return '';
+    if (h && w) {
+      return h + '/' + w;
+    } else if (h) {
+      return h.toString();
+    } else if (w) {
+      return w.toString();
+    } else {
+      return null;
     }
   }
 }

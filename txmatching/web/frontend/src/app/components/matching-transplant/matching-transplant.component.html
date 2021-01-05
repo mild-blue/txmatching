@@ -18,9 +18,9 @@
             <patient [patient]="donor"></patient>
           </div>
           <div class="patient-info">
-            <span title="sex">F</span>
-            <span title="age">35</span>
-            <span title="height/weight">180/75</span>
+            <span title="Sex" *ngIf="donor.parameters.sex">{{donor.parameters.sex}}</span>
+            <span title="Year of Birth" *ngIf="donor.parameters.year_of_birth">{{donor.parameters.year_of_birth}}</span>
+            <span title="Height/Weight" *ngIf="getPatientHeightAndWeight(donor)">{{getPatientHeightAndWeight(donor)}}</span>
           </div>
         </td>
         <td colspan="2">
@@ -29,9 +29,9 @@
             <patient [patient]="recipient"></patient>
           </div>
           <div class="patient-info">
-            <span title="sex">M</span>
-            <span title="age">42</span>
-            <span title="height/weight">180/92</span>
+            <span title="Sex" *ngIf="recipient.parameters.sex">{{recipient.parameters.sex}}</span>
+            <span title="Year of Birth" *ngIf="recipient.parameters.year_of_birth">{{recipient.parameters.year_of_birth}}</span>
+            <span title="Height/Weight" *ngIf="getPatientHeightAndWeight(recipient)">{{getPatientHeightAndWeight(recipient)}}</span>
           </div>
         </td>
         <td></td>
@@ -72,51 +72,6 @@
                     [class]="getHlaClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
         <td>{{ compatibilityIndex.group_compatibility_index }}</td>
-      </tr>
-      <!-- More info -->
-      <tr class="anti-header" *ngIf="showPacientDetail">
-        <td></td>
-        <td>Donor</td>
-        <td colspan="2">Recipient</td>
-        <td></td>
-      </tr>
-      <tr *ngIf="showPacientDetail">
-        <td>More info</td>
-        <td>
-          <small>
-            <div *ngIf="donor.parameters.sex">
-              Sex: <strong>{{getSexName(donor.parameters.sex)}}</strong>
-            </div>
-            <div *ngIf="donor.parameters.height">
-              Height: <strong>{{donor.parameters.height}} cm</strong>
-            </div>
-            <div *ngIf="donor.parameters.weight">
-              Weight: <strong>{{donor.parameters.weight}} kg</strong>
-            </div>
-            <div *ngIf="donor.parameters.year_of_birth">
-              Born: <strong>{{donor.parameters.year_of_birth}}</strong>
-              ({{getPacientAge(donor.parameters.year_of_birth)}} years old)
-            </div>
-          </small>
-        </td>
-        <td colspan="2">
-          <small>
-            <div *ngIf="recipient.parameters.sex">
-              Sex: <strong>{{getSexName(recipient.parameters.sex)}}</strong>
-            </div>
-            <div *ngIf="recipient.parameters.height">
-              Height: <strong>{{recipient.parameters.height}} cm</strong>
-            </div>
-            <div *ngIf="recipient.parameters.weight">
-              Weight: <strong>{{recipient.parameters.weight}} kg</strong>
-            </div>
-            <div *ngIf="recipient.parameters.year_of_birth">
-              Born: <strong>{{recipient.parameters.year_of_birth}}</strong>
-              ({{getPacientAge(recipient.parameters.year_of_birth)}} years old)
-            </div>
-          </small>
-        </td>
-        <td></td>
       </tr>
       </tbody>
     </table>
