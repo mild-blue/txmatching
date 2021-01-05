@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 })
 export class VersionService {
 
-  private _version: Version | null = null;
+  private _version?: Version;
 
   constructor(private _http: HttpClient,
               private _logger: LoggerService) {
@@ -33,7 +33,7 @@ export class VersionService {
     return this._version?.environment || '';
   }
 
-  public getVersion(): Version | null {
+  public getVersion(): Version | undefined {
     return this._version;
   }
 }

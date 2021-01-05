@@ -9,7 +9,7 @@ import { EnvironmentType, Version } from '@app/model/Version';
 })
 export class LogoComponent implements OnInit {
 
-  _version: Version | null;
+  private _version?: Version;
 
   constructor(
     private _versionService: VersionService
@@ -25,9 +25,9 @@ export class LogoComponent implements OnInit {
       return '';
     }
 
-    let e = this._version.environment;
-    let v = this._version.version;
-    let vShort = v.substr(0, 7);
+    const e = this._version.environment;
+    const v = this._version.version;
+    const vShort = v.substr(0, 7);
 
     switch (e) {
       case EnvironmentType.PRODUCTION:
