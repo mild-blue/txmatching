@@ -1,4 +1,6 @@
 <app-header [user]="user"
+            [uploadStatus]="uploadStatus"
+            (uploadAction)="uploadPatients()"
             [downloadStatus]="downloadStatus"></app-header>
 
 <section class="patients">
@@ -12,8 +14,8 @@
   </app-container>
 
   <app-content>
-    <h3 *ngIf="!loading && !patients">No patients were found.</h3>
-    <app-item-list *ngIf="!loading && patients && activeListFilter"
+    <h3 *ngIf="!loading && !pairs.length">No patients were found.</h3>
+    <app-item-list *ngIf="!loading && pairs.length && activeListFilter"
                    [listItemDetailComponent]="activeListFilter.detailComponent"
                    [listItemComponent]="activeListFilter.itemComponent"
                    [items]="getFilteredItems()"

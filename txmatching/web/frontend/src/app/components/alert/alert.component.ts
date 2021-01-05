@@ -68,7 +68,7 @@ export class AlertComponent implements OnInit, OnDestroy {
       [AlertType.Warning]: 'alert alert-warning'
     };
 
-    if (alert.type) {
+    if (alert.type !== undefined) {
       classes.push(alertTypeClass[alert.type]);
     }
 
@@ -110,5 +110,14 @@ export class AlertComponent implements OnInit, OnDestroy {
 
     // save timeout for this alert
     this._timeouts.set(alert.uuid, timeout);
+  }
+
+  public handleAlertActionClick(alert: Alert): void {
+    if (!alert.action) {
+      return;
+    }
+
+    alert.action();
+    this.removeAlert(alert);
   }
 }
