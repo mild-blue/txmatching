@@ -1,4 +1,11 @@
 export interface Version {
-  environment: string;
+  environment: EnvironmentType;
   version: string;
+}
+
+export enum EnvironmentType {
+  PRODUCTION = 'PRODUCTION',
+  STAGING = 'STAGING',
+  DEVELOPMENT = 'DEVELOPMENT',
+  UNKNOWN = 'UNKNOWN'
 }
