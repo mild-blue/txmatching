@@ -1,11 +1,14 @@
 import logging
 import math
 import re
+from dataclasses import dataclass
+from enum import Enum
 from typing import Dict, List, Optional, Union
 
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 
+from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
     DonorUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dto.hla_antibodies_upload_dto import \
@@ -22,6 +25,43 @@ from txmatching.utils.excel_parsing.countries_for_excel import \
 
 DEFAULT_CUTOFF_FOR_EXCEL = 2000
 DEFAULT_MFI = 4 * DEFAULT_CUTOFF_FOR_EXCEL
+
+EXPLANATION_FILE_STILL_SAVED = 'If you believe the file is in correct format or you are unable to fix the issue ' \
+                               'contact us on the contact email and we will figure out what to do. ' \
+                               'The raw file was securely saved to our database'
+
+
+class ExcelSource(str, Enum):
+    IKEM = 'IKEM'
+
+
+# pylint: disable=too-many-instance-attributes
+@dataclass
+class ExcelColumnsMap:
+    donor_id: str
+    donor_blood_group: str
+    donor_typing: str
+    recipient_blood_group: str
+    recipient_acceptable_bloods: str
+    recipient_typization: str
+    recipient_id: str
+    recipient_antibodies: str
+
+
+# pylint: enable=too-many-instance-attributes
+
+EXCEL_COLUMNS_MAPS = {
+    ExcelSource.IKEM: ExcelColumnsMap(
+        'DONOR',
+        'BLOOD GROUP donor',
+        'TYPIZATION DONOR',
+        'BLOOD GROUP recipient',
+        'Acceptable blood group',
+        'TYPIZATION RECIPIENT',
+        'RECIPIENT',
+        'luminex  cut-off (2000 MFI) varianta 2',
+    )
+}
 
 logger = logging.getLogger(__name__)
 
@@ -69,11 +109,12 @@ def _parse_hla_antibodies(hla_allele_str: str) -> List[HLAAntibodiesUploadDTO]:
     ) for hla_code in hla_codes]
 
 
-def _get_donor_upload_dto_from_row(row: Dict,
-                                   related_recipient: Optional[RecipientUploadDTO]) -> DonorUploadDTO:
-    donor_id = row['DONOR']
-    blood_group = _parse_blood_group(row['BLOOD GROUP donor'])
-    hla_typing = _parse_hla(row['TYPIZATION DONOR'])
+def _get_donor_upload_dto_from_row(row: Dict[str, str],
+                                   related_recipient: Optional[RecipientUploadDTO],
+                                   column_map: ExcelColumnsMap) -> DonorUploadDTO:
+    donor_id = row[column_map.donor_id]
+    blood_group = _parse_blood_group(row[column_map.donor_blood_group])
+    hla_typing = _parse_hla(row[column_map.donor_typing])
 
     if related_recipient:
         donor_type = DonorType.DONOR
@@ -88,16 +129,18 @@ def _get_donor_upload_dto_from_row(row: Dict,
                           )
 
 
-def _get_recipient_upload_dto_from_row(row: Dict) -> Optional[RecipientUploadDTO]:
-    recipient_id = row['RECIPIENT']
+def _get_recipient_upload_dto_from_row(row: Dict[str, str],
+                                       column_map: ExcelColumnsMap) -> Optional[RecipientUploadDTO]:
+    recipient_id = row[column_map.recipient_id]
     if pd.isna(recipient_id):
         return None
     else:
-        blood_group = _parse_blood_group(row['BLOOD GROUP recipient'])
-        hla_typing = _parse_hla(row['TYPIZATION RECIPIENT'])
-        antibodies_recipient = _parse_hla_antibodies(row['luminex  cut-off (2000 MFI) varianta 2'])
-        acceptable_blood_groups_recipient = _parse_acceptable_blood_groups(row['Acceptable blood group'],
-                                                                           blood_group=blood_group)
+        blood_group = _parse_blood_group(row[column_map.recipient_blood_group])
+        hla_typing = _parse_hla(row[column_map.recipient_typization])
+        antibodies_recipient = _parse_hla_antibodies(row[column_map.recipient_antibodies])
+        acceptable_blood_groups_recipient = _parse_acceptable_blood_groups(
+            row[column_map.recipient_acceptable_bloods],
+            blood_group=blood_group)
 
         return RecipientUploadDTO(medical_id=recipient_id,
                                   hla_antibodies=antibodies_recipient,
@@ -110,29 +153,42 @@ def _get_recipient_upload_dto_from_row(row: Dict) -> Optional[RecipientUploadDTO
 def parse_excel_data(file_io: Union[str, FileStorage],
                      txm_event_name: str,
                      country: Optional[Country],
-                     add_to_existing_patients: bool = True) -> List[PatientUploadDTOIn]:
+                     add_to_existing_patients: bool = True,
+                     excel_source: ExcelSource = ExcelSource.IKEM) -> List[PatientUploadDTOIn]:
     logger.info('Parsing patient data from file')
-    data = pd.read_excel(file_io, skiprows=1)
+    try:
+        data = pd.read_excel(file_io, skiprows=1)
+    except Exception as error:
+        raise InvalidArgumentException(
+            f'Error during load of excel file:{error}. {EXPLANATION_FILE_STILL_SAVED}') from error
+    column_map = EXCEL_COLUMNS_MAPS[excel_source]
+    missing_columns = set(column_map.__dict__.values()).difference(set(data.columns))
+    if len(missing_columns) > 0:
+        raise InvalidArgumentException(f'Missing columns: {missing_columns}. {EXPLANATION_FILE_STILL_SAVED}')
     parsed_data = dict()
 
-    for _, row in data.iterrows():
-        recipient = _get_recipient_upload_dto_from_row(row)
-        donor = _get_donor_upload_dto_from_row(row, recipient)
-        if country:
-            row_country = country
-        else:
-            row_country = country_code_from_id(donor.medical_id)
-        if row_country in parsed_data:
-            parsed_data[row_country].donors += [donor]
-            if recipient:
-                parsed_data[row_country].recipients += [recipient]
-        else:
-            parsed_data[row_country] = PatientUploadDTOIn(
-                txm_event_name=txm_event_name,
-                country=row_country,
-                donors=[donor],
-                recipients=[recipient] if recipient else [],
-                add_to_existing_patients=add_to_existing_patients
-            )
+    try:
+        for _, row in data.iterrows():
+            recipient = _get_recipient_upload_dto_from_row(row, column_map)
+            donor = _get_donor_upload_dto_from_row(row, recipient, column_map)
+            if country:
+                row_country = country
+            else:
+                row_country = country_code_from_id(donor.medical_id)
+            if row_country in parsed_data:
+                parsed_data[row_country].donors += [donor]
+                if recipient:
+                    parsed_data[row_country].recipients += [recipient]
+            else:
+                parsed_data[row_country] = PatientUploadDTOIn(
+                    txm_event_name=txm_event_name,
+                    country=row_country,
+                    donors=[donor],
+                    recipients=[recipient] if recipient else [],
+                    add_to_existing_patients=add_to_existing_patients
+                )
+    except Exception as error:
+        raise InvalidArgumentException(f'Error during patient extraction from excel: {error} '
+                                       f'{EXPLANATION_FILE_STILL_SAVED}') from error
 
     return list(parsed_data.values())
