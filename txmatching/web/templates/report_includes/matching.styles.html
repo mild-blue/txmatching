@@ -234,7 +234,7 @@
     }
 
     table.matching-summary-table tr {
-        border-top: 1px solid #dddddd;
+        border-top: 1px solid #949494;
     }
 
     table.matching-summary-table tr:first-child {
@@ -253,9 +253,12 @@
     .patient-pair {
         border-radius: 3px;
         padding: 2px;
-        margin: 5px;
+        margin: 3px 2px;
         background: #e9ecef;
+        display: inline-block;
+    }
 
+    .patient-pair-content {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -264,10 +267,9 @@
         display: -webkit-box;
         -webkit-box-pack: center;
         -webkit-box-align: center;
-
     }
 
-    .patient-pair .icon-right {
+    .patient-pair-content .icon-right {
         margin: 0 7px;
         font-weight: 800;
     }
