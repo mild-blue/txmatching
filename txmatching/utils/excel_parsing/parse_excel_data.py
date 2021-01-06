@@ -109,7 +109,7 @@ def _parse_hla_antibodies(hla_allele_str: str) -> List[HLAAntibodiesUploadDTO]:
     ) for hla_code in hla_codes]
 
 
-def _get_donor_upload_dto_from_row(row: Dict,
+def _get_donor_upload_dto_from_row(row: Dict[str, str],
                                    related_recipient: Optional[RecipientUploadDTO],
                                    column_map: ExcelColumnsMap) -> DonorUploadDTO:
     donor_id = row[column_map.donor_id]
@@ -129,7 +129,7 @@ def _get_donor_upload_dto_from_row(row: Dict,
                           )
 
 
-def _get_recipient_upload_dto_from_row(row: Dict, column_map: ExcelColumnsMap) -> Optional[RecipientUploadDTO]:
+def _get_recipient_upload_dto_from_row(row: Dict[str, str], column_map: ExcelColumnsMap) -> Optional[RecipientUploadDTO]:
     recipient_id = row[column_map.recipient_id]
     if pd.isna(recipient_id):
         return None
