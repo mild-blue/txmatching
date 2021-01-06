@@ -18,7 +18,7 @@ from txmatching.database.services.config_service import \
 from txmatching.database.services.parsing_utils import (
     check_existing_ids_for_duplicates, get_hla_code, parse_date_to_datetime)
 from txmatching.database.services.txm_event_service import (
-    get_txm_event, get_txm_event_db_id_from_name,
+    get_txm_event, get_txm_event_db_id_by_name,
     remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 
 def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn):
-    txm_event_db_id = get_txm_event_db_id_from_name(patient_upload_dto.txm_event_name)
+    txm_event_db_id = get_txm_event_db_id_by_name(patient_upload_dto.txm_event_name)
     if not patient_upload_dto.add_to_existing_patients:
         remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id,
                                                                 patient_upload_dto.country)

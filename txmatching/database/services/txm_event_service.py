@@ -31,7 +31,7 @@ def create_txm_event(name: str) -> TxmEvent:
 
 
 def delete_txm_event(name: str):
-    txm_event_db_id = get_txm_event_db_id_from_name(name)
+    txm_event_db_id = get_txm_event_db_id_by_name(name)
     TxmEventModel.query.filter(TxmEventModel.id == txm_event_db_id).delete()
     db.session.commit()
 
@@ -60,10 +60,10 @@ def _remove_last_uploaded_data(txm_event_id: int, current_user_id: int):
 
 
 def save_original_data(txm_event_name: str, current_user_id: int, data: dict):
-    txm_event_model_id = get_txm_event_db_id_from_name(txm_event_name)
-    _remove_last_uploaded_data(txm_event_model_id, current_user_id)
+    txm_event_db_id = get_txm_event_db_id_by_name(txm_event_name)
+    _remove_last_uploaded_data(txm_event_db_id, current_user_id)
     uploaded_data_model = UploadedDataModel(
-        txm_event_id=txm_event_model_id,
+        txm_event_id=txm_event_db_id,
         user_id=current_user_id,
         uploaded_data=data
     )
@@ -72,7 +72,7 @@ def save_original_data(txm_event_name: str, current_user_id: int, data: dict):
     db.session.commit()
 
 
-def get_txm_event_db_id_from_name(txm_event_name: str):
+def get_txm_event_db_id_by_name(txm_event_name: str) -> int:
     try:
         txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == txm_event_name).one()
         return txm_event_model.id
