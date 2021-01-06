@@ -53,9 +53,7 @@
                           <img src="assets/countries/{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
                         </div>
                         {{ transplant.donor }}
-
                       </div>
-
                     </div>
                     <div class="patient-info">
                       {% if (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.sex is not none %}
@@ -77,6 +75,17 @@
                         </div>
                         {{ transplant.recipient }}
                       </div>
+                    </div>
+                    <div class="patient-info">
+                      {% if (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.sex is not none %}
+                        <span>{{ (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.sex.value }}</span>
+                      {% endif %}
+                      {% if (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.year_of_birth is not none %}
+                        <span>{{ (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.year_of_birth }}</span>
+                      {% endif %}
+                      {% if transplant.recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_width is not none %}
+                        <span>{{ transplant.recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_width }}</span>
+                      {% endif %}
                     </div>
                   </td>
                   <td>Score</td>
@@ -128,7 +137,7 @@
                     </td>
                     <td>
                       {% if detailed_score_per_group.hla_group.value != 'Other' %}
-                        {{ detailed_score_per_group.compatibility_index }}
+                        {{ detailed_score_per_group.group_compatibility_index }}
                       {% else %}
                         -
                       {% endif %}
