@@ -5,7 +5,7 @@ import logging
 import os
 import time
 from distutils.dir_util import copy_tree
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import jinja2
 import pdfkit
@@ -238,13 +238,29 @@ def patient_by_medical_id_filter(medical_id: str, patients: Dict[str, Patient]) 
     return patients[medical_id]
 
 
+def patient_height_and_width(patient: Patient) -> Optional[str]:
+    h = patient.parameters.height
+    w = patient.parameters.weight
+
+    if h is not None and w is not None:
+        return f'{h}/{w:.0f}'
+    elif h is not None:
+        return f'{h}/-'
+    elif w is not None:
+        return f'-/{w:.0f}'
+    else:
+        return None
+
+
 def hla_score_group_filter(scores_per_groups: List[dict], hla_group: str) -> dict:
     return list(filter(lambda scores_per_group: scores_per_group['hla_group'].value.upper() == hla_group.upper(),
                        scores_per_groups))[0]
+
 
 jinja2.filters.FILTERS.update({
     'country_combination_filter': country_combination_filter,
     'donor_recipient_score_filter': donor_recipient_score_filter,
     'country_code_from_country_filter': country_code_from_country_filter,
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
+    'patient_height_and_width': patient_height_and_width,
 })

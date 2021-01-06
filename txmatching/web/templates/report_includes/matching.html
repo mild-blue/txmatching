@@ -48,7 +48,20 @@
                           <img src="assets/countries/{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
                         </div>
                         {{ transplant.donor }}
+
                       </div>
+
+                    </div>
+                    <div class="patient-info">
+                      {% if (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.sex is not none %}
+                        <span>{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.sex.value }}</span>
+                      {% endif %}
+                      {% if (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.year_of_birth is not none %}
+                        <span>{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.year_of_birth }}</span>
+                      {% endif %}
+                      {% if transplant.donor|patient_by_medical_id_filter(all_donors)|patient_height_and_width is not none %}
+                        <span>{{ transplant.donor|patient_by_medical_id_filter(all_donors)|patient_height_and_width }}</span>
+                      {% endif %}
                     </div>
                   </td>
                   <td colspan="2">
