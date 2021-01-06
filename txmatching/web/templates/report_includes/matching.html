@@ -8,10 +8,10 @@
   <div class="box">
     <div class="matching-header">
       <h2>
-        Matching #{{ matching.order_id }}
         {% if loop.index == 1 %}
-          - <span class="color-primary">selected matching</span>
+          <span class="color-primary">Selected:</span>
         {% endif %}
+        Matching #{{ matching.order_id }}
       </h2>
 
       <!-- Matching info -->

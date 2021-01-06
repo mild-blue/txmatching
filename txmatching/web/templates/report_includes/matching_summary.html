@@ -11,10 +11,10 @@
 
       <!-- Matching title -->
       <h2 class="mb-0">
-        Matching #{{ matching.order_id }}
         {% if loop.index == 1 %}
-          - <span class="color-primary">selected matching</span>
+          <span class="color-primary">Selected:</span>
         {% endif %}
+        Matching #{{ matching.order_id }}
       </h2>
 
       <!-- Matching info -->
@@ -64,3 +64,5 @@
     </div>
   {% endfor %}
 </div>
+
+<div class="page-break"></div>
