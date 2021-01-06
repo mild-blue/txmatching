@@ -129,7 +129,8 @@ def _get_donor_upload_dto_from_row(row: Dict[str, str],
                           )
 
 
-def _get_recipient_upload_dto_from_row(row: Dict[str, str], column_map: ExcelColumnsMap) -> Optional[RecipientUploadDTO]:
+def _get_recipient_upload_dto_from_row(row: Dict[str, str],
+                                       column_map: ExcelColumnsMap) -> Optional[RecipientUploadDTO]:
     recipient_id = row[column_map.recipient_id]
     if pd.isna(recipient_id):
         return None
