@@ -1,7 +1,14 @@
 name: Check Pipeline
 
 on:
+  # manual dispatch
+  workflow_dispatch:
+  # run on PRs to master when - is opened,
+  # new commit is pushed or is set as ready for review
   pull_request:
+    types: [opened, synchronize, ready_for_review]
+    branches:
+      - master
 
 jobs:
   run_tests:
@@ -12,6 +19,8 @@ jobs:
       # the image must be rebuild and published again
       image: mildblue/txmatching-conda-dependencies:1.0.1
     timeout-minutes: 10
+    # disable run if the PR is draft (as our CLI creates PR as draft once the issue is in progress)
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
 

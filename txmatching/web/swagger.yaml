@@ -1165,7 +1165,7 @@ paths:
                 required: true
                 type: integer
             -   description: Number of matchings with lower score than chosen to include
-                    in report
+                    in report.
                 in: query
                 name: matchingsBelowChosen
                 required: true
@@ -1183,7 +1183,7 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '404':
-                    description: Matching for provided id was not found
+                    description: Matching for provided id was not found.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
