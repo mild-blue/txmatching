@@ -1,0 +1,39 @@
+<style>
+    /* Configuration */
+    .configuration {
+        display: flex;
+        justify-content: space-between;
+        -webkit-box-align: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .configuration ul li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .configuration ul li:not(:last-child) {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .configuration .label {
+        margin-right: 40px;
+        /* wkhtmltopdf otherwise sometimes wraps in a wrong place */
+        white-space: nowrap;
+    }
+
+    .configuration .value {
+        /* wkhtmltopdf otherwise sometimes wraps in a wrong place */
+        white-space: nowrap;
+    }
+</style>
