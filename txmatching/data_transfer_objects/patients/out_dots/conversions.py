@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
     DonorDTOOut
@@ -16,10 +16,14 @@ from txmatching.utils.hla_system.hla_crossmatch import (
 
 def to_lists_for_fe(txm_event: TxmEvent) -> Dict:
     return {
-        'donors': [donor_to_donor_dto_out(donor, txm_event.all_recipients, txm_event.db_id) for donor in
-                   txm_event.all_donors],
-        'recipients': txm_event.all_recipients
+        'donors': sorted([donor_to_donor_dto_out(donor, txm_event.all_recipients, txm_event.db_id) for donor in
+                          txm_event.all_donors], key=_patient_order_for_fe),
+        'recipients': sorted(txm_event.all_recipients, key=_patient_order_for_fe)
     }
+
+
+def _patient_order_for_fe(patient: Union[DonorDTOOut, Recipient]) -> str:
+    return f'{patient.parameters.country_code.value}_{patient.medical_id}'
 
 
 def donor_to_donor_dto_out(donor: Donor,

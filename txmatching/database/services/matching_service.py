@@ -1,13 +1,18 @@
 import dataclasses
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Union
+
 from dacite import from_dict
+
 from txmatching.data_transfer_objects.matchings.calculated_matchings_dto import \
     CalculatedMatchingsDTO
-from txmatching.data_transfer_objects.matchings.matching_dto import MatchingDTO, RoundDTO, TransplantDTOOut
+from txmatching.data_transfer_objects.matchings.matching_dto import (
+    MatchingDTO, RoundDTO, TransplantDTOOut)
+from txmatching.data_transfer_objects.patients.out_dots.conversions import \
+    get_detailed_score
 from txmatching.database.services.config_service import (
     get_config_model_for_txm_event, get_configuration_for_txm_event)
-from txmatching.database.services.txm_event_service import get_txm_event, get_detailed_score
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.matching import get_count_of_transplants
