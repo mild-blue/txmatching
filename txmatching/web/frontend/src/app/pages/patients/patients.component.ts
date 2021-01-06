@@ -63,15 +63,15 @@ export class PatientsComponent implements OnInit {
 
     const items: (Donor | PatientPair)[] = [];
     for (const donor of this.patients.donors) {
+
+      // try to find recipient
+      let recipient;
       if (donor.donor_type === DonorType.DONOR) {
-        // if donor with recipient
+        recipient = this.patients.recipients.find(r => r.db_id === donor.related_recipient_db_id);
+      }
 
-        // find recipient
-        const recipient = this.patients.recipients.find(r => r.db_id === donor.related_recipient_db_id);
-        if (!recipient) {
-          continue;
-        }
-
+      if (recipient) {
+        // donor with valid recipient
         items.push({
           index: items.length + 1,
           d: donor,

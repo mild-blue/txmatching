@@ -21,8 +21,10 @@ export class PatientDonorItemComponent implements OnInit {
       return 'bridging donor';
     } else if (type === DonorType.NON_DIRECTED) {
       return 'non-directed donor';
+    } else if (type === DonorType.DONOR) {
+      return 'donor';
     }
 
-    return '';
+    return type;
   }
 }
