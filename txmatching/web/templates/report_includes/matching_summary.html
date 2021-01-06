@@ -1,0 +1,66 @@
+{% from 'report_includes/macros.html' import antigen_class, antibody_class %}
+
+<div class="box">
+  <h1 class="mb-0">Matchings summaries</h1>
+</div>
+
+<div class="box">
+
+  {% for matching in matchings %}
+    <div class="matching-summary">
+
+      <!-- Matching title -->
+      <h2 class="mb-0">
+        Matching #{{ matching.order_id }}
+        {% if loop.index == 1 %}
+          - <span class="color-primary">selected matching</span>
+        {% endif %}
+      </h2>
+
+      <!-- Matching info -->
+      <ul class="matching-info">
+        <li>Score: <strong class="color-primary">{{ matching.score }}</strong></li>
+        <li>Rounds: <strong>{{ matching.rounds|length }}</strong></li>
+        <li>Transplants: <strong>{{ matching.count_of_transplants }}</strong></li>
+        <li>Countries: <strong>{{ matching.countries|country_code_from_country_filter|join(', ') }}</strong></li>
+      </ul>
+
+      <!-- Table with matching rounds -->
+      <table class="matching-summary-table">
+        {% for round in matching.rounds %}
+          <tr>
+
+            <td>
+              <div class="matching-summary-round-title">{{ loop.index }}</div>
+            </td>
+
+            <td>
+              <!-- Transplants tiles-->
+              <div>
+                {% for transplant in round.transplants %}
+                  <!-- Patient pair -->
+                  <div class="patient-pair">
+                    <div class="patient">
+                      <div class="flag">
+                        <img src="assets/countries/{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
+                      </div>
+                      {{ transplant.donor }}
+                    </div>
+                    <div class="icon-right"> ></div>
+                    <div class="patient">
+                      <div class="flag">
+                        <img src="assets/countries/{{ (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value }}.png"/>
+                      </div>
+                      {{ transplant.recipient }}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </td>
+
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% endfor %}
+</div>

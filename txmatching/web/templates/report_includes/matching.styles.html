@@ -7,7 +7,6 @@
     .matching-info {
         width: 100%;
         display: flex;
-        margin-bottom: 10px;
 
         /* wkhtmltopdf */
         display: -webkit-box;
@@ -104,27 +103,27 @@
         font-weight: bold;
     }
 
-    table {
+    .transplant-content table {
         width: 100%;
         border-collapse: collapse;
         font-size: 13px;
     }
 
-    tr {
+    .transplant-content tr {
         border-top: 1px solid #dddddd;
     }
 
-    tr:first-child {
+    .transplant-content tr:first-child {
         font-weight: 700;
     }
 
-    tr.anti-header td {
+    .transplant-content tr.anti-header td {
         background: #eff3f7;
         font-size: 12px;
         padding: 2px;
     }
 
-    td {
+    .transplant-content td {
         text-align: center;
         padding: 7px 10px;
         border: 1px solid #dddddd;
@@ -133,17 +132,17 @@
         width: auto;
     }
 
-    td:not([colspan]) {
+    .transplant-content td:not([colspan]) {
         width: 21.6666%;
     }
 
-    td:first-child {
+    .transplant-content td:first-child {
         width: 20%;
         text-align: left;
         font-weight: 700;
     }
 
-    td:last-child {
+    .transplant-content td:last-child {
         width: 15%;
         font-weight: 700;
     }
@@ -220,4 +219,53 @@
         height: 16px;
         width: 16px;
     }
+
+    /* Matching summary */
+    .matching-summary, .matching-summary > * {
+        page-break-inside: avoid !important;
+    }
+
+    table.matching-summary-table {
+        border-collapse: collapse;
+    }
+
+    table.matching-summary-table tr {
+        border-top: 1px solid #dddddd;
+    }
+
+    table.matching-summary-table tr:first-child {
+        border-top: none;
+    }
+
+    table.matching-summary-table td {
+        vertical-align: top;
+    }
+
+    .matching-summary-round-title {
+        font-weight: 700;
+        margin: 4px;
+    }
+
+    .patient-pair {
+        border-radius: 3px;
+        padding: 2px;
+        margin: 5px;
+        background: #e9ecef;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+
+    }
+
+    .patient-pair .icon-right {
+        margin: 0 7px;
+        font-weight: 800;
+    }
+
 </style>
