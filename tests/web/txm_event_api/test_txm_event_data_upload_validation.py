@@ -68,14 +68,14 @@ class TestMatchingApi(DbTests):
         res, _ = self._txm_event_upload(donors_json=SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_EXISTING_RECIPIENT_ID,
                                         recipients_json=RECIPIENTS)
         self._check_response(res, 400,
-                             error_message='When recipient is set, donor type must be "DONOR".')
+                             error_message='When recipient is set, donor type must be "DONOR" but was NON_DIRECTED.')
 
         # Case 2 - None recipient, BRIDGING_DONOR or NON_DIRECTED type expected (related_recipient_medical_id not set)
         res, _ = self._txm_event_upload(donors_json=SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_MISSING_RECIPIENT_ID,
                                         recipients_json=RECIPIENTS)
         self._check_response(res, 400,
                              error_message='When recipient is not set, donor type must be "BRIDGING_DONOR" or'
-                                           ' "NON_DIRECTED".')
+                                           ' "NON_DIRECTED" but was "DONOR".')
 
     def test_txm_event_patient_failed_upload_invalid_related_medical_id_in_donor(self):
         res, _ = self._txm_event_upload(donors_json=SPECIAL_DONORS_INVALID_RECIPIENT_MEDICAL_ID,

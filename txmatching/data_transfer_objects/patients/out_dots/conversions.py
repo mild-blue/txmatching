@@ -14,7 +14,7 @@ from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
 
 
-def to_lists_for_fe(txm_event: TxmEvent) -> Dict:
+def to_lists_for_fe(txm_event: TxmEvent) -> Dict[str, Union[List[DonorDTOOut], List[Recipient]]]:
     return {
         'donors': sorted([donor_to_donor_dto_out(donor, txm_event.all_recipients, txm_event.db_id) for donor in
                           txm_event.all_donors], key=_patient_order_for_fe),

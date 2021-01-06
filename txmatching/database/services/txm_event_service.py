@@ -36,11 +36,12 @@ def delete_txm_event(name: str):
     db.session.commit()
 
 
-def remove_donors_and_recipients_from_txm_event_for_country(txm_event_name: str, country_code: Country):
-    txm_event_model_db_id = get_txm_event_db_id_from_name(txm_event_name)
-    DonorModel.query.filter(DonorModel.txm_event_id == txm_event_model_db_id,
-                            DonorModel.country == country_code).delete()
-    RecipientModel.query.filter(and_(RecipientModel.txm_event_id == txm_event_model_db_id,
+def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int, country_code: Country):
+    DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
+                                 DonorModel.country == country_code)).delete()
+    # Very likely is not needed as all recipients should be cascade deleted in the previous step.
+    # but to be sure everything gets delted, this stays here.
+    RecipientModel.query.filter(and_(RecipientModel.txm_event_id == txm_event_db_id,
                                      RecipientModel.country == country_code)).delete()
 
 
@@ -80,11 +81,13 @@ def get_txm_event_db_id_from_name(txm_event_name: str):
 
 
 def get_txm_event(txm_event_db_id: int) -> TxmEvent:
-    txm_event_model = TxmEventModel.query.get(txm_event_db_id)
+    maybe_txm_event_model = TxmEventModel.query.get(txm_event_db_id)
+    if maybe_txm_event_model is None:
+        raise InvalidArgumentException(f'No TXM event with id {txm_event_db_id} found.')
 
-    all_donors = [get_donor_from_donor_model(donor_model) for donor_model in txm_event_model.donors]
+    all_donors = [get_donor_from_donor_model(donor_model) for donor_model in maybe_txm_event_model.donors]
     all_recipients = [get_recipient_from_recipient_model(recipient_model, recipient_model.donor.id)
-                      for recipient_model in txm_event_model.recipients]
+                      for recipient_model in maybe_txm_event_model.recipients]
 
-    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, all_donors=all_donors,
+    return TxmEvent(db_id=maybe_txm_event_model.id, name=maybe_txm_event_model.name, all_donors=all_donors,
                     all_recipients=all_recipients)

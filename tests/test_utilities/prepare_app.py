@@ -17,7 +17,7 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.services import solver_service
 from txmatching.database.services.patient_upload_service import \
-    save_patients_from_excel_to_txm_event
+    replace_or_add_patients_from_excel
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
@@ -83,7 +83,7 @@ class DbTests(unittest.TestCase):
     def fill_db_with_patients(file=get_absolute_path('/tests/resources/data.xlsx'), txm_event='test') -> int:
         patients = parse_excel_data(file, txm_event, None)
         txm_event = create_or_overwrite_txm_event(name=txm_event)
-        save_patients_from_excel_to_txm_event(patients)
+        replace_or_add_patients_from_excel(patients)
         return txm_event.db_id
 
     def _set_bearer_token(self):

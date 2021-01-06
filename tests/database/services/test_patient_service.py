@@ -10,7 +10,7 @@ from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto i
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.patient_upload_service import \
-    update_txm_event_patients
+    replace_or_add_patients_from_one_country
 from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
@@ -161,7 +161,7 @@ class TestPatientService(DbTests):
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()
         self.assertEqual(1, len(configs))
 
-        update_txm_event_patients(PATIENT_UPLOAD_DTO)
+        replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
 
         # Validate that all configs of particular TXM event are deleted.
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()

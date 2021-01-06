@@ -29,7 +29,7 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
 from txmatching.database.services.patient_service import (update_donor,
                                                           update_recipient)
 from txmatching.database.services.patient_upload_service import \
-    save_patients_from_excel_to_txm_event
+    replace_or_add_patients_from_excel
 from txmatching.database.services.txm_event_service import (
     get_txm_event, get_txm_event_id_for_current_user)
 from txmatching.database.services.upload_service import save_uploaded_file
@@ -141,7 +141,7 @@ class AddPatientsFile(Resource):
         for parsed_country_data in parsed_data:
             guard_user_has_access_to_country(user_id=user_id, country=parsed_country_data.country)
 
-        save_patients_from_excel_to_txm_event(parsed_data)
+        replace_or_add_patients_from_excel(parsed_data)
         return jsonify(PatientUploadDTOOut(
             recipients_uploaded=sum(len(parsed_data_country.recipients) for parsed_data_country in parsed_data),
             donors_uploaded=sum(len(parsed_data_country.donors) for parsed_data_country in parsed_data))

@@ -7,13 +7,15 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.services.patient_upload_service import \
-    save_patients_from_excel_to_txm_event
-from txmatching.database.services.txm_event_service import get_txm_event
+    replace_or_add_patients_from_excel
+from txmatching.database.services.txm_event_service import (
+    get_txm_event, remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
     AppUserModel, ConfigModel, DonorModel, PairingResultModel,
     RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
+from txmatching.utils.enums import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.logged_user import get_current_user_id
@@ -40,7 +42,7 @@ class TestUpdateDonorRecipient(DbTests):
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()
         self.assertEqual(1, len(configs))
 
-        save_patients_from_excel_to_txm_event(patients)
+        replace_or_add_patients_from_excel(patients)
 
         configs = ConfigModel.query.all()
         recipients = RecipientModel.query.all()
@@ -147,3 +149,13 @@ class TestUpdateDonorRecipient(DbTests):
             get_absolute_path('tests/resources/patient_data_issues.xlsx'),
             txm_event.name,
             None))
+
+    def test_remove_patients(self):
+        txm_event_db_id = self.fill_db_with_patients(file=get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id, Country.IND)
+        txm_event = get_txm_event(txm_event_db_id)
+        country_donors = [donor for donor in txm_event.active_donors_dict.values() if
+                          donor.parameters.country_code == Country.IND]
+        self.assertEqual(0, len(country_donors))
+        self.assertEqual(26, len(txm_event.active_donors_dict))
+        self.assertEqual(25, len(txm_event.active_recipients_dict))

@@ -32,18 +32,14 @@ from txmatching.utils.hla_system.hla_transformations_store import \
 logger = logging.getLogger(__name__)
 
 
-def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn):
-    """
-    Updates TXM event patients, i.e., removes current event donors and recipients and add new entities.
-    :param patient_upload_dto:
-    :return:
-    """
-    if not patient_upload_dto.add_to_existing_patients:
-        remove_donors_and_recipients_from_txm_event_for_country(patient_upload_dto.txm_event_name,
-                                                                patient_upload_dto.country)
+def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn):
     txm_event_db_id = get_txm_event_db_id_from_name(patient_upload_dto.txm_event_name)
+    if not patient_upload_dto.add_to_existing_patients:
+        remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id,
+                                                                patient_upload_dto.country)
+
     remove_configs_from_txm_event(txm_event_db_id)
-    _save_patients_to_existing_txm_event(
+    _add_patients_from_one_country(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,
         country_code=patient_upload_dto.country,
@@ -52,9 +48,9 @@ def update_txm_event_patients(patient_upload_dto: PatientUploadDTOIn):
     db.session.commit()
 
 
-def save_patients_from_excel_to_txm_event(patient_upload_dtos: List[PatientUploadDTOIn]):
+def replace_or_add_patients_from_excel(patient_upload_dtos: List[PatientUploadDTOIn]):
     for patient_upload_dto in patient_upload_dtos:
-        update_txm_event_patients(patient_upload_dto)
+        replace_or_add_patients_from_one_country(patient_upload_dto)
 
 
 def _recipient_upload_dto_to_recipient_model(
@@ -112,7 +108,8 @@ def _donor_upload_dto_to_donor_model(
 
     if donor.donor_type == DonorType.DONOR and not donor.related_recipient_medical_id:
         raise InvalidArgumentException(
-            f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" or "{DonorType.NON_DIRECTED}".'
+            f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" or "{DonorType.NON_DIRECTED}" '
+            f'but was "{donor.donor_type}".'
         )
     if (donor.donor_type == DonorType.DONOR and
             donor.related_recipient_medical_id and
@@ -123,7 +120,8 @@ def _donor_upload_dto_to_donor_model(
         )
 
     if donor.donor_type != DonorType.DONOR and donor.related_recipient_medical_id is not None:
-        raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}".')
+        raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}" but was '
+                                       f'{donor.donor_type}.')
 
     maybe_related_recipient_medical_id = maybe_related_recipient.medical_id if maybe_related_recipient else None
 
@@ -154,16 +152,14 @@ def _donor_upload_dto_to_donor_model(
     return donor_model
 
 
-def _save_patients_to_existing_txm_event(
+def _add_patients_from_one_country(
         donors: List[DonorUploadDTO],
         recipients: List[RecipientUploadDTO],
         country_code: Country,
         txm_event_db_id: int
 ):
-    related_recipient_medical_ids = [
-        donor.related_recipient_medical_id
-        for donor in list(filter(lambda donor: donor.related_recipient_medical_id is not None, donors))
-    ]
+    related_recipient_medical_ids = [donor.related_recipient_medical_id for donor in donors
+                                     if donor.related_recipient_medical_id is not None]
 
     duplicate_ids = [item for item, count in collections.Counter(related_recipient_medical_ids).items() if count > 1]
     if len(duplicate_ids) > 0:
