@@ -1,6 +1,6 @@
 <style>
     /* Header */
-    .header {
+    .header-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -13,10 +13,16 @@
         -webkit-box-align: center;
     }
 
+    .header-middle {
+        margin-top: 280px;
+        margin-bottom: 280px;
+        text-align: center;
+    }
+
     .header h1 {
         margin: 0;
         color: {{ color }};
-        font-size: 32px;
+        font-size: 120px;
     }
 
     /* Logo */
@@ -56,12 +62,9 @@
 
     /* Date */
     .date {
-        font-weight: 700;
-    }
-
-    .date span {
+        height: 50px;
         font-weight: 400;
         font-family: monospace;
-        margin-left: 10px;
     }
+
 </style>
