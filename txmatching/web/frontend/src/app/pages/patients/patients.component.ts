@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { PatientService } from '@app/services/patient/patient.service';
-import { ListItem } from '@app/components/list-item/list-item.interface';
-import { PatientListFilter, patientListFilters, PatientListFilterType } from '@app/pages/patients/patients.interface';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { User } from '@app/model/User';
@@ -12,6 +10,11 @@ import { AppConfiguration } from '@app/model/Configuration';
 import { PatientList } from '@app/model/PatientList';
 import { PatientPair } from '@app/model/PatientPair';
 import { UploadService } from '@app/services/upload/upload.service';
+import { Donor, DonorType } from '@app/model/Donor';
+import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
+import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
+import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
+import { PatientDonorDetailComponent } from '@app/components/patient-donor-detail/patient-donor-detail.component';
 
 @Component({
   selector: 'app-patients',
@@ -20,11 +23,9 @@ import { UploadService } from '@app/services/upload/upload.service';
 })
 export class PatientsComponent implements OnInit {
 
-  public activeListFilter?: PatientListFilter;
-  public tabs: string[] = Object.values(PatientListFilterType);
-
   public patients?: PatientList;
   public pairs: PatientPair[] = [];
+  public items: (Donor | PatientPair)[] = [];
 
   public loading: boolean = false;
   public error: boolean = false;
@@ -41,7 +42,6 @@ export class PatientsComponent implements OnInit {
               private _patientService: PatientService,
               private _uploadService: UploadService,
               private _logger: LoggerService) {
-    this.activeListFilter = patientListFilters[0];
   }
 
   ngOnInit(): void {
@@ -52,54 +52,45 @@ export class PatientsComponent implements OnInit {
     Promise.all([this._initConfiguration(), this._initPatients()]).finally(() => this.loading = false);
   }
 
-  get patientsCount(): number {
-    return this.patients ? this.patients.donors.length + this.patients.recipients.length : 0;
-  }
-
-  public setActiveFilter(type: string): void {
-    this.activeListFilter = patientListFilters.find(f => String(f.type) === type);
-  }
-
-  public getFilteredItems(): ListItem[] {
-    if (this.activeListFilter && this.patients) {
-      if (this.activeListFilter.type === PatientListFilterType.Donors) {
-        return this.patients.donors;
-      }
-      if (this.activeListFilter.type === PatientListFilterType.Recipients) {
-        return this.patients.recipients;
-      }
-    }
-
-    return this.pairs;
-  }
-
   public uploadPatients(): void {
     this._uploadService.uploadFile('Refresh patients', this._initPatients.bind(this));
   }
 
-  private _initPairs(): void {
+  private _initItems(): void {
     if (!this.patients) {
       return;
     }
 
-    // add pairs
+    const items: (Donor | PatientPair)[] = [];
     for (const donor of this.patients.donors) {
-      const recipient = this.patients.recipients.find(r => r.db_id === donor.related_recipient_db_id);
 
-      if (!recipient) {
-        continue;
+      // try to find recipient
+      let recipient;
+      if (donor.donor_type === DonorType.DONOR) {
+        recipient = this.patients.recipients.find(r => r.db_id === donor.related_recipient_db_id);
       }
 
-      this.pairs.push({
-        index: this.pairs.length + 1,
-        d: donor,
-        r: recipient
-      });
+      if (recipient) {
+        // donor with valid recipient
+        items.push({
+          index: items.length + 1,
+          d: donor,
+          r: recipient,
+          itemComponent: PatientPairItemComponent,
+          detailComponent: PatientPairDetailComponent
+        });
+      } else {
+        // donor without recipient
+        items.push({
+          ...donor,
+          index: items.length + 1,
+          itemComponent: PatientDonorItemComponent,
+          detailComponent: PatientDonorDetailComponent
+        });
+      }
     }
 
-    // add indexes for list rendering
-    this.patients.donors.forEach((d, key) => d.index = key + 1);
-    this.patients.recipients.forEach((r, key) => r.index = key + 1);
+    this.items = [...items]; // make a copy, not a reference
   }
 
   private async _initPatients(): Promise<void> {
@@ -116,8 +107,8 @@ export class PatientsComponent implements OnInit {
       this.patients = await this._patientService.getPatients();
       this._logger.log('Got patients from server', [this.patients]);
 
-      // Init pairs
-      this._initPairs();
+      // Init list items
+      this._initItems();
     } catch (e) {
       this._alertService.error(`Error loading patients: "${e.message || e}"`);
       this._logger.error(`Error loading patients: "${e.message || e}"`);

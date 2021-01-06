@@ -8,17 +8,15 @@
     <div class="patients__header">
       <h1>
         Patients
-        <app-count [count]="patientsCount"></app-count>
+        <app-count [count]="items.length"></app-count>
       </h1>
     </div>
   </app-container>
 
   <app-content>
-    <h3 *ngIf="!loading && !pairs.length">No patients were found.</h3>
-    <app-item-list *ngIf="!loading && pairs.length && activeListFilter"
-                   [listItemDetailComponent]="activeListFilter.detailComponent"
-                   [listItemComponent]="activeListFilter.itemComponent"
-                   [items]="getFilteredItems()"
+    <h3 *ngIf="!loading && !items.length">No patients were found.</h3>
+    <app-item-list *ngIf="!loading && items.length"
+                   [items]="items"
                    [configuration]="configuration"
                    [patients]="patients"
                    [saveLastViewedItem]="true"

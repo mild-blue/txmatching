@@ -1,0 +1,6 @@
+<div *ngIf="item" class="donor-item">
+  <patient [patient]="item"></patient>
+  <div class="donor-item__type">
+    {{ getDonorTypeLabel(item.donor_type) }}
+  </div>
+</div>
