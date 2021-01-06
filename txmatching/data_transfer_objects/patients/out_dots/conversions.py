@@ -1,0 +1,81 @@
+from typing import Dict, List, Union
+
+from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
+    DonorDTOOut
+from txmatching.database.services.config_service import \
+    get_configuration_for_txm_event
+from txmatching.patients.patient import Donor, Recipient, TxmEvent
+from txmatching.scorers.scorer_from_config import scorer_from_configuration
+from txmatching.utils.blood_groups import blood_groups_compatible
+from txmatching.utils.hla_system.compatibility_index import (
+    DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index)
+from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
+from txmatching.utils.hla_system.hla_crossmatch import (
+    AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
+
+
+def to_lists_for_fe(txm_event: TxmEvent) -> Dict[str, Union[List[DonorDTOOut], List[Recipient]]]:
+    return {
+        'donors': sorted([donor_to_donor_dto_out(donor, txm_event.all_recipients, txm_event.db_id) for donor in
+                          txm_event.all_donors], key=_patient_order_for_fe),
+        'recipients': sorted(txm_event.all_recipients, key=_patient_order_for_fe)
+    }
+
+
+def _patient_order_for_fe(patient: Union[DonorDTOOut, Recipient]) -> str:
+    return f'{patient.parameters.country_code.value}_{patient.medical_id}'
+
+
+def donor_to_donor_dto_out(donor: Donor,
+                           all_recipients: List[Recipient],
+                           txm_event_db_id: int) -> DonorDTOOut:
+    donor_dto = DonorDTOOut(db_id=donor.db_id,
+                            medical_id=donor.medical_id,
+                            parameters=donor.parameters,
+                            donor_type=donor.donor_type,
+                            related_recipient_db_id=donor.related_recipient_db_id,
+                            active=donor.active
+                            )
+    if donor.related_recipient_db_id:
+        related_recipient = next(recipient for recipient in all_recipients if
+                                 recipient.db_id == donor.related_recipient_db_id)
+
+        configuration = get_configuration_for_txm_event(txm_event_db_id)
+        scorer = scorer_from_configuration(configuration)
+        donor_dto.score_with_related_recipient = scorer.score_transplant(donor, related_recipient, None)
+        donor_dto.compatible_blood_with_related_recipient = blood_groups_compatible(
+            donor.parameters.blood_group,
+            related_recipient.parameters.blood_group
+        )
+        antibodies = get_crossmatched_antibodies(
+            donor.parameters.hla_typing,
+            related_recipient.hla_antibodies,
+            configuration.use_split_resolution
+        )
+        compatibility_index_detailed = get_detailed_compatibility_index(
+            donor_hla_typing=donor.parameters.hla_typing,
+            recipient_hla_typing=related_recipient.parameters.hla_typing)
+        donor_dto.detailed_score_with_related_recipient = get_detailed_score(
+            compatibility_index_detailed,
+            antibodies
+        )
+
+    return donor_dto
+
+
+def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityIndexForHLAGroup],
+                       antibodies: List[AntibodyMatchForHLAGroup]) -> List[DetailedScoreForHLAGroup]:
+    assert len(antibodies) == len(compatibility_index_detailed)
+    detailed_scores = []
+    for antibody_group, compatibility_index_detailed_group in zip(antibodies, compatibility_index_detailed):
+        assert antibody_group.hla_group == compatibility_index_detailed_group.hla_group
+        detailed_scores.append(
+            DetailedScoreForHLAGroup(
+                recipient_matches=compatibility_index_detailed_group.recipient_matches,
+                hla_group=compatibility_index_detailed_group.hla_group,
+                group_compatibility_index=compatibility_index_detailed_group.group_compatibility_index,
+                antibody_matches=antibody_group.antibody_matches,
+                donor_matches=compatibility_index_detailed_group.donor_matches
+            )
+        )
+    return detailed_scores

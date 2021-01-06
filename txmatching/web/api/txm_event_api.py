@@ -23,8 +23,8 @@ from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in 
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson, TxmEventJsonIn, TxmEventJsonOut,
     UploadPatientsJson)
-from txmatching.database.services.patient_service import \
-    update_txm_event_patients
+from txmatching.database.services.patient_upload_service import \
+    replace_or_add_patients_from_one_country
 from txmatching.database.services.txm_event_service import (create_txm_event,
                                                             delete_txm_event,
                                                             save_original_data)
@@ -118,7 +118,7 @@ class TxmEventUploadPatients(Resource):
         # save the original request to the database
         save_original_data(patient_upload_dto.txm_event_name, current_user_id, request.json)
         # perform update operation
-        update_txm_event_patients(patient_upload_dto)
+        replace_or_add_patients_from_one_country(patient_upload_dto)
         return jsonify(PatientUploadDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),
             donors_uploaded=len(patient_upload_dto.donors)

@@ -7,9 +7,9 @@ from txmatching.data_transfer_objects.patients.update_dtos.hla_code_update_dtos 
     HLATypeUpdateDTO, HLATypingUpdateDTO)
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
-from txmatching.database.services.patient_service import (get_txm_event,
-                                                          update_donor,
+from txmatching.database.services.patient_service import (update_donor,
                                                           update_recipient)
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     RecipientModel)
 from txmatching.patients.patient import RecipientRequirements

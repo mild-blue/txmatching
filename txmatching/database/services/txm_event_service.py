@@ -1,7 +1,10 @@
 from sqlalchemy import and_
+from sqlalchemy.orm.exc import NoResultFound
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.database.db import db
+from txmatching.database.services.patient_service import (
+    get_donor_from_donor_model, get_recipient_from_recipient_model)
 from txmatching.database.sql_alchemy_schema import (DonorModel, RecipientModel,
                                                     TxmEventModel,
                                                     UploadedDataModel)
@@ -15,7 +18,7 @@ def get_newest_txm_event_db_id() -> int:
     if txm_event_model:
         return txm_event_model.id
     else:
-        raise ValueError('No TXM event found.')
+        raise ValueError('There are no TXM events in the database.')
 
 
 def create_txm_event(name: str) -> TxmEvent:
@@ -28,18 +31,17 @@ def create_txm_event(name: str) -> TxmEvent:
 
 
 def delete_txm_event(name: str):
-    if len(TxmEventModel.query.filter(TxmEventModel.name == name).all()) == 0:
-        raise InvalidArgumentException(f'TXM event "{name}" does not exist.')
-    TxmEventModel.query.filter(TxmEventModel.name == name).delete()
+    txm_event_db_id = get_txm_event_db_id_by_name(name)
+    TxmEventModel.query.filter(TxmEventModel.id == txm_event_db_id).delete()
     db.session.commit()
 
 
-def remove_donors_and_recipients_from_txm_event_for_country(name: str, country_code: Country):
-    txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
-    if not txm_event_model:
-        raise InvalidArgumentException(f'No TXM event with name "{name}" found.')
-    DonorModel.query.filter(DonorModel.txm_event_id == txm_event_model.id, DonorModel.country == country_code).delete()
-    RecipientModel.query.filter(and_(RecipientModel.txm_event_id == txm_event_model.id,
+def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int, country_code: Country):
+    DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
+                                 DonorModel.country == country_code)).delete()
+    # Very likely is not needed as all recipients should be cascade deleted in the previous step.
+    # but to be sure everything gets delted, this stays here.
+    RecipientModel.query.filter(and_(RecipientModel.txm_event_id == txm_event_db_id,
                                      RecipientModel.country == country_code)).delete()
 
 
@@ -58,16 +60,34 @@ def _remove_last_uploaded_data(txm_event_id: int, current_user_id: int):
 
 
 def save_original_data(txm_event_name: str, current_user_id: int, data: dict):
-    txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == txm_event_name).first()
-    if not txm_event_model:
-        raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.')
-    txm_event_model_id = txm_event_model.id
-    _remove_last_uploaded_data(txm_event_model_id, current_user_id)
+    txm_event_db_id = get_txm_event_db_id_by_name(txm_event_name)
+    _remove_last_uploaded_data(txm_event_db_id, current_user_id)
     uploaded_data_model = UploadedDataModel(
-        txm_event_id=txm_event_model_id,
+        txm_event_id=txm_event_db_id,
         user_id=current_user_id,
         uploaded_data=data
     )
 
     db.session.add(uploaded_data_model)
     db.session.commit()
+
+
+def get_txm_event_db_id_by_name(txm_event_name: str) -> int:
+    try:
+        txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == txm_event_name).one()
+        return txm_event_model.id
+    except NoResultFound as error:
+        raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.') from error
+
+
+def get_txm_event(txm_event_db_id: int) -> TxmEvent:
+    maybe_txm_event_model = TxmEventModel.query.get(txm_event_db_id)
+    if maybe_txm_event_model is None:
+        raise InvalidArgumentException(f'No TXM event with id {txm_event_db_id} found.')
+
+    all_donors = [get_donor_from_donor_model(donor_model) for donor_model in maybe_txm_event_model.donors]
+    all_recipients = [get_recipient_from_recipient_model(recipient_model, recipient_model.donor.id)
+                      for recipient_model in maybe_txm_event_model.recipients]
+
+    return TxmEvent(db_id=maybe_txm_event_model.id, name=maybe_txm_event_model.name, all_donors=all_donors,
+                    all_recipients=all_recipients)

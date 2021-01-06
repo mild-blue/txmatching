@@ -2,6 +2,7 @@
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 
 import logging
+
 from flask import jsonify, request
 from flask_restx import Resource
 
