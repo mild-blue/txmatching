@@ -3,6 +3,7 @@ import json
 from tests.test_utilities.populate_db import (PATIENT_DATA_OBFUSCATED,
                                               create_or_overwrite_txm_event)
 from tests.test_utilities.prepare_app import DbTests
+from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import (
@@ -83,7 +84,9 @@ class TestUpdateDonorRecipient(DbTests):
         all_matchings = list(solve_from_configuration(Configuration(
             max_cycle_length=100,
             max_sequence_length=100,
-            max_number_of_distinct_countries_in_round=100),
+            max_number_of_distinct_countries_in_round=100,
+            use_split_resolution=False
+        ),
             txm_event.db_id).calculated_matchings)
         self.assertEqual(358, len(all_matchings))
 
@@ -128,3 +131,18 @@ class TestUpdateDonorRecipient(DbTests):
         for i, matching in enumerate(matching_tuples):
             self.assertTrue(frozenset(matching) in expected_matching_tuples,
                             f'Error in round {i}: {matching} not found')
+
+    def test_loading_patients_wrong(self):
+        txm_event = create_or_overwrite_txm_event('test')
+        self.assertRaises(InvalidArgumentException, lambda: parse_excel_data(
+            get_absolute_path('tests/resources/patient_data_wrong.xlsx'),
+            txm_event.name,
+            None))
+        self.assertRaises(InvalidArgumentException, lambda: parse_excel_data(
+            get_absolute_path('tests/resources/nonexistent_file.xlsx'),
+            txm_event.name,
+            None))
+        self.assertRaises(InvalidArgumentException, lambda: parse_excel_data(
+            get_absolute_path('tests/resources/patient_data_issues.xlsx'),
+            txm_event.name,
+            None))

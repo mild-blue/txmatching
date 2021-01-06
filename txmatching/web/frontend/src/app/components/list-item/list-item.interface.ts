@@ -6,6 +6,8 @@ import { PatientList } from '@app/model/PatientList';
 export interface ListItem {
   index: number;
   isActive?: boolean;
+  itemComponent: typeof ListItemAbstractComponent;
+  detailComponent: typeof ListItemDetailAbstractComponent;
 }
 
 export class ListItemAbstractComponent {

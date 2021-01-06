@@ -12,10 +12,10 @@ import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-patient-detail-recipient',
-  templateUrl: './patient-detail-recipient.component.html',
-  styleUrls: ['./patient-detail-recipient.component.scss']
+  templateUrl: './patient-recipient-detail.component.html',
+  styleUrls: ['./patient-recipient-detail.component.scss']
 })
-export class PatientDetailRecipientComponent extends ListItemDetailAbstractComponent implements OnInit {
+export class PatientRecipientDetailComponent extends ListItemDetailAbstractComponent implements OnInit {
 
   @Input() patients?: PatientList;
   @Input() item?: Recipient;

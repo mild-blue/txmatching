@@ -31,7 +31,7 @@
 
 <ng-template #itemList>
   <app-item *ngFor="let item of displayedItems; trackBy: trackListItem"
-            [listItemComponent]="listItemComponent"
+            [listItemComponent]="item.itemComponent"
             [isActive]="item === activeItem"
             [item]="item"
             [patients]="patients"

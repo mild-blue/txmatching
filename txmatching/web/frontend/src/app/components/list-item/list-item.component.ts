@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { matchingBatchSize } from '@app/model/Matching';
 import { AppConfiguration } from '@app/model/Configuration';
-import { ListItem, ListItemAbstractComponent, ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
+import { ListItem, ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
 import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
 import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
@@ -22,9 +22,6 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   @Input() items: ListItem[] = [];
   @Input() patients?: PatientList;
   @Input() configuration?: AppConfiguration;
-
-  @Input() listItemComponent?: typeof ListItemAbstractComponent;
-  @Input() listItemDetailComponent?: typeof ListItemDetailAbstractComponent;
 
   @Input() saveLastViewedItem: boolean = false;
   @Input() useInfiniteScroll: boolean = true;
@@ -190,11 +187,11 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
 
   private _loadDetailComponent(): void {
     const activeItem = this.activeItem;
-    if (!this.listItemDetailComponent || !activeItem) {
+    if (!activeItem?.detailComponent) {
       return;
     }
 
-    const detailComponentFactory = this._componentFactoryResolver.resolveComponentFactory(this.listItemDetailComponent);
+    const detailComponentFactory = this._componentFactoryResolver.resolveComponentFactory(activeItem.detailComponent);
 
     if (this.listItemDetailHost) {
       const detailViewContainerRef = this.listItemDetailHost.viewContainerRef;
