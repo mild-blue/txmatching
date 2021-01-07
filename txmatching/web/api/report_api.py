@@ -238,16 +238,16 @@ def patient_by_medical_id_filter(medical_id: str, patients: Dict[str, Patient]) 
     return patients[medical_id]
 
 
-def patient_height_and_width(patient: Patient) -> Optional[str]:
-    h = patient.parameters.height
-    w = patient.parameters.weight
+def patient_height_and_weight(patient: Patient) -> Optional[str]:
+    height = patient.parameters.height
+    weight = patient.parameters.weight
 
-    if h is not None and w is not None:
-        return f'{h}/{w:.0f}'
-    elif h is not None:
-        return f'{h}/-'
-    elif w is not None:
-        return f'-/{w:.0f}'
+    if height is not None and weight is not None:
+        return f'{height}/{weight:.0f}'
+    elif height is not None:
+        return f'{height}/-'
+    elif weight is not None:
+        return f'-/{weight:.0f}'
     else:
         return None
 
@@ -262,5 +262,5 @@ jinja2.filters.FILTERS.update({
     'donor_recipient_score_filter': donor_recipient_score_filter,
     'country_code_from_country_filter': country_code_from_country_filter,
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
-    'patient_height_and_width': patient_height_and_width,
+    'patient_height_and_weight': patient_height_and_weight,
 })
