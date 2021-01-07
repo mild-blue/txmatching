@@ -42,6 +42,25 @@
         page-break-inside: avoid !important;
     }
 
+    .matching-transplant h3 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .matching-transplant h3 div {
+        white-space: nowrap;
+    }
+
+    .donor-type-label {
+        font-size: 13px;
+    }
+
     .transplant-header {
         background: #eff3f7;
         border: 1px solid #dddddd;

@@ -33,7 +33,10 @@
           <div class="matching-transplant">
             <!-- Prevent page break between round heading and first transplant -->
             {% if loop.index == 1 %}
-              <h3>Round #{{ round_index }}</h3>
+              <h3>
+                <div>Round #{{ round_index }}</div>
+                <div class="donor-type-label">{{ round|donor_type_label_from_round_filter(all_donors) }}</div>
+              </h3>
             {% endif %}
 
             <div class="transplant-header">

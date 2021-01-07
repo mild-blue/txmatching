@@ -29,7 +29,7 @@ from txmatching.database.services.matching_service import (
     create_matching_dtos, get_latest_matchings_detailed)
 from txmatching.database.services.txm_event_service import (
     get_txm_event, get_txm_event_id_for_current_user)
-from txmatching.patients.patient import Patient
+from txmatching.patients.patient import Donor, DonorType, Patient
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.web.api.namespaces import report_api
@@ -279,6 +279,21 @@ def score_color_filter(score: Optional[float], configuration: Configuration):
         return '#70c47b'
 
 
+def donor_type_label_from_round_filter(round: dict, donors: Dict[str, Donor]) -> str:
+    if len(round['transplants']) == 0:
+        return ''
+
+    donor_id = round['transplants'][0]['donor']
+    donor_type = donors[donor_id].donor_type
+
+    if donor_type == DonorType.BRIDGING_DONOR:
+        return 'bridging donor'
+    elif donor_type == DonorType.NON_DIRECTED:
+        return 'non-directed donor'
+    else:
+        return ''
+
+
 jinja2.filters.FILTERS.update({
     'country_combination_filter': country_combination_filter,
     'donor_recipient_score_filter': donor_recipient_score_filter,
@@ -286,4 +301,5 @@ jinja2.filters.FILTERS.update({
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
     'patient_height_and_weight_filter': patient_height_and_weight_filter,
     'score_color_filter': score_color_filter,
+    'donor_type_label_from_round_filter': donor_type_label_from_round_filter,
 })
