@@ -37,7 +37,23 @@
             {% endif %}
 
             <div class="transplant-header">
-              <h4>Transplant #{{ loop.index }}</h4>
+              <h4>
+                <div class="patient-pair-content">
+                  <div class="patient">
+                    <div class="flag">
+                      <img src="assets/countries/{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
+                    </div>
+                    {{ transplant.donor }}
+                  </div>
+                  <div class="icon-right"> ></div>
+                  <div class="patient">
+                    <div class="flag">
+                      <img src="assets/countries/{{ (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value }}.png"/>
+                    </div>
+                    {{ transplant.recipient }}
+                  </div>
+                </div>
+              </h4>
               <div class="score">Score: <span>{{ transplant.score }}</span></div>
             </div>
 
