@@ -1,0 +1,277 @@
+<style>
+    /* Matching */
+    .matching-header {
+        page-break-inside: avoid !important;
+    }
+
+    .matching-info {
+        width: 100%;
+        display: flex;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+    }
+
+    .matching-info li:last-child {
+        -webkit-box-flex: 1;
+    }
+
+    .matching-info li:not(:last-child) {
+        padding-right: 5px;
+    }
+
+    .matching-info li:not(:last-child)::after {
+        content: '|';
+        margin: 0 5px 0 10px;
+        color: #454545;
+    }
+
+    /* Matching round */
+    .matching-round {
+        margin-bottom: 20px;
+    }
+
+    /* Matching transplant */
+    .matching-transplant {
+        border-top: none;
+        border-radius: 40px;
+        padding-top: 20px;
+    }
+
+    .matching-transplant, .matching-transplant > * {
+        page-break-inside: avoid !important;
+    }
+
+    .transplant-header {
+        background: #eff3f7;
+        border: 1px solid #dddddd;
+        border-bottom: none;
+        padding: 0 10px;
+        font-weight: 700;
+        font-size: 14px;
+        height: 50px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .transplant-header .score span {
+        font-size: 18px;
+        font-weight: 700;
+        color: #e2001a;
+    }
+
+    /* Transplant table */
+
+    .small {
+        display: inline-block;
+        margin-left: 5px;
+    }
+
+    .small, .small * {
+        font-size: 8px !important;
+    }
+
+    .center-holder {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+    }
+
+    .patient-info {
+        margin-top: 2px;
+        font-size: 12px;
+        font-weight: 300;
+    }
+
+    .patient-info span + span::before {
+        content: '-';
+        margin: 0 5px;
+        color: {{ color }};
+        font-weight: bold;
+    }
+
+    .transplant-content table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .transplant-content tr {
+        border-top: 1px solid #dddddd;
+    }
+
+    .transplant-content tr:first-child {
+        font-weight: 700;
+    }
+
+    .transplant-content tr.anti-header td {
+        background: #eff3f7;
+        font-size: 12px;
+        padding: 2px;
+    }
+
+    .transplant-content td {
+        text-align: center;
+        padding: 7px 10px;
+        border: 1px solid #dddddd;
+        vertical-align: top;
+
+        width: auto;
+    }
+
+    .transplant-content td:not([colspan]) {
+        width: 21.6666%;
+    }
+
+    .transplant-content td:first-child {
+        width: 20%;
+        text-align: left;
+        font-weight: 700;
+    }
+
+    .transplant-content td:last-child {
+        width: 15%;
+        font-weight: 700;
+    }
+
+    .footer-score td {
+        text-align: right;
+    }
+
+    .footer-score td:not(:last-child) {
+        border: none !important;
+    }
+
+    .footer-score td:last-child {
+        background: transparent;
+    }
+
+    .footer-score span {
+        font-size: 18px;
+        font-weight: 700;
+        color: #e2001a;
+    }
+
+    /* Code */
+    .code {
+        display: inline-block;
+        border-radius: 3px;
+        padding: 3px 3px 1px;
+        margin: 1px;
+
+        background: #e9ecef;
+        color: #6c757d;
+
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    .code.matching {
+        background: rgba(40, 167, 69, 0.2);
+        border-color: #28a745;
+        color: #28a745;
+    }
+
+    .code.bad-matching {
+        background: rgba(220, 53, 69, 0.2);
+        border-color: #dc3545 !important;
+        color: #dc3545 !important;
+    }
+
+    /* Patient */
+    .patient {
+        display: flex;
+        align-items: center;
+        font-weight: 700;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-align: center;
+    }
+
+    .patient .flag {
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        border: 1px solid #ddd;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: start;
+        -webkit-box-align: center;
+    }
+
+    .patient img {
+        height: 16px;
+        width: 16px;
+    }
+
+    /* Matching summary */
+    .matching-summary {
+        padding-top: 7px; /* new page */
+    }
+
+    .matching-summary, .matching-summary > * {
+        page-break-inside: avoid !important;
+    }
+
+    table.matching-summary-table {
+        border-collapse: collapse;
+    }
+
+    table.matching-summary-table tr {
+        border-top: 1px solid #949494;
+    }
+
+    table.matching-summary-table tr:first-child {
+        border-top: none;
+    }
+
+    table.matching-summary-table td {
+        vertical-align: top;
+    }
+
+    .matching-summary-round-title {
+        font-weight: 700;
+        margin: 4px;
+    }
+
+    .patient-pair {
+        border-radius: 3px;
+        padding: 2px;
+        margin: 3px 2px;
+        background: #e9ecef;
+        display: inline-block;
+    }
+
+    .patient-pair-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+    }
+
+    .patient-pair-content .icon-right {
+        margin: 0 7px;
+        font-weight: 800;
+    }
+
+</style>

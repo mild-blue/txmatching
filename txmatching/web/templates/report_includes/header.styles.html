@@ -1,0 +1,70 @@
+<style>
+    /* Header */
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        margin-bottom: 20px;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .header-middle {
+        margin-top: 290px;
+        margin-bottom: 360px;
+        text-align: center;
+    }
+
+    .header h1 {
+        margin: 0 200px;
+        color: {{ color }};
+        font-size: 90px;
+    }
+
+    /* Logo */
+    .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+    }
+
+    .logo img {
+        height: 50px;
+    }
+
+    .logo h2 {
+        margin: 0 0 0 20px;
+        padding-left: 20px;
+        color: {{ color }};
+        line-height: 1;
+        font-size: 18px;
+        position: relative;
+    }
+
+    .logo h2::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 3px;
+        height: 100%;
+        background: {{ color }};
+    }
+
+    /* Date */
+    .date {
+        height: 50px;
+        font-weight: 400;
+        font-family: monospace;
+    }
+
+</style>
