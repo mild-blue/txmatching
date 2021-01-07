@@ -54,7 +54,11 @@
                   </div>
                 </div>
               </h4>
-              <div class="score">Score: <span>{{ transplant.score }}</span></div>
+              <div class="score" style="background: {{ transplant.score|score_color_filter(configuration) }}">
+                <div>
+                  Score: <span>{{ transplant.score }}</span>
+                </div>
+              </div>
             </div>
 
             <div class="transplant-content">

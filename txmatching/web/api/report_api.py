@@ -256,10 +256,34 @@ def hla_score_group_filter(scores_per_groups: List[dict], hla_group: str) -> dic
                        scores_per_groups))[0]
 
 
+def score_color_filter(score: Optional[float], configuration: Configuration):
+    # wkhtmltopdf does not support linear-gradients css style that is used in fe and makes
+    # exporting super-slow so we define percentage->color mapping in this function
+
+    if score is None:
+        percentage = 0
+    elif score == -1:
+        return '#ff0000'  # bad-matching
+    else:
+        percentage = 100 * score / configuration.maximum_total_score
+
+    if percentage < 15:
+        return '#ffa400'
+    elif percentage < 30:
+        return '#ffe14c'
+    elif percentage < 75:
+        return '#cfe733'
+    elif percentage < 100:
+        return '#98d961'
+    else:
+        return '#70c47b'
+
+
 jinja2.filters.FILTERS.update({
     'country_combination_filter': country_combination_filter,
     'donor_recipient_score_filter': donor_recipient_score_filter,
     'country_code_from_country_filter': country_code_from_country_filter,
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
     'patient_height_and_weight': patient_height_and_weight,
+    'score_color_filter': score_color_filter,
 })
