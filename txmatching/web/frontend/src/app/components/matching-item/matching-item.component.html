@@ -14,11 +14,9 @@
     </li>
   </ul>
 
-  <ng-container *ngIf="isActive">
-    <app-matching-round *ngFor="let round of item.rounds"
-                        [configuration]="configuration"
-                        [patients]="patients"
-                        [round]="round"></app-matching-round>
-  </ng-container>
+  <app-matching-round *ngFor="let round of item.rounds"
+                      [configuration]="configuration"
+                      [patients]="patients"
+                      [round]="round"></app-matching-round>
 
 </div>

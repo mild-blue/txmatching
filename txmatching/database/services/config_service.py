@@ -45,6 +45,10 @@ def get_config_model_for_txm_event(txm_event_db_id: int) -> Optional[ConfigModel
     return config
 
 
+def remove_configs_from_txm_event(txm_event_db_id: int):
+    ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).delete()
+
+
 def _configuration_to_config_model(configuration: Configuration, txm_event_db_id: int) -> ConfigModel:
     user_id = get_current_user_id()
     return ConfigModel(parameters=dataclasses.asdict(configuration), created_by=user_id, txm_event_id=txm_event_db_id)

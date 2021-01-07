@@ -13,6 +13,8 @@ from txmatching.auth.operation_guards.country_guard import (
     guard_user_country_access_to_recipient, guard_user_has_access_to_country)
 from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
+from txmatching.data_transfer_objects.patients.out_dots.conversions import (
+    donor_to_donor_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
     DonorJson, DonorModelToUpdateJson, PatientsJson, RecipientJson,
     RecipientModelToUpdateJson)
@@ -24,11 +26,12 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
     RecipientUpdateDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson)
-from txmatching.database.services.patient_service import (
-    donor_to_donor_dto, get_txm_event, save_patients_from_excel_to_txm_event,
-    to_lists_for_fe, update_donor, update_recipient)
-from txmatching.database.services.txm_event_service import \
-    get_txm_event_id_for_current_user
+from txmatching.database.services.patient_service import (update_donor,
+                                                          update_recipient)
+from txmatching.database.services.patient_upload_service import \
+    replace_or_add_patients_from_excel
+from txmatching.database.services.txm_event_service import (
+    get_txm_event, get_txm_event_id_for_current_user)
 from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
@@ -88,7 +91,7 @@ class AlterDonor(Resource):
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
         txm_event_db_id = get_txm_event_id_for_current_user()
         all_recipients = get_txm_event(txm_event_db_id).all_recipients
-        return jsonify(donor_to_donor_dto(
+        return jsonify(donor_to_donor_dto_out(
             update_donor(donor_update_dto, get_txm_event_id_for_current_user()),
             all_recipients,
             txm_event_db_id)
@@ -138,7 +141,7 @@ class AddPatientsFile(Resource):
         for parsed_country_data in parsed_data:
             guard_user_has_access_to_country(user_id=user_id, country=parsed_country_data.country)
 
-        save_patients_from_excel_to_txm_event(parsed_data)
+        replace_or_add_patients_from_excel(parsed_data)
         return jsonify(PatientUploadDTOOut(
             recipients_uploaded=sum(len(parsed_data_country.recipients) for parsed_data_country in parsed_data),
             donors_uploaded=sum(len(parsed_data_country.donors) for parsed_data_country in parsed_data))

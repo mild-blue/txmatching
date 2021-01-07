@@ -2,7 +2,7 @@ import logging
 from typing import Iterable, List
 
 from txmatching.configuration.configuration import Configuration
-from txmatching.database.services.patient_service import get_txm_event
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.filters.filter_from_config import filter_from_config
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
