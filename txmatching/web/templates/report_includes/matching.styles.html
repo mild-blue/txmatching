@@ -266,10 +266,13 @@
 
     .patient-pair {
         border-radius: 3px;
-        padding: 2px;
+        padding: 2px 5px;
         margin: 3px 2px;
         background: #e9ecef;
         display: inline-block;
+
+        /* fix wkhtmltopdf artefacts */
+        border: 1px solid #e9ecef;
     }
 
     .patient-pair-content {
