@@ -82,8 +82,8 @@
                       {% if (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.year_of_birth is not none %}
                         <span>{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.year_of_birth }}</span>
                       {% endif %}
-                      {% if transplant.donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight is not none %}
-                        <span>{{ transplant.donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight }}</span>
+                      {% if transplant.donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight_filter is not none %}
+                        <span>{{ transplant.donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight_filter }}</span>
                       {% endif %}
                     </div>
                   </td>
@@ -103,8 +103,8 @@
                       {% if (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.year_of_birth is not none %}
                         <span>{{ (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.year_of_birth }}</span>
                       {% endif %}
-                      {% if transplant.recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight is not none %}
-                        <span>{{ transplant.recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight }}</span>
+                      {% if transplant.recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight_filter is not none %}
+                        <span>{{ transplant.recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight_filter }}</span>
                       {% endif %}
                     </div>
                   </td>

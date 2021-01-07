@@ -237,7 +237,7 @@ def patient_by_medical_id_filter(medical_id: str, patients: Dict[str, Patient]) 
     return patients[medical_id]
 
 
-def patient_height_and_weight(patient: Patient) -> Optional[str]:
+def patient_height_and_weight_filter(patient: Patient) -> Optional[str]:
     height = patient.parameters.height
     weight = patient.parameters.weight
 
@@ -284,6 +284,6 @@ jinja2.filters.FILTERS.update({
     'donor_recipient_score_filter': donor_recipient_score_filter,
     'country_code_from_country_filter': country_code_from_country_filter,
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
-    'patient_height_and_weight': patient_height_and_weight,
+    'patient_height_and_weight_filter': patient_height_and_weight_filter,
     'score_color_filter': score_color_filter,
 })
