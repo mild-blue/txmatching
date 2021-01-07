@@ -12,6 +12,10 @@
         display: -webkit-box;
     }
 
+    .matching-info li * {
+        vertical-align: top;
+    }
+
     .matching-info li:last-child {
         -webkit-box-flex: 1;
     }
@@ -235,21 +239,13 @@
         -webkit-box-align: center;
     }
 
-    .patient .flag {
-        margin-right: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        border: 1px solid #ddd;
-
-        /* wkhtmltopdf */
-        display: -webkit-box;
-        -webkit-box-pack: start;
-        -webkit-box-align: center;
+    .flag {
+        display: inline-block;
+        margin: 3px 5px 0 0;
     }
 
-    .patient img {
-        height: 16px;
+    .flag img {
+        height: 14px;
         width: 16px;
     }
 

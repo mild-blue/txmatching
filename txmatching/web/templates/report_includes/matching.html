@@ -19,7 +19,17 @@
         <li>Score: <strong class="color-primary">{{ matching.score }}</strong></li>
         <li>Rounds: <strong>{{ matching.rounds|length }}</strong></li>
         <li>Transplants: <strong>{{ matching.count_of_transplants }}</strong></li>
-        <li>Countries: <strong>{{ matching.countries|country_code_from_country_filter|join(', ') }}</strong></li>
+        <!-- countries stats -->
+        {% for country in matching.countries %}
+          <li>
+            <div class="flag">
+              <img src="assets/countries/{{ country['country_code'].value }}.png"/>
+            </div>
+            <strong>
+              {{ country['donor_count'] }}/{{ country['recipient_count'] }}
+            </strong>
+          </li>
+        {% endfor %}
       </ul>
     </div>
 
