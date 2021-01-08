@@ -279,12 +279,16 @@ def score_color_filter(score: Optional[float], configuration: Configuration):
         return '#70c47b'
 
 
-def donor_type_label_from_round_filter(matching_round: dict, donors: Dict[str, Donor]) -> str:
+def _get_donor_type_from_round(matching_round: dict, donors: Dict[str, Donor]) -> Optional[DonorType]:
     if len(matching_round['transplants']) == 0:
-        return ''
+        return None
 
     donor_id = matching_round['transplants'][0]['donor']
-    donor_type = donors[donor_id].donor_type
+    return donors[donor_id].donor_type
+
+
+def donor_type_label_from_round_filter(matching_round: dict, donors: Dict[str, Donor]) -> str:
+    donor_type = _get_donor_type_from_round(matching_round, donors)
 
     if donor_type == DonorType.BRIDGING_DONOR:
         return 'bridging donor'
@@ -292,6 +296,17 @@ def donor_type_label_from_round_filter(matching_round: dict, donors: Dict[str, D
         return 'non-directed donor'
     else:
         return ''
+
+
+def round_index_from_order_filter(order: int, matching_round: dict, donors: Dict[str, Donor]) -> str:
+    donor_type = _get_donor_type_from_round(matching_round, donors)
+
+    if donor_type == DonorType.BRIDGING_DONOR:
+        return f'{order}B'
+    elif donor_type == DonorType.NON_DIRECTED:
+        return f'{order}N'
+    else:
+        return f'{order}'
 
 
 jinja2.filters.FILTERS.update({
@@ -302,4 +317,5 @@ jinja2.filters.FILTERS.update({
     'patient_height_and_weight_filter': patient_height_and_weight_filter,
     'score_color_filter': score_color_filter,
     'donor_type_label_from_round_filter': donor_type_label_from_round_filter,
+    'round_index_from_order_filter': round_index_from_order_filter,
 })

@@ -38,7 +38,9 @@
           <tr>
 
             <td>
-              <div class="matching-summary-round-title">{{ loop.index }}</div>
+              <div class="matching-summary-round-title">
+                {{ loop.index|round_index_from_order_filter(round, all_donors) }}
+              </div>
             </td>
 
             <td>
