@@ -65,7 +65,6 @@
     }
 
     .transplant-header {
-        background: #eff3f7;
         border: 1px solid #dddddd;
         border-bottom: none;
         padding: 0 0 0 10px;
@@ -83,9 +82,20 @@
         -webkit-box-align: center;
     }
 
+    .non-compatible {
+        background-color: #666666;
+        color: #f9f9f9
+    }
+
+    .compatible {
+        background: #e9ecef;
+        color: black;
+    }
+
     .transplant-header .score {
         height: 100%;
         width: 15%;
+        color: black;
 
         display: flex;
         align-items: center;
@@ -283,7 +293,6 @@
         border-radius: 3px;
         padding: 2px 5px;
         margin: 3px 2px;
-        background: #e9ecef;
         display: inline-block;
 
         /* fix wkhtmltopdf artefacts */

@@ -48,7 +48,9 @@
               <div>
                 {% for transplant in round.transplants %}
                   <!-- Patient pair -->
-                  <div class="patient-pair" style="border-right: 10px solid {{ transplant.score|score_color_filter(configuration) }}">
+                  <div
+                    class="patient-pair {{ 'compatible' if transplant.compatible_blood else 'non-compatible' }}"
+                    style="border-right: 10px solid {{ transplant.score|score_color_filter(configuration) }}">
                     <div class="patient-pair-content">
                       <div class="patient">
                         <div class="flag">

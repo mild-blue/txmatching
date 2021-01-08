@@ -55,7 +55,7 @@
               </h3>
             {% endif %}
 
-            <div class="transplant-header">
+            <div class="transplant-header {{ 'compatible' if transplant.compatible_blood else 'non-compatible' }}">
               <h4>
                 <div class="patient-pair-content">
                   <div class="patient">
