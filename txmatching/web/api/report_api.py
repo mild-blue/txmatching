@@ -279,11 +279,11 @@ def score_color_filter(score: Optional[float], configuration: Configuration):
         return '#70c47b'
 
 
-def donor_type_label_from_round_filter(round: dict, donors: Dict[str, Donor]) -> str:
-    if len(round['transplants']) == 0:
+def donor_type_label_from_round_filter(matching_round: dict, donors: Dict[str, Donor]) -> str:
+    if len(matching_round['transplants']) == 0:
         return ''
 
-    donor_id = round['transplants'][0]['donor']
+    donor_id = matching_round['transplants'][0]['donor']
     donor_type = donors[donor_id].donor_type
 
     if donor_type == DonorType.BRIDGING_DONOR:
