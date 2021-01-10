@@ -1,7 +1,8 @@
+import logging
 from dataclasses import dataclass, field
 from typing import List
 
-from txmatching.auth.exceptions import InvalidArgumentException
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -11,7 +12,8 @@ class HLAAntibodyDTO:
 
     def __post_init__(self):
         if self.mfi < 0:
-            raise InvalidArgumentException("MFI should never be negative")
+            self.mfi = 0
+            logger.warning("MFI should not be negative, setting to 0.")
 
 
 @dataclass
