@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: txmatching
+    image: mildblue/txmatching
     env_file:
       - .env.pub
     ports:
