@@ -14,12 +14,12 @@ from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.pairing_result import PairingResult
 
 
-def save_pairing_result(pairing_result: PairingResult):
+def save_pairing_result(pairing_result: PairingResult, user_id: int):
     calculated_matchings_model = dataclasses.asdict(
         _calculated_matchings_to_model(pairing_result.calculated_matchings)
     )
 
-    config_id = save_configuration_to_db(pairing_result.configuration, pairing_result.txm_event_db_id)
+    config_id = save_configuration_to_db(pairing_result.configuration, pairing_result.txm_event_db_id, user_id)
 
     pairing_result_model = PairingResultModel(
         score_matrix=score_matrix_to_dto(pairing_result.score_matrix),

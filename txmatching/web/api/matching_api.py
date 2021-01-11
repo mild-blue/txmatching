@@ -17,12 +17,13 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import configuration_from_dict
-from txmatching.database.services.matching_service import \
-    get_latest_matchings_detailed, create_matching_dtos
+from txmatching.database.services.matching_service import (
+    create_matching_dtos, get_latest_matchings_detailed)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_id_for_current_user
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
+from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import matching_api
 
 logger = logging.getLogger(__name__)
@@ -43,9 +44,10 @@ class CalculateFromConfig(Resource):
     @require_user_login()
     def post(self) -> str:
         txm_event_id = get_txm_event_id_for_current_user()
+        user_id = get_current_user_id()
         configuration = configuration_from_dict(request.json)
         pairing_result = solve_from_configuration(configuration, txm_event_db_id=txm_event_id)
-        solver_service.save_pairing_result(pairing_result)
+        solver_service.save_pairing_result(pairing_result, user_id)
         latest_matchings_detailed = get_latest_matchings_detailed(txm_event_id)
 
         matching_dtos = create_matching_dtos(latest_matchings_detailed, latest_matchings_detailed.matchings)

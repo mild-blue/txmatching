@@ -76,7 +76,7 @@ class DbTests(unittest.TestCase):
     def fill_db_with_patients_and_results(self) -> int:
         txm_event_db_id = self.fill_db_with_patients()
         pairing_result = solve_from_configuration(Configuration(), txm_event_db_id)
-        solver_service.save_pairing_result(pairing_result)
+        solver_service.save_pairing_result(pairing_result, 1)
         return txm_event_db_id
 
     @staticmethod

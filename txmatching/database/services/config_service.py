@@ -8,7 +8,6 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.utils.enums import Country
-from txmatching.utils.logged_user import get_current_user_id
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +27,8 @@ def get_configuration_for_txm_event(txm_event_db_id: int) -> Configuration:
         return configuration_from_dict(current_config_model.parameters)
 
 
-def save_configuration_to_db(configuration: Configuration, txm_event_db_id: int) -> int:
-    config_model = _configuration_to_config_model(configuration, txm_event_db_id)
+def save_configuration_to_db(configuration: Configuration, txm_event_db_id: int, user_id: int) -> int:
+    config_model = _configuration_to_config_model(configuration, txm_event_db_id, user_id)
     previous_config = get_config_model_for_txm_event(txm_event_db_id)
     if previous_config:
         db.session.delete(previous_config)
@@ -49,6 +48,5 @@ def remove_configs_from_txm_event(txm_event_db_id: int):
     ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).delete()
 
 
-def _configuration_to_config_model(configuration: Configuration, txm_event_db_id: int) -> ConfigModel:
-    user_id = get_current_user_id()
+def _configuration_to_config_model(configuration: Configuration, txm_event_db_id: int, user_id) -> ConfigModel:
     return ConfigModel(parameters=dataclasses.asdict(configuration), created_by=user_id, txm_event_id=txm_event_db_id)
