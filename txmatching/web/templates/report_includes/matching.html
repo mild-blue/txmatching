@@ -1,7 +1,7 @@
 {% from 'report_includes/macros.html' import antigen_class, antibody_class %}
 
 <div class="box pb-0">
-  <h1 class="mb-0">Matchings details</h1>
+  <h1 class="mb-0">Selected matching detail</h1>
 </div>
 
 {% for matching in matchings %}
@@ -19,11 +19,13 @@
 
             <!-- Matching header: Prevent page break between round heading and first transplant -->
             {% if round_index == 1 and loop.index == 1 %}
+
+              {% if matching_index == 2 %}
+                <h1>Other significant matchings details</h1>
+              {% endif %}
+
               <div class="matching-header">
                 <h2>
-                  {% if matching_index == 1 %}
-                    <span class="color-primary">Selected:</span>
-                  {% endif %}
                   Matching #{{ matching.order_id }}
                 </h2>
 

@@ -4,13 +4,10 @@
   <h1 class="mb-0">Matchings summaries</h1>
 
   {% for matching in matchings %}
-    <div class="matching-summary">
+    <div class="matching-summary {{ 'selected' if loop.index == 1 else '' }}">
 
       <!-- Matching title -->
       <h3 class="mb-0">
-        {% if loop.index == 1 %}
-          <span class="color-primary">Selected:</span>
-        {% endif %}
         Matching #{{ matching.order_id }}
       </h3>
 
