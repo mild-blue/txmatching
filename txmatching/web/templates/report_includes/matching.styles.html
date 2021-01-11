@@ -173,7 +173,7 @@
 
     .transplant-content td {
         text-align: center;
-        padding: 2px 5px;
+        padding: 1px 5px;
         border: 1px solid #dddddd;
 
         width: auto;
@@ -218,6 +218,7 @@
         border-radius: 3px;
         border: 1px solid;
         padding: 2px;
+        margin: 1px 0;
 
         /* white background is better for printing */
         /* background: #e9ecef; */
@@ -252,11 +253,22 @@
     .flag {
         display: inline-block;
         margin: 3px 5px 0 0;
+        border: 1px solid #ddd;
+        position: relative;
+        top: 1px;
     }
 
     .flag img {
         height: 14px;
         width: 16px;
+    }
+
+    .patient-pair-content .flag {
+        border: 1px solid #666;
+    }
+
+    li > .flag {
+        top: -1px;
     }
 
     /* Matching summary */
