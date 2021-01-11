@@ -6,6 +6,7 @@ from txmatching.auth.data_types import UserRole
 from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
+from txmatching.database.services import solver_service
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
@@ -122,9 +123,15 @@ def populate_db():
 
     replace_or_add_patients_from_excel(patients)
 
+    patients = parse_excel_data(get_absolute_path('tests/resources/data2.xlsx'), country=None,
+                                txm_event_name='mock_data_CZE_CAN_IND')
+
+    replace_or_add_patients_from_excel(patients)
+
     result = solve_from_configuration(txm_event_db_id=txm_event.db_id,
                                       configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
                                                                   use_split_resolution=True))
+    solver_service.save_pairing_result(result, 1)
     logger.info(f'Successfully stored {len(list(result.calculated_matchings))} matchings into the database.')
 
 

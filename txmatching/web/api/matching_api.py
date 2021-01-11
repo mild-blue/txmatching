@@ -54,5 +54,5 @@ class CalculateFromConfig(Resource):
 
         if get_user_role() == UserRole.VIEWER:
             matching_dtos = matching_dtos[:configuration.max_matchings_to_show_to_viewer]
-
+        # TODO after discussing with FE return here also information whether all results are returned
         return jsonify(matching_dtos)

@@ -12,3 +12,4 @@ class PairingResult:
     configuration: Configuration
     score_matrix: ScoreMatrix
     calculated_matchings: Iterable[MatchingWithScore]
+    all_results_found: bool
