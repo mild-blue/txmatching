@@ -8,6 +8,9 @@
 
       <!-- Matching title -->
       <h3 class="mb-0">
+        {% if loop.index == 1 %}
+          <span class="color-primary">Selected:</span>
+        {% endif %}
         Matching #{{ matching.order_id }}
       </h3>
 
