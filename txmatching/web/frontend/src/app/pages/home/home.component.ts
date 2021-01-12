@@ -1,26 +1,26 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Role, User} from '@app/model/User';
-import {AuthService} from '@app/services/auth/auth.service';
-import {faCog} from '@fortawesome/free-solid-svg-icons';
-import {ConfigurationService} from '@app/services/configuration/configuration.service';
-import {AppConfiguration, Configuration} from '@app/model/Configuration';
-import {MatchingService} from '@app/services/matching/matching.service';
-import {AlertService} from '@app/services/alert/alert.service';
-import {Subscription} from 'rxjs';
-import {CalculatedMatchings, Matching} from '@app/model/Matching';
-import {PatientService} from '@app/services/patient/patient.service';
-import {LoggerService} from '@app/services/logger/logger.service';
-import {MatchingDetailComponent} from '@app/components/matching-detail/matching-detail.component';
-import {MatchingItemComponent} from '@app/components/matching-item/matching-item.component';
-import {ReportService} from '@app/services/report/report.service';
-import {UploadDownloadStatus} from '@app/components/header/header.interface';
-import {Report} from '@app/services/report/report.interface';
-import {finalize, first} from 'rxjs/operators';
-import {PatientList} from '@app/model/PatientList';
-import {DonorType} from '@app/model/Donor';
-import {Transplant} from '@app/model/Transplant';
-import {Round} from '@app/model/Round';
-import {UploadService} from '@app/services/upload/upload.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Role, User } from '@app/model/User';
+import { AuthService } from '@app/services/auth/auth.service';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
+import { ConfigurationService } from '@app/services/configuration/configuration.service';
+import { AppConfiguration, Configuration } from '@app/model/Configuration';
+import { MatchingService } from '@app/services/matching/matching.service';
+import { AlertService } from '@app/services/alert/alert.service';
+import { Subscription } from 'rxjs';
+import { CalculatedMatchings, Matching } from '@app/model/Matching';
+import { PatientService } from '@app/services/patient/patient.service';
+import { LoggerService } from '@app/services/logger/logger.service';
+import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
+import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
+import { ReportService } from '@app/services/report/report.service';
+import { UploadDownloadStatus } from '@app/components/header/header.interface';
+import { Report } from '@app/services/report/report.interface';
+import { finalize, first } from 'rxjs/operators';
+import { PatientList } from '@app/model/PatientList';
+import { DonorType } from '@app/model/Donor';
+import { Transplant } from '@app/model/Transplant';
+import { Round } from '@app/model/Round';
+import { UploadService } from '@app/services/upload/upload.service';
 
 @Component({
   selector: 'app-home',
@@ -154,9 +154,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.configuration = configuration;
 
     try {
-      const calculated_matchings_dto: CalculatedMatchings  = await this._matchingService.calculate(updatedConfig);
+      const calculated_matchings_dto: CalculatedMatchings = await this._matchingService.calculate(updatedConfig);
       this.matchings = this._prepareMatchings(calculated_matchings_dto.calculated_matchings);
       this._logger.log('Calculated matchings', [calculated_matchings_dto]);
+      if (!calculated_matchings_dto.all_matchings_found) {
+        const count = calculated_matchings_dto.found_matchings_count;
+        this._alertService.info(
+          `More than ${count} matchings found, showing top ${count}. ` +
+          `Use the settings if the top ${count} does not comply with your expectations to find the proper matching.`
+        );
+      }
     } catch (e) {
       this._alertService.error(`Error calculating matchings: "${e.message || e}"`);
       this._logger.error(`Error calculating matchings: "${e.message || e}"`);
