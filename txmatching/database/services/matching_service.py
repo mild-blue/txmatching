@@ -1,13 +1,12 @@
-import dataclasses
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple
 
 from dacite import from_dict
 
-from txmatching.data_transfer_objects.matchings.calculated_matchings_dto import \
-    CalculatedMatchingsDTO
+from txmatching.data_transfer_objects.matchings.calculated_matchings_model import \
+    CalculatedMatchingsModel
 from txmatching.data_transfer_objects.matchings.matching_dto import (
-    MatchingDTO, RoundDTO, TransplantDTOOut)
+    CalculatedMatchingsDTO, MatchingDTO, RoundDTO, TransplantDTOOut)
 from txmatching.data_transfer_objects.patients.out_dots.conversions import \
     get_detailed_score
 from txmatching.database.services.config_service import (
@@ -32,6 +31,8 @@ class LatestMatchingsDetailed:
     blood_compatibility_tuples: Dict[Tuple[int, int], bool]
     detailed_score_tuples: Dict[Tuple[int, int], List[DetailedCompatibilityIndexForHLAGroup]]
     antibody_matches_tuples: Dict[Tuple[int, int], List[AntibodyMatchForHLAGroup]]
+    found_matchings_count: int
+    all_matchings_found: bool
 
 
 def get_latest_matchings_detailed(txm_event_db_id: int) -> LatestMatchingsDetailed:
@@ -53,7 +54,7 @@ def get_latest_matchings_detailed(txm_event_db_id: int) -> LatestMatchingsDetail
 
     txm_event = get_txm_event(txm_event_db_id)
 
-    calculated_matchings = from_dict(data_class=CalculatedMatchingsDTO,
+    calculated_matchings = from_dict(data_class=CalculatedMatchingsModel,
                                      data=last_pairing_result_model.calculated_matchings)
 
     all_matchings = _db_matchings_to_matching_list(calculated_matchings, txm_event.active_donors_dict,
@@ -93,17 +94,19 @@ def get_latest_matchings_detailed(txm_event_db_id: int) -> LatestMatchingsDetail
         score_dict,
         compatible_blood_dict,
         detailed_compatibility_index_dict,
-        antibody_matches_dict
+        antibody_matches_dict,
+        calculated_matchings.found_matchings_count,
+        calculated_matchings.all_matchings_found
     )
 
 
 def _db_matchings_to_matching_list(
-        calculated_matchings: CalculatedMatchingsDTO,
+        calculated_matchings: CalculatedMatchingsModel,
         donors_dict: Dict[int, Donor],
         recipients_dict: Dict[int, Recipient],
 ) -> List[MatchingWithScore]:
     matching_list = []
-    for json_matching in calculated_matchings.matchings:
+    for json_matching in calculated_matchings.calculated_matchings:
         matching_list.append(
             MatchingWithScore(
                 frozenset(DonorRecipientPair(donors_dict[donor_recipient_ids.donor],
@@ -118,15 +121,15 @@ def _db_matchings_to_matching_list(
     return matching_list
 
 
-def create_matching_dtos(
+def create_calculated_matchings_dto(
         latest_matchings_detailed: LatestMatchingsDetailed,
         matchings: List[MatchingWithScore]
-) -> List[Union[tuple, dict]]:
+) -> CalculatedMatchingsDTO:
     """
     Method that creates common DTOs for FE and reports.
     """
-    return [
-        dataclasses.asdict(MatchingDTO(
+    return CalculatedMatchingsDTO(
+        calculated_matchings=[MatchingDTO(
             rounds=[
                 RoundDTO(
                     transplants=[
@@ -148,5 +151,9 @@ def create_matching_dtos(
             score=matching.score(),
             order_id=matching.order_id(),
             count_of_transplants=get_count_of_transplants(matching)
-        )) for matching in matchings
-    ]
+        ) for matching in matchings
+        ],
+        found_matchings_count=latest_matchings_detailed.found_matchings_count,
+        all_matchings_found=latest_matchings_detailed.all_matchings_found
+
+    )

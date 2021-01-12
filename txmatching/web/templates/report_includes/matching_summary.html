@@ -3,7 +3,7 @@
 <div class="box">
   <h1 class="mb-0">Matchings summaries</h1>
 
-  {% for matching in matchings %}
+  {% for matching in matchings.calculated_matchings %}
     <div class="matching-summary {{ 'selected' if loop.index == 1 else '' }}">
 
       <!-- Matching title -->

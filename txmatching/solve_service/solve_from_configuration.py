@@ -35,9 +35,10 @@ def solve_from_configuration(configuration: Configuration, txm_event_db_id: int)
 
     return PairingResult(configuration=configuration,
                          score_matrix=solver.score_matrix,
-                         calculated_matchings=matchings_filtered_sorted,
+                         calculated_matchings_list=matchings_filtered_sorted,
                          txm_event_db_id=txm_event.db_id,
-                         all_results_found=all_results_found)
+                         all_results_found=all_results_found,
+                         found_matchings_count=matching_count)
 
 
 def _filter_and_limit_number_of_matchings(all_matchings: Iterator[MatchingWithScore],

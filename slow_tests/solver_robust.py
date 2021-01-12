@@ -22,8 +22,8 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.logged_user import get_current_user_id
 
 
-class TestUpdateDonorRecipient(DbTests):
-    def test_saving_patients_from_obfuscated_excel(self):
+class TestLargeMatchingDoesNotFail(DbTests):
+    def testing_computation_for_patients_that_create_extremely_many_matchings(self):
         txm_event = create_or_overwrite_txm_event('test')
         patients = parse_excel_data(get_absolute_path('/tests/resources/data2.xlsx'), txm_event.name, None)
         replace_or_add_patients_from_excel(patients)
