@@ -1,0 +1,16 @@
+@import "../../../styles/variables";
+
+.pair-detail {
+  padding: $padding-y 0;
+
+  &__nav {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__pair {
+    padding: $padding-y $padding-x;
+  }
+}

@@ -4,6 +4,6 @@
      class="indicator">
   <div *ngIf="showScore" class="score">
     <span>score</span>
-    {{score}}
+    {{score ? score : "-"}}
   </div>
 </div>
