@@ -89,7 +89,9 @@
           <app-code *ngFor="let match of compatibilityIndex.antibody_matches"
                     [class]="getAntibodyMatchClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
-        <td>{{ compatibilityIndex.group_compatibility_index }}</td>
+        <td>
+          {{ recipient ? compatibilityIndex.group_compatibility_index : "-"}}
+        </td>
       </tr>
       </tbody>
     </table>
