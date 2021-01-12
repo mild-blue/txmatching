@@ -1,27 +1,12 @@
 {% from 'report_includes/macros.html' import antigen_class, antibody_class %}
 
 <div class="box pb-0">
-  <h1 class="mb-0">Matchings details</h1>
+  <h1 class="mb-0">Selected matching detail</h1>
 </div>
 
 {% for matching in matchings %}
   <div class="box">
-    <div class="matching-header">
-      <h2>
-        {% if loop.index == 1 %}
-          <span class="color-primary">Selected:</span>
-        {% endif %}
-        Matching #{{ matching.order_id }}
-      </h2>
-
-      <!-- Matching info -->
-      <ul class="matching-info">
-        <li>Score: <strong class="color-primary">{{ matching.score }}</strong></li>
-        <li>Rounds: <strong>{{ matching.rounds|length }}</strong></li>
-        <li>Transplants: <strong>{{ matching.count_of_transplants }}</strong></li>
-        <li>Countries: <strong>{{ matching.countries|country_code_from_country_filter|join(', ') }}</strong></li>
-      </ul>
-    </div>
+    {% set matching_index = loop.index %}
 
     <!-- Matching rounds -->
     {% for round in matching.rounds %}
@@ -31,14 +16,70 @@
         <!-- Matching round transplants -->
         {% for transplant in round.transplants %}
           <div class="matching-transplant">
-            <!-- Prevent page break between round heading and first transplant -->
-            {% if loop.index == 1 %}
-              <h3>Round #{{ round_index }}</h3>
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            {% if round_index == 1 and loop.index == 1 %}
+
+              {% if matching_index == 2 %}
+                <h1>Other significant matchings details</h1>
+              {% endif %}
+
+              <div class="matching-header">
+                <h2>
+                  Matching #{{ matching.order_id }}
+                </h2>
+
+                <!-- Matching info -->
+                <ul class="matching-info">
+                  <li>Score: <strong class="color-primary">{{ matching.score }}</strong></li>
+                  <li>Rounds: <strong>{{ matching.rounds|length }}</strong></li>
+                  <li>Transplants: <strong>{{ matching.count_of_transplants }}</strong></li>
+                  <!-- countries stats -->
+                  {% for country in matching.countries %}
+                    <li>
+                      <div class="flag">
+                        <img src="assets/countries/{{ country['country_code'].value }}.png"/>
+                      </div>
+                      <strong>
+                        {{ country['donor_count'] }}/{{ country['recipient_count'] }}
+                      </strong>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
             {% endif %}
 
-            <div class="transplant-header">
-              <h4>Transplant #{{ loop.index }}</h4>
-              <div class="score">Score: <span>{{ transplant.score }}</span></div>
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+            {% if loop.index == 1 %}
+              <h3>
+                <div>Round #{{ round_index }}</div>
+                <div class="donor-type-label">{{ round|donor_type_label_from_round_filter(all_donors) }}</div>
+              </h3>
+            {% endif %}
+
+            <div class="transplant-header {{ 'compatible' if transplant.compatible_blood else 'non-compatible' }}">
+              <h4>
+                <div class="patient-pair-content">
+                  <div class="patient">
+                    <div class="flag">
+                      <img src="assets/countries/{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
+                    </div>
+                    {{ transplant.donor }}
+                  </div>
+                  <div class="icon-right"> ></div>
+                  <div class="patient">
+                    <div class="flag">
+                      <img src="assets/countries/{{ (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value }}.png"/>
+                    </div>
+                    {{ transplant.recipient }}
+                  </div>
+                </div>
+              </h4>
+              <div class="score" style="background: {{ transplant.score|score_color_filter(configuration) }}">
+                <div>
+                  <span>{{ transplant.score }}</span>
+                </div>
+              </div>
             </div>
 
             <div class="transplant-content">
@@ -62,8 +103,8 @@
                       {% if (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.year_of_birth is not none %}
                         <span>{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.year_of_birth }}</span>
                       {% endif %}
-                      {% if transplant.donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight is not none %}
-                        <span>{{ transplant.donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight }}</span>
+                      {% if transplant.donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight_filter is not none %}
+                        <span>{{ transplant.donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight_filter }}</span>
                       {% endif %}
                     </div>
                   </td>
@@ -83,8 +124,8 @@
                       {% if (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.year_of_birth is not none %}
                         <span>{{ (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.year_of_birth }}</span>
                       {% endif %}
-                      {% if transplant.recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight is not none %}
-                        <span>{{ transplant.recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight }}</span>
+                      {% if transplant.recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight_filter is not none %}
+                        <span>{{ transplant.recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight_filter }}</span>
                       {% endif %}
                     </div>
                   </td>
@@ -152,6 +193,4 @@
       </div>
     {% endfor %}
   </div>
-
-  <div class="page-break"></div>
 {% endfor %}

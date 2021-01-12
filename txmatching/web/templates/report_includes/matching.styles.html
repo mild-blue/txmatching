@@ -12,6 +12,10 @@
         display: -webkit-box;
     }
 
+    .matching-info li * {
+        vertical-align: top;
+    }
+
     .matching-info li:last-child {
         -webkit-box-flex: 1;
     }
@@ -34,22 +38,39 @@
     /* Matching transplant */
     .matching-transplant {
         border-top: none;
-        border-radius: 40px;
-        padding-top: 20px;
+        padding-top: 10px;
     }
 
     .matching-transplant, .matching-transplant > * {
         page-break-inside: avoid !important;
     }
 
+    .matching-transplant h3 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .matching-transplant h3 div {
+        white-space: nowrap;
+    }
+
+    .donor-type-label {
+        font-size: 13px;
+    }
+
     .transplant-header {
-        background: #eff3f7;
         border: 1px solid #dddddd;
         border-bottom: none;
-        padding: 0 10px;
+        padding: 0 0 0 10px;
         font-weight: 700;
         font-size: 14px;
-        height: 50px;
+        height: 40px;
 
         display: flex;
         justify-content: space-between;
@@ -61,10 +82,35 @@
         -webkit-box-align: center;
     }
 
-    .transplant-header .score span {
+    .non-compatible {
+        background-color: #666666;
+        color: #f9f9f9
+    }
+
+    .compatible {
+        background: #e9ecef;
+        color: black;
+    }
+
+    .transplant-header .score {
+        height: 100%;
+        width: 15%;
+        color: black;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+
+    }
+
+    .transplant-header span {
         font-size: 18px;
         font-weight: 700;
-        color: #e2001a;
     }
 
     /* Transplant table */
@@ -75,7 +121,7 @@
     }
 
     .small, .small * {
-        font-size: 8px !important;
+        font-size: 10px !important;
     }
 
     .center-holder {
@@ -119,15 +165,16 @@
 
     .transplant-content tr.anti-header td {
         background: #eff3f7;
-        font-size: 12px;
-        padding: 2px;
+        font-size: 10px;
+        padding: 1px;
+        text-transform: uppercase;
+        color: #6c757d;
     }
 
     .transplant-content td {
         text-align: center;
-        padding: 7px 10px;
+        padding: 1px 5px;
         border: 1px solid #dddddd;
-        vertical-align: top;
 
         width: auto;
     }
@@ -169,14 +216,15 @@
     .code {
         display: inline-block;
         border-radius: 3px;
-        padding: 3px 3px 1px;
-        margin: 1px;
+        border: 1px solid;
+        padding: 2px;
+        margin: 1px 0;
 
-        background: #e9ecef;
+        /* white background is better for printing */
+        /* background: #e9ecef; */
         color: #6c757d;
 
         font-weight: 600;
-        font-size: 12px;
     }
 
     .code.matching {
@@ -202,22 +250,25 @@
         -webkit-box-align: center;
     }
 
-    .patient .flag {
-        margin-right: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
+    .flag {
+        display: inline-block;
+        margin: 3px 5px 0 0;
         border: 1px solid #ddd;
-
-        /* wkhtmltopdf */
-        display: -webkit-box;
-        -webkit-box-pack: start;
-        -webkit-box-align: center;
+        position: relative;
+        top: 1px;
     }
 
-    .patient img {
-        height: 16px;
+    .flag img {
+        height: 14px;
         width: 16px;
+    }
+
+    .patient-pair-content .flag {
+        border: 1px solid #666;
+    }
+
+    li > .flag {
+        top: -1px;
     }
 
     /* Matching summary */
@@ -229,12 +280,17 @@
         page-break-inside: avoid !important;
     }
 
+    .matching-summary.selected {
+        border-bottom: 1px solid gray;
+        padding-bottom: 15px;
+    }
+
     table.matching-summary-table {
         border-collapse: collapse;
     }
 
     table.matching-summary-table tr {
-        border-top: 1px solid #949494;
+        border-top: 1px solid #dddddd;
     }
 
     table.matching-summary-table tr:first-child {
@@ -252,10 +308,12 @@
 
     .patient-pair {
         border-radius: 3px;
-        padding: 2px;
+        padding: 2px 5px;
         margin: 3px 2px;
-        background: #e9ecef;
         display: inline-block;
+
+        /* fix wkhtmltopdf artefacts */
+        border: 1px solid #e9ecef;
     }
 
     .patient-pair-content {

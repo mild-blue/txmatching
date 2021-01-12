@@ -29,7 +29,7 @@ from txmatching.database.services.matching_service import (
     create_matching_dtos, get_latest_matchings_detailed)
 from txmatching.database.services.txm_event_service import (
     get_txm_event, get_txm_event_id_for_current_user)
-from txmatching.patients.patient import Patient
+from txmatching.patients.patient import Donor, DonorType, Patient
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.web.api.namespaces import report_api
@@ -237,7 +237,7 @@ def patient_by_medical_id_filter(medical_id: str, patients: Dict[str, Patient]) 
     return patients[medical_id]
 
 
-def patient_height_and_weight(patient: Patient) -> Optional[str]:
+def patient_height_and_weight_filter(patient: Patient) -> Optional[str]:
     height = patient.parameters.height
     weight = patient.parameters.weight
 
@@ -256,10 +256,66 @@ def hla_score_group_filter(scores_per_groups: List[dict], hla_group: str) -> dic
                        scores_per_groups))[0]
 
 
+def score_color_filter(score: Optional[float], configuration: Configuration):
+    # wkhtmltopdf does not support linear-gradients css style that is used in fe and makes
+    # exporting super-slow so we define percentage->color mapping in this function
+
+    if score is None:
+        percentage = 0
+    elif score == -1:
+        return '#ff0000'  # bad-matching
+    else:
+        percentage = 100 * score / configuration.maximum_total_score
+
+    if percentage < 15:
+        return '#ffa400'
+    elif percentage < 30:
+        return '#ffe14c'
+    elif percentage < 75:
+        return '#cfe733'
+    elif percentage < 100:
+        return '#98d961'
+    else:
+        return '#70c47b'
+
+
+def _get_donor_type_from_round(matching_round: dict, donors: Dict[str, Donor]) -> Optional[DonorType]:
+    if len(matching_round['transplants']) == 0:
+        return None
+
+    donor_id = matching_round['transplants'][0]['donor']
+    return donors[donor_id].donor_type
+
+
+def donor_type_label_from_round_filter(matching_round: dict, donors: Dict[str, Donor]) -> str:
+    donor_type = _get_donor_type_from_round(matching_round, donors)
+
+    if donor_type == DonorType.BRIDGING_DONOR:
+        return 'bridging donor'
+    elif donor_type == DonorType.NON_DIRECTED:
+        return 'non-directed donor'
+    else:
+        return ''
+
+
+def round_index_from_order_filter(order: int, matching_round: dict, donors: Dict[str, Donor]) -> str:
+    donor_type = _get_donor_type_from_round(matching_round, donors)
+
+    if donor_type == DonorType.BRIDGING_DONOR:
+        return f'{order}B'
+    elif donor_type == DonorType.NON_DIRECTED:
+        return f'{order}N'
+    else:
+        return f'{order}'
+
+
 jinja2.filters.FILTERS.update({
     'country_combination_filter': country_combination_filter,
     'donor_recipient_score_filter': donor_recipient_score_filter,
     'country_code_from_country_filter': country_code_from_country_filter,
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
-    'patient_height_and_weight': patient_height_and_weight,
+    'patient_height_and_weight_filter': patient_height_and_weight_filter,
+    'score_color_filter': score_color_filter,
+    'donor_type_label_from_round_filter': donor_type_label_from_round_filter,
+    'round_index_from_order_filter': round_index_from_order_filter,
 })
