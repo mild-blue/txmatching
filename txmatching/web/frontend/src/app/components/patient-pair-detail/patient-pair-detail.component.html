@@ -7,7 +7,7 @@
   </div>
 
   <div *ngIf="item" [ngSwitch]="activeTab">
-    <div *ngSwitchCase="tabs.Pair"
+    <div *ngSwitchCase="tabs.Overview"
          class="pair-detail__pair">
       <app-matching-transplant [donor]="item.d"
                                [recipient]="item.r"
@@ -16,10 +16,10 @@
                                [detailedScorePerGroup]="item.d.detailed_score_with_related_recipient"
                                [configuration]="configuration"></app-matching-transplant>
     </div>
-    <app-patient-detail-donor *ngSwitchCase="tabs.Donor"
+    <app-patient-detail-donor *ngSwitchCase="tabs.DonorSettings"
                               [item]="item.d"
                               [patients]="patients"></app-patient-detail-donor>
-    <app-patient-detail-recipient *ngSwitchCase="tabs.Recipient"
+    <app-patient-detail-recipient *ngSwitchCase="tabs.RecipientSettings"
                                   [item]="item.r"
                                   [patients]="patients"></app-patient-detail-recipient>
   </div>

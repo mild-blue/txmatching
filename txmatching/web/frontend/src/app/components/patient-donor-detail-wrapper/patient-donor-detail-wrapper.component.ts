@@ -16,7 +16,7 @@ export class PatientDonorDetailWrapperComponent extends ListItemDetailAbstractCo
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
-  public activeTab: PatientDonorTab = PatientDonorTab.Detail;
+  public activeTab: PatientDonorTab = PatientDonorTab.Overview;
   public tabs: typeof PatientDonorTab = PatientDonorTab;
   public tabNames: string[] = Object.values(PatientDonorTab);
 

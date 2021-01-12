@@ -1,4 +1,4 @@
 export enum PatientDonorTab {
-  Detail = 'detail',
+  Overview = 'overview',
   Settings = 'settings',
 }

@@ -7,7 +7,7 @@
   </div>
 
   <div *ngIf="item" [ngSwitch]="activeTab">
-    <div *ngSwitchCase="tabs.Detail"
+    <div *ngSwitchCase="tabs.Overview"
          class="pair-detail__pair">
       <app-matching-transplant [donor]="item"
                                [isBloodCompatible]="item.compatible_blood_with_related_recipient"
