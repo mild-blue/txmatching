@@ -16,11 +16,13 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import \
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
-from txmatching.database.services.config_service import configuration_from_dict
+from txmatching.database.services.config_service import (
+    configuration_from_dict, find_configuration_db_id_for_configuration)
 from txmatching.database.services.matching_service import (
-    create_calculated_matchings_dto, get_latest_matchings_detailed)
-from txmatching.database.services.txm_event_service import \
-    get_txm_event_id_for_current_user
+    create_calculated_matchings_dto, get_latest_matchings_detailed,
+    get_matchings_detailed_for_configuration)
+from txmatching.database.services.txm_event_service import (
+    get_txm_event, get_txm_event_id_for_current_user)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
@@ -44,15 +46,21 @@ class CalculateFromConfig(Resource):
     @matching_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     def post(self) -> str:
-        txm_event_id = get_txm_event_id_for_current_user()
+        txm_event_db_id = get_txm_event_id_for_current_user()
+        txm_event = get_txm_event(txm_event_db_id)
         user_id = get_current_user_id()
         configuration = configuration_from_dict(request.json)
-        pairing_result = solve_from_configuration(configuration, txm_event_db_id=txm_event_id)
-        solver_service.save_pairing_result(pairing_result, user_id)
-        latest_matchings_detailed = get_latest_matchings_detailed(txm_event_id)
+        maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
+                                                                               configuration=configuration)
+        if maybe_configuration_db_id:
+            matchings_detailed = get_matchings_detailed_for_configuration(txm_event, maybe_configuration_db_id)
+        else:
+            pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
+            solver_service.save_pairing_result(pairing_result, user_id)
+            # TODO here there is not reason to load the data again from the database. Fix that
+            matchings_detailed = get_latest_matchings_detailed(txm_event)
 
-        calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed,
-                                                                   latest_matchings_detailed.matchings)
+        calculated_matchings_dto = create_calculated_matchings_dto(matchings_detailed, matchings_detailed.matchings)
 
         if get_user_role() == UserRole.VIEWER:
             calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[

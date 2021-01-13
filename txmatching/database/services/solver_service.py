@@ -1,9 +1,9 @@
 import dataclasses
 
-from txmatching.data_transfer_objects.matchings.calculated_matchings_model import (
-    CalculatedMatchingModel, CalculatedMatchingsModel)
-from txmatching.data_transfer_objects.matchings.donor_recipient_dto import \
-    DonorRecipientDTO
+from txmatching.data_transfer_objects.matchings.donor_recipient_model import \
+    DonorRecipientModel
+from txmatching.data_transfer_objects.matchings.matchings_model import (
+    MatchingModel, MatchingsModel)
 from txmatching.database.db import db
 from txmatching.database.services.config_service import \
     save_configuration_to_db
@@ -29,11 +29,11 @@ def save_pairing_result(pairing_result: PairingResult, user_id: int):
     db.session.commit()
 
 
-def _calculated_matchings_to_model(pairing_result: PairingResult) -> CalculatedMatchingsModel:
-    return CalculatedMatchingsModel([
-        CalculatedMatchingModel(
+def _calculated_matchings_to_model(pairing_result: PairingResult) -> MatchingsModel:
+    return MatchingsModel([
+        MatchingModel(
             donors_recipients=[
-                DonorRecipientDTO(pair.donor.db_id, pair.recipient.db_id)
+                DonorRecipientModel(pair.donor.db_id, pair.recipient.db_id)
                 for pair in matching.get_donor_recipient_pairs()
             ],
             score=matching.score(),
