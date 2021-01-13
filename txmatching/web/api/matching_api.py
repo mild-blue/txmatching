@@ -58,7 +58,7 @@ class CalculateFromConfig(Resource):
             pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
             solver_service.save_pairing_result(pairing_result, user_id)
             # TODO here there is not reason to load the data again from the database. Fix that
-            matchings_detailed = get_latest_matchings_detailed(txm_event_db_id)
+            matchings_detailed = get_latest_matchings_detailed(txm_event)
 
         calculated_matchings_dto = create_calculated_matchings_dto(matchings_detailed, matchings_detailed.matchings)
 

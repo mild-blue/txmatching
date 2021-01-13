@@ -103,7 +103,7 @@ class Report(Resource):
             pairing_result = solve_from_configuration(Configuration(), txm_event=txm_event)
             user_id = get_current_user_id()
             solver_service.save_pairing_result(pairing_result, user_id)
-        latest_matchings_detailed = get_latest_matchings_detailed(txm_event_db_id)
+        latest_matchings_detailed = get_latest_matchings_detailed(txm_event)
         # lower ID -> better evaluation
         sorted_matchings = sorted(latest_matchings_detailed.matchings, key=lambda m: m.order_id())
 

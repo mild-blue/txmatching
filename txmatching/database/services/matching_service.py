@@ -8,8 +8,9 @@ from txmatching.data_transfer_objects.matchings.matchings_model import \
 from txmatching.data_transfer_objects.patients.out_dots.conversions import \
     get_detailed_score
 from txmatching.database.services.config_service import (
-    get_configuration_for_db_id, get_latest_config_model_for_txm_event,
-    get_pairing_result_for_configuration_db_id, set_used_config)
+    config_set_updated, get_configuration_from_db_id,
+    get_latest_config_model_for_txm_event,
+    get_pairing_result_for_configuration_db_id)
 from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.matching import get_count_of_transplants
@@ -35,10 +36,9 @@ class MatchingsDetailed:
 
 def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
                                              configuration_db_id: int) -> MatchingsDetailed:
-    configuration = get_configuration_for_db_id(configuration_db_id)
+    configuration = get_configuration_from_db_id(configuration_db_id)
 
-    set_used_config(configuration_db_id)
-    txm_event = get_txm_event(txm_event.db_id)
+    config_set_updated(configuration_db_id)
     database_pairing_result = get_pairing_result_for_configuration_db_id(configuration_db_id)
 
     matchings_with_score = _matchings_dto_to_matching_with_score(database_pairing_result.matchings,
@@ -84,13 +84,12 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
     )
 
 
-def get_latest_matchings_detailed(txm_event_db_id: int) -> MatchingsDetailed:
-    maybe_config_model = get_latest_config_model_for_txm_event(txm_event_db_id)
+def get_latest_matchings_detailed(txm_event: TxmEvent) -> MatchingsDetailed:
+    maybe_config_model = get_latest_config_model_for_txm_event(txm_event.db_id)
     if maybe_config_model is None:
         raise AssertionError('There are no latest matchings in the database, '
                              "didn't you forget to call solve_from_configuration()?")
     configuration_db_id = maybe_config_model.id
-    txm_event = get_txm_event(txm_event_db_id)
     return get_matchings_detailed_for_configuration(txm_event, configuration_db_id)
 
 

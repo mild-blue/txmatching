@@ -19,7 +19,7 @@ from txmatching.utils.enums import Country
 logger = logging.getLogger(__name__)
 
 
-def get_configuration_for_db_id(configuration_db_id: int) -> Configuration:
+def get_configuration_from_db_id(configuration_db_id: int) -> Configuration:
     config = ConfigModel.query.get(configuration_db_id)
     if config is None:
         raise AssertionError(f'Configuration not found for db id {configuration_db_id}')
@@ -88,6 +88,6 @@ def get_pairing_result_for_configuration_db_id(configuration_db_id: int) -> Data
     return DatabasePairingResult(score_matrix=score_matrix, matchings=matchings)
 
 
-def set_used_config(configuration_db_id: int):
+def config_set_updated(configuration_db_id: int):
     ConfigModel.query.filter(ConfigModel.id == configuration_db_id).update({'updated_at': datetime.now()})
     db.session.commit()
