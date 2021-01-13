@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public loading: boolean = false;
 
   public matchings: Matching[] = [];
+  public foundMatchingsCount: number = 0;
   public user?: User;
   public patients?: PatientList;
   public appConfiguration?: AppConfiguration;
@@ -156,13 +157,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     try {
       const calculated_matchings_dto: CalculatedMatchings = await this._matchingService.calculate(updatedConfig);
       this.matchings = this._prepareMatchings(calculated_matchings_dto.calculated_matchings);
+      this.foundMatchingsCount = calculated_matchings_dto.found_matchings_count;
       this._logger.log('Calculated matchings', [calculated_matchings_dto]);
       if (!calculated_matchings_dto.all_matchings_found) {
-        const count = calculated_matchings_dto.found_matchings_count;
-        this._alertService.info(
-          `More than ${count} matchings found, showing top ${count}. ` +
-          `Use the settings if the top ${count} does not comply with your expectations to find the proper matching.`
-        );
+        this._alertService.info(`
+          More than ${this.foundMatchingsCount} possible matchings were found.
+          Not looking for all the matchings and only showing the top matchings from the set of already found.
+          If you want to be sure, that the top matchings are truly the best, please contact us, we will help.
+        `, undefined, undefined, false);
       }
     } catch (e) {
       this._alertService.error(`Error calculating matchings: "${e.message || e}"`);

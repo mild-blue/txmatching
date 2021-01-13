@@ -8,8 +8,8 @@
   <app-container>
     <div class="home-header">
       <h1>
-        Matchings
-        <app-count *ngIf="!loading" [count]="matchings.length"></app-count>
+        Top Matchings
+        <app-count *ngIf="!loading" [count]="matchings.length" [maxCount]="foundMatchingsCount"></app-count>
       </h1>
       <button (click)="toggleConfiguration()"
               *ngIf="showConfiguration"
