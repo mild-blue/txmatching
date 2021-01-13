@@ -16,7 +16,7 @@ from txmatching.utils.hla_system.hla_crossmatch import (
 
 def to_lists_for_fe(txm_event: TxmEvent) -> Dict[str, Union[List[DonorDTOOut], List[Recipient]]]:
     return {
-        'donors': sorted([donor_to_donor_dto_out(donor, txm_event.all_recipients, txm_event.db_id) for donor in
+        'donors': sorted([donor_to_donor_dto_out(donor, txm_event.all_recipients, txm_event) for donor in
                           txm_event.all_donors], key=_patient_order_for_fe),
         'recipients': sorted(txm_event.all_recipients, key=_patient_order_for_fe)
     }
@@ -28,7 +28,7 @@ def _patient_order_for_fe(patient: Union[DonorDTOOut, Recipient]) -> str:
 
 def donor_to_donor_dto_out(donor: Donor,
                            all_recipients: List[Recipient],
-                           txm_event_db_id: int) -> DonorDTOOut:
+                           txm_event: TxmEvent) -> DonorDTOOut:
     donor_dto = DonorDTOOut(db_id=donor.db_id,
                             medical_id=donor.medical_id,
                             parameters=donor.parameters,
@@ -40,7 +40,7 @@ def donor_to_donor_dto_out(donor: Donor,
         related_recipient = next(recipient for recipient in all_recipients if
                                  recipient.db_id == donor.related_recipient_db_id)
 
-        configuration = get_configuration_for_txm_event(txm_event_db_id)
+        configuration = get_configuration_for_txm_event(txm_event)
         scorer = scorer_from_configuration(configuration)
         donor_dto.score_with_related_recipient = scorer.score_transplant(donor, related_recipient, None)
         donor_dto.compatible_blood_with_related_recipient = blood_groups_compatible(

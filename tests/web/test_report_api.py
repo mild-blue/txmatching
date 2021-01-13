@@ -2,6 +2,7 @@ from tests.test_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.services import solver_service
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -17,7 +18,8 @@ class TestMatchingApi(DbTests):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
-        pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
+        txm_event = get_txm_event(self.txm_event_db_id)
+        pairing_result = solve_from_configuration(Configuration(), txm_event)
         solver_service.save_pairing_result(pairing_result, 1)
 
         with self.app.test_client() as client:
@@ -33,7 +35,8 @@ class TestMatchingApi(DbTests):
     def test_get_report_with_invalid_matching_id(self):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
-        pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
+        txm_event = get_txm_event(self.txm_event_db_id)
+        pairing_result = solve_from_configuration(Configuration(), txm_event)
         solver_service.save_pairing_result(pairing_result, 1)
 
         with self.app.test_client() as client:
@@ -50,7 +53,8 @@ class TestMatchingApi(DbTests):
     def test_get_report_with_invalid_matching_below_chosen_argument(self):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
-        pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
+        txm_event = get_txm_event(self.txm_event_db_id)
+        pairing_result = solve_from_configuration(Configuration(), txm_event)
         solver_service.save_pairing_result(pairing_result, 1)
 
         # Less than min value - failure

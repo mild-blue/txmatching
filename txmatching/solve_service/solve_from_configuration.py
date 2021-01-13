@@ -3,9 +3,8 @@ import logging
 from typing import Iterator, List, Tuple
 
 from txmatching.configuration.configuration import Configuration
-from txmatching.database.services.txm_event_service import get_txm_event
-from txmatching.filters.filter_base import FilterBase
 from txmatching.filters.filter_from_config import filter_from_config
+from txmatching.patients.patient import TxmEvent
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.pairing_result import PairingResult
@@ -16,8 +15,7 @@ MAX_ALLOWED_NUMBER_OF_MATCHINGS = 100000
 MAX_NUMBER_OF_MATCHINGS_TO_STORE = 1000
 
 
-def solve_from_configuration(configuration: Configuration, txm_event_db_id: int) -> PairingResult:
-    txm_event = get_txm_event(txm_event_db_id)
+def solve_from_configuration(configuration: Configuration, txm_event: TxmEvent) -> PairingResult:
     scorer = scorer_from_configuration(configuration)
     solver = solver_from_configuration(configuration,
                                        donors_dict=txm_event.active_donors_dict,

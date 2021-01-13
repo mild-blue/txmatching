@@ -123,7 +123,7 @@ def populate_db():
 
     replace_or_add_patients_from_excel(patients)
 
-    result = solve_from_configuration(txm_event_db_id=txm_event.db_id,
+    result = solve_from_configuration(txm_event=txm_event,
                                       configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
                                                                   use_split_resolution=True))
     solver_service.save_pairing_result(result, 1)
