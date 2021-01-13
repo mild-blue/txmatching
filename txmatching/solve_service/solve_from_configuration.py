@@ -11,8 +11,8 @@ from txmatching.solvers.pairing_result import PairingResult
 from txmatching.solvers.solver_from_config import solver_from_configuration
 
 logger = logging.getLogger(__name__)
-MAX_ALLOWED_NUMBER_OF_MATCHINGS = 1000000
-MAX_NUMBER_OF_MATCHINGS_TO_STORE = 1000
+MAX_ALLOWED_NUMBER_OF_MATCHINGS = 800
+MAX_NUMBER_OF_MATCHINGS_TO_STORE = 400
 
 
 def solve_from_configuration(configuration: Configuration, txm_event_db_id: int) -> PairingResult:
@@ -48,13 +48,14 @@ def _filter_and_limit_number_of_matchings(all_matchings: Iterator[MatchingWithSc
     all_results_found = True
     i = -1
     for i, matching in enumerate(all_matchings):
-        if i == MAX_ALLOWED_NUMBER_OF_MATCHINGS:
-            logger.error(f'Max number of matchings {MAX_ALLOWED_NUMBER_OF_MATCHINGS} was reached. Returning only '
-                         f'matchings found up to now.')
-            all_results_found = False
-            break
         if matching_filter.keep(matching):
             matchings.append(matching)
+            if i == MAX_ALLOWED_NUMBER_OF_MATCHINGS - 1:
+                logger.error(f'Max number of matchings {MAX_ALLOWED_NUMBER_OF_MATCHINGS} was reached. Returning only '
+                             f'matchings found up to now.')
+                all_results_found = False
+                break
+
     return matchings, all_results_found, i + 1
 
 
