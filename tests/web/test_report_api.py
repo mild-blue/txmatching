@@ -18,7 +18,7 @@ class TestMatchingApi(DbTests):
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
         pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
-        solver_service.save_pairing_result(pairing_result)
+        solver_service.save_pairing_result(pairing_result, 1)
 
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}=2',
@@ -34,7 +34,7 @@ class TestMatchingApi(DbTests):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
-        solver_service.save_pairing_result(pairing_result)
+        solver_service.save_pairing_result(pairing_result, 1)
 
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{REPORTS_NAMESPACE}/6666?{MATCHINGS_BELOW_CHOSEN}=2',
@@ -51,7 +51,7 @@ class TestMatchingApi(DbTests):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         pairing_result = solve_from_configuration(Configuration(), self.txm_event_db_id)
-        solver_service.save_pairing_result(pairing_result)
+        solver_service.save_pairing_result(pairing_result, 1)
 
         # Less than min value - failure
         with self.app.test_client() as client:

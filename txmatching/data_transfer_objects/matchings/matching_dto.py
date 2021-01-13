@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import List
 
-from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import MedicalId
 from txmatching.utils.enums import Country
 # pylint: disable=too-many-instance-attributes
@@ -39,22 +38,7 @@ class MatchingDTO:
 
 
 @dataclass
-class TransplantDTO:
-    score: float
-    compatible_blood: bool
-    donor: Donor
-    recipient: Recipient
-
-
-@dataclass
-class RoundReportDTO:
-    transplants: List[TransplantDTO]
-
-
-@dataclass
-class MatchingReportDTO:
-    score: float
-    rounds: List[RoundReportDTO]
-    countries: List[CountryDTO]
-    order_id: int
-    count_of_transplants: int
+class CalculatedMatchingsDTO:
+    calculated_matchings: List[MatchingDTO]
+    found_matchings_count: int
+    all_matchings_found: bool

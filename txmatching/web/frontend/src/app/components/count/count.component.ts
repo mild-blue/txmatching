@@ -7,4 +7,5 @@ import { Component, Input } from '@angular/core';
 })
 export class CountComponent {
   @Input() count: number = 0;
+  @Input() maxCount?: number;
 }

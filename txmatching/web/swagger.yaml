@@ -33,6 +33,21 @@ definitions:
         - hla_code
         - match_type
         type: object
+    CalculatedMatchings:
+        properties:
+            all_matchings_found:
+                type: boolean
+            calculated_matchings:
+                items:
+                    $ref: '#/definitions/Matching'
+                type: array
+            found_matchings_count:
+                type: integer
+        required:
+        - all_matchings_found
+        - calculated_matchings
+        - found_matchings_count
+        type: object
     Configuration:
         properties:
             blood_group_compatibility_bonus:
@@ -995,9 +1010,7 @@ paths:
                 '200':
                     description: List of all matchings for given configuration.
                     schema:
-                        items:
-                            $ref: '#/definitions/Matching'
-                        type: array
+                        $ref: '#/definitions/CalculatedMatchings'
                 '400':
                     description: Wrong data format.
                     schema:

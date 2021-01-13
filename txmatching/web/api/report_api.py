@@ -20,18 +20,21 @@ from txmatching.configuration.app_configuration.application_configuration import
     ApplicationEnvironment, get_application_configuration)
 from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
+from txmatching.data_transfer_objects.matchings.matching_dto import (
+    CountryDTO, RoundDTO)
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     get_config_model_for_txm_event, get_configuration_for_txm_event)
 from txmatching.database.services.matching_service import (
-    create_matching_dtos, get_latest_matchings_detailed)
+    create_calculated_matchings_dto, get_latest_matchings_detailed)
 from txmatching.database.services.txm_event_service import (
     get_txm_event, get_txm_event_id_for_current_user)
 from txmatching.patients.patient import Donor, DonorType, Patient
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
+from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import report_api
 
 logger = logging.getLogger(__name__)
@@ -98,7 +101,8 @@ class Report(Resource):
         maybe_config_model = get_config_model_for_txm_event(txm_event_db_id)
         if maybe_config_model is None:
             pairing_result = solve_from_configuration(Configuration(), txm_event_db_id=txm_event_db_id)
-            solver_service.save_pairing_result(pairing_result)
+            user_id = get_current_user_id()
+            solver_service.save_pairing_result(pairing_result, user_id)
         latest_matchings_detailed = get_latest_matchings_detailed(txm_event_db_id)
         # lower ID -> better evaluation
         sorted_matchings = sorted(latest_matchings_detailed.matchings, key=lambda m: m.order_id())
@@ -117,7 +121,7 @@ class Report(Resource):
         other_matchings_to_include.sort(key=lambda m: m.order_id())
         matchings = requested_matching + other_matchings_to_include
 
-        matching_dtos = create_matching_dtos(latest_matchings_detailed, matchings)
+        calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings)
 
         configuration = get_configuration_for_txm_event(txm_event_db_id=txm_event_db_id)
 
@@ -150,7 +154,7 @@ class Report(Resource):
             title='Matching Report',
             date=now.strftime('%d.%m.%Y %H:%M:%S'),
             configuration=configuration,
-            matchings=matching_dtos,
+            matchings=calculated_matchings_dto,
             required_patients_medical_ids=required_patients_medical_ids,
             manual_donor_recipient_scores_with_medical_ids=manual_donor_recipient_scores_with_medical_ids,
             all_donors={donor.medical_id: donor for donor in txm_event.all_donors},
@@ -229,8 +233,8 @@ def donor_recipient_score_filter(donor_recipient_score: Tuple) -> str:
     return f'{donor_recipient_score[0]} -> {donor_recipient_score[1]} : {donor_recipient_score[2]}'
 
 
-def country_code_from_country_filter(countries: List[dict]) -> List[str]:
-    return [country['country_code'].value for country in countries]
+def country_code_from_country_filter(countries: List[CountryDTO]) -> List[str]:
+    return [country.country_code.value for country in countries]
 
 
 def patient_by_medical_id_filter(medical_id: str, patients: Dict[str, Patient]) -> Patient:
@@ -249,11 +253,6 @@ def patient_height_and_weight_filter(patient: Patient) -> Optional[str]:
         return f'-/{weight:.0f}'
     else:
         return None
-
-
-def hla_score_group_filter(scores_per_groups: List[dict], hla_group: str) -> dict:
-    return list(filter(lambda scores_per_group: scores_per_group['hla_group'].value.upper() == hla_group.upper(),
-                       scores_per_groups))[0]
 
 
 def score_color_filter(score: Optional[float], configuration: Configuration):
@@ -279,15 +278,15 @@ def score_color_filter(score: Optional[float], configuration: Configuration):
         return '#70c47b'
 
 
-def _get_donor_type_from_round(matching_round: dict, donors: Dict[str, Donor]) -> Optional[DonorType]:
-    if len(matching_round['transplants']) == 0:
+def _get_donor_type_from_round(matching_round: RoundDTO, donors: Dict[str, Donor]) -> Optional[DonorType]:
+    if len(matching_round.transplants) == 0:
         return None
 
-    donor_id = matching_round['transplants'][0]['donor']
+    donor_id = matching_round.transplants[0].donor
     return donors[donor_id].donor_type
 
 
-def donor_type_label_from_round_filter(matching_round: dict, donors: Dict[str, Donor]) -> str:
+def donor_type_label_from_round_filter(matching_round: RoundDTO, donors: Dict[str, Donor]) -> str:
     donor_type = _get_donor_type_from_round(matching_round, donors)
 
     if donor_type == DonorType.BRIDGING_DONOR:
@@ -298,7 +297,7 @@ def donor_type_label_from_round_filter(matching_round: dict, donors: Dict[str, D
         return ''
 
 
-def round_index_from_order_filter(order: int, matching_round: dict, donors: Dict[str, Donor]) -> str:
+def round_index_from_order_filter(order: int, matching_round: RoundDTO, donors: Dict[str, Donor]) -> str:
     donor_type = _get_donor_type_from_round(matching_round, donors)
 
     if donor_type == DonorType.BRIDGING_DONOR:

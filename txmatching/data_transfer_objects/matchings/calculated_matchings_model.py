@@ -6,12 +6,14 @@ from txmatching.data_transfer_objects.matchings.donor_recipient_dto import \
 
 
 @dataclass
-class CalculatedMatchingDTO:
+class CalculatedMatchingModel:
     donors_recipients: List[DonorRecipientDTO]
     score: float
     db_id: int
 
 
 @dataclass
-class CalculatedMatchingsDTO:
-    matchings: List[CalculatedMatchingDTO]
+class CalculatedMatchingsModel:
+    calculated_matchings: List[CalculatedMatchingModel]
+    found_matchings_count: int
+    all_matchings_found: bool
