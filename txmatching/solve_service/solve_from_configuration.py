@@ -3,6 +3,7 @@ import logging
 from typing import Iterator, List, Tuple
 
 from txmatching.configuration.configuration import Configuration
+from txmatching.filters.filter_base import FilterBase
 from txmatching.filters.filter_from_config import filter_from_config
 from txmatching.patients.patient import TxmEvent
 from txmatching.scorers.scorer_from_config import scorer_from_configuration

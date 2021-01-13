@@ -16,11 +16,13 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import \
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
-from txmatching.database.services.config_service import configuration_from_dict
-from txmatching.database.services.matching_service import \
-    get_latest_matchings_detailed, create_matching_dtos
-from txmatching.database.services.txm_event_service import \
-    get_txm_event_id_for_current_user
+from txmatching.database.services.config_service import (
+    configuration_from_dict, find_configuration_db_id_for_configuration)
+from txmatching.database.services.matching_service import (
+    create_calculated_matchings_dto, get_latest_matchings_detailed,
+    get_matchings_detailed_for_configuration)
+from txmatching.database.services.txm_event_service import (
+    get_txm_event, get_txm_event_id_for_current_user)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id

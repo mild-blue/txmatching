@@ -15,3 +15,5 @@ class MatchingModel:
 @dataclass
 class MatchingsModel:
     matchings: List[MatchingModel]
+    found_matchings_count: int
+    all_matchings_found: bool

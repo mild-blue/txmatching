@@ -1,10 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
-from dacite import from_dict
-
-from txmatching.data_transfer_objects.matchings.calculated_matchings_dto import \
-    CalculatedMatchingsDTO
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CalculatedMatchingsDTO, MatchingDTO, RoundDTO, TransplantDTOOut)
 from txmatching.data_transfer_objects.matchings.matchings_model import \
@@ -81,8 +77,8 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
         compatible_blood_dict,
         detailed_compatibility_index_dict,
         antibody_matches_dict,
-        calculated_matchings.found_matchings_count,
-        calculated_matchings.all_matchings_found
+        database_pairing_result.matchings.found_matchings_count,
+        database_pairing_result.matchings.all_matchings_found
     )
 
 
@@ -102,7 +98,7 @@ def _matchings_dto_to_matching_with_score(
         recipients_dict: Dict[int, Recipient],
 ) -> List[MatchingWithScore]:
     matching_list = []
-    for json_matching in calculated_matchings.calculated_matchings:
+    for json_matching in calculated_matchings.matchings:
         matching_list.append(
             MatchingWithScore(
                 frozenset(DonorRecipientPair(donors_dict[donor_recipient_ids.donor],
