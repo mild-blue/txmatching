@@ -12,7 +12,7 @@ class TestConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         configuration = Configuration(
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
-        save_configuration_to_db(configuration, txm_event_db_id)
+        save_configuration_to_db(configuration, txm_event_db_id, 1)
 
         configuration = get_configuration_for_txm_event(txm_event_db_id)
         self.assertEqual(Country.CZE, configuration.forbidden_country_combinations[0].donor_country)

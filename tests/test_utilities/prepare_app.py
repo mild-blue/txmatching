@@ -1,6 +1,8 @@
+import logging
 import os
 import unittest
 from importlib import util as importing
+from logging.config import dictConfig
 from typing import Dict
 
 from flask import Flask
@@ -23,7 +25,7 @@ from txmatching.solve_service.solve_from_configuration import \
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import (API_VERSION, USER_NAMESPACE, add_all_namespaces,
-                            register_error_handlers)
+                            register_error_handlers, setup_logging)
 
 ROLE_CREDENTIALS = {
     UserRole.ADMIN: ADMIN_USER,
@@ -45,6 +47,9 @@ class DbTests(unittest.TestCase):
     _database_name = 'memory.sqlite'
 
     def setUp(self):
+        formatter ='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+        logging.basicConfig(level=logging.INFO, format=formatter)
         """
         Creates a new database for the unit test to use
         """
@@ -76,7 +81,7 @@ class DbTests(unittest.TestCase):
     def fill_db_with_patients_and_results(self) -> int:
         txm_event_db_id = self.fill_db_with_patients()
         pairing_result = solve_from_configuration(Configuration(), txm_event_db_id)
-        solver_service.save_pairing_result(pairing_result)
+        solver_service.save_pairing_result(pairing_result, 1)
         return txm_event_db_id
 
     @staticmethod

@@ -1,6 +1,7 @@
 import dataclasses
 
-from tests.test_utilities.populate_db import create_or_overwrite_txm_event, PATIENT_DATA_OBFUSCATED
+from tests.test_utilities.populate_db import (PATIENT_DATA_OBFUSCATED,
+                                              create_or_overwrite_txm_event)
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.sql_alchemy_schema import ConfigModel
@@ -170,26 +171,32 @@ class TestSaveAndGetConfiguration(DbTests):
 
         self.maxDiff = None
 
-        self.assertCountEqual(expected_antibodies[3]["antibody_matches"],
-                              res.json[0]["rounds"][0]["transplants"][1]['detailed_score_per_group'][3][
-                                  "antibody_matches"])
-        self.assertEqual(expected_antibodies[3]["hla_group"],
-                         res.json[0]["rounds"][0]["transplants"][1]['detailed_score_per_group'][3]["hla_group"])
+        self.assertCountEqual(expected_antibodies[3]['antibody_matches'],
+                              res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1][
+                                  'detailed_score_per_group'][3][
+                                  'antibody_matches'])
+        self.assertEqual(expected_antibodies[3]['hla_group'],
+                         res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1]['detailed_score_per_group'][
+                             3]['hla_group'])
 
         self.assertListEqual(expected_score[0]['donor_matches'],
-                             res.json[0]["rounds"][0]["transplants"][0]['detailed_score_per_group'][0][
+                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][0][
+                                 'detailed_score_per_group'][0][
                                  'donor_matches'
                              ])
         self.assertListEqual(expected_score2[0]['donor_matches'],
-                             res.json[0]["rounds"][0]["transplants"][1]['detailed_score_per_group'][0][
+                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1][
+                                 'detailed_score_per_group'][0][
                                  'donor_matches'
                              ])
         self.assertListEqual(expected_score[0]['recipient_matches'],
-                             res.json[0]["rounds"][0]["transplants"][0]['detailed_score_per_group'][0][
+                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][0][
+                                 'detailed_score_per_group'][0][
                                  'recipient_matches'
                              ])
         self.assertListEqual(expected_score2[0]['recipient_matches'],
-                             res.json[0]["rounds"][0]["transplants"][1]['detailed_score_per_group'][0][
+                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1][
+                                 'detailed_score_per_group'][0][
                                  'recipient_matches'
                              ])
 
