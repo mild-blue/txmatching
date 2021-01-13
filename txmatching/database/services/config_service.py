@@ -42,10 +42,6 @@ def get_configuration_for_txm_event(txm_event: TxmEvent) -> Configuration:
 
 def save_configuration_to_db(configuration: Configuration, txm_event_db_id: int, user_id: int) -> int:
     config_model = _configuration_to_config_model(configuration, txm_event_db_id, user_id)
-    previous_config = get_latest_config_model_for_txm_event(txm_event_db_id)
-    if previous_config:
-        db.session.delete(previous_config)
-        db.session.flush()
 
     db.session.add(config_model)
     db.session.commit()
