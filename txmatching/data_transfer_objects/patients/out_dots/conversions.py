@@ -8,7 +8,8 @@ from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.hla_system.compatibility_index import (
-    DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index)
+    DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index,
+    get_detailed_compatibility_index_without_recipient)
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
@@ -59,6 +60,20 @@ def donor_to_donor_dto_out(donor: Donor,
             compatibility_index_detailed,
             antibodies
         )
+    else:
+        compatibility_index_detailed = get_detailed_compatibility_index_without_recipient(
+            donor_hla_typing=donor.parameters.hla_typing
+        )
+
+        donor_dto.detailed_score_with_related_recipient = [
+            DetailedScoreForHLAGroup(
+                recipient_matches=[],
+                hla_group=compatibility_index_detailed_group.hla_group,
+                group_compatibility_index=compatibility_index_detailed_group.group_compatibility_index,
+                antibody_matches=[],
+                donor_matches=compatibility_index_detailed_group.donor_matches
+            ) for compatibility_index_detailed_group in compatibility_index_detailed
+        ]
 
     return donor_dto
 

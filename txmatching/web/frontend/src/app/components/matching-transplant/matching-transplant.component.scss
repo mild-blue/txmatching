@@ -16,8 +16,6 @@
     font-weight: 700;
 
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     position: relative;
 
     background-color: $transplant-bg--incompatible;
@@ -28,6 +26,21 @@
     &.compatible {
       background-color: $transplant-bg--compatible;
       color: $transplant-color--compatible;
+
+      .donor-type-label {
+        border-color: $transplant-color--compatible;
+      }
+    }
+
+    .donor-type-label {
+      margin-left: 10px;
+      padding: 2px 5px;
+      border: 1px solid $gray-300;
+      border-radius: 3px;
+
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 10px;
     }
   }
 

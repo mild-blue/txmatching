@@ -39,16 +39,6 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
     this._activeTransplantSubscription.unsubscribe();
   }
 
-  public getDonorTypeLabel(type: DonorType): string {
-    if (type === DonorType.BRIDGING_DONOR) {
-      return 'bridging donor';
-    } else if (type === DonorType.NON_DIRECTED) {
-      return 'non-directed donor';
-    }
-
-    return '';
-  }
-
   private _scrollToTransplant(id: number): void {
     const scrollable = document.querySelector(`.${scrollableDetailClass}`);
     const activeTransplantElement: HTMLElement | null = document.querySelector(`#transplant-${id}`);

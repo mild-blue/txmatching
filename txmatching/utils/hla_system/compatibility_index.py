@@ -1,7 +1,6 @@
+import logging
 from dataclasses import dataclass
 from typing import List
-
-import logging
 
 from txmatching.patients.patient_parameters import HLATyping
 from txmatching.utils.enums import (HLA_GROUPS_GENE,
@@ -72,6 +71,36 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
         recipient_split_codes=recipient_split_codes,
         hla_group=hla_group
     ))
+
+    return hla_compatibility_index_detailed
+
+
+def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATyping,
+                                                       ) -> List[DetailedCompatibilityIndexForHLAGroup]:
+    hla_compatibility_index_detailed = []
+    for hla_group in HLA_GROUPS_GENE:  # why not HLA_GROUPS_GENE + [HLAGroup.Other]?
+        donor_split_codes = _hla_codes_for_gene_hla_group(donor_hla_typing, hla_group)
+        donor_matches = [HLAMatch(left_donor_code, MatchTypes.NONE) for left_donor_code in donor_split_codes]
+        hla_compatibility_index_detailed.append(
+            DetailedCompatibilityIndexForHLAGroup(
+                hla_group=hla_group,
+                donor_matches=donor_matches,
+                recipient_matches=[],
+                group_compatibility_index=0
+            )
+        )
+
+    hla_group = HLAGroup.Other
+    donor_split_codes = _hla_codes_for_hla_group(donor_hla_typing, hla_group)
+    donor_matches = [HLAMatch(left_donor_code, MatchTypes.NONE) for left_donor_code in donor_split_codes]
+    hla_compatibility_index_detailed.append(
+        DetailedCompatibilityIndexForHLAGroup(
+            hla_group=hla_group,
+            donor_matches=donor_matches,
+            recipient_matches=[],
+            group_compatibility_index=0
+        )
+    )
 
     return hla_compatibility_index_detailed
 
