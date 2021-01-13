@@ -11,8 +11,8 @@ from txmatching.solvers.pairing_result import PairingResult
 from txmatching.solvers.solver_from_config import solver_from_configuration
 
 logger = logging.getLogger(__name__)
-MAX_ALLOWED_NUMBER_OF_MATCHINGS = 800
-MAX_NUMBER_OF_MATCHINGS_TO_STORE = 400
+MAX_ALLOWED_NUMBER_OF_MATCHINGS = 1000000
+MAX_NUMBER_OF_MATCHINGS_TO_STORE = 1000
 
 
 def solve_from_configuration(configuration: Configuration, txm_event_db_id: int) -> PairingResult:
@@ -47,6 +47,8 @@ def _filter_and_limit_number_of_matchings(all_matchings: Iterator[MatchingWithSc
     matchings = []
     all_results_found = True
     i = -1
+    # TODO here we should use something more memory efficient, never really store the whole list
+    # https://github.com/mild-blue/txmatching/issues/356
     for i, matching in enumerate(all_matchings):
         if matching_filter.keep(matching):
             matchings.append(matching)
@@ -60,6 +62,8 @@ def _filter_and_limit_number_of_matchings(all_matchings: Iterator[MatchingWithSc
 
 
 def _sort_matchings_by_transplant_number_and_score(matchings: Iterator[MatchingWithScore]) -> List[MatchingWithScore]:
+    # TODO here we should use something more memory efficient, never really store the whole list
+    # https://github.com/mild-blue/txmatching/issues/356
     matchings = sorted(matchings, key=lambda matching: len(matching.get_rounds()), reverse=True)
     matchings = sorted(matchings, key=lambda matching: matching.score(), reverse=True)
     matchings = sorted(matchings, key=lambda matching: len(matching.get_donor_recipient_pairs()), reverse=True)
