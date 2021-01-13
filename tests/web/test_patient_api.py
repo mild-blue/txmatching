@@ -19,8 +19,15 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers)
         self.assertEqual(200, res.status_code)
         for donor in res.json['donors']:
+            self.assertIn('detailed_score_with_related_recipient', donor)
+            detailed_score_for_groups = donor['detailed_score_with_related_recipient']
             if donor['related_recipient_db_id']:
-                self.assertIn('detailed_score_with_related_recipient', donor)
+                pass
+            else:
+                for detailed_score_for_group in detailed_score_for_groups:
+                    self.assertEqual(detailed_score_for_group['antibody_matches'], [])
+                    self.assertEqual(detailed_score_for_group['recipient_matches'], [])
+                    self.assertEqual(detailed_score_for_group['group_compatibility_index'], 0)
 
     def test_upload_patients_via_file(self):
         res = self._upload_data()

@@ -1,6 +1,20 @@
 <div class="transplant">
-  <div class="transplant-header" [class.compatible]="isBloodCompatible">
-    <app-patient-pair [donor]="donor" [recipient]="recipient"></app-patient-pair>
+  <div class="transplant-header"
+       *ngIf="donor"
+       [class.compatible]="isBloodCompatible">
+
+    <ng-container *ngIf="recipient; then template_pair; else template_donor"></ng-container>
+
+    <ng-template #template_pair>
+      <app-patient-pair [donor]="donor" [recipient]="recipient"></app-patient-pair>
+    </ng-template>
+
+    <ng-template #template_donor>
+      <patient [patient]="donor"></patient>
+      <div class="donor-type-label">
+        {{ donor.donor_type | donorTypeLabel}}
+      </div>
+    </ng-template>
 
     <app-score-indicator [configuration]="configuration"
                          [score]="score"
@@ -8,7 +22,7 @@
   </div>
 
   <div class="transplant-content">
-    <table *ngIf="donor && recipient && detailedScorePerGroup">
+    <table *ngIf="donor && detailedScorePerGroup">
       <tbody>
       <tr>
         <td></td>
@@ -24,15 +38,17 @@
           </div>
         </td>
         <td colspan="2">
-          Recipient
-          <div class="center-holder">
-            <patient [patient]="recipient"></patient>
-          </div>
-          <div class="patient-info">
-            <span title="Sex" *ngIf="recipient.parameters.sex">{{recipient.parameters.sex}}</span>
-            <span title="Year of Birth" *ngIf="recipient.parameters.year_of_birth">{{recipient.parameters.year_of_birth}}</span>
-            <span title="Height/Weight" *ngIf="getPatientHeightAndWeight(recipient)">{{getPatientHeightAndWeight(recipient)}}</span>
-          </div>
+          <ng-container *ngIf="recipient">
+            Recipient
+            <div class="center-holder">
+              <patient [patient]="recipient"></patient>
+            </div>
+            <div class="patient-info">
+              <span title="Sex" *ngIf="recipient.parameters.sex">{{recipient.parameters.sex}}</span>
+              <span title="Year of Birth" *ngIf="recipient.parameters.year_of_birth">{{recipient.parameters.year_of_birth}}</span>
+              <span title="Height/Weight" *ngIf="getPatientHeightAndWeight(recipient)">{{getPatientHeightAndWeight(recipient)}}</span>
+            </div>
+          </ng-container>
         </td>
         <td></td>
       </tr>
@@ -42,11 +58,13 @@
           <app-code [class.matching]="isBloodCompatible">{{ donor.parameters.blood_group }}</app-code>
         </td>
         <td colspan="2">
-          <app-code [class.matching]="isBloodCompatible">{{ recipient.parameters.blood_group }}</app-code>
-          <div class="small">
-            Acceptable:
-            <app-code *ngFor="let bloodGroup of recipient.acceptable_blood_groups">{{ bloodGroup }}</app-code>
-          </div>
+          <ng-container *ngIf="recipient">
+            <app-code [class.matching]="isBloodCompatible">{{ recipient.parameters.blood_group }}</app-code>
+            <div class="small">
+              Acceptable:
+              <app-code *ngFor="let bloodGroup of recipient.acceptable_blood_groups">{{ bloodGroup }}</app-code>
+            </div>
+          </ng-container>
         </td>
         <td></td>
       </tr>
@@ -71,7 +89,9 @@
           <app-code *ngFor="let match of compatibilityIndex.antibody_matches"
                     [class]="getAntibodyMatchClass(match.match_type)">{{ match.hla_code }}</app-code>
         </td>
-        <td>{{ compatibilityIndex.group_compatibility_index }}</td>
+        <td>
+          {{ recipient ? compatibilityIndex.group_compatibility_index : "-"}}
+        </td>
       </tr>
       </tbody>
     </table>

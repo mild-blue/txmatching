@@ -14,7 +14,7 @@ import { Donor, DonorType } from '@app/model/Donor';
 import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
 import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
 import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
-import { PatientDonorDetailComponent } from '@app/components/patient-donor-detail/patient-donor-detail.component';
+import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
 
 @Component({
   selector: 'app-patients',
@@ -85,7 +85,7 @@ export class PatientsComponent implements OnInit {
           ...donor,
           index: items.length + 1,
           itemComponent: PatientDonorItemComponent,
-          detailComponent: PatientDonorDetailComponent
+          detailComponent: PatientDonorDetailWrapperComponent
         });
       }
     }
