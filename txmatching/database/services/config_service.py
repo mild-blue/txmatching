@@ -1,5 +1,6 @@
 import dataclasses
 import logging
+from datetime import datetime
 from typing import Dict, Optional
 
 from dacite import Config, from_dict
@@ -49,7 +50,8 @@ def save_configuration_to_db(configuration: Configuration, txm_event_db_id: int,
 
 
 def get_latest_config_model_for_txm_event(txm_event_db_id: int) -> Optional[ConfigModel]:
-    config = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).first()
+    config = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).order_by(
+        ConfigModel.updated_at.desc()).first()
     return config
 
 
@@ -84,3 +86,8 @@ def get_pairing_result_for_configuration_db_id(configuration_db_id: int) -> Data
                           data=pairing_result_model.calculated_matchings)
     score_matrix = pairing_result_model.score_matrix['score_matrix_dto']
     return DatabasePairingResult(score_matrix=score_matrix, matchings=matchings)
+
+
+def set_used_config(configuration_db_id: int):
+    ConfigModel.query.filter(ConfigModel.id == configuration_db_id).update({'updated_at': datetime.now()})
+    db.session.commit()

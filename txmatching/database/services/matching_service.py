@@ -9,7 +9,7 @@ from txmatching.data_transfer_objects.patients.out_dots.conversions import \
     get_detailed_score
 from txmatching.database.services.config_service import (
     get_configuration_for_db_id, get_latest_config_model_for_txm_event,
-    get_pairing_result_for_configuration_db_id)
+    get_pairing_result_for_configuration_db_id, set_used_config)
 from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.matching import get_count_of_transplants
@@ -36,6 +36,8 @@ class MatchingsDetailed:
 def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
                                              configuration_db_id: int) -> MatchingsDetailed:
     configuration = get_configuration_for_db_id(configuration_db_id)
+
+    set_used_config(configuration_db_id)
     txm_event = get_txm_event(txm_event.db_id)
     database_pairing_result = get_pairing_result_for_configuration_db_id(configuration_db_id)
 
