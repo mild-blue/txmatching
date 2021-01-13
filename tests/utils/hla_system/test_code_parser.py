@@ -83,6 +83,8 @@ class TestCodeParser(DbTests):
         self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B1'))
         self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B111'))
         self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B'))
+        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BW4'))
+        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BW6'))
 
         self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'BWA1'))
         self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'A1'))
