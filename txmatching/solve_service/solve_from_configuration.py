@@ -12,7 +12,7 @@ from txmatching.solvers.pairing_result import PairingResult
 from txmatching.solvers.solver_from_config import solver_from_configuration
 
 logger = logging.getLogger(__name__)
-MAX_ALLOWED_NUMBER_OF_MATCHINGS = 100000
+MAX_ALLOWED_NUMBER_OF_MATCHINGS = 1000000
 MAX_NUMBER_OF_MATCHINGS_TO_STORE = 1000
 
 
