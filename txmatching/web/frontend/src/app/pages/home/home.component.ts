@@ -163,7 +163,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this._alertService.info(`
           More than ${this.foundMatchingsCount} possible matchings were found.
           Not looking for all the matchings and only showing the top matchings from the set of already found.
-          If you want to be sure, that the top matchings are truly the best, please contact us, we will help.
+          If you want to be sure that the top matchings are truly the best, please contact us, we will help.
         `, undefined, undefined, false);
       }
     } catch (e) {
