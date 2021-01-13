@@ -24,6 +24,7 @@ class HLAGroup(str, Enum):
     CW = 'CW'
     DP = 'DP'
     DQ = 'DQ'
+    BW = 'BW'
     OTHER_DR = 'OTHER_DR'
     Other = 'Other'
 
