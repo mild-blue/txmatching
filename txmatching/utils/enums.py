@@ -33,12 +33,12 @@ HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR]
 HLA_GROUPS_NAMES_WITH_OTHER = [group for group in HLA_GROUPS_GENE] + [HLAGroup.Other]
 
 HLA_GROUP_SPLIT_CODE_REGEX = {
-    HLAGroup.A: r'^A\d*',
-    HLAGroup.B: r'^B\d*',
-    HLAGroup.CW: r'CW\d*',
+    HLAGroup.A: r'^A\d+',
+    HLAGroup.B: r'^B\d+',
+    HLAGroup.CW: r'CW\d+',
     HLAGroup.DRB1: r'DR(?!5([123]))',
-    HLAGroup.DP: r'DP\d*',
-    HLAGroup.DQ: r'DQ\d*',
+    HLAGroup.DP: r'DP\d+',
+    HLAGroup.DQ: r'DQ\d+',
     HLAGroup.OTHER_DR: r'DR5[123]'
 }
 
