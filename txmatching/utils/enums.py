@@ -29,7 +29,7 @@ class HLAGroup(str, Enum):
 
 
 HLA_GROUPS_GENE = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
-HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR]
+HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR, HLAGroup.BW]
 HLA_GROUPS_NAMES_WITH_OTHER = [group for group in HLA_GROUPS_GENE] + [HLAGroup.Other]
 
 HLA_GROUP_SPLIT_CODE_REGEX = {
@@ -39,7 +39,8 @@ HLA_GROUP_SPLIT_CODE_REGEX = {
     HLAGroup.DRB1: r'DR(?!5([123]))',
     HLAGroup.DP: r'DPA?\d+',
     HLAGroup.DQ: r'DQA?\d+',
-    HLAGroup.OTHER_DR: r'DR5[123]'
+    HLAGroup.OTHER_DR: r'DR5[123]',
+    HLAGroup.BW: r'BW\d+'
 }
 
 HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.Other] = '|'.join(
