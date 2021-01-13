@@ -11,7 +11,6 @@ from txmatching.database.services.config_service import (
     config_set_updated, get_configuration_from_db_id,
     get_latest_config_model_for_txm_event,
     get_pairing_result_for_configuration_db_id)
-from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
