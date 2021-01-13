@@ -37,8 +37,8 @@ HLA_GROUP_SPLIT_CODE_REGEX = {
     HLAGroup.B: r'^B\d+',
     HLAGroup.CW: r'CW\d+',
     HLAGroup.DRB1: r'DR(?!5([123]))',
-    HLAGroup.DP: r'DP\d+',
-    HLAGroup.DQ: r'DQ\d+',
+    HLAGroup.DP: r'DPA?\d+',
+    HLAGroup.DQ: r'DQA?\d+',
     HLAGroup.OTHER_DR: r'DR5[123]'
 }
 
