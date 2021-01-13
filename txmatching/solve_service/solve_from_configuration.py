@@ -12,7 +12,7 @@ from txmatching.solvers.pairing_result import PairingResult
 from txmatching.solvers.solver_from_config import solver_from_configuration
 
 logger = logging.getLogger(__name__)
-MAX_ALLOWED_NUMBER_OF_MATCHINGS = 1000000
+MAX_ALLOWED_NUMBER_OF_MATCHINGS = 100000
 MAX_NUMBER_OF_MATCHINGS_TO_STORE = 1000
 
 
@@ -59,6 +59,9 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
             heapq.heappush(matchings_heap, matching_entry)
             if len(matchings_heap) > MAX_NUMBER_OF_MATCHINGS_TO_STORE:
                 heapq.heappop(matchings_heap)
+
+            if i % 100000 == 0:
+                logger.info(f'Processed {i} matchings')
 
             if i == MAX_ALLOWED_NUMBER_OF_MATCHINGS - 1:
                 logger.error(f'Max number of matchings {MAX_ALLOWED_NUMBER_OF_MATCHINGS} was reached. Returning only '
