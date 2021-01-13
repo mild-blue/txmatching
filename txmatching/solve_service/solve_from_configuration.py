@@ -65,7 +65,8 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
 
             if i == MAX_ALLOWED_NUMBER_OF_MATCHINGS - 1:
                 logger.error(f'Max number of matchings {MAX_ALLOWED_NUMBER_OF_MATCHINGS} was reached. Returning only '
-                             f'matchings found up to now.')
+                             f'best {MAX_NUMBER_OF_MATCHINGS_TO_STORE} matchings from {MAX_ALLOWED_NUMBER_OF_MATCHINGS}'
+                             f'found up to now.')
                 all_results_found = False
                 break
 

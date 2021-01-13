@@ -3,7 +3,8 @@ import unittest
 
 
 class TestAcceptableBloodGroupParsing(unittest.TestCase):
-    def test_blood_group_parsing(self):
+    def test_heap_sorting_works(self):
+        # TODO improve the test to test heap behavoir properly.
         MAX = 4
         l = [
             (1, 4),

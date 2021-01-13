@@ -161,9 +161,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       this._logger.log('Calculated matchings', [calculated_matchings_dto]);
       if (!calculated_matchings_dto.all_matchings_found) {
         this._alertService.info(`
-          More than ${this.foundMatchingsCount} possible matchings were found.
-          Not looking for all the matchings and only showing the top matchings from the set of already found.
-          If you want to be sure that the top matchings are truly the best, please contact us, we will help.
+        There exist more than ${this.foundMatchingsCount} matchings. Shown matchings present the top matchings found so
+         far, most probably including the top matching over all. For more details, please contact the developers using
+         info@mild.blue or call +420 723 927 536.
         `, undefined, undefined, false);
       }
     } catch (e) {
