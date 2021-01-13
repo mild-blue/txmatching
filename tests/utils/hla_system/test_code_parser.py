@@ -1,7 +1,10 @@
+import re
+
 import pandas as pd
 
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
+from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (
     HlaCodeProcessingResultDetail, get_mfi_from_multiple_hla_codes,
@@ -74,6 +77,19 @@ class TestCodeParser(DbTests):
         self.assertSetEqual({'DQA1*01:03', 'DQB1*06:03'}, set(preprocess_hla_code_in('DQ[01:03,      06:03]')))
         self.assertSetEqual({'DPA1', 'DP2'},
                             set(parse_hla_raw_code(code) for code in preprocess_hla_code_in('DP[01:03,02:01]')))
+
+    def test_group_assignment(self):
+        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BWA1'))
+        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B1'))
+        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B111'))
+        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B'))
+        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BW4'))
+        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BW6'))
+
+        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'BWA1'))
+        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'A1'))
+        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'A111'))
+        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'B'))
 
     def test_mfi_extraction(self):
         self.assertEqual(0, get_mfi_from_multiple_hla_codes([1, 3000, 4000]))
