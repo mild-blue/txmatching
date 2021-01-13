@@ -2,7 +2,7 @@ import heapq
 import unittest
 
 
-class TestAcceptableBloodGroupParsing(unittest.TestCase):
+class TestHeapBehavior(unittest.TestCase):
     def test_heap_sorting_works(self):
         # TODO improve the test to test heap behavoir properly.
         MAX = 4
