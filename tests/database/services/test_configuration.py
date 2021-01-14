@@ -45,3 +45,28 @@ class TestConfiguration(DbTests):
                          config.manual_donor_recipient_scores, )
         self.assertEqual([1, 3, 5],
                          config.required_patient_db_ids, )
+
+    def test_configuration_comparison(self):
+        self.assertEqual(
+            Configuration(),
+            Configuration()
+        )
+        self.assertNotEqual(
+            Configuration(max_cycle_length=5),
+            Configuration(max_cycle_length=4)
+        )
+        self.assertNotEqual(
+            Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)]),
+            Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.AUT, Country.CZE)])
+        )
+
+        self.assertEqual(
+            Configuration(forbidden_country_combinations=[
+                ForbiddenCountryCombination(Country.CZE, Country.AUT),
+                ForbiddenCountryCombination(Country.ISR, Country.CAN),
+            ]),
+            Configuration(forbidden_country_combinations=[
+                ForbiddenCountryCombination(Country.ISR, Country.CAN),
+                ForbiddenCountryCombination(Country.CZE, Country.AUT),
+            ])
+        )

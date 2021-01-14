@@ -12,7 +12,7 @@ class ManualDonorRecipientScore:
     score: float
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class ForbiddenCountryCombination:
     donor_country: Country
     recipient_country: Country
