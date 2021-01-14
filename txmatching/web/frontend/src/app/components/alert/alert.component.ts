@@ -103,7 +103,7 @@ export class AlertComponent implements OnInit, OnDestroy {
   }
 
   private _fadeOutAlert(alert: Alert): void {
-    if (!alert.fadeAutomatically) {
+    if (alert.fadeAutomatically === false) {
       return;
     }
 

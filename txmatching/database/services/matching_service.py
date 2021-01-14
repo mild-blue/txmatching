@@ -30,7 +30,7 @@ class MatchingsDetailed:
     detailed_score_tuples: Dict[Tuple[int, int], List[DetailedCompatibilityIndexForHLAGroup]]
     antibody_matches_tuples: Dict[Tuple[int, int], List[AntibodyMatchForHLAGroup]]
     found_matchings_count: int
-    all_matchings_found: bool
+    show_not_all_matchings_found: bool
 
 
 def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
@@ -79,7 +79,7 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
         detailed_compatibility_index_dict,
         antibody_matches_dict,
         database_pairing_result.matchings.found_matchings_count,
-        database_pairing_result.matchings.all_matchings_found
+        database_pairing_result.matchings.show_not_all_matchings_found
     )
 
 
@@ -146,6 +146,6 @@ def create_calculated_matchings_dto(
         ) for matching in matchings
         ],
         found_matchings_count=latest_matchings_detailed.found_matchings_count,
-        all_matchings_found=latest_matchings_detailed.all_matchings_found
+        show_not_all_matchings_found=latest_matchings_detailed.show_not_all_matchings_found
 
     )

@@ -16,4 +16,4 @@ class MatchingModel:
 class MatchingsModel:
     matchings: List[MatchingModel]
     found_matchings_count: int
-    all_matchings_found: bool
+    show_not_all_matchings_found: bool

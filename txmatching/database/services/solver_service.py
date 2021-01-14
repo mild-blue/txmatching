@@ -41,6 +41,6 @@ def _calculated_matchings_to_model(pairing_result: PairingResult) -> MatchingsMo
         )
         for matching in pairing_result.calculated_matchings_list
     ],
-        pairing_result.found_matchings_count,
-        pairing_result.all_results_found
+        found_matchings_count=pairing_result.found_matchings_count,
+        show_not_all_matchings_found=not pairing_result.all_results_found
     )
