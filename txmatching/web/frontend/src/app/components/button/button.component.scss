@@ -22,7 +22,7 @@
     background-color: var(--primary-color);
 
     &:hover {
-      background-color: hsl(var(--primary-color), 10%);
+      filter: brightness(90%);
     }
   }
 
