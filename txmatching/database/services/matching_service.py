@@ -13,6 +13,7 @@ from txmatching.database.services.config_service import (
     get_pairing_result_for_configuration_db_id)
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.matching import get_count_of_transplants
+from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.utils.blood_groups import blood_groups_compatible
@@ -43,11 +44,13 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
     matchings_with_score = _matchings_dto_to_matching_with_score(database_pairing_result.matchings,
                                                                  txm_event.active_donors_dict,
                                                                  txm_event.active_recipients_dict)
+    scorer = scorer_from_configuration(configuration)
 
     score_dict = {
-        (donor_db_id, recipient_db_id): score for donor_db_id, row in
-        zip(txm_event.active_donors_dict, database_pairing_result.score_matrix) for recipient_db_id, score in
-        zip(txm_event.active_recipients_dict, row)
+        (donor.db_id, recipient.db_id): scorer.score_transplant(donor, recipient, txm_event.active_donors_dict[
+            recipient.related_donor_db_id]) for donor in
+        txm_event.active_donors_dict.values() for recipient in
+        txm_event.active_recipients_dict.values()
     }
 
     compatible_blood_dict = {(donor_db_id, recipient_db_id): blood_groups_compatible(donor.parameters.blood_group,
