@@ -6,7 +6,7 @@ from txmatching.auth.exceptions import SolverAlreadyRunningException
 from txmatching.solve_service.solver_lock import run_with_solver_lock
 
 
-class TestJwtCrypto(TestCase):
+class TestSolverLock(TestCase):
     def test_solver_lock_should_work(self):
         model = mock.MagicMock()
         model.run = False
