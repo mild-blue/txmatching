@@ -1,11 +1,13 @@
 from swagger_unittest import swagger_test
 
 from tests.test_utilities.generate_swagger import PATH_TO_SWAGGER_YAML
-from tests.test_utilities.populate_db import ADMIN_WITH_DEFAULT_TXM_EVENT, PATIENT_DATA_OBFUSCATED
+from tests.test_utilities.populate_db import (ADMIN_WITH_DEFAULT_TXM_EVENT,
+                                              PATIENT_DATA_OBFUSCATED)
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import (API_VERSION, SERVICE_NAMESPACE,
-                            TXM_EVENT_NAMESPACE, USER_NAMESPACE, PATIENT_NAMESPACE)
+from txmatching.web import (API_VERSION, MATCHING_NAMESPACE, PATIENT_NAMESPACE,
+                            SERVICE_NAMESPACE, TXM_EVENT_NAMESPACE,
+                            USER_NAMESPACE)
 
 
 class TestSwaggerEndpoints(DbTests):
@@ -29,6 +31,8 @@ class TestSwaggerEndpoints(DbTests):
             'post': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/login': [401],
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
+                # TODO remove this in https://github.com/mild-blue/txmatching/issues/372
+                f'{API_VERSION[1:]}/{MATCHING_NAMESPACE}/calculate-for-config': [400]
             },
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
