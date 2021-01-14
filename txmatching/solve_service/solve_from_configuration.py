@@ -7,6 +7,7 @@ from txmatching.filters.filter_base import FilterBase
 from txmatching.filters.filter_from_config import filter_from_config
 from txmatching.patients.patient import TxmEvent
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
+from txmatching.solve_service.solver_lock import run_with_solver_lock
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.pairing_result import PairingResult
 from txmatching.solvers.solver_from_config import solver_from_configuration
@@ -17,6 +18,10 @@ MAX_NUMBER_OF_MATCHINGS_TO_STORE = 1000
 
 
 def solve_from_configuration(configuration: Configuration, txm_event: TxmEvent) -> PairingResult:
+    return run_with_solver_lock(lambda: _solve_from_configuration_unsafe(configuration, txm_event))
+
+
+def _solve_from_configuration_unsafe(configuration: Configuration, txm_event: TxmEvent) -> PairingResult:
     scorer = scorer_from_configuration(configuration)
     solver = solver_from_configuration(configuration,
                                        donors_dict=txm_event.active_donors_dict,
