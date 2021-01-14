@@ -1591,6 +1591,8 @@ responses:
         description: not_found_exception
     ParseError:
         description: When a mask can't be parsed
+    SolverAlreadyRunningException:
+        description: Solver already running
     UserUpdateException:
         description: user_update_exception
     ValueError:
