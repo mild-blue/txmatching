@@ -50,8 +50,8 @@ class CalculateFromConfig(Resource):
         if maybe_configuration_db_id:
             matchings_detailed = get_matchings_detailed_for_configuration(txm_event, maybe_configuration_db_id)
         else:
-            raise InvalidArgumentException('The configuration provided was not precomputed. Please contact '
-                                           'administrators.')
+            raise InvalidArgumentException('The configuration provided was not computed yet. To compute it, please'
+                                           ' contact administrators, using info@mild.blue or +420 723 927 536.')
             # TODO move this commented out section to another endpoint in and also remove the raising of error and
             # return some object telling FE that the cached mathcing does not exist.
             #  https://github.com/mild-blue/txmatching/issues/372
