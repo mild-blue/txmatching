@@ -59,7 +59,6 @@ class TestConfiguration(DbTests):
             Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)]),
             Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.AUT, Country.CZE)])
         )
-
         self.assertEqual(
             Configuration(forbidden_country_combinations=[
                 ForbiddenCountryCombination(Country.CZE, Country.AUT),
@@ -69,4 +68,8 @@ class TestConfiguration(DbTests):
                 ForbiddenCountryCombination(Country.ISR, Country.CAN),
                 ForbiddenCountryCombination(Country.CZE, Country.AUT),
             ])
+        )
+        self.assertEqual(
+            Configuration(max_matchings_to_show_to_viewer=10),
+            Configuration(max_matchings_to_show_to_viewer=20),
         )
