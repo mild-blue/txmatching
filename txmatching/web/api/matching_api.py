@@ -7,7 +7,7 @@ from flask import jsonify, request
 from flask_restx import Resource
 
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.auth.exceptions import CachingNotReadyException
 from txmatching.auth.request_context import get_user_role
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
@@ -50,8 +50,7 @@ class CalculateFromConfig(Resource):
         if maybe_configuration_db_id:
             matchings_detailed = get_matchings_detailed_for_configuration(txm_event, maybe_configuration_db_id)
         else:
-            raise InvalidArgumentException('The configuration provided was not computed yet. To compute it, please'
-                                           ' contact administrators, using info@mild.blue or +420 723 927 536.')
+            raise CachingNotReadyException('Caching is not ready')
             # TODO move this commented out section to another endpoint in and also remove the raising of error and
             # return some object telling FE that the cached mathcing does not exist.
             #  https://github.com/mild-blue/txmatching/issues/372

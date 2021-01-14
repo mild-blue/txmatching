@@ -7,11 +7,12 @@ from flask_restx import Api
 from werkzeug.exceptions import Forbidden, HTTPException
 
 from txmatching.auth.exceptions import (
-    AuthenticationException, CouldNotSendOtpUsingSmsServiceException,
-    CredentialsMismatchException, GuardException, InvalidArgumentException,
-    InvalidAuthCallException, InvalidIpAddressAccessException,
-    InvalidJWTException, InvalidOtpException, NotFoundException,
-    UserUpdateException, WrongTokenUsedException, SolverAlreadyRunningException)
+    AuthenticationException, CachingNotReadyException,
+    CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
+    GuardException, InvalidArgumentException, InvalidAuthCallException,
+    InvalidIpAddressAccessException, InvalidJWTException, InvalidOtpException,
+    NotFoundException, SolverAlreadyRunningException, UserUpdateException,
+    WrongTokenUsedException)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 
@@ -112,6 +113,13 @@ def _user_auth_handlers(api: Api):
         """invalid_argument_exception"""
         _log_warning(error)
         return {'error': 'Invalid argument.', 'message': str(error)}, 400
+
+    @api.errorhandler(CachingNotReadyException)
+    def handle_caching_not_ready_exception(error: CachingNotReadyException):
+        """invalid_argument_exception"""
+        _log_warning(error)
+        return {'error': 'The configuration provided was not computed yet. To compute it, please contact '
+                         'administrators, using info@mild.blue or +420 723 927 536.', 'message': str(error)}, 400
 
     @api.errorhandler(DaciteError)
     def handle_dacite_exception(error: DaciteError):

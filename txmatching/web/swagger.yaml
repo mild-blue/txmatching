@@ -1559,6 +1559,8 @@ produces:
 responses:
     AuthenticationException:
         description: general_authentication_exception
+    CachingNotReadyException:
+        description: invalid_argument_exception
     CouldNotSendOtpUsingSmsServiceException:
         description: could_not_send_otp
     CredentialsMismatchException:
