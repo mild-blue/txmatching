@@ -62,7 +62,7 @@ class Configuration:
     # For equality comparison, the field bellow is treated as set (see __eq__() function)
     # TODO: https://github.com/mild-blue/txmatching/issues/373 change field type to set
     manual_donor_recipient_scores: List[ManualDonorRecipientScore] = field(default_factory=list)
-    max_matchings_to_show_to_viewer: int = 10
+    max_matchings_to_show_to_viewer: int = field(default=10, compare=False)
 
     def __eq__(self, other):
         """
