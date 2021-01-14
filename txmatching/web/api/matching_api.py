@@ -62,5 +62,6 @@ class CalculateFromConfig(Resource):
         if get_user_role() == UserRole.VIEWER:
             calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[
                                                             :configuration.max_matchings_to_show_to_viewer]
+            calculated_matchings_dto.show_not_all_matchings_found = False
 
         return jsonify(calculated_matchings_dto)

@@ -159,12 +159,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.matchings = this._prepareMatchings(calculated_matchings_dto.calculated_matchings);
       this.foundMatchingsCount = calculated_matchings_dto.found_matchings_count;
       this._logger.log('Calculated matchings', [calculated_matchings_dto]);
-      if (!calculated_matchings_dto.all_matchings_found) {
+      if (calculated_matchings_dto.show_not_all_matchings_found) {
         this._alertService.info(`
         There exist more than ${this.foundMatchingsCount} matchings. Shown matchings present the top matchings found so
          far, most probably including the top matching over all. For more details, please contact the developers using
          info@mild.blue or call +420 723 927 536.
-        `, undefined, undefined, false);
+        `);
       }
     } catch (e) {
       this._alertService.error(`Error calculating matchings: "${e.message || e}"`);

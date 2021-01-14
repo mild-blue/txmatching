@@ -41,4 +41,4 @@ class MatchingDTO:
 class CalculatedMatchingsDTO:
     calculated_matchings: List[MatchingDTO]
     found_matchings_count: int
-    all_matchings_found: bool
+    show_not_all_matchings_found: bool
