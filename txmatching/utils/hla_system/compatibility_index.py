@@ -1,9 +1,9 @@
+import logging
 from dataclasses import dataclass
 from typing import List
 
-import logging
-
 from txmatching.patients.patient_parameters import HLATyping
+from txmatching.patients.patient_parameters_dataclasses import HLAType
 from txmatching.utils.enums import (HLA_GROUPS_GENE,
                                     HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS,
                                     MATCH_TYPE_BONUS, HLAGroup, MatchTypes)
@@ -25,7 +25,7 @@ class InvalidNumberOfAllelesError(Exception):
 
 @dataclass
 class HLAMatch:
-    hla_code: str
+    hla_code: HLAType
     match_type: MatchTypes
 
 
@@ -59,8 +59,8 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
         recipient_split_codes = _hla_codes_for_gene_hla_group(recipient_hla_typing, hla_group)
 
         hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_split_codes(
-            donor_split_codes=donor_split_codes,
-            recipient_split_codes=recipient_split_codes,
+            donor_hla_types=donor_split_codes,
+            recipient_hla_types=recipient_split_codes,
             hla_group=hla_group
         )
         )
@@ -68,8 +68,8 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
     donor_split_codes = _hla_codes_for_hla_group(donor_hla_typing, hla_group)
     recipient_split_codes = _hla_codes_for_hla_group(recipient_hla_typing, hla_group)
     hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_split_codes(
-        donor_split_codes=donor_split_codes,
-        recipient_split_codes=recipient_split_codes,
+        donor_hla_types=donor_split_codes,
+        recipient_hla_types=recipient_split_codes,
         hla_group=hla_group
     ))
 
@@ -81,8 +81,8 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
 def _match_through_split_codes(current_compatibility_index: float,
                                donor_matches: List[HLAMatch],
                                recipient_matches: List[HLAMatch],
-                               donor_split_codes: List[str],
-                               recipient_split_codes: List[str],
+                               donor_split_codes: List[HLAType],
+                               recipient_split_codes: List[HLAType],
                                hla_group: HLAGroup):
     for split_code in donor_split_codes.copy():
         if split_code in recipient_split_codes:
@@ -96,24 +96,40 @@ def _match_through_split_codes(current_compatibility_index: float,
     return current_compatibility_index
 
 
+# TODOO
+def _get_broad_codes_typed(hla_types: List[HLAType]) -> List[HLAType]:
+    return [
+        HLAType(broad_code)
+        for broad_code
+        in get_broad_codes(
+            [hla_type.code for hla_type in hla_types]
+        )
+    ]
+
+
+# TODOO
+def _broad_to_split_typed(hla_types: HLAType) -> List[HLAType]:
+    return [HLAType(splits) for splits in broad_to_split(hla_types.code)]
+
+
 def _match_through_broad_codes(current_compatibility_index: float,
                                donor_matches: List[HLAMatch],
                                recipient_matches: List[HLAMatch],
-                               donor_split_codes: List[str],
-                               recipient_split_codes: List[str],
+                               donor_hla_types: List[HLAType],
+                               recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup):
-    for split_code, broad_code in zip(donor_split_codes.copy(), get_broad_codes(donor_split_codes)):
-        if broad_code in get_broad_codes(recipient_split_codes):
-            if broad_code in recipient_split_codes:
+    for hla_type, broad_code in zip(donor_hla_types.copy(), _get_broad_codes_typed(donor_hla_types)):
+        if broad_code in _get_broad_codes_typed(recipient_hla_types):
+            if broad_code in recipient_hla_types:
                 recipient_match_code = broad_code
             else:
-                split_codes_for_broad = set(broad_to_split(broad_code))
-                split_codes_to_remove = split_codes_for_broad.intersection(set(recipient_split_codes))
+                split_codes_for_broad = set(_broad_to_split_typed(broad_code))
+                split_codes_to_remove = split_codes_for_broad.intersection(set(recipient_hla_types))
                 recipient_match_code = split_codes_to_remove.pop()
 
-            recipient_split_codes.remove(recipient_match_code)
-            donor_split_codes.remove(split_code)
-            donor_matches.append(HLAMatch(split_code, MatchTypes.BROAD))
+            recipient_hla_types.remove(recipient_match_code)
+            donor_hla_types.remove(hla_type)
+            donor_matches.append(HLAMatch(hla_type, MatchTypes.BROAD))
             recipient_matches.append(HLAMatch(recipient_match_code, MatchTypes.BROAD))
             current_compatibility_index += MATCH_TYPE_BONUS[MatchTypes.BROAD] * HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS[
                 hla_group]
@@ -124,8 +140,8 @@ def _match_through_broad_codes(current_compatibility_index: float,
 
 
 def _get_ci_for_recipient_donor_split_codes(
-        donor_split_codes: List[str],
-        recipient_split_codes: List[str],
+        donor_hla_types: List[HLAType],
+        recipient_hla_types: List[HLAType],
         hla_group: HLAGroup) -> DetailedCompatibilityIndexForHLAGroup:
     donor_matches = []
     recipient_matches = []
@@ -133,20 +149,20 @@ def _get_ci_for_recipient_donor_split_codes(
     group_compatibility_index = _match_through_split_codes(0.0,
                                                            donor_matches,
                                                            recipient_matches,
-                                                           donor_split_codes,
-                                                           recipient_split_codes,
+                                                           donor_hla_types,
+                                                           recipient_hla_types,
                                                            hla_group)
     group_compatibility_index = _match_through_broad_codes(group_compatibility_index,
                                                            donor_matches,
                                                            recipient_matches,
-                                                           donor_split_codes,
-                                                           recipient_split_codes,
+                                                           donor_hla_types,
+                                                           recipient_hla_types,
                                                            hla_group)
 
-    for left_recipient_code in recipient_split_codes:
-        recipient_matches.append(HLAMatch(left_recipient_code, MatchTypes.NONE))
-    for left_donor_code in donor_split_codes:
-        donor_matches.append(HLAMatch(left_donor_code, MatchTypes.NONE))
+    for left_recipient_hla_type in recipient_hla_types:
+        recipient_matches.append(HLAMatch(left_recipient_hla_type, MatchTypes.NONE))
+    for left_donor_hla_type in donor_hla_types:
+        donor_matches.append(HLAMatch(left_donor_hla_type, MatchTypes.NONE))
 
     return DetailedCompatibilityIndexForHLAGroup(
         hla_group=hla_group,
@@ -156,7 +172,7 @@ def _get_ci_for_recipient_donor_split_codes(
     )
 
 
-def _hla_codes_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[str]:
+def _hla_codes_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
     hla_codes = _hla_codes_for_hla_group(donor_hla_typing, hla_group)
 
     if len(hla_codes) not in {1, 2}:
@@ -169,6 +185,6 @@ def _hla_codes_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGro
     return hla_codes
 
 
-def _hla_codes_for_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[str]:
+def _hla_codes_for_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
     return next(codes_per_group.hla_codes for codes_per_group in donor_hla_typing.codes_per_group if
                 codes_per_group.hla_group == hla_group).copy()

@@ -20,14 +20,15 @@ export interface DetailedScorePerGroup {
 }
 
 export interface HlaMatch {
-  hla_code: string;
 }
 
 export interface AntigenMatch extends HlaMatch {
+  hla_code: Antigen;  // TODOO: rename
   match_type: AntigenMatchType;
 }
 
 export interface AntibodyMatch extends HlaMatch {
+  hla_code: string;  // TODOO
   match_type: AntibodyMatchType;
 }
 

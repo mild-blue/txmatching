@@ -20,7 +20,8 @@ from txmatching.database.services.txm_event_service import (
 from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
                                                     UploadedDataModel)
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
-from txmatching.patients.patient_parameters import HLAType, HLATyping
+from txmatching.patients.patient_parameters import HLATyping
+from txmatching.patients.patient_parameters_dataclasses import HLAType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE

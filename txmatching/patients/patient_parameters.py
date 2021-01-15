@@ -2,6 +2,7 @@ import itertools
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from txmatching.patients.patient_parameters_dataclasses import HLAType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import (CodesPerGroup, Country, Sex,
                                     split_to_hla_groups)
@@ -11,16 +12,7 @@ from txmatching.utils.hla_system.hla_transformations import (
 Kilograms = float
 Centimeters = int
 
-
-@dataclass
-class HLAType:
-    raw_code: str
-    code: Optional[str] = None
-
-    def __post_init__(self):
-        if self.code is None:
-            code = parse_hla_raw_code(self.raw_code)
-            self.code = code
+# TODOO: move back HLAType maybe
 
 
 @dataclass
@@ -30,7 +22,7 @@ class HLATyping:
 
     def __post_init__(self):
         if self.codes_per_group is None:
-            codes = [hla_type.code for hla_type in self.hla_types_list if hla_type.code]
+            codes = [hla_type for hla_type in self.hla_types_list if hla_type.code]
             self.codes_per_group = split_to_hla_groups(codes)
 
 
@@ -63,9 +55,16 @@ class HLAAntibodies:
         )
         hla_codes_over_cutoff_list = []
         for (hla_code_name, hla_code_cutoff), hla_code_group in grouped_hla_codes:
-            mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in hla_code_group])
+            hla_code_group_list = list(hla_code_group)
+            assert len(hla_code_group_list) > 0
+            mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in hla_code_group_list])
             if mfi >= hla_code_cutoff:
-                hla_codes_over_cutoff_list.append(hla_code_name)
+                hla_codes_over_cutoff_list.append(
+                    HLAType(
+                        raw_code=hla_code_group_list[0].raw_code,
+                        code=hla_code_group_list[0].code,
+                    )
+                )
 
         self.hla_codes_over_cutoff_per_group = split_to_hla_groups(hla_codes_over_cutoff_list)
 

@@ -20,7 +20,7 @@ definitions:
     AntigenMatch:
         properties:
             hla_code:
-                type: string
+                $ref: '#/definitions/HlaType'
             match_type:
                 enum:
                 - SPLIT

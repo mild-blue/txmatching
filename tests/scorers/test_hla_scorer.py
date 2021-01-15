@@ -1,8 +1,8 @@
 import unittest
 
 from txmatching.patients.patient import Donor, Recipient
-from txmatching.patients.patient_parameters import (HLAType, HLATyping,
-                                                    PatientParameters)
+from txmatching.patients.patient_parameters import HLATyping, PatientParameters
+from txmatching.patients.patient_parameters_dataclasses import HLAType
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
 from txmatching.utils.enums import Country
 

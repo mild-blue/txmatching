@@ -49,13 +49,19 @@ EXAMPLE_DETAILED_SCORE = [
 DESCRIPTION_DETAILED_SCORE = """Contains details for compatibility index for each HLA Group compatibility
 index is calculated for."""
 
+# TODOO: move to other file, this was moved here from patient_swagger.py for cyclic import problem
+HLAType = matching_api.model('HlaType', {
+    'code': fields.String(required=False),
+    'raw_code': fields.String(required=True),
+})
+
 AntigenMatchJson = matching_api.model('AntigenMatch', {
-    'hla_code': fields.String(required=True),
+    'hla_code': fields.Nested(required=True, model=HLAType),
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in MatchTypes])
 })
 
 AntibodyMatchJson = matching_api.model('AntibodyMatch', {
-    'hla_code': fields.String(required=True, example='A11'),
+    'hla_code': fields.String(required=True, example='A11'),  # TODOO: antibodies
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in AntibodyMatchTypes])
 })
 

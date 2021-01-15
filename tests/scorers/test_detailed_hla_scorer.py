@@ -3,8 +3,8 @@ import unittest
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack)
 from txmatching.patients.patient import Donor, Recipient
-from txmatching.patients.patient_parameters import (HLAType, HLATyping,
-                                                    PatientParameters)
+from txmatching.patients.patient_parameters import HLATyping, PatientParameters
+from txmatching.patients.patient_parameters_dataclasses import HLAType
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, HLAGroup, MatchTypes
@@ -22,33 +22,33 @@ class TestHlaScorer(unittest.TestCase):
         expected = [
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=HLAGroup.A,
-                donor_matches=[HLAMatch('A23', MatchTypes.BROAD),
-                               HLAMatch('A26', MatchTypes.BROAD.NONE)],
-                recipient_matches=[HLAMatch('A9', MatchTypes.BROAD),
-                                   HLAMatch('A30', MatchTypes.BROAD.NONE)],
+                donor_matches=[HLAMatch(HLAType('A23'), MatchTypes.BROAD),
+                               HLAMatch(HLAType('A26'), MatchTypes.BROAD.NONE)],
+                recipient_matches=[HLAMatch(HLAType('A9'), MatchTypes.BROAD),
+                                   HLAMatch(HLAType('A30'), MatchTypes.BROAD.NONE)],
                 group_compatibility_index=1.0),
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=HLAGroup.B,
-                donor_matches=[HLAMatch('B62', MatchTypes.BROAD),
-                               HLAMatch('B38', MatchTypes.NONE)],
-                recipient_matches=[HLAMatch('B77', MatchTypes.BROAD),
-                                   HLAMatch('B14', MatchTypes.NONE)],
+                donor_matches=[HLAMatch(HLAType('B62'), MatchTypes.BROAD),
+                               HLAMatch(HLAType('B38'), MatchTypes.NONE)],
+                recipient_matches=[HLAMatch(HLAType('B77'), MatchTypes.BROAD),
+                                   HLAMatch(HLAType('B14'), MatchTypes.NONE)],
                 group_compatibility_index=3.0),
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=HLAGroup.DRB1,
-                donor_matches=[HLAMatch('DR4', MatchTypes.SPLIT), HLAMatch('DR11', MatchTypes.SPLIT)],
-                recipient_matches=[HLAMatch('DR4', MatchTypes.SPLIT),
-                                   HLAMatch('DR11', MatchTypes.SPLIT)],
+                donor_matches=[HLAMatch(HLAType('DR4', MatchTypes.SPLIT), HLAMatch('DR11'), MatchTypes.SPLIT)],
+                recipient_matches=[HLAMatch(HLAType('DR4'), MatchTypes.SPLIT),
+                                   HLAMatch(HLAType('DR11'), MatchTypes.SPLIT)],
                 group_compatibility_index=18.0),
             DetailedCompatibilityIndexForHLAGroup(hla_group=HLAGroup.Other,
-                                                  donor_matches=[HLAMatch(hla_code='DR52', match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code='DR53', match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code='DQ7', match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code='DQ8', match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code='DP2', match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code='DP10', match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code='CW9', match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code='CW12', match_type=MatchTypes.NONE)],
+                                                  donor_matches=[HLAMatch(hla_code=HLAType('DR52'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code=HLAType('DR53'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code=HLAType('DQ7'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code=HLAType('DQ8'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code=HLAType('DP2'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code=HLAType('DP10'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code=HLAType('CW9'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_code=HLAType('CW12'), match_type=MatchTypes.NONE)],
                                                   recipient_matches=[], group_compatibility_index=0.0)
 
         ]
