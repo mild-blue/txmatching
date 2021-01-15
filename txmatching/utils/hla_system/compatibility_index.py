@@ -2,8 +2,7 @@ import logging
 from dataclasses import dataclass
 from typing import List
 
-from txmatching.patients.patient_parameters import HLATyping
-from txmatching.patients.patient_parameters_dataclasses import HLAType
+from txmatching.patients.patient_parameters import HLAType, HLATyping
 from txmatching.utils.enums import (HLA_GROUPS_GENE,
                                     HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS,
                                     MATCH_TYPE_BONUS, HLAGroup, MatchTypes)

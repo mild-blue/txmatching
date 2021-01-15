@@ -3,9 +3,8 @@ import unittest
 from txmatching.patients.patient import (Donor, DonorType, Recipient,
                                          RecipientRequirements)
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLATyping,
+                                                    HLAType, HLATyping,
                                                     PatientParameters)
-from txmatching.patients.patient_parameters_dataclasses import HLAType
 from txmatching.scorers.matching import (
     calculate_compatibility_index_for_group, get_count_of_transplants,
     get_matching_hla_typing)

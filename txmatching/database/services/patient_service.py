@@ -24,9 +24,8 @@ from txmatching.database.sql_alchemy_schema import (
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements)
 from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLATyping,
+                                                    HLAType, HLATyping,
                                                     PatientParameters)
-from txmatching.patients.patient_parameters_dataclasses import HLAType
 from txmatching.utils.hla_system.hla_transformations import \
     preprocess_hla_code_in
 from txmatching.utils.hla_system.hla_transformations_store import \
