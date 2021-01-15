@@ -28,15 +28,16 @@ class HLAType:
         """
         For List[HLAType].remove()
         """
-        return self.code == other.code
+        return isinstance(other, HLAType) and self.code == other.code
 
     def __hash__(self):
         return hash(self.code)
 
 
 @dataclass
-class CodesPerGroup:
+class CodesPerGroup:  # TODOO: rename
     hla_group: HLAGroup
+    # TODOO: this is used for antigens and antibodies both which is little problematic
     hla_codes: List[HLAType]  # TODOO: rename
 
 

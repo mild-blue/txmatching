@@ -36,7 +36,7 @@ class TestHlaScorer(unittest.TestCase):
                 group_compatibility_index=3.0),
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=HLAGroup.DRB1,
-                donor_matches=[HLAMatch(HLAType('DR4', MatchTypes.SPLIT), HLAMatch('DR11'), MatchTypes.SPLIT)],
+                donor_matches=[HLAMatch(HLAType('DR4'), MatchTypes.SPLIT), HLAMatch(HLAType('DR11'), MatchTypes.SPLIT)],
                 recipient_matches=[HLAMatch(HLAType('DR4'), MatchTypes.SPLIT),
                                    HLAMatch(HLAType('DR11'), MatchTypes.SPLIT)],
                 group_compatibility_index=18.0),
