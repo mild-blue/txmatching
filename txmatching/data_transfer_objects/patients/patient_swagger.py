@@ -11,13 +11,13 @@ from txmatching.web.api.namespaces import patient_api
 
 HLA_CODES_IN_GROUPS_EXAMPLE = [
     {'hla_group': HLAGroup.A.name,
-     'hla_codes': ['A1']},
+     'hla_codes': [{'code': 'A1', 'raw_code': 'A1'}]},
     {'hla_group': HLAGroup.B.name,
-     'hla_codes': ['B38']},
+     'hla_codes': [{'code': 'B38', 'raw_code': 'B38'}]},
     {'hla_group': HLAGroup.DRB1.name,
-     'hla_codes': ['DR7']},
+     'hla_codes': [{'code': 'DR7', 'raw_code': 'DR7'}]},
     {'hla_group': HLAGroup.Other.name,
-     'hla_codes': ['CW4']}
+     'hla_codes': [{'code': 'CW4', 'raw_code': 'CW4'}]}
 ]
 
 EXAMPLE_HLA_TYPING = {'hla_types_list': [{'raw_code': 'A*01:02'},
@@ -26,7 +26,7 @@ EXAMPLE_HLA_TYPING = {'hla_types_list': [{'raw_code': 'A*01:02'},
 
 HlaCodesInGroup = patient_api.model('HlaCodesInGroups', {
     'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),
-    'hla_codes': fields.List(required=True, cls_or_instance=fields.String)
+    'hla_codes': fields.List(required=True, cls_or_instance=fields.Nested(HLAType))
 })
 
 HLAAntibody = patient_api.model('HlaAntibody', {

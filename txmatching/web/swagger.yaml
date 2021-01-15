@@ -153,16 +153,24 @@ definitions:
                     -   hla_code: A1
                         match_type: MATCH
                     donor_matches:
-                    -   hla_code: A23
+                    -   hla_code:
+                            code: A23
+                            raw_code: A23
                         match_type: BROAD
-                    -   hla_code: A1
+                    -   hla_code:
+                            code: A1
+                            raw_code: A1
                         match_type: SPLIT
                     group_compatibility_index: 2.0
                     hla_group: A
                     recipient_matches:
-                    -   hla_code: A9
+                    -   hla_code:
+                            code: A9
+                            raw_code: A9
                         match_type: BROAD
-                    -   hla_code: A1
+                    -   hla_code:
+                            code: A1
+                            raw_code: A1
                         match_type: SPLIT
                 -   antibody_matches: []
                     donor_matches: []
@@ -364,16 +372,20 @@ definitions:
                 description: hla codes split to hla groups
                 example: &id001
                 -   hla_codes:
-                    - A1
+                    -   code: A1
+                        raw_code: A1
                     hla_group: A
                 -   hla_codes:
-                    - B38
+                    -   code: B38
+                        raw_code: B38
                     hla_group: B
                 -   hla_codes:
-                    - DR7
+                    -   code: DR7
+                        raw_code: DR7
                     hla_group: DRB1
                 -   hla_codes:
-                    - CW4
+                    -   code: CW4
+                        raw_code: CW4
                     hla_group: Other
                 items:
                     $ref: '#/definitions/HlaCodesInGroups'
@@ -422,7 +434,7 @@ definitions:
         properties:
             hla_codes:
                 items:
-                    type: string
+                    $ref: '#/definitions/HlaType'
                 type: array
             hla_group:
                 enum:

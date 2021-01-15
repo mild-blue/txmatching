@@ -44,7 +44,7 @@ class CodesPerGroup:  # TODOO: rename
 @dataclass
 class HLATyping:
     hla_types_list: List[HLAType]
-    codes_per_group: Optional[List[CodesPerGroup]] = None
+    codes_per_group: Optional[List[CodesPerGroup]] = None  # TODOO: rename to codes_per_groups
 
     def __post_init__(self):
         if self.codes_per_group is None:

@@ -7,15 +7,15 @@ from txmatching.web.api.namespaces import matching_api
 EXAMPLE_DETAILED_SCORE = [
     {'hla_group': HLAGroup.A.name,
      'donor_matches': [
-         {'hla_code': 'A23',
+         {'hla_code': {'code': 'A23', 'raw_code': 'A23'},
           'match_type': MatchTypes.BROAD.name},
-         {'hla_code': 'A1',
+         {'hla_code': {'code': 'A1', 'raw_code': 'A1'},
           'match_type': MatchTypes.SPLIT.name}
      ],
      'recipient_matches': [
-         {'hla_code': 'A9',
+         {'hla_code': {'code': 'A9', 'raw_code': 'A9'},
           'match_type': MatchTypes.BROAD.name},
-         {'hla_code': 'A1',
+         {'hla_code': {'code': 'A1', 'raw_code': 'A1'},
           'match_type': MatchTypes.SPLIT.name}
      ],
      'antibody_matches': [
