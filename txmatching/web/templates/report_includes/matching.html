@@ -163,17 +163,17 @@
                     <td>{{ detailed_score_per_group.hla_group.value }}</td>
                     <td>
                       {% for match in detailed_score_per_group.donor_matches %}
-                        <div class="code {{ antigen_class(match.match_type) }}">{{ match.hla_code }}</div>
+                        <div class="code {{ antigen_class(match.match_type) }}">{{ match.hla_code.code }}</div>
                       {% endfor %}
                     </td>
                     <td>
                       {% for match in detailed_score_per_group.recipient_matches %}
-                        <div class="code {{ antigen_class(match.match_type) }}">{{ match.hla_code }}</div>
+                        <div class="code {{ antigen_class(match.match_type) }}">{{ match.hla_code.code }}</div>
                       {% endfor %}
                     </td>
                     <td>
                       {% for match in detailed_score_per_group.antibody_matches %}
-                        <div class="code {{ antibody_class(match.match_type) }}">{{ match.hla_code }}</div>
+                        <div class="code {{ antibody_class(match.match_type) }}">{{ match.hla_code.code }}</div>
                       {% endfor %}
                     </td>
                     <td>
