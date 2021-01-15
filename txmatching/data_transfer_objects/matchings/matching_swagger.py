@@ -60,8 +60,15 @@ AntigenMatchJson = matching_api.model('AntigenMatch', {
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in MatchTypes])
 })
 
+HLAAntibody = matching_api.model('HlaAntibody', {
+    'raw_code': fields.String(required=True),
+    'mfi': fields.Integer(required=True),
+    'cutoff': fields.Integer(required=True),
+    'code': fields.String(required=False)
+})
+
 AntibodyMatchJson = matching_api.model('AntibodyMatch', {
-    'hla_code': fields.String(required=True, example='A11'),  # TODOO: antibodies
+    'hla_code': fields.Nested(required=True, model=HLAAntibody),
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in AntibodyMatchTypes])
 })
 

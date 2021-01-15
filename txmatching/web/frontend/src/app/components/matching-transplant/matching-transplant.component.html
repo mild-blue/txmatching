@@ -71,7 +71,8 @@
         </td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.antibody_matches"
-                    [class]="getAntibodyMatchClass(match.match_type)">{{ match.hla_code }}</app-code>
+                    [class]="getAntibodyMatchClass(match.match_type)"
+                    [title]="'Raw code: ' + match.hla_code.raw_code">{{ match.hla_code.code }}</app-code>
         </td>
         <td>{{ compatibilityIndex.group_compatibility_index }}</td>
       </tr>

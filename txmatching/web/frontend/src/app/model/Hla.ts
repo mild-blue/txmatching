@@ -28,7 +28,7 @@ export interface AntigenMatch extends HlaMatch {
 }
 
 export interface AntibodyMatch extends HlaMatch {
-  hla_code: string;  // TODOO
+  hla_code: Antibody;  // TODOO: rename
   match_type: AntibodyMatchType;
 }
 

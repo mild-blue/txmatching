@@ -2,7 +2,7 @@ from flask_restx import fields
 
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
-    DetailedScoreForGroupJson, HLAType)
+    DetailedScoreForGroupJson, HLAAntibody, HLAType)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER, Country,
@@ -27,13 +27,6 @@ EXAMPLE_HLA_TYPING = {'hla_types_list': [{'raw_code': 'A*01:02'},
 HlaCodesInGroup = patient_api.model('HlaCodesInGroups', {
     'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),
     'hla_codes': fields.List(required=True, cls_or_instance=fields.Nested(HLAType))
-})
-
-HLAAntibody = patient_api.model('HlaAntibody', {
-    'raw_code': fields.String(required=True),
-    'mfi': fields.Integer(required=True),
-    'cutoff': fields.Integer(required=True),
-    'code': fields.String(required=False)
 })
 
 # TODOO: move more to separate file

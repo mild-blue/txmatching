@@ -35,23 +35,23 @@ class HLAType:
 
 
 @dataclass
-class CodesPerGroup:  # TODOO: rename
+class HLAPerGroup:
     hla_group: HLAGroup
-    # TODOO: this is used for antigens and antibodies both which is little problematic
     hla_codes: List[HLAType]  # TODOO: rename
 
 
 @dataclass
 class HLATyping:
     hla_types_list: List[HLAType]
-    codes_per_group: Optional[List[CodesPerGroup]] = None  # TODOO: rename to codes_per_groups
+    codes_per_group: Optional[List[HLAPerGroup]] = None  # TODOO: rename to codes_per_groups
 
     def __post_init__(self):
         if self.codes_per_group is None:
             codes = [hla_type for hla_type in self.hla_types_list if hla_type.code]
-            self.codes_per_group = split_to_hla_groups(codes)
+            self.codes_per_group = split_hlas_to_groups(codes)
 
 
+# TODO: create base class for HLAAntibody and HLAType
 @dataclass
 class HLAAntibody:
     raw_code: str
@@ -64,12 +64,28 @@ class HLAAntibody:
             code = parse_hla_raw_code(self.raw_code)
             self.code = code
 
+    def __eq__(self, other):
+        """
+        For List[HLAType].remove()
+        """
+        return isinstance(other, HLAAntibody) and self.code == other.code  # TODOO: is this correct here?
+
+    def __hash__(self):
+        return hash(self.code)
+
+
+@dataclass
+class AntibodiesPerGroup:
+    hla_group: HLAGroup
+    hla_codes: List[HLAAntibody]  # TODOO: rename
+
 
 @dataclass
 class HLAAntibodies:
     hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
-    hla_codes_over_cutoff_per_group: List[CodesPerGroup] = field(default_factory=list)
+    hla_codes_over_cutoff_per_group: List[AntibodiesPerGroup] = field(default_factory=list)  # TODOO: rename
 
+    # TODOO: rename variables
     def __init__(self, hla_antibodies_list: List[HLAAntibody] = None):
         if hla_antibodies_list is None:
             hla_antibodies_list = []
@@ -86,13 +102,10 @@ class HLAAntibodies:
             mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in hla_code_group_list])
             if mfi >= hla_code_cutoff:
                 hla_codes_over_cutoff_list.append(
-                    HLAType(
-                        raw_code=hla_code_group_list[0].raw_code,
-                        code=hla_code_group_list[0].code,
-                    )
+                    hla_code_group_list[0]  # TODOO: could be maybe refactored
                 )
 
-        self.hla_codes_over_cutoff_per_group = split_to_hla_groups(hla_codes_over_cutoff_list)
+        self.hla_codes_over_cutoff_per_group = split_antibodies_to_groups(hla_codes_over_cutoff_list)
 
 
 @dataclass
@@ -106,18 +119,36 @@ class PatientParameters:
     year_of_birth: Optional[int] = None
 
 
-def split_to_hla_groups(hla_types: List[HLAType]) -> List[CodesPerGroup]:
+def split_hlas_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
     hla_codes_in_groups = dict()
     for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
         hla_codes_in_groups[hla_group] = []
     for hla_type in hla_types:
         match_found = False
         for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
-            if re.match(HLA_GROUP_SPLIT_CODE_REGEX[hla_group], hla_type.code):  # TODOO
+            if re.match(HLA_GROUP_SPLIT_CODE_REGEX[hla_group], hla_type.code):
                 hla_codes_in_groups[hla_group] += [hla_type]
                 match_found = True
                 break
         if not match_found:
             raise AssertionError(f'Unexpected hla_code: {hla_type.code}')
-    return [CodesPerGroup(hla_group, hla_codes_in_group) for hla_group, hla_codes_in_group in
+    return [HLAPerGroup(hla_group, hla_codes_in_group) for hla_group, hla_codes_in_group in
+            hla_codes_in_groups.items()]
+
+
+# TODOO: code repetition with the function above
+def split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[AntibodiesPerGroup]:
+    hla_codes_in_groups = dict()
+    for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
+        hla_codes_in_groups[hla_group] = []
+    for hla_type in hla_antibodies:
+        match_found = False
+        for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
+            if re.match(HLA_GROUP_SPLIT_CODE_REGEX[hla_group], hla_type.code):
+                hla_codes_in_groups[hla_group] += [hla_type]
+                match_found = True
+                break
+        if not match_found:
+            raise AssertionError(f'Unexpected hla_code: {hla_type.code}')
+    return [AntibodiesPerGroup(hla_group, hla_codes_in_group) for hla_group, hla_codes_in_group in
             hla_codes_in_groups.items()]

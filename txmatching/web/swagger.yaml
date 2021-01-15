@@ -5,8 +5,7 @@ definitions:
     AntibodyMatch:
         properties:
             hla_code:
-                example: A11
-                type: string
+                $ref: '#/definitions/HlaAntibody'
             match_type:
                 enum:
                 - NONE
