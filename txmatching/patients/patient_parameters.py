@@ -1,11 +1,13 @@
 import itertools
+import re
 from dataclasses import dataclass, field
 from typing import List, Optional
 
 from txmatching.patients.patient_parameters_dataclasses import HLAType
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import (CodesPerGroup, Country, Sex,
-                                    split_to_hla_groups)
+from txmatching.utils.enums import (HLA_GROUP_SPLIT_CODE_REGEX,
+                                    HLA_GROUPS_NAMES_WITH_OTHER, Country,
+                                    HLAGroup, Sex)
 from txmatching.utils.hla_system.hla_transformations import (
     get_mfi_from_multiple_hla_codes, parse_hla_raw_code)
 
@@ -13,6 +15,12 @@ Kilograms = float
 Centimeters = int
 
 # TODOO: move back HLAType maybe
+
+
+@dataclass
+class CodesPerGroup:
+    hla_group: HLAGroup
+    hla_codes: List[HLAType]  # TODOO: rename
 
 
 @dataclass
@@ -78,3 +86,20 @@ class PatientParameters:
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None
     year_of_birth: Optional[int] = None
+
+
+def split_to_hla_groups(hla_types: List[HLAType]) -> List[CodesPerGroup]:
+    hla_codes_in_groups = dict()
+    for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
+        hla_codes_in_groups[hla_group] = []
+    for hla_type in hla_types:
+        match_found = False
+        for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
+            if re.match(HLA_GROUP_SPLIT_CODE_REGEX[hla_group], hla_type.code):  # TODOO
+                hla_codes_in_groups[hla_group] += [hla_type]
+                match_found = True
+                break
+        if not match_found:
+            raise AssertionError(f'Unexpected hla_code: {hla_type.code}')
+    return [CodesPerGroup(hla_group, hla_codes_in_group) for hla_group, hla_codes_in_group in
+            hla_codes_in_groups.items()]
