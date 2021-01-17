@@ -30,12 +30,14 @@ ARG release_version=development-docker
 ENV RELEASE_FILE_PATH=./release.txt
 RUN echo $release_version > $RELEASE_FILE_PATH
 
+ENV PORT=8008
+
 # Start the app - one must initialize shell beforehand
 CMD . ~/.bashrc && \
     conda activate txmatching && \
     gunicorn  \
         --config txmatching/web/gunicorn_configuration.py \
-        --bind 0.0.0.0:8080 \
+        --bind 0.0.0.0:${PORT} \
         --timeout 1800 \
         --graceful-timeout 1800 \
          txmatching.web.app:app
