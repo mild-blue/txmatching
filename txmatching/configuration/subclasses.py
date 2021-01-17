@@ -5,7 +5,7 @@ from txmatching.utils.enums import Country
 PatientDbId = int
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class ManualDonorRecipientScore:
     donor_db_id: int
     recipient_db_id: int

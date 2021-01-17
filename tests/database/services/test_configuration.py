@@ -73,3 +73,10 @@ class TestConfiguration(DbTests):
             Configuration(max_matchings_to_show_to_viewer=10),
             Configuration(max_matchings_to_show_to_viewer=20),
         )
+
+        self.assertEqual(
+            Configuration(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 2, 1),
+                                                         ManualDonorRecipientScore(1, 3, 1)]),
+            Configuration(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 3, 1),
+                                                         ManualDonorRecipientScore(1, 2, 1)])
+        )
