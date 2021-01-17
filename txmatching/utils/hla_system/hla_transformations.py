@@ -163,7 +163,7 @@ def get_broad_codes(hla_codes: List[str]) -> List[str]:
     return [split_to_broad(hla_code) for hla_code in hla_codes]
 
 
-def get_mfi_from_multiple_hla_codes(mfis: List[int]):
+def get_mfi_from_multiple_hla_codes(mfis: List[int], cutoff: int, raw_code: str) -> int:
     """
     Takes list of mfis of the same hla code and estimates the mfi for the code.
     It is based on discussions with immunologists. If variance is low, take average, if variance is high, something
@@ -178,5 +178,8 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int]):
     # this should be +inf but max_mfi will do as well
     max_min_difference = (max_mfi - min_mfi) / min_mfi if min_mfi > 0 else max_mfi
     if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
-        return np.mean(mfis)
+        return int(np.mean(mfis))
+    if np.mean(mfis) > cutoff:
+        logging.warning(f'Dropping {raw_code} antibody even though mean mfi is above threshold, due to large variance'
+                        f'in mfi values. MFIs: {mfis}, cutoff: {cutoff}')
     return 0
