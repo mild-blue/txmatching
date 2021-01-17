@@ -4,6 +4,7 @@ import pandas as pd
 
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
+from txmatching.patients.patient_parameters import HLAAntibodies, HLAAntibody
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (
@@ -100,3 +101,11 @@ class TestCodeParser(DbTests):
         self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000]))
         self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000]))
         self.assertEqual(0, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000]))
+
+        self.assertSetEqual({'DQA1'}, set(
+            HLAAntibodies(
+                [
+                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2500),
+                    HLAAntibody('DQA1*01:01', cutoff=2000, mfi=10)
+                ]
+            ).hla_codes_over_cutoff_per_group[3].hla_codes))
