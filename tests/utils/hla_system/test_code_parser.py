@@ -96,11 +96,13 @@ class TestCodeParser(DbTests):
         self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'B'))
 
     def test_mfi_extraction(self):
-        self.assertEqual(0, get_mfi_from_multiple_hla_codes([1, 3000, 4000]))
-        self.assertEqual(0, get_mfi_from_multiple_hla_codes([1000, 20000, 18000]))
-        self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000]))
-        self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000]))
-        self.assertEqual(0, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000]))
+        self.assertEqual(0, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test'))
+        self.assertEqual(0, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test'))
+        self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000], 2000, 'test'))
+        self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000], 2000, 'test'))
+        self.assertEqual(0, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test'))
+        self.assertEqual(20000, get_mfi_from_multiple_hla_codes([30000, 10001], 2000, 'test'))
+        self.assertEqual(0, get_mfi_from_multiple_hla_codes([30000, 10000], 2000, 'test'))
 
         self.assertSetEqual({'DQA1'}, set(
             HLAAntibodies(
