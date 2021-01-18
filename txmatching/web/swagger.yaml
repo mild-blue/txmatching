@@ -50,6 +50,21 @@ definitions:
         - hla_type
         - match_type
         type: object
+    CalculatedMatchings:
+        properties:
+            calculated_matchings:
+                items:
+                    $ref: '#/definitions/Matching'
+                type: array
+            found_matchings_count:
+                type: integer
+            show_not_all_matchings_found:
+                type: boolean
+        required:
+        - calculated_matchings
+        - found_matchings_count
+        - show_not_all_matchings_found
+        type: object
     Configuration:
         properties:
             blood_group_compatibility_bonus:
@@ -1056,9 +1071,7 @@ paths:
                 '200':
                     description: List of all matchings for given configuration.
                     schema:
-                        items:
-                            $ref: '#/definitions/Matching'
-                        type: array
+                        $ref: '#/definitions/CalculatedMatchings'
                 '400':
                     description: Wrong data format.
                     schema:
@@ -1607,6 +1620,8 @@ produces:
 responses:
     AuthenticationException:
         description: general_authentication_exception
+    CachingNotReadyException:
+        description: invalid_argument_exception
     CouldNotSendOtpUsingSmsServiceException:
         description: could_not_send_otp
     CredentialsMismatchException:
@@ -1639,6 +1654,8 @@ responses:
         description: not_found_exception
     ParseError:
         description: When a mask can't be parsed
+    SolverAlreadyRunningException:
+        description: Solver already running
     UserUpdateException:
         description: user_update_exception
     ValueError:

@@ -75,6 +75,36 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
     return hla_compatibility_index_detailed
 
 
+def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATyping,
+                                                       ) -> List[DetailedCompatibilityIndexForHLAGroup]:
+    hla_compatibility_index_detailed = []
+    for hla_group in HLA_GROUPS_GENE:  # why not HLA_GROUPS_GENE + [HLAGroup.Other]?
+        donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
+        donor_matches = [HLAMatch(left_donor_hla, MatchTypes.NONE) for left_donor_hla in donor_hla_types]
+        hla_compatibility_index_detailed.append(
+            DetailedCompatibilityIndexForHLAGroup(
+                hla_group=hla_group,
+                donor_matches=donor_matches,
+                recipient_matches=[],
+                group_compatibility_index=0
+            )
+        )
+
+    hla_group = HLAGroup.Other
+    donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
+    donor_matches = [HLAMatch(left_donor_hla, MatchTypes.NONE) for left_donor_hla in donor_hla_types]
+    hla_compatibility_index_detailed.append(
+        DetailedCompatibilityIndexForHLAGroup(
+            hla_group=hla_group,
+            donor_matches=donor_matches,
+            recipient_matches=[],
+            group_compatibility_index=0
+        )
+    )
+
+    return hla_compatibility_index_detailed
+
+
 # pylint: disable=too-many-arguments
 # I think it is reasonable to have multiple arguments here
 def _match_through_split_codes(current_compatibility_index: float,

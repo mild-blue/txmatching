@@ -85,9 +85,11 @@ def get_txm_event(txm_event_db_id: int) -> TxmEvent:
     if maybe_txm_event_model is None:
         raise InvalidArgumentException(f'No TXM event with id {txm_event_db_id} found.')
 
-    all_donors = [get_donor_from_donor_model(donor_model) for donor_model in maybe_txm_event_model.donors]
-    all_recipients = [get_recipient_from_recipient_model(recipient_model, recipient_model.donor.id)
-                      for recipient_model in maybe_txm_event_model.recipients]
+    all_donors = sorted([get_donor_from_donor_model(donor_model) for donor_model in maybe_txm_event_model.donors],
+                        key=lambda donor: donor.db_id)
+    all_recipients = sorted([get_recipient_from_recipient_model(recipient_model, recipient_model.donor.id)
+                             for recipient_model in maybe_txm_event_model.recipients],
+                            key=lambda recipient: recipient.db_id)
 
     return TxmEvent(db_id=maybe_txm_event_model.id, name=maybe_txm_event_model.name, all_donors=all_donors,
                     all_recipients=all_recipients)

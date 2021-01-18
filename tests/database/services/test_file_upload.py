@@ -90,7 +90,7 @@ class TestUpdateDonorRecipient(DbTests):
             max_number_of_distinct_countries_in_round=100,
             use_split_resolution=False
         ),
-            txm_event.db_id).calculated_matchings)
+            txm_event).calculated_matchings_list)
         self.assertEqual(358, len(all_matchings))
 
         matching_tuples = [[(found_pair.donor.medical_id, found_pair.recipient.medical_id)

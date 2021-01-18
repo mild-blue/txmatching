@@ -51,6 +51,18 @@
     border-color: lighten($danger, 20%);
   }
 
+  &-info {
+    color: darken($info, 10%);
+    background-color: lighten($info, 40%);
+    border-color: lighten($info, 20%);
+  }
+
+  &-warning {
+    color: darken($warning, 10%);
+    background-color: lighten($warning, 40%);
+    border-color: lighten($warning, 20%);
+  }
+
   .close {
     font-size: 1.5rem;
     font-weight: 700;

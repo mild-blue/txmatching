@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class DonorRecipientDTO:
+class DonorRecipientModel:
     donor: int
     recipient: int

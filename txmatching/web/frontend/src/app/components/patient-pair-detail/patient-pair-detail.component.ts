@@ -16,7 +16,7 @@ export class PatientPairDetailComponent extends ListItemDetailAbstractComponent 
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
-  public activeTab: PatientPairTab = PatientPairTab.Pair;
+  public activeTab: PatientPairTab = PatientPairTab.Overview;
   public tabs: typeof PatientPairTab = PatientPairTab;
   public tabNames: string[] = Object.values(PatientPairTab);
 

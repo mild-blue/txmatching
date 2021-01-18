@@ -1,3 +1,4 @@
+import dataclasses
 from dataclasses import dataclass, field
 from typing import List
 
@@ -50,9 +51,40 @@ class Configuration:
     max_cycle_length: int = 4
     max_sequence_length: int = 4
     max_number_of_distinct_countries_in_round: int = 3
+    # For equality comparison, the field bellow is treated as set (see __eq__() function)
+    # TODO: https://github.com/mild-blue/txmatching/issues/373 change field type to set
     required_patient_db_ids: List[PatientDbId] = field(default_factory=list)
     use_split_resolution: bool = True
+    # For equality comparison, the field bellow is treated as set (see __eq__() function)
+    # TODO: https://github.com/mild-blue/txmatching/issues/373 change field type to set
     forbidden_country_combinations: List[ForbiddenCountryCombination] = field(
         default_factory=lambda: DEFAULT_FORBIDDEN_COUNTRY_LIST)
+    # For equality comparison, the field bellow is treated as set (see __eq__() function)
+    # TODO: https://github.com/mild-blue/txmatching/issues/373 change field type to set
     manual_donor_recipient_scores: List[ManualDonorRecipientScore] = field(default_factory=list)
-    max_matchings_to_show_to_viewer: int = 10
+    max_matchings_to_show_to_viewer: int = field(default=10, compare=False)
+
+    def __eq__(self, other):
+        """
+        Compare list fields as sets
+        """
+        fields = getattr(self, dataclasses._FIELDS, None)
+
+        for fld in fields.values():
+            if fld._field_type is not dataclasses._FIELD or not fld.compare:
+                continue
+
+            val1 = getattr(self, fld.name, None)
+            val2 = getattr(other, fld.name, None)
+
+            if fld.name in [
+                'required_patient_db_ids',
+                'forbidden_country_combinations',
+                'manual_donor_recipient_scores',
+            ]:
+                if set(val1) != set(val2):
+                    return False
+            elif val1 != val2:
+                return False
+
+        return True

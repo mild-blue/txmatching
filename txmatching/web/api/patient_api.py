@@ -90,11 +90,12 @@ class AlterDonor(Resource):
         donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
         txm_event_db_id = get_txm_event_id_for_current_user()
-        all_recipients = get_txm_event(txm_event_db_id).all_recipients
+        txm_event = get_txm_event(txm_event_db_id)
+        all_recipients = txm_event.all_recipients
         return jsonify(donor_to_donor_dto_out(
             update_donor(donor_update_dto, get_txm_event_id_for_current_user()),
             all_recipients,
-            txm_event_db_id)
+            txm_event)
         )
 
 

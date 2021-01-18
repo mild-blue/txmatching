@@ -100,3 +100,9 @@ MatchingJson = matching_api.model('Matching', {
     'order_id': fields.Integer(required=True),
     'count_of_transplants': fields.Integer(required=True)
 })
+
+CalculatedMatchingsJson = matching_api.model('CalculatedMatchings', {
+    'calculated_matchings': fields.List(required=True, cls_or_instance=fields.Nested(MatchingJson)),
+    'found_matchings_count': fields.Integer(required=True),
+    'show_not_all_matchings_found': fields.Boolean(required=True)
+})

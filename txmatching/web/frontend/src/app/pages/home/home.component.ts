@@ -7,7 +7,7 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { Matching } from '@app/model/Matching';
+import { CalculatedMatchings, Matching } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public loading: boolean = false;
 
   public matchings: Matching[] = [];
+  public foundMatchingsCount: number = 0;
   public user?: User;
   public patients?: PatientList;
   public appConfiguration?: AppConfiguration;
@@ -154,9 +155,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.configuration = configuration;
 
     try {
-      const matchings: Matching[] = await this._matchingService.calculate(updatedConfig);
-      this.matchings = this._prepareMatchings(matchings);
-      this._logger.log('Calculated matchings', [matchings]);
+      const calculated_matchings_dto: CalculatedMatchings = await this._matchingService.calculate(updatedConfig);
+      this.matchings = this._prepareMatchings(calculated_matchings_dto.calculated_matchings);
+      this.foundMatchingsCount = calculated_matchings_dto.found_matchings_count;
+      this._logger.log('Calculated matchings', [calculated_matchings_dto]);
+      if (calculated_matchings_dto.show_not_all_matchings_found) {
+        this._alertService.info(`
+        There exist more than ${this.foundMatchingsCount} matchings. Shown matchings present the top matchings found so
+         far, most probably including the top matching over all. For more details, please contact the developers using
+         info@mild.blue or call +420 723 927 536.
+        `);
+      }
     } catch (e) {
       this._alertService.error(`Error calculating matchings: "${e.message || e}"`);
       this._logger.error(`Error calculating matchings: "${e.message || e}"`);
@@ -195,7 +204,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       // when successfully got patients & configuration
       // get useful config properties
-      const { scorer_constructor_name, solver_constructor_name, ...rest } = this.appConfiguration;
+      const {scorer_constructor_name, solver_constructor_name, ...rest} = this.appConfiguration;
       this.configuration = rest;
 
       // calculate matchings
@@ -223,7 +232,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private _prepareRound(r: Round, mIndex: number, rIndex: number): Round {
-    const round: Round = { ...r };
+    const round: Round = {...r};
 
     round.transplants = r.transplants.map((transplant, tKey) =>
       this._prepareTransplant(transplant, +`${mIndex}${rIndex}${tKey + 1}`)
@@ -235,7 +244,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private _prepareTransplant(t: Transplant, index: number): Transplant {
-    const transplant: Transplant = { ...t, index };
+    const transplant: Transplant = {...t, index};
 
     // try to find Donor and Recipient instances
     if (this.patients) {

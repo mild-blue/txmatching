@@ -1,20 +1,25 @@
+import time
+
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import (
     Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore)
 from txmatching.database.services.config_service import (
     configuration_from_dict, get_configuration_for_txm_event,
     save_configuration_to_db)
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.utils.enums import Country
 
 
 class TestConfiguration(DbTests):
     def test_configuration(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
+        txm_event = get_txm_event(txm_event_db_id)
+        time.sleep(1)
         configuration = Configuration(
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
-        save_configuration_to_db(configuration, txm_event_db_id)
-
-        configuration = get_configuration_for_txm_event(txm_event_db_id)
+        save_configuration_to_db(configuration, txm_event.db_id, 1)
+        self.assertEqual(Country.CZE, configuration.forbidden_country_combinations[0].donor_country)
+        configuration = get_configuration_for_txm_event(txm_event)
         self.assertEqual(Country.CZE, configuration.forbidden_country_combinations[0].donor_country)
 
     def test_configuration_from_dto(self):
@@ -40,3 +45,38 @@ class TestConfiguration(DbTests):
                          config.manual_donor_recipient_scores, )
         self.assertEqual([1, 3, 5],
                          config.required_patient_db_ids, )
+
+    def test_configuration_comparison(self):
+        self.assertEqual(
+            Configuration(),
+            Configuration()
+        )
+        self.assertNotEqual(
+            Configuration(max_cycle_length=5),
+            Configuration(max_cycle_length=4)
+        )
+        self.assertNotEqual(
+            Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)]),
+            Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.AUT, Country.CZE)])
+        )
+        self.assertEqual(
+            Configuration(forbidden_country_combinations=[
+                ForbiddenCountryCombination(Country.CZE, Country.AUT),
+                ForbiddenCountryCombination(Country.ISR, Country.CAN),
+            ]),
+            Configuration(forbidden_country_combinations=[
+                ForbiddenCountryCombination(Country.ISR, Country.CAN),
+                ForbiddenCountryCombination(Country.CZE, Country.AUT),
+            ])
+        )
+        self.assertEqual(
+            Configuration(max_matchings_to_show_to_viewer=10),
+            Configuration(max_matchings_to_show_to_viewer=20),
+        )
+
+        self.assertEqual(
+            Configuration(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 2, 1),
+                                                         ManualDonorRecipientScore(1, 3, 1)]),
+            Configuration(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 3, 1),
+                                                         ManualDonorRecipientScore(1, 2, 1)])
+        )

@@ -15,6 +15,7 @@ export class Alert {
   fade?: boolean;
   action?: Function;
   actionLabel?: string;
+  fadeAutomatically?: boolean;
 
   constructor(init?: Partial<Alert>) {
     this.uuid = uuid.v4();

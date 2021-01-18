@@ -5,14 +5,14 @@ from txmatching.utils.enums import Country
 PatientDbId = int
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class ManualDonorRecipientScore:
     donor_db_id: int
     recipient_db_id: int
     score: float
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class ForbiddenCountryCombination:
     donor_country: Country
     recipient_country: Country

@@ -80,6 +80,19 @@ class InvalidArgumentException(BaseTxmException):
     """
 
 
+# TODO remove in https://github.com/mild-blue/txmatching/issues/372
+class CachingNotReadyException(BaseTxmException):
+    """
+    Raised if caching is missing.
+    """
+
+
+class SolverAlreadyRunningException(BaseTxmException):
+    """
+    Indicates that the Solver is already running and TXM can not start it again.
+    """
+
+
 def require_auth_condition(condition: bool, message: Optional[str] = None):
     """
     Raises InvalidAuthCallException with message if condition is false.

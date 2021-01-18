@@ -4,7 +4,7 @@
   <h1 class="mb-0">Selected matching detail</h1>
 </div>
 
-{% for matching in matchings %}
+{% for matching in matchings.calculated_matchings %}
   <div class="box">
     {% set matching_index = loop.index %}
 
