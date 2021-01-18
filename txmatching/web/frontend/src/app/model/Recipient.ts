@@ -1,11 +1,11 @@
 import { Patient } from '@app/model/Patient';
-import { Antibody, HlaGroupCodes } from '@app/model/Hla';
+import { AntibodiesPerGroup, Antibody } from '@app/model/Hla';
 
 export interface Recipient extends Patient {
   acceptable_blood_groups: string[];
   hla_antibodies: {
     hla_antibodies_list: Antibody[];
-    hla_codes_over_cutoff_per_group: HlaGroupCodes[];
+    hla_antibodies_per_group: AntibodiesPerGroup[];
   };
   recipient_requirements: RecipientRequirements;
   related_donor_db_id: number;

@@ -77,13 +77,13 @@ class HLAAntibody:
 @dataclass
 class AntibodiesPerGroup:
     hla_group: HLAGroup
-    hla_codes: List[HLAAntibody]  # TODOO: rename
+    hla_antibody_list: List[HLAAntibody]
 
 
 @dataclass
 class HLAAntibodies:
     hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
-    hla_codes_over_cutoff_per_group: List[AntibodiesPerGroup] = field(default_factory=list)  # TODOO: rename
+    hla_antibodies_per_groups: List[AntibodiesPerGroup] = field(default_factory=list)  # TODOO: rename
 
     # TODOO: rename variables
     def __init__(self, hla_antibodies_list: List[HLAAntibody] = None):
@@ -105,7 +105,7 @@ class HLAAntibodies:
                     hla_code_group_list[0]  # TODOO: could be maybe refactored
                 )
 
-        self.hla_codes_over_cutoff_per_group = split_antibodies_to_groups(hla_codes_over_cutoff_list)
+        self.hla_antibodies_per_groups = split_antibodies_to_groups(hla_codes_over_cutoff_list)
 
 
 @dataclass

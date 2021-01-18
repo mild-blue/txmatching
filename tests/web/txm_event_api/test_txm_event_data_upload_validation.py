@@ -184,5 +184,5 @@ def _get_hla_typing_codes(donor_or_recipient: Patient) -> Set[str]:
 
 def _get_hla_antibodies_codes(donor_or_recipient: Recipient) -> Set[str]:
     return {hla.code for codes_per_group in
-            donor_or_recipient.hla_antibodies.hla_codes_over_cutoff_per_group for hla in
-            codes_per_group.hla_codes}
+            donor_or_recipient.hla_antibodies.hla_antibodies_per_groups for hla in
+            codes_per_group.hla_antibody_list}

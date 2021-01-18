@@ -21,9 +21,9 @@ EXAMPLE_DETAILED_SCORE = [
           'match_type': MatchTypes.SPLIT.name}
      ],
      'antibody_matches': [
-         {'hla_code': 'A9',
+         {'hla_code': {'raw_code': 'A9', 'mfi': 0, 'cutoff': 0, 'code': 'A9'},
           'match_type': AntibodyMatchTypes.NONE.name},
-         {'hla_code': 'A1',
+         {'hla_code': {'raw_code': 'A1', 'mfi': 0, 'cutoff': 0, 'code': 'A1'},
           'match_type': AntibodyMatchTypes.MATCH.name}
      ],
      'group_compatibility_index': 2.0

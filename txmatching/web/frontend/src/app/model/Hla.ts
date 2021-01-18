@@ -32,9 +32,14 @@ export interface AntibodyMatch extends HlaMatch {
   match_type: AntibodyMatchType;
 }
 
-export interface HlaGroupCodes {
+export interface HlaPerGroup {
   hla_group: string;
-  hla_codes: string[];
+  hla_types: Antigen[];
+}
+
+export interface AntibodiesPerGroup {
+  hla_group: string;
+  hla_antibody_list: Antibody[];
 }
 
 export enum AntigenMatchType {

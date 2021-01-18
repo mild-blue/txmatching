@@ -25,7 +25,7 @@ class TestUpdateDonorRecipient(DbTests):
 
         self.assertSetEqual({'0', 'A'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
         self.assertSetEqual({'B7', 'DQ6', 'DQ5'},
-                            {hla_antibody.code for hla_antibody in RecipientModel.query.get(1).hla_antibodies})
+                            {hla_antibody.code for hla_antibody in RecipientModel.query.get(1).hla_antibody_list})
         self.assertFalse(
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
         update_recipient(RecipientUpdateDTO(
@@ -45,7 +45,7 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(0, len(configs))
 
         self.assertSetEqual({'AB'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
-        self.assertSetEqual({'B42', 'DQ6', 'DQA1'}, {code.code for code in RecipientModel.query.get(1).hla_antibodies})
+        self.assertSetEqual({'B42', 'DQ6', 'DQA1'}, {code.code for code in RecipientModel.query.get(1).hla_antibody_list})
         self.assertTrue(
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
         self.assertSetEqual({'A11', 'DQ6', 'DQA1'},

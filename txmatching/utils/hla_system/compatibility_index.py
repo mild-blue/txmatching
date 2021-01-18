@@ -24,7 +24,7 @@ class InvalidNumberOfAllelesError(Exception):
 
 @dataclass
 class HLAMatch:
-    hla_code: HLAType
+    hla_code: HLAType  # TODOO: rename
     match_type: MatchTypes
 
 
@@ -112,18 +112,20 @@ def _match_through_broad_codes(current_compatibility_index: float,
                                recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup):
     for hla_type, broad_code in zip(donor_hla_types.copy(), _hla_type_to_broad(donor_hla_types)):
+        broad_code_as_hla_type = HLAType(broad_code)
         if broad_code in _hla_type_to_broad(recipient_hla_types):
-            if broad_code in recipient_hla_types:
-                recipient_match_code = broad_code
+            if broad_code_as_hla_type in recipient_hla_types:
+                recipient_match_hla_type = broad_code_as_hla_type
             else:
-                split_codes_for_broad = set(_broad_to_hla_types(broad_code))
-                split_codes_to_remove = split_codes_for_broad.intersection(set(recipient_hla_types))
-                recipient_match_code = split_codes_to_remove.pop()
+                hla_types_for_broad = set(_broad_to_hla_types(broad_code))
+                hla_types_to_remove = hla_types_for_broad.intersection(set(recipient_hla_types))
+                assert len(hla_types_to_remove) > 0
+                recipient_match_hla_type = hla_types_to_remove.pop()
 
-            recipient_hla_types.remove(recipient_match_code)
+            recipient_hla_types.remove(recipient_match_hla_type)
             donor_hla_types.remove(hla_type)
             donor_matches.append(HLAMatch(hla_type, MatchTypes.BROAD))
-            recipient_matches.append(HLAMatch(recipient_match_code, MatchTypes.BROAD))
+            recipient_matches.append(HLAMatch(recipient_match_hla_type, MatchTypes.BROAD))
             current_compatibility_index += MATCH_TYPE_BONUS[MatchTypes.BROAD] * HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS[
                 hla_group]
     return current_compatibility_index

@@ -2,6 +2,24 @@ basePath: /
 consumes:
 - application/json
 definitions:
+    AntibodiesPerGroup:
+        properties:
+            hla_antibody_list:
+                items:
+                    $ref: '#/definitions/HlaAntibody'
+                type: array
+            hla_group:
+                enum:
+                - A
+                - B
+                - DRB1
+                - Other
+                example: A
+                type: string
+        required:
+        - hla_antibody_list
+        - hla_group
+        type: object
     AntibodyMatch:
         properties:
             hla_code:
@@ -145,11 +163,19 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: &id004
+                example: &id003
                 -   antibody_matches:
-                    -   hla_code: A9
+                    -   hla_code:
+                            code: A9
+                            cutoff: 0
+                            mfi: 0
+                            raw_code: A9
                         match_type: NONE
-                    -   hla_code: A1
+                    -   hla_code:
+                            code: A1
+                            cutoff: 0
+                            mfi: 0
+                            raw_code: A1
                         match_type: MATCH
                     donor_matches:
                     -   hla_code:
@@ -237,7 +263,7 @@ definitions:
                 type: integer
             hla_typing:
                 description: HLA typing of the patient. Use high resolution if available.
-                example: &id002
+                example: &id001
                 - A1
                 - A32
                 - B7
@@ -300,7 +326,7 @@ definitions:
                 -   $ref: '#/definitions/HlaTypingToUpdate'
                 description: Provide full list of all the HLA types of the patient,
                     not just the change set
-                example: &id003
+                example: &id002
                     hla_types_list:
                     -   raw_code: A*01:02
                     -   raw_code: B7
@@ -367,31 +393,39 @@ definitions:
                 items:
                     $ref: '#/definitions/HlaAntibody'
                 type: array
-            hla_codes_over_cutoff_per_group:
-                description: hla codes split to hla groups
-                example: &id001
-                -   hla_codes:
+            hla_antibodies_per_groups:
+                description: hla antibodies split to hla groups
+                example:
+                -   hla_antibody_list:
                     -   code: A1
+                        cutoff: 0
+                        mfi: 0
                         raw_code: A1
                     hla_group: A
-                -   hla_codes:
+                -   hla_antibody_list:
                     -   code: B38
+                        cutoff: 0
+                        mfi: 10
                         raw_code: B38
                     hla_group: B
-                -   hla_codes:
+                -   hla_antibody_list:
                     -   code: DR7
+                        cutoff: 300
+                        mfi: 0
                         raw_code: DR7
                     hla_group: DRB1
-                -   hla_codes:
+                -   hla_antibody_list:
                     -   code: CW4
+                        cutoff: 500
+                        mfi: 500
                         raw_code: CW4
                     hla_group: Other
                 items:
-                    $ref: '#/definitions/HlaCodesInGroups'
+                    $ref: '#/definitions/AntibodiesPerGroup'
                 type: array
         required:
         - hla_antibodies_list
-        - hla_codes_over_cutoff_per_group
+        - hla_antibodies_per_groups
         type: object
     HlaAntibodiesToUpdate:
         properties:
@@ -431,10 +465,6 @@ definitions:
         type: object
     HlaCodesInGroups:
         properties:
-            hla_codes:
-                items:
-                    $ref: '#/definitions/HlaType'
-                type: array
             hla_group:
                 enum:
                 - A
@@ -443,9 +473,13 @@ definitions:
                 - Other
                 example: A
                 type: string
+            hla_types:
+                items:
+                    $ref: '#/definitions/HlaType'
+                type: array
         required:
-        - hla_codes
         - hla_group
+        - hla_types
         type: object
     HlaType:
         properties:
@@ -466,9 +500,25 @@ definitions:
         type: object
     HlaTyping:
         properties:
-            codes_per_group:
-                description: hla codes split to hla groups
-                example: *id001
+            hla_per_groups:
+                description: hla types split to hla groups
+                example:
+                -   hla_group: A
+                    hla_types:
+                    -   code: A1
+                        raw_code: A1
+                -   hla_group: B
+                    hla_types:
+                    -   code: B38
+                        raw_code: B38
+                -   hla_group: DRB1
+                    hla_types:
+                    -   code: DR7
+                        raw_code: DR7
+                -   hla_group: Other
+                    hla_types:
+                    -   code: CW4
+                        raw_code: CW4
                 items:
                     $ref: '#/definitions/HlaCodesInGroups'
                 type: array
@@ -477,7 +527,7 @@ definitions:
                     $ref: '#/definitions/HlaType'
                 type: array
         required:
-        - codes_per_group
+        - hla_per_groups
         - hla_types_list
         type: object
     HlaTypingToUpdate:
@@ -695,7 +745,7 @@ definitions:
                 type: array
             hla_typing:
                 description: HLA typing of the patient. Use high resolution if available.
-                example: *id002
+                example: *id001
                 items:
                     type: string
                 type: array
@@ -770,7 +820,7 @@ definitions:
                 -   $ref: '#/definitions/HlaTypingToUpdate'
                 description: Provide full list of all the HLA types of the patient,
                     not just the change set
-                example: *id003
+                example: *id002
             recipient_requirements:
                 allOf:
                 -   $ref: '#/definitions/RecipientRequirements'
@@ -832,7 +882,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: *id004
+                example: *id003
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array
