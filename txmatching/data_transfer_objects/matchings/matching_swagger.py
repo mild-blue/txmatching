@@ -1,5 +1,7 @@
 from flask_restx import fields
 
+from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
+                                                              HLAType)
 from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER,
                                     AntibodyMatchTypes, HLAGroup, MatchTypes)
 from txmatching.web.api.namespaces import matching_api
@@ -49,22 +51,9 @@ EXAMPLE_DETAILED_SCORE = [
 DESCRIPTION_DETAILED_SCORE = """Contains details for compatibility index for each HLA Group compatibility
 index is calculated for."""
 
-# TODOO: move to other file, this was moved here from patient_swagger.py for cyclic import problem
-HLAType = matching_api.model('HlaType', {
-    'code': fields.String(required=False),
-    'raw_code': fields.String(required=True),
-})
-
 AntigenMatchJson = matching_api.model('AntigenMatch', {
     'hla_code': fields.Nested(required=True, model=HLAType),
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in MatchTypes])
-})
-
-HLAAntibody = matching_api.model('HlaAntibody', {
-    'raw_code': fields.String(required=True),
-    'mfi': fields.Integer(required=True),
-    'cutoff': fields.Integer(required=True),
-    'code': fields.String(required=False)
 })
 
 AntibodyMatchJson = matching_api.model('AntibodyMatch', {
