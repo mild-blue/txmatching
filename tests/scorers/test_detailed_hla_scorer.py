@@ -41,14 +41,14 @@ class TestHlaScorer(unittest.TestCase):
                                    HLAMatch(HLAType('DR11'), MatchTypes.SPLIT)],
                 group_compatibility_index=18.0),
             DetailedCompatibilityIndexForHLAGroup(hla_group=HLAGroup.Other,
-                                                  donor_matches=[HLAMatch(hla_code=HLAType('DR52'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code=HLAType('DR53'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code=HLAType('DQ7'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code=HLAType('DQ8'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code=HLAType('DP2'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code=HLAType('DP10'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code=HLAType('CW9'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_code=HLAType('CW12'), match_type=MatchTypes.NONE)],
+                                                  donor_matches=[HLAMatch(hla_type=HLAType('DR52'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_type=HLAType('DR53'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_type=HLAType('DQ7'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_type=HLAType('DQ8'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_type=HLAType('DP2'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_type=HLAType('DP10'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_type=HLAType('CW9'), match_type=MatchTypes.NONE),
+                                                                 HLAMatch(hla_type=HLAType('CW12'), match_type=MatchTypes.NONE)],
                                                   recipient_matches=[], group_compatibility_index=0.0)
 
         ]
