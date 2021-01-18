@@ -24,7 +24,7 @@ class InvalidNumberOfAllelesError(Exception):
 
 @dataclass
 class HLAMatch:
-    hla_code: HLAType  # TODOO: rename
+    hla_type: HLAType
     match_type: MatchTypes
 
 

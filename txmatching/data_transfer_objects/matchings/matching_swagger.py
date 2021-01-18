@@ -9,21 +9,21 @@ from txmatching.web.api.namespaces import matching_api
 EXAMPLE_DETAILED_SCORE = [
     {'hla_group': HLAGroup.A.name,
      'donor_matches': [
-         {'hla_code': {'code': 'A23', 'raw_code': 'A23'},
+         {'hla_type': {'code': 'A23', 'raw_code': 'A23'},
           'match_type': MatchTypes.BROAD.name},
-         {'hla_code': {'code': 'A1', 'raw_code': 'A1'},
+         {'hla_type': {'code': 'A1', 'raw_code': 'A1'},
           'match_type': MatchTypes.SPLIT.name}
      ],
      'recipient_matches': [
-         {'hla_code': {'code': 'A9', 'raw_code': 'A9'},
+         {'hla_type': {'code': 'A9', 'raw_code': 'A9'},
           'match_type': MatchTypes.BROAD.name},
-         {'hla_code': {'code': 'A1', 'raw_code': 'A1'},
+         {'hla_type': {'code': 'A1', 'raw_code': 'A1'},
           'match_type': MatchTypes.SPLIT.name}
      ],
      'antibody_matches': [
-         {'hla_code': {'raw_code': 'A9', 'mfi': 0, 'cutoff': 0, 'code': 'A9'},
+         {'hla_antibody': {'raw_code': 'A9', 'mfi': 0, 'cutoff': 0, 'code': 'A9'},
           'match_type': AntibodyMatchTypes.NONE.name},
-         {'hla_code': {'raw_code': 'A1', 'mfi': 0, 'cutoff': 0, 'code': 'A1'},
+         {'hla_antibody': {'raw_code': 'A1', 'mfi': 0, 'cutoff': 0, 'code': 'A1'},
           'match_type': AntibodyMatchTypes.MATCH.name}
      ],
      'group_compatibility_index': 2.0
@@ -52,12 +52,12 @@ DESCRIPTION_DETAILED_SCORE = """Contains details for compatibility index for eac
 index is calculated for."""
 
 AntigenMatchJson = matching_api.model('AntigenMatch', {
-    'hla_code': fields.Nested(required=True, model=HLAType),
+    'hla_type': fields.Nested(required=True, model=HLAType),
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in MatchTypes])
 })
 
 AntibodyMatchJson = matching_api.model('AntibodyMatch', {
-    'hla_code': fields.Nested(required=True, model=HLAAntibody),
+    'hla_antibody': fields.Nested(required=True, model=HLAAntibody),
     'match_type': fields.String(required=True, enum=[match_type.name for match_type in AntibodyMatchTypes])
 })
 

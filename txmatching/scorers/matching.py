@@ -16,7 +16,7 @@ def get_matching_hla_typing_code(donor: Patient, recipient: Patient) -> List[str
     """
     scores = get_detailed_compatibility_index(donor.parameters.hla_typing,
                                               recipient.parameters.hla_typing)
-    return list({match.hla_code.code for ci_detail_group in scores for match in ci_detail_group.recipient_matches
+    return list({match.hla_type.code for ci_detail_group in scores for match in ci_detail_group.recipient_matches
                  if match.match_type != MatchTypes.NONE})
 
 

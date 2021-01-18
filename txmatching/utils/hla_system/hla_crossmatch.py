@@ -10,7 +10,7 @@ from txmatching.utils.hla_system.hla_transformations import (broad_to_split,
 
 @dataclass(eq=True, frozen=True)
 class AntibodyMatch:
-    hla_code: HLAAntibody  # TODO: rename
+    hla_antibody: HLAAntibody
     match_type: AntibodyMatchTypes
 
 
@@ -36,7 +36,7 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
     :param use_split_resolution: setting whether to use split resolution for crossmatch determination
     :return:
     """
-    common_codes = {code.hla_code for code_group in
+    common_codes = {code.hla_antibody for code_group in
                     get_crossmatched_antibodies(donor_hla_typing, recipient_antibodies, use_split_resolution) for code
                     in code_group.antibody_matches if code.match_type is not AntibodyMatchTypes.NONE}
     # if there are any common codes, positive crossmatch is found
