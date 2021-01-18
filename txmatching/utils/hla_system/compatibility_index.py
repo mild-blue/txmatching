@@ -95,20 +95,14 @@ def _match_through_split_codes(current_compatibility_index: float,
     return current_compatibility_index
 
 
-# TODOO
-def _get_broad_codes_typed(hla_types: List[HLAType]) -> List[HLAType]:
-    return [
-        HLAType(broad_code)
-        for broad_code
-        in get_broad_codes(
-            [hla_type.code for hla_type in hla_types]
-        )
-    ]
+def _hla_type_to_broad(hla_types: List[HLAType]) -> List[str]:
+    return get_broad_codes(
+        [hla_type.code for hla_type in hla_types]
+    )
 
 
-# TODOO
-def _broad_to_split_typed(hla_types: HLAType) -> List[HLAType]:
-    return [HLAType(splits) for splits in broad_to_split(hla_types.code)]
+def _broad_to_hla_types(broad_code: str) -> List[HLAType]:
+    return [HLAType(splits) for splits in broad_to_split(broad_code)]
 
 
 def _match_through_broad_codes(current_compatibility_index: float,
@@ -117,12 +111,12 @@ def _match_through_broad_codes(current_compatibility_index: float,
                                donor_hla_types: List[HLAType],
                                recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup):
-    for hla_type, broad_code in zip(donor_hla_types.copy(), _get_broad_codes_typed(donor_hla_types)):
-        if broad_code in _get_broad_codes_typed(recipient_hla_types):
+    for hla_type, broad_code in zip(donor_hla_types.copy(), _hla_type_to_broad(donor_hla_types)):
+        if broad_code in _hla_type_to_broad(recipient_hla_types):
             if broad_code in recipient_hla_types:
                 recipient_match_code = broad_code
             else:
-                split_codes_for_broad = set(_broad_to_split_typed(broad_code))
+                split_codes_for_broad = set(_broad_to_hla_types(broad_code))
                 split_codes_to_remove = split_codes_for_broad.intersection(set(recipient_hla_types))
                 recipient_match_code = split_codes_to_remove.pop()
 
