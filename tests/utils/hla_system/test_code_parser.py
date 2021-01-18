@@ -96,18 +96,30 @@ class TestCodeParser(DbTests):
         self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'B'))
 
     def test_mfi_extraction(self):
-        self.assertEqual(0, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test'))
-        self.assertEqual(0, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test'))
+        self.assertEqual(1, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test'))
+        self.assertEqual(1000, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test'))
         self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000], 2000, 'test'))
         self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000], 2000, 'test'))
-        self.assertEqual(0, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test'))
-        self.assertEqual(20000, get_mfi_from_multiple_hla_codes([30000, 10001], 2000, 'test'))
-        self.assertEqual(0, get_mfi_from_multiple_hla_codes([30000, 10000], 2000, 'test'))
+        self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test'))
+        self.assertEqual(15000, get_mfi_from_multiple_hla_codes([20000, 10001], 2000, 'test'))
+        self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test'))
+
+        self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test'))
 
         self.assertSetEqual({'DQA1'}, set(
             HLAAntibodies(
                 [
                     HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2500),
                     HLAAntibody('DQA1*01:01', cutoff=2000, mfi=10)
+                ]
+            ).hla_codes_over_cutoff_per_group[3].hla_codes))
+
+
+        self.assertSetEqual(set(), set(
+            HLAAntibodies(
+                [
+                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=6000),
+                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2000),
+                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=1800)
                 ]
             ).hla_codes_over_cutoff_per_group[3].hla_codes))

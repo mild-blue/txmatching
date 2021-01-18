@@ -16,7 +16,10 @@ from txmatching.utils.hla_system.rel_dna_ser_parsing import HIGH_RES_TO_SPLIT
 
 logger = logging.getLogger(__name__)
 
-MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI = 2
+MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI = 1
+
+RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW = 0.5
+RELATIVE_CLOSENESS_TO_CUTOFF_FROM_ABOVE = 1.25
 
 HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*[A-Z]?$')
 HIGH_RES_REGEX_ENDING_WITH_N = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*N$')
@@ -163,23 +166,75 @@ def get_broad_codes(hla_codes: List[str]) -> List[str]:
     return [split_to_broad(hla_code) for hla_code in hla_codes]
 
 
-def get_mfi_from_multiple_hla_codes(mfis: List[int], cutoff: int, raw_code: str) -> int:
+def get_mfi_from_multiple_hla_codes(mfis: List[int],
+                                    cutoff: int,
+                                    raw_code: str,
+                                    logger_with_extra_info: Union[
+                                        logging.Logger, logging.LoggerAdapter] = logging.getLogger(__name__)) -> int:
     """
     Takes list of mfis of the same hla code and estimates the mfi for the code.
     It is based on discussions with immunologists. If variance is low, take average, if variance is high, something
     is wrong and ignore the hla_code (return 0 mfi)
-    :param mfis:
-    :return:
     """
+    mfis = np.array(mfis)
     max_mfi = np.max(mfis)
     min_mfi = np.min(mfis)
+
     if min_mfi < 0:
         raise AssertionError(f'MFI has to be always >=0. The data shall be validated on input. Obtained MFI={min_mfi}.')
-    # this should be +inf but max_mfi will do as well
+
+
     max_min_difference = (max_mfi - min_mfi) / min_mfi if min_mfi > 0 else max_mfi
-    if max_min_difference < MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI:
-        return int(np.mean(mfis))
-    if np.mean(mfis) > cutoff:
-        logging.warning(f'Dropping {raw_code} antibody even though mean mfi is above threshold, due to large variance'
-                        f'in mfi values. MFIs: {mfis}, cutoff: {cutoff}')
-    return 0
+    difference_over_cutoff = (max_mfi - min_mfi) > cutoff
+
+    # This means that the level of antibodies for this hla code is not only about this specific antibody, but
+    # probably also about the other allele (alpha or beta). And we need to filter away the mfis related to the other
+    # allele.
+
+    # Two conditions are used: difference between min max has to be over cutoff that is relevant for low mif values,
+    # where relative difference between values is high, but actual is low.
+    # Second is relative that is meant for higher mfi values, where actual difference can be high (over cutoff, but
+    # in relative terms in can be ignored.
+    only_one_number_used = False
+    if max_min_difference > MAX_MIN_RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI and difference_over_cutoff:
+        mfis_under_mean = mfis[mfis < np.mean(mfis)]
+        mfis_close_to_minimum = mfis[mfis < min_mfi + cutoff / 2]
+        if set(mfis_under_mean) == set(mfis_close_to_minimum) and len(mfis_under_mean) != 1:
+            relevant_mean = np.mean(mfis_under_mean)
+        # some extreme outlier
+        elif len(mfis_close_to_minimum) == 1:
+            if len(mfis_under_mean) > 1:
+                relevant_mean = np.mean(mfis_under_mean)
+            else:
+                only_one_number_used = True
+                relevant_mean = np.mean(mfis_under_mean)
+        # probably three (or more) different batches of mfis, tak only the lowest one
+        else:
+            relevant_mean = np.mean(mfis_close_to_minimum)
+
+        if RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW * cutoff < relevant_mean < cutoff:
+            logger_with_extra_info.warning(
+                f'Dropping {raw_code} antibody. Due to assuming that the high MFI values are '
+                f'from other allele. But the mean MFIs identified as relevant are quite close to cut-off, '
+                f'and therefore this should be checked by immunologist.'
+                f'The MFI values for this code are {mfis}, cutoff is: {cutoff}, calculated mfi {int(relevant_mean)}')
+            if only_one_number_used:
+                logger_with_extra_info.warning('Moreover only 1 number was used for that decision')
+
+        elif relevant_mean > cutoff > min_mfi:
+            logger_with_extra_info.warning(
+                f'Not dropping {raw_code} antibody. But one might consider dropping it, as there are MFIs < cut-off. '
+                f'But as the mean mfi from the MFIs identified as relevant is above cutoff, we rather keep it'
+                f' The MFI values for this code are {mfis}, cutoff is: {cutoff}, calculated mfi {int(relevant_mean)}')
+            if only_one_number_used:
+                logger_with_extra_info.warning('Moreover only 1 number was used for that decision')
+
+        elif relevant_mean < cutoff and only_one_number_used:
+            logger_with_extra_info.warning(
+                f'Dropping {raw_code} antibody. Due to assuming that the high MFI values are '
+                f'from other allele. But the mean MFIs identified as relevant was only 1. And therefore this shall be '
+                f'checked by immunologist.'
+                f'The MFI values for this code are {mfis}, cutoff is: {cutoff}, calculated mfi {int(relevant_mean)}')
+
+        return int(relevant_mean)
+    return int(np.mean(mfis))
