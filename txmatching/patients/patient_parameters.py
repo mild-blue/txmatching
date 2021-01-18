@@ -68,7 +68,7 @@ class HLAAntibody:
         """
         For List[HLAType].remove()
         """
-        return isinstance(other, HLAAntibody) and self.code == other.code  # TODOO: is this correct here?
+        return isinstance(other, HLAAntibody) and self.code == other.code
 
     def __hash__(self):
         return hash(self.code)
@@ -83,29 +83,28 @@ class AntibodiesPerGroup:
 @dataclass
 class HLAAntibodies:
     hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
-    hla_antibodies_per_groups: List[AntibodiesPerGroup] = field(default_factory=list)  # TODOO: rename
+    hla_antibodies_per_groups: List[AntibodiesPerGroup] = field(default_factory=list)
 
-    # TODOO: rename variables
     def __init__(self, hla_antibodies_list: List[HLAAntibody] = None):
         if hla_antibodies_list is None:
             hla_antibodies_list = []
         self.hla_antibodies_list = hla_antibodies_list
         hla_antibodies_list_without_none = [hla_antibody for hla_antibody in hla_antibodies_list if hla_antibody.code]
-        grouped_hla_codes = itertools.groupby(
-            sorted(hla_antibodies_list_without_none, key=lambda hla_code: (hla_code.code, hla_code.cutoff)),
-            key=lambda hla_code: (hla_code.code, hla_code.cutoff)
+        grouped_hla_antibodies = itertools.groupby(
+            sorted(hla_antibodies_list_without_none, key=lambda hla_antibody: (hla_antibody.code, hla_antibody.cutoff)),
+            key=lambda hla_antibody: (hla_antibody.code, hla_antibody.cutoff)
         )
-        hla_codes_over_cutoff_list = []
-        for (hla_code_name, hla_code_cutoff), hla_code_group in grouped_hla_codes:
-            hla_code_group_list = list(hla_code_group)
-            assert len(hla_code_group_list) > 0
-            mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in hla_code_group_list])
-            if mfi >= hla_code_cutoff:
-                hla_codes_over_cutoff_list.append(
-                    hla_code_group_list[0]  # TODOO: could be maybe refactored
+        hla_antibodies_over_cutoff_list = []
+        for (_, antibody_cutoff), antibody_group in grouped_hla_antibodies:
+            antibody_group_list = list(antibody_group)
+            assert len(antibody_group_list) > 0
+            mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in antibody_group_list])
+            if mfi >= antibody_cutoff:
+                hla_antibodies_over_cutoff_list.append(
+                    antibody_group_list[0]
                 )
 
-        self.hla_antibodies_per_groups = split_antibodies_to_groups(hla_codes_over_cutoff_list)
+        self.hla_antibodies_per_groups = split_antibodies_to_groups(hla_antibodies_over_cutoff_list)
 
 
 @dataclass
@@ -136,7 +135,7 @@ def split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
             hla_types_in_groups.items()]
 
 
-# TODOO: code repetition with the function above
+# TODO: share logic with split_hla_types_to_groups
 def split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[AntibodiesPerGroup]:
     hla_types_in_groups = dict()
     for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
