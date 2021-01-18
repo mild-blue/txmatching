@@ -60,6 +60,7 @@ import { PatientDonorDetailComponent } from '@app/components/patient-donor-detai
 import { PatientRecipientDetailComponent } from '@app/components/patient-recipient-detail/patient-recipient-detail.component';
 import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
 import { DonorTypeLabelPipe } from '@app/pipes/donor-type-label/donor-type-label.pipe';
+import { AntibodyTitlePipe } from './pipes/antibody-title/antibody-title.pipe';
 
 @NgModule({
   declarations: [
@@ -104,7 +105,8 @@ import { DonorTypeLabelPipe } from '@app/pipes/donor-type-label/donor-type-label
     ScoreIndicatorComponent,
     PatientDonorItemComponent,
     PatientDonorDetailWrapperComponent,
-    DonorTypeLabelPipe
+    DonorTypeLabelPipe,
+    AntibodyTitlePipe
   ],
   imports: [
     BrowserModule,
