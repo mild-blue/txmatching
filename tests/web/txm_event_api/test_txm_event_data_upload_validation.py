@@ -178,8 +178,8 @@ class TestMatchingApi(DbTests):
 
 def _get_hla_typing_codes(donor_or_recipient: Patient) -> Set[str]:
     return {hla.code for codes_per_group in
-            donor_or_recipient.parameters.hla_typing.codes_per_group for hla in
-            codes_per_group.hla_codes}
+            donor_or_recipient.parameters.hla_typing.hla_per_groups for hla in
+            codes_per_group.hla_types}
 
 
 def _get_hla_antibodies_codes(donor_or_recipient: Recipient) -> Set[str]:

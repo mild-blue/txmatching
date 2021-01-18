@@ -54,21 +54,21 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
     """
     hla_compatibility_index_detailed = []
     for hla_group in HLA_GROUPS_GENE:
-        donor_split_codes = _hla_codes_for_gene_hla_group(donor_hla_typing, hla_group)
-        recipient_split_codes = _hla_codes_for_gene_hla_group(recipient_hla_typing, hla_group)
+        donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
+        recipient_hla_types = _hla_types_for_gene_hla_group(recipient_hla_typing, hla_group)
 
         hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_split_codes(
-            donor_hla_types=donor_split_codes,
-            recipient_hla_types=recipient_split_codes,
+            donor_hla_types=donor_hla_types,
+            recipient_hla_types=recipient_hla_types,
             hla_group=hla_group
         )
         )
     hla_group = HLAGroup.Other
-    donor_split_codes = _hla_codes_for_hla_group(donor_hla_typing, hla_group)
-    recipient_split_codes = _hla_codes_for_hla_group(recipient_hla_typing, hla_group)
+    donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
+    recipient_hla_types = _hla_types_for_hla_group(recipient_hla_typing, hla_group)
     hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_split_codes(
-        donor_hla_types=donor_split_codes,
-        recipient_hla_types=recipient_split_codes,
+        donor_hla_types=donor_hla_types,
+        recipient_hla_types=recipient_hla_types,
         hla_group=hla_group
     ))
 
@@ -165,19 +165,19 @@ def _get_ci_for_recipient_donor_split_codes(
     )
 
 
-def _hla_codes_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
-    hla_codes = _hla_codes_for_hla_group(donor_hla_typing, hla_group)
+def _hla_types_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
+    hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
 
-    if len(hla_codes) not in {1, 2}:
+    if len(hla_types) not in {1, 2}:
         logger.error(
             f'Invalid list of alleles for gene {hla_group.name} - there have to be 1 or 2 per gene.'
-            f'\nList of patient_alleles: {donor_hla_typing.codes_per_group}')
-        return hla_codes
-    if len(hla_codes) == 1:
-        return hla_codes + hla_codes
-    return hla_codes
+            f'\nList of patient_alleles: {donor_hla_typing.hla_per_groups}')
+        return hla_types
+    if len(hla_types) == 1:
+        return hla_types + hla_types
+    return hla_types
 
 
-def _hla_codes_for_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
-    return next(codes_per_group.hla_codes for codes_per_group in donor_hla_typing.codes_per_group if
-                codes_per_group.hla_group == hla_group).copy()
+def _hla_types_for_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
+    return next(hla_per_group.hla_types for hla_per_group in donor_hla_typing.hla_per_groups if
+                hla_per_group.hla_group == hla_group).copy()

@@ -47,14 +47,14 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
                                 use_split_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
     antibody_matches = []
-    for hla_per_group, antibodies_per_group in zip(donor_hla_typing.codes_per_group,
+    for hla_per_group, antibodies_per_group in zip(donor_hla_typing.hla_per_groups,
                                                    recipient_antibodies.hla_codes_over_cutoff_per_group):
         assert hla_per_group.hla_group == antibodies_per_group.hla_group
         recipient_antibodies_set = set()
         if use_split_resolution:
             # in case some code is in broad resolution we treat it is as if all split resolution codes were present
             donor_hla_typing_set = {split_code for hla in
-                                    hla_per_group.hla_codes for split_code in
+                                    hla_per_group.hla_types for split_code in
                                     broad_to_split(hla.code)}
 
             for antibody in antibodies_per_group.hla_codes:
@@ -64,7 +64,7 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                     recipient_antibodies_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.NONE))
 
         else:
-            donor_hla_typing_set = {split_to_broad(code.code) for code in hla_per_group.hla_codes}
+            donor_hla_typing_set = {split_to_broad(code.code) for code in hla_per_group.hla_types}
             for antibody in antibodies_per_group.hla_codes:
                 if split_to_broad(antibody.code) in donor_hla_typing_set:
                     recipient_antibodies_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.MATCH))
