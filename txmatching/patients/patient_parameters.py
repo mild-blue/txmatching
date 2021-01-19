@@ -26,7 +26,7 @@ class HLAType:
 
     def __eq__(self, other):
         """
-        For List[HLAType].remove()
+        Needed for List[HLAType].remove()
         """
         return isinstance(other, HLAType) and self.code == other.code
 
@@ -51,7 +51,6 @@ class HLATyping:
             self.hla_per_groups = split_hla_types_to_groups(hla_types)
 
 
-# TODO: create base class for HLAAntibody and HLAType
 @dataclass
 class HLAAntibody:
     raw_code: str
@@ -65,13 +64,13 @@ class HLAAntibody:
             self.code = code
 
     def __eq__(self, other):
-        """
-        For List[HLAType].remove()
-        """
-        return isinstance(other, HLAAntibody) and self.code == other.code
+        return (isinstance(other, HLAAntibody) and
+                self.code == other.code and
+                self.mfi == other.mfi and
+                self.raw_code == other.raw_code)
 
     def __hash__(self):
-        return hash(self.code)
+        return hash((self.code, self.mfi, self.raw_code))
 
 
 @dataclass
