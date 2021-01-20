@@ -80,7 +80,7 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
     hla_compatibility_index_detailed = []
     for hla_group in HLA_GROUPS_GENE:  # why not HLA_GROUPS_GENE + [HLAGroup.Other]?
         donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
-        donor_matches = [HLAMatch(left_donor_hla, MatchTypes.NONE) for left_donor_hla in donor_hla_types]
+        donor_matches = [HLAMatch(donor_hla, MatchTypes.NONE) for donor_hla in donor_hla_types]
         hla_compatibility_index_detailed.append(
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=hla_group,
@@ -92,7 +92,7 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
 
     hla_group = HLAGroup.Other
     donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
-    donor_matches = [HLAMatch(left_donor_hla, MatchTypes.NONE) for left_donor_hla in donor_hla_types]
+    donor_matches = [HLAMatch(donor_hla, MatchTypes.NONE) for donor_hla in donor_hla_types]
     hla_compatibility_index_detailed.append(
         DetailedCompatibilityIndexForHLAGroup(
             hla_group=hla_group,

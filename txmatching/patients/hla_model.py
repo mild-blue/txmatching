@@ -23,10 +23,10 @@ class HLAType:
         """
         Needed for List[HLAType].remove()
         """
-        return isinstance(other, HLAType) and self.code == other.code
+        return isinstance(other, HLAType) and self.raw_code == other.raw_code
 
     def __hash__(self):
-        return hash(self.code)
+        return hash(self.raw_code)
 
 
 @dataclass
@@ -60,12 +60,12 @@ class HLAAntibody:
 
     def __eq__(self, other):
         return (isinstance(other, HLAAntibody) and
-                self.code == other.code and
+                self.raw_code == other.raw_code and
                 self.mfi == other.mfi and
-                self.raw_code == other.raw_code)
+                self.cutoff == other.cutoff)
 
     def __hash__(self):
-        return hash((self.code, self.mfi, self.raw_code))
+        return hash((self.raw_code, self.mfi, self.cutoff))
 
 
 @dataclass
