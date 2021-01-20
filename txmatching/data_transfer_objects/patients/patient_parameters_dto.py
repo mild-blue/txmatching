@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from txmatching.patients.patient_parameters import (Centimeters, HLAType,
-                                                    Kilograms)
+from txmatching.patients.hla_model import HLAType
+from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
 

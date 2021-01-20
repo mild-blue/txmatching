@@ -1,10 +1,10 @@
 import unittest
 
+from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
+                                           HLATyping)
 from txmatching.patients.patient import (Donor, DonorType, Recipient,
                                          RecipientRequirements)
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLAType, HLATyping,
-                                                    PatientParameters)
+from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.matching import (
     calculate_compatibility_index_for_group, get_count_of_transplants,
     get_matching_hla_typing_code)

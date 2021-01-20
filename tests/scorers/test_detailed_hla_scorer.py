@@ -2,9 +2,9 @@ import unittest
 
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack)
+from txmatching.patients.hla_model import HLAType, HLATyping
 from txmatching.patients.patient import Donor, Recipient
-from txmatching.patients.patient_parameters import (HLAType, HLATyping,
-                                                    PatientParameters)
+from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, HLAGroup, MatchTypes

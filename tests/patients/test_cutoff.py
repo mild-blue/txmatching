@@ -1,6 +1,6 @@
 import unittest
 
-from txmatching.patients.patient_parameters import HLAAntibodies, HLAAntibody
+from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
 
 
 class TestCutOff(unittest.TestCase):

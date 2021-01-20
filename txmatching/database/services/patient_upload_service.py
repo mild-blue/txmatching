@@ -23,8 +23,8 @@ from txmatching.database.services.txm_event_service import (
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
     RecipientModel)
+from txmatching.patients.hla_model import HLAAntibody, HLAType
 from txmatching.patients.patient import DonorType, calculate_cutoff
-from txmatching.patients.patient_parameters import HLAAntibody, HLAType
 from txmatching.utils.enums import Country
 from txmatching.utils.hla_system.hla_transformations_store import \
     parse_hla_raw_code_and_store_parsing_error_in_db

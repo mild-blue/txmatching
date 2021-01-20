@@ -19,8 +19,8 @@ from txmatching.database.services.txm_event_service import (
     get_newest_txm_event_db_id, get_txm_event)
 from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
                                                     UploadedDataModel)
+from txmatching.patients.hla_model import HLAType, HLATyping
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
-from txmatching.patients.patient_parameters import HLAType, HLATyping
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE

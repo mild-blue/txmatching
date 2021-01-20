@@ -21,11 +21,11 @@ from txmatching.database.services.parsing_utils import get_hla_code
 from txmatching.database.sql_alchemy_schema import (
     ConfigModel, DonorModel, RecipientAcceptableBloodModel,
     RecipientHLAAntibodyModel, RecipientModel)
+from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
+                                           HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements)
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLAType, HLATyping,
-                                                    PatientParameters)
+from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.hla_system.hla_transformations import \
     preprocess_hla_code_in
 from txmatching.utils.hla_system.hla_transformations_store import \

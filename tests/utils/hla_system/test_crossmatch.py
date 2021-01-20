@@ -1,8 +1,8 @@
 import logging
 import unittest
 
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLAType, HLATyping)
+from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
+                                           HLATyping)
 from txmatching.utils.hla_system.hla_crossmatch import \
     is_positive_hla_crossmatch
 

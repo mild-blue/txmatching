@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from txmatching.patients.patient_parameters import (HLAAntibodies, HLAAntibody,
-                                                    HLATyping)
+from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLATyping
 from txmatching.utils.enums import AntibodyMatchTypes, HLAGroup
 from txmatching.utils.hla_system.hla_transformations import (broad_to_split,
                                                              split_to_broad)

@@ -1,8 +1,9 @@
 from typing import FrozenSet, Iterable, List, Set, Tuple
 from unittest import TestCase
 
+from txmatching.patients.hla_model import HLATyping
 from txmatching.patients.patient import Donor, Recipient
-from txmatching.patients.patient_parameters import PatientParameters, HLATyping
+from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching import Matching
 from txmatching.solvers.matching.transplant_round import TransplantRound
