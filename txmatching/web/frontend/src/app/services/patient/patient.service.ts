@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { PatientList } from '@app/model/PatientList';
 import { Donor } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
 import { Antibody } from '@app/model/Hla';
+import { PatientsGenerated } from '@app/generated/model';
+import { parsePatientList } from '@app/parsers';
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +20,9 @@ export class PatientService {
   }
 
   public async getPatients(): Promise<PatientList> {
-    return this._http.get<PatientList>(
+    return this._http.get<PatientsGenerated>(
       `${environment.apiUrl}/patients`
-    ).pipe(first()).toPromise();
+    ).pipe(first(), map(parsePatientList)).toPromise();
   }
 
   public async saveDonor(donor: Donor): Promise<Donor> {

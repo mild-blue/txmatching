@@ -16,19 +16,19 @@
     <!-- Checkboxes -->
     <h4>Matching conditions</h4>
     <div class="checkboxes">
-      <mat-slide-toggle *ngIf="item.recipient_requirements.require_compatible_blood_group !== undefined"
+      <mat-slide-toggle *ngIf="item.recipient_requirements?.require_compatible_blood_group !== undefined"
                         (change)="setCheckBoxValue('require_compatible_blood_group', $event.checked)"
-                        [checked]="item.recipient_requirements.require_compatible_blood_group">
+                        [checked]="item.recipient_requirements?.require_compatible_blood_group">
         Require compatible blood group
       </mat-slide-toggle>
-      <mat-slide-toggle *ngIf="item.recipient_requirements.require_better_match_in_compatibility_index !== undefined"
+      <mat-slide-toggle *ngIf="item.recipient_requirements?.require_better_match_in_compatibility_index !== undefined"
                         (change)="setCheckBoxValue('require_better_match_in_compatibility_index', $event.checked)"
-                        [checked]="item.recipient_requirements.require_better_match_in_compatibility_index">
+                        [checked]="item.recipient_requirements?.require_better_match_in_compatibility_index">
         Require new donor having better CI match than original donor
       </mat-slide-toggle>
-      <mat-slide-toggle *ngIf="item.recipient_requirements.require_better_match_in_compatibility_index_or_blood_group !== undefined"
+      <mat-slide-toggle *ngIf="item.recipient_requirements?.require_better_match_in_compatibility_index_or_blood_group !== undefined"
                         (change)="setCheckBoxValue('require_better_match_in_compatibility_index_or_blood_group', $event.checked)"
-                        [checked]="item.recipient_requirements.require_better_match_in_compatibility_index_or_blood_group">
+                        [checked]="item.recipient_requirements?.require_better_match_in_compatibility_index_or_blood_group">
         Require new donor having better CI match than original donor or blood group match
       </mat-slide-toggle>
     </div>
