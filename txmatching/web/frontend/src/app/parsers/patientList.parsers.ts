@@ -1,4 +1,4 @@
-import { PatientsGenerated } from '../generated/model';
+import { PatientsGenerated } from '../generated';
 import { PatientList } from '../model';
 import { parseDonor } from './donor.parsers';
 import { parseRecipient } from './recipient.parsers';

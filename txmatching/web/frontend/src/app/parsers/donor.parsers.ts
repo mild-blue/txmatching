@@ -1,4 +1,4 @@
-import { DonorGenerated, DonorGeneratedDonorTypeEnum } from '../generated/model';
+import { DonorGenerated, DonorGeneratedDonorTypeEnum } from '../generated';
 import { Donor, DonorType } from '../model';
 import { parsePatient } from './patient.parsers';
 import { parseDetailedScorePerGroup } from './hla.parsers';

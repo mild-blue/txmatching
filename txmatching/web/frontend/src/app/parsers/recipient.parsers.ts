@@ -1,4 +1,4 @@
-import { RecipientGenerated, RecipientRequirementsGenerated } from '../generated/model';
+import { RecipientGenerated, RecipientRequirementsGenerated } from '../generated';
 import { Recipient, RecipientRequirements } from '../model';
 import { parsePatient } from './patient.parsers';
 import { parseAntibodiesPerGroup, parseAntibody } from './hla.parsers';
@@ -9,8 +9,8 @@ export const parseRecipient = (data: RecipientGenerated): Recipient => {
     acceptable_blood_groups: data.acceptable_blood_groups ?? [],
     // TODO: create hla_antibodies model
     hla_antibodies: {
-      hla_antibodies_list: data.hla_antibodies?.hla_antibodies_list.map(_ => parseAntibody(_)) ?? [],
-      hla_antibodies_per_groups: data.hla_antibodies?.hla_antibodies_per_groups.map(_ => parseAntibodiesPerGroup(_)) ?? []
+      hla_antibodies_list: data.hla_antibodies?.hla_antibodies_list.map(parseAntibody) ?? [],
+      hla_antibodies_per_groups: data.hla_antibodies?.hla_antibodies_per_groups.map(parseAntibodiesPerGroup) ?? []
     },
     recipient_requirements: data.recipient_requirements && parseRecipientRequirements(data.recipient_requirements),
     related_donor_db_id: data.related_donor_db_id,

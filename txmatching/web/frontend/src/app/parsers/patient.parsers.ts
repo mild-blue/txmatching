@@ -1,4 +1,4 @@
-import { DonorGenerated, PatientParametersGenerated, PatientParametersGeneratedSexEnum, RecipientGenerated } from '../generated/model';
+import { DonorGenerated, PatientParametersGenerated, PatientParametersGeneratedSexEnum, RecipientGenerated } from '../generated';
 import { Patient, PatientParameters, PatientSexType } from '../model';
 import { ListItem, ListItemAbstractComponent, ListItemDetailAbstractComponent } from '../components/list-item/list-item.interface';
 import { parseAntigen, parseHlaPerGroup } from '@app/parsers/hla.parsers';
@@ -28,8 +28,8 @@ export const parsePatientParameters = ( data: PatientParametersGenerated ): Pati
     blood_group: data.blood_group ?? '',
     // TODO: create hla typing model
     hla_typing: {
-      hla_per_groups: data.hla_typing?.hla_per_groups.map(_ => parseHlaPerGroup(_)) ?? [],
-      hla_types_list: data.hla_typing?.hla_types_list.map(_ => parseAntigen(_)) ?? []
+      hla_per_groups: data.hla_typing?.hla_per_groups.map(parseHlaPerGroup) ?? [],
+      hla_types_list: data.hla_typing?.hla_types_list.map(parseAntigen) ?? []
     },
     // TODO: create enum for country code
     country_code: data.country_code ?? '',

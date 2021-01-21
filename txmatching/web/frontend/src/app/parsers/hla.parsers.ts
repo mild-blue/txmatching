@@ -5,7 +5,7 @@ import {
   DetailedScoreForGroupGenerated,
   HlaAntibodyGenerated, HlaCodesInGroupsGenerated,
   HlaTypeGenerated
-} from '../generated/model';
+} from '../generated';
 import {
   AntibodiesPerGroup,
   Antibody, AntibodyMatch, AntibodyMatchType,
@@ -50,9 +50,9 @@ export const parseAntibody = ( data: HlaAntibodyGenerated ): Antibody => {
 export const parseDetailedScorePerGroup = ( data: DetailedScoreForGroupGenerated ): DetailedScorePerGroup => {
   return {
     hla_group: data.hla_group,
-    donor_matches: data.donor_matches.map(_ => parseAntigenMatch(_)),
-    recipient_matches: data.recipient_matches.map(_ => parseAntigenMatch(_)),
-    antibody_matches: data.antibody_matches.map(_ => parseAntibodyMatch(_)),
+    donor_matches: data.donor_matches.map(parseAntigenMatch),
+    recipient_matches: data.recipient_matches.map(parseAntigenMatch),
+    antibody_matches: data.antibody_matches.map(parseAntibodyMatch),
     group_compatibility_index: data.group_compatibility_index
   }
 };
@@ -80,14 +80,14 @@ export const parseAntibodyMatch = ( data: AntibodyMatchGenerated ): AntibodyMatc
 export const parseHlaPerGroup = ( data: HlaCodesInGroupsGenerated ): HlaPerGroup => {
   return {
     hla_group: data.hla_group,
-    hla_types: data.hla_types.map(_ => parseAntigen(_))
+    hla_types: data.hla_types.map(parseAntigen)
   };
 };
 
 export const parseAntibodiesPerGroup = ( data: AntibodiesPerGroupGenerated ): AntibodiesPerGroup => {
   return {
     hla_group: data.hla_group,
-    hla_antibody_list: data.hla_antibody_list.map(_ => parseAntibody(_))
+    hla_antibody_list: data.hla_antibody_list.map(parseAntibody)
   };
 };
 

@@ -135,5 +135,5 @@ copy-generated-ts-to-fe:
 	fi;
 	mkdir -p $(FE_GENERATED_DIR)/model
 	cp -r $(SWAGGER_OUTPUT_DIR)/model $(FE_GENERATED_DIR)
-	mv $(FE_GENERATED_DIR)/model/{models,index}.ts
-	git add $(FE_GENERATED_DIR)/model
+	echo "export * from './model/models';" > $(FE_GENERATED_DIR)/index.ts
+	git add $(FE_GENERATED_DIR)

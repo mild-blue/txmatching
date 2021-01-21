@@ -7,7 +7,7 @@ import { PatientList } from '@app/model/PatientList';
 import { Donor } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
 import { Antibody } from '@app/model/Hla';
-import { PatientsGenerated } from '@app/generated/model';
+import { PatientsGenerated } from '@app/generated';
 import { parsePatientList } from '@app/parsers';
 
 @Injectable({
