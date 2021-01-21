@@ -27,7 +27,16 @@ npm install -g @angular/cli
 
 It will globally install Angular on your machine.
 
-Navigate to `txmatching/web/frontend` before running the commands bellow.
+### OpenAPI Generator
+We use *openapi-generator* to automatically generate TS files from swagger. Please run:
+
+```
+npm install -g @openapitools/openapi-generator-cli
+```
+
+---
+
+Note: Navigate to `txmatching/web/frontend` before running the commands bellow.
 
 ## Before starting dev server
 After downloading a new version of frontend app, you need to run `npm install` in case there is a need to install additional modules.

@@ -1,0 +1,12 @@
+{
+  "supportsES6": false,
+  "modelPropertyNaming": "original",
+  "apiModulePrefix": "",
+  "enumNameSuffix": "Enum",
+  "modelFileSuffix": "Generated",
+  "modelSuffix": "Generated",
+  "ngVersion": "10.0.11",
+  "serviceFileSuffix": ".service",
+  "serviceSuffix": "Service",
+  "stringEnums": true
+}

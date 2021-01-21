@@ -2,6 +2,10 @@ include .env.local
 
 CONDA_ENV=txmatching
 
+SWAGGER_INPUT_FILE='txmatching/web/swagger.yaml'
+SWAGGER_OUTPUT_DIR='/tmp/swagger-generated'
+FE_GENERATED_DIR='txmatching/web/frontend/src/app/generated'
+
 # creates environment from the file
 conda-create:
 	conda env create -f conda.yml --name $(CONDA_ENV)
@@ -102,5 +106,34 @@ rebuild: conda-update build-fe
 migrate-db:
 	cd txmatching && PYTHONPATH=$${PYTHONPATH:-..} POSTGRES_USER=${POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} POSTGRES_DB=${POSTGRES_DB} POSTGRES_URL=${POSTGRES_URL} python database/migrate_db.py
 
-generate-swagger:
+generate-swagger-all: \
+	generate-swagger-file \
+	validate-swagger \
+	generate-and-copy-ts-from-swagger
+
+generate-swagger-file:
 	PYTHONPATH=$${PYTHONPATH:-.} python tests/test_utilities/generate_swagger.py
+
+validate-swagger:
+	openapi-generator-cli validate -i $(SWAGGER_INPUT_FILE)
+
+generate-and-copy-ts-from-swagger: \
+	generate-ts-from-swagger \
+	copy-generated-ts-to-fe
+
+generate-ts-from-swagger:
+	#npx @openapitools/openapi-generator-cli generate
+	openapi-generator-cli generate \
+		-i $(SWAGGER_INPUT_FILE) \
+		-c 'txmatching/web/swagger-ts-generator.conf.json' \
+		-g typescript-angular \
+		-o $(SWAGGER_OUTPUT_DIR)/
+
+copy-generated-ts-to-fe:
+	if [ -d $(FE_GENERATED_DIR) ]; then \
+	    git rm -rf --ignore-unmatch $(FE_GENERATED_DIR); \
+	fi;
+	mkdir -p $(FE_GENERATED_DIR)/model
+	cp -r $(SWAGGER_OUTPUT_DIR)/model $(FE_GENERATED_DIR)
+	mv $(FE_GENERATED_DIR)/model/{models,index}.ts
+	git add $(FE_GENERATED_DIR)/model

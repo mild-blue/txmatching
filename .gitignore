@@ -317,3 +317,6 @@ devops/compose/docker-compose.yml
 
 # Ignore temoporary excel fileset
 **/*.xlsx#
+
+# Swagger openapi-generator
+openapitools.json
