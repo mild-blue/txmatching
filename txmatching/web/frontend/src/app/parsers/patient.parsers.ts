@@ -1,22 +1,14 @@
 import { DonorGenerated, PatientParametersGenerated, PatientParametersGeneratedSexEnum, RecipientGenerated } from '../generated';
 import { Patient, PatientParameters, PatientSexType } from '../model';
-import { ListItem, ListItemAbstractComponent, ListItemDetailAbstractComponent } from '../components/list-item/list-item.interface';
+import { DEFAULT_LIST_ITEM } from '../components/list-item/list-item.interface';
 import { parseAntigen, parseHlaPerGroup } from '@app/parsers/hla.parsers';
-
-const createDefaultListItem = (): ListItem => {
-  return {
-    index: 0,
-    isActive: undefined,
-    itemComponent: ListItemAbstractComponent,
-    detailComponent: ListItemDetailAbstractComponent
-  }
-}
 
 export const parsePatient = ( data: DonorGenerated | RecipientGenerated ): Patient => {
   return {
-    ...createDefaultListItem(),
+    // TODO: create proper ListItem here
+    ...DEFAULT_LIST_ITEM,
     db_id: data.db_id,
-    medical_id: ":D" + data.medical_id,  // TODOO
+    medical_id: data.medical_id,
     parameters: parsePatientParameters(data.parameters)
   };
 };

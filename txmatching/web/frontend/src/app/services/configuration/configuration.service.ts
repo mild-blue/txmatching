@@ -12,6 +12,7 @@ export class ConfigurationService {
   }
 
   public async getConfiguration(): Promise<AppConfiguration> {
+    // TODO: Create parser and use generated model
     return this._http.get<AppConfiguration>(
       `${environment.apiUrl}/configuration`
     ).pipe().toPromise();

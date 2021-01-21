@@ -22,7 +22,10 @@ export class PatientService {
   public async getPatients(): Promise<PatientList> {
     return this._http.get<PatientsGenerated>(
       `${environment.apiUrl}/patients`
-    ).pipe(first(), map(parsePatientList)).toPromise();
+    ).pipe(
+      first(),
+      map(parsePatientList)
+    ).toPromise();
   }
 
   public async saveDonor(donor: Donor): Promise<Donor> {

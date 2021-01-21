@@ -138,6 +138,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (!this.patients) return;
+
     if (this.configOpened) {
       this.toggleConfiguration();
     }
@@ -155,7 +157,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.configuration = configuration;
 
     try {
-      const calculated_matchings_dto: CalculatedMatchings = await this._matchingService.calculate(updatedConfig);
+      const calculated_matchings_dto: CalculatedMatchings = await this._matchingService.calculate(updatedConfig, this.patients);
       this.matchings = this._prepareMatchings(calculated_matchings_dto.calculated_matchings);
       this.foundMatchingsCount = calculated_matchings_dto.found_matchings_count;
       this._logger.log('Calculated matchings', [calculated_matchings_dto]);
@@ -244,22 +246,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private _prepareTransplant(t: Transplant, index: number): Transplant {
-    const transplant: Transplant = {...t, index};
-
-    // try to find Donor and Recipient instances
-    if (this.patients) {
-      const foundDonor = this.patients.donors.find(p => p.medical_id === t.donor);
-      if (foundDonor) {
-        transplant.d = foundDonor;
-      }
-
-      const foundRecipient = this.patients.recipients.find(p => p.medical_id === t.recipient);
-      if (foundRecipient) {
-        transplant.r = foundRecipient;
-      }
-    }
-
-    return transplant;
+    return {...t, index};
   }
 
   private _getRoundDonorType(round: Round): DonorType {

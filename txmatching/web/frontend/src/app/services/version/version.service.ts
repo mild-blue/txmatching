@@ -18,6 +18,7 @@ export class VersionService {
   }
 
   public initEnvironment(): Observable<string> {
+    // TODO: Create parser and use generated model
     return this._http.get<Version>(
       `${environment.apiUrl}/service/version`
     ).pipe(
