@@ -31,7 +31,7 @@
 
         {% else %}
           <div class="donor-type-label">
-            {{ (donor|patient_by_medical_id_filter(all_donors)).donor_type|donor_type_label }}
+            {{ (donor|patient_by_medical_id_filter(all_donors)).donor_type|donor_type_label_filter }}
           </div>
         {% endif %}
 
@@ -129,17 +129,17 @@
           <td>{{ detailed_score_per_group.hla_group.value }}</td>
           <td>
             {% for match in detailed_score_per_group.donor_matches %}
-              <div class="code {{ antigen_class(match.match_type) }}">{{ match.hla_type.code }}</div>
+              <div class="code {{ antigen_class(match.match_type) }}">{{ match.hla_type|hla_type_filter }}</div>
             {% endfor %}
           </td>
           <td>
             {% for match in detailed_score_per_group.recipient_matches %}
-              <div class="code {{ antigen_class(match.match_type) }}">{{ match.hla_type.code }}</div>
+              <div class="code {{ antigen_class(match.match_type) }}">{{ match.hla_type|hla_type_filter }}</div>
             {% endfor %}
           </td>
           <td>
             {% for match in detailed_score_per_group.antibody_matches %}
-              <div class="code {{ antibody_class(match.match_type) }}">{{ match.hla_antibody.code }}</div>
+              <div class="code {{ antibody_class(match.match_type) }}">{{ match.hla_antibody|hla_type_filter }}</div>
             {% endfor %}
           </td>
           <td>

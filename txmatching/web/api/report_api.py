@@ -5,7 +5,7 @@ import logging
 import os
 import time
 from distutils.dir_util import copy_tree
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import jinja2
 import pdfkit
@@ -33,6 +33,7 @@ from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_latest_matchings_detailed)
 from txmatching.database.services.txm_event_service import (
     get_txm_event, get_txm_event_id_for_current_user)
+from txmatching.patients.hla_model import HLAAntibody, HLAType
 from txmatching.patients.patient import Donor, DonorType, Patient
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
@@ -292,7 +293,7 @@ def _get_donor_type_from_round(matching_round: RoundDTO, donors: Dict[str, Donor
     return donors[donor_id].donor_type
 
 
-def donor_type_label(donor_type: DonorType) -> str:
+def donor_type_label_filter(donor_type: DonorType) -> str:
     if donor_type == DonorType.BRIDGING_DONOR:
         return 'bridging donor'
     elif donor_type == DonorType.NON_DIRECTED:
@@ -303,7 +304,7 @@ def donor_type_label(donor_type: DonorType) -> str:
 
 def donor_type_label_from_round_filter(matching_round: RoundDTO, donors: Dict[str, Donor]) -> str:
     donor_type = _get_donor_type_from_round(matching_round, donors)
-    return donor_type_label(donor_type)
+    return donor_type_label_filter(donor_type)
 
 
 def round_index_from_order_filter(order: int, matching_round: RoundDTO, donors: Dict[str, Donor]) -> str:
@@ -317,6 +318,13 @@ def round_index_from_order_filter(order: int, matching_round: RoundDTO, donors: 
         return f'{order}'
 
 
+def hla_type_filter(hla: Union[HLAType, HLAAntibody]):
+    if hla.code == hla.raw_code:
+        return f'{hla.code}'
+    else:
+        return f'{hla.code} ({hla.raw_code})'
+
+
 jinja2.filters.FILTERS.update({
     'country_combination_filter': country_combination_filter,
     'donor_recipient_score_filter': donor_recipient_score_filter,
@@ -324,7 +332,8 @@ jinja2.filters.FILTERS.update({
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
     'patient_height_and_weight_filter': patient_height_and_weight_filter,
     'score_color_filter': score_color_filter,
-    'donor_type_label': donor_type_label,
+    'donor_type_label_filter': donor_type_label_filter,
     'donor_type_label_from_round_filter': donor_type_label_from_round_filter,
     'round_index_from_order_filter': round_index_from_order_filter,
+    'hla_type_filter': hla_type_filter,
 })
