@@ -141,7 +141,7 @@
             {% endfor %}
           </td>
           <td>
-            {% if detailed_score_per_group.hla_group.value != 'Other' %}
+            {% if detailed_score_per_group.hla_group.value != 'Other' and recipient %}
               {{ detailed_score_per_group.group_compatibility_index }}
             {% else %}
               -
