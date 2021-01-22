@@ -110,16 +110,18 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
 def _match_through_split_codes(current_compatibility_index: float,
                                donor_matches: List[HLAMatch],
                                recipient_matches: List[HLAMatch],
-                               donor_split_codes: List[HLAType],
-                               recipient_split_codes: List[HLAType],
+                               donor_hla_types: List[HLAType],
+                               recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup):
-    for split_code in donor_split_codes.copy():
-        if split_code in recipient_split_codes:
-            donor_split_codes.remove(split_code)
-            recipient_split_codes.remove(split_code)
+    for donor_hla_type in donor_hla_types.copy():
+        matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
+                              recipient_hla_type.code == donor_hla_type.code]
+        if len(matching_hla_types) > 0:
+            donor_hla_types.remove(donor_hla_type)
+            recipient_hla_types.remove(matching_hla_types[0])
 
-            donor_matches.append(HLAMatch(split_code, MatchTypes.SPLIT))
-            recipient_matches.append(HLAMatch(split_code, MatchTypes.SPLIT))
+            donor_matches.append(HLAMatch(donor_hla_type, MatchTypes.SPLIT))
+            recipient_matches.append(HLAMatch(matching_hla_types[0], MatchTypes.SPLIT))
             current_compatibility_index += MATCH_TYPE_BONUS[MatchTypes.SPLIT] * HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS[
                 hla_group]
     return current_compatibility_index
