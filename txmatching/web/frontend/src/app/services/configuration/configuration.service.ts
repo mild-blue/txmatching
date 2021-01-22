@@ -12,7 +12,7 @@ export class ConfigurationService {
   }
 
   public async getConfiguration(): Promise<AppConfiguration> {
-    // TODO: Create parser and use generated model
+    // TODO: https://github.com/mild-blue/txmatching/issues/401 Create parser and use generated model
     return this._http.get<AppConfiguration>(
       `${environment.apiUrl}/configuration`
     ).pipe().toPromise();

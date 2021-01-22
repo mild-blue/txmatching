@@ -5,7 +5,7 @@ import { parseAntigen, parseHlaPerGroup } from '@app/parsers/hla.parsers';
 
 export const parsePatient = ( data: DonorGenerated | RecipientGenerated ): Patient => {
   return {
-    // TODO: create proper ListItem here
+    // TODO: https://github.com/mild-blue/txmatching/issues/401 create proper ListItem here
     ...DEFAULT_LIST_ITEM,
     db_id: data.db_id,
     medical_id: data.medical_id,
@@ -16,14 +16,14 @@ export const parsePatient = ( data: DonorGenerated | RecipientGenerated ): Patie
 
 export const parsePatientParameters = ( data: PatientParametersGenerated ): PatientParameters => {
   return {
-    // TODO: create enum for blood group
+    // TODO: https://github.com/mild-blue/txmatching/issues/401 create enum for blood group
     blood_group: data.blood_group ?? '',
-    // TODO: create hla typing model
+    // TODO: https://github.com/mild-blue/txmatching/issues/401 create hla typing model
     hla_typing: {
       hla_per_groups: data.hla_typing?.hla_per_groups.map(parseHlaPerGroup) ?? [],
       hla_types_list: data.hla_typing?.hla_types_list.map(parseAntigen) ?? []
     },
-    // TODO: create enum for country code
+    // TODO: https://github.com/mild-blue/txmatching/issues/401 create enum for country code
     country_code: data.country_code ?? '',
     sex: parsePatientSexType(data.sex),
     height: data.height,
