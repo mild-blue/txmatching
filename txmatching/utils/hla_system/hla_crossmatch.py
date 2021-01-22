@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from txmatching.patients.patient_parameters import HLAAntibodies, HLATyping
+from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLATyping
 from txmatching.utils.enums import AntibodyMatchTypes, HLAGroup
 from txmatching.utils.hla_system.hla_transformations import (broad_to_split,
                                                              split_to_broad)
@@ -9,9 +9,8 @@ from txmatching.utils.hla_system.hla_transformations import (broad_to_split,
 
 @dataclass(eq=True, frozen=True)
 class AntibodyMatch:
-    hla_code: str
+    hla_antibody: HLAAntibody
     match_type: AntibodyMatchTypes
-
 
 
 @dataclass
@@ -36,7 +35,7 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
     :param use_split_resolution: setting whether to use split resolution for crossmatch determination
     :return:
     """
-    common_codes = {code.hla_code for code_group in
+    common_codes = {code.hla_antibody for code_group in
                     get_crossmatched_antibodies(donor_hla_typing, recipient_antibodies, use_split_resolution) for code
                     in code_group.antibody_matches if code.match_type is not AntibodyMatchTypes.NONE}
     # if there are any common codes, positive crossmatch is found
@@ -47,32 +46,32 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
                                 use_split_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
     antibody_matches = []
-    for code_group_typing, code_group_antibodies in zip(donor_hla_typing.codes_per_group,
-                                                        recipient_antibodies.hla_codes_over_cutoff_per_group):
-        assert code_group_typing.hla_group == code_group_antibodies.hla_group
+    for hla_per_group, antibodies_per_group in zip(donor_hla_typing.hla_per_groups,
+                                                   recipient_antibodies.hla_antibodies_per_groups):
+        assert hla_per_group.hla_group == antibodies_per_group.hla_group
         recipient_antibodies_set = set()
         if use_split_resolution:
             # in case some code is in broad resolution we treat it is as if all split resolution codes were present
-            donor_hla_typing_set = {split_code for code in
-                                    code_group_typing.hla_codes for split_code in
-                                    broad_to_split(code)}
+            donor_hla_typing_set = {split_code for hla in
+                                    hla_per_group.hla_types for split_code in
+                                    broad_to_split(hla.code)}
 
-            for code in code_group_antibodies.hla_codes:
-                if set(broad_to_split(code)).intersection(donor_hla_typing_set):
-                    recipient_antibodies_set.add(AntibodyMatch(code, AntibodyMatchTypes.MATCH))
+            for antibody in antibodies_per_group.hla_antibody_list:
+                if set(broad_to_split(antibody.code)).intersection(donor_hla_typing_set):
+                    recipient_antibodies_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.MATCH))
                 else:
-                    recipient_antibodies_set.add(AntibodyMatch(code, AntibodyMatchTypes.NONE))
+                    recipient_antibodies_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.NONE))
 
         else:
-            donor_hla_typing_set = {split_to_broad(code) for code in code_group_typing.hla_codes}
-            for code in code_group_antibodies.hla_codes:
-                if split_to_broad(code) in donor_hla_typing_set:
-                    recipient_antibodies_set.add(AntibodyMatch(code, AntibodyMatchTypes.MATCH))
+            donor_hla_typing_set = {split_to_broad(code.code) for code in hla_per_group.hla_types}
+            for antibody in antibodies_per_group.hla_antibody_list:
+                if split_to_broad(antibody.code) in donor_hla_typing_set:
+                    recipient_antibodies_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.MATCH))
                 else:
-                    recipient_antibodies_set.add(AntibodyMatch(code, AntibodyMatchTypes.NONE))
+                    recipient_antibodies_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.NONE))
 
         antibody_matches.append(AntibodyMatchForHLAGroup(
-            code_group_typing.hla_group,
+            hla_per_group.hla_group,
             list(recipient_antibodies_set)
         ))
 

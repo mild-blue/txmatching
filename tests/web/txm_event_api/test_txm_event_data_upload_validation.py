@@ -19,8 +19,8 @@ from txmatching.database.services.txm_event_service import (
     get_newest_txm_event_db_id, get_txm_event)
 from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
                                                     UploadedDataModel)
+from txmatching.patients.hla_model import HLAType, HLATyping
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
-from txmatching.patients.patient_parameters import HLAType, HLATyping
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
@@ -177,12 +177,12 @@ class TestMatchingApi(DbTests):
 
 
 def _get_hla_typing_codes(donor_or_recipient: Patient) -> Set[str]:
-    return {code for codes_per_group in
-            donor_or_recipient.parameters.hla_typing.codes_per_group for code in
-            codes_per_group.hla_codes}
+    return {hla.code for codes_per_group in
+            donor_or_recipient.parameters.hla_typing.hla_per_groups for hla in
+            codes_per_group.hla_types}
 
 
 def _get_hla_antibodies_codes(donor_or_recipient: Recipient) -> Set[str]:
-    return {code for codes_per_group in
-            donor_or_recipient.hla_antibodies.hla_codes_over_cutoff_per_group for code in
-            codes_per_group.hla_codes}
+    return {hla.code for codes_per_group in
+            donor_or_recipient.hla_antibodies.hla_antibodies_per_groups for hla in
+            codes_per_group.hla_antibody_list}

@@ -6,8 +6,9 @@ import numpy as np
 
 from tests.solvers.tabular_scorer import TabularScorer
 from txmatching.configuration.configuration import Configuration
+from txmatching.patients.hla_model import HLATyping
 from txmatching.patients.patient import Donor
-from txmatching.patients.patient_parameters import HLATyping, PatientParameters
+from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.solvers.all_solutions_solver.score_matrix_solver import \
     find_possible_path_combinations_from_score_matrix
 from txmatching.utils.blood_groups import BloodGroup

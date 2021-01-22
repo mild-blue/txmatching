@@ -1,60 +1,14 @@
 from flask_restx import fields
 
+from txmatching.data_transfer_objects.hla.hla_swagger import (
+    EXAMPLE_HLA_TYPING, HLAAntibodies, HLATyping)
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
-    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE, DetailedScoreForGroupJson)
+    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
+    DetailedScoreForGroupJson)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER, Country,
-                                    HLAGroup, Sex)
+from txmatching.utils.enums import Country, Sex
 from txmatching.web.api.namespaces import patient_api
-
-HLA_CODES_IN_GROUPS_EXAMPLE = [
-    {'hla_group': HLAGroup.A.name,
-     'hla_codes': ['A1']},
-    {'hla_group': HLAGroup.B.name,
-     'hla_codes': ['B38']},
-    {'hla_group': HLAGroup.DRB1.name,
-     'hla_codes': ['DR7']},
-    {'hla_group': HLAGroup.Other.name,
-     'hla_codes': ['CW4']}
-]
-
-EXAMPLE_HLA_TYPING = {'hla_types_list': [{'raw_code': 'A*01:02'},
-                                         {'raw_code': 'B7'},
-                                         {'raw_code': 'DR11'}]}
-
-HlaCodesInGroup = patient_api.model('HlaCodesInGroups', {
-    'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),
-    'hla_codes': fields.List(required=True, cls_or_instance=fields.String)
-})
-
-HLAAntibody = patient_api.model('HlaAntibody', {
-    'raw_code': fields.String(required=True),
-    'mfi': fields.Integer(required=True),
-    'cutoff': fields.Integer(required=True),
-    'code': fields.String(required=False)
-})
-
-HLAType = patient_api.model('HlaType', {
-    'code': fields.String(required=False),
-    'raw_code': fields.String(required=True),
-})
-
-HLATyping = patient_api.model('HlaTyping', {
-    'hla_types_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAType)),
-    'codes_per_group': fields.List(required=True,
-                                   description='hla codes split to hla groups',
-                                   example=HLA_CODES_IN_GROUPS_EXAMPLE,
-                                   cls_or_instance=fields.Nested(HlaCodesInGroup)),
-})
-
-HLAAntibodies = patient_api.model('HlaAntibodies', {
-    'hla_antibodies_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAAntibody)),
-    'hla_codes_over_cutoff_per_group': fields.List(required=True,
-                                                   description='hla codes split to hla groups',
-                                                   example=HLA_CODES_IN_GROUPS_EXAMPLE,
-                                                   cls_or_instance=fields.Nested(HlaCodesInGroup)),
-})
 
 PatientParametersJson = patient_api.model('PatientParameters', {
     'blood_group': fields.String(required=False, enum=[blood_group.value for blood_group in BloodGroup]),

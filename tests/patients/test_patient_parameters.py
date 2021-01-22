@@ -1,5 +1,5 @@
-from txmatching.patients.patient_parameters import (HLAType, HLATyping,
-                                                    PatientParameters)
+from txmatching.patients.hla_model import HLAType, HLATyping
+from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country
 
