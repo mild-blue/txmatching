@@ -8,43 +8,47 @@
     detailed_score_per_group,
     configuration
   ) %}
-  <div class="transplant-header {{ 'compatible' if compatible_blood else 'non-compatible' }}">
-    <h4>
-      <div class="patient-pair-content">
-        <div class="patient">
-          <div class="flag">
-            <img src="assets/countries/{{ donor.parameters.country_code.value }}.png"/>
-          </div>
-          {{ donor.medical_id }}
-        </div>
-
-        {% if recipient %}
-          <div class="icon-right"> ></div>
-          <div class="patient">
-            <div class="flag">
-              <img src="assets/countries/{{ recipient.parameters.country_code.value }}.png"/>
-            </div>
-            {{ recipient.medical_id }}
-          </div>
-
-        {% else %}
-          <div class="donor-type-label">
-            {{ donor.donor_type|donor_type_label_filter }}
-          </div>
-        {% endif %}
-
-      </div>
-    </h4>
-    <div class="score" style="background: {{ score|score_color_filter(configuration) }}">
-      <div>
-        <span>{{ score if score else "-" }}</span>
-      </div>
-    </div>
-  </div>
 
   <div class="transplant-content">
     <table>
       <tbody>
+      <tr class="transplant-header {{ 'compatible' if compatible_blood else 'non-compatible' }}">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/{{ donor.parameters.country_code.value }}.png"/>
+                </div>
+                {{ donor.medical_id }}
+              </div>
+
+              {% if recipient %}
+                <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/{{ recipient.parameters.country_code.value }}.png"/>
+                  </div>
+                  {{ recipient.medical_id }}
+                </div>
+
+              {% else %}
+                <div class="donor-type-label">
+                  {{ donor.donor_type|donor_type_label_filter }}
+                </div>
+              {% endif %}
+
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: {{ score|score_color_filter(configuration) }}">
+          <div>
+            <div>
+              <span>{{ score if score else "-" }}</span>
+            </div>
+          </div>
+        </td>
+      </tr>
       <tr>
         <td></td>
         <td>
@@ -119,7 +123,7 @@
         <td></td>
         <td>Antigens</td>
         <td>Antigens</td>
-        <td>Antibodies</td>
+        <td class="antibodies-td">Antibodies</td>
         <td></td>
       </tr>
       {% for detailed_score_per_group in detailed_score_per_group %}

@@ -1,11 +1,11 @@
 <style>
     .transplant-header {
-        border: 1px solid #dddddd;
-        border-bottom: none;
-        padding: 0 0 0 10px;
         font-weight: 700;
         font-size: 14px;
         height: 40px;
+    }
+    .transplant-header h4 {
+        margin-left: 5px;
 
         display: flex;
         justify-content: space-between;
@@ -28,19 +28,7 @@
     }
 
     .transplant-header .score {
-        height: 100%;
-        width: 15%;
         color: black;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        /* wkhtmltopdf */
-        display: -webkit-box;
-        -webkit-box-pack: center;
-        -webkit-box-align: center;
-
     }
 
     .transplant-header span {
@@ -104,10 +92,6 @@
         border-top: 1px solid #dddddd;
     }
 
-    .transplant-content tr:first-child {
-        font-weight: 700;
-    }
-
     .transplant-content tr.anti-header td {
         background: #eff3f7;
         font-size: 10px;
@@ -124,18 +108,24 @@
         width: auto;
     }
 
-    .transplant-content td:not([colspan]) {
-        width: 21.6666%;
-    }
-
     .transplant-content td:first-child {
         width: 20%;
         text-align: left;
         font-weight: 700;
     }
 
+    .transplant-content td:not([colspan]) {
+        width: 20%;
+    }
+
+
+    .transplant-content td.antibodies-td {
+        width: 30%;
+        font-weight: 700;
+    }
+
     .transplant-content td:last-child {
-        width: 15%;
+        width: 10%;
         font-weight: 700;
     }
 
