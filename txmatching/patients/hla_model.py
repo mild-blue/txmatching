@@ -118,7 +118,9 @@ def _split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
             hla_types_in_groups.items()]
 
 
-# TODO: share logic with split_hla_types_to_groups
+# Beware this code is similar to code in function split_hla_types_to_groups,
+# if you are chaning this code it is likely you want to change the other function as well.
+# Ideally when doing so, try to share the logic between the functions.
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[AntibodiesPerGroup]:
     hla_types_in_groups = dict()
     for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
