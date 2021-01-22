@@ -60,12 +60,10 @@
             {{
               transplant_component(
                 transplant.score,
-                transplant.donor,
-                transplant.recipient,
+                transplant.donor|patient_by_medical_id_filter(all_donors),
+                transplant.recipient|patient_by_medical_id_filter(all_recipients),
                 transplant.compatible_blood,
                 transplant.detailed_score_per_group,
-                all_donors,
-                all_recipients,
                 configuration
               )
               }}

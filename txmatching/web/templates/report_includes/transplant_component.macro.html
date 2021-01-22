@@ -6,8 +6,6 @@
     recipient,
     compatible_blood,
     detailed_score_per_group,
-    all_donors,
-    all_recipients,
     configuration
   ) %}
   <div class="transplant-header {{ 'compatible' if compatible_blood else 'non-compatible' }}">
@@ -15,23 +13,23 @@
       <div class="patient-pair-content">
         <div class="patient">
           <div class="flag">
-            <img src="assets/countries/{{ (donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
+            <img src="assets/countries/{{ donor.parameters.country_code.value }}.png"/>
           </div>
-          {{ donor }}
+          {{ donor.medical_id }}
         </div>
 
         {% if recipient %}
           <div class="icon-right"> ></div>
           <div class="patient">
             <div class="flag">
-              <img src="assets/countries/{{ (recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value }}.png"/>
+              <img src="assets/countries/{{ recipient.parameters.country_code.value }}.png"/>
             </div>
-            {{ recipient }}
+            {{ recipient.medical_id }}
           </div>
 
         {% else %}
           <div class="donor-type-label">
-            {{ (donor|patient_by_medical_id_filter(all_donors)).donor_type|donor_type_label_filter }}
+            {{ donor.donor_type|donor_type_label_filter }}
           </div>
         {% endif %}
 
@@ -53,20 +51,20 @@
           <div class="center-holder">
             <div class="patient">
               <div class="flag">
-                <img src="assets/countries/{{ (donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
+                <img src="assets/countries/{{ donor.parameters.country_code.value }}.png"/>
               </div>
-              {{ donor }}
+              {{ donor.medical_id }}
             </div>
           </div>
           <div class="patient-info">
-            {% if (donor|patient_by_medical_id_filter(all_donors)).parameters.sex is not none %}
-              <span>{{ (donor|patient_by_medical_id_filter(all_donors)).parameters.sex.value }}</span>
+            {% if donor.parameters.sex is not none %}
+              <span>{{ donor.parameters.sex.value }}</span>
             {% endif %}
-            {% if (donor|patient_by_medical_id_filter(all_donors)).parameters.year_of_birth is not none %}
-              <span>{{ (donor|patient_by_medical_id_filter(all_donors)).parameters.year_of_birth }}</span>
+            {% if donor.parameters.year_of_birth is not none %}
+              <span>{{ donor.parameters.year_of_birth }}</span>
             {% endif %}
-            {% if donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight_filter is not none %}
-              <span>{{ donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight_filter }}</span>
+            {% if donor|patient_height_and_weight_filter is not none %}
+              <span>{{ donor|patient_height_and_weight_filter }}</span>
             {% endif %}
           </div>
         </td>
@@ -75,20 +73,20 @@
             <div class="center-holder">
               <div class="patient">
                 <div class="flag">
-                  <img src="assets/countries/{{ (recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value }}.png"/>
+                  <img src="assets/countries/{{ recipient.parameters.country_code.value }}.png"/>
                 </div>
-                {{ recipient }}
+                {{ recipient.medical_id }}
               </div>
             </div>
             <div class="patient-info">
-              {% if (recipient|patient_by_medical_id_filter(all_recipients)).parameters.sex is not none %}
-                <span>{{ (recipient|patient_by_medical_id_filter(all_recipients)).parameters.sex.value }}</span>
+              {% if recipient.parameters.sex is not none %}
+                <span>{{ recipient.parameters.sex.value }}</span>
               {% endif %}
-              {% if (recipient|patient_by_medical_id_filter(all_recipients)).parameters.year_of_birth is not none %}
-                <span>{{ (recipient|patient_by_medical_id_filter(all_recipients)).parameters.year_of_birth }}</span>
+              {% if recipient.parameters.year_of_birth is not none %}
+                <span>{{ recipient.parameters.year_of_birth }}</span>
               {% endif %}
-              {% if recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight_filter is not none %}
-                <span>{{ recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight_filter }}</span>
+              {% if recipient|patient_height_and_weight_filter is not none %}
+                <span>{{ recipient|patient_height_and_weight_filter }}</span>
               {% endif %}
             </div>
           {% endif %}
@@ -99,17 +97,17 @@
         <td>Blood type</td>
         <td>
           <div class="code {% if compatible_blood %}matching{% endif %}">
-            {{ (donor|patient_by_medical_id_filter(all_donors)).parameters.blood_group }}
+            {{ donor.parameters.blood_group }}
           </div>
         </td>
         <td colspan="2">
           {% if recipient %}
             <div class="code {% if compatible_blood %}matching{% endif %}">
-              {{ (recipient|patient_by_medical_id_filter(all_recipients)).parameters.blood_group }}
+              {{ recipient.parameters.blood_group }}
             </div>
             <div class="small">
               Acceptable:
-              {% for code in (recipient|patient_by_medical_id_filter(all_recipients)).acceptable_blood_groups %}
+              {% for code in recipient.acceptable_blood_groups %}
                 <div class="code">{{ code }}</div>
               {% endfor %}
             </div>

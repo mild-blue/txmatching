@@ -11,12 +11,10 @@
         {{
           transplant_component(
             donor.score_with_related_recipient,
-            donor.medical_id,
-            (all_recipients_by_db_id[donor.related_recipient_db_id].medical_id if donor.related_recipient_db_id else None),
+            donor,
+            (all_recipients_by_db_id[donor.related_recipient_db_id] if donor.related_recipient_db_id else None),
             donor.compatible_blood_with_related_recipient,
             donor.detailed_score_with_related_recipient,
-            all_donors,
-            all_recipients,
             configuration
           )
           }}
