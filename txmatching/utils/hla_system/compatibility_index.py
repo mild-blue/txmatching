@@ -22,7 +22,7 @@ class InvalidNumberOfAllelesError(Exception):
     pass
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class HLAMatch:
     hla_type: HLAType
     match_type: MatchTypes
@@ -131,10 +131,6 @@ def _hla_type_to_broad(hla_types: List[HLAType]) -> List[str]:
     )
 
 
-def _broad_to_hla_types(broad_code: str) -> List[HLAType]:
-    return [HLAType(splits) for splits in broad_to_split(broad_code)]
-
-
 def _match_through_broad_codes(current_compatibility_index: float,
                                donor_matches: List[HLAMatch],
                                recipient_matches: List[HLAMatch],
@@ -142,13 +138,15 @@ def _match_through_broad_codes(current_compatibility_index: float,
                                recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup):
     for hla_type, broad_code in zip(donor_hla_types.copy(), _hla_type_to_broad(donor_hla_types)):
-        broad_code_as_hla_type = HLAType(broad_code)
         if broad_code in _hla_type_to_broad(recipient_hla_types):
-            if broad_code_as_hla_type in recipient_hla_types:
-                recipient_match_hla_type = broad_code_as_hla_type
+            matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
+                                  recipient_hla_type.code == broad_code]
+            if len(matching_hla_types) > 0:
+                recipient_match_hla_type = matching_hla_types[0]
             else:
-                hla_types_for_broad = set(_broad_to_hla_types(broad_code))
-                hla_types_to_remove = hla_types_for_broad.intersection(set(recipient_hla_types))
+                split_codes_for_broad = broad_to_split(broad_code)
+                hla_types_to_remove = {recipient_hla_type for recipient_hla_type in recipient_hla_types if
+                                       recipient_hla_type.code in split_codes_for_broad}
                 assert len(hla_types_to_remove) > 0
                 recipient_match_hla_type = hla_types_to_remove.pop()
 
