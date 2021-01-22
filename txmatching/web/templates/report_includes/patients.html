@@ -1,0 +1,26 @@
+{% from 'report_includes/transplant_component.macro.html' import transplant_component %}
+
+<div class="box pb-0">
+  <h1 class="mb-0">All patients</h1>
+</div>
+
+  <div class="box">
+    {% for donor in patients.donors %}
+      <div class="matching-transplant">
+
+        {{
+          transplant_component(
+            donor.score_with_related_recipient,
+            donor.medical_id,
+            (all_recipients_by_db_id[donor.related_recipient_db_id].medical_id if donor.related_recipient_db_id else None),
+            donor.compatible_blood_with_related_recipient,
+            donor.detailed_score_with_related_recipient,
+            all_donors,
+            all_recipients,
+            configuration
+          )
+          }}
+
+      </div>
+    {% endfor %}
+  </div>

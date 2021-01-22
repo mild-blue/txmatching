@@ -22,6 +22,8 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, RoundDTO)
+from txmatching.data_transfer_objects.patients.out_dots.conversions import \
+    to_lists_for_fe
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
@@ -123,6 +125,8 @@ class Report(Resource):
 
         calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings)
 
+        patients_dto = to_lists_for_fe(txm_event)
+
         configuration = get_configuration_for_txm_event(txm_event=txm_event)
 
         Report.prepare_tmp_dir()
@@ -155,10 +159,12 @@ class Report(Resource):
             date=now.strftime('%d.%m.%Y %H:%M:%S'),
             configuration=configuration,
             matchings=calculated_matchings_dto,
+            patients=patients_dto,
             required_patients_medical_ids=required_patients_medical_ids,
             manual_donor_recipient_scores_with_medical_ids=manual_donor_recipient_scores_with_medical_ids,
             all_donors={donor.medical_id: donor for donor in txm_event.all_donors},
             all_recipients={recipient.medical_id: recipient for recipient in txm_event.all_recipients},
+            all_recipients_by_db_id={recipient.db_id: recipient for recipient in txm_event.all_recipients},
             logo=logo,
             color=color
         ))
@@ -286,15 +292,18 @@ def _get_donor_type_from_round(matching_round: RoundDTO, donors: Dict[str, Donor
     return donors[donor_id].donor_type
 
 
-def donor_type_label_from_round_filter(matching_round: RoundDTO, donors: Dict[str, Donor]) -> str:
-    donor_type = _get_donor_type_from_round(matching_round, donors)
-
+def donor_type_label(donor_type: DonorType) -> str:
     if donor_type == DonorType.BRIDGING_DONOR:
         return 'bridging donor'
     elif donor_type == DonorType.NON_DIRECTED:
         return 'non-directed donor'
     else:
         return ''
+
+
+def donor_type_label_from_round_filter(matching_round: RoundDTO, donors: Dict[str, Donor]) -> str:
+    donor_type = _get_donor_type_from_round(matching_round, donors)
+    return donor_type_label(donor_type)
 
 
 def round_index_from_order_filter(order: int, matching_round: RoundDTO, donors: Dict[str, Donor]) -> str:
@@ -315,6 +324,7 @@ jinja2.filters.FILTERS.update({
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
     'patient_height_and_weight_filter': patient_height_and_weight_filter,
     'score_color_filter': score_color_filter,
+    'donor_type_label': donor_type_label,
     'donor_type_label_from_round_filter': donor_type_label_from_round_filter,
     'round_index_from_order_filter': round_index_from_order_filter,
 })
