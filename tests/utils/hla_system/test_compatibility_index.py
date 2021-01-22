@@ -10,6 +10,8 @@ from txmatching.utils.hla_system.compatibility_index import (
     HLAMatch, compatibility_index, get_detailed_compatibility_index)
 
 logger = logging.getLogger(__name__)
+DR_INDEX = 2
+OTHER_INDEX = 3
 
 
 class TestCompatibilityIndex(unittest.TestCase):
@@ -39,7 +41,7 @@ class TestCompatibilityIndex(unittest.TestCase):
         expected = {HLAMatch(hla_type=HLAType(raw_code='DRB1*04:02', code='DR4'), match_type=MatchTypes.BROAD),
                     HLAMatch(hla_type=HLAType(raw_code='DRB1*07:01', code='DR7'), match_type=MatchTypes.SPLIT)}
 
-        self.assertSetEqual(expected, set(ci[2].recipient_matches))
+        self.assertSetEqual(expected, set(ci[DR_INDEX].recipient_matches))
 
         ci = get_detailed_compatibility_index(
             HLATyping(
@@ -62,4 +64,4 @@ class TestCompatibilityIndex(unittest.TestCase):
                     HLAMatch(hla_type=HLAType(raw_code='DPB1*04:01', code='DP4'), match_type=MatchTypes.NONE)
                     }
 
-        self.assertSetEqual(expected, set(ci[3].recipient_matches))
+        self.assertSetEqual(expected, set(ci[OTHER_INDEX].recipient_matches))

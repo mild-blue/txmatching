@@ -130,10 +130,12 @@ def populate_db():
     #
     # replace_or_add_patients_from_excel(patients)
 
+    txm_event = get_txm_event(txm_event.db_id)
+
     result = solve_from_configuration(txm_event=txm_event,
-                                      configuration=Configuration(max_sequence_length=1, max_cycle_length=2,
+                                      configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
                                                                   use_split_resolution=True))
-    solver_service.save_pairing_result(result, 30)
+    solver_service.save_pairing_result(result, 1)
 
     logger.info(f'Successfully stored {len(list(result.calculated_matchings_list))} matchings into the database.')
 
