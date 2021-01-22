@@ -1,0 +1,144 @@
+{% from 'report_includes/macros.html' import antigen_class, antibody_class %}
+
+{% macro transplant_component(
+    score,
+    donor,
+    recipient,
+    compatible_blood,
+    detailed_score_per_group,
+    all_donors,
+    all_recipients,
+    configuration
+  ) %}
+  <div class="transplant-header {{ 'compatible' if compatible_blood else 'non-compatible' }}">
+    <h4>
+      <div class="patient-pair-content">
+        <div class="patient">
+          <div class="flag">
+            <img src="assets/countries/{{ (donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
+          </div>
+          {{ donor }}
+        </div>
+        <div class="icon-right"> ></div>
+        <div class="patient">
+          <div class="flag">
+            <img src="assets/countries/{{ (recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value }}.png"/>
+          </div>
+          {{ recipient }}
+        </div>
+      </div>
+    </h4>
+    <div class="score" style="background: {{ score|score_color_filter(configuration) }}">
+      <div>
+        <span>{{ score }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/{{ (donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
+              </div>
+              {{ donor }}
+            </div>
+          </div>
+          <div class="patient-info">
+            {% if (donor|patient_by_medical_id_filter(all_donors)).parameters.sex is not none %}
+              <span>{{ (donor|patient_by_medical_id_filter(all_donors)).parameters.sex.value }}</span>
+            {% endif %}
+            {% if (donor|patient_by_medical_id_filter(all_donors)).parameters.year_of_birth is not none %}
+              <span>{{ (donor|patient_by_medical_id_filter(all_donors)).parameters.year_of_birth }}</span>
+            {% endif %}
+            {% if donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight_filter is not none %}
+              <span>{{ donor|patient_by_medical_id_filter(all_donors)|patient_height_and_weight_filter }}</span>
+            {% endif %}
+          </div>
+        </td>
+        <td colspan="2">
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/{{ (recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value }}.png"/>
+              </div>
+              {{ recipient }}
+            </div>
+          </div>
+          <div class="patient-info">
+            {% if (recipient|patient_by_medical_id_filter(all_recipients)).parameters.sex is not none %}
+              <span>{{ (recipient|patient_by_medical_id_filter(all_recipients)).parameters.sex.value }}</span>
+            {% endif %}
+            {% if (recipient|patient_by_medical_id_filter(all_recipients)).parameters.year_of_birth is not none %}
+              <span>{{ (recipient|patient_by_medical_id_filter(all_recipients)).parameters.year_of_birth }}</span>
+            {% endif %}
+            {% if recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight_filter is not none %}
+              <span>{{ recipient|patient_by_medical_id_filter(all_recipients)|patient_height_and_weight_filter }}</span>
+            {% endif %}
+          </div>
+        </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code {% if compatible_blood %}matching{% endif %}">
+            {{ (donor|patient_by_medical_id_filter(all_donors)).parameters.blood_group }}
+          </div>
+        </td>
+        <td colspan="2">
+          <div class="code {% if compatible_blood %}matching{% endif %}">
+            {{ (recipient|patient_by_medical_id_filter(all_recipients)).parameters.blood_group }}
+          </div>
+          <div class="small">
+            Acceptable:
+            {% for code in (recipient|patient_by_medical_id_filter(all_recipients)).acceptable_blood_groups %}
+              <div class="code">{{ code }}</div>
+            {% endfor %}
+          </div>
+        </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td>Antibodies</td>
+        <td></td>
+      </tr>
+      {% for detailed_score_per_group in detailed_score_per_group %}
+        <tr>
+          <td>{{ detailed_score_per_group.hla_group.value }}</td>
+          <td>
+            {% for match in detailed_score_per_group.donor_matches %}
+              <div class="code {{ antigen_class(match.match_type) }}">{{ match.hla_type.code }}</div>
+            {% endfor %}
+          </td>
+          <td>
+            {% for match in detailed_score_per_group.recipient_matches %}
+              <div class="code {{ antigen_class(match.match_type) }}">{{ match.hla_type.code }}</div>
+            {% endfor %}
+          </td>
+          <td>
+            {% for match in detailed_score_per_group.antibody_matches %}
+              <div class="code {{ antibody_class(match.match_type) }}">{{ match.hla_antibody.code }}</div>
+            {% endfor %}
+          </td>
+          <td>
+            {% if detailed_score_per_group.hla_group.value != 'Other' %}
+              {{ detailed_score_per_group.group_compatibility_index }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
