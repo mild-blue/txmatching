@@ -27,3 +27,11 @@ export class ListItemDetailAbstractComponent {
   }
 }
 
+// HACK: instead of using this, create proper ListItem in all places
+// where this cons is used
+export const DEFAULT_LIST_ITEM: ListItem =  {
+  index: 0,
+  isActive: undefined,
+  itemComponent: ListItemAbstractComponent,
+  detailComponent: ListItemDetailAbstractComponent
+}

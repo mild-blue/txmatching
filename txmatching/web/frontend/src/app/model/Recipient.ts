@@ -5,9 +5,9 @@ export interface Recipient extends Patient {
   acceptable_blood_groups: string[];
   hla_antibodies: {
     hla_antibodies_list: Antibody[];
-    hla_antibodies_per_group: AntibodiesPerGroup[];
+    hla_antibodies_per_groups: AntibodiesPerGroup[];
   };
-  recipient_requirements: RecipientRequirements;
+  recipient_requirements?: RecipientRequirements;
   related_donor_db_id: number;
 }
 
