@@ -3,6 +3,6 @@ import { Donor } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
 
 export interface PatientPair extends ListItem {
-  d: Donor;
-  r: Recipient;
+  d?: Donor;
+  r?: Recipient;
 }
