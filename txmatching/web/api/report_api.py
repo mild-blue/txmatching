@@ -4,10 +4,12 @@ import datetime
 import logging
 import os
 import time
+from dataclasses import dataclass, replace
 from distutils.dir_util import copy_tree
 from typing import Dict, List, Optional, Tuple, Union
 
 import jinja2
+import pandas as pd
 import pdfkit
 from flask import request, send_from_directory
 from flask_restx import Resource
@@ -24,6 +26,8 @@ from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, RoundDTO)
 from txmatching.data_transfer_objects.patients.out_dots.conversions import \
     to_lists_for_fe
+from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
+    DonorDTOOut
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
@@ -34,7 +38,7 @@ from txmatching.database.services.matching_service import (
 from txmatching.database.services.txm_event_service import (
     get_txm_event, get_txm_event_id_for_current_user)
 from txmatching.patients.hla_model import HLAAntibody, HLAType
-from txmatching.patients.patient import Donor, DonorType, Patient
+from txmatching.patients.patient import Donor, DonorType, Patient, Recipient
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
@@ -142,6 +146,10 @@ class Report(Resource):
         now = datetime.datetime.now()
         now_formatted = now.strftime('%Y_%m_%d_%H_%M_%S')
 
+        # Uncomment to export patients to xlsx file
+        # xls_file_full_path = os.path.join(TMP_DIR, f'patients_{now_formatted}.xlsx')
+        # export_patients_to_xlsx_file(patients_dto, xls_file_full_path)
+
         required_patients_medical_ids = [txm_event.active_recipients_dict[recipient_db_id].medical_id
                                          for recipient_db_id in configuration.required_patient_db_ids]
 
@@ -230,6 +238,76 @@ class Report(Resource):
         conf = get_application_configuration()
         return (LOGO_MILD_BLUE, COLOR_MILD_BLUE) if conf.environment == ApplicationEnvironment.STAGING \
             else (LOGO_IKEM, COLOR_IKEM)
+
+
+def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut], List[Recipient]]], output_file: str):
+    @dataclass()
+    class PatientPair:
+        donor_medical_id: str
+        donor_country: str
+        donor_height: int
+        donor_weight: float
+        donor_sex: str
+        donor_year_of_birth: int
+        donor_blood_group: str
+        donor_type: str
+        donor_antigens: str
+        recipient_medical_id: str = ''
+        recipient_country: str = ''
+        recipient_height: int = None
+        recipient_weight: float = None
+        recipient_sex: str = ''
+        recipient_year_of_birth: int = None
+        recipient_blood_group: str = ''
+        recipient_acceptable_blood_groups: str = ''
+        recipient_antigens: str = ''
+        recipient_antibodies: str = ''
+
+    all_recipients_by_db_id = {recipient.db_id: recipient for recipient in patients_dto['recipients']}
+
+    patient_pairs = []
+    for donor in patients_dto['donors']:  # type: Donor
+        recipient = (all_recipients_by_db_id[donor.related_recipient_db_id] if donor.related_recipient_db_id else None)  # type: Recipient
+
+        patient_pair = PatientPair(
+            donor_medical_id=donor.medical_id,
+            donor_country=donor.parameters.country_code.value,
+            donor_height=donor.parameters.height,
+            donor_weight=donor.parameters.weight,
+            donor_sex=donor.parameters.sex.value if donor.parameters.sex is not None else '',
+            donor_year_of_birth=donor.parameters.year_of_birth,
+            donor_blood_group=donor.parameters.blood_group,
+            donor_type=donor_type_label_filter(donor.donor_type),
+            donor_antigens=' '.join([hla.raw_code for hla in donor.parameters.hla_typing.hla_types_list]),
+        )
+        if recipient is not None:
+            patient_pair = replace(
+                patient_pair,
+                recipient_medical_id=recipient.medical_id,
+                recipient_country=recipient.parameters.country_code.value,
+                recipient_height=recipient.parameters.height,
+                recipient_weight=recipient.parameters.weight,
+                recipient_sex=recipient.parameters.sex.value if recipient.parameters.sex is not None else '',
+                recipient_year_of_birth=recipient.parameters.year_of_birth,
+                recipient_blood_group=recipient.parameters.blood_group,
+                recipient_acceptable_blood_groups=', '.join([blood_group for blood_group in recipient.acceptable_blood_groups]),
+                recipient_antigens=' '.join([hla.raw_code for hla in recipient.parameters.hla_typing.hla_types_list]),
+                recipient_antibodies=' '.join([antibody.raw_code for antibody in recipient.hla_antibodies.hla_antibodies_list]),
+            )
+        patient_pairs.append(patient_pair)
+
+    df = pd.DataFrame(patient_pairs)
+
+    # Save to xls file and wrap text for all columns and
+    # Note: xlsxwriter module needs to be installed
+    writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
+    df.to_excel(writer, sheet_name='Patients', index=False)
+    workbook = writer.book
+    worksheet = writer.sheets['Patients']
+
+    workbook_format = workbook.add_format({'text_wrap': True})
+    worksheet.set_column('A:Z', None, workbook_format)
+    writer.save()
 
 
 def country_combination_filter(country_combination: ForbiddenCountryCombination) -> str:
