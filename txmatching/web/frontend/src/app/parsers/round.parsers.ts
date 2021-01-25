@@ -10,9 +10,9 @@ export const parseRound = (data: RoundGenerated, patients: PatientList, mIndex: 
   const index = _getRoundIndex(donorType, rIndex);
 
   return {
-    index: index,
-    donorType: donorType,
-    transplants: transplants
+    index,
+    donorType,
+    transplants
   };
 };
 
