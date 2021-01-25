@@ -204,7 +204,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
         mfis_close_to_minimum = mfis[mfis < min_mfi + cutoff * RELATIVE_CLOSENESS_TO_MINUM]
         # expected case: the low MFIs are identified both as close to minimum and below average. And it is not just one
         # value. Should happend in case there are two prominent groups of MFIs with large gap.
-        if (mfis_under_mean == mfis_close_to_minimum).all():
+        if np.array_equal(mfis_under_mean, mfis_close_to_minimum):
             relevant_mean = np.mean(mfis_under_mean)
             # Only one value is present in the low batch. This decreases credibility of the result,
             # the value is used anyway (as instructed by immunologist) but this info is added to the warning message.

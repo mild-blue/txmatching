@@ -30,6 +30,7 @@ from txmatching.utils.hla_system.hla_transformations import \
     preprocess_hla_code_in
 from txmatching.utils.hla_system.hla_transformations_store import \
     parse_hla_raw_code_and_store_parsing_error_in_db
+from txmatching.utils.logging_tools import PatientAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
     if not related_donor_db_id:
         related_donor_db_id = DonorModel.query.filter(DonorModel.recipient_id == recipient_model.id).one().id
     base_patient = _get_base_patient_from_patient_model(recipient_model)
-    logger_with_patient = (logger, {'patient_medical_id': recipient_model.medical_id})
+    logger_with_patient = PatientAdapter(logger, {'patient_medical_id': recipient_model.medical_id})
 
     return Recipient(base_patient.db_id,
                      base_patient.medical_id,
