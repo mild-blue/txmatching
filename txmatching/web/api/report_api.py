@@ -298,8 +298,7 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
 
     df = pd.DataFrame(patient_pairs)
 
-    # Save to xls file and wrap text for all columns and
-    # Note: xlsxwriter module needs to be installed
+    # Save to xls file and wrap text for all columns
     writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
     df.to_excel(writer, sheet_name='Patients', index=False)
     workbook = writer.book
