@@ -241,8 +241,9 @@ class Report(Resource):
 
 
 def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut], List[Recipient]]], output_file: str):
-    @dataclass()
+    @dataclass
     class PatientPair:
+        # pylint: disable=too-many-instance-attributes
         donor_medical_id: str
         donor_country: str
         donor_height: int
@@ -267,7 +268,9 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
 
     patient_pairs = []
     for donor in patients_dto['donors']:  # type: Donor
-        recipient = (all_recipients_by_db_id[donor.related_recipient_db_id] if donor.related_recipient_db_id else None)  # type: Recipient
+        recipient = (
+            all_recipients_by_db_id[donor.related_recipient_db_id] if donor.related_recipient_db_id else None
+        )  # type: Recipient
 
         patient_pair = PatientPair(
             donor_medical_id=donor.medical_id,
@@ -294,22 +297,27 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
                 recipient_sex=recipient.parameters.sex.value if recipient.parameters.sex is not None else '',
                 recipient_year_of_birth=recipient.parameters.year_of_birth,
                 recipient_blood_group=recipient.parameters.blood_group,
-                recipient_acceptable_blood_groups=', '.join([blood_group for blood_group in recipient.acceptable_blood_groups]),
+                recipient_acceptable_blood_groups=(
+                    ', '.join([blood_group for blood_group in recipient.acceptable_blood_groups])
+                ),
                 recipient_antigens=' '.join([hla.raw_code for hla in recipient.parameters.hla_typing.hla_types_list]),
                 recipient_antibodies=' '.join([antibody.raw_code for antibody in antibodies]),
             )
         patient_pairs.append(patient_pair)
 
+    # pylint: disable=invalid-name
     df = pd.DataFrame(patient_pairs)
 
-    # Save to xls file and wrap text for all columns
+    # Save to xls file and set some formatting
+    # pylint: disable=abstract-class-instantiated
     writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
     df.to_excel(writer, sheet_name='Patients', index=False)
     workbook = writer.book
     worksheet = writer.sheets['Patients']
-
+    # wrap text in the cells
     workbook_format = workbook.add_format({'text_wrap': True})
-    worksheet.set_column('A:Z', None, workbook_format)
+    # increase columns width to 20
+    worksheet.set_column('A:S', 20, workbook_format)
     writer.save()
 
 
