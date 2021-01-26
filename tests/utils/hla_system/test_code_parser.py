@@ -118,11 +118,11 @@ class TestCodeParser(DbTests):
         # 01 is dropped whereas DQA1*01:01 is kept and after that transformed to DQA1 and therefore it is in the
         # antibody set.
         self.assertSetEqual({'DQA1'}, {hla_antibody.code for hla_antibody in HLAAntibodies(
-                [
-                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2500),
-                    HLAAntibody('DQA1*01:01', cutoff=2000, mfi=10)
-                ]
-            ).hla_antibodies_per_groups[3].hla_antibody_list})
+            [
+                HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2500),
+                HLAAntibody('DQA1*01:01', cutoff=2000, mfi=10)
+            ]
+        ).hla_antibodies_per_groups[3].hla_antibody_list})
         # here is similar case as in the lines above, In all the cases the hla_code is the same and therefore this
         # should be translated to get_mfi_from_multiple_hla_codes call eventually and here average is calculated to 1900
         # which is below cutoff.
@@ -132,5 +132,17 @@ class TestCodeParser(DbTests):
                     HLAAntibody('DQA1*01:02', cutoff=2000, mfi=6000),
                     HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2000),
                     HLAAntibody('DQA1*01:02', cutoff=2000, mfi=1800)
+                ]
+            ).hla_antibodies_per_groups[3].hla_antibody_list))
+
+        self.assertSetEqual({
+            HLAAntibody(raw_code='DQA1*01:01', mfi=4500, cutoff=2000, code='DQA1'),
+            HLAAntibody(raw_code='DQA1*01:02', mfi=2000, cutoff=2000, code='DQA1')
+        }, set(
+            HLAAntibodies(
+                [
+                    HLAAntibody('DQA1*01:01', cutoff=2000, mfi=6000),
+                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2000),
+                    HLAAntibody('DQA1*01:01', cutoff=2000, mfi=3000)
                 ]
             ).hla_antibodies_per_groups[3].hla_antibody_list))

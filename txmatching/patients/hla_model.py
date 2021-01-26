@@ -88,11 +88,12 @@ class HLAAntibodies:
         self.hla_antibodies_list = hla_antibodies_list
         hla_antibodies_list_without_none = [hla_antibody for hla_antibody in hla_antibodies_list if hla_antibody.code]
         grouped_hla_antibodies = itertools.groupby(
-            sorted(hla_antibodies_list_without_none, key=lambda hla_antibody: (hla_antibody.code, hla_antibody.cutoff)),
+            sorted(hla_antibodies_list_without_none,
+                   key=lambda hla_antibody: (hla_antibody.code, hla_antibody.cutoff, hla_antibody.raw_code)),
             key=lambda hla_antibody: (hla_antibody.code, hla_antibody.cutoff, hla_antibody.raw_code)
         )
         hla_antibodies_over_cutoff_list = []
-        for (_, hla_code_cutoff, hla_code_raw), antibody_group in grouped_hla_antibodies:
+        for (hla_code, hla_code_cutoff, hla_code_raw), antibody_group in grouped_hla_antibodies:
             antibody_group_list = list(antibody_group)
             assert len(antibody_group_list) > 0
             mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in antibody_group_list],
@@ -100,16 +101,22 @@ class HLAAntibodies:
                                                   hla_code_raw,
                                                   logger_with_patient)
             if mfi >= hla_code_cutoff:
-                hla_antibodies_over_cutoff_list.append(
-                    antibody_group_list[0]
+                new_antibody = HLAAntibody(
+                    code=hla_code,
+                    raw_code=hla_code_raw,
+                    cutoff=hla_code_cutoff,
+                    mfi=mfi
                 )
+                hla_antibodies_over_cutoff_list.append(new_antibody)
 
         self.hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_over_cutoff_list)
 
 
 def _split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
     hla_types_in_groups = _split_hla_codes_to_groups(hla_types)
-    return [HLAPerGroup(hla_group, hla_codes_in_group) for hla_group, hla_codes_in_group in
+    return [HLAPerGroup(hla_group,
+                        sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
+                        ) for hla_group, hla_codes_in_group in
             hla_types_in_groups.items()]
 
 
@@ -118,7 +125,9 @@ def _split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
 # Ideally when doing so, try to share the logic between the functions.
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[AntibodiesPerGroup]:
     hla_antibodies_in_groups = _split_hla_codes_to_groups(hla_antibodies)
-    return [AntibodiesPerGroup(hla_group, hla_codes_in_group) for hla_group, hla_codes_in_group in
+    return [AntibodiesPerGroup(hla_group,
+                               sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
+                               ) for hla_group, hla_codes_in_group in
             hla_antibodies_in_groups.items()]
 
 
