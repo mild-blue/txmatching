@@ -76,7 +76,7 @@ def find_all_sequences(score_matrix: np.ndarray,
         bridge_paths = _find_all_paths_starting_with(bridge_index, compatible_donor_idxs_per_donor_idx, set())
         paths.extend(bridge_paths)
 
-    paths = [tuple(path) for path in paths if 1 < len(path) <= max_length and
+    paths = [tuple(path) for path in paths if 1 < len(path) <= max_length + 1 and
              country_count_in_path(tuple(path), donors) <= max_countries]
 
     return paths
