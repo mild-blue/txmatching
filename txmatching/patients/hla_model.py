@@ -2,7 +2,7 @@ import itertools
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from txmatching.utils.enums import (HLA_GROUP_SPLIT_CODE_REGEX,
                                     HLA_GROUPS_NAMES_WITH_OTHER, HLAGroup)
@@ -87,11 +87,12 @@ class HLAAntibodies:
             hla_antibodies_list = []
         self.hla_antibodies_list = hla_antibodies_list
         hla_antibodies_list_without_none = [hla_antibody for hla_antibody in hla_antibodies_list if hla_antibody.code]
-        grouped_hla_antibodies = itertools.groupby(
-            sorted(hla_antibodies_list_without_none,
-                   key=lambda hla_antibody: (hla_antibody.code, hla_antibody.cutoff, hla_antibody.raw_code)),
-            key=lambda hla_antibody: (hla_antibody.code, hla_antibody.cutoff, hla_antibody.raw_code)
-        )
+
+        def _group_key(hla_antibody: HLAAntibody) -> Tuple[str, int, str]:
+            return hla_antibody.code, hla_antibody.cutoff, hla_antibody.raw_code
+
+        grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies_list_without_none, key=_group_key),
+                                                   key=_group_key)
         hla_antibodies_over_cutoff_list = []
         for (hla_code, hla_code_cutoff, hla_code_raw), antibody_group in grouped_hla_antibodies:
             antibody_group_list = list(antibody_group)
