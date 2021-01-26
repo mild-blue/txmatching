@@ -41,21 +41,25 @@ class TestHlaScorer(unittest.TestCase):
                                    HLAMatch(HLAType('DR11'), MatchTypes.SPLIT)],
                 group_compatibility_index=18.0),
             DetailedCompatibilityIndexForHLAGroup(hla_group=HLAGroup.Other,
-                                                  donor_matches=[HLAMatch(hla_type=HLAType('DR52'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_type=HLAType('DR53'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_type=HLAType('DQ7'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_type=HLAType('DQ8'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_type=HLAType('DP2'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_type=HLAType('DP10'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_type=HLAType('CW9'), match_type=MatchTypes.NONE),
-                                                                 HLAMatch(hla_type=HLAType('CW12'), match_type=MatchTypes.NONE)],
+                                                  donor_matches=[
+                                                      HLAMatch(hla_type=HLAType('DR52'), match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=HLAType('DR53'), match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=HLAType('DQ7'), match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=HLAType('DQ8'), match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=HLAType('DP2'), match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=HLAType('DP10'), match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=HLAType('CW9'), match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=HLAType('CW12'), match_type=MatchTypes.NONE)],
                                                   recipient_matches=[], group_compatibility_index=0.0)
 
         ]
         self.maxDiff = None
-        self.assertListEqual(expected, calculated_detailed_score)
+        for exp, res in zip(expected, calculated_detailed_score):
+            self.assertSetEqual(set(exp.donor_matches), set(res.donor_matches))
+            self.assertSetEqual(set(exp.recipient_matches), set(res.recipient_matches))
 
-    def test_scorer_on_some_patients(self):
+
+def test_scorer_on_some_patients(self):
         scorer = HLAAdditiveScorer()
         donor = Donor(
             db_id=1,
