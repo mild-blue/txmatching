@@ -75,11 +75,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public async setDefaultTxmEvent(event_id: number): Promise<void> {
+    this.loading = true;
     this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
-
-    if(this.configuration) {
-      await this.calculate(this.configuration);
-    }
+    await this._initMatchings();
+    this.loading = false;
   }
 
   public getActiveMatching(): Matching | undefined {
@@ -158,6 +157,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.toggleConfiguration();
     }
     this.loading = true;
+    this.matchings = [];
+    this.foundMatchingsCount = 0;
 
     const { scorer_constructor_name, solver_constructor_name } = this.appConfiguration;
     const updatedConfig: AppConfiguration = {
@@ -233,8 +234,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  // TODOO: move to base class
   private async _initTxmEvents(): Promise<void> {
-    this.txmEvents = await this._eventService.getEvents();
-    this.defaultTxmEvent = await this._eventService.getDefaultEvent();
+    try {
+      this.txmEvents = await this._eventService.getEvents();
+      this._logger.log('Got txm events from server', [this.txmEvents]);
+      this.defaultTxmEvent = await this._eventService.getDefaultEvent();
+      this._logger.log('Got default txm event from server', [this.defaultTxmEvent]);
+    } catch (e) {
+      this._alertService.error(`Error loading txm events: "${e.message || e}"`);
+      this._logger.error(`Error loading txm events: "${e.message || e}"`);
+    }
   }
 }

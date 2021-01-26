@@ -60,9 +60,10 @@ export class PatientsComponent implements OnInit {
   }
 
   public async setDefaultTxmEvent(event_id: number): Promise<void> {
+    this.loading = true;
     this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
-
-    // TODOO: render patients
+    await Promise.all([this._initConfiguration(), this._initPatients()]);
+    this.loading = false
   }
 
   public uploadPatients(): void {
@@ -146,7 +147,14 @@ export class PatientsComponent implements OnInit {
   }
 
   private async _initTxmEvents(): Promise<void> {
-    this.txmEvents = await this._eventService.getEvents();
-    this.defaultTxmEvent = await this._eventService.getDefaultEvent();
+    try {
+      this.txmEvents = await this._eventService.getEvents();
+      this._logger.log('Got txm events from server', [this.txmEvents]);
+      this.defaultTxmEvent = await this._eventService.getDefaultEvent();
+      this._logger.log('Got default txm event from server', [this.defaultTxmEvent]);
+    } catch (e) {
+      this._alertService.error(`Error loading txm events: "${e.message || e}"`);
+      this._logger.error(`Error loading txm events: "${e.message || e}"`);
+    }
   }
 }
