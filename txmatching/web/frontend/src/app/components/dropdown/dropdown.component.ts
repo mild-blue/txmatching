@@ -13,7 +13,14 @@ export class DropdownComponent {
   @Input() id: string = '';
   @Input() trigger?: HTMLButtonElement;
 
+  private wasClickInside = false;
+
   constructor(private _elementRef: ElementRef) {
+  }
+
+  @HostListener('click')
+  clickInside() {
+    this.wasClickInside = true;
   }
 
   @HostListener('document:click', ['$event'])
@@ -28,8 +35,10 @@ export class DropdownComponent {
     const insideDropdown = currentDropdown.contains(clickedElement);
     const triggerClicked = this.trigger.contains(clickedElement);
 
-    if (!triggerClicked && !insideDropdown) {
+    // We use wasClickInside because contains() do not work properly for elements that are changed by Angular
+    if (!triggerClicked && !insideDropdown && !this.wasClickInside) {
       this.clickedOutside.emit(this.id);
     }
+    this.wasClickInside = false;
   }
 }

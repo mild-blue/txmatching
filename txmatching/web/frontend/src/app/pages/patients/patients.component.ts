@@ -15,6 +15,8 @@ import { PatientPairItemComponent } from '@app/components/patient-pair-item/pati
 import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
 import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
 import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
+import { EventService } from '@app/services/event/event.service';
+import { TxmEvent, TxmEvents } from '@app/model/Event';
 
 @Component({
   selector: 'app-patients',
@@ -33,6 +35,8 @@ export class PatientsComponent implements OnInit {
   public uploadStatus: UploadDownloadStatus = UploadDownloadStatus.enabled;
 
   public user?: User;
+  public txmEvents?: TxmEvents;
+  public defaultTxmEvent?: TxmEvent;
 
   public configuration?: AppConfiguration;
 
@@ -41,6 +45,7 @@ export class PatientsComponent implements OnInit {
               private _configService: ConfigurationService,
               private _patientService: PatientService,
               private _uploadService: UploadService,
+              private _eventService: EventService,
               private _logger: LoggerService) {
   }
 
@@ -49,7 +54,15 @@ export class PatientsComponent implements OnInit {
 
     // init config and patients
     this.loading = true;
-    Promise.all([this._initConfiguration(), this._initPatients()]).finally(() => this.loading = false);
+    Promise.all(
+      [this._initConfiguration(), this._initPatients(), this._initTxmEvents()]
+    ).finally(() => this.loading = false);
+  }
+
+  public async setDefaultTxmEvent(event_id: number): Promise<void> {
+    this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
+
+    // TODOO: render patients
   }
 
   public uploadPatients(): void {
@@ -130,5 +143,10 @@ export class PatientsComponent implements OnInit {
       this._alertService.error(`Error loading configuration: "${e.message || e}"`);
       this._logger.error(`Error loading configuration: "${e.message || e}"`);
     }
+  }
+
+  private async _initTxmEvents(): Promise<void> {
+    this.txmEvents = await this._eventService.getEvents();
+    this.defaultTxmEvent = await this._eventService.getDefaultEvent();
   }
 }

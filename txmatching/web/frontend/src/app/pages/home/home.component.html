@@ -2,7 +2,10 @@
             [downloadStatus]="downloadStatus"
             [uploadStatus]="uploadStatus"
             (downloadAction)="downloadReport()"
-            (uploadAction)="uploadPatients()"></app-header>
+            (uploadAction)="uploadPatients()"
+            [txmEvents]="txmEvents"
+            [defaultTxmEvent]="defaultTxmEvent"
+            (defaultTxmEventSelected)="setDefaultTxmEvent($event)"></app-header>
 
 <section class="home">
   <app-container>

@@ -9,10 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { TxmEventGenerated } from './txmEventGenerated';
 
 
-export interface TxmEventGenerated { 
-    id: number;
-    name: string;
+export interface TxmEventsGenerated { 
+    events: Array<TxmEventGenerated>;
 }
 

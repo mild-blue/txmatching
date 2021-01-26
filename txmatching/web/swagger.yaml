@@ -129,6 +129,13 @@ definitions:
         - donor_count
         - recipient_count
         type: object
+    DefaultTxmEvent:
+        properties:
+            id:
+                type: integer
+        required:
+        - id
+        type: object
     DetailedScoreForGroup:
         properties:
             antibody_matches:
@@ -916,10 +923,22 @@ definitions:
         type: object
     TxmEvent:
         properties:
+            id:
+                type: integer
             name:
                 type: string
         required:
+        - id
         - name
+        type: object
+    TxmEvents:
+        properties:
+            events:
+                items:
+                    $ref: '#/definitions/TxmEvent'
+                type: array
+        required:
+        - txmEvents
         type: object
     UploadPatients:
         properties:
@@ -1301,6 +1320,35 @@ paths:
             tags:
             - service
     /v1/txm-event:
+        get:
+            description: Get list of allowed txm txmEvents for the logged user.
+            operationId: get_txm_event_api
+            responses:
+                '201':
+                    description: List of allowed txmEvents.
+                    schema:
+                        $ref: '#/definitions/TxmEvents'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - txm-event
         post:
             description: Endpoint that lets an ADMIN create a new TXM event. The ADMIN
                 should specify TXM event name.
@@ -1314,6 +1362,75 @@ paths:
             responses:
                 '201':
                     description: Returns the newly created TXM event object.
+                    schema:
+                        $ref: '#/definitions/TxmEvent'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '409':
+                    description: Non-unique patients provided.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - txm-event
+    /v1/txm-event/default:
+        get:
+            description: Get default event
+            operationId: get_txm_default_event_api
+            responses:
+                '201':
+                    description: Default event.
+                    schema:
+                        $ref: '#/definitions/TxmEvent'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - txm-event
+        put:
+            description: Set default txm event for the logged user.
+            operationId: put_txm_default_event_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/DefaultTxmEvent'
+            responses:
+                '201':
+                    description: Returns the default event.
                     schema:
                         $ref: '#/definitions/TxmEvent'
                 '400':
@@ -1656,6 +1773,8 @@ responses:
         description: When a mask can't be parsed
     SolverAlreadyRunningException:
         description: Solver already running
+    UnauthorizedException:
+        description: unauthorized_exception
     UserUpdateException:
         description: user_update_exception
     ValueError:

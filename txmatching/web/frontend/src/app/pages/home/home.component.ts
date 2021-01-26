@@ -7,20 +7,17 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { CalculatedMatchings, Matching } from '@app/model/Matching';
+import { Matching } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
-import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
-import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
 import { ReportService } from '@app/services/report/report.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
 import { finalize, first } from 'rxjs/operators';
 import { PatientList } from '@app/model/PatientList';
-import { DonorType } from '@app/model/Donor';
-import { Transplant } from '@app/model/Transplant';
-import { Round } from '@app/model/Round';
 import { UploadService } from '@app/services/upload/upload.service';
+import { EventService } from '@app/services/event/event.service';
+import { TxmEvent, TxmEvents } from '@app/model/Event';
 
 @Component({
   selector: 'app-home',
@@ -40,6 +37,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   public matchings: Matching[] = [];
   public foundMatchingsCount: number = 0;
   public user?: User;
+  public txmEvents?: TxmEvents;
+  public defaultTxmEvent?: TxmEvent;
+
   public patients?: PatientList;
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
@@ -54,18 +54,32 @@ export class HomeComponent implements OnInit, OnDestroy {
               private _patientService: PatientService,
               private _reportService: ReportService,
               private _uploadService: UploadService,
+              private _eventService: EventService,
               private _logger: LoggerService) {
   }
 
   ngOnInit(): void {
     this._initUser();
-    this._initMatchings();
+
+    // init matchings and txm events
+    this.loading = true;
+    Promise.all(
+      [this._initMatchings(), this._initTxmEvents()]
+    ).finally(() => this.loading = false);
   }
 
   ngOnDestroy(): void {
     this._configSubscription?.unsubscribe();
     this._matchingSubscription?.unsubscribe();
     this._patientsSubscription?.unsubscribe();
+  }
+
+  public async setDefaultTxmEvent(event_id: number): Promise<void> {
+    this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
+
+    if(this.configuration) {
+      await this.calculate(this.configuration);
+    }
   }
 
   public getActiveMatching(): Matching | undefined {
@@ -182,7 +196,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private async _initMatchings(): Promise<void> {
-    this.loading = true;
     try {
       // try getting patients
       try {
@@ -217,7 +230,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       this._logger.error(e);
     } finally {
       this._logger.log('End of matchings initialization');
-      this.loading = false;
     }
+  }
+
+  private async _initTxmEvents(): Promise<void> {
+    this.txmEvents = await this._eventService.getEvents();
+    this.defaultTxmEvent = await this._eventService.getDefaultEvent();
   }
 }

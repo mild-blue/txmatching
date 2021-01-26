@@ -1,7 +1,11 @@
 <app-header [user]="user"
             [uploadStatus]="uploadStatus"
             (uploadAction)="uploadPatients()"
-            [downloadStatus]="downloadStatus"></app-header>
+            [downloadStatus]="downloadStatus"
+            [txmEvents]="txmEvents"
+            [defaultTxmEvent]="defaultTxmEvent"
+            (defaultTxmEventSelected)="setDefaultTxmEvent($event)"
+            ></app-header>
 
 <section class="patients">
   <app-container>

@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { User } from '@app/model/User';
-import { faQuestionCircle, faUserAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faQuestionCircle, faUserAlt } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '@app/services/auth/auth.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
+import { TxmEvent, TxmEvents } from '@app/model/Event';
 
 @Component({
   selector: 'app-header',
@@ -21,12 +22,22 @@ export class HeaderComponent {
   @Input() downloadStatus: UploadDownloadStatus = UploadDownloadStatus.disabled;
   @Output() downloadAction: EventEmitter<void> = new EventEmitter<void>();
 
+  @Input() txmEvents?: TxmEvents;
+
+  @Input() defaultTxmEvent?: TxmEvent;
+  @Output() defaultTxmEventSelected: EventEmitter<number> = new EventEmitter<number>();
+
+  public settingsIcon = faCog;
   public userIcon = faUserAlt;
   public infoIcon = faQuestionCircle;
 
   public uploadDownloadStatus: typeof UploadDownloadStatus = UploadDownloadStatus;
 
   constructor(private _authService: AuthService) {
+  }
+
+  get settingsDropdownId(): string {
+    return 'settings-dropdown';
   }
 
   get userDropdownId(): string {
@@ -61,5 +72,9 @@ export class HeaderComponent {
 
   public handleUploadClick(): void {
     this.uploadAction.emit();
+  }
+
+  public changeDefaultTxmEvent(id: number): void {
+    this.defaultTxmEventSelected.emit(id);
   }
 }

@@ -93,6 +93,12 @@ class SolverAlreadyRunningException(BaseTxmException):
     """
 
 
+class UnauthorizedException(BaseTxmException):
+    """
+    Raised if user tries to access resource he has no access to.
+    """
+
+
 def require_auth_condition(condition: bool, message: Optional[str] = None):
     """
     Raises InvalidAuthCallException with message if condition is false.
