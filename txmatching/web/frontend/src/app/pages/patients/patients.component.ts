@@ -16,14 +16,14 @@ import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/
 import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
 import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
 import { EventService } from '@app/services/event/event.service';
-import { TxmEvent, TxmEvents } from '@app/model/Event';
+import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 
 @Component({
   selector: 'app-patients',
   templateUrl: './patients.component.html',
   styleUrls: ['./patients.component.scss']
 })
-export class PatientsComponent implements OnInit {
+export class PatientsComponent extends AbstractLoggedComponent implements OnInit {
 
   public patients?: PatientList;
   public pairs: PatientPair[] = [];
@@ -34,25 +34,21 @@ export class PatientsComponent implements OnInit {
   public downloadStatus: UploadDownloadStatus = UploadDownloadStatus.hidden;
   public uploadStatus: UploadDownloadStatus = UploadDownloadStatus.enabled;
 
-  public user?: User;
-  public txmEvents?: TxmEvents;
-  public defaultTxmEvent?: TxmEvent;
-
   public configuration?: AppConfiguration;
 
-  constructor(private _authService: AuthService,
-              private _alertService: AlertService,
-              private _configService: ConfigurationService,
+  constructor(private _configService: ConfigurationService,
               private _patientService: PatientService,
               private _uploadService: UploadService,
-              private _eventService: EventService,
-              private _logger: LoggerService) {
+              _authService: AuthService,
+              _alertService: AlertService,
+              _eventService: EventService,
+              _logger: LoggerService) {
+    super(_authService, _alertService, _eventService, _logger);
   }
 
   ngOnInit(): void {
-    this.user = this._authService.currentUserValue;
+    super.ngOnInit();
 
-    // init config and patients
     this.loading = true;
     this._initAll().finally(() => this.loading = false);
   }
@@ -157,18 +153,6 @@ export class PatientsComponent implements OnInit {
     } catch (e) {
       this._alertService.error(`Error loading configuration: "${e.message || e}"`);
       this._logger.error(`Error loading configuration: "${e.message || e}"`);
-    }
-  }
-
-  private async _initTxmEvents(): Promise<void> {
-    try {
-      this.txmEvents = await this._eventService.getEvents();
-      this._logger.log('Got txm events from server', [this.txmEvents]);
-      this.defaultTxmEvent = await this._eventService.getDefaultEvent();
-      this._logger.log('Got default txm event from server', [this.defaultTxmEvent]);
-    } catch (e) {
-      this._alertService.error(`Error loading txm events: "${e.message || e}"`);
-      this._logger.error(`Error loading txm events: "${e.message || e}"`);
     }
   }
 }

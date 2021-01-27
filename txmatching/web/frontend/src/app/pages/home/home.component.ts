@@ -6,7 +6,6 @@ import { ConfigurationService } from '@app/services/configuration/configuration.
 import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
-import { Subscription } from 'rxjs';
 import { Matching } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
@@ -17,18 +16,15 @@ import { finalize, first } from 'rxjs/operators';
 import { PatientList } from '@app/model/PatientList';
 import { UploadService } from '@app/services/upload/upload.service';
 import { EventService } from '@app/services/event/event.service';
-import { TxmEvent, TxmEvents } from '@app/model/Event';
+import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent extends AbstractLoggedComponent implements OnInit, OnDestroy {
 
-  private _configSubscription?: Subscription;
-  private _matchingSubscription?: Subscription;
-  private _patientsSubscription?: Subscription;
   private _downloadInProgress: boolean = false;
   private _uploadInProgress: boolean = false;
 
@@ -36,9 +32,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public matchings: Matching[] = [];
   public foundMatchingsCount: number = 0;
-  public user?: User;
-  public txmEvents?: TxmEvents;
-  public defaultTxmEvent?: TxmEvent;
 
   public patients?: PatientList;
   public appConfiguration?: AppConfiguration;
@@ -47,28 +40,26 @@ export class HomeComponent implements OnInit, OnDestroy {
   public configIcon = faCog;
   public configOpened: boolean = false;
 
-  constructor(private _authService: AuthService,
-              private _configService: ConfigurationService,
-              private _alertService: AlertService,
+  constructor(private _configService: ConfigurationService,
               private _matchingService: MatchingService,
               private _patientService: PatientService,
               private _reportService: ReportService,
               private _uploadService: UploadService,
-              private _eventService: EventService,
-              private _logger: LoggerService) {
+              _authService: AuthService,
+              _alertService: AlertService,
+              _eventService: EventService,
+              _logger: LoggerService) {
+    super(_authService, _alertService, _eventService, _logger);
   }
 
   ngOnInit(): void {
-    this._initUser();
+    super.ngOnInit();
 
     this.loading = true;
     this._initAll().finally(() => this.loading = false);
   }
 
   ngOnDestroy(): void {
-    this._configSubscription?.unsubscribe();
-    this._matchingSubscription?.unsubscribe();
-    this._patientsSubscription?.unsubscribe();
   }
 
   private async _initAll(): Promise<void> {
@@ -85,10 +76,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public getActiveMatching(): Matching | undefined {
     return this.matchings.find(m => m.isActive);
-  }
-
-  get isViewer(): boolean {
-    return this.user ? this.user.decoded.role === Role.VIEWER : false;
   }
 
   get downloadStatus(): UploadDownloadStatus {
@@ -208,10 +195,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _initUser(): void {
-    this.user = this._authService.currentUserValue;
-  }
-
   private async _initMatchings(): Promise<void> {
     // TODOO: init matchings and patients separately
     if(!this.defaultTxmEvent) {
@@ -253,19 +236,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       this._logger.error(e);
     } finally {
       this._logger.log('End of matchings initialization');
-    }
-  }
-
-  // TODOO: move to base class
-  private async _initTxmEvents(): Promise<void> {
-    try {
-      this.txmEvents = await this._eventService.getEvents();
-      this._logger.log('Got txm events from server', [this.txmEvents]);
-      this.defaultTxmEvent = await this._eventService.getDefaultEvent();
-      this._logger.log('Got default txm event from server', [this.defaultTxmEvent]);
-    } catch (e) {
-      this._alertService.error(`Error loading txm events: "${e.message || e}"`);
-      this._logger.error(`Error loading txm events: "${e.message || e}"`);
     }
   }
 }
