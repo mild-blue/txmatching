@@ -10,6 +10,7 @@ import { Donor } from '@app/model/Donor';
 import { Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
 import { TxmEvent } from '@app/model/Event';
+import { LoggerService } from '@app/services/logger/logger.service';
 
 @Component({
   selector: 'app-patient-detail-donor',
@@ -31,7 +32,8 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   public loading: boolean = false;
   public success: boolean = false;
 
-  constructor(private _patientService: PatientService) {
+  constructor(private _patientService: PatientService,
+              private _logger: LoggerService) {
     super(_patientService);
 
     this.filtered = this.inputControl.valueChanges.pipe(
@@ -57,9 +59,11 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   }
 
   public addNewAntigen(code: string, control: HTMLInputElement): void {
-    if (!this.item || !code.length) {
+    if(!this.item) {
+      this._logger.error(`addNewAntigen failed because item not set`);
       return;
     }
+    if(!code.length) return;
 
     const formattedCode = code.trim().toUpperCase();
     this.item.parameters.hla_typing.hla_types_list.push({ code: formattedCode, raw_code: formattedCode });
@@ -70,9 +74,11 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   }
 
   public addAntigen(a: Antigen, control: HTMLInputElement): void {
-    if (!this.item || !a) {
+    if(!this.item) {
+      this._logger.error(`addAntigen failed because item not set`);
       return;
     }
+    if (!a) return;
 
     this.item.parameters.hla_typing.hla_types_list.push(a);
 
@@ -82,7 +88,8 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   }
 
   public remove(code: Antigen): void {
-    if (!this.item) {
+    if(!this.item) {
+      this._logger.error(`remove failed because item not set`);
       return;
     }
 
@@ -94,10 +101,12 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   }
 
   public handleSave(): void {
-    if (!this.item) {
+    if(!this.item) {
+      this._logger.error(`handleSave failed because item not set`);
       return;
     }
-    if (!this.defaultTxmEvent) { // TODOO
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`handleSave failed because defaultTxmEvent not set`);
       return;
     }
 
@@ -112,7 +121,8 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   }
 
   private _initAvailableCodes(): void {
-    if (!this.patients?.donors) {
+    if(!this.patients?.donors) {
+      this._logger.error(`initAvailableCodes failed because donors not set`);
       return;
     }
 
