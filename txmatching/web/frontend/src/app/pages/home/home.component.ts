@@ -118,6 +118,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public async downloadReport(): Promise<void> {
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`Download report failed because defaultTxmEvent not set`);
+      return;
+    }
+
     const activeMatching = this.getActiveMatching();
     if (!activeMatching) {
       return;
@@ -126,7 +131,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._logger.log('Downloading with active matching', [activeMatching]);
 
     this._downloadInProgress = true;
-    this._reportService.downloadReport(activeMatching.order_id)
+    this._reportService.downloadReport(this.defaultTxmEvent.id, activeMatching.order_id)
     .pipe(
       first(),
       finalize(() => this._downloadInProgress = false)
@@ -149,7 +154,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public async calculate(configuration: Configuration): Promise<void> {
-    if (!this.appConfiguration || !this.patients || !this.defaultTxmEvent) return;
+    if(!this.appConfiguration) {
+      this._logger.error(`Calculate failed because appConfiguration not set`);
+      return;
+    }
+    if(!this.patients) {
+      this._logger.error(`Calculate failed because patients not set`);
+      return;
+    }
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`Calculate failed because defaultTxmEvent not set`);
+      return;
+    }
 
     if (this.configOpened) {
       this.toggleConfiguration();
@@ -198,10 +214,15 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private async _initMatchings(): Promise<void> {
     // TODOO: init matchings and patients separately
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`Init matchings failed because defaultTxmEvent not set`);
+      return;
+    }
+
     try {
       // try getting patients
       try {
-        this.patients = await this._patientService.getPatients();
+        this.patients = await this._patientService.getPatients(this.defaultTxmEvent.id);
         this._logger.log('Got patients from server', [this.patients]);
       } catch (e) {
         this._alertService.error(`Error loading patients: "${e.message || e}"`);
@@ -211,7 +232,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       // try getting configuration
       try {
-        this.appConfiguration = await this._configService.getConfiguration();
+        this.appConfiguration = await this._configService.getConfiguration(this.defaultTxmEvent.id);
         this._logger.log('Got config from server', [this.appConfiguration]);
       } catch (e) {
         this._alertService.error(`Error loading configuration: "${e.message || e}"`);

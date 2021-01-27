@@ -4,6 +4,7 @@ import { PatientList } from '@app/model/PatientList';
 import { Configuration } from '@app/model/Configuration';
 import { PatientDonorTab } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.interface';
 import { Donor } from '@app/model/Donor';
+import { TxmEvent } from '@app/model/Event';
 
 @Component({
   selector: 'app-patient-donor-detail-wrapper',
@@ -15,6 +16,7 @@ export class PatientDonorDetailWrapperComponent extends ListItemDetailAbstractCo
   @Input() item?: Donor;
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
+  @Input() defaultTxmEvent?: TxmEvent;
 
   public activeTab: PatientDonorTab = PatientDonorTab.Overview;
   public tabs: typeof PatientDonorTab = PatientDonorTab;

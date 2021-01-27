@@ -13,6 +13,7 @@ from flask import request, send_from_directory
 from flask_restx import Resource
 from jinja2 import Environment, FileSystemLoader
 
+from txmatching.auth.auth_check import require_valid_txm_event_id
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         NotFoundException)
 from txmatching.auth.user.user_auth_check import require_user_login
@@ -54,7 +55,7 @@ COLOR_MILD_BLUE = '#2D4496'
 
 # Query params:
 #   - matchingRangeLimit
-@report_api.route('/<matching_id>', methods=['GET'])
+@report_api.route('/<int:matching_id>', methods=['GET'])
 class Report(Resource):
 
     @report_api.doc(
@@ -81,10 +82,10 @@ class Report(Resource):
                          )
     @report_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
+    @require_valid_txm_event_id()
     # pylint: disable=too-many-locals
-    def get(self, matching_id: int) -> str:
-        txm_event_db_id = get_txm_event_id_for_current_user()
-        txm_event = get_txm_event(txm_event_db_id)
+    def get(self, txm_event_id: int, matching_id: int) -> str:
+        txm_event = get_txm_event(txm_event_id)
         matching_id = int(request.view_args['matching_id'])
         if request.args.get(MATCHINGS_BELOW_CHOSEN) is None or request.args.get(MATCHINGS_BELOW_CHOSEN) == '':
             raise InvalidArgumentException(f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
@@ -98,7 +99,7 @@ class Report(Resource):
                 f'Current value is {matching_range_limit}.'
             )
 
-        maybe_config_model = get_latest_config_model_for_txm_event(txm_event_db_id)
+        maybe_config_model = get_latest_config_model_for_txm_event(txm_event_id)
         if maybe_config_model is None:
             pairing_result = solve_from_configuration(Configuration(), txm_event=txm_event)
             user_id = get_current_user_id()

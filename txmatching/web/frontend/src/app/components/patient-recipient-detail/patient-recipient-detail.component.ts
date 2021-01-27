@@ -9,6 +9,7 @@ import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Recipient } from '@app/model/Recipient';
 import { Antibody, Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
+import { TxmEvent } from '@app/model/Event';
 
 @Component({
   selector: 'app-patient-detail-recipient',
@@ -19,6 +20,7 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
 
   @Input() patients?: PatientList;
   @Input() item?: Recipient;
+  @Input() defaultTxmEvent?: TxmEvent;
 
   public success: boolean = false;
 
@@ -112,12 +114,16 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
     if (!this.item) {
       return;
     }
+    // TODOO
+    if (!this.defaultTxmEvent) {
+      return;
+    }
 
     this.loading = true;
     this.success = false;
     const oldAntibodies = this.item.hla_antibodies.hla_antibodies_list;
     const antibodies = newAntibodies ? [...oldAntibodies, ...newAntibodies] : oldAntibodies;
-    this._patientService.saveRecipient(this.item, antibodies)
+    this._patientService.saveRecipient(this.defaultTxmEvent.id, this.item, antibodies)
     .then((recipient) => {
       this.success = true;
       this.item = recipient;

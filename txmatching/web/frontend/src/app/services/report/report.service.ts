@@ -15,14 +15,14 @@ export class ReportService {
   constructor(private _http: HttpClient) {
   }
 
-  public downloadReport(matchingId: number): Observable<Report> {
+  public downloadReport(txmEventId: number, matchingId: number): Observable<Report> {
     const httpOptions: Object = {
       responseType: 'blob',
       observe: 'response'
     };
     // &v=${Date.now()} is done according to https://stackoverflow.com/questions/53207420/how-to-download-new-version-of-file-without-using-the-client-cache
     return this._http.get<HttpResponse<Blob>>(
-      `${environment.apiUrl}/reports/${matchingId}?matchingsBelowChosen=${otherMatchingsCount}&v=${Date.now()}`,
+      `${environment.apiUrl}/txm-event/${txmEventId}/reports/${matchingId}?matchingsBelowChosen=${otherMatchingsCount}&v=${Date.now()}`,
       httpOptions
     ).pipe(
       map((response: HttpResponse<Blob>) => {

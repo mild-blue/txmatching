@@ -9,6 +9,7 @@ import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Donor } from '@app/model/Donor';
 import { Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
+import { TxmEvent } from '@app/model/Event';
 
 @Component({
   selector: 'app-patient-detail-donor',
@@ -19,6 +20,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
   @Input() patients?: PatientList;
   @Input() item?: Donor;
+  @Input() defaultTxmEvent?: TxmEvent;
 
   public inputControl: FormControl = new FormControl('');
   public allAntigens: Antigen[] = [];
@@ -95,10 +97,13 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     if (!this.item) {
       return;
     }
+    if (!this.defaultTxmEvent) { // TODOO
+      return;
+    }
 
     this.loading = true;
     this.success = false;
-    this._patientService.saveDonor(this.item)
+    this._patientService.saveDonor(this.defaultTxmEvent.id, this.item)
     .then(() => {
       this.loading = false;
       this.success = true;

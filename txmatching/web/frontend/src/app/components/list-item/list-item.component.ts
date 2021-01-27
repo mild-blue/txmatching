@@ -6,6 +6,7 @@ import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-i
 import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
 import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 import { PatientList } from '@app/model/PatientList';
+import { TxmEvent } from '@app/model/Event';
 
 @Component({
   selector: 'app-item-list',
@@ -22,6 +23,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   @Input() items: ListItem[] = [];
   @Input() patients?: PatientList;
   @Input() configuration?: AppConfiguration;
+  @Input() defaultTxmEvent?: TxmEvent;
 
   @Input() saveLastViewedItem: boolean = false;
   @Input() useInfiniteScroll: boolean = true;
@@ -200,6 +202,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
       detailComponentRef.instance.item = activeItem;
       detailComponentRef.instance.patients = this.patients;
       detailComponentRef.instance.configuration = this.configuration;
+      detailComponentRef.instance.defaultTxmEvent = this.defaultTxmEvent;
     }
   }
 }

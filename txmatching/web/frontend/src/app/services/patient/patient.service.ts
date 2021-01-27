@@ -19,19 +19,19 @@ export class PatientService {
               private _logger: LoggerService) {
   }
 
-  public async getPatients(): Promise<PatientList> {
+  public async getPatients(txmEventId: number): Promise<PatientList> {
     return this._http.get<PatientsGenerated>(
-      `${environment.apiUrl}/patients`
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients`
     ).pipe(
       first(),
       map(parsePatientList)
     ).toPromise();
   }
 
-  public async saveDonor(donor: Donor): Promise<Donor> {
+  public async saveDonor(txmEventId: number, donor: Donor): Promise<Donor> {
     this._logger.log('Saving donor', [donor]);
     return this._http.put<Donor>(
-      `${environment.apiUrl}/patients/donor`,
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/donor`,
       {
         db_id: donor.db_id,
         hla_typing: {
@@ -41,10 +41,10 @@ export class PatientService {
     ).pipe(first()).toPromise();
   }
 
-  public async saveRecipient(recipient: Recipient, antibodies: Antibody[]): Promise<Recipient> {
+  public async saveRecipient(txmEventId: number, recipient: Recipient, antibodies: Antibody[]): Promise<Recipient> {
     this._logger.log('Saving recipient', [recipient]);
     return this._http.put<Recipient>(
-      `${environment.apiUrl}/patients/recipient`,
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/recipient`,
       {
         db_id: recipient.db_id,
         acceptable_blood_groups: recipient.acceptable_blood_groups,

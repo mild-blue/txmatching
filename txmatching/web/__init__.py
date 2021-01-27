@@ -139,8 +139,12 @@ def create_app() -> Flask:
 def add_all_namespaces(api: Api):
     api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
     api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
-    api.add_namespace(matching_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{MATCHING_NAMESPACE}')
-    api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
-    api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
-    api.add_namespace(report_api, path=f'{API_VERSION}/{REPORTS_NAMESPACE}')
+    api.add_namespace(matching_api,
+                      path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{MATCHING_NAMESPACE}')
+    api.add_namespace(patient_api,
+                      path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{PATIENT_NAMESPACE}')
+    api.add_namespace(configuration_api,
+                      path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{CONFIGURATION_NAMESPACE}')
+    api.add_namespace(report_api,
+                      path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{REPORTS_NAMESPACE}')
     api.add_namespace(txm_event_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}')

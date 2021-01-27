@@ -2,6 +2,7 @@ import { Configuration } from '@app/model/Configuration';
 import { PatientService } from '@app/services/patient/patient.service';
 import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 import { PatientList } from '@app/model/PatientList';
+import { TxmEvent } from '@app/model/Event';
 
 export interface ListItem {
   index: number;
@@ -21,6 +22,7 @@ export class ListItemDetailAbstractComponent {
   item?: ListItem;
   patients?: PatientList;
   configuration?: Configuration;
+  defaultTxmEvent?: TxmEvent;
 
   constructor(_patientService?: PatientService,
               _uiInteractionsService?: UiInteractionsService) {

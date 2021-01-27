@@ -54,9 +54,13 @@ export class PatientsComponent implements OnInit {
 
     // init config and patients
     this.loading = true;
-    Promise.all(
-      [this._initConfiguration(), this._initPatients(), this._initTxmEvents()]
-    ).finally(() => this.loading = false);
+    this._initAll().finally(() => this.loading = false);
+  }
+
+  private async _initAll(): Promise<void> {
+    await this._initTxmEvents();
+    await this._initPatients();
+    await this._initConfiguration();
   }
 
   public async setDefaultTxmEvent(event_id: number): Promise<void> {
@@ -71,7 +75,8 @@ export class PatientsComponent implements OnInit {
   }
 
   private _initItems(): void {
-    if (!this.patients) {
+    if(!this.patients) {
+      this._logger.error(`Items init failed because patients not set`);
       return;
     }
 
@@ -108,6 +113,10 @@ export class PatientsComponent implements OnInit {
   }
 
   private async _initPatients(): Promise<void> {
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`Patients init failed because defaultTxmEvent not set`);
+      return;
+    }
 
     // if not already loading before Promise.all
     let loadingWasSwitchedOn = false;
@@ -118,7 +127,7 @@ export class PatientsComponent implements OnInit {
 
     // try getting patients
     try {
-      this.patients = await this._patientService.getPatients();
+      this.patients = await this._patientService.getPatients(this.defaultTxmEvent.id);
       this._logger.log('Got patients from server', [this.patients]);
 
       // Init list items
@@ -137,8 +146,13 @@ export class PatientsComponent implements OnInit {
   }
 
   private async _initConfiguration(): Promise<void> {
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`Configuration init failed because defaultTxmEvent not set`);
+      return;
+    }
+
     try {
-      this.configuration = await this._configService.getConfiguration();
+      this.configuration = await this._configService.getConfiguration(this.defaultTxmEvent.id);
       this._logger.log('Got config from server', [this.configuration]);
     } catch (e) {
       this._alertService.error(`Error loading configuration: "${e.message || e}"`);

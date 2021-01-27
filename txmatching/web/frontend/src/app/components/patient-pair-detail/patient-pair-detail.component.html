@@ -18,9 +18,11 @@
     </div>
     <app-patient-detail-donor *ngSwitchCase="tabs.DonorSettings"
                               [item]="item.d"
-                              [patients]="patients"></app-patient-detail-donor>
+                              [patients]="patients"
+                              [defaultTxmEvent]="defaultTxmEvent"></app-patient-detail-donor>
     <app-patient-detail-recipient *ngSwitchCase="tabs.RecipientSettings"
                                   [item]="item.r"
-                                  [patients]="patients"></app-patient-detail-recipient>
+                                  [patients]="patients"
+                                  [defaultTxmEvent]="defaultTxmEvent"></app-patient-detail-recipient>
   </div>
 </div>
