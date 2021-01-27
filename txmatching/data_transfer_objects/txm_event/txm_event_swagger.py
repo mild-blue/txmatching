@@ -106,7 +106,7 @@ PatientUploadSuccessJson = txm_event_api.model('PatientUploadSuccessResponse', {
 })
 
 TxmEventsJson = txm_event_api.model('TxmEvents', {
-    'txmEvents': fields.List(required=True, cls_or_instance=fields.Nested(
+    'events': fields.List(required=True, cls_or_instance=fields.Nested(
         TxmEventJsonOut
     )),
 })

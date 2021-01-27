@@ -41,9 +41,8 @@ class CalculateFromConfig(Resource):
     )
     @matching_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
-    def post(self) -> str:
-        txm_event_db_id = get_txm_event_id_for_current_user()
-        txm_event = get_txm_event(txm_event_db_id)
+    def post(self, txm_event_id: int) -> str:
+        txm_event = get_txm_event(txm_event_id)
         configuration = configuration_from_dict(request.json)
         maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
                                                                                configuration=configuration)

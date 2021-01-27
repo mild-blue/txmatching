@@ -16,9 +16,9 @@ export class MatchingService {
   constructor(private _http: HttpClient) {
   }
 
-  public async calculate(config: AppConfiguration, patients: PatientList): Promise<CalculatedMatchings> {
+  public async calculate(txmEventId: number, config: AppConfiguration, patients: PatientList): Promise<CalculatedMatchings> {
     return this._http.post<CalculatedMatchingsGenerated>(
-      `${environment.apiUrl}/matching/calculate-for-config`,
+      `${environment.apiUrl}/txm-event/${txmEventId}/matching/calculate-for-config`,
       config
     ).pipe(
       first(),

@@ -938,7 +938,7 @@ definitions:
                     $ref: '#/definitions/TxmEvent'
                 type: array
         required:
-        - txmEvents
+        - events
         type: object
     UploadPatients:
         properties:
@@ -1077,41 +1077,6 @@ paths:
             -   bearer: []
             tags:
             - configuration
-    /v1/matching/calculate-for-config:
-        post:
-            operationId: post_calculate_from_config
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/Configuration'
-            responses:
-                '200':
-                    description: List of all matchings for given configuration.
-                    schema:
-                        $ref: '#/definitions/CalculatedMatchings'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - matching
     /v1/patients:
         get:
             operationId: get_all_patients
@@ -1533,6 +1498,46 @@ paths:
             -   bearer: []
             tags:
             - txm-event
+    /v1/txm-event/{txm_event_id}/matching/calculate-for-config:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        post:
+            operationId: post_calculate_from_config
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/Configuration'
+            responses:
+                '200':
+                    description: List of all matchings for given configuration.
+                    schema:
+                        $ref: '#/definitions/CalculatedMatchings'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - matching
     /v1/user/change-password:
         put:
             operationId: put_password_change_api

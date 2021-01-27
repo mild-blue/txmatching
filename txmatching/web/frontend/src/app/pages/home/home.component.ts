@@ -61,17 +61,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._initUser();
 
-    // init matchings and txm events
     this.loading = true;
-    Promise.all(
-      [this._initMatchings(), this._initTxmEvents()]
-    ).finally(() => this.loading = false);
+    this._initAll().finally(() => this.loading = false);
   }
 
   ngOnDestroy(): void {
     this._configSubscription?.unsubscribe();
     this._matchingSubscription?.unsubscribe();
     this._patientsSubscription?.unsubscribe();
+  }
+
+  private async _initAll(): Promise<void> {
+    await this._initTxmEvents();
+    await this._initMatchings();
   }
 
   public async setDefaultTxmEvent(event_id: number): Promise<void> {
@@ -147,11 +149,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public async calculate(configuration: Configuration): Promise<void> {
-    if (!this.appConfiguration) {
-      return;
-    }
-
-    if (!this.patients) return;
+    if (!this.appConfiguration || !this.patients || !this.defaultTxmEvent) return;
 
     if (this.configOpened) {
       this.toggleConfiguration();
@@ -172,7 +170,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.configuration = configuration;
 
     try {
-      const calculatedMatchings = await this._matchingService.calculate(updatedConfig, this.patients);
+      const calculatedMatchings = await this._matchingService.calculate(
+        this.defaultTxmEvent.id, updatedConfig, this.patients
+      );
       this.matchings = calculatedMatchings.calculated_matchings;
       this.foundMatchingsCount = calculatedMatchings.found_matchings_count;
       this._logger.log('Calculated matchings', [calculatedMatchings]);
@@ -197,6 +197,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private async _initMatchings(): Promise<void> {
+    // TODOO: init matchings and patients separately
     try {
       // try getting patients
       try {

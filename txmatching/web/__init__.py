@@ -6,8 +6,8 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from txmatching.auth.crypto import bcrypt
 from txmatching.configuration.app_configuration.application_configuration import (
-    ApplicationConfiguration, build_db_connection_string,
-    get_application_configuration, ApplicationEnvironment)
+    ApplicationConfiguration, ApplicationEnvironment,
+    build_db_connection_string, get_application_configuration)
 from txmatching.database.db import db
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
@@ -139,7 +139,7 @@ def create_app() -> Flask:
 def add_all_namespaces(api: Api):
     api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
     api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
-    api.add_namespace(matching_api, path=f'{API_VERSION}/{MATCHING_NAMESPACE}')
+    api.add_namespace(matching_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{MATCHING_NAMESPACE}')
     api.add_namespace(patient_api, path=f'{API_VERSION}/{PATIENT_NAMESPACE}')
     api.add_namespace(configuration_api, path=f'{API_VERSION}/{CONFIGURATION_NAMESPACE}')
     api.add_namespace(report_api, path=f'{API_VERSION}/{REPORTS_NAMESPACE}')
