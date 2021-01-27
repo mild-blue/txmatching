@@ -241,7 +241,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
                 f'Dropping {raw_code} antibody: '
                 f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
                 f'To be consulted with immunologist, because the antibody is dropped even though only one MFI value was'
-                f' identified as relevant for the MFI calculatuion and therefore the final calculated mean is less '
+                f' identified as relevant for the MFI calculation and therefore the final calculated mean is less '
                 f'relevant.'
             )
 
