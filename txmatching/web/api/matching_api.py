@@ -6,6 +6,7 @@ import logging
 from flask import jsonify, request
 from flask_restx import Resource
 
+from txmatching.auth.auth_check import require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import CachingNotReadyException
 from txmatching.auth.request_context import get_user_role
@@ -41,6 +42,7 @@ class CalculateFromConfig(Resource):
     )
     @matching_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
+    @require_valid_txm_event_id()
     def post(self, txm_event_id: int) -> str:
         txm_event = get_txm_event(txm_event_id)
         configuration = configuration_from_dict(request.json)
