@@ -71,11 +71,11 @@ definitions:
                 type: number
             forbidden_country_combinations:
                 items:
-                    $ref: '#/definitions/Forbidden Country Combination'
+                    $ref: '#/definitions/ForbiddenCountryCombination'
                 type: array
             manual_donor_recipient_scores:
                 items:
-                    $ref: '#/definitions/Manual Recipient Donor Score'
+                    $ref: '#/definitions/ManualRecipientDonorScore'
                 type: array
             max_cycle_length:
                 example: 4
@@ -358,7 +358,7 @@ definitions:
         required:
         - error
         type: object
-    Forbidden Country Combination:
+    ForbiddenCountryCombination:
         properties:
             donor_country:
                 enum:
@@ -561,7 +561,7 @@ definitions:
         required:
         - auth_token
         type: object
-    Manual Recipient Donor Score:
+    ManualRecipientDonorScore:
         properties:
             donor_db_id:
                 example: 2

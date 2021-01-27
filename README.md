@@ -60,7 +60,13 @@ We'have a swagger UI running on `/doc/` route (so for example, `localhost:8080/d
 How to use it and some useful info [here on doc](https://flask-restx.readthedocs.io/en/latest/swagger.html).
 
 The swagger is also in the project. It is generated in `txmatching/web/swagger.yaml`. We always test that it is up to date
-and in case any changes are made, one needs to regenerated it using `tests/test_utilities/generate-swagger.py`
+and in case any changes are made, one needs to regenerated it using `tests/test_utilities/generate-swagger.py`.
+
+We also automatically generate TypeScript files that are used by FE. These files are generated from the swagger file
+using `openapi-generator-cli` tool. To install this tool, please refer to [README.md](txmatching/web/frontend/README.md).
+
+You can automatically generate both swaggger file and TS files by running `make generate-swagger-all`.
+
 ## Dependencies Management
 We are using `conda` for managing dependencies as [graph-tool](https://graph-tool.skewed.de/)
 can be installed just from the `conda-forge` repository.
@@ -106,8 +112,6 @@ For pdf generation, a [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) is r
 `sudo dpkg -i wkhtmltox_0.12.6-1.focal_amd64.deb` (of the correct version that you want to install)
 
 `wkhtmltopdf --version` (to check that it worked)
-
-
 
 
 ## Git Hooks

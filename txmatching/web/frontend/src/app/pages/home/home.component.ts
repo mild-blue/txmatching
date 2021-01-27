@@ -138,6 +138,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (!this.patients) return;
+
     if (this.configOpened) {
       this.toggleConfiguration();
     }
@@ -155,11 +157,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.configuration = configuration;
 
     try {
-      const calculated_matchings_dto: CalculatedMatchings = await this._matchingService.calculate(updatedConfig);
-      this.matchings = this._prepareMatchings(calculated_matchings_dto.calculated_matchings);
-      this.foundMatchingsCount = calculated_matchings_dto.found_matchings_count;
-      this._logger.log('Calculated matchings', [calculated_matchings_dto]);
-      if (calculated_matchings_dto.show_not_all_matchings_found) {
+      const calculatedMatchings = await this._matchingService.calculate(updatedConfig, this.patients);
+      this.matchings = calculatedMatchings.calculated_matchings;
+      this.foundMatchingsCount = calculatedMatchings.found_matchings_count;
+      this._logger.log('Calculated matchings', [calculatedMatchings]);
+      if (calculatedMatchings.show_not_all_matchings_found) {
         this._alertService.info(`
         There exist more than ${this.foundMatchingsCount} matchings. Shown matchings present the top matchings found so
          far, most probably including the top matching over all. For more details, please contact the developers using
@@ -217,78 +219,5 @@ export class HomeComponent implements OnInit, OnDestroy {
       this._logger.log('End of matchings initialization');
       this.loading = false;
     }
-  }
-
-  private _prepareMatchings(m: Matching[]): Matching[] {
-    return m.map((matching, mKey) => {
-      matching.index = mKey + 1;
-      matching.isActive = mKey === 0;
-      matching.itemComponent = MatchingItemComponent;
-      matching.detailComponent = MatchingDetailComponent;
-      matching.rounds = matching.rounds.map((round, rKey) => this._prepareRound(round, mKey + 1, rKey + 1));
-
-      return matching;
-    });
-  }
-
-  private _prepareRound(r: Round, mIndex: number, rIndex: number): Round {
-    const round: Round = {...r};
-
-    round.transplants = r.transplants.map((transplant, tKey) =>
-      this._prepareTransplant(transplant, +`${mIndex}${rIndex}${tKey + 1}`)
-    );
-    round.donorType = this._getRoundDonorType(round);
-    round.index = this._getRoundIndex(round, rIndex);
-
-    return round;
-  }
-
-  private _prepareTransplant(t: Transplant, index: number): Transplant {
-    const transplant: Transplant = {...t, index};
-
-    // try to find Donor and Recipient instances
-    if (this.patients) {
-      const foundDonor = this.patients.donors.find(p => p.medical_id === t.donor);
-      if (foundDonor) {
-        transplant.d = foundDonor;
-      }
-
-      const foundRecipient = this.patients.recipients.find(p => p.medical_id === t.recipient);
-      if (foundRecipient) {
-        transplant.r = foundRecipient;
-      }
-    }
-
-    return transplant;
-  }
-
-  private _getRoundDonorType(round: Round): DonorType {
-    if (!round.transplants.length) {
-      return DonorType.DONOR;
-    }
-
-    const firstTransplant = round.transplants[0];
-    const donor = firstTransplant.d;
-
-    if (donor) {
-      return donor.donor_type;
-    }
-
-    return DonorType.DONOR;
-  }
-
-  private _getRoundIndex(round: Round, order: number): string {
-    const roundIndex = `${order}`;
-
-    if (round.donorType) {
-      if (round.donorType === DonorType.BRIDGING_DONOR.valueOf()) {
-        return `${roundIndex}B`;
-      }
-      if (round.donorType === DonorType.NON_DIRECTED.valueOf()) {
-        return `${roundIndex}N`;
-      }
-    }
-
-    return roundIndex;
   }
 }

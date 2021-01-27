@@ -18,6 +18,7 @@ export class VersionService {
   }
 
   public initEnvironment(): Observable<string> {
+    // TODO: https://github.com/mild-blue/txmatching/issues/401 Create parser and use generated model
     return this._http.get<Version>(
       `${environment.apiUrl}/service/version`
     ).pipe(
