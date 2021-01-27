@@ -96,7 +96,7 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
   }
 
   public setCheckBoxValue(key: string, value: boolean): void {
-    if (this.item && this.item.recipient_requirements[key] !== undefined) {
+    if (this.item?.recipient_requirements && this.item.recipient_requirements[key] !== undefined) {
       this.item.recipient_requirements[key] = value;
     }
   }

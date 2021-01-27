@@ -4,13 +4,13 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.utils.enums import Country
 from txmatching.web.api.namespaces import matching_api
 
-ManualDonorRecipientScoreJson = matching_api.model('Manual Recipient Donor Score', {
+ManualDonorRecipientScoreJson = matching_api.model('ManualRecipientDonorScore', {
     'donor_db_id': fields.Integer(required=True, example=2),
     'recipient_db_id': fields.Integer(required=True, example=3),
     'score': fields.Float(required=True, example=2.0)
 })
 
-ForbiddenCountryCombination = matching_api.model('Forbidden Country Combination', {
+ForbiddenCountryCombination = matching_api.model('ForbiddenCountryCombination', {
     'donor_country': fields.String(required=True, enum=[country.value for country in Country]),
     'recipient_country': fields.String(required=True, enum=[country.value for country in Country]),
 })

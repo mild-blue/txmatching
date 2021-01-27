@@ -6,7 +6,7 @@
                     (tabClicked)="setActiveTab($event)"></app-tab-switch>
   </div>
 
-  <div *ngIf="item" [ngSwitch]="activeTab">
+  <div *ngIf="item && item.d && item.r" [ngSwitch]="activeTab">
     <div *ngSwitchCase="tabs.Overview"
          class="pair-detail__pair">
       <app-matching-transplant [donor]="item.d"
