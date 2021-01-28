@@ -17,9 +17,8 @@ class HLAType:
     code: Optional[str] = None
 
     def __post_init__(self):
-        if self.code is None:
-            code = parse_hla_raw_code(self.raw_code)
-            self.code = code
+        code = parse_hla_raw_code(self.raw_code)
+        self.code = code
 
     def __eq__(self, other):
         """

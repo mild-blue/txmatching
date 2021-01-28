@@ -4,7 +4,10 @@ from tests.test_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
                                               PATIENT_DATA_OBFUSCATED,
                                               create_or_overwrite_txm_event)
 from tests.test_utilities.prepare_app import DbTests
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.database.sql_alchemy_schema import UploadedFileModel
+from txmatching.patients.patient import DonorType
+from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
 
@@ -81,3 +84,64 @@ class TestPatientService(DbTests):
             return client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{PATIENT_NAMESPACE}/add-patients-file',
                               headers=self.auth_headers, data=data)
+
+    def test_single_pair(self):
+        txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
+        donor_medical_id = 'donor_test'
+        recipient_medical_id = 'recipient_test'
+        with self.app.test_client() as client:
+            json_data = {
+                'donor': {
+                    'medical_id': donor_medical_id,
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A1', 'A23', 'Invalid', 'B*01:01N'
+                    ],
+                    'donor_type': DonorType.DONOR.value,
+                    'related_recipient_medical_id': 'R1',
+                    'sex': Sex.M,
+                    'height': 180,
+                    'weight': 90,
+                    'year_of_birth': 1965
+                },
+                'recipient': {
+                    'medical_id': recipient_medical_id,
+                    'acceptable_blood_groups': [
+                        'A', 0
+                    ],
+                    'blood_group': 'A',
+                    'hla_typing': [
+                        'A1', 'A23'
+                    ],
+                    'recipient_cutoff': 2000,
+                    'hla_antibodies': [
+                        {
+                            'mfi': 2350,
+                            'name': 'sdfsdfafaf',
+                        },
+                        {
+                            'mfi': 2350,
+                            'name': 'A9',
+                        }
+                    ],
+                    'sex': Sex.F,
+                    'height': 150,
+                    'weight': 65,
+                    'year_of_birth': 2001,
+                    'waiting_since': '2020-01-06',
+                    'previous_transplants': 0
+                },
+                'country_code': 'CZE'
+            }
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/add-pair',
+                              headers=self.auth_headers, json=json_data)
+
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(1, res.json['recipients_uploaded'])
+        self.assertEqual(1, res.json['donors_uploaded'])
+
+        txm_event = get_txm_event(txm_event_db_id)
+
+        self.assertEqual(donor_medical_id, txm_event.all_donors[0].medical_id)
+        self.assertEqual(1, txm_event.all_donors[0].related_recipient_db_id)

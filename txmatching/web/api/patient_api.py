@@ -2,8 +2,9 @@
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 
 import logging
+from enum import Enum
 
-from dacite import from_dict
+from dacite import Config, from_dict
 from flask import jsonify, request
 from flask_restx import Resource
 
@@ -17,20 +18,24 @@ from txmatching.auth.user.user_auth_check import (require_user_edit_access,
 from txmatching.data_transfer_objects.patients.out_dots.conversions import (
     donor_to_donor_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
-    DonorJson, DonorModelToUpdateJson, PatientsJson, RecipientJson,
-    RecipientModelToUpdateJson)
+    DonorJson, DonorModelPairInJson, DonorModelToUpdateJson, PatientsJson,
+    RecipientJson, RecipientModelToUpdateJson)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
+from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
+    DonorRecipientPairDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson)
+from txmatching.database.services.config_service import \
+    remove_configs_from_txm_event
 from txmatching.database.services.patient_service import (update_donor,
                                                           update_recipient)
-from txmatching.database.services.patient_upload_service import \
-    replace_or_add_patients_from_excel
+from txmatching.database.services.patient_upload_service import (
+    add_donor_recipient_pair, replace_or_add_patients_from_excel)
 from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
@@ -58,11 +63,39 @@ class AllPatients(Resource):
         return jsonify(to_lists_for_fe(txm_event))
 
 
+@patient_api.route('/add-pair', methods=['POST'])
+class AddDonorRecipientPair(Resource):
+    @patient_api.doc(body=DonorModelPairInJson, security='bearer')
+    @patient_api.response(code=200, model=PatientUploadSuccessJson,
+                          description='Added new donor (possibly with recipient)')
+    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @patient_api.response(code=403, model=FailJson,
+                          description='Access denied. You do not have rights to access this endpoint.'
+                          )
+    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @require_user_edit_access()
+    @require_valid_txm_event_id()
+    def post(self, txm_event_id: int):
+        donor_recipient_pair_dto_in = from_dict(data_class=DonorRecipientPairDTO, data=request.json,
+                                                config=Config(cast=[Enum]))
+
+        guard_user_has_access_to_country(user_id=get_current_user_id(),
+                                         country=donor_recipient_pair_dto_in.country_code)
+
+        remove_configs_from_txm_event(txm_event_id)
+        add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
+        return jsonify(PatientUploadDTOOut(
+            donors_uploaded=1,
+            recipients_uploaded=1 if donor_recipient_pair_dto_in.recipient else 0
+        ))
+
+
 @patient_api.route('/recipient', methods=['PUT'])
 class AlterRecipient(Resource):
 
     @patient_api.doc(body=RecipientModelToUpdateJson, security='bearer')
-    @patient_api.response(code=200, model=RecipientJson, description='Updates single recipient.')
+    @patient_api.response(code=200, model=RecipientJson, description='Updated recipient.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
     @patient_api.response(code=403, model=FailJson,

@@ -5,6 +5,8 @@ from txmatching.data_transfer_objects.hla.hla_swagger import (
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
     DetailedScoreForGroupJson)
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
+    RECIPIENT_IN_BASE_DICT, DonorJsonIn)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
@@ -115,4 +117,28 @@ DonorModelToUpdateJson = patient_api.model('DonorModelToUpdate', {
                                 example=EXAMPLE_HLA_TYPING),
     'active': fields.Boolean(required=False, description='Information, whether or not given donor shall be considered'
                                                          ' in exchange.')
+})
+
+HLAAntibodyPairInJson = patient_api.model('HLAAntibodyPairIn', {
+    'name': fields.String(required=True, example='A32', description='HLA antibody name.'),
+    'mfi': fields.Integer(required=True, example=2350, description='Mean fluorescence intensity. Use exact value.'),
+})
+# pylint: disable=duplicate-code
+# here the code is duplicated because the object RecipientPairInJson and RecipientJsonIn in txm_event_swagger are
+# similar but they cannot be the same because some of the fileds are sim
+RecipientPairInJson = patient_api.model('RecipientPairIn', {
+    'recipient_cutoff': fields.Integer(required=True, example=4000),
+    'hla_antibodies': fields.List(required=True,
+                                  description='Detected HLA antibodies of the patient. Use high resolution \
+                                  if available.',
+                                  cls_or_instance=fields.Nested(
+                                      HLAAntibodyPairInJson
+                                  )),
+    **RECIPIENT_IN_BASE_DICT
+})
+
+DonorModelPairInJson = patient_api.model('DonorModelPairIn', {
+    'country_code': fields.String(required=False, enum=[country.value for country in Country]),
+    'donor': fields.Nested(required=True, model=DonorJsonIn),
+    'recipient': fields.Nested(required=False, model=RecipientPairInJson)
 })
