@@ -195,11 +195,11 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
     if min_mfi < 0:
         raise AssertionError(f'MFI has to be always >=0. The data shall be validated on input. Obtained MFI={min_mfi}.')
 
-    max_min_difference = (max_mfi - min_mfi) / min_mfi if min_mfi > 0 else max_mfi
+    max_min_relative_difference = (max_mfi - min_mfi) / min_mfi if min_mfi > 0 else max_mfi
     difference_over_cutoff = (max_mfi - min_mfi) > cutoff
 
     only_one_number_used = False
-    if max_min_difference > RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI and difference_over_cutoff:
+    if max_min_relative_difference > RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI and difference_over_cutoff:
         mfis_under_mean = mfis[mfis < np.mean(mfis)]
         mfis_close_to_minimum = mfis[mfis < min_mfi + cutoff * RELATIVE_CLOSENESS_TO_MINIMUM]
         # expected case: the low MFIs are identified both as close to minimum and below average. And it is not just one

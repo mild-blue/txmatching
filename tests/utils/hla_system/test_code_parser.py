@@ -99,25 +99,21 @@ class TestCodeParser(DbTests):
         # When one value extremely low, calculate average only from such value.
         self.assertEqual(1, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test'))
         self.assertEqual(1000, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test'))
-
+        self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test'))
         # When multiple values low, calculate the average only from those values.
         self.assertEqual(900, get_mfi_from_multiple_hla_codes([1000, 900, 800, 19000, 20000, 18000], 2000, 'test'))
 
         # When similarly high MFIs calculate the average
         self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000], 2000, 'test'))
         self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000], 2000, 'test'))
-
+        self.assertEqual(15000, get_mfi_from_multiple_hla_codes([20000, 10000], 2000, 'test'))
         # When the lowest MFI is significantly lower than the other values, but there are not MFIs close to such lowest
         # value, average of values lower then overall average is calculated. This might not be optimal in some cases,
         # as the one below (one might maybe drop the hla code. But the algorithm is better safe than sorry.)
         # This case is reported in logger and will be investigated on per instance basis.
         self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test'))
-        # Average of values that differ not too much is calculated
-        self.assertEqual(15000, get_mfi_from_multiple_hla_codes([20000, 10000], 2000, 'test'))
-        # Only the lower value is taken for average calculation in case the values differ too much.
-        self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test'))
 
-        # Check that we truly group by high res. In this case both DQA1*01:01 and 02 are DQA1 in split. But
+        # Checks that we truly group by high res. In this case both DQA1*01:01 and 02 are DQA1 in split. But
         # 01 is dropped whereas DQA1*01:01 is kept and after that transformed to DQA1 and therefore it is in the
         # antibody set.
         self.assertSetEqual({'DQA1'}, {hla_antibody.code for hla_antibody in HLAAntibodies(
