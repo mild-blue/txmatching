@@ -211,9 +211,9 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
             if len(mfis_under_mean) == 1:
                 only_one_number_used = True
 
-        # In case set of lowest mfis from the two sets (MFIs below average and close to minimum) are different, use the
+        # In case set of lowest MFIs from the two sets (MFIs below average and close to minimum) are different, use the
         # batch that is smaller (assuming that there are multiple groups of MFIs and just one of the methods has
-        # identified it.
+        # identified it).
         elif len(min(mfis_under_mean, mfis_close_to_minimum, key=len)) > 1:
             relevant_mean = np.mean(min(mfis_under_mean, mfis_close_to_minimum, key=len))
         # Smallest batch contains only 1 MFI. Taking the large one to make the result more reliable.

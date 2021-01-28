@@ -122,7 +122,7 @@ def _split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
 
 
 # Beware this code is similar to code in function split_hla_types_to_groups,
-# if you are chaning this code it is likely you want to change the other function as well.
+# if you are changing this code it is likely you want to change the other function as well.
 # Ideally when doing so, try to share the logic between the functions.
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[AntibodiesPerGroup]:
     hla_antibodies_in_groups = _split_hla_codes_to_groups(hla_antibodies)
