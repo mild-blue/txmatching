@@ -36,8 +36,8 @@ export class HeaderComponent {
   constructor(private _authService: AuthService) {
   }
 
-  get settingsDropdownId(): string {
-    return 'settings-dropdown';
+  get txmEventDropdownId(): string {
+    return 'txm-event-dropdown';
   }
 
   get userDropdownId(): string {
