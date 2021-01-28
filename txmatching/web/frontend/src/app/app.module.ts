@@ -63,6 +63,7 @@ import { DonorTypeLabelPipe } from '@app/pipes/donor-type-label/donor-type-label
 import { AntibodyTitlePipe } from './pipes/antibody-title/antibody-title.pipe';
 import { MatSelectModule } from '@angular/material/select';
 import { AbstractLoggedComponent } from './pages/abstract-logged/abstract-logged.component';
+import { LoadingIconComponent } from './components/loading-icon/loading-icon.component';
 
 @NgModule({
   declarations: [
@@ -109,7 +110,8 @@ import { AbstractLoggedComponent } from './pages/abstract-logged/abstract-logged
     PatientDonorDetailWrapperComponent,
     DonorTypeLabelPipe,
     AntibodyTitlePipe,
-    AbstractLoggedComponent
+    AbstractLoggedComponent,
+    LoadingIconComponent
   ],
   imports: [
     BrowserModule,

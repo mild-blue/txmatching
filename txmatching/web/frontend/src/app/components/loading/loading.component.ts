@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { LoadingIconSize } from '@app/components/loading-icon/loading-icon.interface';
 
 @Component({
   selector: 'app-loading',
@@ -9,6 +9,6 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 export class LoadingComponent {
 
   @Input() show: boolean = false;
-  public icon = faSpinner;
+  public iconSize = LoadingIconSize.large;
 
 }
