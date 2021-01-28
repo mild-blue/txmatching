@@ -7,12 +7,16 @@
       <ng-template [ngIf]="defaultTxmEvent" [ngIfElse]="elseBlock">
         <button #settingsDropdownTrigger (click)="openDropdown(settingsDropdownId)">
           <div class="caption">TXM Event</div>
-          <div class="name">{{defaultTxmEvent.name}}</div>
+          <div class="name">
+            {{defaultTxmEvent.name}}
+            <fa-icon [icon]="caretDownIcon"></fa-icon>
+          </div>
         </button>
         <app-dropdown (clickedOutside)="closeDropdown($event)"
                       [id]="settingsDropdownId"
                       [open]="settingsDropdownId === openedDropdownId"
                       [trigger]="settingsDropdownTrigger">
+          <p><strong>Select TXM Event</strong></p>
           <mat-form-field appearance="fill" *ngIf="txmEvents && defaultTxmEvent">
             <mat-label>TXM Event</mat-label>
             <mat-select [value]="defaultTxmEvent.id" (valueChange)="changeDefaultTxmEvent($event)">
