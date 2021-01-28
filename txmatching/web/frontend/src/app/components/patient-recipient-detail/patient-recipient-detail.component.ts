@@ -114,7 +114,6 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
     if (!this.item) {
       return;
     }
-    // TODOO
     if (!this.defaultTxmEvent) {
       return;
     }

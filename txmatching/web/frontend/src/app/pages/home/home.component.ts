@@ -196,7 +196,6 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   private async _initMatchings(): Promise<void> {
-    // TODOO: init matchings and patients separately
     if(!this.defaultTxmEvent) {
       this._logger.error(`Init matchings failed because defaultTxmEvent not set`);
       return;
