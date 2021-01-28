@@ -305,13 +305,12 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
             )
         patient_pairs.append(patient_pair)
 
-    # pylint: disable=invalid-name
-    df = pd.DataFrame(patient_pairs)
+    df_with_patients = pd.DataFrame(patient_pairs)
 
     # Save to xls file and set some formatting
     # pylint: disable=abstract-class-instantiated
     writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
-    df.to_excel(writer, sheet_name='Patients', index=False)
+    df_with_patients.to_excel(writer, sheet_name='Patients', index=False)
     workbook = writer.book
     worksheet = writer.sheets['Patients']
     # wrap text in the cells
