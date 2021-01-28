@@ -115,7 +115,7 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Invalid argument.', 'message': str(error)}, 400
 
     @api.errorhandler(UnauthorizedException)
-    def handle_invalid_argument_exception(error: UnauthorizedException):
+    def handle_unauthorized_exception(error: UnauthorizedException):
         """unauthorized_exception"""
         _log_warning(error)
         return {'error': 'Not authorized.', 'message': str(error)}, 403

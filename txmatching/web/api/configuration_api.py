@@ -14,8 +14,7 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services.config_service import \
     get_configuration_for_txm_event
-from txmatching.database.services.txm_event_service import (
-    get_txm_event, get_txm_event_id_for_current_user)
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.web.api.namespaces import configuration_api
 
 logger = logging.getLogger(__name__)

@@ -52,7 +52,7 @@ def require_valid_txm_event_id() -> Callable:
         def decorated_route(*args, **kwargs):
             txm_event_id = kwargs.get('txm_event_id', None)
             if txm_event_id is None:
-                raise InvalidArgumentException(f'Argument txm_event_id is not specified.')
+                raise InvalidArgumentException('Argument txm_event_id is not specified.')
 
             if txm_event_id not in get_allowed_txm_event_ids_for_current_user():
                 raise UnauthorizedException(f'TXM event {txm_event_id} is not allowed for this user.')

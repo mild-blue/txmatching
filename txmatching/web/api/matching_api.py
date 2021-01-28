@@ -21,8 +21,7 @@ from txmatching.database.services.config_service import (
     configuration_from_dict, find_configuration_db_id_for_configuration)
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
-from txmatching.database.services.txm_event_service import (
-    get_txm_event, get_txm_event_id_for_current_user)
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.web.api.namespaces import matching_api
 
 logger = logging.getLogger(__name__)

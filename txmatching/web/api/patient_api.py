@@ -31,8 +31,7 @@ from txmatching.database.services.patient_service import (update_donor,
                                                           update_recipient)
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
-from txmatching.database.services.txm_event_service import (
-    get_txm_event, get_txm_event_id_for_current_user)
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id

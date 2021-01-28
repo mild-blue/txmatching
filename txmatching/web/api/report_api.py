@@ -30,8 +30,7 @@ from txmatching.database.services.config_service import (
     get_configuration_for_txm_event, get_latest_config_model_for_txm_event)
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_latest_matchings_detailed)
-from txmatching.database.services.txm_event_service import (
-    get_txm_event, get_txm_event_id_for_current_user)
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.patients.patient import Donor, DonorType, Patient
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration

@@ -110,7 +110,10 @@ def get_txm_event(txm_event_db_id: int) -> TxmEvent:
 
 def get_allowed_txm_event_ids_for_current_user() -> List[int]:
     if get_current_user().role == UserRole.ADMIN:
-        txm_event_ids = [txm_event_model.id for txm_event_model in TxmEventModel.query.order_by(TxmEventModel.id.asc()).all()]
+        txm_event_ids = [
+            txm_event_model.id for txm_event_model
+            in TxmEventModel.query.order_by(TxmEventModel.id.asc()).all()
+        ]
         return txm_event_ids
     else:
         return [get_txm_event_id_for_current_user()]
