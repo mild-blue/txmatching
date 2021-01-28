@@ -6,16 +6,16 @@ from tests.test_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.sql_alchemy_schema import UploadedFileModel
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import API_VERSION, PATIENT_NAMESPACE
+from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
 
 
 class TestPatientService(DbTests):
 
     def test_get_patients(self):
-        self.fill_db_with_patients(
+        txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         with self.app.test_client() as client:
-            res = client.get(f'{API_VERSION}/{PATIENT_NAMESPACE}',
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}',
                              headers=self.auth_headers)
         self.assertEqual(200, res.status_code)
         for donor in res.json['donors']:
@@ -72,11 +72,12 @@ class TestPatientService(DbTests):
                          res.json['message'])
 
     def _upload_data(self, file=PATIENT_DATA_OBFUSCATED):
-        create_or_overwrite_txm_event(name='test')
+        txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
         with self.app.test_client() as client:
             data = {
                 'file': (open(get_absolute_path(file), 'rb'),
                          os.path.basename(file))
             }
-            return client.put(f'{API_VERSION}/{PATIENT_NAMESPACE}/add-patients-file',
+            return client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/add-patients-file',
                               headers=self.auth_headers, data=data)

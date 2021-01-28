@@ -6,7 +6,7 @@ from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import API_VERSION, REPORTS_NAMESPACE
+from txmatching.web import API_VERSION, REPORTS_NAMESPACE, TXM_EVENT_NAMESPACE
 from txmatching.web.api.report_api import (MATCHINGS_BELOW_CHOSEN,
                                            MAX_MATCHINGS_BELOW_CHOSEN,
                                            MIN_MATCHINGS_BELOW_CHOSEN)
@@ -23,7 +23,8 @@ class TestMatchingApi(DbTests):
         solver_service.save_pairing_result(pairing_result, 1)
 
         with self.app.test_client() as client:
-            res = client.get(f'{API_VERSION}/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}=2',
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                             f'{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}=2',
                              headers=self.auth_headers)
 
             self.assertEqual(200, res.status_code)
@@ -40,7 +41,8 @@ class TestMatchingApi(DbTests):
         solver_service.save_pairing_result(pairing_result, 1)
 
         with self.app.test_client() as client:
-            res = client.get(f'{API_VERSION}/{REPORTS_NAMESPACE}/6666?{MATCHINGS_BELOW_CHOSEN}=2',
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                             f'{REPORTS_NAMESPACE}/6666?{MATCHINGS_BELOW_CHOSEN}=2',
                              headers=self.auth_headers)
 
             self.assertEqual(401, res.status_code)
@@ -60,7 +62,8 @@ class TestMatchingApi(DbTests):
         # Less than min value - failure
         with self.app.test_client() as client:
             res = client.get(
-                f'{API_VERSION}/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                f'{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
                 headers=self.auth_headers
             )
 
@@ -76,7 +79,8 @@ class TestMatchingApi(DbTests):
         # More than max value - failure
         with self.app.test_client() as client:
             res = client.get(
-                f'{API_VERSION}/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                f'{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
                 headers=self.auth_headers
             )
 
@@ -92,7 +96,8 @@ class TestMatchingApi(DbTests):
         # MIN_MATCHINGS_BELOW_CHOSEN - correct edge case
         with self.app.test_client() as client:
             res = client.get(
-                f'{API_VERSION}/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                f'{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN}',
                 headers=self.auth_headers
             )
 
@@ -105,7 +110,8 @@ class TestMatchingApi(DbTests):
         # MAX_MATCHINGS_BELOW_CHOSEN - correct edge case
         with self.app.test_client() as client:
             res = client.get(
-                f'{API_VERSION}/{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                f'{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN}',
                 headers=self.auth_headers
             )
 

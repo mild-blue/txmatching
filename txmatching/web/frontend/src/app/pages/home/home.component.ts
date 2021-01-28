@@ -137,7 +137,13 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   public uploadPatients(): void {
-    this._uploadService.uploadFile('Recalculate matchings', this._initMatchings.bind(this));
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`uploadPatients failed because defaultTxmEvent not set`);
+      return;
+    }
+    this._uploadService.uploadFile(
+      this.defaultTxmEvent.id, 'Recalculate matchings', this._initMatchings.bind(this)
+    );
   }
 
   public async calculate(configuration: Configuration): Promise<void> {

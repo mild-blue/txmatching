@@ -63,7 +63,7 @@ class TxmEventApi(Resource):
         security='bearer',
         description='Get list of allowed txm txmEvents for the logged user.'
     )
-    @txm_event_api.response(code=201, model=TxmEventsJson, description='List of allowed txmEvents.')
+    @txm_event_api.response(code=200, model=TxmEventsJson, description='List of allowed txmEvents.')
     @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
     @txm_event_api.response(code=401, model=FailJson, description='Authentication failed.')
     @txm_event_api.response(code=403, model=FailJson,
@@ -93,7 +93,7 @@ class TxmDefaultEventApi(Resource):
         security='bearer',
         description='Set default txm event for the logged user.'
     )
-    @txm_event_api.response(code=201, model=TxmEventJsonOut, description='Returns the default event.')
+    @txm_event_api.response(code=200, model=TxmEventJsonOut, description='Returns the default event.')
     @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
     @txm_event_api.response(code=401, model=FailJson, description='Authentication failed.')
     @txm_event_api.response(code=403, model=FailJson,
@@ -107,13 +107,13 @@ class TxmDefaultEventApi(Resource):
         update_default_txm_event_id_for_current_user(default_event_in.id)
         event = get_txm_event(default_event_in.id)
 
-        return make_response(jsonify(TxmEventDTOOut(id=event.db_id, name=event.name)), 201)
+        return make_response(jsonify(TxmEventDTOOut(id=event.db_id, name=event.name)))
 
     @txm_event_api.doc(
         security='bearer',
         description='Get default event'
     )
-    @txm_event_api.response(code=201, model=TxmEventJsonOut, description='Default event.')
+    @txm_event_api.response(code=200, model=TxmEventJsonOut, description='Default event.')
     @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
     @txm_event_api.response(code=401, model=FailJson, description='Authentication failed.')
     @txm_event_api.response(code=403, model=FailJson,

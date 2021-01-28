@@ -67,7 +67,13 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
   }
 
   public uploadPatients(): void {
-    this._uploadService.uploadFile('Refresh patients', this._initPatients.bind(this));
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`uploadPatients failed because defaultTxmEvent not set`);
+      return;
+    }
+    this._uploadService.uploadFile(
+      this.defaultTxmEvent.id, 'Refresh patients', this._initPatients.bind(this)
+    );
   }
 
   private _initItems(): void {

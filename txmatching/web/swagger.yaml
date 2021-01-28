@@ -1088,7 +1088,7 @@ paths:
             description: Get list of allowed txm txmEvents for the logged user.
             operationId: get_txm_event_api
             responses:
-                '201':
+                '200':
                     description: List of allowed txmEvents.
                     schema:
                         $ref: '#/definitions/TxmEvents'
@@ -1158,7 +1158,7 @@ paths:
             description: Get default event
             operationId: get_txm_default_event_api
             responses:
-                '201':
+                '200':
                     description: Default event.
                     schema:
                         $ref: '#/definitions/TxmEvent'
@@ -1193,7 +1193,7 @@ paths:
                 schema:
                     $ref: '#/definitions/DefaultTxmEvent'
             responses:
-                '201':
+                '200':
                     description: Returns the default event.
                     schema:
                         $ref: '#/definitions/TxmEvent'
