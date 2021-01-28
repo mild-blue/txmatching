@@ -2,6 +2,36 @@
   <div class="logo">
     <app-logo routerLink="/"></app-logo>
   </div>
+  <div class="icons">
+    <div class="txm-event">
+      <ng-template [ngIf]="defaultTxmEvent" [ngIfElse]="elseBlock">
+        <button #settingsDropdownTrigger (click)="openDropdown(settingsDropdownId)">
+          <div class="caption">TXM Event</div>
+          <div class="name">{{defaultTxmEvent.name}}</div>
+        </button>
+        <app-dropdown (clickedOutside)="closeDropdown($event)"
+                      [id]="settingsDropdownId"
+                      [open]="settingsDropdownId === openedDropdownId"
+                      [trigger]="settingsDropdownTrigger">
+          <mat-form-field appearance="fill" *ngIf="txmEvents && defaultTxmEvent">
+            <mat-label>TXM Event</mat-label>
+            <mat-select [value]="defaultTxmEvent.id" (valueChange)="changeDefaultTxmEvent($event)">
+              <mat-option *ngFor="let txmEvent of txmEvents.events" [value]="txmEvent.id">
+                {{txmEvent.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </app-dropdown>
+      </ng-template>
+
+      <ng-template #elseBlock>
+        <button>
+          -
+        </button>
+      </ng-template>
+    </div>
+  </div>
+
   <div class="menu">
     <ul>
       <li>
@@ -12,6 +42,7 @@
       </li>
     </ul>
   </div>
+
   <div class="download"
        [class.hidden]="downloadStatus === uploadDownloadStatus.hidden"
        [class.disabled]="downloadStatus === uploadDownloadStatus.disabled">
@@ -30,6 +61,7 @@
       <mat-spinner *ngIf="uploadStatus === uploadDownloadStatus.loading" diameter="16"></mat-spinner>
     </button>
   </div>
+
   <div class="icons">
     <div *ngIf="user" class="user">
       <button #userDropdownTrigger (click)="openDropdown(userDropdownId)">
@@ -41,25 +73,6 @@
                     [trigger]="userDropdownTrigger">
         <p>{{user.email}}</p>
         <app-button (click)="logOut()" size="sm">Log out</app-button>
-      </app-dropdown>
-    </div>
-    <div class="settings">
-      <button #settingsDropdownTrigger (click)="openDropdown(settingsDropdownId)">
-        <fa-icon [icon]="settingsIcon"></fa-icon>
-      </button>
-      <app-dropdown (clickedOutside)="closeDropdown($event)"
-                    [id]="settingsDropdownId"
-                    [open]="settingsDropdownId === openedDropdownId"
-                    [trigger]="settingsDropdownTrigger">
-
-        <mat-form-field appearance="fill" *ngIf="txmEvents && defaultTxmEvent">
-          <mat-label>TXM Event</mat-label>
-          <mat-select [value]="defaultTxmEvent.id" (valueChange)="changeDefaultTxmEvent($event)">
-            <mat-option *ngFor="let txmEvent of txmEvents.events" [value]="txmEvent.id">
-              {{txmEvent.name}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
       </app-dropdown>
     </div>
     <div class="info">

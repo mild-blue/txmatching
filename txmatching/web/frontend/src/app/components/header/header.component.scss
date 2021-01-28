@@ -141,9 +141,29 @@ header {
       margin-top: 0;
     }
 
-    .info, .user {
+    .info, .user, .txm-event {
       ::ng-deep .dropdown button {
         margin: 10px auto 0;
+      }
+    }
+
+    .txm-event {
+
+      button {
+        text-align: left;
+        margin-left: 13px;
+        padding-left: 13px;
+        border-left: 1px solid $body-color--secondary;
+
+        .caption {
+          font-size: 12px;
+        }
+
+        .name {
+          font-weight: bold;
+          color: $body-color;
+          font-size: 16px;
+        }
       }
     }
 

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { User } from '@app/model/User';
-import { faCog, faQuestionCircle, faUserAlt } from '@fortawesome/free-solid-svg-icons';
+import { faQuestionCircle, faUserAlt } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '@app/services/auth/auth.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { TxmEvent, TxmEvents } from '@app/model/Event';
@@ -27,7 +27,6 @@ export class HeaderComponent {
   @Input() defaultTxmEvent?: TxmEvent;
   @Output() defaultTxmEventSelected: EventEmitter<number> = new EventEmitter<number>();
 
-  public settingsIcon = faCog;
   public userIcon = faUserAlt;
   public infoIcon = faQuestionCircle;
 
