@@ -45,7 +45,27 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event(txm_event_db_id)
         configuration = Configuration(use_split_resolution=True)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-        self.assertEqual(872, len(solutions))
+        self.assertEqual(947, len(solutions))
+
+    def test_with_sequence_length_limit(self):
+        txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        txm_event = get_txm_event(txm_event_db_id)
+        for max_sequence_length in range(1, 6):
+            configuration = Configuration(use_split_resolution=True, max_sequence_length=max_sequence_length)
+            solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
+            self.assertEqual(max_sequence_length,
+                             max([max([sequence.length() for sequence in solution.get_sequences()]) for solution in
+                                  solutions]))
+
+    def test_with_cycle_length_limit(self):
+        txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        txm_event = get_txm_event(txm_event_db_id)
+        for max_cycle_length in range(2, 5):
+            configuration = Configuration(use_split_resolution=True, max_cycle_length=max_cycle_length)
+            solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
+            self.assertEqual(max_cycle_length,
+                             max([max([cycle.length() for cycle in solution.get_cycles()], default=0) for solution in
+                                  solutions]))
 
     def test_solver_no_patients(self):
         txm_event = create_or_overwrite_txm_event(name='test')
