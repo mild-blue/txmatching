@@ -8,7 +8,9 @@
     <div class="patients__header">
       <h1>
         Patients
-        <app-count [count]="items.length"></app-count>
+        <app-count [count]="donorsCount + recipientCount"
+                   title="Donors: {{donorsCount}}, Recipients: {{recipientCount}}">
+        </app-count>
       </h1>
     </div>
   </app-container>

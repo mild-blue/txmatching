@@ -1,0 +1,201 @@
+<style>
+    .transplant-header {
+        font-weight: 700;
+        font-size: 14px;
+        height: 40px;
+    }
+    .transplant-header h4 {
+        margin-left: 5px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .non-compatible {
+        background-color: #666666;
+        color: #f9f9f9
+    }
+
+    .compatible {
+        background: #e9ecef;
+        color: black;
+    }
+
+    .transplant-header .score {
+        color: black;
+    }
+
+    .transplant-header span {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .transplant-header .donor-type-label {
+        border-radius: 3px;
+        border: 1px solid;
+        padding: 2px 5px;
+        margin: 0 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+    }
+
+    /* Transplant table */
+
+    .small {
+        display: inline-block;
+        margin-left: 5px;
+    }
+
+    .small, .small * {
+        font-size: 10px !important;
+    }
+
+    .center-holder {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+    }
+
+    .patient-info {
+        margin-top: 2px;
+        font-size: 12px;
+        font-weight: 300;
+    }
+
+    .patient-info span + span::before {
+        content: '-';
+        margin: 0 5px;
+        color: {{ color }};
+        font-weight: bold;
+    }
+
+    .transplant-content table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .transplant-content tr {
+        border-top: 1px solid #dddddd;
+    }
+
+    .transplant-content tr.anti-header td {
+        background: #eff3f7;
+        font-size: 10px;
+        padding: 1px;
+        text-transform: uppercase;
+        color: #6c757d;
+    }
+
+    .transplant-content td {
+        text-align: center;
+        padding: 1px 5px;
+        border: 1px solid #dddddd;
+
+        width: auto;
+    }
+
+    .transplant-content td:first-child {
+        width: 20%;
+        text-align: left;
+        font-weight: 700;
+    }
+
+    .transplant-content td:not([colspan]) {
+        width: 20%;
+    }
+
+
+    .transplant-content td.antibodies-td {
+        width: 30%;
+        font-weight: 700;
+    }
+
+    .transplant-content td:last-child {
+        width: 10%;
+        font-weight: 700;
+    }
+
+    .footer-score td {
+        text-align: right;
+    }
+
+    .footer-score td:not(:last-child) {
+        border: none !important;
+    }
+
+    .footer-score td:last-child {
+        background: transparent;
+    }
+
+    .footer-score span {
+        font-size: 18px;
+        font-weight: 700;
+        color: #e2001a;
+    }
+
+    /* Code */
+    .code {
+        display: inline-block;
+        border-radius: 3px;
+        border: 1px solid;
+        padding: 2px;
+        margin: 1px 0;
+        white-space: nowrap;
+
+        /* white background is better for printing */
+        /* background: #e9ecef; */
+        color: #6c757d;
+
+        font-weight: 600;
+    }
+
+    .code.matching {
+        background: rgba(40, 167, 69, 0.2);
+        border-color: #28a745;
+        color: #28a745;
+    }
+
+    .code.bad-matching {
+        background: rgba(220, 53, 69, 0.2);
+        border-color: #dc3545 !important;
+        color: #dc3545 !important;
+    }
+
+    /* Patient */
+    .patient {
+        display: flex;
+        align-items: center;
+        font-weight: 700;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-align: center;
+    }
+
+    .flag {
+        display: inline-block;
+        margin: 3px 5px 0 0;
+        border: 1px solid #ddd;
+        position: relative;
+        top: 1px;
+    }
+
+    .flag img {
+        height: 14px;
+        width: 16px;
+    }
+</style>
