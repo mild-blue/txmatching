@@ -7,19 +7,14 @@ import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Subscription } from 'rxjs';
-import { CalculatedMatchings, Matching } from '@app/model/Matching';
+import { Matching } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
-import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
-import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
 import { ReportService } from '@app/services/report/report.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
 import { finalize, first } from 'rxjs/operators';
 import { PatientList } from '@app/model/PatientList';
-import { DonorType } from '@app/model/Donor';
-import { Transplant } from '@app/model/Transplant';
-import { Round } from '@app/model/Round';
 import { UploadService } from '@app/services/upload/upload.service';
 
 @Component({
@@ -99,7 +94,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public toggleConfiguration(): void {
     this.configOpened = !this.configOpened;
-    document.querySelector('body')?.classList.toggle('config-opened');
   }
 
   public async downloadReport(): Promise<void> {

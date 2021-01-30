@@ -12,8 +12,18 @@
                    title="Donors: {{donorsCount}}, Recipients: {{recipientCount}}">
         </app-count>
       </h1>
+      <app-button (click)="togglePatientPopup()" variant="success" size="sm">
+        add new
+        <mat-icon>add</mat-icon>
+      </app-button>
     </div>
   </app-container>
+
+  <app-template-popup [isOpened]="patientPopupOpened"
+                      [title]="'New patient'"
+                      (wasClosed)="togglePatientPopup()">
+    <app-add-new-patient></app-add-new-patient>
+  </app-template-popup>
 
   <app-content>
     <h3 *ngIf="!loading && !items.length">No patients were found.</h3>

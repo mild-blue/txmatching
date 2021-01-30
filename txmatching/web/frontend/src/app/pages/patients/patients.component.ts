@@ -33,6 +33,7 @@ export class PatientsComponent implements OnInit {
   public uploadStatus: UploadDownloadStatus = UploadDownloadStatus.enabled;
   public donorsCount: number = 0;
   public recipientCount: number = 0;
+  public patientPopupOpened: boolean = false;
 
   public user?: User;
 
@@ -56,6 +57,10 @@ export class PatientsComponent implements OnInit {
 
   public uploadPatients(): void {
     this._uploadService.uploadFile('Refresh patients', this._initPatients.bind(this));
+  }
+
+  public togglePatientPopup(): void {
+    this.patientPopupOpened = !this.patientPopupOpened;
   }
 
   private _initItems(): void {
