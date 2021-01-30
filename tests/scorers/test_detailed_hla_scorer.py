@@ -54,9 +54,9 @@ class TestHlaScorer(unittest.TestCase):
 
         ]
         self.maxDiff = None
-        for exp, res in zip(expected, calculated_detailed_score):
-            self.assertSetEqual(set(exp.donor_matches), set(res.donor_matches))
-            self.assertSetEqual(set(exp.recipient_matches), set(res.recipient_matches))
+        for expected_result, actual_result in zip(expected, calculated_detailed_score):
+            self.assertSetEqual(set(expected_result.donor_matches), set(actual_result.donor_matches))
+            self.assertSetEqual(set(expected_result.recipient_matches), set(actual_result.recipient_matches))
 
 
 def test_scorer_on_some_patients(self):
