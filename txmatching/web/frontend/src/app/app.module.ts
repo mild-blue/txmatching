@@ -64,6 +64,8 @@ import { AntibodyTitlePipe } from './pipes/antibody-title/antibody-title.pipe';
 import { AbstractLoggedComponent } from './pages/abstract-logged/abstract-logged.component';
 import { LoadingIconComponent } from './components/loading-icon/loading-icon.component';
 import { MatListModule } from '@angular/material/list';
+import { AddNewPatientComponent } from './components/add-new-patient/add-new-patient.component';
+import { TemplatePopupComponent } from './components/template-popup/template-popup.component';
 
 @NgModule({
   declarations: [
@@ -111,7 +113,9 @@ import { MatListModule } from '@angular/material/list';
     DonorTypeLabelPipe,
     AntibodyTitlePipe,
     AbstractLoggedComponent,
-    LoadingIconComponent
+    LoadingIconComponent,
+    AddNewPatientComponent,
+    TemplatePopupComponent
   ],
   imports: [
     BrowserModule,
@@ -139,4 +143,5 @@ import { MatListModule } from '@angular/material/list';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

@@ -101,7 +101,6 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
   public toggleConfiguration(): void {
     this.configOpened = !this.configOpened;
-    document.querySelector('body')?.classList.toggle('config-opened');
   }
 
   public async downloadReport(): Promise<void> {

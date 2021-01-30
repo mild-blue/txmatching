@@ -35,6 +35,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
   public uploadStatus: UploadDownloadStatus = UploadDownloadStatus.enabled;
   public donorsCount: number = 0;
   public recipientCount: number = 0;
+  public patientPopupOpened: boolean = false;
 
   public configuration?: AppConfiguration;
 
@@ -76,6 +77,10 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     this._uploadService.uploadFile(
       this.defaultTxmEvent.id, 'Refresh patients', this._initPatients.bind(this)
     );
+  }
+
+  public togglePatientPopup(): void {
+    this.patientPopupOpened = !this.patientPopupOpened;
   }
 
   private _initItems(): void {

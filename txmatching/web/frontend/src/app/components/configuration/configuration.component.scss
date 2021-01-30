@@ -2,52 +2,11 @@
 @import "../../../styles/variables";
 
 .configuration {
-  height: 0;
-  overflow: hidden;
-  opacity: 0;
-
-  position: fixed;
-  top: 50px;
-  transition: top 0.5s ease-out, opacity 0.5s ease-out;
-
-  border-radius: $border-radius--wide $border-radius--wide 0;
-  box-shadow: $box-shadow--wide;
-
-  &.open {
-    opacity: 1;
-    top: 20px;
-    z-index: 100;
-    height: 100vh;
-    width: 100vw;
-    overflow-y: scroll;
-    background: $white;
-    padding: $padding-y $padding-x calc(#{$padding-y} * 4);
-  }
 
   &__content {
     width: 100%;
     max-width: 1600px;
     margin: 0 auto calc(#{$padding-y} * 2);
-  }
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: $padding-y;
-
-    h1 {
-      margin: 0;
-    }
-
-    .close {
-      font-size: 24px;
-      transition: color 0.2s ease;
-      margin-right: $padding-x;
-
-      &:hover {
-        color: var(--primary-color);
-      }
-    }
   }
 
   &__boxes {

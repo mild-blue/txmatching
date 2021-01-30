@@ -33,7 +33,7 @@ body {
     transition: opacity 0.5s ease;
   }
 
-  &.config-opened {
+  &.popup-opened {
     max-height: 100vh;
     overflow: hidden;
     position: relative;
