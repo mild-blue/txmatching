@@ -289,11 +289,7 @@ module.exports = {
       { 'selector': 'variableLike', 'format': ['camelCase', 'snake_case'] },
       {
         'selector': 'interface',
-        'format': ['PascalCase'],
-        'custom': {
-          'regex': '^I[A-Z]',
-          'match': false
-        }
+        'format': ['PascalCase']
       }
     ]
   }

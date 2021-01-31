@@ -2,6 +2,9 @@ import { AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn }
 import { Patient } from '@app/model/Patient';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Hla } from '@app/model/Hla';
+import { ENTER, SPACE } from '@angular/cdk/keycodes';
+
+export const separatorKeysCodes: number[] = [ENTER, SPACE];
 
 export function patientNameValidator(patients: Patient[]): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {

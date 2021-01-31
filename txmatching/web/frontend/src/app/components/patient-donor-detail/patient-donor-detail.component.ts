@@ -3,9 +3,8 @@ import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { hlaFullTextSearch } from '@app/directives/validators/form.directive';
+import { hlaFullTextSearch, separatorKeysCodes } from '@app/directives/validators/form.directive';
 import { PatientService } from '@app/services/patient/patient.service';
-import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Donor } from '@app/model/Donor';
 import { Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
@@ -24,7 +23,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   public allAntigens: Antigen[] = [];
 
   public filtered: Observable<Antigen[]>;
-  public separatorKeysCodes: number[] = [ENTER, SPACE];
+  public separatorKeysCodes: number[] = separatorKeysCodes;
 
   public loading: boolean = false;
   public success: boolean = false;
