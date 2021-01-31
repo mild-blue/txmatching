@@ -25,7 +25,6 @@ export class TemplatePopupComponent implements OnChanges {
       if (!wasOpened && isOpened && this.popupElement) {
         this.popupElement.nativeElement.scrollTop = 0;
       }
-      console.log(changes);
 
       // Toggle body class when opened or closed
       if (!changes.isOpened.firstChange && wasOpened !== isOpened) {
