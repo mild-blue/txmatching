@@ -30,8 +30,6 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson)
-from txmatching.database.services.config_service import \
-    remove_configs_from_txm_event
 from txmatching.database.services.patient_service import (update_donor,
                                                           update_recipient)
 from txmatching.database.services.patient_upload_service import (
@@ -63,8 +61,8 @@ class AllPatients(Resource):
         return jsonify(to_lists_for_fe(txm_event))
 
 
-@patient_api.route('/add-pair', methods=['POST'])
-class AddDonorRecipientPair(Resource):
+@patient_api.route('/pairs', methods=['POST'])
+class DonorRecipientPair(Resource):
     @patient_api.doc(body=DonorModelPairInJson, security='bearer')
     @patient_api.response(code=200, model=PatientUploadSuccessJson,
                           description='Added new donor (possibly with recipient)')
@@ -83,7 +81,6 @@ class AddDonorRecipientPair(Resource):
         guard_user_has_access_to_country(user_id=get_current_user_id(),
                                          country=donor_recipient_pair_dto_in.country_code)
 
-        remove_configs_from_txm_event(txm_event_id)
         add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
         return jsonify(PatientUploadDTOOut(
             donors_uploaded=1,

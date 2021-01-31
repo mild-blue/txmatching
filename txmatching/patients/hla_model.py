@@ -17,8 +17,9 @@ class HLAType:
     code: Optional[str] = None
 
     def __post_init__(self):
-        code = parse_hla_raw_code(self.raw_code)
-        self.code = code
+        if self.code is None:
+            self.code = parse_hla_raw_code(self.raw_code)
+
 
     def __eq__(self, other):
         """
@@ -56,8 +57,7 @@ class HLAAntibody:
 
     def __post_init__(self):
         if self.code is None:
-            code = parse_hla_raw_code(self.raw_code)
-            self.code = code
+            self.code = parse_hla_raw_code(self.raw_code)
 
     def __eq__(self, other):
         return (isinstance(other, HLAAntibody) and
