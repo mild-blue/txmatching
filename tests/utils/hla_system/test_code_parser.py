@@ -4,6 +4,7 @@ import pandas as pd
 
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
+from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (
@@ -95,8 +96,54 @@ class TestCodeParser(DbTests):
         self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'B'))
 
     def test_mfi_extraction(self):
-        self.assertEqual(0, get_mfi_from_multiple_hla_codes([1, 3000, 4000]))
-        self.assertEqual(0, get_mfi_from_multiple_hla_codes([1000, 20000, 18000]))
-        self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000]))
-        self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000]))
-        self.assertEqual(0, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000]))
+        # When one value extremely low, calculate average only from such value.
+        self.assertEqual(1, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test'))
+        self.assertEqual(1000, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test'))
+        self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test'))
+
+        # When multiple values low, calculate the average only from those values.
+        self.assertEqual(900, get_mfi_from_multiple_hla_codes([1000, 900, 800, 19000, 20000, 18000], 2000, 'test'))
+
+        # When similarly high MFIs calculate the average
+        self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000], 2000, 'test'))
+        self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000], 2000, 'test'))
+        self.assertEqual(15000, get_mfi_from_multiple_hla_codes([20000, 10000], 2000, 'test'))
+
+        # When the lowest MFI is significantly lower than the other values, but there are not MFIs close to such lowest
+        # value, average of values lower then overall average is calculated. This might not be optimal in some cases,
+        # as the one below (one might maybe drop the hla code. But the algorithm is better safe than sorry.)
+        # This case is reported in logger and will be investigated on per instance basis.
+        self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test'))
+
+        # Checks that we truly group by high res codes. In this case both DQA1*01:01 and DQA1*01:02 are DQA1 in split.
+        # DQA1*01:01 is dropped whereas DQA1*01:02 is kept. After conversion into split this results in DQA1 in the
+        # antibody set
+        self.assertSetEqual({'DQA1'}, {hla_antibody.code for hla_antibody in HLAAntibodies(
+            [
+                HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2500),
+                HLAAntibody('DQA1*01:01', cutoff=2000, mfi=10)
+            ]
+        ).hla_antibodies_per_groups[3].hla_antibody_list})
+        # Similar case as in the lines above. All hla_codes are the same in high res. This invokes call of
+        # get_mfi_from_multiple_hla_codes, where the average is calculated (1900), which is below cutoff.
+        # The antibody set is thus empty.
+        self.assertSetEqual(set(), set(
+            HLAAntibodies(
+                [
+                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=6000),
+                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2000),
+                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=1800)
+                ]
+            ).hla_antibodies_per_groups[3].hla_antibody_list))
+
+        self.assertSetEqual({
+            HLAAntibody(raw_code='DQA1*01:01', mfi=4500, cutoff=2000, code='DQA1'),
+            HLAAntibody(raw_code='DQA1*01:02', mfi=2000, cutoff=2000, code='DQA1')
+        }, set(
+            HLAAntibodies(
+                [
+                    HLAAntibody('DQA1*01:01', cutoff=2000, mfi=6000),
+                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2000),
+                    HLAAntibody('DQA1*01:01', cutoff=2000, mfi=3000)
+                ]
+            ).hla_antibodies_per_groups[3].hla_antibody_list))
