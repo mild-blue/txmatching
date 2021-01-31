@@ -1,1 +1,37 @@
-<p>add-new-patient works!</p>
+<div class="new-patient">
+
+  <form [formGroup]="form">
+
+    <!-- Country -->
+    <mat-form-field>
+      <mat-label>Country</mat-label>
+
+      <mat-chip-list #countryChip>
+        <mat-chip *ngIf="form.controls.country.valid"
+                  [removable]="true"
+                  (removed)="handleRemove('country', countryInput)">
+          <country [country]="selectedCountry"></country>
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input formControlName="country"
+               [matChipInputFor]="countryChip"
+               [errorStateMatcher]="errorMatcher"
+               [matAutocomplete]="donorAuto"
+               [placeholder]="!selectedCountry ? 'Search by country code' : ''"
+               matInput #countryInput type="text">
+      </mat-chip-list>
+
+      <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleSelect(countryInput)">
+        <mat-option *ngFor="let c of filteredCountries | async" [value]="c">
+          <country [country]="c"></country>
+        </mat-option>
+      </mat-autocomplete>
+
+      <mat-hint>
+        Search and select 1 country from {{allCountries.length}} available countries.
+      </mat-hint>
+    </mat-form-field>
+
+    <h2>Donor</h2>
+  </form>
+</div>

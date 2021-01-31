@@ -38,7 +38,7 @@ export function countryFullTextSearch(countries: string[], searchPhrase: string)
   return countries.filter(c => c.toLocaleLowerCase().match(searchPattern));
 }
 
-export class ConfigErrorStateMatcher implements ErrorStateMatcher {
+export class ControlErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (((control.touched || control.dirty) && control.value) || isSubmitted));

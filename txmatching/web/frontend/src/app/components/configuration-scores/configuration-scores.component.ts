@@ -4,7 +4,7 @@ import { Configuration, DonorRecipientScore } from '@app/model/Configuration';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { ConfigErrorStateMatcher, patientFullTextSearch, patientNameValidator } from '@app/directives/validators/configForm.directive';
+import { ControlErrorStateMatcher, patientFullTextSearch, patientNameValidator } from '@app/directives/validators/form.directive';
 import { Donor } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
 import { PatientList } from '@app/model/PatientList';
@@ -31,7 +31,7 @@ export class ConfigurationScoresComponent implements OnInit {
   public filteredDonors: Observable<Patient[]>;
   public filteredRecipients: Observable<Patient[]>;
 
-  public errorMatcher = new ConfigErrorStateMatcher();
+  public errorMatcher = new ControlErrorStateMatcher();
 
   constructor() {
     this.filteredDonors = this.form.controls.donor.valueChanges.pipe(
