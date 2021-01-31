@@ -63,6 +63,7 @@ import { DonorTypeLabelPipe } from '@app/pipes/donor-type-label/donor-type-label
 import { AntibodyTitlePipe } from './pipes/antibody-title/antibody-title.pipe';
 import { AddNewPatientComponent } from './components/add-new-patient/add-new-patient.component';
 import { TemplatePopupComponent } from './components/template-popup/template-popup.component';
+import { AbstractFormHandlerComponent } from './components/abstract-form-handler/abstract-form-handler.component';
 
 @NgModule({
   declarations: [
@@ -110,7 +111,8 @@ import { TemplatePopupComponent } from './components/template-popup/template-pop
     DonorTypeLabelPipe,
     AntibodyTitlePipe,
     AddNewPatientComponent,
-    TemplatePopupComponent
+    TemplatePopupComponent,
+    AbstractFormHandlerComponent
   ],
   imports: [
     BrowserModule,

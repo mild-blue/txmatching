@@ -3,7 +3,7 @@ import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
+import { hlaFullTextSearch } from '@app/directives/validators/form.directive';
 import { PatientService } from '@app/services/patient/patient.service';
 import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Donor } from '@app/model/Donor';

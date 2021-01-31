@@ -3,15 +3,16 @@ import { Configuration, CountryCombination } from '@app/model/Configuration';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { ConfigErrorStateMatcher, countryFullTextSearch, countryNameValidator } from '@app/directives/validators/configForm.directive';
+import { countryFullTextSearch, countryNameValidator } from '@app/directives/validators/form.directive';
 import { PatientList } from '@app/model/PatientList';
+import { AbstractFormHandlerComponent } from '@app/components/abstract-form-handler/abstract-form-handler.component';
 
 @Component({
   selector: 'app-configuration-countries',
   templateUrl: './configuration-countries.component.html',
   styleUrls: ['./configuration-countries.component.scss']
 })
-export class ConfigurationCountriesComponent {
+export class ConfigurationCountriesComponent extends AbstractFormHandlerComponent {
   private _donorCountries: string[] = [];
   private _recipientCountries: string[] = [];
 
@@ -30,9 +31,9 @@ export class ConfigurationCountriesComponent {
   public filteredDonorCountries: Observable<string[]>;
   public filteredRecipientCountries: Observable<string[]>;
 
-  public errorMatcher = new ConfigErrorStateMatcher();
-
   constructor() {
+    super();
+
     this.filteredDonorCountries = this.form.controls.donorCountry?.valueChanges.pipe(
       startWith(undefined),
       map((country: string | null) => country ? countryFullTextSearch(this.donorCountries, country) : this.donorCountries.slice()));
@@ -83,23 +84,6 @@ export class ConfigurationCountriesComponent {
 
   get recipientCountry(): string {
     return this.form.controls.recipientCountry.value ?? '';
-  }
-
-  public handleSelect(control: HTMLInputElement): void {
-    if (!control) {
-      return;
-    }
-    control.value = '';
-    control.disabled = true;
-  }
-
-  public handleRemove(controlName: string, control: HTMLInputElement): void {
-    const formControl = this.form.controls[controlName];
-    if (!formControl || !control) {
-      return;
-    }
-    formControl.setValue('');
-    control.disabled = false;
   }
 
   public addCombination(): void {
