@@ -8,13 +8,14 @@ import { ControlErrorStateMatcher, patientFullTextSearch, patientNameValidator }
 import { Donor } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
 import { PatientList } from '@app/model/PatientList';
+import { AbstractFormHandlerComponent } from '@app/components/abstract-form-handler/abstract-form-handler.component';
 
 @Component({
   selector: 'app-configuration-scores',
   templateUrl: './configuration-scores.component.html',
   styleUrls: ['./configuration-scores.component.scss']
 })
-export class ConfigurationScoresComponent implements OnInit {
+export class ConfigurationScoresComponent extends AbstractFormHandlerComponent implements OnInit {
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
@@ -34,6 +35,8 @@ export class ConfigurationScoresComponent implements OnInit {
   public errorMatcher = new ControlErrorStateMatcher();
 
   constructor() {
+    super();
+
     this.filteredDonors = this.form.controls.donor.valueChanges.pipe(
       startWith(''),
       map((value: string | Donor | Recipient | null) => {
@@ -120,23 +123,6 @@ export class ConfigurationScoresComponent implements OnInit {
 
   get recipient(): Recipient | undefined {
     return this.form.controls.recipient.value;
-  }
-
-  public handleSelect(control: HTMLInputElement): void {
-    if (!control) {
-      return;
-    }
-    control.value = '';
-    control.disabled = true;
-  }
-
-  public handleRemove(controlName: string, control: HTMLInputElement): void {
-    const formControl = this.form.controls[controlName];
-    if (!formControl || !control) {
-      return;
-    }
-    formControl.setValue('');
-    control.disabled = false;
   }
 
   public displayFn(user: Donor | Recipient): string {
