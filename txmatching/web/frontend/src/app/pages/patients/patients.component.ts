@@ -33,6 +33,8 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
   public error: boolean = false;
   public downloadStatus: UploadDownloadStatus = UploadDownloadStatus.hidden;
   public uploadStatus: UploadDownloadStatus = UploadDownloadStatus.enabled;
+  public donorsCount: number = 0;
+  public recipientCount: number = 0;
 
   public configuration?: AppConfiguration;
 
@@ -130,7 +132,9 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     // try getting patients
     try {
       this.patients = await this._patientService.getPatients(this.defaultTxmEvent.id);
-      this._logger.log('Got patients from server', [this.patients]);
+      this.donorsCount = this.patients.donors.length;
+      this.recipientCount = this.patients.recipients.length;
+      this._logger.log(`Got ${this.donorsCount + this.recipientCount} patients from server`, [this.patients]);
 
       // Init list items
       this._initItems();

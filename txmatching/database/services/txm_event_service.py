@@ -67,14 +67,8 @@ def update_default_txm_event_id_for_current_user(event_id: int):
     db.session.commit()
 
 
-def _remove_last_uploaded_data(txm_event_id: int, current_user_id: int):
-    UploadedDataModel.query.filter(and_(UploadedDataModel.txm_event_id == txm_event_id,
-                                        UploadedDataModel.user_id == current_user_id)).delete()
-
-
 def save_original_data(txm_event_name: str, current_user_id: int, data: dict):
     txm_event_db_id = get_txm_event_db_id_by_name(txm_event_name)
-    _remove_last_uploaded_data(txm_event_db_id, current_user_id)
     uploaded_data_model = UploadedDataModel(
         txm_event_id=txm_event_db_id,
         user_id=current_user_id,

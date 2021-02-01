@@ -4,10 +4,12 @@ import datetime
 import logging
 import os
 import time
+from dataclasses import dataclass, replace
 from distutils.dir_util import copy_tree
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import jinja2
+import pandas as pd
 import pdfkit
 from flask import request, send_from_directory
 from flask_restx import Resource
@@ -23,6 +25,10 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, RoundDTO)
+from txmatching.data_transfer_objects.patients.out_dots.conversions import \
+    to_lists_for_fe
+from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
+    DonorDTOOut
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
@@ -31,7 +37,8 @@ from txmatching.database.services.config_service import (
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_latest_matchings_detailed)
 from txmatching.database.services.txm_event_service import get_txm_event
-from txmatching.patients.patient import Donor, DonorType, Patient
+from txmatching.patients.hla_model import HLAAntibody, HLAType
+from txmatching.patients.patient import Donor, DonorType, Patient, Recipient
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
@@ -123,6 +130,8 @@ class Report(Resource):
 
         calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings)
 
+        patients_dto = to_lists_for_fe(txm_event)
+
         configuration = get_configuration_for_txm_event(txm_event=txm_event)
 
         Report.prepare_tmp_dir()
@@ -136,6 +145,10 @@ class Report(Resource):
 
         now = datetime.datetime.now()
         now_formatted = now.strftime('%Y_%m_%d_%H_%M_%S')
+
+        # Uncomment to export patients to xlsx file
+        # xls_file_full_path = os.path.join(TMP_DIR, f'patients_{now_formatted}.xlsx')
+        # export_patients_to_xlsx_file(patients_dto, xls_file_full_path)
 
         required_patients_medical_ids = [txm_event.active_recipients_dict[recipient_db_id].medical_id
                                          for recipient_db_id in configuration.required_patient_db_ids]
@@ -155,10 +168,12 @@ class Report(Resource):
             date=now.strftime('%d.%m.%Y %H:%M:%S'),
             configuration=configuration,
             matchings=calculated_matchings_dto,
+            patients=patients_dto,
             required_patients_medical_ids=required_patients_medical_ids,
             manual_donor_recipient_scores_with_medical_ids=manual_donor_recipient_scores_with_medical_ids,
             all_donors={donor.medical_id: donor for donor in txm_event.all_donors},
             all_recipients={recipient.medical_id: recipient for recipient in txm_event.all_recipients},
+            all_recipients_by_db_id={recipient.db_id: recipient for recipient in txm_event.all_recipients},
             logo=logo,
             color=color
         ))
@@ -225,6 +240,86 @@ class Report(Resource):
             else (LOGO_IKEM, COLOR_IKEM)
 
 
+def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut], List[Recipient]]], output_file: str):
+    @dataclass
+    class PatientPair:
+        # pylint: disable=too-many-instance-attributes
+        donor_medical_id: str
+        donor_country: str
+        donor_height: int
+        donor_weight: float
+        donor_sex: str
+        donor_year_of_birth: int
+        donor_blood_group: str
+        donor_type: str
+        donor_antigens: str
+        recipient_medical_id: str = ''
+        recipient_country: str = ''
+        recipient_height: int = None
+        recipient_weight: float = None
+        recipient_sex: str = ''
+        recipient_year_of_birth: int = None
+        recipient_blood_group: str = ''
+        recipient_acceptable_blood_groups: str = ''
+        recipient_antigens: str = ''
+        recipient_antibodies: str = ''
+
+    all_recipients_by_db_id = {recipient.db_id: recipient for recipient in patients_dto['recipients']}
+
+    patient_pairs = []
+    for donor in patients_dto['donors']:  # type: Donor
+        recipient = (
+            all_recipients_by_db_id[donor.related_recipient_db_id] if donor.related_recipient_db_id else None
+        )  # type: Recipient
+
+        patient_pair = PatientPair(
+            donor_medical_id=donor.medical_id,
+            donor_country=donor.parameters.country_code.value,
+            donor_height=donor.parameters.height,
+            donor_weight=donor.parameters.weight,
+            donor_sex=donor.parameters.sex.value if donor.parameters.sex is not None else '',
+            donor_year_of_birth=donor.parameters.year_of_birth,
+            donor_blood_group=donor.parameters.blood_group,
+            donor_type=donor_type_label_filter(donor.donor_type),
+            donor_antigens=' '.join([hla.raw_code for hla in donor.parameters.hla_typing.hla_types_list]),
+        )
+        if recipient is not None:
+            antibodies: List[HLAAntibody] = []
+            for antibodies_per_group in recipient.hla_antibodies.hla_antibodies_per_groups:
+                antibodies.extend(antibodies_per_group.hla_antibody_list)
+
+            patient_pair = replace(
+                patient_pair,
+                recipient_medical_id=recipient.medical_id,
+                recipient_country=recipient.parameters.country_code.value,
+                recipient_height=recipient.parameters.height,
+                recipient_weight=recipient.parameters.weight,
+                recipient_sex=recipient.parameters.sex.value if recipient.parameters.sex is not None else '',
+                recipient_year_of_birth=recipient.parameters.year_of_birth,
+                recipient_blood_group=recipient.parameters.blood_group,
+                recipient_acceptable_blood_groups=(
+                    ', '.join([blood_group for blood_group in recipient.acceptable_blood_groups])
+                ),
+                recipient_antigens=' '.join([hla.raw_code for hla in recipient.parameters.hla_typing.hla_types_list]),
+                recipient_antibodies=' '.join([antibody.raw_code for antibody in antibodies]),
+            )
+        patient_pairs.append(patient_pair)
+
+    df_with_patients = pd.DataFrame(patient_pairs)
+
+    # Save to xls file and set some formatting
+    # pylint: disable=abstract-class-instantiated
+    writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
+    df_with_patients.to_excel(writer, sheet_name='Patients', index=False)
+    workbook = writer.book
+    worksheet = writer.sheets['Patients']
+    # wrap text in the cells
+    workbook_format = workbook.add_format({'text_wrap': True})
+    # increase columns width to 20
+    worksheet.set_column('A:S', 20, workbook_format)
+    writer.save()
+
+
 def country_combination_filter(country_combination: ForbiddenCountryCombination) -> str:
     return f'{country_combination.donor_country} - {country_combination.recipient_country}'
 
@@ -286,15 +381,18 @@ def _get_donor_type_from_round(matching_round: RoundDTO, donors: Dict[str, Donor
     return donors[donor_id].donor_type
 
 
-def donor_type_label_from_round_filter(matching_round: RoundDTO, donors: Dict[str, Donor]) -> str:
-    donor_type = _get_donor_type_from_round(matching_round, donors)
-
+def donor_type_label_filter(donor_type: DonorType) -> str:
     if donor_type == DonorType.BRIDGING_DONOR:
         return 'bridging donor'
     elif donor_type == DonorType.NON_DIRECTED:
         return 'non-directed donor'
     else:
         return ''
+
+
+def donor_type_label_from_round_filter(matching_round: RoundDTO, donors: Dict[str, Donor]) -> str:
+    donor_type = _get_donor_type_from_round(matching_round, donors)
+    return donor_type_label_filter(donor_type)
 
 
 def round_index_from_order_filter(order: int, matching_round: RoundDTO, donors: Dict[str, Donor]) -> str:
@@ -308,6 +406,13 @@ def round_index_from_order_filter(order: int, matching_round: RoundDTO, donors: 
         return f'{order}'
 
 
+def hla_type_filter(hla: Union[HLAType, HLAAntibody]):
+    if hla.code == hla.raw_code:
+        return f'{hla.code}'
+    else:
+        return f'{hla.code} ({hla.raw_code})'
+
+
 jinja2.filters.FILTERS.update({
     'country_combination_filter': country_combination_filter,
     'donor_recipient_score_filter': donor_recipient_score_filter,
@@ -315,6 +420,8 @@ jinja2.filters.FILTERS.update({
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
     'patient_height_and_weight_filter': patient_height_and_weight_filter,
     'score_color_filter': score_color_filter,
+    'donor_type_label_filter': donor_type_label_filter,
     'donor_type_label_from_round_filter': donor_type_label_from_round_filter,
     'round_index_from_order_filter': round_index_from_order_filter,
+    'hla_type_filter': hla_type_filter,
 })
