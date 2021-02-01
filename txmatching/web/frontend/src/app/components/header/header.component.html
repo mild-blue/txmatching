@@ -4,7 +4,7 @@
   </div>
   <div class="icons">
     <div class="txm-event">
-      <ng-template [ngIf]="defaultTxmEvent" [ngIfElse]="elseBlock">
+      <ng-template [ngIf]="defaultTxmEvent && txmEvents" [ngIfElse]="elseBlock">
         <button #txmEventDropdownTrigger (click)="openDropdown(txmEventDropdownId)">
           <div class="caption">TXM Event</div>
           <div class="name">
@@ -15,16 +15,19 @@
         <app-dropdown (clickedOutside)="closeDropdown($event)"
                       [id]="txmEventDropdownId"
                       [open]="txmEventDropdownId === openedDropdownId"
-                      [trigger]="txmEventDropdownTrigger">
-          <p><strong>Select TXM Event</strong></p>
-          <mat-form-field appearance="fill" *ngIf="txmEvents && defaultTxmEvent">
-            <mat-label>TXM Event</mat-label>
-            <mat-select [value]="defaultTxmEvent.id" (valueChange)="changeDefaultTxmEvent($event)">
-              <mat-option *ngFor="let txmEvent of txmEvents.events" [value]="txmEvent.id">
-                {{txmEvent.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+                      [trigger]="txmEventDropdownTrigger"
+                      [float]="'right'">
+
+          <p><strong>TXM Event</strong></p>
+          <mat-selection-list [multiple]="false"
+                              (selectionChange)="changeDefaultTxmEvent($event)">
+            <mat-list-option *ngFor="let txmEvent of txmEvents.events"
+                             [value]="txmEvent.id"
+                             [selected]="defaultTxmEvent.id == txmEvent.id">
+              {{txmEvent.name}}
+            </mat-list-option>
+          </mat-selection-list>
+
         </app-dropdown>
       </ng-template>
 

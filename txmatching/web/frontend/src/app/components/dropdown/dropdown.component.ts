@@ -12,6 +12,7 @@ export class DropdownComponent {
   @Input() open: boolean = false;
   @Input() id: string = '';
   @Input() trigger?: HTMLButtonElement;
+  @Input() float: string = "left";
 
   private wasClickInside = false;
 

@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { User } from '@app/model/User';
-import { faCaretDown, faQuestionCircle, faSpinner, faUserAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faQuestionCircle, faUserAlt } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '@app/services/auth/auth.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { TxmEvent, TxmEvents } from '@app/model/Event';
+import { MatSelectionListChange } from '@angular/material/list';
 
 @Component({
   selector: 'app-header',
@@ -74,7 +75,7 @@ export class HeaderComponent {
     this.uploadAction.emit();
   }
 
-  public changeDefaultTxmEvent(id: number): void {
-    this.defaultTxmEventSelected.emit(id);
+  public changeDefaultTxmEvent(change: MatSelectionListChange): void {
+    this.defaultTxmEventSelected.emit(change.option.value);
   }
 }

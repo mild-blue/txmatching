@@ -61,9 +61,9 @@ import { PatientRecipientDetailComponent } from '@app/components/patient-recipie
 import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
 import { DonorTypeLabelPipe } from '@app/pipes/donor-type-label/donor-type-label.pipe';
 import { AntibodyTitlePipe } from './pipes/antibody-title/antibody-title.pipe';
-import { MatSelectModule } from '@angular/material/select';
 import { AbstractLoggedComponent } from './pages/abstract-logged/abstract-logged.component';
 import { LoadingIconComponent } from './components/loading-icon/loading-icon.component';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -131,7 +131,7 @@ import { LoadingIconComponent } from './components/loading-icon/loading-icon.com
     MatSlideToggleModule,
     MatBadgeModule,
     MatProgressSpinnerModule,
-    MatSelectModule
+    MatListModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
