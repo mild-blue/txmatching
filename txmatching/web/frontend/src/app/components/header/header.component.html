@@ -33,7 +33,7 @@
 
       <ng-template #elseBlock>
         <button>
-          <app-loading-icon></app-loading-icon>
+          <app-loading-icon *ngIf="loading"></app-loading-icon>
         </button>
       </ng-template>
     </div>

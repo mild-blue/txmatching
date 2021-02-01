@@ -14,9 +14,9 @@ import { Subscription } from 'rxjs';
 })
 export class EventService {
 
-  _txmEvents?: Promise<TxmEvents>;
-  _defaultTxmEvent?: Promise<TxmEvent>;
-  _userSubscription: Subscription;
+  private _txmEvents?: Promise<TxmEvents>;
+  private _defaultTxmEvent?: Promise<TxmEvent>;
+  private _userSubscription: Subscription;
 
   constructor(private _http: HttpClient,
               private _logger: LoggerService,

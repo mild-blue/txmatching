@@ -28,6 +28,8 @@ export class HeaderComponent {
   @Input() defaultTxmEvent?: TxmEvent;
   @Output() defaultTxmEventSelected: EventEmitter<number> = new EventEmitter<number>();
 
+  @Input() loading: boolean = false;
+
   public caretDownIcon = faCaretDown;
   public userIcon = faUserAlt;
   public infoIcon = faQuestionCircle;

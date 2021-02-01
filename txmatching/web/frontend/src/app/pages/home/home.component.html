@@ -5,7 +5,8 @@
             (uploadAction)="uploadPatients()"
             [txmEvents]="txmEvents"
             [defaultTxmEvent]="defaultTxmEvent"
-            (defaultTxmEventSelected)="setDefaultTxmEvent($event)"></app-header>
+            (defaultTxmEventSelected)="setDefaultTxmEvent($event)"
+            [loading]="loading"></app-header>
 
 <section class="home">
   <app-container>
