@@ -2,6 +2,43 @@
   <div class="logo">
     <app-logo routerLink="/"></app-logo>
   </div>
+  <div class="icons">
+    <div class="txm-event">
+      <ng-template [ngIf]="defaultTxmEvent && txmEvents" [ngIfElse]="elseBlock">
+        <button #txmEventDropdownTrigger (click)="openDropdown(txmEventDropdownId)">
+          <div class="caption">TXM Event</div>
+          <div class="name">
+            {{defaultTxmEvent.name}}
+            <fa-icon [icon]="caretDownIcon"></fa-icon>
+          </div>
+        </button>
+        <app-dropdown (clickedOutside)="closeDropdown($event)"
+                      [id]="txmEventDropdownId"
+                      [open]="txmEventDropdownId === openedDropdownId"
+                      [trigger]="txmEventDropdownTrigger"
+                      [float]="'right'">
+
+          <p><strong>TXM Event</strong></p>
+          <mat-selection-list [multiple]="false"
+                              (selectionChange)="changeDefaultTxmEvent($event)">
+            <mat-list-option *ngFor="let txmEvent of txmEvents.events"
+                             [value]="txmEvent.id"
+                             [selected]="defaultTxmEvent.id == txmEvent.id">
+              {{txmEvent.name}}
+            </mat-list-option>
+          </mat-selection-list>
+
+        </app-dropdown>
+      </ng-template>
+
+      <ng-template #elseBlock>
+        <button>
+          <app-loading-icon *ngIf="loading"></app-loading-icon>
+        </button>
+      </ng-template>
+    </div>
+  </div>
+
   <div class="menu">
     <ul>
       <li>
@@ -12,6 +49,7 @@
       </li>
     </ul>
   </div>
+
   <div class="download"
        [class.hidden]="downloadStatus === uploadDownloadStatus.hidden"
        [class.disabled]="downloadStatus === uploadDownloadStatus.disabled">
@@ -30,6 +68,7 @@
       <mat-spinner *ngIf="uploadStatus === uploadDownloadStatus.loading" diameter="16"></mat-spinner>
     </button>
   </div>
+
   <div class="icons">
     <div *ngIf="user" class="user">
       <button #userDropdownTrigger (click)="openDropdown(userDropdownId)">

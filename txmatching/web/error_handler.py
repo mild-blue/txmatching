@@ -11,8 +11,8 @@ from txmatching.auth.exceptions import (
     CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
     GuardException, InvalidArgumentException, InvalidAuthCallException,
     InvalidIpAddressAccessException, InvalidJWTException, InvalidOtpException,
-    NotFoundException, SolverAlreadyRunningException, UserUpdateException,
-    WrongTokenUsedException)
+    NotFoundException, SolverAlreadyRunningException, UnauthorizedException,
+    UserUpdateException, WrongTokenUsedException)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 
@@ -113,6 +113,12 @@ def _user_auth_handlers(api: Api):
         """invalid_argument_exception"""
         _log_warning(error)
         return {'error': 'Invalid argument.', 'message': str(error)}, 400
+
+    @api.errorhandler(UnauthorizedException)
+    def handle_unauthorized_exception(error: UnauthorizedException):
+        """unauthorized_exception"""
+        _log_warning(error)
+        return {'error': 'Not authorized.', 'message': str(error)}, 403
 
     @api.errorhandler(CachingNotReadyException)
     def handle_caching_not_ready_exception(error: CachingNotReadyException):

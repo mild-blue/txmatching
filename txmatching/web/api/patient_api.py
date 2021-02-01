@@ -7,6 +7,7 @@ from dacite import from_dict
 from flask import jsonify, request
 from flask_restx import Resource
 
+from txmatching.auth.auth_check import require_valid_txm_event_id
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.auth.operation_guards.country_guard import (
     get_user_default_country, guard_user_country_access_to_donor,
@@ -30,8 +31,7 @@ from txmatching.database.services.patient_service import (update_donor,
                                                           update_recipient)
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
-from txmatching.database.services.txm_event_service import (
-    get_txm_event, get_txm_event_id_for_current_user)
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
@@ -52,8 +52,9 @@ class AllPatients(Resource):
                           )
     @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
-    def get(self) -> str:
-        txm_event = get_txm_event(get_txm_event_id_for_current_user())
+    @require_valid_txm_event_id()
+    def get(self, txm_event_id: int) -> str:
+        txm_event = get_txm_event(txm_event_id)
         return jsonify(to_lists_for_fe(txm_event))
 
 
@@ -69,10 +70,11 @@ class AlterRecipient(Resource):
                           )
     @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_edit_access()
-    def put(self):
+    @require_valid_txm_event_id()
+    def put(self, txm_event_id: int):
         recipient_update_dto = from_dict(data_class=RecipientUpdateDTO, data=request.json)
         guard_user_country_access_to_recipient(user_id=get_current_user_id(), recipient_id=recipient_update_dto.db_id)
-        return jsonify(update_recipient(recipient_update_dto, get_txm_event_id_for_current_user()))
+        return jsonify(update_recipient(recipient_update_dto, txm_event_id))
 
 
 @patient_api.route('/donor', methods=['PUT'])
@@ -86,14 +88,14 @@ class AlterDonor(Resource):
                           )
     @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_edit_access()
-    def put(self):
+    @require_valid_txm_event_id()
+    def put(self, txm_event_id: int):
         donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
-        txm_event_db_id = get_txm_event_id_for_current_user()
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event(txm_event_id)
         all_recipients = txm_event.all_recipients
         return jsonify(donor_to_donor_dto_out(
-            update_donor(donor_update_dto, get_txm_event_id_for_current_user()),
+            update_donor(donor_update_dto, txm_event_id),
             all_recipients,
             txm_event)
         )
@@ -120,13 +122,13 @@ class AddPatientsFile(Resource):
                           )
     @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_edit_access()
-    def put(self):
+    @require_valid_txm_event_id()
+    def put(self, txm_event_id: int):
         file = request.files['file']
         file_bytes = file.read()
-        txm_event_db_id = get_txm_event_id_for_current_user()
-        txm_event_name = get_txm_event(txm_event_db_id).name
+        txm_event_name = get_txm_event(txm_event_id).name
         user_id = get_current_user_id()
-        save_uploaded_file(file_bytes, file.filename, txm_event_db_id, user_id)
+        save_uploaded_file(file_bytes, file.filename, txm_event_id, user_id)
 
         if file.filename.endswith('multi_country.xlsx'):
             parsed_data = parse_excel_data(file_bytes, txm_event_name, None)

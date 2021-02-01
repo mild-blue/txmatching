@@ -1,7 +1,11 @@
 <app-header [user]="user"
             [uploadStatus]="uploadStatus"
             (uploadAction)="uploadPatients()"
-            [downloadStatus]="downloadStatus"></app-header>
+            [downloadStatus]="downloadStatus"
+            [txmEvents]="txmEvents"
+            [defaultTxmEvent]="defaultTxmEvent"
+            (defaultTxmEventSelected)="setDefaultTxmEvent($event)"
+            [loading]="loading"></app-header>
 
 <section class="patients">
   <app-container>
@@ -22,7 +26,8 @@
                    [configuration]="configuration"
                    [patients]="patients"
                    [saveLastViewedItem]="true"
-                   [useInfiniteScroll]="false"></app-item-list>
+                   [useInfiniteScroll]="false"
+                   [defaultTxmEvent]="defaultTxmEvent"></app-item-list>
   </app-content>
 </section>
 

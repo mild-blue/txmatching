@@ -32,13 +32,14 @@ class TestSwaggerEndpoints(DbTests):
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/login': [401],
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
                 # TODO remove this in https://github.com/mild-blue/txmatching/issues/372
-                f'{API_VERSION[1:]}/{MATCHING_NAMESPACE}/calculate-for-config': [400]
+                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/'
+                f'{MATCHING_NAMESPACE}/calculate-for-config': [400]
             },
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/change-password': [401],
                 f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/patients': [403],
-                f'{API_VERSION[1:]}/{PATIENT_NAMESPACE}/add-patients-file': [400]
+                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/add-patients-file': [400]
             }
         }
         # we need this user as we need the report to be generated from filled txm event, but we create an empty

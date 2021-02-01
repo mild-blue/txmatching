@@ -11,10 +11,10 @@ export class ConfigurationService {
   constructor(private _http: HttpClient) {
   }
 
-  public async getConfiguration(): Promise<AppConfiguration> {
+  public async getConfiguration(txmEventId: number): Promise<AppConfiguration> {
     // TODO: https://github.com/mild-blue/txmatching/issues/401 Create parser and use generated model
     return this._http.get<AppConfiguration>(
-      `${environment.apiUrl}/configuration`
+      `${environment.apiUrl}/txm-event/${txmEventId}/configuration`
     ).pipe().toPromise();
   }
 }

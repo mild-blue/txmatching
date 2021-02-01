@@ -9,8 +9,6 @@
   z-index: 10;
 
   position: absolute;
-  top: 100%;
-  right: 0;
 
   min-width: 250px;
   background: $white;
@@ -21,5 +19,9 @@
 
   &.open {
     display: block;
+  }
+
+  &.float-left {
+    right: 0;
   }
 }

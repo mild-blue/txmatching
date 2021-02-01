@@ -20,3 +20,5 @@ txm_event_api = Namespace(TXM_EVENT_NAMESPACE)
 
 REPORTS_NAMESPACE = 'reports'
 report_api = Namespace(REPORTS_NAMESPACE)
+
+# Note: namespace prefix urls are defined in txmatching.web.add_all_namespaces

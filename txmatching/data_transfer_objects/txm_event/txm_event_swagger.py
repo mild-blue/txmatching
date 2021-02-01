@@ -15,7 +15,12 @@ TxmEventJsonIn = txm_event_api.model('NewTxmEvent', {
     'name': fields.String(required=True)
 })
 
+TxmDefaultEventJsonIn = txm_event_api.model('DefaultTxmEvent', {
+    'id': fields.Integer(required=True)
+})
+
 TxmEventJsonOut = txm_event_api.model('TxmEvent', {
+    'id': fields.Integer(required=True),
     'name': fields.String(required=True)
 })
 
@@ -98,4 +103,10 @@ PatientUploadSuccessJson = txm_event_api.model('PatientUploadSuccessResponse', {
                                           description='Number of recipients successfully loaded into the application.'),
     'donors_uploaded': fields.Integer(required=True,
                                       description='Number of donors successfully loaded into the application.'),
+})
+
+TxmEventsJson = txm_event_api.model('TxmEvents', {
+    'events': fields.List(required=True, cls_or_instance=fields.Nested(
+        TxmEventJsonOut
+    )),
 })

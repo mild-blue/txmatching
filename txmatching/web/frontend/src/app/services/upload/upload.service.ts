@@ -14,7 +14,7 @@ export class UploadService {
               private _logger: LoggerService) {
   }
 
-  public uploadFile(callbackLabel?: string, callbackAction?: Function): void {
+  public uploadFile(txmEventId: number, callbackLabel?: string, callbackAction?: Function): void {
     const input = document.createElement('input');
     input.type = 'file';
     input.dispatchEvent(new MouseEvent('click'));
@@ -24,16 +24,16 @@ export class UploadService {
         return;
       }
 
-      this._handleUpload(fileToUpload, callbackLabel, callbackAction);
+      this._handleUpload(txmEventId, fileToUpload, callbackLabel, callbackAction);
     });
   }
 
-  private _handleUpload(file: File, callbackLabel?: string, callbackAction?: Function): void {
+  private _handleUpload(txmEventId: number, file: File, callbackLabel?: string, callbackAction?: Function): void {
     const formData: FormData = new FormData();
     formData.append('file', file, file.name);
 
     this._http.put<File>(
-      `${environment.apiUrl}/patients/add-patients-file`,
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/add-patients-file`,
       formData
     ).subscribe(
       () => {

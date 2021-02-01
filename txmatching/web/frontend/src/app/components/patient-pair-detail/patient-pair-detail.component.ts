@@ -4,6 +4,7 @@ import { PatientPairTab } from '@app/components/patient-pair-detail/patient-pair
 import { Configuration } from '@app/model/Configuration';
 import { PatientPair } from '@app/model/PatientPair';
 import { PatientList } from '@app/model/PatientList';
+import { TxmEvent } from '@app/model/Event';
 
 @Component({
   selector: 'app-patient-pair-detail',
@@ -15,6 +16,7 @@ export class PatientPairDetailComponent extends ListItemDetailAbstractComponent 
   @Input() item?: PatientPair;
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
+  @Input() defaultTxmEvent?: TxmEvent;
 
   public activeTab: PatientPairTab = PatientPairTab.Overview;
   public tabs: typeof PatientPairTab = PatientPairTab;

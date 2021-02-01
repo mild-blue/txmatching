@@ -6,32 +6,25 @@ import { ConfigurationService } from '@app/services/configuration/configuration.
 import { AppConfiguration, Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
-import { Subscription } from 'rxjs';
-import { CalculatedMatchings, Matching } from '@app/model/Matching';
+import { Matching } from '@app/model/Matching';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
-import { MatchingDetailComponent } from '@app/components/matching-detail/matching-detail.component';
-import { MatchingItemComponent } from '@app/components/matching-item/matching-item.component';
 import { ReportService } from '@app/services/report/report.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
 import { finalize, first } from 'rxjs/operators';
 import { PatientList } from '@app/model/PatientList';
-import { DonorType } from '@app/model/Donor';
-import { Transplant } from '@app/model/Transplant';
-import { Round } from '@app/model/Round';
 import { UploadService } from '@app/services/upload/upload.service';
+import { EventService } from '@app/services/event/event.service';
+import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent extends AbstractLoggedComponent implements OnInit, OnDestroy {
 
-  private _configSubscription?: Subscription;
-  private _matchingSubscription?: Subscription;
-  private _patientsSubscription?: Subscription;
   private _downloadInProgress: boolean = false;
   private _uploadInProgress: boolean = false;
 
@@ -39,7 +32,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public matchings: Matching[] = [];
   public foundMatchingsCount: number = 0;
-  public user?: User;
+
   public patients?: PatientList;
   public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
@@ -47,33 +40,42 @@ export class HomeComponent implements OnInit, OnDestroy {
   public configIcon = faCog;
   public configOpened: boolean = false;
 
-  constructor(private _authService: AuthService,
-              private _configService: ConfigurationService,
-              private _alertService: AlertService,
+  constructor(private _configService: ConfigurationService,
               private _matchingService: MatchingService,
               private _patientService: PatientService,
               private _reportService: ReportService,
               private _uploadService: UploadService,
-              private _logger: LoggerService) {
+              _authService: AuthService,
+              _alertService: AlertService,
+              _eventService: EventService,
+              _logger: LoggerService) {
+    super(_authService, _alertService, _eventService, _logger);
   }
 
   ngOnInit(): void {
-    this._initUser();
-    this._initMatchings();
+    super.ngOnInit();
+
+    this.loading = true;
+    this._initAll().finally(() => this.loading = false);
   }
 
   ngOnDestroy(): void {
-    this._configSubscription?.unsubscribe();
-    this._matchingSubscription?.unsubscribe();
-    this._patientsSubscription?.unsubscribe();
+  }
+
+  private async _initAll(): Promise<void> {
+    await this._initTxmEvents();
+    await this._initMatchings();
+  }
+
+  public async setDefaultTxmEvent(event_id: number): Promise<void> {
+    this.loading = true;
+    this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
+    await this._initMatchings();
+    this.loading = false;
   }
 
   public getActiveMatching(): Matching | undefined {
     return this.matchings.find(m => m.isActive);
-  }
-
-  get isViewer(): boolean {
-    return this.user ? this.user.decoded.role === Role.VIEWER : false;
   }
 
   get downloadStatus(): UploadDownloadStatus {
@@ -103,6 +105,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public async downloadReport(): Promise<void> {
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`Download report failed because defaultTxmEvent not set`);
+      return;
+    }
+
     const activeMatching = this.getActiveMatching();
     if (!activeMatching) {
       return;
@@ -111,7 +118,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._logger.log('Downloading with active matching', [activeMatching]);
 
     this._downloadInProgress = true;
-    this._reportService.downloadReport(activeMatching.order_id)
+    this._reportService.downloadReport(this.defaultTxmEvent.id, activeMatching.order_id)
     .pipe(
       first(),
       finalize(() => this._downloadInProgress = false)
@@ -130,20 +137,35 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public uploadPatients(): void {
-    this._uploadService.uploadFile('Recalculate matchings', this._initMatchings.bind(this));
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`uploadPatients failed because defaultTxmEvent not set`);
+      return;
+    }
+    this._uploadService.uploadFile(
+      this.defaultTxmEvent.id, 'Recalculate matchings', this._initMatchings.bind(this)
+    );
   }
 
   public async calculate(configuration: Configuration): Promise<void> {
-    if (!this.appConfiguration) {
+    if(!this.appConfiguration) {
+      this._logger.error(`Calculate failed because appConfiguration not set`);
       return;
     }
-
-    if (!this.patients) return;
+    if(!this.patients) {
+      this._logger.error(`Calculate failed because patients not set`);
+      return;
+    }
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`Calculate failed because defaultTxmEvent not set`);
+      return;
+    }
 
     if (this.configOpened) {
       this.toggleConfiguration();
     }
     this.loading = true;
+    this.matchings = [];
+    this.foundMatchingsCount = 0;
 
     const { scorer_constructor_name, solver_constructor_name } = this.appConfiguration;
     const updatedConfig: AppConfiguration = {
@@ -157,7 +179,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.configuration = configuration;
 
     try {
-      const calculatedMatchings = await this._matchingService.calculate(updatedConfig, this.patients);
+      const calculatedMatchings = await this._matchingService.calculate(
+        this.defaultTxmEvent.id, updatedConfig, this.patients
+      );
       this.matchings = calculatedMatchings.calculated_matchings;
       this.foundMatchingsCount = calculatedMatchings.found_matchings_count;
       this._logger.log('Calculated matchings', [calculatedMatchings]);
@@ -177,16 +201,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _initUser(): void {
-    this.user = this._authService.currentUserValue;
-  }
-
   private async _initMatchings(): Promise<void> {
-    this.loading = true;
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`Init matchings failed because defaultTxmEvent not set`);
+      return;
+    }
+
     try {
       // try getting patients
       try {
-        this.patients = await this._patientService.getPatients();
+        this.patients = await this._patientService.getPatients(this.defaultTxmEvent.id);
         this._logger.log('Got patients from server', [this.patients]);
       } catch (e) {
         this._alertService.error(`Error loading patients: "${e.message || e}"`);
@@ -196,7 +220,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       // try getting configuration
       try {
-        this.appConfiguration = await this._configService.getConfiguration();
+        this.appConfiguration = await this._configService.getConfiguration(this.defaultTxmEvent.id);
         this._logger.log('Got config from server', [this.appConfiguration]);
       } catch (e) {
         this._alertService.error(`Error loading configuration: "${e.message || e}"`);
@@ -217,7 +241,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       this._logger.error(e);
     } finally {
       this._logger.log('End of matchings initialization');
-      this.loading = false;
     }
   }
 }

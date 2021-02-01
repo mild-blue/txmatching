@@ -15,13 +15,15 @@ import { PatientPairItemComponent } from '@app/components/patient-pair-item/pati
 import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
 import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
 import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
+import { EventService } from '@app/services/event/event.service';
+import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 
 @Component({
   selector: 'app-patients',
   templateUrl: './patients.component.html',
   styleUrls: ['./patients.component.scss']
 })
-export class PatientsComponent implements OnInit {
+export class PatientsComponent extends AbstractLoggedComponent implements OnInit {
 
   public patients?: PatientList;
   public pairs: PatientPair[] = [];
@@ -34,32 +36,51 @@ export class PatientsComponent implements OnInit {
   public donorsCount: number = 0;
   public recipientCount: number = 0;
 
-  public user?: User;
-
   public configuration?: AppConfiguration;
 
-  constructor(private _authService: AuthService,
-              private _alertService: AlertService,
-              private _configService: ConfigurationService,
+  constructor(private _configService: ConfigurationService,
               private _patientService: PatientService,
               private _uploadService: UploadService,
-              private _logger: LoggerService) {
+              _authService: AuthService,
+              _alertService: AlertService,
+              _eventService: EventService,
+              _logger: LoggerService) {
+    super(_authService, _alertService, _eventService, _logger);
   }
 
   ngOnInit(): void {
-    this.user = this._authService.currentUserValue;
+    super.ngOnInit();
 
-    // init config and patients
     this.loading = true;
-    Promise.all([this._initConfiguration(), this._initPatients()]).finally(() => this.loading = false);
+    this._initAll().finally(() => this.loading = false);
+  }
+
+  private async _initAll(): Promise<void> {
+    await this._initTxmEvents();
+    await this._initPatients();
+    await this._initConfiguration();
+  }
+
+  public async setDefaultTxmEvent(event_id: number): Promise<void> {
+    this.loading = true;
+    this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
+    await Promise.all([this._initConfiguration(), this._initPatients()]);
+    this.loading = false
   }
 
   public uploadPatients(): void {
-    this._uploadService.uploadFile('Refresh patients', this._initPatients.bind(this));
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`uploadPatients failed because defaultTxmEvent not set`);
+      return;
+    }
+    this._uploadService.uploadFile(
+      this.defaultTxmEvent.id, 'Refresh patients', this._initPatients.bind(this)
+    );
   }
 
   private _initItems(): void {
-    if (!this.patients) {
+    if(!this.patients) {
+      this._logger.error(`Items init failed because patients not set`);
       return;
     }
 
@@ -96,6 +117,10 @@ export class PatientsComponent implements OnInit {
   }
 
   private async _initPatients(): Promise<void> {
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`Patients init failed because defaultTxmEvent not set`);
+      return;
+    }
 
     // if not already loading before Promise.all
     let loadingWasSwitchedOn = false;
@@ -106,7 +131,7 @@ export class PatientsComponent implements OnInit {
 
     // try getting patients
     try {
-      this.patients = await this._patientService.getPatients();
+      this.patients = await this._patientService.getPatients(this.defaultTxmEvent.id);
       this.donorsCount = this.patients.donors.length;
       this.recipientCount = this.patients.recipients.length;
       this._logger.log(`Got ${this.donorsCount + this.recipientCount} patients from server`, [this.patients]);
@@ -127,8 +152,13 @@ export class PatientsComponent implements OnInit {
   }
 
   private async _initConfiguration(): Promise<void> {
+    if(!this.defaultTxmEvent) {
+      this._logger.error(`Configuration init failed because defaultTxmEvent not set`);
+      return;
+    }
+
     try {
-      this.configuration = await this._configService.getConfiguration();
+      this.configuration = await this._configService.getConfiguration(this.defaultTxmEvent.id);
       this._logger.log('Got config from server', [this.configuration]);
     } catch (e) {
       this._alertService.error(`Error loading configuration: "${e.message || e}"`);

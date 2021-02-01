@@ -11,8 +11,7 @@
  */
 
 
-export interface TxmEventGenerated { 
+export interface DefaultTxmEventGenerated { 
     id: number;
-    name: string;
 }
 

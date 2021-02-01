@@ -1,7 +1,11 @@
+from typing import List
+
 from sqlalchemy import and_
 from sqlalchemy.orm.exc import NoResultFound
 
-from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.auth.data_types import UserRole
+from txmatching.auth.exceptions import (InvalidArgumentException,
+                                        UnauthorizedException)
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import (
     get_donor_from_donor_model, get_recipient_from_recipient_model)
@@ -54,6 +58,15 @@ def get_txm_event_id_for_current_user() -> int:
         return get_newest_txm_event_db_id()
 
 
+def update_default_txm_event_id_for_current_user(event_id: int):
+    if event_id not in get_allowed_txm_event_ids_for_current_user():
+        raise UnauthorizedException(f'TXM event {event_id} is not allowed for this user.')
+
+    current_user_model = get_current_user()
+    current_user_model.default_txm_event_id = event_id
+    db.session.commit()
+
+
 def save_original_data(txm_event_name: str, current_user_id: int, data: dict):
     txm_event_db_id = get_txm_event_db_id_by_name(txm_event_name)
     uploaded_data_model = UploadedDataModel(
@@ -87,3 +100,14 @@ def get_txm_event(txm_event_db_id: int) -> TxmEvent:
 
     return TxmEvent(db_id=maybe_txm_event_model.id, name=maybe_txm_event_model.name, all_donors=all_donors,
                     all_recipients=all_recipients)
+
+
+def get_allowed_txm_event_ids_for_current_user() -> List[int]:
+    if get_current_user().role == UserRole.ADMIN:
+        txm_event_ids = [
+            txm_event_model.id for txm_event_model
+            in TxmEventModel.query.order_by(TxmEventModel.id.asc()).all()
+        ]
+        return txm_event_ids
+    else:
+        return [get_txm_event_id_for_current_user()]

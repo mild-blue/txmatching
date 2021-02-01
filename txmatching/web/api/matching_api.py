@@ -6,6 +6,7 @@ import logging
 from flask import jsonify, request
 from flask_restx import Resource
 
+from txmatching.auth.auth_check import require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import CachingNotReadyException
 from txmatching.auth.request_context import get_user_role
@@ -20,8 +21,7 @@ from txmatching.database.services.config_service import (
     configuration_from_dict, find_configuration_db_id_for_configuration)
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
-from txmatching.database.services.txm_event_service import (
-    get_txm_event, get_txm_event_id_for_current_user)
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.web.api.namespaces import matching_api
 
 logger = logging.getLogger(__name__)
@@ -41,9 +41,9 @@ class CalculateFromConfig(Resource):
     )
     @matching_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
-    def post(self) -> str:
-        txm_event_db_id = get_txm_event_id_for_current_user()
-        txm_event = get_txm_event(txm_event_db_id)
+    @require_valid_txm_event_id()
+    def post(self, txm_event_id: int) -> str:
+        txm_event = get_txm_event(txm_event_id)
         configuration = configuration_from_dict(request.json)
         maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
                                                                                configuration=configuration)
