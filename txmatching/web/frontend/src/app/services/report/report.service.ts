@@ -5,7 +5,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Report } from '@app/services/report/report.interface';
 
-const otherMatchingsCount = 5;
+const otherMatchingsCount = 10;
 
 @Injectable({
   providedIn: 'root'
