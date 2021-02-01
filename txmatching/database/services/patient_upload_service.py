@@ -41,7 +41,7 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO, tx
 
     _add_patients_from_one_country(
         donors=[donor_recipient_pair_dto.donor],
-        recipients=[donor_recipient_pair_dto.recipient.to_upload_dto()] if donor_recipient_pair_dto.recipient else [],
+        recipients=[donor_recipient_pair_dto.recipient] if donor_recipient_pair_dto.recipient else [],
         country_code=donor_recipient_pair_dto.country_code,
         txm_event_db_id=txm_event_db_id
     )

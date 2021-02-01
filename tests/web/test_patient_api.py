@@ -118,3 +118,40 @@ class TestPatientService(DbTests):
 
         self.assertEqual(donor_medical_id, txm_event.all_donors[0].medical_id)
         self.assertEqual(1, txm_event.all_donors[0].related_recipient_db_id)
+
+    def test_invalid_cuttoff_values(self):
+        txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
+        donor_medical_id = 'donor_test'
+        recipient_medical_id = 'recipient_test'
+        with self.app.test_client() as client:
+            json_data = {
+                'donor': {
+                    'medical_id': donor_medical_id,
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'donor_type': DonorType.DONOR.value,
+                },
+                'recipient': {
+                    'medical_id': recipient_medical_id,
+                    'acceptable_blood_groups': [],
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'recipient_cutoff': 2000,
+                    'hla_antibodies': [{
+                        'mfi': 2350,
+                        'name': 'test',
+                        'cutoff': 1000
+                    },
+                        {
+                            'mfi': 2000,
+                            'name': 'test',
+                            'cutoff': 2000
+                        }],
+                },
+                'country_code': 'CZE'
+            }
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/pairs',
+                              headers=self.auth_headers, json=json_data)
+
+        self.assertEqual(400, res.status_code)

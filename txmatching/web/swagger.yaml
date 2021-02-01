@@ -185,7 +185,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: &id013
+                example: &id003
                 -   antibody_matches:
                     -   hla_antibody:
                             code: A9
@@ -347,7 +347,7 @@ definitions:
             donor:
                 $ref: '#/definitions/DonorInput'
             recipient:
-                $ref: '#/definitions/RecipientPairIn'
+                $ref: '#/definitions/RecipientInput'
         required:
         - donor
         type: object
@@ -424,20 +424,6 @@ definitions:
                 type: string
         required:
         - cutoff
-        - mfi
-        - name
-        type: object
-    HLAAntibodyPairIn:
-        properties:
-            mfi:
-                description: Mean fluorescence intensity. Use exact value.
-                example: 2350
-                type: integer
-            name:
-                description: HLA antibody name.
-                example: A32
-                type: string
-        required:
         - mfi
         - name
         type: object
@@ -766,7 +752,7 @@ definitions:
         type: object
     RecipientInput:
         properties:
-            acceptable_blood_groups: &id003
+            acceptable_blood_groups:
                 description: Acceptable blood groups for the patient. Leave empty
                     to use                                             compatible
                     blood groups.
@@ -779,7 +765,7 @@ definitions:
                     example: A
                     type: string
                 type: array
-            blood_group: &id004
+            blood_group:
                 enum:
                 - A
                 - B
@@ -787,7 +773,7 @@ definitions:
                 - '0'
                 example: A
                 type: string
-            height: &id005
+            height:
                 description: Height of the patient in centimeters.
                 example: 178
                 type: integer
@@ -797,40 +783,40 @@ definitions:
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
-            hla_typing: &id006
+            hla_typing:
                 description: HLA typing of the patient. Use high resolution if available.
                 example: *id001
                 items:
                     type: string
                 type: array
-            medical_id: &id007
+            medical_id:
                 description: Medical ID of the patient. This ID is unique thorough
                     the system and can be used for the identification of a specific
                     patient in your system. Typically, this is the patient ID used
                     in your internal system.
                 example: R1037
                 type: string
-            previous_transplants: &id008
+            previous_transplants:
                 description: Number of previous kidney transplants.
                 type: integer
-            sex: &id009
+            sex:
                 description: Sex of the patient.
                 enum:
                 - M
                 - F
                 example: M
                 type: string
-            waiting_since: &id010
+            waiting_since:
                 description: Date since when the patient has been on waiting list.
                     Use format YYYY-MM-DD.
                 example: '2015-01-17'
                 format: date
                 type: string
-            weight: &id011
+            weight:
                 description: Weight of the patient in kilograms.
                 example: 78.4
                 type: number
-            year_of_birth: &id012
+            year_of_birth:
                 description: Year of birth of the patient.
                 example: 1945
                 type: integer
@@ -885,34 +871,6 @@ definitions:
         required:
         - db_id
         type: object
-    RecipientPairIn:
-        properties:
-            acceptable_blood_groups: *id003
-            blood_group: *id004
-            height: *id005
-            hla_antibodies:
-                description: Detected HLA antibodies of the patient. Use high resolution                                   if
-                    available.
-                items:
-                    $ref: '#/definitions/HLAAntibodyPairIn'
-                type: array
-            hla_typing: *id006
-            medical_id: *id007
-            previous_transplants: *id008
-            recipient_cutoff:
-                example: 4000
-                type: integer
-            sex: *id009
-            waiting_since: *id010
-            weight: *id011
-            year_of_birth: *id012
-        required:
-        - blood_group
-        - hla_antibodies
-        - hla_typing
-        - medical_id
-        - recipient_cutoff
-        type: object
     RecipientRequirements:
         properties:
             require_better_match_in_compatibility_index:
@@ -964,7 +922,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: *id013
+                example: *id003
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array
@@ -1462,46 +1420,6 @@ paths:
             name: txm_event_id
             required: true
             type: integer
-    /v1/txm-event/{txm_event_id}/patients/add-pair:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-        post:
-            operationId: post_add_donor_recipient_pair
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/DonorModelPairIn'
-            responses:
-                '200':
-                    description: Added new donor (possibly with recipient)
-                    schema:
-                        $ref: '#/definitions/PatientUploadSuccessResponse'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - patients
     /v1/txm-event/{txm_event_id}/patients/add-patients-file:
         parameters:
         -   in: path
@@ -1563,6 +1481,46 @@ paths:
                     description: Updates single donor.
                     schema:
                         $ref: '#/definitions/Donor'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
+    /v1/txm-event/{txm_event_id}/patients/pairs:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        post:
+            operationId: post_donor_recipient_pair
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/DonorModelPairIn'
+            responses:
+                '200':
+                    description: Added new donor (possibly with recipient)
+                    schema:
+                        $ref: '#/definitions/PatientUploadSuccessResponse'
                 '400':
                     description: Wrong data format.
                     schema:

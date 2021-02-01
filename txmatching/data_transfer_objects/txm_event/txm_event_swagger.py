@@ -47,7 +47,13 @@ DonorJsonIn = txm_event_api.model('DonorInput', {
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
 })
 
-RECIPIENT_IN_BASE_DICT = {
+RecipientJsonIn = txm_event_api.model('RecipientInput', {
+    'hla_antibodies': fields.List(required=True,
+                                  description='Detected HLA antibodies of the patient. Use high resolution \
+                                  if available.',
+                                  cls_or_instance=fields.Nested(
+                                      HLAAntibodyJsonIn
+                                  )),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(
         enum=[blood_group.value for blood_group in BloodGroup]),
                                            description='Acceptable blood groups for the patient. Leave empty to use \
@@ -68,17 +74,7 @@ RECIPIENT_IN_BASE_DICT = {
                                              'Use format YYYY-MM-DD.'),
     'previous_transplants': fields.Integer(required=False,
                                            example=0,
-                                           description='Number of previous kidney transplants.'),
-}
-
-RecipientJsonIn = txm_event_api.model('RecipientInput', {
-    'hla_antibodies': fields.List(required=True,
-                                  description='Detected HLA antibodies of the patient. Use high resolution \
-                                  if available.',
-                                  cls_or_instance=fields.Nested(
-                                      HLAAntibodyJsonIn
-                                  )),
-    **RECIPIENT_IN_BASE_DICT
+                                           description='Number of previous kidney transplants.')
 })
 
 UploadPatientsJson = txm_event_api.model(

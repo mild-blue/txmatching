@@ -2,7 +2,7 @@ import itertools
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 from txmatching.utils.enums import (HLA_GROUP_SPLIT_CODE_REGEX,
                                     HLA_GROUPS_NAMES_WITH_OTHER, HLAGroup)
@@ -19,7 +19,6 @@ class HLAType:
     def __post_init__(self):
         if self.code is None:
             self.code = parse_hla_raw_code(self.raw_code)
-
 
     def __eq__(self, other):
         """
@@ -87,23 +86,28 @@ class HLAAntibodies:
         self.hla_antibodies_list = hla_antibodies_list
         hla_antibodies_list_without_none = [hla_antibody for hla_antibody in hla_antibodies_list if hla_antibody.code]
 
-        def _group_key(hla_antibody: HLAAntibody) -> Tuple[int, str]:
-            return hla_antibody.cutoff, hla_antibody.raw_code
+        def _group_key(hla_antibody: HLAAntibody) -> str:
+            return hla_antibody.raw_code
 
         grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies_list_without_none, key=_group_key),
                                                    key=_group_key)
         hla_antibodies_over_cutoff_list = []
-        for (hla_code_cutoff, hla_code_raw), antibody_group in grouped_hla_antibodies:
+        for hla_code_raw, antibody_group in grouped_hla_antibodies:
             antibody_group_list = list(antibody_group)
             assert len(antibody_group_list) > 0
+            cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group_list}
+            if len(cutoffs) != 1:
+                raise AssertionError(f'There were multiple cutoff values s for antibody {hla_code_raw} '
+                                     'This means inconsistency that is not allowed.')
+            cutoff = cutoffs.pop()
             mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in antibody_group_list],
-                                                  hla_code_cutoff,
+                                                  cutoff,
                                                   hla_code_raw,
                                                   logger_with_patient)
-            if mfi >= hla_code_cutoff:
+            if mfi >= cutoff:
                 new_antibody = HLAAntibody(
                     raw_code=hla_code_raw,
-                    cutoff=hla_code_cutoff,
+                    cutoff=cutoff,
                     mfi=mfi
                 )
                 hla_antibodies_over_cutoff_list.append(new_antibody)

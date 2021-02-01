@@ -18,8 +18,8 @@ from txmatching.auth.user.user_auth_check import (require_user_edit_access,
 from txmatching.data_transfer_objects.patients.out_dots.conversions import (
     donor_to_donor_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
-    DonorJson, DonorModelPairInJson, DonorModelToUpdateJson, PatientsJson,
-    RecipientJson, RecipientModelToUpdateJson)
+    DonorJson, DonorModelPairInJson, DonorToUpdateJson, PatientsJson,
+    RecipientJson, RecipientToUpdateJson)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
@@ -91,7 +91,7 @@ class DonorRecipientPair(Resource):
 @patient_api.route('/recipient', methods=['PUT'])
 class AlterRecipient(Resource):
 
-    @patient_api.doc(body=RecipientModelToUpdateJson, security='bearer')
+    @patient_api.doc(body=RecipientToUpdateJson, security='bearer')
     @patient_api.response(code=200, model=RecipientJson, description='Updated recipient.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
@@ -109,7 +109,7 @@ class AlterRecipient(Resource):
 
 @patient_api.route('/donor', methods=['PUT'])
 class AlterDonor(Resource):
-    @patient_api.doc(body=DonorModelToUpdateJson, security='bearer')
+    @patient_api.doc(body=DonorToUpdateJson, security='bearer')
     @patient_api.response(code=200, model=DonorJson, description='Updates single donor.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
