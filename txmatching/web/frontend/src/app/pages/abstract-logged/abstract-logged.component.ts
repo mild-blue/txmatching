@@ -29,9 +29,7 @@ export class AbstractLoggedComponent implements OnInit {
   protected async _initTxmEvents(): Promise<void> {
     try {
       this.txmEvents = await this._eventService.getEvents();
-      this._logger.log('Got txm events from server', [this.txmEvents]);
       this.defaultTxmEvent = await this._eventService.getDefaultEvent();
-      this._logger.log('Got default txm event from server', [this.defaultTxmEvent]);
     } catch (e) {
       this._alertService.error(`Error loading txm events: "${e.message || e}"`);
       this._logger.error(`Error loading txm events: "${e.message || e}"`);
