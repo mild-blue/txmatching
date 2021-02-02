@@ -13,8 +13,6 @@ from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in 
 from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
-from txmatching.database.services.config_service import \
-    remove_configs_from_txm_event
 from txmatching.database.services.parsing_utils import (
     check_existing_ids_for_duplicates, get_hla_code, parse_date_to_datetime)
 from txmatching.database.services.txm_event_service import (

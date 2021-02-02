@@ -141,8 +141,10 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
 
 
 def get_patients_hash(txm_event: TxmEvent) -> int:
-    donors = tuple(txm_event.active_donors_dict.values()) if txm_event.active_donors_dict is not None else None
-    recipients = tuple(txm_event.active_recipients_dict.values()) if txm_event.active_recipients_dict is not None else None
+    donors = tuple(txm_event.active_donors_dict.values()) \
+        if txm_event.active_donors_dict is not None else None
+    recipients = tuple(txm_event.active_recipients_dict.values()) \
+        if txm_event.active_recipients_dict is not None else None
 
     hash_ = hashlib.md5()
     _update_hash(hash_, donors)
@@ -151,33 +153,23 @@ def get_patients_hash(txm_event: TxmEvent) -> int:
     return hash_int
 
 
+# pylint: disable=too-many-branches, too-many-statements
+# Many branches and statements are still readable here
 def _update_hash(hash_, value):
-    # logger.info(f"Updating hash for type {type(value)} ({value})")
-
     type_str = f'__{type(value).__name__}__'
-    # logger.info(f"Hash update: {type_str}")
     hash_.update(type_str.encode('ASCII'))
 
-    # TODOO: remove comments
-    #f = open("hash_output.txt", "a")
-    #f.write(type_str)
-    #f.close()
-
     if isinstance(value, str):
-        #f = open("hash_output.txt", "a")
-        #f.write(value)
-        #f.close()
-        # logger.info(f"Hash update: {value}")
         hash_.update(value.encode('ASCII'))
-    elif isinstance(value, int) or isinstance(value, bool) or isinstance(value, float) or isinstance(value, datetime):
+    elif isinstance(value, (int, bool, float, datetime)):
         _update_hash(hash_, str(value))
-    elif isinstance(value, list) or isinstance(value, set) or isinstance(value, tuple):
+    elif isinstance(value, (list, set, tuple)):
         for item in value:
             _update_hash(hash_, item)
     elif isinstance(value, dict):
-        for k, v in value.items():
-            _update_hash(hash_, k)
-            _update_hash(hash_, v)
+        for key, val in value.items():
+            _update_hash(hash_, key)
+            _update_hash(hash_, val)
     elif value is None:
         _update_hash(hash_, '__none__')
     elif isinstance(value, Patient):
