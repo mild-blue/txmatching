@@ -52,7 +52,7 @@ class CalculateFromConfig(Resource):
         else:
             raise CachingNotReadyException('Caching is not ready')
             # TODO move this commented out section to another endpoint in and also remove the raising of error and
-            # return some object telling FE that the cached mathcing does not exist.
+            # return some object telling FE that the cached matching does not exist.
             #  https://github.com/mild-blue/txmatching/issues/372
             # pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
             # solver_service.save_pairing_result(pairing_result, user_id)
@@ -64,4 +64,5 @@ class CalculateFromConfig(Resource):
                                                             :configuration.max_matchings_to_show_to_viewer]
             calculated_matchings_dto.show_not_all_matchings_found = False
 
+        calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[:50]
         return jsonify(calculated_matchings_dto)

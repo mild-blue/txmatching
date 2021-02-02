@@ -1,10 +1,8 @@
 import unittest
 
-from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
-                                           HLATyping)
-from txmatching.patients.patient import (Donor, DonorType, Recipient,
-                                         RecipientRequirements)
-from txmatching.patients.patient_parameters import PatientParameters
+from tests.test_utilities.create_dataclasses import (get_test_donors,
+                                                     get_test_recipients)
+from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
 from txmatching.scorers.matching import (
     calculate_compatibility_index_for_group, get_count_of_transplants,
     get_matching_hla_typing_code)
@@ -12,8 +10,7 @@ from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_sequence import TransplantSequence
-from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, HLAGroup, Sex
+from txmatching.utils.enums import HLAGroup
 
 RAW_CODES = [
     'A1',
@@ -24,107 +21,9 @@ RAW_CODES = [
     'DR15'
 ]
 
-DONORS = [
-    Donor(
-        db_id=1,
-        medical_id='1',
-        parameters=PatientParameters(
-            blood_group=BloodGroup.A,
-            country_code=Country.CZE,
-            hla_typing=HLATyping(
-                hla_types_list=[
-                    HLAType(raw_code=RAW_CODES[0]),
-                    HLAType(raw_code=RAW_CODES[1]),
-                    HLAType(raw_code='B44'),
-                    HLAType(raw_code='DR10')
-                ]
-            ),
-            sex=Sex.M,
-            height=180,
-            weight=70,
-            year_of_birth=1985
-        ),
-        related_recipient_db_id=None,
-        donor_type=DonorType.DONOR
-    ),
-    Donor(
-        db_id=2,
-        medical_id='2',
-        parameters=PatientParameters(
-            blood_group=BloodGroup.A,
-            country_code=Country.CZE,
-            hla_typing=HLATyping(
-                hla_types_list=[
-                    HLAType(raw_code=RAW_CODES[1]),
-                    HLAType(raw_code=RAW_CODES[2]),
-                    HLAType(raw_code='DR10')
-                ]
-            ),
-            sex=Sex.M,
-            height=180,
-            weight=70,
-            year_of_birth=1985
-        ),
-        related_recipient_db_id=None,
-        donor_type=DonorType.DONOR
-    )
-]
+DONORS = get_test_donors()
 
-RECIPIENTS = [
-    Recipient(
-        db_id=3,
-        medical_id='3',
-        parameters=PatientParameters(
-            blood_group=BloodGroup.A,
-            country_code=Country.CZE,
-            hla_typing=HLATyping(
-                hla_types_list=[
-                    HLAType(raw_code=RAW_CODES[1]),
-                    HLAType(raw_code=RAW_CODES[2]),
-                    HLAType(raw_code='DR1')
-                ]
-            ),
-            sex=Sex.M,
-            height=180,
-            weight=70,
-            year_of_birth=1985
-        ),
-        related_donor_db_id=1,
-        acceptable_blood_groups=[],
-        recipient_cutoff=None,
-        hla_antibodies=HLAAntibodies([]),
-        recipient_requirements=RecipientRequirements(),
-        waiting_since=None,
-        previous_transplants=None
-    ),
-    Recipient(
-        db_id=4,
-        medical_id='4',
-        parameters=PatientParameters(
-            blood_group=BloodGroup.A,
-            country_code=Country.CZE,
-            hla_typing=HLATyping(
-                hla_types_list=[
-                    HLAType(raw_code='A3'),
-                    HLAType(raw_code='B38'),
-                    HLAType(raw_code=RAW_CODES[4]),
-                    HLAType(raw_code=RAW_CODES[5]),
-                ]
-            ),
-            sex=Sex.M,
-            height=180,
-            weight=70,
-            year_of_birth=1985
-        ),
-        related_donor_db_id=1,
-        acceptable_blood_groups=[],
-        recipient_cutoff=None,
-        hla_antibodies=HLAAntibodies([]),
-        recipient_requirements=RecipientRequirements(),
-        waiting_since=None,
-        previous_transplants=None
-    ),
-]
+RECIPIENTS = get_test_recipients()
 
 TEST_ANTIGENS = [
     'A7',

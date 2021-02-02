@@ -1,3 +1,5 @@
+from tests.test_utilities.create_dataclasses import (get_test_donors,
+                                                     get_test_recipients)
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
@@ -9,17 +11,19 @@ from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in 
 from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
+from txmatching.database.services.patient_service import get_patients_hash
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
 from txmatching.database.sql_alchemy_schema import ConfigModel
-from txmatching.patients.patient import DonorType
+from txmatching.patients.hla_model import HLAType
+from txmatching.patients.patient import DonorType, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
 from txmatching.utils.logged_user import get_current_user_id
 
 TXM_EVENT_NAME = 'test'
 
-DONORS = [
+DONOR_UPLOAD_DTOS = [
     DonorUploadDTO(
         medical_id='D1',
         blood_group=BloodGroup.A,
@@ -61,7 +65,7 @@ DONORS = [
     ),
 ]
 
-RECIPIENTS = [
+RECIPIENT_UPLOAD_DTOS = [
     RecipientUploadDTO(
         acceptable_blood_groups=[
             BloodGroup.A,
@@ -138,8 +142,8 @@ RECIPIENTS = [
 PATIENT_UPLOAD_DTO = PatientUploadDTOIn(
     country=Country.CZE,
     txm_event_name=TXM_EVENT_NAME,
-    donors=DONORS,
-    recipients=RECIPIENTS
+    donors=DONOR_UPLOAD_DTOS,
+    recipients=RECIPIENT_UPLOAD_DTOS
 )
 
 
@@ -164,5 +168,62 @@ class TestPatientService(DbTests):
         replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
 
         # Validate that all configs of particular TXM event are deleted.
+        # TODOO
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()
         self.assertEqual(0, len(configs))
+
+    def test_get_patients_hash(self):
+        txm_event_1 = TxmEvent(
+            1, 'event_name_1',
+            all_donors=get_test_donors(),
+            all_recipients=get_test_recipients(),
+            active_donors_dict=None, active_recipients_dict=None
+        )
+        hash_1 = get_patients_hash(txm_event_1)
+
+        # changing event db id, event name does not change the hash
+        txm_event_2 = TxmEvent(
+            2, 'event_name_2',
+            all_donors=get_test_donors(),
+            all_recipients=get_test_recipients(),
+            active_donors_dict=None, active_recipients_dict=None
+        )
+        hash_2 = get_patients_hash(txm_event_2)
+        self.assertEqual(hash_1, hash_2)
+
+        # Changing donors changes the hash
+        txm_event_3 = TxmEvent(
+            1, 'event_name_1',
+            all_donors=[],
+            all_recipients=get_test_recipients(),
+            active_donors_dict=None, active_recipients_dict=None
+        )
+        hash_3 = get_patients_hash(txm_event_3)
+        self.assertNotEqual(hash_1, hash_3)
+
+        # Changing recipients changes the hash
+        txm_event_4 = TxmEvent(
+            1, 'event_name_1',
+            all_donors=get_test_donors(),
+            all_recipients=[],
+            active_donors_dict=None, active_recipients_dict=None
+        )
+        hash_4 = get_patients_hash(txm_event_4)
+        self.assertNotEqual(hash_1, hash_4)
+
+        # changing hla type changes the hash
+        new_donors = get_test_donors()
+        self.assertEqual(
+            new_donors[0].parameters.hla_typing.hla_per_groups[0].hla_types[0],
+            HLAType('A1')
+        )
+        new_donors[0].parameters.hla_typing.hla_per_groups[0].hla_types[0] = HLAType('A3')
+
+        txm_event_5 = TxmEvent(
+            1, 'event_name_1',
+            all_donors=new_donors,
+            all_recipients=get_test_recipients(),
+            active_donors_dict=None, active_recipients_dict=None
+        )
+        hash_5 = get_patients_hash(txm_event_5)
+        self.assertNotEqual(hash_1, hash_5)

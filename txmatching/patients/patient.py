@@ -18,7 +18,7 @@ class DonorType(str, Enum):
     NON_DIRECTED = 'NON_DIRECTED'
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class Patient:
     db_id: int
     medical_id: str
@@ -31,14 +31,14 @@ class Patient:
         return isinstance(self, Donor)
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class Donor(Patient):
     related_recipient_db_id: Optional[RecipientDbId] = None
     donor_type: DonorType = DonorType.DONOR
     active: bool = True
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class RecipientRequirements:
     """
     Attributes:
@@ -65,6 +65,16 @@ class Recipient(Patient):
     def __post_init__(self):
         if self.recipient_cutoff is None:
             self.recipient_cutoff = calculate_cutoff(self.hla_antibodies.hla_antibodies_list)
+
+    def __hash__(self):
+        return hash((
+            *self.acceptable_blood_groups,
+            self.recipient_cutoff,
+            self.hla_antibodies,
+            self.recipient_requirements,
+            self.waiting_since,
+            self.previous_transplants
+        ))
 
 
 @dataclass

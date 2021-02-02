@@ -24,7 +24,7 @@ from txmatching.database.sql_alchemy_schema import (
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
                                            HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
-                                         RecipientRequirements)
+                                         RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.hla_system.hla_transformations import \
     preprocess_hla_code_in
@@ -142,6 +142,12 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     remove_configs_from_txm_event(txm_event_db_id)
     db.session.commit()
     return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
+
+
+def get_patients_hash(txm_event: TxmEvent):
+    donors = tuple(txm_event.active_donors_dict.values()) if txm_event.active_donors_dict is not None else None
+    recipients = tuple(txm_event.active_recipients_dict.values()) if txm_event.active_recipients_dict is not None else None
+    return hash((donors, recipients))
 
 
 def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> Patient:
