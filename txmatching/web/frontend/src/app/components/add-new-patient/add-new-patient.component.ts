@@ -23,7 +23,7 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
   public success: boolean = false;
 
   public form: FormGroup = new FormGroup({
-    country: new FormControl('', [Validators.required, countryNameValidator(this.allCountries)]),
+    country: new FormControl('', [countryNameValidator(this.allCountries)]),
     donor: new FormGroup({
       medicalId: new FormControl('', Validators.required)
     })

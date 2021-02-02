@@ -1,5 +1,3 @@
-<div *ngIf="shouldShowErrors">
-  <small>
+<div *ngFor="let error of errors">
     {{error}}
-  </small>
 </div>

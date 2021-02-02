@@ -6,7 +6,7 @@
     <mat-form-field>
       <mat-label>Country</mat-label>
 
-      <mat-chip-list #countryChip>
+      <mat-chip-list #countryChip formControlName="country">
         <mat-chip *ngIf="form.controls.country.valid"
                   [removable]="true"
                   (removed)="handleRemove('country', countryInput)">
@@ -15,10 +15,9 @@
         </mat-chip>
         <input formControlName="country"
                [matChipInputFor]="countryChip"
-               [errorStateMatcher]="errorMatcher"
                [matAutocomplete]="donorAuto"
                [placeholder]="!selectedCountry ? 'Search by country code' : ''"
-               matInput #countryInput type="text">
+               #countryInput type="text">
       </mat-chip-list>
 
       <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleSelect(countryInput)">
@@ -27,44 +26,15 @@
         </mat-option>
       </mat-autocomplete>
 
+      <mat-error>
+        <app-form-control-errors [control]="form.get('country')"></app-form-control-errors>
+      </mat-error>
+
       <mat-hint>
         Search and select 1 country from {{allCountries.length}} available countries.
       </mat-hint>
-    </mat-form-field>
 
-    <!-- Donor -->
-    <h2>Donor</h2>
-
-    <!-- Donor antigens -->
-    <h4>
-      Antigens
-      <app-count [count]="donor.antigens.length"></app-count>
-    </h4>
-    <mat-form-field>
-      <mat-label>Donor's antigens</mat-label>
-      <mat-chip-list #antigensChipList>
-        <mat-chip *ngFor="let code of donor.antigens"
-                  (removed)="donor.removeAntigen(code)"
-                  [title]="'Raw code: ' + code"
-                  [removable]="true">
-          {{code}}
-          <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-        <input #donorAntigensInput
-               [matChipInputFor]="antigensChipList"
-               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               (matChipInputTokenEnd)="addAntigen(donor, $event.value, donorAntigensInput)"
-               matInput
-               type="text">
-      </mat-chip-list>
-      <mat-hint>
-        Add new antigens by typing codes followed by
-        <span class="key">Space <mat-icon>space_bar</mat-icon></span>
-        or
-        <span class="key">Enter <mat-icon>keyboard_return</mat-icon></span>
-      </mat-hint>
     </mat-form-field>
-    <app-form-control-errors [control]="form.get('country')"></app-form-control-errors>
 
     <!-- Donor -->
     <div formGroupName="donor">
@@ -73,7 +43,12 @@
       <!-- Donor medical ID -->
       <mat-form-field>
         <mat-label>Medical ID</mat-label>
-        <input value="{{ donor.medicalId }}" formControlName="medicalId" matInput type="text">
+        <input value="{{ donor.medicalId }}"
+               formControlName="medicalId"
+               matInput type="text">
+        <mat-error>
+          <app-form-control-errors [control]="form.get('donor.medicalId')"></app-form-control-errors>
+        </mat-error>
       </mat-form-field>
 
       <!-- Donor antigens -->

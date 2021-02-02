@@ -9,27 +9,19 @@ import { errorMessages } from '@app/components/form-control-errors/form-control-
 })
 export class FormControlErrorsComponent {
 
-  @Input() control?: AbstractControl;
+  @Input() control?: AbstractControl | null;
 
-  get shouldShowErrors(): boolean {
-    return !!this.control && !!this.control.errors && this.control.touched;
-  }
-
-  get error(): string {
-    if (!this.control?.errors) {
-      return '';
+  get errors(): string[] {
+    if (!this.control?.errors || !this.control.touched) {
+      return [];
     }
 
-    const allErrors = Object.keys(this.control.errors).map(err => {
-      console.log(err, errorMessages[err], this.control?.getError(err));
+    return Object.keys(this.control.errors).map(err => {
       if (errorMessages[err] && this.control) {
         return errorMessages[err](this.control.getError(err));
       } else {
         return 'Invalid value';
       }
     });
-
-    // Show the most important one according to the order in errorMessages
-    return allErrors[0] ?? '';
   }
 }
