@@ -15,8 +15,6 @@ from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto im
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.database.db import db
-from txmatching.database.services.config_service import \
-    remove_configs_from_txm_event
 from txmatching.database.services.parsing_utils import get_hla_code
 from txmatching.database.sql_alchemy_schema import (
     ConfigModel, DonorModel, RecipientAcceptableBloodModel,
@@ -119,7 +117,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
 
     RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
-    remove_configs_from_txm_event(txm_event_db_id)
+    # remove_configs_from_txm_event(txm_event_db_id)  # TODOO
     db.session.commit()
     return get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id))
 
@@ -139,14 +137,16 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     if donor_update_dto.active is not None:
         donor_update_dict['active'] = donor_update_dto.active
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
-    remove_configs_from_txm_event(txm_event_db_id)
+    # remove_configs_from_txm_event(txm_event_db_id)  # TODOO
     db.session.commit()
     return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
 
 
-def get_patients_hash(txm_event: TxmEvent):
+def get_patients_hash(txm_event: TxmEvent) -> int:
+    # TODOO
     donors = tuple(txm_event.active_donors_dict.values()) if txm_event.active_donors_dict is not None else None
     recipients = tuple(txm_event.active_recipients_dict.values()) if txm_event.active_recipients_dict is not None else None
+    logger.info(f'Getting hash for {len(donors)} donors and {len(recipients)} recipients')
     return hash((donors, recipients))
 
 

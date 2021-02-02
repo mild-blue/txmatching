@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict, Optional
 
 from dacite import Config, from_dict
+from sqlalchemy import and_
 
 from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.matchings.matchings_model import \
@@ -11,6 +12,7 @@ from txmatching.data_transfer_objects.matchings.matchings_model import \
 from txmatching.data_transfer_objects.matchings.pairing_result import \
     DatabasePairingResult
 from txmatching.database.db import db
+from txmatching.database.services.patient_service import get_patients_hash
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
                                                     PairingResultModel)
 from txmatching.patients.patient import TxmEvent
@@ -34,6 +36,7 @@ def configuration_from_dict(config_model: Dict) -> Configuration:
 
 
 def get_configuration_for_txm_event(txm_event: TxmEvent) -> Configuration:
+    # TODOO
     current_config_model = get_latest_config_model_for_txm_event(txm_event.db_id)
     if current_config_model is None:
         return Configuration()
@@ -41,8 +44,9 @@ def get_configuration_for_txm_event(txm_event: TxmEvent) -> Configuration:
         return configuration_from_dict(current_config_model.parameters)
 
 
-def save_configuration_to_db(configuration: Configuration, txm_event_db_id: int, user_id: int) -> int:
-    config_model = _configuration_to_config_model(configuration, txm_event_db_id, user_id)
+def save_configuration_to_db(configuration: Configuration, txm_event: TxmEvent, user_id: int) -> int:
+    patients_hash = get_patients_hash(txm_event)
+    config_model = _configuration_to_config_model(configuration, txm_event.db_id, patients_hash, user_id)
 
     db.session.add(config_model)
     db.session.commit()
@@ -59,13 +63,27 @@ def remove_configs_from_txm_event(txm_event_db_id: int):
     ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).delete()
 
 
-def _configuration_to_config_model(configuration: Configuration, txm_event_db_id: int, user_id: int) -> ConfigModel:
-    return ConfigModel(parameters=dataclasses.asdict(configuration), created_by=user_id, txm_event_id=txm_event_db_id)
+def _configuration_to_config_model(configuration: Configuration, txm_event_db_id: int, patients_hash: int, user_id: int) -> ConfigModel:
+    return ConfigModel(
+        parameters=dataclasses.asdict(configuration),
+        txm_event_id=txm_event_db_id,
+        patients_hash=patients_hash,
+        created_by=user_id
+    )
 
 
 def find_configuration_db_id_for_configuration(configuration: Configuration,
                                                txm_event: TxmEvent) -> Optional[int]:
-    for config_model in ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all():
+    patients_hash = get_patients_hash(txm_event)
+    # TODOO
+    logger.info(f'Got patients hash {patients_hash}')
+
+    config_models = ConfigModel.query.filter(and_(
+        ConfigModel.txm_event_id == txm_event.db_id,
+        ConfigModel.patients_hash == patients_hash
+    )).all()
+    logger.debug(config_models)
+    for config_model in config_models:
         config_from_model = configuration_from_dict(config_model.parameters)
         if configuration == config_from_model:
             return config_model.id

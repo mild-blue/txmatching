@@ -31,7 +31,7 @@ class TestUpdateDonorRecipient(DbTests):
 
         # Insert config and validates that it is stored into DB
         user_id = get_current_user_id()
-        config = ConfigModel(
+        config = ConfigModel(  # TODOO
             txm_event_id=txm_event.db_id,
             parameters={},
             created_by=user_id

@@ -64,5 +64,5 @@ class CalculateFromConfig(Resource):
                                                             :configuration.max_matchings_to_show_to_viewer]
             calculated_matchings_dto.show_not_all_matchings_found = False
 
-        calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[:50]
+        calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[:50]  # TODOO
         return jsonify(calculated_matchings_dto)
