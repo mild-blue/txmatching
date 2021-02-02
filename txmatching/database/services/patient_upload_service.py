@@ -38,7 +38,6 @@ def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDT
         remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id,
                                                                 patient_upload_dto.country)
 
-    remove_configs_from_txm_event(txm_event_db_id)
     _add_patients_from_one_country(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,

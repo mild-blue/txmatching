@@ -36,9 +36,6 @@ class HLAPerGroup:
     hla_group: HLAGroup
     hla_types: List[HLAType]
 
-    def __hash__(self):
-        return hash((self.hla_group, *self.hla_types))
-
 
 @dataclass
 class HLATyping:
@@ -49,9 +46,6 @@ class HLATyping:
         if self.hla_per_groups is None:
             hla_types = [hla_type for hla_type in self.hla_types_list if hla_type.code]
             self.hla_per_groups = _split_hla_types_to_groups(hla_types)
-
-    def __hash__(self):
-        return hash(tuple(self.hla_per_groups))
 
 
 @dataclass
@@ -80,9 +74,6 @@ class HLAAntibody:
 class AntibodiesPerGroup:
     hla_group: HLAGroup
     hla_antibody_list: List[HLAAntibody]
-
-    def __hash__(self):
-        return hash((self.hla_group, *self.hla_antibody_list))
 
 
 @dataclass
@@ -119,9 +110,6 @@ class HLAAntibodies:
                 hla_antibodies_over_cutoff_list.append(new_antibody)
 
         self.hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_over_cutoff_list)
-
-    def __hash__(self):
-        return hash(tuple(self.hla_antibodies_per_groups))
 
 
 def _split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:

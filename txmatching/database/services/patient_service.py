@@ -1,9 +1,9 @@
 import dataclasses
+import hashlib
 import logging
 from typing import Optional, Union
 
 import dacite
-from sqlalchemy import and_
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
@@ -17,9 +17,10 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
 from txmatching.database.db import db
 from txmatching.database.services.parsing_utils import get_hla_code
 from txmatching.database.sql_alchemy_schema import (
-    ConfigModel, DonorModel, RecipientAcceptableBloodModel,
-    RecipientHLAAntibodyModel, RecipientModel)
-from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
+    DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
+    RecipientModel)
+from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibodies,
+                                           HLAAntibody, HLAPerGroup, HLAType,
                                            HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
@@ -128,8 +129,6 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
     if txm_event_db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to')
-    ConfigModel.query.filter(
-        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
 
     donor_update_dict = {}
     if donor_update_dto.hla_typing:
@@ -143,11 +142,96 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
 
 
 def get_patients_hash(txm_event: TxmEvent) -> int:
-    # TODOO
     donors = tuple(txm_event.active_donors_dict.values()) if txm_event.active_donors_dict is not None else None
     recipients = tuple(txm_event.active_recipients_dict.values()) if txm_event.active_recipients_dict is not None else None
-    logger.info(f'Getting hash for {len(donors)} donors and {len(recipients)} recipients')
-    return hash((donors, recipients))
+
+    hash_ = hashlib.md5()
+    _update_hash(hash_, donors)
+    _update_hash(hash_, recipients)
+    hash_int = int(hash_.hexdigest(), 16) % 2**64  # convert to int8
+    return hash_int
+
+
+def _update_hash(hash_, value):
+    # logger.info(f"Updating hash for type {type(value)} ({value})")
+
+    type_str = f'__{type(value).__name__}__'
+    # logger.info(f"Hash update: {type_str}")
+    hash_.update(type_str.encode('ASCII'))
+
+    # TODOO: remove comments
+    #f = open("hash_output.txt", "a")
+    #f.write(type_str)
+    #f.close()
+
+    if isinstance(value, str):
+        #f = open("hash_output.txt", "a")
+        #f.write(value)
+        #f.close()
+        # logger.info(f"Hash update: {value}")
+        hash_.update(value.encode('ASCII'))
+    elif isinstance(value, int) or isinstance(value, bool) or isinstance(value, float):
+        _update_hash(hash_, str(value))
+    elif isinstance(value, list) or isinstance(value, set) or isinstance(value, tuple):
+        for item in value:
+            _update_hash(hash_, item)
+    elif isinstance(value, dict):
+        for k, v in value.items():
+            _update_hash(hash_, k)
+            _update_hash(hash_, v)
+    elif value is None:
+        _update_hash(hash_, '__none__')
+    elif isinstance(value, Patient):
+        _update_hash(hash_, value.medical_id)
+        _update_hash(hash_, value.parameters)
+        if isinstance(value, Donor):
+            _update_hash(hash_, value.related_recipient_db_id)
+            _update_hash(hash_, value.donor_type)
+            _update_hash(hash_, value.active)
+        if isinstance(value, Recipient):
+            _update_hash(hash_, value.related_donor_db_id)
+            _update_hash(hash_, sorted(value.acceptable_blood_groups))
+            _update_hash(hash_, value.recipient_cutoff)
+            _update_hash(hash_, value.hla_antibodies)
+            _update_hash(hash_, value.recipient_requirements)
+            _update_hash(hash_, value.waiting_since)
+            _update_hash(hash_, value.previous_transplants)
+    elif isinstance(value, PatientParameters):
+        _update_hash(hash_, value.blood_group)
+        _update_hash(hash_, value.country_code)
+        _update_hash(hash_, value.hla_typing)
+        _update_hash(hash_, value.sex)
+        _update_hash(hash_, value.height)
+        _update_hash(hash_, value.weight)
+        _update_hash(hash_, value.year_of_birth)
+    elif isinstance(value, HLATyping):
+        _update_hash(hash_, value.hla_per_groups)
+    elif isinstance(value, HLAPerGroup):
+        _update_hash(hash_, value.hla_group)
+        _update_hash(hash_, sorted(value.hla_types, key=lambda hla_type: hla_type.raw_code))
+    elif isinstance(value, HLAType):
+        _update_hash(hash_, value.raw_code)
+    elif isinstance(value, RecipientRequirements):
+        # Treat None as False
+        _update_hash(hash_, bool(value.require_better_match_in_compatibility_index_or_blood_group))
+        _update_hash(hash_, bool(value.require_better_match_in_compatibility_index))
+        _update_hash(hash_, bool(value.require_compatible_blood_group))
+    elif isinstance(value, HLAAntibodies):
+        _update_hash(hash_, value.hla_antibodies_per_groups)
+    elif isinstance(value, AntibodiesPerGroup):
+        _update_hash(hash_, value.hla_group)
+        _update_hash(hash_, sorted(value.hla_antibody_list,
+                                   key=lambda hla_type: (
+                                      hla_type.raw_code,
+                                      hla_type.mfi,
+                                      hla_type.cutoff
+                                  )))
+    elif isinstance(value, HLAAntibody):
+        _update_hash(hash_, value.raw_code)
+        _update_hash(hash_, value.mfi)
+        _update_hash(hash_, value.cutoff)
+    else:
+        raise NotImplementedError(f'Hashing type {type(value)} ({value}) not implemented')
 
 
 def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> Patient:

@@ -1,3 +1,5 @@
+import hashlib
+
 from tests.test_utilities.create_dataclasses import (get_test_donors,
                                                      get_test_recipients)
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
@@ -11,7 +13,8 @@ from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in 
 from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
-from txmatching.database.services.patient_service import get_patients_hash
+from txmatching.database.services.patient_service import (_update_hash,
+                                                          get_patients_hash)
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
 from txmatching.database.sql_alchemy_schema import ConfigModel
@@ -157,6 +160,7 @@ class TestPatientService(DbTests):
         config = ConfigModel(  # TODOO
             txm_event_id=txm_event.db_id,
             parameters={},
+            patients_hash=get_patients_hash(txm_event),
             created_by=user_id
         )
 
@@ -167,10 +171,34 @@ class TestPatientService(DbTests):
 
         replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
 
-        # Validate that all configs of particular TXM event are deleted.
-        # TODOO
+        # Validate that configs of particular TXM event are not deleted.
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event.db_id).all()
-        self.assertEqual(0, len(configs))
+        self.assertEqual(1, len(configs))
+
+        # Validate that patients hash has changed
+        self.assertNotEqual(config.patients_hash)
+
+    def test_hashing(self):
+        def _assert_hash(value, expected_hash_digest):
+            hash_ = hashlib.md5()
+            _update_hash(hash_, value)
+            #print(hash_.hexdigest())  # TODOO
+            #return
+            self.assertEqual(hash_.hexdigest(), expected_hash_digest)
+
+        _assert_hash('foo', '56c527b4cc0b522b127062dec3201194')
+        _assert_hash('42', 'aa0a056d9e7d1b3b17530b46107b91a3')
+        _assert_hash(42, 'd1e2cf72d8bf073f0bc2d0e8794b31ae')
+        _assert_hash(42.0, 'ee8b51ea1d5859dc45035c4ee9fcaedc')
+        _assert_hash(True, '3b3e200b7cda75063ec203db706d2463')
+        _assert_hash([42], '7c4aa0d7ffabc559d31ae902ae2b93a6')
+        _assert_hash([1, 2], '50d69227171683e044fc85f530d31568')
+        _assert_hash({1, 2}, '26b3a59f9692f43f20db24e6ab242cb7')
+        _assert_hash((1, True), 'e70e4791e78da2db05688c6043a20d86')
+        _assert_hash({'a': 'b'}, 'e4625008dde72175d331df31f62572e9')
+        _assert_hash(None, '6af5817033462a81dfdff478e27e824d')
+        _assert_hash(get_test_donors(), 'e799dd070b8c420c7b9c026969dbf663')
+        _assert_hash(get_test_recipients(), '344d1610eab01d736c40b1938492515a')
 
     def test_get_patients_hash(self):
         txm_event_1 = TxmEvent(

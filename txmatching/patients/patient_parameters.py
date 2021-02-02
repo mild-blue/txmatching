@@ -9,7 +9,7 @@ Kilograms = float
 Centimeters = int
 
 
-@dataclass(unsafe_hash=True)
+@dataclass
 class PatientParameters:
     blood_group: BloodGroup
     country_code: Country
