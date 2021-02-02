@@ -1,6 +1,6 @@
 <div class="new-patient">
 
-  <form [formGroup]="form">
+  <form [formGroup]="form" (ngSubmit)="handleSubmit()">
 
     <!-- Country -->
     <mat-form-field>
@@ -15,7 +15,6 @@
         </mat-chip>
         <input formControlName="country"
                [matChipInputFor]="countryChip"
-               [errorStateMatcher]="errorMatcher"
                [matAutocomplete]="donorAuto"
                [placeholder]="!selectedCountry ? 'Search by country code' : ''"
                matInput #countryInput type="text">
@@ -32,37 +31,53 @@
       </mat-hint>
     </mat-form-field>
 
-    <!-- Donor -->
-    <h2>Donor</h2>
+    <app-form-control-errors [control]="form.get('country')"></app-form-control-errors>
 
-    <!-- Donor antigens -->
-    <h4>
-      Antigens
-      <app-count [count]="donor.antigens.length"></app-count>
-    </h4>
-    <mat-form-field>
-      <mat-label>Donor's antigens</mat-label>
-      <mat-chip-list #antigensChipList>
-        <mat-chip *ngFor="let code of donor.antigens"
-                  (removed)="donor.removeAntigen(code)"
-                  [title]="'Raw code: ' + code"
-                  [removable]="true">
-          {{code}}
-          <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-        <input #donorAntigensInput
-               [matChipInputFor]="antigensChipList"
-               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               (matChipInputTokenEnd)="addAntigen(donor, $event.value, donorAntigensInput)"
-               matInput
-               type="text">
-      </mat-chip-list>
-      <mat-hint>
-        Add new antigens by typing codes followed by
-        <span class="key">Space <mat-icon>space_bar</mat-icon></span>
-        or
-        <span class="key">Enter <mat-icon>keyboard_return</mat-icon></span>
-      </mat-hint>
-    </mat-form-field>
+    <!-- Donor -->
+    <div formGroupName="donor">
+      <h2>Donor</h2>
+
+      <!-- Donor medical ID -->
+      <mat-form-field>
+        <mat-label>Medical ID</mat-label>
+        <input value="{{ donor.medicalId }}" formControlName="medicalId" matInput type="text">
+      </mat-form-field>
+
+      <!-- Donor antigens -->
+      <h4>
+        Antigens
+        <app-count [count]="donor.antigens.length"></app-count>
+      </h4>
+      <mat-form-field>
+        <mat-label>Donor's antigens</mat-label>
+        <mat-chip-list #antigensChipList>
+          <mat-chip *ngFor="let code of donor.antigens"
+                    (removed)="donor.removeAntigen(code)"
+                    [title]="'Raw code: ' + code"
+                    [removable]="true">
+            {{code}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+          <input #donorAntigensInput
+                 [matChipInputFor]="antigensChipList"
+                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 (matChipInputTokenEnd)="addAntigen(donor, $event.value, donorAntigensInput)"
+                 matInput
+                 type="text">
+        </mat-chip-list>
+        <mat-hint>
+          Add new antigens by typing codes followed by
+          <span class="key">Space <mat-icon>space_bar</mat-icon></span>
+          or
+          <span class="key">Enter <mat-icon>keyboard_return</mat-icon></span>
+        </mat-hint>
+      </mat-form-field>
+    </div>
+
+    <app-button type="submit" variant="success"
+                [loading]="loading"
+                [disabled]="loading"
+                [success]="!loading && success">Save changes
+    </app-button>
   </form>
 </div>

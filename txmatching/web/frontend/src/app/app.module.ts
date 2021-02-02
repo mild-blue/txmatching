@@ -67,6 +67,7 @@ import { MatListModule } from '@angular/material/list';
 import { AddNewPatientComponent } from './components/add-new-patient/add-new-patient.component';
 import { TemplatePopupComponent } from './components/template-popup/template-popup.component';
 import { AbstractFormHandlerComponent } from './components/abstract-form-handler/abstract-form-handler.component';
+import { FormControlErrorsComponent } from './components/form-control-errors/form-control-errors.component';
 
 @NgModule({
   declarations: [
@@ -117,7 +118,8 @@ import { AbstractFormHandlerComponent } from './components/abstract-form-handler
     LoadingIconComponent,
     AddNewPatientComponent,
     TemplatePopupComponent,
-    AbstractFormHandlerComponent
+    AbstractFormHandlerComponent,
+    FormControlErrorsComponent
   ],
   imports: [
     BrowserModule,

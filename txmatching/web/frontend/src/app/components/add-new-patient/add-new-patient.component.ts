@@ -14,15 +14,20 @@ import { DonorNew } from '@app/model';
 })
 export class AddNewPatientComponent extends AbstractFormHandlerComponent implements OnInit {
 
-  public form: FormGroup = new FormGroup({
-    country: new FormControl('', Validators.required)
-  });
-
   public allCountries: string[] = Object.keys(Country).map(key => `${Country[key as Country]}`);
   public filteredCountries: Observable<string[]>;
   public separatorKeysCodes: number[] = separatorKeysCodes;
 
   public donor: DonorNew = new DonorNew();
+  public loading: boolean = false;
+  public success: boolean = false;
+
+  public form: FormGroup = new FormGroup({
+    country: new FormControl('', [Validators.required, countryNameValidator(this.allCountries)]),
+    donor: new FormGroup({
+      medicalId: new FormControl('', Validators.required)
+    })
+  });
 
   constructor() {
     super();
@@ -34,8 +39,6 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
   }
 
   ngOnInit() {
-    // Allow only existing countries
-    this.form.controls.country.setValidators(countryNameValidator(this.allCountries));
   }
 
   get selectedCountry(): string {
@@ -51,5 +54,9 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
 
     // Reset input
     control.value = '';
+  }
+
+  public handleSubmit() {
+    console.log(this.form.valid);
   }
 }
