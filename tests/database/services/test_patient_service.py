@@ -200,7 +200,7 @@ class TestPatientService(DbTests):
         _assert_hash({'a': 'b'}, 'e4625008dde72175d331df31f62572e9')
         _assert_hash(None, '6af5817033462a81dfdff478e27e824d')
         _assert_hash(get_test_donors(), 'e799dd070b8c420c7b9c026969dbf663')
-        _assert_hash(get_test_recipients(), '344d1610eab01d736c40b1938492515a')
+        _assert_hash(get_test_recipients(), '84ab071fa11443c016f991ce32113442')
 
     def test_get_patients_hash(self):
         txm_event_1 = TxmEvent(
