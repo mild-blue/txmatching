@@ -36,7 +36,6 @@ def configuration_from_dict(config_model: Dict) -> Configuration:
 
 
 def get_configuration_for_txm_event(txm_event: TxmEvent) -> Configuration:
-    # TODOO
     current_config_model = get_latest_config_model_for_txm_event(txm_event.db_id)
     if current_config_model is None:
         return Configuration()
@@ -75,9 +74,6 @@ def _configuration_to_config_model(configuration: Configuration, txm_event_db_id
 def find_configuration_db_id_for_configuration(configuration: Configuration,
                                                txm_event: TxmEvent) -> Optional[int]:
     patients_hash = get_patients_hash(txm_event)
-    # TODOO
-    logger.info(f'Got patients hash {patients_hash}')
-
     config_models = ConfigModel.query.filter(and_(
         ConfigModel.txm_event_id == txm_event.db_id,
         ConfigModel.patients_hash == patients_hash
@@ -88,6 +84,7 @@ def find_configuration_db_id_for_configuration(configuration: Configuration,
         if configuration == config_from_model:
             return config_model.id
 
+    logger.info(f'Configuration for event {txm_event.db_id} and patients hash {patients_hash} not found')
     return None
 
 

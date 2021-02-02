@@ -17,6 +17,7 @@ from txmatching.database.services.patient_service import (_update_hash,
                                                           get_patients_hash)
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
+from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.patients.hla_model import HLAType
 from txmatching.patients.patient import DonorType, TxmEvent
@@ -157,7 +158,7 @@ class TestPatientService(DbTests):
 
         # Insert config and validates that it is stored into DB
         user_id = get_current_user_id()
-        config = ConfigModel(  # TODOO
+        config = ConfigModel(
             txm_event_id=txm_event.db_id,
             parameters={},
             patients_hash=get_patients_hash(txm_event),
@@ -176,7 +177,8 @@ class TestPatientService(DbTests):
         self.assertEqual(1, len(configs))
 
         # Validate that patients hash has changed
-        self.assertNotEqual(config.patients_hash)
+        txm_event_new = get_txm_event(txm_event.db_id)
+        self.assertNotEqual(config.patients_hash, get_patients_hash(txm_event_new))
 
     def test_hashing(self):
         def _assert_hash(value, expected_hash_digest):

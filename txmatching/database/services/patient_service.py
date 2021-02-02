@@ -1,6 +1,7 @@
 import dataclasses
 import hashlib
 import logging
+from datetime import datetime
 from typing import Optional, Union
 
 import dacite
@@ -118,7 +119,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
 
     RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
-    # remove_configs_from_txm_event(txm_event_db_id)  # TODOO
     db.session.commit()
     return get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id))
 
@@ -136,7 +136,6 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     if donor_update_dto.active is not None:
         donor_update_dict['active'] = donor_update_dto.active
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
-    # remove_configs_from_txm_event(txm_event_db_id)  # TODOO
     db.session.commit()
     return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
 
@@ -170,7 +169,7 @@ def _update_hash(hash_, value):
         #f.close()
         # logger.info(f"Hash update: {value}")
         hash_.update(value.encode('ASCII'))
-    elif isinstance(value, int) or isinstance(value, bool) or isinstance(value, float):
+    elif isinstance(value, int) or isinstance(value, bool) or isinstance(value, float) or isinstance(value, datetime):
         _update_hash(hash_, str(value))
     elif isinstance(value, list) or isinstance(value, set) or isinstance(value, tuple):
         for item in value:
