@@ -39,6 +39,8 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
   }
 
   ngOnInit() {
+    // Allow only existing countries
+    this.form.controls.country.setValidators(countryNameValidator(this.allCountries));
   }
 
   get selectedCountry(): string {

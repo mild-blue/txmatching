@@ -114,12 +114,12 @@ import { FormControlErrorsComponent } from './components/form-control-errors/for
     PatientDonorDetailWrapperComponent,
     DonorTypeLabelPipe,
     AntibodyTitlePipe,
-    AbstractLoggedComponent,
-    LoadingIconComponent,
     AddNewPatientComponent,
     TemplatePopupComponent,
     AbstractFormHandlerComponent,
-    FormControlErrorsComponent
+    FormControlErrorsComponent,
+    LoadingIconComponent,
+    AbstractLoggedComponent
   ],
   imports: [
     BrowserModule,
