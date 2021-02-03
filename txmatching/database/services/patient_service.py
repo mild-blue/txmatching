@@ -141,10 +141,8 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
 
 
 def get_patients_hash(txm_event: TxmEvent) -> int:
-    donors = tuple(txm_event.active_donors_dict.values()) \
-        if txm_event.active_donors_dict is not None else None
-    recipients = tuple(txm_event.active_recipients_dict.values()) \
-        if txm_event.active_recipients_dict is not None else None
+    donors = tuple(txm_event.active_donors_dict.values())
+    recipients = tuple(txm_event.active_recipients_dict.values())
 
     hash_ = hashlib.md5()
     _update_hash(hash_, donors)
@@ -157,6 +155,10 @@ def get_patients_hash(txm_event: TxmEvent) -> int:
 # pylint: disable=too-many-branches, too-many-statements
 # Many branches and statements are still readable here
 def _update_hash(hash_, value):
+    """
+    Create hash for a given value that is persistent across app sessions. Contrary to this function, a hash created
+    using `hash()` function is not persistent (see https://docs.python.org/3/using/cmdline.html#envvar-PYTHONHASHSEED)
+    """
     type_str = f'__{type(value).__name__}__'
     hash_.update(type_str.encode('ASCII'))
 
@@ -165,9 +167,13 @@ def _update_hash(hash_, value):
     elif isinstance(value, (int, bool, float, datetime)):
         _update_hash(hash_, str(value))
     elif isinstance(value, (list, set, tuple)):
+        # Note: Creating hash of set using this way could be possibly not secure
+        #       (see: https://stackoverflow.com/questions/15479928)
         for item in value:
             _update_hash(hash_, item)
     elif isinstance(value, dict):
+        # Note: Creating hash of dict using this way could be possibly not secure
+        #       (see: https://stackoverflow.com/questions/15479928)
         for key, val in value.items():
             _update_hash(hash_, key)
             _update_hash(hash_, val)

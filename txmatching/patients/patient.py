@@ -67,21 +67,23 @@ class Recipient(Patient):
             self.recipient_cutoff = calculate_cutoff(self.hla_antibodies.hla_antibodies_list)
 
 
-@dataclass
+@dataclass(init=False)
 class TxmEvent:
     db_id: int
     name: str
     all_donors: List[Donor]
     all_recipients: List[Recipient]
-    active_donors_dict: Optional[Dict[DonorDbId, Donor]] = None
-    active_recipients_dict: Optional[Dict[RecipientDbId, Recipient]] = None
+    active_donors_dict: Dict[DonorDbId, Donor]
+    active_recipients_dict: Dict[RecipientDbId, Recipient]
 
-    def __post_init__(self):
-        if not self.active_donors_dict:
-            self.active_donors_dict = {donor.db_id: donor for donor in self.all_donors if donor.active}
-        if not self.active_recipients_dict:
-            self.active_recipients_dict = {recipient.db_id: recipient for recipient in self.all_recipients if
-                                           recipient.related_donor_db_id in self.active_donors_dict}
+    def __init__(self, db_id: int, name: str, all_donors: List[Donor], all_recipients: List[Recipient]):
+        self.db_id = db_id
+        self.name = name
+        self.all_donors = all_donors
+        self.all_recipients = all_recipients
+        self.active_donors_dict = {donor.db_id: donor for donor in self.all_donors if donor.active}
+        self.active_recipients_dict = {recipient.db_id: recipient for recipient in self.all_recipients if
+                                       recipient.related_donor_db_id in self.active_donors_dict}
 
 
 def calculate_cutoff(hla_antibodies_list: List[HLAAntibody]) -> int:
