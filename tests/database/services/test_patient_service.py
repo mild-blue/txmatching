@@ -184,8 +184,6 @@ class TestPatientService(DbTests):
         def _assert_hash(value, expected_hash_digest):
             hash_ = hashlib.md5()
             _update_hash(hash_, value)
-            #print(hash_.hexdigest())  # TODOO
-            #return
             self.assertEqual(hash_.hexdigest(), expected_hash_digest)
 
         _assert_hash('foo', '56c527b4cc0b522b127062dec3201194')

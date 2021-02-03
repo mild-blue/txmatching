@@ -149,7 +149,8 @@ def get_patients_hash(txm_event: TxmEvent) -> int:
     hash_ = hashlib.md5()
     _update_hash(hash_, donors)
     _update_hash(hash_, recipients)
-    hash_int = int(hash_.hexdigest(), 16) % 2**63  # convert to int8
+    # Decrease hash size so that it would fit to postgres BIGINT (INT8)
+    hash_int = int(hash_.hexdigest(), 16) % 2**63
     return hash_int
 
 
