@@ -204,8 +204,7 @@ class TestPatientService(DbTests):
         txm_event_1 = TxmEvent(
             1, 'event_name_1',
             all_donors=get_test_donors(),
-            all_recipients=get_test_recipients(),
-            active_donors_dict=None, active_recipients_dict=None
+            all_recipients=get_test_recipients()
         )
         hash_1 = get_patients_hash(txm_event_1)
 
@@ -213,8 +212,7 @@ class TestPatientService(DbTests):
         txm_event_2 = TxmEvent(
             2, 'event_name_2',
             all_donors=get_test_donors(),
-            all_recipients=get_test_recipients(),
-            active_donors_dict=None, active_recipients_dict=None
+            all_recipients=get_test_recipients()
         )
         hash_2 = get_patients_hash(txm_event_2)
         self.assertEqual(hash_1, hash_2)
@@ -223,8 +221,7 @@ class TestPatientService(DbTests):
         txm_event_3 = TxmEvent(
             1, 'event_name_1',
             all_donors=[],
-            all_recipients=get_test_recipients(),
-            active_donors_dict=None, active_recipients_dict=None
+            all_recipients=get_test_recipients()
         )
         hash_3 = get_patients_hash(txm_event_3)
         self.assertNotEqual(hash_1, hash_3)
@@ -233,8 +230,7 @@ class TestPatientService(DbTests):
         txm_event_4 = TxmEvent(
             1, 'event_name_1',
             all_donors=get_test_donors(),
-            all_recipients=[],
-            active_donors_dict=None, active_recipients_dict=None
+            all_recipients=[]
         )
         hash_4 = get_patients_hash(txm_event_4)
         self.assertNotEqual(hash_1, hash_4)
@@ -250,8 +246,7 @@ class TestPatientService(DbTests):
         txm_event_5 = TxmEvent(
             1, 'event_name_1',
             all_donors=new_donors,
-            all_recipients=get_test_recipients(),
-            active_donors_dict=None, active_recipients_dict=None
+            all_recipients=get_test_recipients()
         )
         hash_5 = get_patients_hash(txm_event_5)
         self.assertNotEqual(hash_1, hash_5)
