@@ -958,15 +958,6 @@ definitions:
         required:
         - events
         type: object
-    TxmEvents:
-        properties:
-            events:
-                items:
-                    $ref: '#/definitions/TxmEvent'
-                type: array
-        required:
-        - events
-        type: object
     UploadPatients:
         properties:
             add_to_existing_patients:
@@ -1241,10 +1232,6 @@ paths:
                     description: Non-unique patients provided.
                     schema:
                         $ref: '#/definitions/FailResponse'
-                '409':
-                    description: Non-unique patients provided.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
                 '500':
                     description: Unexpected error, see contents for details.
                     schema:
@@ -1410,15 +1397,22 @@ paths:
                 '400':
                     description: Wrong data format.
                     schema:
-                        $ref: '#/definitions/ServiceStatus'
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
                 '500':
                     description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
-                '503':
-                    description: Some services are failing.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
             tags:
             - patients
         parameters:
@@ -1507,23 +1501,64 @@ paths:
             security:
             -   bearer: []
             tags:
-            - txm-event
-    /v1/txm-event/patients:
-        put:
-            description: This endpoint allows the country editor to upload patient
-                data for given                         TXM event. TXM event name has
-                to be provided by an ADMIN. The endpoint removes all patients                         from
-                respective country in case there were any.
-            operationId: put_txm_event_upload_patients
+            - patients
+    /v1/txm-event/{txm_event_id}/patients/pairs:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        post:
+            operationId: post_donor_recipient_pair
             parameters:
             -   in: body
                 name: payload
                 required: true
                 schema:
-                    $ref: '#/definitions/UploadPatients'
+                    $ref: '#/definitions/DonorModelPairIn'
             responses:
                 '200':
-                    description: Success.
+                    description: Added new donor (possibly with recipient)
+                    schema:
+                        $ref: '#/definitions/PatientUploadSuccessResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
+    /v1/txm-event/{txm_event_id}/patients/recipient:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        put:
+            operationId: put_alter_recipient
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/RecipientModelToUpdate'
+            responses:
+                '200':
+                    description: Updated recipient.
                     schema:
                         $ref: '#/definitions/Recipient'
                 '400':
@@ -1546,26 +1581,25 @@ paths:
             security:
             -   bearer: []
             tags:
-            - txm-event
-    /v1/txm-event/{name}:
-        delete:
-            description: Endpoint that lets an ADMIN delete existing TXM event. The
-                ADMIN should know the TXM event name.
-            operationId: delete_txm_event_delete_api
+            - patients
+    /v1/txm-event/{txm_event_id}/reports/{matching_id}:
+        get:
+            operationId: get_report
             parameters:
-            -   description: Name of the TXM event to be deleted.
+            -   description: Id of matching that was chosen
                 in: path
-                name: name
+                name: matching_id
                 required: true
-                type: string
+                type: integer
+            -   description: Number of matchings with lower score than chosen to include
+                    in report.
+                in: query
+                name: matchingsBelowChosen
+                required: true
+                type: integer
             responses:
                 '200':
-                    description: Returns status code representing result of TXM event
-                        object deletion.
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
+                    description: Generates PDF report.
                 '401':
                     description: Authentication failed.
                     schema:
@@ -1586,7 +1620,12 @@ paths:
             security:
             -   bearer: []
             tags:
-            - txm-event
+            - reports
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
     /v1/user/change-password:
         put:
             operationId: put_password_change_api
