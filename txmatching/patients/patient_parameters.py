@@ -3,7 +3,8 @@ from typing import Optional
 
 from txmatching.patients.hla_model import HLATyping
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, Sex
+from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import Sex
 
 Kilograms = float
 Centimeters = int

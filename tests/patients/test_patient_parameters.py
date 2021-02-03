@@ -1,7 +1,7 @@
 from txmatching.patients.hla_model import HLAType, HLATyping
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 donor_parameters_Joe = PatientParameters(
     blood_group=BloodGroup.A,

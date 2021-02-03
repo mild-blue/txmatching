@@ -5,7 +5,7 @@ from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto impor
     DonorUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
     RecipientUploadDTO
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 
 @dataclass

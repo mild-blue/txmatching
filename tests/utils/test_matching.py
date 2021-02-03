@@ -13,7 +13,8 @@ from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_sequence import TransplantSequence
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, HLAGroup, Sex
+from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import HLAGroup, Sex
 
 RAW_CODES = [
     'A1',

@@ -1,7 +1,7 @@
 from flask_restx import fields
 
 from txmatching.configuration.configuration import Configuration
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 from txmatching.web.api.namespaces import matching_api
 
 ManualDonorRecipientScoreJson = matching_api.model('ManualRecipientDonorScore', {

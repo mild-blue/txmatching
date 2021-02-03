@@ -14,7 +14,7 @@ from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
                                                     PairingResultModel)
 from txmatching.patients.patient import TxmEvent
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 logger = logging.getLogger(__name__)
 

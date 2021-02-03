@@ -19,7 +19,7 @@ from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto i
     RecipientUploadDTO
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 from txmatching.utils.excel_parsing.countries_for_excel import \
     country_code_from_id
 

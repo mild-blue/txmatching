@@ -2,7 +2,8 @@ from flask_restx import fields
 
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, Sex
+from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import Sex
 from txmatching.web.api.namespaces import txm_event_api
 
 ANTIGENS_EXAMPLE = ['A1', 'A32', 'B7', 'B51', 'DR11', 'DR15', 'A*02:03', 'A*11:01:35', 'DPA1*01:07', 'DRB4*01:01',

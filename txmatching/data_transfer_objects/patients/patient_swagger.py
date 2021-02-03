@@ -7,7 +7,8 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DetailedScoreForGroupJson)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, Sex
+from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import Sex
 from txmatching.web.api.namespaces import patient_api
 
 PatientParametersJson = patient_api.model('PatientParameters', {
