@@ -19,7 +19,7 @@ from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
     TxmDefaultEventDTOIn, TxmEventDTOIn)
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import (
     TxmEventDTOOut, TxmEventsDTOOut)
-from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import \
+from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson, TxmDefaultEventJsonIn, TxmEventJsonIn,

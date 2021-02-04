@@ -333,6 +333,24 @@ definitions:
         - hla_typing
         - medical_id
         type: object
+    DonorModelPairIn:
+        properties:
+            country_code:
+                enum:
+                - CZE
+                - ISR
+                - AUT
+                - CAN
+                - IND
+                example: CZE
+                type: string
+            donor:
+                $ref: '#/definitions/DonorInput'
+            recipient:
+                $ref: '#/definitions/RecipientInput'
+        required:
+        - donor
+        type: object
     DonorModelToUpdate:
         properties:
             active:
@@ -1484,6 +1502,46 @@ paths:
             -   bearer: []
             tags:
             - patients
+    /v1/txm-event/{txm_event_id}/patients/pairs:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        post:
+            operationId: post_donor_recipient_pair
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/DonorModelPairIn'
+            responses:
+                '200':
+                    description: Added new donor (possibly with recipient)
+                    schema:
+                        $ref: '#/definitions/PatientUploadSuccessResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
     /v1/txm-event/{txm_event_id}/patients/recipient:
         parameters:
         -   in: path
@@ -1500,7 +1558,7 @@ paths:
                     $ref: '#/definitions/RecipientModelToUpdate'
             responses:
                 '200':
-                    description: Updates single recipient.
+                    description: Updated recipient.
                     schema:
                         $ref: '#/definitions/Recipient'
                 '400':

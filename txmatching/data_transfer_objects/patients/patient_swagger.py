@@ -5,6 +5,8 @@ from txmatching.data_transfer_objects.hla.hla_swagger import (
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
     DetailedScoreForGroupJson)
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
+    DonorJsonIn, RecipientJsonIn)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
@@ -81,7 +83,7 @@ HLAAntibodiesToUpdateJson = patient_api.model('HlaAntibodiesToUpdate', {
     'hla_antibodies_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAAntibodyToUpdateJson)),
 })
 
-RecipientModelToUpdateJson = patient_api.model('RecipientModelToUpdate', {
+RecipientToUpdateJson = patient_api.model('RecipientModelToUpdate', {
     'db_id': fields.Integer(required=True, description='Database id of the patient', example=1),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(
         enum=[blood_group.value for blood_group in BloodGroup]),
@@ -107,7 +109,7 @@ RecipientModelToUpdateJson = patient_api.model('RecipientModelToUpdate', {
     'cutoff': fields.Integer(required=False)
 })
 
-DonorModelToUpdateJson = patient_api.model('DonorModelToUpdate', {
+DonorToUpdateJson = patient_api.model('DonorModelToUpdate', {
     'db_id': fields.Integer(required=True, description='Database id of the patient', example=1),
     'hla_typing': fields.Nested(HLATypingToUpdateJson, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
@@ -115,4 +117,15 @@ DonorModelToUpdateJson = patient_api.model('DonorModelToUpdate', {
                                 example=EXAMPLE_HLA_TYPING),
     'active': fields.Boolean(required=False, description='Information, whether or not given donor shall be considered'
                                                          ' in exchange.')
+})
+
+HLAAntibodyPairInJson = patient_api.model('HLAAntibodyPairIn', {
+    'name': fields.String(required=True, example='A32', description='HLA antibody name.'),
+    'mfi': fields.Integer(required=True, example=2350, description='Mean fluorescence intensity. Use exact value.'),
+})
+
+DonorModelPairInJson = patient_api.model('DonorModelPairIn', {
+    'country_code': fields.String(required=False, enum=[country.value for country in Country]),
+    'donor': fields.Nested(required=True, model=DonorJsonIn),
+    'recipient': fields.Nested(required=False, model=RecipientJsonIn)
 })
