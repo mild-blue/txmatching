@@ -1,6 +1,7 @@
 # pylint: disable=no-self-use
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 import datetime
+import itertools
 import logging
 import os
 import time
@@ -118,14 +119,16 @@ class Report(Resource):
         if len(requested_matching) == 0:
             raise NotFoundException(f'Matching with id {matching_id} not found.')
 
-        matchings_over = list(
-            filter(lambda matching: matching.order_id() < matching_id,
-                   sorted_matchings))
-        matchings_under = list(
-            filter(lambda matching: matching.order_id() > matching_id,
-                   sorted_matchings))[:matching_range_limit]
-        other_matchings_to_include = matchings_over + matchings_under
-        other_matchings_to_include.sort(key=lambda m: m.order_id())
+        other_matchings_to_include = list(
+            itertools.islice(
+                filter(
+                    lambda matching: matching.order_id() != matching_id,
+                    sorted_matchings
+                ),
+                matching_range_limit
+            )
+        )
+
         matchings = requested_matching + other_matchings_to_include
 
         calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings)
