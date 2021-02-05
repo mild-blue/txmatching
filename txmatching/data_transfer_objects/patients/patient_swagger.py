@@ -125,7 +125,7 @@ HLAAntibodyPairInJson = patient_api.model('HLAAntibodyPairIn', {
 })
 
 DonorModelPairInJson = patient_api.model('DonorModelPairIn', {
-    'country_code': fields.String(required=False, enum=[country.value for country in Country]),
+    'country_code': fields.Nested(CountryCodeJson, required=False),
     'donor': fields.Nested(required=True, model=DonorJsonIn),
     'recipient': fields.Nested(required=False, model=RecipientJsonIn)
 })
