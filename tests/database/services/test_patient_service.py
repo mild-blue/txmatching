@@ -1,12 +1,12 @@
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
-from txmatching.data_transfer_objects.patients.upload_dto.hla_antibodies_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
-from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import \
+from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
-from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.patient_upload_service import \

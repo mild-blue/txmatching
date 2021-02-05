@@ -6,11 +6,13 @@ from typing import Dict, List
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
     HLATypingDTO
-from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
+    DonorRecipientPairDTO
+from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
-from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import \
+from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
-from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.config_service import \
@@ -30,6 +32,19 @@ from txmatching.utils.hla_system.hla_transformations_store import \
     parse_hla_raw_code_and_store_parsing_error_in_db
 
 logger = logging.getLogger(__name__)
+
+
+def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO, txm_event_db_id: int):
+    remove_configs_from_txm_event(txm_event_db_id)
+    if donor_recipient_pair_dto.recipient:
+        donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
+
+    _add_patients_from_one_country(
+        donors=[donor_recipient_pair_dto.donor],
+        recipients=[donor_recipient_pair_dto.recipient] if donor_recipient_pair_dto.recipient else [],
+        country_code=donor_recipient_pair_dto.country_code,
+        txm_event_db_id=txm_event_db_id
+    )
 
 
 def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn):

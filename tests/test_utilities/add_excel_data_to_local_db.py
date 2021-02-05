@@ -7,7 +7,7 @@ from dacite import Config, from_dict
 
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from txmatching.configuration.configuration import Configuration
-from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import \
+from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
 from txmatching.database.services.patient_upload_service import (
     replace_or_add_patients_from_excel,
