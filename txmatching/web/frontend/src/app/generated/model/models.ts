@@ -3,6 +3,7 @@ export * from './antibodyMatchGenerated';
 export * from './antigenMatchGenerated';
 export * from './calculatedMatchingsGenerated';
 export * from './configurationGenerated';
+export * from './countryCodeGenerated';
 export * from './countryGenerated';
 export * from './defaultTxmEventGenerated';
 export * from './detailedScoreForGroupGenerated';

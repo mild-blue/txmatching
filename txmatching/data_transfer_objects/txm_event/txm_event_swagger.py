@@ -1,8 +1,9 @@
 from flask_restx import fields
 
+from txmatching.data_transfer_objects.matchings.matching_swagger import \
+    CountryCodeJson
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import Sex
 from txmatching.web.api.namespaces import txm_event_api
 
@@ -80,7 +81,7 @@ RecipientJsonIn = txm_event_api.model('RecipientInput', {
 UploadPatientsJson = txm_event_api.model(
     'UploadPatients',
     {
-        'country': fields.String(required=True, enum=[country.value for country in Country]),
+        'country': fields.Nested(CountryCodeJson, required=True),
         'txm_event_name': fields.String(required=True,
                                         example='2020-10-CZE-ISR-AUT',
                                         description='The TXM event name has to be provided by an ADMIN.'),

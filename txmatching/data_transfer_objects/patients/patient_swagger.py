@@ -3,18 +3,17 @@ from flask_restx import fields
 from txmatching.data_transfer_objects.hla.hla_swagger import (
     EXAMPLE_HLA_TYPING, HLAAntibodies, HLATyping)
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
-    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
+    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE, CountryCodeJson,
     DetailedScoreForGroupJson)
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import Sex
 from txmatching.web.api.namespaces import patient_api
 
 PatientParametersJson = patient_api.model('PatientParameters', {
     'blood_group': fields.String(required=False, enum=[blood_group.value for blood_group in BloodGroup]),
     'hla_typing': fields.Nested(required=False, model=HLATyping),
-    'country_code': fields.String(required=False, enum=[country.value for country in Country]),
+    'country_code': fields.Nested(CountryCodeJson, required=False),
     'sex': fields.String(required=False, enum=[sex.value for sex in Sex]),
     'height': fields.Integer(required=False),
     'weight': fields.Float(required=False),
