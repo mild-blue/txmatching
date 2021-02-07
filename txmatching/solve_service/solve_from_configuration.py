@@ -14,7 +14,7 @@ from txmatching.solvers.solver_from_config import solver_from_configuration
 
 logger = logging.getLogger(__name__)
 MAX_ALLOWED_NUMBER_OF_MATCHINGS = 1000000
-MAX_NUMBER_OF_MATCHINGS_TO_STORE = 1000
+MAX_NUMBER_OF_MATCHINGS_TO_STORE = 100
 
 
 def solve_from_configuration(configuration: Configuration, txm_event: TxmEvent) -> PairingResult:
