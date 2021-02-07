@@ -6,7 +6,8 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
-from txmatching.database.services.patient_service import get_patients_hash
+from txmatching.database.services.patient_service import \
+    get_patients_persistent_hash
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.txm_event_service import (
@@ -35,7 +36,7 @@ class TestUpdateDonorRecipient(DbTests):
         config = ConfigModel(
             txm_event_id=txm_event.db_id,
             parameters={},
-            patients_hash=get_patients_hash(txm_event),
+            patients_hash=get_patients_persistent_hash(txm_event),
             created_by=user_id
         )
 

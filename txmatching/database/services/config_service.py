@@ -12,7 +12,8 @@ from txmatching.data_transfer_objects.matchings.matchings_model import \
 from txmatching.data_transfer_objects.matchings.pairing_result import \
     DatabasePairingResult
 from txmatching.database.db import db
-from txmatching.database.services.patient_service import get_patients_hash
+from txmatching.database.services.patient_service import \
+    get_patients_persistent_hash
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
                                                     PairingResultModel)
 from txmatching.patients.patient import TxmEvent
@@ -44,7 +45,7 @@ def get_configuration_for_txm_event(txm_event: TxmEvent) -> Configuration:
 
 
 def save_configuration_to_db(configuration: Configuration, txm_event: TxmEvent, user_id: int) -> int:
-    patients_hash = get_patients_hash(txm_event)
+    patients_hash = get_patients_persistent_hash(txm_event)
     config_model = _configuration_to_config_model(configuration, txm_event.db_id, patients_hash, user_id)
 
     db.session.add(config_model)
@@ -78,7 +79,7 @@ def _configuration_to_config_model(
 
 def find_configuration_db_id_for_configuration(configuration: Configuration,
                                                txm_event: TxmEvent) -> Optional[int]:
-    patients_hash = get_patients_hash(txm_event)
+    patients_hash = get_patients_persistent_hash(txm_event)
     config_models = ConfigModel.query.filter(and_(
         ConfigModel.txm_event_id == txm_event.db_id,
         ConfigModel.patients_hash == patients_hash

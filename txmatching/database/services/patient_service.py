@@ -1,7 +1,5 @@
 import dataclasses
-import hashlib
 import logging
-from datetime import datetime
 from typing import Optional, Union
 
 import dacite
@@ -20,8 +18,7 @@ from txmatching.database.services.parsing_utils import get_hla_code
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
     RecipientModel)
-from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibodies,
-                                           HLAAntibody, HLAPerGroup, HLAType,
+from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
                                            HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
@@ -31,6 +28,9 @@ from txmatching.utils.hla_system.hla_transformations import \
 from txmatching.utils.hla_system.hla_transformations_store import \
     parse_hla_raw_code_and_store_parsing_error_in_db
 from txmatching.utils.logging_tools import PatientAdapter
+from txmatching.utils.persistent_hash import (get_hash_digest,
+                                              initialize_persistent_hash,
+                                              update_persistent_hash)
 
 logger = logging.getLogger(__name__)
 
@@ -140,96 +140,14 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
 
 
-def get_patients_hash(txm_event: TxmEvent) -> int:
+def get_patients_persistent_hash(txm_event: TxmEvent) -> int:
     donors = tuple(txm_event.active_donors_dict.values())
     recipients = tuple(txm_event.active_recipients_dict.values())
 
-    hash_ = hashlib.md5()
-    _update_hash(hash_, donors)
-    _update_hash(hash_, recipients)
-    # Decrease hash size so that it would fit to postgres BIGINT (INT8)
-    hash_int = int(hash_.hexdigest(), 16) % 2**63
-    return hash_int
-
-
-# pylint: disable=too-many-branches, too-many-statements
-# Many branches and statements are still readable here
-def _update_hash(hash_, value):
-    """
-    Create hash for a given value that is persistent across app sessions. Contrary to this function, a hash created
-    using `hash()` function is not persistent (see https://docs.python.org/3/using/cmdline.html#envvar-PYTHONHASHSEED)
-    """
-    type_str = f'__{type(value).__name__}__'
-    hash_.update(type_str.encode('ASCII'))
-
-    if isinstance(value, str):
-        hash_.update(value.encode('ASCII'))
-    elif isinstance(value, (int, bool, float, datetime)):
-        _update_hash(hash_, str(value))
-    elif isinstance(value, (list, set, tuple)):
-        # Note: Creating hash of set using this way could be possibly not secure
-        #       (see: https://stackoverflow.com/questions/15479928)
-        for item in value:
-            _update_hash(hash_, item)
-    elif isinstance(value, dict):
-        # Note: Creating hash of dict using this way could be possibly not secure
-        #       (see: https://stackoverflow.com/questions/15479928)
-        for key, val in value.items():
-            _update_hash(hash_, key)
-            _update_hash(hash_, val)
-    elif value is None:
-        _update_hash(hash_, '__none__')
-    elif isinstance(value, Patient):
-        _update_hash(hash_, value.medical_id)
-        _update_hash(hash_, value.parameters)
-        if isinstance(value, Donor):
-            _update_hash(hash_, value.related_recipient_db_id)
-            _update_hash(hash_, value.donor_type)
-            _update_hash(hash_, value.active)
-        if isinstance(value, Recipient):
-            _update_hash(hash_, value.related_donor_db_id)
-            _update_hash(hash_, sorted(value.acceptable_blood_groups))
-            _update_hash(hash_, value.recipient_cutoff)
-            _update_hash(hash_, value.hla_antibodies)
-            _update_hash(hash_, value.recipient_requirements)
-            _update_hash(hash_, value.waiting_since)
-            _update_hash(hash_, value.previous_transplants)
-    elif isinstance(value, PatientParameters):
-        _update_hash(hash_, value.blood_group)
-        _update_hash(hash_, value.country_code)
-        _update_hash(hash_, value.hla_typing)
-        _update_hash(hash_, value.sex)
-        _update_hash(hash_, value.height)
-        _update_hash(hash_, value.weight)
-        _update_hash(hash_, value.year_of_birth)
-    elif isinstance(value, HLATyping):
-        _update_hash(hash_, value.hla_per_groups)
-    elif isinstance(value, HLAPerGroup):
-        _update_hash(hash_, value.hla_group)
-        _update_hash(hash_, sorted(value.hla_types, key=lambda hla_type: hla_type.raw_code))
-    elif isinstance(value, HLAType):
-        _update_hash(hash_, value.raw_code)
-    elif isinstance(value, RecipientRequirements):
-        # Treat None as False
-        _update_hash(hash_, bool(value.require_better_match_in_compatibility_index_or_blood_group))
-        _update_hash(hash_, bool(value.require_better_match_in_compatibility_index))
-        _update_hash(hash_, bool(value.require_compatible_blood_group))
-    elif isinstance(value, HLAAntibodies):
-        _update_hash(hash_, value.hla_antibodies_per_groups)
-    elif isinstance(value, AntibodiesPerGroup):
-        _update_hash(hash_, value.hla_group)
-        _update_hash(hash_, sorted(value.hla_antibody_list,
-                                   key=lambda hla_type: (
-                                      hla_type.raw_code,
-                                      hla_type.mfi,
-                                      hla_type.cutoff
-                                  )))
-    elif isinstance(value, HLAAntibody):
-        _update_hash(hash_, value.raw_code)
-        _update_hash(hash_, value.mfi)
-        _update_hash(hash_, value.cutoff)
-    else:
-        raise NotImplementedError(f'Hashing type {type(value)} ({value}) not implemented')
+    hash_ = initialize_persistent_hash()
+    update_persistent_hash(hash_, donors)
+    update_persistent_hash(hash_, recipients)
+    return get_hash_digest(hash_)
 
 
 def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> Patient:

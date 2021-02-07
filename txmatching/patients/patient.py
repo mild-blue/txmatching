@@ -8,6 +8,8 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
+from txmatching.utils.persistent_hash import (PersistentlyHashable,
+                                              update_persistent_hash)
 
 DEFAULT_CUTOFF = 2000
 
@@ -19,7 +21,7 @@ class DonorType(str, Enum):
 
 
 @dataclass
-class Patient:
+class Patient(PersistentlyHashable):
     db_id: int
     medical_id: str
     parameters: PatientParameters
@@ -30,16 +32,28 @@ class Patient:
     def is_donor(self) -> bool:
         return isinstance(self, Donor)
 
+    def update_persistent_hash(self, hash_):
+        update_persistent_hash(hash_, Patient)
+        update_persistent_hash(hash_, self.medical_id)
+        update_persistent_hash(hash_, self.parameters)
+
 
 @dataclass
-class Donor(Patient):
+class Donor(Patient, PersistentlyHashable):
     related_recipient_db_id: Optional[RecipientDbId] = None
     donor_type: DonorType = DonorType.DONOR
     active: bool = True
 
+    def update_persistent_hash(self, hash_):
+        super().update_persistent_hash(hash_)
+        update_persistent_hash(hash_, Donor)
+        update_persistent_hash(hash_, self.related_recipient_db_id)
+        update_persistent_hash(hash_, self.donor_type)
+        update_persistent_hash(hash_, self.active)
+
 
 @dataclass
-class RecipientRequirements:
+class RecipientRequirements(PersistentlyHashable):
     """
     Attributes:
         require_new_donor_having_better_match_in_compatibility_index: New donor for recipient needs to have
@@ -51,9 +65,16 @@ class RecipientRequirements:
     require_better_match_in_compatibility_index_or_blood_group: Optional[bool] = None
     require_compatible_blood_group: Optional[bool] = None
 
+    def update_persistent_hash(self, hash_):
+        update_persistent_hash(hash_, RecipientRequirements)
+        # Treat None as False
+        update_persistent_hash(hash_, bool(self.require_better_match_in_compatibility_index_or_blood_group))
+        update_persistent_hash(hash_, bool(self.require_better_match_in_compatibility_index))
+        update_persistent_hash(hash_, bool(self.require_compatible_blood_group))
+
 
 @dataclass
-class Recipient(Patient):
+class Recipient(Patient, PersistentlyHashable):
     related_donor_db_id: DonorDbId
     acceptable_blood_groups: List[BloodGroup]
     recipient_cutoff: Optional[int] = None
@@ -65,6 +86,17 @@ class Recipient(Patient):
     def __post_init__(self):
         if self.recipient_cutoff is None:
             self.recipient_cutoff = calculate_cutoff(self.hla_antibodies.hla_antibodies_list)
+
+    def update_persistent_hash(self, hash_):
+        super().update_persistent_hash(hash_)
+        update_persistent_hash(hash_, Recipient)
+        update_persistent_hash(hash_, self.related_donor_db_id)
+        update_persistent_hash(hash_, sorted(self.acceptable_blood_groups))
+        update_persistent_hash(hash_, self.recipient_cutoff)
+        update_persistent_hash(hash_, self.hla_antibodies)
+        update_persistent_hash(hash_, self.recipient_requirements)
+        update_persistent_hash(hash_, self.waiting_since)
+        update_persistent_hash(hash_, self.previous_transplants)
 
 
 @dataclass(init=False)

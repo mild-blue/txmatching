@@ -9,10 +9,12 @@ from txmatching.utils.enums import (HLA_GROUP_SPLIT_CODE_REGEX,
 from txmatching.utils.hla_system.hla_transformations import (
     get_mfi_from_multiple_hla_codes, parse_hla_raw_code)
 from txmatching.utils.logging_tools import PatientAdapter
+from txmatching.utils.persistent_hash import (PersistentlyHashable,
+                                              update_persistent_hash)
 
 
 @dataclass
-class HLAType:
+class HLAType(PersistentlyHashable):
     raw_code: str
     code: Optional[str] = None
 
@@ -30,15 +32,24 @@ class HLAType:
     def __hash__(self):
         return hash(self.raw_code)
 
+    def update_persistent_hash(self, hash_):
+        update_persistent_hash(hash_, HLAType)
+        update_persistent_hash(hash_, self.raw_code)
+
 
 @dataclass
-class HLAPerGroup:
+class HLAPerGroup(PersistentlyHashable):
     hla_group: HLAGroup
     hla_types: List[HLAType]
 
+    def update_persistent_hash(self, hash_):
+        update_persistent_hash(hash_, HLAPerGroup)
+        update_persistent_hash(hash_, self.hla_group)
+        update_persistent_hash(hash_, sorted(self.hla_types, key=lambda hla_type: hla_type.raw_code))
+
 
 @dataclass
-class HLATyping:
+class HLATyping(PersistentlyHashable):
     hla_types_list: List[HLAType]
     hla_per_groups: Optional[List[HLAPerGroup]] = None
 
@@ -47,9 +58,13 @@ class HLATyping:
             hla_types = [hla_type for hla_type in self.hla_types_list if hla_type.code]
             self.hla_per_groups = _split_hla_types_to_groups(hla_types)
 
+    def update_persistent_hash(self, hash_):
+        update_persistent_hash(hash_, HLATyping)
+        update_persistent_hash(hash_, self.hla_per_groups)
+
 
 @dataclass
-class HLAAntibody:
+class HLAAntibody(PersistentlyHashable):
     raw_code: str
     mfi: int
     cutoff: int
@@ -69,15 +84,36 @@ class HLAAntibody:
     def __hash__(self):
         return hash((self.raw_code, self.mfi, self.cutoff))
 
+    def update_persistent_hash(self, hash_):
+        update_persistent_hash(hash_, HLAAntibody)
+        update_persistent_hash(hash_, self.raw_code)
+        update_persistent_hash(hash_, self.mfi)
+        update_persistent_hash(hash_, self.cutoff)
+
 
 @dataclass
-class AntibodiesPerGroup:
+class AntibodiesPerGroup(PersistentlyHashable):
     hla_group: HLAGroup
     hla_antibody_list: List[HLAAntibody]
 
+    def update_persistent_hash(self, hash_):
+        update_persistent_hash(hash_, AntibodiesPerGroup)
+        update_persistent_hash(hash_, self.hla_group)
+        update_persistent_hash(
+            hash_,
+            sorted(
+                self.hla_antibody_list,
+                key=lambda hla_type: (
+                    hla_type.raw_code,
+                    hla_type.mfi,
+                    hla_type.cutoff
+                )
+            )
+        )
+
 
 @dataclass
-class HLAAntibodies:
+class HLAAntibodies(PersistentlyHashable):
     hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
     hla_antibodies_per_groups: List[AntibodiesPerGroup] = field(default_factory=list)
 
@@ -110,6 +146,10 @@ class HLAAntibodies:
                 hla_antibodies_over_cutoff_list.append(new_antibody)
 
         self.hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_over_cutoff_list)
+
+    def update_persistent_hash(self, hash_):
+        update_persistent_hash(hash_, HLAAntibodies)
+        update_persistent_hash(hash_, self.hla_antibodies_per_groups)
 
 
 def _split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
