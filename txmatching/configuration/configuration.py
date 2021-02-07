@@ -63,6 +63,8 @@ class Configuration:
     # TODO: https://github.com/mild-blue/txmatching/issues/373 change field type to set
     manual_donor_recipient_scores: List[ManualDonorRecipientScore] = field(default_factory=list)
     max_matchings_to_show_to_viewer: int = field(default=10, compare=False)
+    max_matchings_to_store_in_db: int = field(default=100, compare=False)
+    max_allowed_number_of_matchings: int = field(default=10000000)
 
     def __eq__(self, other):
         """
