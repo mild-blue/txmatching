@@ -1,8 +1,6 @@
 <div *ngIf="configuration && configForm"
      class="configuration">
 
-  <div class="configuration__content">
-
     <form [formGroup]="configForm" class="config-form">
       <div class="configuration__box toggles">
         <mat-slide-toggle *ngIf="configuration.require_compatible_blood_group !== undefined"
@@ -92,8 +90,6 @@
       <app-configuration-patients [configuration]="configuration"
                                   [patients]="patients"></app-configuration-patients>
     </ng-container>
-
-  </div>
 
   <app-button (click)="submitAction()">Set values</app-button>
 </div>

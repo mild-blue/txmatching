@@ -42,4 +42,10 @@
       }
     }
   }
+
+  &__content {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto calc(#{$padding-y} * 2);
+  }
 }

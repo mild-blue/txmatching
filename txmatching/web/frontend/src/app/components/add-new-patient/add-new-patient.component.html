@@ -2,40 +2,46 @@
   <form [formGroup]="form" (ngSubmit)="handleSubmit()">
 
     <!-- Country -->
-    <div class="new-patient__field">
-      <div class="label">Select a country</div>
-      <mat-form-field>
-        <mat-label>Country</mat-label>
+    <div class="new-patient__row--single-box">
+      <div class="new-patient__box">
+        <div class="content">
+          <div class="new-patient__field">
+            <div class="label">Select a country</div>
+            <mat-form-field>
+              <mat-label>Country</mat-label>
 
-        <mat-chip-list #countryChip formControlName="country">
-          <mat-chip *ngIf="form.controls.country.valid"
-                    [removable]="true"
-                    (removed)="handleRemove('country', countryInput)">
-            <country [country]="selectedCountry"></country>
-            <mat-icon matChipRemove>cancel</mat-icon>
-          </mat-chip>
-          <input formControlName="country"
-                 [matChipInputFor]="countryChip"
-                 [matAutocomplete]="donorAuto"
-                 [placeholder]="!selectedCountry ? 'Search by country code' : ''"
-                 #countryInput type="text">
-        </mat-chip-list>
+              <mat-chip-list #countryChip formControlName="country">
+                <mat-chip *ngIf="form.controls.country.valid"
+                          [removable]="true"
+                          (removed)="handleRemove('country', countryInput)">
+                  <country [country]="selectedCountry"></country>
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input formControlName="country"
+                       [matChipInputFor]="countryChip"
+                       [matAutocomplete]="donorAuto"
+                       [placeholder]="!selectedCountry ? 'Search by country code' : ''"
+                       #countryInput type="text">
+              </mat-chip-list>
 
-        <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleSelect(countryInput)">
-          <mat-option *ngFor="let c of filteredCountries | async" [value]="c">
-            <country [country]="c"></country>
-          </mat-option>
-        </mat-autocomplete>
+              <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleSelect(countryInput)">
+                <mat-option *ngFor="let c of filteredCountries | async" [value]="c">
+                  <country [country]="c"></country>
+                </mat-option>
+              </mat-autocomplete>
 
-        <mat-error>
-          <app-form-control-errors [control]="form.get('country')"></app-form-control-errors>
-        </mat-error>
+              <mat-error>
+                <app-form-control-errors [control]="form.get('country')"></app-form-control-errors>
+              </mat-error>
 
-        <mat-hint>
-          Search and select 1 country from {{allCountries.length}} available countries.
-        </mat-hint>
+              <mat-hint>
+                Search and select 1 country from {{allCountries.length}} available countries.
+              </mat-hint>
 
-      </mat-form-field>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="new-patient__row">
@@ -44,7 +50,6 @@
       <div class="new-patient__box">
         <h4>Donor</h4>
         <div class="content">
-
 
           <!-- Donor medical ID -->
           <div class="new-patient__field">
@@ -85,7 +90,7 @@
             </div>
             <mat-form-field>
               <mat-label>Donor's antigens</mat-label>
-              <mat-chip-list #antigensChipList>
+              <mat-chip-list #donorAntigensChipList>
                 <mat-chip *ngFor="let code of donor.antigens"
                           (removed)="donor.removeAntigen(code)"
                           [title]="'Raw code: ' + code"
@@ -94,7 +99,7 @@
                   <mat-icon matChipRemove>cancel</mat-icon>
                 </mat-chip>
                 <input #donorAntigensInput
-                       [matChipInputFor]="antigensChipList"
+                       [matChipInputFor]="donorAntigensChipList"
                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                        (matChipInputTokenEnd)="addAntigen(donor, $event.value, donorAntigensInput)"
                        matInput
@@ -153,99 +158,106 @@
       <div *ngIf="donor.type !== DonorType.NON_DIRECTED" class="new-patient__box">
         <h4>Recipient</h4>
 
-        <!-- Recipient medical ID -->
-        <mat-form-field>
-          <mat-label>Medical ID</mat-label>
-          <input [(ngModel)]="donor.medicalId" [ngModelOptions]="{standalone: true}" matInput type="text" required>
-        </mat-form-field>
+        <div class="content">
 
-        <!-- Donor Type -->
-        <div>
-          <mat-label>Donor type</mat-label>
-          <mat-button-toggle-group [(ngModel)]="donor.type" [ngModelOptions]="{standalone: true}">
-            <mat-button-toggle *ngFor="let type of allDonorTypes"
-                               [value]="type">
-              {{ type | donorTypeLabel }}
-            </mat-button-toggle>
-          </mat-button-toggle-group>
+          <!-- Recipient medical ID -->
+          <div class="new-patient__field">
+            <div class="label">Medical ID</div>
+            <mat-form-field>
+              <mat-label>Medical ID</mat-label>
+              <input [(ngModel)]="recipient.medicalId" [ngModelOptions]="{standalone: true}" matInput type="text" required>
+            </mat-form-field>
+          </div>
+
+          <!-- Recipient Blood Group -->
+          <div class="new-patient__field">
+            <div class="label">Blood group</div>
+            <mat-button-toggle-group [(ngModel)]="recipient.bloodGroup" [ngModelOptions]="{standalone: true}">
+              <mat-button-toggle *ngFor="let bg of allBloodGroups"
+                                 [value]="bg">
+                {{ bg }}
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+
+          <!-- Recipient antigens -->
+          <div class="new-patient__field">
+            <div class="label">
+              Antigens
+              <app-count [count]="recipient.antigens.length"></app-count>
+            </div>
+            <mat-form-field>
+              <mat-label>Recipient's antigens</mat-label>
+              <mat-chip-list #recipientAntigensChipList>
+                <mat-chip *ngFor="let code of recipient.antigens"
+                          (removed)="recipient.removeAntigen(code)"
+                          [title]="'Raw code: ' + code"
+                          [removable]="true">
+                  {{code}}
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input #recipientAntigensInput
+                       [matChipInputFor]="recipientAntigensChipList"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       (matChipInputTokenEnd)="addAntigen(donor, $event.value, recipientAntigensInput)"
+                       matInput
+                       type="text">
+              </mat-chip-list>
+              <mat-hint>
+                Add new antigens by typing codes followed by
+                <span class="key">Space <mat-icon>space_bar</mat-icon></span>
+                or
+                <span class="key">Enter <mat-icon>keyboard_return</mat-icon></span>
+              </mat-hint>
+            </mat-form-field>
+          </div>
+
+          <!-- Recipient Sex -->
+          <div class="new-patient__field">
+            <div class="label">Sex</div>
+            <mat-button-toggle-group [(ngModel)]="recipient.sex" [ngModelOptions]="{standalone: true}">
+              <mat-button-toggle *ngFor="let sex of allSexes"
+                                 [value]="sex">
+                {{ sex }}
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+
+          <!-- Recipient height -->
+          <div class="new-patient__field">
+            <div class="label">Height [cm]</div>
+            <mat-form-field>
+              <mat-label>Height [cm]</mat-label>
+              <input [(ngModel)]="recipient.height" [ngModelOptions]="{standalone: true}" matInput type="number">
+            </mat-form-field>
+          </div>
+
+          <!-- Recipient weight -->
+          <div class="new-patient__field">
+            <div class="label">Weight [cm]</div>
+            <mat-form-field>
+              <mat-label>Weight [kg]</mat-label>
+              <input [(ngModel)]="recipient.weight" [ngModelOptions]="{standalone: true}" matInput type="number">
+            </mat-form-field>
+          </div>
+
+          <!-- Recipient year of birth -->
+          <div class="new-patient__field">
+            <div class="label">Year of birth</div>
+            <mat-form-field>
+              <mat-label>Year of birth</mat-label>
+              <input [(ngModel)]="recipient.yearOfBirth" [ngModelOptions]="{standalone: true}" matInput type="number">
+            </mat-form-field>
+          </div>
         </div>
-
-        <!-- Donor Blood Group -->
-        <div>
-          <mat-label>Donor blood group</mat-label>
-          <mat-button-toggle-group [(ngModel)]="donor.bloodGroup" [ngModelOptions]="{standalone: true}">
-            <mat-button-toggle *ngFor="let bg of allBloodGroups"
-                               [value]="bg">
-              {{ bg }}
-            </mat-button-toggle>
-          </mat-button-toggle-group>
-        </div>
-
-        <!-- Donor antigens -->
-        <h4>
-          Antigens
-          <app-count [count]="donor.antigens.length"></app-count>
-        </h4>
-        <mat-form-field>
-          <mat-label>Donor's antigens</mat-label>
-          <mat-chip-list #antigensChipList>
-            <mat-chip *ngFor="let code of donor.antigens"
-                      (removed)="donor.removeAntigen(code)"
-                      [title]="'Raw code: ' + code"
-                      [removable]="true">
-              {{code}}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-            <input #donorAntigensInput
-                   [matChipInputFor]="antigensChipList"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                   (matChipInputTokenEnd)="addAntigen(donor, $event.value, donorAntigensInput)"
-                   matInput
-                   type="text">
-          </mat-chip-list>
-          <mat-hint>
-            Add new antigens by typing codes followed by
-            <span class="key">Space <mat-icon>space_bar</mat-icon></span>
-            or
-            <span class="key">Enter <mat-icon>keyboard_return</mat-icon></span>
-          </mat-hint>
-        </mat-form-field>
-
-        <!-- Donor Sex -->
-        <div>
-          <mat-label>Donor sex</mat-label>
-          <mat-button-toggle-group [(ngModel)]="donor.sex" [ngModelOptions]="{standalone: true}">
-            <mat-button-toggle *ngFor="let sex of allSexes"
-                               [value]="sex">
-              {{ sex }}
-            </mat-button-toggle>
-          </mat-button-toggle-group>
-        </div>
-
-        <!-- Donor height -->
-        <mat-form-field>
-          <mat-label>Height [cm]</mat-label>
-          <input [(ngModel)]="donor.height" [ngModelOptions]="{standalone: true}" matInput type="number">
-        </mat-form-field>
-
-        <!-- Donor weight -->
-        <mat-form-field>
-          <mat-label>Weight [kg]</mat-label>
-          <input [(ngModel)]="donor.weight" [ngModelOptions]="{standalone: true}" matInput type="number">
-        </mat-form-field>
-
-        <!-- Donor year of birth -->
-        <mat-form-field>
-          <mat-label>Year of birth</mat-label>
-          <input [(ngModel)]="donor.yearOfBirth" [ngModelOptions]="{standalone: true}" matInput type="number">
-        </mat-form-field>
       </div>
 
     </div>
     <app-button type="submit" variant="success"
                 [loading]="loading"
                 [disabled]="loading"
-                [success]="!loading && success">Save changes
+                [success]="!loading && success">
+      Confirm
     </app-button>
   </form>
 </div>

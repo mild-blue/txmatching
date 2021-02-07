@@ -5,7 +5,7 @@ import { map, startWith } from 'rxjs/operators';
 import { countryFullTextSearch, countryNameValidator, separatorKeysCodes } from '@app/directives/validators/form.directive';
 import { Observable } from 'rxjs';
 import { AbstractFormHandlerComponent } from '@app/components/abstract-form-handler/abstract-form-handler.component';
-import { BloodGroup, DonorNew, DonorType, Sex } from '@app/model';
+import { BloodGroup, DonorNew, DonorType, RecipientNew, Sex } from '@app/model';
 
 @Component({
   selector: 'app-add-new-patient',
@@ -29,6 +29,8 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
   public separatorKeysCodes: number[] = separatorKeysCodes;
 
   public donor: DonorNew = new DonorNew();
+  public recipient: RecipientNew = new RecipientNew();
+
   public loading: boolean = false;
   public success: boolean = false;
 
