@@ -78,7 +78,7 @@ definitions:
                     $ref: '#/definitions/ManualRecipientDonorScore'
                 type: array
             max_allowed_number_of_matchings:
-                example: 10000000
+                example: 10000
                 type: integer
             max_cycle_length:
                 example: 4
