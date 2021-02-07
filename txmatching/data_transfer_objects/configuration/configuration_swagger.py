@@ -55,6 +55,14 @@ ConfigurationJson = matching_api.model(
         'max_matchings_to_show_to_viewer': fields.Integer(
             required=False,
             example=_default_configuration.max_matchings_to_show_to_viewer
+        ),
+        'max_matchings_to_store_in_db': fields.Integer(
+            required=False,
+            example=_default_configuration.max_matchings_to_store_in_db
+        ),
+        'max_allowed_number_of_matchings': fields.Integer(
+            required=False,
+            example=_default_configuration.max_allowed_number_of_matchings
         )
     }
 )
