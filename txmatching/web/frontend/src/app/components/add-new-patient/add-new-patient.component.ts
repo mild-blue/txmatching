@@ -20,6 +20,7 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
 
   public allCountries: string[] = Object.keys(Country).map(key => `${Country[key as Country]}`);
   public allDonorTypes: DonorType[] = Object.keys(DonorType).map(key => DonorType[key as DonorType]);
+  public DonorType: typeof DonorType = DonorType;
   // @ts-ignore
   public allBloodGroups: string[] = Object.keys(BloodGroup).map(key => `${BloodGroup[key as BloodGroup]}`);
   public allSexes: string[] = Object.keys(Sex).map(key => `${Sex[key as Sex]}`);

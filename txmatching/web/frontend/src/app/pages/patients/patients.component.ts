@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { AlertService } from '@app/services/alert/alert.service';
-import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
@@ -86,7 +85,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
   private _initItems(): void {
     if(!this.patients) {
-      this._logger.error(`Items init failed because patients not set`);
+      this._logger.error('Items init failed because patients not set');
       return;
     }
 
@@ -124,7 +123,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
   private async _initPatients(): Promise<void> {
     if(!this.defaultTxmEvent) {
-      this._logger.error(`Patients init failed because defaultTxmEvent not set`);
+      this._logger.error('Patients init failed because defaultTxmEvent not set');
       return;
     }
 

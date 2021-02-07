@@ -1,0 +1,54 @@
+@import "../../../styles/variables";
+
+.new-patient {
+  &__field {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: calc(#{$item-gap} / 2);
+
+    .label {
+      font-weight: 600;
+      margin-right: $padding-x;
+      padding-top: 20px;
+    }
+
+    mat-form-field {
+      flex: 1;
+      max-width: 70%;
+    }
+  }
+
+  &__row {
+    display: flex;
+
+    margin-left: calc(#{$item-gap} * -1);
+    margin-right: calc(#{$item-gap} * -1);
+  }
+
+  &__box {
+    flex: 1;
+    max-width: calc(50% - #{$item-gap} * 2);
+
+    border-radius: $border-radius--wide;
+    background: var(--primary-color);
+    box-shadow: $box-shadow--wide;
+    margin-bottom: $box-shadow--wide-size;
+    overflow: hidden;
+
+    margin-left: $item-gap;
+    margin-right: $item-gap;
+
+    h4 {
+      margin: 0;
+      padding: $padding-y $padding-x;
+      color: $white;
+    }
+
+    .content {
+      border-radius: $border-radius--wide;
+      background: $white;
+      padding: $padding-y $padding-x;
+    }
+  }
+}
