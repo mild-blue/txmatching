@@ -1,5 +1,4 @@
 <div class="new-patient">
-
   <form [formGroup]="form" (ngSubmit)="handleSubmit()">
 
     <!-- Country -->
@@ -37,19 +36,36 @@
     </mat-form-field>
 
     <!-- Donor -->
-    <div formGroupName="donor">
+    <div>
       <h2>Donor</h2>
 
       <!-- Donor medical ID -->
       <mat-form-field>
         <mat-label>Medical ID</mat-label>
-        <input value="{{ donor.medicalId }}"
-               formControlName="medicalId"
-               matInput type="text">
-        <mat-error>
-          <app-form-control-errors [control]="form.get('donor.medicalId')"></app-form-control-errors>
-        </mat-error>
+        <input [(ngModel)]="donor.medicalId" [ngModelOptions]="{standalone: true}" matInput type="text" required>
       </mat-form-field>
+
+      <!-- Donor Type -->
+      <div>
+        <mat-label>Donor type</mat-label>
+        <mat-button-toggle-group [(ngModel)]="donor.type" [ngModelOptions]="{standalone: true}">
+          <mat-button-toggle *ngFor="let type of allDonorTypes"
+                             [value]="type">
+            {{ type | donorTypeLabel }}
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <!-- Donor Blood Group -->
+      <div>
+        <mat-label>Donor blood group</mat-label>
+        <mat-button-toggle-group [(ngModel)]="donor.bloodGroup" [ngModelOptions]="{standalone: true}">
+          <mat-button-toggle *ngFor="let bg of allBloodGroups"
+                             [value]="bg">
+            {{ bg }}
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
 
       <!-- Donor antigens -->
       <h4>
@@ -81,6 +97,35 @@
         </mat-hint>
       </mat-form-field>
     </div>
+
+    <!-- Donor Sex -->
+    <div>
+      <mat-label>Donor sex</mat-label>
+      <mat-button-toggle-group [(ngModel)]="donor.sex" [ngModelOptions]="{standalone: true}">
+        <mat-button-toggle *ngFor="let sex of allSexes"
+                           [value]="sex">
+          {{ sex }}
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <!-- Donor height -->
+    <mat-form-field>
+      <mat-label>Height [cm]</mat-label>
+      <input [(ngModel)]="donor.height" [ngModelOptions]="{standalone: true}" matInput type="number">
+    </mat-form-field>
+
+    <!-- Donor weight -->
+    <mat-form-field>
+      <mat-label>Weight [kg]</mat-label>
+      <input [(ngModel)]="donor.weight" [ngModelOptions]="{standalone: true}" matInput type="number">
+    </mat-form-field>
+
+    <!-- Donor year of birth -->
+    <mat-form-field>
+      <mat-label>Year of birth</mat-label>
+      <input [(ngModel)]="donor.yearOfBirth" [ngModelOptions]="{standalone: true}" matInput type="number">
+    </mat-form-field>
 
     <app-button type="submit" variant="success"
                 [loading]="loading"

@@ -68,6 +68,7 @@ import { AddNewPatientComponent } from './components/add-new-patient/add-new-pat
 import { TemplatePopupComponent } from './components/template-popup/template-popup.component';
 import { AbstractFormHandlerComponent } from './components/abstract-form-handler/abstract-form-handler.component';
 import { FormControlErrorsComponent } from './components/form-control-errors/form-control-errors.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
   declarations: [
@@ -139,7 +140,8 @@ import { FormControlErrorsComponent } from './components/form-control-errors/for
     MatSlideToggleModule,
     MatBadgeModule,
     MatProgressSpinnerModule,
-    MatListModule
+    MatListModule,
+    MatButtonToggleModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
