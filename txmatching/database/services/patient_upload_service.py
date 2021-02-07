@@ -33,7 +33,6 @@ logger = logging.getLogger(__name__)
 
 
 def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO, txm_event_db_id: int):
-    remove_configs_from_txm_event(txm_event_db_id)
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
 
