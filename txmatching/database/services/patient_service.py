@@ -152,14 +152,11 @@ def get_patients_persistent_hash(txm_event: TxmEvent) -> int:
     donors = tuple(txm_event.active_donors_dict.values())
     recipients = tuple(txm_event.active_recipients_dict.values())
 
-    start = time.time()
     hash_ = initialize_persistent_hash()
     update_persistent_hash(hash_, donors)
     update_persistent_hash(hash_, recipients)
     hash_digest = get_hash_digest(hash_)
-    end = time.time()
 
-    logger.debug(f'Creating persistent hash of {len(donors) + len(recipients)} patients took {end - start} seconds')
     return hash_digest
 
 

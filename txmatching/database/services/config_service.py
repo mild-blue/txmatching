@@ -59,10 +59,6 @@ def get_latest_config_model_for_txm_event(txm_event_db_id: int) -> Optional[Conf
     return config
 
 
-def remove_configs_from_txm_event(txm_event_db_id: int):
-    ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).delete()
-
-
 def _configuration_to_config_model(
         configuration: Configuration,
         txm_event_db_id: int,
