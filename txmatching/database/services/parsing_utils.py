@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import List, Optional
 
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
-from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.patients.patient import TxmEvent
 from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code

@@ -92,21 +92,30 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         RecipientAcceptableBloodModel.query.filter(
             RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
         db.session.add_all(acceptable_blood_models)
-    if recipient_update_dto.hla_antibodies:
+    if recipient_update_dto.hla_antibodies or recipient_update_dto.cutoff:
         # not the best approach: in case cutoff was different per antibody before it will be unified now, but
         # but good for the moment
         old_recipient = get_recipient_from_recipient_model(old_recipient_model)
-        cutoff = recipient_update_dto.cutoff if recipient_update_dto.cutoff is not None \
-            else old_recipient.recipient_cutoff
+        if recipient_update_dto.cutoff is not None:
+            recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
+            new_cutoff = recipient_update_dto.cutoff
+        else:
+            new_cutoff = old_recipient.recipient_cutoff
 
+        if recipient_update_dto.hla_antibodies is not None:
+            new_antibody_list = recipient_update_dto.hla_antibodies_preprocessed.hla_antibodies_list
+        else:
+            new_antibody_list = old_recipient.hla_antibodies.hla_antibodies_list
+
+        recipient_update_dict['recipient_cutoff'] = new_cutoff
         hla_antibodies = [
             RecipientHLAAntibodyModel(
                 recipient_id=recipient_update_dto.db_id,
                 raw_code=hla_antibody_dto.raw_code,
                 mfi=hla_antibody_dto.mfi,
-                cutoff=cutoff,
+                cutoff=new_cutoff,
                 code=parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody_dto.raw_code)
-            ) for hla_antibody_dto in recipient_update_dto.hla_antibodies_preprocessed.hla_antibodies_list]
+            ) for hla_antibody_dto in new_antibody_list]
 
         RecipientHLAAntibodyModel.query.filter(
             RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id).delete()
@@ -116,8 +125,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
     if recipient_update_dto.recipient_requirements:
         recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
             recipient_update_dto.recipient_requirements)
-    if recipient_update_dto.cutoff:
-        recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
 
     RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
     db.session.commit()

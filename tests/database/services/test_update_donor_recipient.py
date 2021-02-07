@@ -51,6 +51,18 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertSetEqual({'A11', 'DQ6', 'DQA1'},
                             {hla_type['code'] for hla_type in RecipientModel.query.get(1).hla_typing['hla_types_list']})
 
+    def test_update_recipient_cutoff(self):
+        txm_event_db_id = self.fill_db_with_patients_and_results()
+        new_cutoff = 8000
+        self.assertSetEqual({2000},
+                            {hla_antibody.cutoff for hla_antibody in RecipientModel.query.get(1).hla_antibodies})
+        update_recipient(RecipientUpdateDTO(
+            cutoff=new_cutoff,
+            db_id=1
+        ), txm_event_db_id)
+        self.assertEqual(new_cutoff, RecipientModel.query.get(1).recipient_cutoff)
+        self.assertSetEqual({new_cutoff}, {code.cutoff for code in RecipientModel.query.get(1).hla_antibodies})
+
     def test_update_donor(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
 

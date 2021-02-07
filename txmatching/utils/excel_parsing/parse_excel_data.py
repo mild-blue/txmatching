@@ -9,13 +9,13 @@ import pandas as pd
 from werkzeug.datastructures import FileStorage
 
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.data_transfer_objects.patients.upload_dto.donor_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
-from txmatching.data_transfer_objects.patients.upload_dto.hla_antibodies_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
-from txmatching.data_transfer_objects.patients.upload_dto.patient_upload_dto_in import \
+from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
-from txmatching.data_transfer_objects.patients.upload_dto.recipient_upload_dto import \
+from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import COMPATIBLE_BLOOD_GROUPS, BloodGroup

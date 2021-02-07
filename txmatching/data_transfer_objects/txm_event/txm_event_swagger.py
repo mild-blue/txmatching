@@ -48,6 +48,12 @@ DonorJsonIn = txm_event_api.model('DonorInput', {
 })
 
 RecipientJsonIn = txm_event_api.model('RecipientInput', {
+    'hla_antibodies': fields.List(required=True,
+                                  description='Detected HLA antibodies of the patient. Use high resolution \
+                                  if available.',
+                                  cls_or_instance=fields.Nested(
+                                      HLAAntibodyJsonIn
+                                  )),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(
         enum=[blood_group.value for blood_group in BloodGroup]),
                                            description='Acceptable blood groups for the patient. Leave empty to use \
@@ -57,12 +63,7 @@ RecipientJsonIn = txm_event_api.model('RecipientInput', {
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String,
                               example=ANTIGENS_EXAMPLE,
                               description=HLA_TYPING_DESCRIPTION),
-    'hla_antibodies': fields.List(required=True,
-                                  description='Detected HLA antibodies of the patient. Use high resolution \
-                                  if available.',
-                                  cls_or_instance=fields.Nested(
-                                      HLAAntibodyJsonIn
-                                  )),
+
     'sex': fields.String(required=False, description='Sex of the patient.', enum=[sex.value for sex in Sex]),
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
@@ -73,7 +74,7 @@ RecipientJsonIn = txm_event_api.model('RecipientInput', {
                                              'Use format YYYY-MM-DD.'),
     'previous_transplants': fields.Integer(required=False,
                                            example=0,
-                                           description='Number of previous kidney transplants.'),
+                                           description='Number of previous kidney transplants.')
 })
 
 UploadPatientsJson = txm_event_api.model(
