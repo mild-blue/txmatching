@@ -15,8 +15,6 @@ from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in
 from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
-from txmatching.database.services.config_service import \
-    remove_configs_from_txm_event
 from txmatching.database.services.parsing_utils import (
     check_existing_ids_for_duplicates, get_hla_code, parse_date_to_datetime)
 from txmatching.database.services.txm_event_service import (
@@ -35,7 +33,6 @@ logger = logging.getLogger(__name__)
 
 
 def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO, txm_event_db_id: int):
-    remove_configs_from_txm_event(txm_event_db_id)
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
 
@@ -53,7 +50,6 @@ def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDT
         remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id,
                                                                 patient_upload_dto.country)
 
-    remove_configs_from_txm_event(txm_event_db_id)
     _add_patients_from_one_country(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,
