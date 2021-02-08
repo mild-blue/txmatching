@@ -32,6 +32,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(1, len(list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)))
 
     @unittest.skip('Support for limitation of number of countries in round has not yet been implemented')
+    # TODO: improve the code https://github.com/mild-blue/txmatching/issues/430
     def test_solve_from_configuration_multiple_countries(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data2.xlsx'))
         txm_event = get_txm_event(txm_event_db_id)
