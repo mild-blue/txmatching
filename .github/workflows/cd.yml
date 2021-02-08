@@ -64,6 +64,7 @@ jobs:
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
+        if: ${{ startsWith(github.ref, 'refs/heads/master') }}
         with:
           key: ${{ secrets.SSH_KEY_STAGING }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS_STAGING }}
