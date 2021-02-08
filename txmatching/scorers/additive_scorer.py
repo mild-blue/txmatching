@@ -49,16 +49,16 @@ class AdditiveScorer(ScorerBase):
                          recipients: List[Recipient],
                          donors_dict: Dict[DonorDbId, Donor]) -> ScoreMatrix:
         score_matrix = np.array([
-            [self._score_transplant_including_original_tuple(donor,
-                                                             recipient,
-                                                             donors_dict[recipient.related_donor_db_id])
+            [self.score_transplant_including_original_tuple(donor,
+                                                            recipient,
+                                                            donors_dict[recipient.related_donor_db_id])
              for recipient in recipients]
             for donor in donors])
 
         return score_matrix
 
-    def _score_transplant_including_original_tuple(self, donor: Donor, recipient: Recipient,
-                                                   original_donor: Donor) -> float:
+    def score_transplant_including_original_tuple(self, donor: Donor, recipient: Recipient,
+                                                  original_donor: Donor) -> float:
         if recipient.related_donor_db_id == donor.db_id:
             score = ORIGINAL_DONOR_RECIPIENT_SCORE
         else:

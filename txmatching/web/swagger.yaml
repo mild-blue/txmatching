@@ -114,6 +114,9 @@ definitions:
                 example: HLAAdditiveScorer
                 type: string
             solver_constructor_name:
+                enum:
+                - AllSolutionsSolver
+                - ILPSolver
                 example: AllSolutionsSolver
                 type: string
             use_binary_scoring:

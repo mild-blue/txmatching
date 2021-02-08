@@ -167,11 +167,10 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.matchings = [];
     this.foundMatchingsCount = 0;
 
-    const { scorer_constructor_name, solver_constructor_name } = this.appConfiguration;
+    const { scorer_constructor_name } = this.appConfiguration;
     const updatedConfig: AppConfiguration = {
       ...configuration,
-      scorer_constructor_name,
-      solver_constructor_name
+      scorer_constructor_name
     };
     this._logger.log('Calculating with config', [updatedConfig]);
 
@@ -230,7 +229,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
       // when successfully got patients & configuration
       // get useful config properties
-      const {scorer_constructor_name, solver_constructor_name, ...rest} = this.appConfiguration;
+      const {scorer_constructor_name, ...rest} = this.appConfiguration;
       this.configuration = rest;
 
       // calculate matchings
