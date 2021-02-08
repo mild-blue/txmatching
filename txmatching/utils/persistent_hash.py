@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import hashlib
 from abc import ABC, abstractmethod
 from datetime import datetime
 
+# pylint: disable=undefined-variable)
+HashType: TypeAlias = 'hashlib._Hash'
+
 
 class PersistentlyHashable(ABC):
     @abstractmethod
-    def update_persistent_hash(self, hash_):
+    def update_persistent_hash(self, hash_: HashType):
         pass
 
     def persistent_hash(self):
@@ -14,16 +19,16 @@ class PersistentlyHashable(ABC):
         return get_hash_digest(hash_)
 
 
-def initialize_persistent_hash():
+def initialize_persistent_hash() -> HashType:
     return hashlib.md5()
 
 
-def get_hash_digest(hash_) -> int:
+def get_hash_digest(hash_: HashType) -> int:
     # Decrease hash size so that it would fit to postgres BIGINT (INT8)
     return int(hash_.hexdigest(), 16) % 2**63
 
 
-def update_persistent_hash(hash_, value):
+def update_persistent_hash(hash_: HashType, value: any):
     """
     Create hash for a given value that is persistent across app sessions. Contrary to this function, a hash created
     using `hash()` function is not persistent (see https://docs.python.org/3/using/cmdline.html#envvar-PYTHONHASHSEED)

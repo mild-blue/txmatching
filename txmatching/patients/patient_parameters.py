@@ -4,7 +4,7 @@ from typing import Optional
 from txmatching.patients.hla_model import HLATyping
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Country, Sex
-from txmatching.utils.persistent_hash import (PersistentlyHashable,
+from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
 Kilograms = float
@@ -21,7 +21,7 @@ class PatientParameters(PersistentlyHashable):
     weight: Optional[Kilograms] = None
     year_of_birth: Optional[int] = None
 
-    def update_persistent_hash(self, hash_):
+    def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, PatientParameters)
         update_persistent_hash(hash_, self.blood_group)
         update_persistent_hash(hash_, self.country_code)

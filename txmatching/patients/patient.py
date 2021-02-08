@@ -8,7 +8,7 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
-from txmatching.utils.persistent_hash import (PersistentlyHashable,
+from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
 DEFAULT_CUTOFF = 2000
@@ -32,7 +32,7 @@ class Patient(PersistentlyHashable):
     def is_donor(self) -> bool:
         return isinstance(self, Donor)
 
-    def update_persistent_hash(self, hash_):
+    def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, Patient)
         update_persistent_hash(hash_, self.medical_id)
         update_persistent_hash(hash_, self.parameters)
@@ -44,7 +44,7 @@ class Donor(Patient, PersistentlyHashable):
     donor_type: DonorType = DonorType.DONOR
     active: bool = True
 
-    def update_persistent_hash(self, hash_):
+    def update_persistent_hash(self, hash_: HashType):
         super().update_persistent_hash(hash_)
         update_persistent_hash(hash_, Donor)
         update_persistent_hash(hash_, self.related_recipient_db_id)
@@ -65,7 +65,7 @@ class RecipientRequirements(PersistentlyHashable):
     require_better_match_in_compatibility_index_or_blood_group: Optional[bool] = None
     require_compatible_blood_group: Optional[bool] = None
 
-    def update_persistent_hash(self, hash_):
+    def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, RecipientRequirements)
         # Treat None as False
         update_persistent_hash(hash_, bool(self.require_better_match_in_compatibility_index_or_blood_group))
@@ -87,7 +87,7 @@ class Recipient(Patient, PersistentlyHashable):
         if self.recipient_cutoff is None:
             self.recipient_cutoff = calculate_cutoff(self.hla_antibodies.hla_antibodies_list)
 
-    def update_persistent_hash(self, hash_):
+    def update_persistent_hash(self, hash_: HashType):
         super().update_persistent_hash(hash_)
         update_persistent_hash(hash_, Recipient)
         update_persistent_hash(hash_, self.related_donor_db_id)
