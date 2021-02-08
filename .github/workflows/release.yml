@@ -1,9 +1,13 @@
 name: Release Pipeline
 
+env:
+  DOCKER_FILE: Dockerfile
+  AWS_ECR_REPOSITORY: prod-txm-backend
+
 on:
   workflow_dispatch:
   release:
-    types: [published]
+    types: [ published ]
 
 jobs:
   build:
@@ -15,26 +19,45 @@ jobs:
         # use latest tag as release version
         run: echo "RELEASE_VERSION=${GITHUB_REF:10}" >> $GITHUB_ENV
 
-      - name: Build and publish docker image
-        uses: docker/build-push-action@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          # login to repo
-          repository: mildblue/txmatching
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          # pass release_version
-          build_args: release_version=${{ env.RELEASE_VERSION }}
-          # tag the image with latest git tag
-          tag_with_ref: true
-          # add labels from the git
-          add_git_labels: true
-          # push only if this is the build containing tags
-          push: ${{ startsWith(github.ref, 'refs/tags/') }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # extract metadata for labels https://github.com/crazy-max/ghaction-docker-meta
+      - name: Docker meta
+        id: docker_meta
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}
+
+        # setup docker actions https://github.com/docker/build-push-action
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build and Push Docker Image
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          file: ${{ env.DOCKER_FILE }}
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:${{ env.RELEASE_VERSION }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
+          push: true
+          build-args: |
+            release_version=${{ env.RELEASE_VERSION }}
 
       - name: Update configuration repository with new version
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          VERSION_TAG="${GITHUB_REF:10}"
+          VERSION_TAG="${RELEASE_VERSION}"
           echo "Updating version to ${VERSION_TAG}."
           git config --global user.email "github@mild.blue"
           git config --global user.name "Gihub action"
