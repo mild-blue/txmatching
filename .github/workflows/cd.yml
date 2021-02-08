@@ -4,7 +4,7 @@ env:
   DOCKER_FILE: Dockerfile
   AWS_ECR_REPOSITORY: stg-txm-backend
   AWS_EC2_HOST: 54.170.65.227
-  AWS_EC2_USER: ec2-user
+  AWS_EC2_USER: centos
   PROJECT_DEPLOYMENT_FOLDER: txmatching
 
 on:
