@@ -64,4 +64,4 @@ jobs:
       - name: Redeploy application
         if: ${{ startsWith(github.ref, 'refs/heads/master') }}
         run: |
-          # TODO execute code connecting to SSH maching
+          ssh "ec2-user@54.170.65.227" "cd /srv/txmatching && ./redeploy.sh"
