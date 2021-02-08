@@ -13,8 +13,6 @@ from txmatching.solvers.pairing_result import PairingResult
 from txmatching.solvers.solver_from_config import solver_from_configuration
 
 logger = logging.getLogger(__name__)
-MAX_ALLOWED_NUMBER_OF_MATCHINGS = 1000000
-MAX_NUMBER_OF_MATCHINGS_TO_STORE = 1000
 
 
 def solve_from_configuration(configuration: Configuration, txm_event: TxmEvent) -> PairingResult:
@@ -31,8 +29,10 @@ def _solve_from_configuration_unsafe(configuration: Configuration, txm_event: Tx
     all_matchings = solver.solve()
     matching_filter = filter_from_config(configuration)
 
-    matchings_filtered_sorted, all_results_found, matching_count = _filter_and_sort_matchings(all_matchings,
-                                                                                              matching_filter)
+    matchings_filtered_sorted, all_results_found, matching_count = _filter_and_sort_matchings(
+        all_matchings,
+        matching_filter,
+        configuration)
 
     logger.info(f'{matching_count} matchings were found.')
 
@@ -45,7 +45,8 @@ def _solve_from_configuration_unsafe(configuration: Configuration, txm_event: Tx
 
 
 def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
-                               matching_filter: FilterBase
+                               matching_filter: FilterBase,
+                               configuration: Configuration
                                ) -> Tuple[List[MatchingWithScore], bool, int]:
     matchings_heap = []
     all_results_found = True
@@ -61,16 +62,17 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
             )
 
             heapq.heappush(matchings_heap, matching_entry)
-            if len(matchings_heap) > MAX_NUMBER_OF_MATCHINGS_TO_STORE:
+            if len(matchings_heap) > configuration.max_matchings_to_store_in_db:
                 heapq.heappop(matchings_heap)
 
             if i % 100000 == 0:
                 logger.info(f'Processed {i} matchings')
 
-            if i == MAX_ALLOWED_NUMBER_OF_MATCHINGS - 1:
-                logger.error(f'Max number of matchings {MAX_ALLOWED_NUMBER_OF_MATCHINGS} was reached. Returning only '
-                             f'best {MAX_NUMBER_OF_MATCHINGS_TO_STORE} matchings from {MAX_ALLOWED_NUMBER_OF_MATCHINGS}'
-                             f' found up to now.')
+            if i == configuration.max_allowed_number_of_matchings - 1:
+                logger.error(
+                    f'Max number of matchings {configuration.max_allowed_number_of_matchings} was reached. '
+                    f'Returning only best {configuration.max_matchings_to_store_in_db} matchings from '
+                    f'{configuration.max_allowed_number_of_matchings} found up to now.')
                 all_results_found = False
                 break
 
