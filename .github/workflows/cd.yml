@@ -1,5 +1,12 @@
 name: Staging Deployment
 
+env:
+  DOCKER_FILE: Dockerfile
+  AWS_ECR_REPOSITORY: stg-txm-backend
+  AWS_EC2_HOST: 54.170.65.227
+  AWS_EC2_USER: ec2-user
+  PROJECT_DEPLOYMENT_FOLDER: txmatching
+
 on:
   # manual dispatch
   workflow_dispatch:
@@ -46,7 +53,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          file: Dockerfile
+          file: ${{ env.DOCKER_FILE }}
           # TODO we might change that on the branch name
           # tags: ${{ steps.docker_meta.outputs.tags }}
           tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:latest
@@ -64,4 +71,4 @@ jobs:
       - name: Redeploy application
         if: ${{ startsWith(github.ref, 'refs/heads/master') }}
         run: |
-          ssh "ec2-user@54.170.65.227" "cd /srv/txmatching && ./redeploy.sh"
+          ssh "${AWS_EC2_USER}@${AWS_EC2_HOST}" "cd /srv/${PROJECT_DEPLOYMENT_FOLDER} && ./redeploy.sh"
