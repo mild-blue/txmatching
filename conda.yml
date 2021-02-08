@@ -34,3 +34,5 @@ dependencies:
       - yoyo-migrations==7.2.0
       - openapi-spec-validator==0.2.9
       - swagger-unittest==0.3.0
+      - mip==1.13.0
+      - networkx==2.5

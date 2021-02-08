@@ -6,9 +6,10 @@ from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.solvers.all_solutions_solver.all_solutions_solver import \
     AllSolutionsSolver
+from txmatching.solvers.ilp_solver.ilp_solver import ILPSolver
 from txmatching.solvers.solver_base import SolverBase
 
-_supported_solvers = [AllSolutionsSolver]
+_supported_solvers = [AllSolutionsSolver, ILPSolver]
 
 
 def solver_from_configuration(configuration: Configuration,
