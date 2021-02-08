@@ -1,3 +1,5 @@
+# pylint: skip-file
+# TODO: improve the code https://github.com/mild-blue/txmatching/issues/430
 from enum import IntEnum
 from typing import Dict, Tuple
 
@@ -12,6 +14,7 @@ from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
     TXMConfigurationForILPSolver
 
 
+#
 class MaxSequenceLimitMethod(IntEnum):
     LazyForbidAllMaximalSequences = 0
     '''Lazy constraints. Forbid all maximal sequences that are larger than the limit.'''

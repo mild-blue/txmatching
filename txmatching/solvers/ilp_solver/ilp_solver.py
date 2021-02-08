@@ -1,3 +1,6 @@
+# pylint: skip-file
+# TODO: improve the code https://github.com/mild-blue/txmatching/issues/430
+
 import logging
 from dataclasses import dataclass
 from typing import Dict, Iterable, Iterator, List, Tuple

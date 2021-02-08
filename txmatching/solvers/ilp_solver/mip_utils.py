@@ -1,3 +1,6 @@
+# pylint: skip-file
+# TODO: improve the code https://github.com/mild-blue/txmatching/issues/430
+
 import mip
 
 from txmatching.solvers.ilp_solver.solution import Status

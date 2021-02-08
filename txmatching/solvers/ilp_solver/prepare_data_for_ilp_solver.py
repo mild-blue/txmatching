@@ -23,7 +23,7 @@ def prepare_data_for_ilp(active_donors_dict: Dict[DonorDbId, Donor],
 
             if donor_for_recipient.related_recipient_db_id and donor.db_id != donor_for_recipient.db_id:
                 recipient = active_recipients_dict[donor_for_recipient.related_recipient_db_id]
-                score = scorer._score_transplant_including_original_tuple(donor, recipient, donor_for_recipient)
+                score = scorer.score_transplant_including_original_tuple(donor, recipient, donor_for_recipient)
                 row.append(score)
             else:
                 row.append(-1)
