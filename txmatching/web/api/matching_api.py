@@ -51,14 +51,14 @@ class CalculateFromConfig(Resource):
         user_id = get_current_user_id()
         maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
                                                                                configuration=configuration)
-        if maybe_configuration_db_id:
-            matchings_detailed = get_matchings_detailed_for_configuration(txm_event, maybe_configuration_db_id)
-        else:
+        if not maybe_configuration_db_id:
             pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
             solver_service.save_pairing_result(pairing_result, user_id)
-            configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
-                                                                             configuration=configuration)
-            matchings_detailed = get_matchings_detailed_for_configuration(txm_event, configuration_db_id)
+            maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
+                                                                                   configuration=configuration)
+
+        assert maybe_configuration_db_id is not None
+        matchings_detailed = get_matchings_detailed_for_configuration(txm_event, maybe_configuration_db_id)
 
         calculated_matchings_dto = create_calculated_matchings_dto(matchings_detailed, matchings_detailed.matchings)
 
