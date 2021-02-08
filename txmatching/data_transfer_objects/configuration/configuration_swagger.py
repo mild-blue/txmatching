@@ -1,6 +1,7 @@
 from flask_restx import fields
 
 from txmatching.configuration.configuration import Configuration
+from txmatching.solvers.solver_from_config import SUPPORTED_SOLVERS
 from txmatching.utils.enums import Country
 from txmatching.web.api.namespaces import matching_api
 
@@ -21,7 +22,8 @@ ConfigurationJson = matching_api.model(
         'scorer_constructor_name': fields.String(required=False,
                                                  example=_default_configuration.scorer_constructor_name),
         'solver_constructor_name': fields.String(required=False,
-                                                 example=_default_configuration.solver_constructor_name),
+                                                 example=_default_configuration.solver_constructor_name,
+                                                 enum=[solver.__name__ for solver in SUPPORTED_SOLVERS]),
         'require_compatible_blood_group': fields.Boolean(required=False,
                                                          example=_default_configuration.require_compatible_blood_group),
         'minimum_total_score': fields.Float(required=False, example=_default_configuration.minimum_total_score),
