@@ -1,11 +1,5 @@
 name: Staging Deployment
 
-env:
-  DOCKER_FILE: Dockerfile
-  AWS_ECR_REPOSITORY: stg-txm-backend
-  AWS_ECS_CLUSTER: stg-txm-backend
-  AWS_ECS_CLUSTER_SERVICE: stg-txm-backend-service
-
 on:
   # manual dispatch
   workflow_dispatch:
@@ -52,7 +46,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          file: ${{ env.DOCKER_FILE }}
+          file: Dockerfile
           # TODO we might change that on the branch name
           # tags: ${{ steps.docker_meta.outputs.tags }}
           tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:latest
@@ -61,12 +55,13 @@ jobs:
           build-args: |
             release_version=${{ env.RELEASE_VERSION }}
 
-      - name: Redeploy the Service
-        env:
-          CLUSTER: ${{ env.AWS_ECS_CLUSTER }}
-          SERVICE: ${{ env.AWS_ECS_CLUSTER_SERVICE }}
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY_STAGING }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS_STAGING }}
+
+      - name: Redeploy application
+        if: ${{ startsWith(github.ref, 'refs/heads/master') }}
         run: |
-          aws ecs update-service \
-            --cluster "${CLUSTER}" \
-            --service "${SERVICE}" \
-            --force-new-deployment
+          # TODO execute code connecting to SSH maching
