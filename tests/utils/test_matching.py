@@ -1,8 +1,9 @@
 import unittest
 
-from tests.test_utilities.create_dataclasses import (get_test_donors,
+from tests.test_utilities.create_dataclasses import (get_test_antibodies,
+                                                     get_test_donors,
+                                                     get_test_raw_codes,
                                                      get_test_recipients)
-from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
 from txmatching.scorers.matching import (
     calculate_compatibility_index_for_group, get_count_of_transplants,
     get_matching_hla_typing_code)
@@ -12,38 +13,13 @@ from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_sequence import TransplantSequence
 from txmatching.utils.enums import HLAGroup
 
-RAW_CODES = [
-    'A1',
-    'A32',
-    'B7',
-    'B51',
-    'DR11',
-    'DR15'
-]
+RAW_CODES = get_test_raw_codes()
 
 DONORS = get_test_donors()
 
 RECIPIENTS = get_test_recipients()
 
-TEST_ANTIGENS = [
-    'A7',
-    'B32',
-    'DR40',
-    'B5',
-    'DR9',
-    'A23'
-]
-
-TEST_ANTIBODIES = HLAAntibodies(
-    hla_antibodies_list=[
-        HLAAntibody('A7', 1200, 1000, 'A7'),
-        HLAAntibody('B32', 1200, 1000, 'B32'),
-        HLAAntibody('DR40', 1200, 1000, 'DR40'),
-        HLAAntibody('B5', 1200, 1000, 'B5'),
-        HLAAntibody('DR9', 1200, 1000, 'DR9'),
-        HLAAntibody('A23', 1200, 1000, 'A23')
-    ]
-)
+TEST_ANTIBODIES = get_test_antibodies()
 
 
 class TestMatching(unittest.TestCase):
