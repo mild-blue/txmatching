@@ -88,7 +88,8 @@ class TestUpdateDonorRecipient(DbTests):
             max_cycle_length=100,
             max_sequence_length=100,
             max_number_of_distinct_countries_in_round=100,
-            use_split_resolution=False
+            use_split_resolution=False,
+            max_matchings_to_store_in_db=1000
         ),
             txm_event).calculated_matchings_list)
         self.assertEqual(358, len(all_matchings))

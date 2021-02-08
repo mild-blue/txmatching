@@ -8,7 +8,6 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.exceptions import CachingNotReadyException
 from txmatching.auth.request_context import get_user_role
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
@@ -17,11 +16,15 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import \
     CalculatedMatchingsJson
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
+from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     configuration_from_dict, find_configuration_db_id_for_configuration)
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
 from txmatching.database.services.txm_event_service import get_txm_event
+from txmatching.solve_service.solve_from_configuration import \
+    solve_from_configuration
+from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import matching_api
 
 logger = logging.getLogger(__name__)
@@ -45,17 +48,17 @@ class CalculateFromConfig(Resource):
     def post(self, txm_event_id: int) -> str:
         txm_event = get_txm_event(txm_event_id)
         configuration = configuration_from_dict(request.json)
+        user_id = get_current_user_id()
         maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
                                                                                configuration=configuration)
-        if maybe_configuration_db_id:
-            matchings_detailed = get_matchings_detailed_for_configuration(txm_event, maybe_configuration_db_id)
-        else:
-            raise CachingNotReadyException('Caching is not ready')
-            # TODO move this commented out section to another endpoint in and also remove the raising of error and
-            # return some object telling FE that the cached mathcing does not exist.
-            #  https://github.com/mild-blue/txmatching/issues/372
-            # pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
-            # solver_service.save_pairing_result(pairing_result, user_id)
+        if not maybe_configuration_db_id:
+            pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
+            solver_service.save_pairing_result(pairing_result, user_id)
+            maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
+                                                                                   configuration=configuration)
+
+        assert maybe_configuration_db_id is not None
+        matchings_detailed = get_matchings_detailed_for_configuration(txm_event, maybe_configuration_db_id)
 
         calculated_matchings_dto = create_calculated_matchings_dto(matchings_detailed, matchings_detailed.matchings)
 

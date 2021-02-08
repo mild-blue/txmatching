@@ -43,7 +43,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_solve_from_example_dataset(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event(txm_event_db_id)
-        configuration = Configuration(use_split_resolution=True)
+        configuration = Configuration(use_split_resolution=True,
+                                      max_matchings_to_store_in_db=1000)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
         self.assertEqual(947, len(solutions))
 
