@@ -191,3 +191,16 @@ def _update_patient_preprocessed_typing(patient_update: PatientUpdateDTO) -> Pat
             for preprocessed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
         ])
     return patient_update
+
+
+def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
+    donor_model = DonorModel.query.get(donor_id)  # type: DonorModel
+    if donor_model is None or donor_model.txm_event_id != txm_event_id:
+        raise InvalidArgumentException(f'Donor {donor_id} not found in txm event {txm_event_id}')
+    recipient_id = donor_model.recipient_id
+
+    DonorModel.query.filter(DonorModel.id == donor_id).delete()
+    if recipient_id is not None:
+        RecipientModel.query.filter(RecipientModel.id == recipient_id).delete()
+
+    db.session.commit()

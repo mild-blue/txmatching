@@ -1518,7 +1518,7 @@ paths:
             required: true
             type: integer
         post:
-            operationId: post_donor_recipient_pair
+            operationId: post_donor_recipient_pairs
             parameters:
             -   in: body
                 name: payload
@@ -1551,6 +1551,47 @@ paths:
             -   bearer: []
             tags:
             - patients
+    /v1/txm-event/{txm_event_id}/patients/pairs/{donor_db_id}:
+        delete:
+            description: Delete existing donor recipient pair.
+            operationId: delete_donor_recipient_pair
+            parameters:
+            -   description: Donor id that will be deleted including its recipient
+                    if there is any
+                in: path
+                name: donor_db_id
+                required: true
+                type: integer
+            responses:
+                '200':
+                    description: Returns status code representing result of donor
+                        recipient pair object deletion.
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
     /v1/txm-event/{txm_event_id}/patients/recipient:
         parameters:
         -   in: path
