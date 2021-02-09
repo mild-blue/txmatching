@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from sqlalchemy import and_
@@ -9,12 +10,16 @@ from txmatching.auth.exceptions import (InvalidArgumentException,
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import (
     get_donor_from_donor_model, get_recipient_from_recipient_model)
-from txmatching.database.sql_alchemy_schema import (DonorModel, RecipientModel,
+from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
+                                                    RecipientModel,
                                                     TxmEventModel,
-                                                    UploadedDataModel)
+                                                    UploadedDataModel,
+                                                    UserToAllowedEvent)
 from txmatching.patients.patient import TxmEvent
 from txmatching.utils.enums import Country
-from txmatching.utils.logged_user import get_current_user
+from txmatching.utils.logged_user import get_current_user, get_current_user_id
+
+logger = logging.getLogger(__name__)
 
 
 def get_newest_txm_event_db_id() -> int:
@@ -51,11 +56,15 @@ def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int
 
 def get_txm_event_id_for_current_user() -> int:
     current_user_model = get_current_user()
-    # TODO change in https://trello.com/c/xRmQhnqM
-    if current_user_model.default_txm_event_id:
+    allowed_events = get_allowed_txm_event_ids_for_current_user()
+
+    if current_user_model.default_txm_event_id and current_user_model.default_txm_event_id in allowed_events:
         return current_user_model.default_txm_event_id
     else:
-        return get_newest_txm_event_db_id()
+        if len(allowed_events) > 0:
+            return allowed_events[-1]
+        else:
+            return get_newest_txm_event_db_id()
 
 
 def update_default_txm_event_id_for_current_user(event_id: int):
@@ -108,6 +117,29 @@ def get_allowed_txm_event_ids_for_current_user() -> List[int]:
             txm_event_model.id for txm_event_model
             in TxmEventModel.query.order_by(TxmEventModel.id.asc()).all()
         ]
-        return txm_event_ids
     else:
-        return [get_txm_event_id_for_current_user()]
+        txm_event_ids = [
+            user_to_event_model.txm_event_id for user_to_event_model in
+            UserToAllowedEvent.query.filter(
+                UserToAllowedEvent.user_id == get_current_user_id()
+            ).order_by(
+                UserToAllowedEvent.txm_event_id.asc()
+            ).all()
+        ]
+
+    return txm_event_ids
+
+
+def set_allowed_txm_event_ids_for_user(user: AppUserModel, txm_event_ids: List[int]):
+    if user.role == UserRole.ADMIN:
+        logger.warning(f'Cannot set allowed txm events for admin user. Skipping')
+    else:
+        UserToAllowedEvent.query.filter(
+            UserToAllowedEvent.user_id == user.id
+        ).delete()
+
+        for txm_event_id in txm_event_ids:
+            user_to_event = UserToAllowedEvent(user_id=user.id, txm_event_id=txm_event_id)
+            db.session.add(user_to_event)
+
+        db.session.commit()
