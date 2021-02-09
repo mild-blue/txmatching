@@ -39,6 +39,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ConfigurationCountriesComponent } from './components/configuration-countries/configuration-countries.component';
 import { ConfigurationScoresComponent } from './components/configuration-scores/configuration-scores.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSelectModule } from '@angular/material/select';
 import { MatBadgeModule } from '@angular/material/badge';
 import { PatientComponent } from './components/patient/patient.component';
 import { CountryComponent } from './components/country/country.component';
@@ -129,6 +130,7 @@ import { MatListModule } from '@angular/material/list';
     BrowserAnimationsModule,
     MatInputModule,
     MatSlideToggleModule,
+    MatSelectModule,
     MatBadgeModule,
     MatProgressSpinnerModule,
     MatListModule

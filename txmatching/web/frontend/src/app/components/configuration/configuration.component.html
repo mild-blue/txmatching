@@ -48,6 +48,15 @@
 
       <div class="configuration__box inputs">
 
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Solver</mat-label>
+          <mat-select formControlName="solver_constructor_name">
+            <mat-option *ngFor="let solverConstructorName of allSolverConstructorNames" [value]="solverConstructorName">
+              {{solverConstructorName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
         <mat-form-field *ngIf="configuration.minimum_total_score !== undefined">
           <mat-label>Minimum transplant score</mat-label>
           <input value="{{ configuration.minimum_total_score }}"

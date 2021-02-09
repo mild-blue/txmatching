@@ -8,6 +8,7 @@ export * from './defaultTxmEventGenerated';
 export * from './detailedScoreForGroupGenerated';
 export * from './donorGenerated';
 export * from './donorInputGenerated';
+export * from './donorModelPairInGenerated';
 export * from './donorModelToUpdateGenerated';
 export * from './failResponseGenerated';
 export * from './forbiddenCountryCombinationGenerated';

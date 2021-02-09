@@ -7,7 +7,7 @@ RUN npm i
 RUN npm run build-prod
 
 # Build backend
-FROM mildblue/txmatching-conda-dependencies:1.0.5 AS backend-build
+FROM mildblue/txmatching-conda-dependencies:1.0.6 AS backend-build
 LABEL description="Mild Blue - TXMatching"
 LABEL project="mildblue:txmatching"
 
@@ -30,7 +30,7 @@ ARG release_version=development-docker
 ENV RELEASE_FILE_PATH=./release.txt
 RUN echo $release_version > $RELEASE_FILE_PATH
 
-ENV PORT=8008
+ENV PORT=8080
 
 # Start the app - one must initialize shell beforehand
 CMD . ~/.bashrc && \

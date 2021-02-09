@@ -18,12 +18,13 @@ export interface Configuration {
   required_patient_db_ids: number[];
   forbidden_country_combinations: CountryCombination[];
 
+  solver_constructor_name: string;
+
   [key: string]: boolean | string | number | number[] | CountryCombination[] | DonorRecipientScore[];
 }
 
 export interface AppConfiguration extends Configuration {
   scorer_constructor_name: string;
-  solver_constructor_name: string;
 }
 
 export interface DonorRecipientScore {
