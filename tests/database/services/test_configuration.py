@@ -17,7 +17,7 @@ class TestConfiguration(DbTests):
         time.sleep(1)
         configuration = Configuration(
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
-        save_configuration_to_db(configuration, txm_event.db_id, 1)
+        save_configuration_to_db(configuration, txm_event, 1)
         self.assertEqual(Country.CZE, configuration.forbidden_country_combinations[0].donor_country)
         configuration = get_configuration_for_txm_event(txm_event)
         self.assertEqual(Country.CZE, configuration.forbidden_country_combinations[0].donor_country)

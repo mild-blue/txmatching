@@ -42,7 +42,7 @@ class TestUpdateDonorRecipient(DbTests):
         ), txm_event_db_id)
 
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
-        self.assertEqual(0, len(configs))
+        self.assertEqual(1, len(configs))
 
         self.assertSetEqual({'AB'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
         self.assertSetEqual({'B42', 'DQ6', 'DQA1'}, {code.code for code in RecipientModel.query.get(1).hla_antibodies})
@@ -83,7 +83,7 @@ class TestUpdateDonorRecipient(DbTests):
         ), txm_event_db_id)
 
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
-        self.assertEqual(0, len(configs))
+        self.assertEqual(1, len(configs))
 
         self.assertSetEqual({'A11', 'DQ6', 'DQA1'},
                             {hla_type['code'] for hla_type in DonorModel.query.get(1).hla_typing['hla_types_list']})

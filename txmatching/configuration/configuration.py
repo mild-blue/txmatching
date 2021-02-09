@@ -38,6 +38,8 @@ class Configuration:
     forbidden_country_combinations: Pairs of countries which do not support mutual transplantations.
     manual_donor_recipient_scores: Manual setting of score for tuple of recipient and donor.
     max_matchings_to_show_to_viewer: Viewer cannot see all the details of the app.
+    max_matchings_to_show_to_store_in_db: Max matchings we keep in database and show to EDITOR.
+    max_allowed_number_of_matchings: Max allowed number of matchings the user is allowed to work with.
     """
     scorer_constructor_name: str = 'HLAAdditiveScorer'
     solver_constructor_name: str = 'AllSolutionsSolver'
@@ -63,6 +65,8 @@ class Configuration:
     # TODO: https://github.com/mild-blue/txmatching/issues/373 change field type to set
     manual_donor_recipient_scores: List[ManualDonorRecipientScore] = field(default_factory=list)
     max_matchings_to_show_to_viewer: int = field(default=10, compare=False)
+    max_matchings_to_store_in_db: int = field(default=100, compare=False)
+    max_allowed_number_of_matchings: int = field(default=10000, compare=False)
 
     def __eq__(self, other):
         """

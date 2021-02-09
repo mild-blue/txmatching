@@ -23,6 +23,7 @@ class ConfigModel(db.Model):
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     txm_event_id = db.Column(db.Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=False)
     parameters = db.Column(db.JSON, unique=False, nullable=False)
+    patients_hash = db.Column(db.BigInteger, unique=False, nullable=False)
     created_by = db.Column(db.Integer, unique=False, nullable=False)
     # created at and updated at is not handled by triggers as then am not sure how tests would work, as triggers
     # seem to be specific as per db and I do not think its worth the effort as this simple approach works fine

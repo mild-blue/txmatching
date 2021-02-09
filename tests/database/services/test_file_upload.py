@@ -6,6 +6,8 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
+from txmatching.database.services.patient_service import \
+    get_patients_persistent_hash
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.txm_event_service import (
@@ -34,6 +36,7 @@ class TestUpdateDonorRecipient(DbTests):
         config = ConfigModel(
             txm_event_id=txm_event.db_id,
             parameters={},
+            patients_hash=get_patients_persistent_hash(txm_event),
             created_by=user_id
         )
 
@@ -74,7 +77,7 @@ class TestUpdateDonorRecipient(DbTests):
         )
             for donor in txm_event.active_donors_dict.values()]
 
-        self.assertEqual(0, len(configs))
+        self.assertEqual(1, len(configs))
         self.assertEqual(34, len(recipients))
         self.assertEqual(38, len(donors))
         self.assertEqual(3, len({donor.country for donor in donors}))
@@ -88,7 +91,8 @@ class TestUpdateDonorRecipient(DbTests):
             max_cycle_length=100,
             max_sequence_length=100,
             max_number_of_distinct_countries_in_round=100,
-            use_split_resolution=False
+            use_split_resolution=False,
+            max_matchings_to_store_in_db=1000
         ),
             txm_event).calculated_matchings_list)
         self.assertEqual(358, len(all_matchings))

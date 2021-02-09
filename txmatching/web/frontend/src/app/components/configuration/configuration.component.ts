@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/f
 import { Configuration } from '@app/model/Configuration';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { PatientList } from '@app/model/PatientList';
+import { ConfigurationGeneratedSolverConstructorNameEnum } from '@app/generated';
 
 @Component({
   selector: 'app-configuration',
@@ -21,6 +22,9 @@ export class ConfigurationComponent implements OnInit, OnChanges {
 
   public configForm?: FormGroup;
   public closeIcon = faTimes;
+  public allSolverConstructorNames: string[] = Object.values(
+    ConfigurationGeneratedSolverConstructorNameEnum
+  );
 
   constructor(private _formBuilder: FormBuilder) {
   }
