@@ -75,15 +75,17 @@ def _configuration_to_config_model(
 
 def find_configuration_db_id_for_configuration(configuration: Configuration,
                                                txm_event: TxmEvent) -> Optional[int]:
+    logger.debug('Searching models for configuration')
     patients_hash = get_patients_persistent_hash(txm_event)
     config_models = ConfigModel.query.filter(and_(
         ConfigModel.txm_event_id == txm_event.db_id,
         ConfigModel.patients_hash == patients_hash
     )).all()
-    logger.debug(config_models)
+
     for config_model in config_models:
         config_from_model = configuration_from_dict(config_model.parameters)
         if configuration == config_from_model:
+            logger.debug('Found config for configuration')
             return config_model.id
 
     logger.info(f'Configuration for event {txm_event.db_id} and patients hash {patients_hash} not found')

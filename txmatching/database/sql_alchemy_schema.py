@@ -56,7 +56,6 @@ class TxmEventModel(db.Model):
     name = db.Column(db.TEXT, unique=True, nullable=False)
     configs = db.relationship('ConfigModel', backref='txm_event', passive_deletes=True)
     donors = db.relationship('DonorModel', backref='txm_event', passive_deletes=True)
-    recipients = db.relationship('RecipientModel', backref='txm_event', passive_deletes=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
@@ -84,8 +83,10 @@ class RecipientModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    acceptable_blood = db.relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True)
-    hla_antibodies = db.relationship('RecipientHLAAntibodyModel', backref='recipient', passive_deletes=True)
+    acceptable_blood = db.relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True,
+                                       lazy='joined')
+    hla_antibodies = db.relationship('RecipientHLAAntibodyModel', backref='recipient', passive_deletes=True,
+                                     lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')
 
 
@@ -109,7 +110,9 @@ class DonorModel(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
     recipient_id = db.Column(db.Integer, ForeignKey('recipient.id'), unique=False, nullable=True)
-    recipient = db.relationship('RecipientModel', backref=backref('donor', uselist=False))
+    recipient = db.relationship('RecipientModel', backref=backref('donor', uselist=False),
+                                passive_deletes=True,
+                                lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')
 
 

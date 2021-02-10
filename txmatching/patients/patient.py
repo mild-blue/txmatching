@@ -99,10 +99,14 @@ class Recipient(Patient, PersistentlyHashable):
         update_persistent_hash(hash_, self.previous_transplants)
 
 
-@dataclass(init=False)
-class TxmEvent:
+@dataclass
+class TxmEventBase:
     db_id: int
     name: str
+
+
+@dataclass(init=False)
+class TxmEvent(TxmEventBase):
     all_donors: List[Donor]
     all_recipients: List[Recipient]
     active_donors_dict: Dict[DonorDbId, Donor]
