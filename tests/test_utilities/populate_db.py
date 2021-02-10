@@ -143,4 +143,4 @@ def populate_db():
 if __name__ == '__main__':
     app = create_app()
     with app.app_context():
-        TxmEventModel.query.get(2)
+        populate_db()
