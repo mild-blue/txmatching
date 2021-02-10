@@ -187,9 +187,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       if (calculatedMatchings.show_not_all_matchings_found) {
         this._alertService.info(`
         There exist more than ${this.foundMatchingsCount} matchings. Shown matchings present the top matchings found so
-         far, most probably including the top matching over all. For more details, please contact the developers using
-         info@mild.blue or call +420 723 927 536.
-        `);
+         far, most probably including the top matching over all. Try using the ILPSolver to find possible better
+         matching or contact the developers for more details using info@mild.blue or call +420 723 927 536.`);
       }
     } catch (e) {
       this._alertService.error(`Error calculating matchings: "${e.message || e}"`);
