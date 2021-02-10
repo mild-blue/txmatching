@@ -132,7 +132,7 @@ def get_allowed_txm_event_ids_for_current_user() -> List[int]:
 
 def set_allowed_txm_event_ids_for_user(user: AppUserModel, txm_event_ids: List[int]):
     if user.role == UserRole.ADMIN:
-        logger.warning(f'Cannot set allowed txm events for admin user. Skipping')
+        logger.warning('Cannot set allowed txm events for admin user. Skipping')
     else:
         UserToAllowedEvent.query.filter(
             UserToAllowedEvent.user_id == user.id
