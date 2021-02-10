@@ -37,6 +37,56 @@ API_VERSION = '/v1'
 logger = logging.getLogger(__name__)
 
 
+class RequestPerformance:
+    def __init__(self, log_queries):
+        self._log_queries = log_queries
+        self._sql_queries: List[Tuple[str, float]] = []
+        self._sql_start_time = 0.0
+        self._sql_total_time = 0.0
+        self._request_start_time = time.perf_counter()
+        self._request_total_time = 0.0
+
+        # pylint: disable=too-many-arguments,unused-argument,unused-variable
+        @event.listens_for(Engine, 'before_cursor_execute')
+        def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+            self._sql_start_time = time.perf_counter()
+
+        # pylint: disable=too-many-arguments,unused-argument,unused-variable
+        @event.listens_for(Engine, 'after_cursor_execute')
+        def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+            now = time.perf_counter()
+            last_execution_duration = now - self._sql_start_time
+            self._sql_total_time += last_execution_duration
+
+            self._add_sql_query(statement, last_execution_duration)
+
+    def _add_sql_query(self, query, duration) -> None:
+        query_simplified = re.sub(r'SELECT.*\sFROM', 'SELECT * FROM', str(query))
+        self._sql_queries.append((query_simplified, duration))
+
+        if self._log_queries:
+            logger.debug(f'SQL query ({duration:.6f}s): {query_simplified}')
+
+    def start(self) -> None:
+        self._sql_queries = []
+        self._sql_start_time = 0.0
+        self._sql_total_time = 0.0
+        self._request_start_time = time.perf_counter()
+        self._request_total_time = 0.0
+
+    def finish(self) -> None:
+        now = time.perf_counter()
+        request_duration = now - self._request_start_time
+        self._request_total_time += request_duration
+
+    def log(self):
+        logger.info(
+            f'Request performance: sql_queries: {len(self._sql_queries)}, '
+            f'sql_total_time: {self._sql_total_time:.6f}, '
+            f'request_total_time: {self._request_total_time:.6f}'
+        )
+
+
 def create_app() -> Flask:
     setup_logging()
 
@@ -130,49 +180,6 @@ def create_app() -> Flask:
             return response
 
     def log_request_performance():
-        class RequestPerformance:
-            def __init__(self, log_queries):
-                self._log_queries = log_queries
-                self.start()
-
-                @event.listens_for(Engine, 'before_cursor_execute')
-                def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
-                    self.sql_start_time = time.perf_counter()
-
-                @event.listens_for(Engine, 'after_cursor_execute')
-                def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
-                    now = time.perf_counter()
-                    last_execution_duration = now - self.sql_start_time
-                    self.sql_total_time += last_execution_duration
-
-                    self._add_sql_query(statement, last_execution_duration)
-
-            def _add_sql_query(self, query, duration) -> None:
-                query_simplified = re.sub(r'SELECT.*\sFROM', 'SELECT * FROM', str(query))
-                self.sql_queries.append((query_simplified, duration))
-
-                if self._log_queries:
-                    logger.debug(f'SQL query ({duration:.6f}s): {query_simplified}')
-
-            def start(self) -> None:
-                self.sql_queries: List[Tuple[str, float]] = []
-                self.sql_start_time = 0.0
-                self.sql_total_time = 0.0
-                self.request_start_time = time.perf_counter()
-                self.request_total_time = 0.0
-
-            def finish(self) -> None:
-                now = time.perf_counter()
-                request_duration = now - self.request_start_time
-                self.request_total_time += request_duration
-
-            def log(self):
-                logger.info(
-                    f'Request performance: sql_queries: {len(self.sql_queries)}, '
-                    f'sql_total_time: {self.sql_total_time:.6f}, '
-                    f'request_total_time: {self.request_total_time:.6f}'
-                )
-
         # Set log_queries=True to log sql queries with duration
         request_performance = RequestPerformance(log_queries=False)
 
