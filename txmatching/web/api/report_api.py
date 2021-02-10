@@ -34,7 +34,7 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
-    find_configuration_db_id_for_configuration,
+    find_configuration_db_id_for_configuration, get_configuration_from_db_id,
     get_latest_configuration_db_id_for_txm_event)
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
@@ -103,6 +103,8 @@ class Report(Resource):
             solver_service.save_pairing_result(pairing_result, user_id)
             maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
                                                                                    configuration=configuration)
+        else:
+            configuration = get_configuration_from_db_id(maybe_configuration_db_id)
 
         assert maybe_configuration_db_id is not None
 
