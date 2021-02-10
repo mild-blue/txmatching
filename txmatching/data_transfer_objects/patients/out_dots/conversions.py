@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
     DonorDTOOut
 from txmatching.database.services.config_service import \
-    get_configuration_for_txm_event
+    get_latest_configuration_for_txm_event
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.blood_groups import blood_groups_compatible
@@ -41,7 +41,7 @@ def donor_to_donor_dto_out(donor: Donor,
         related_recipient = next(recipient for recipient in all_recipients if
                                  recipient.db_id == donor.related_recipient_db_id)
 
-        configuration = get_configuration_for_txm_event(txm_event)
+        configuration = get_latest_configuration_for_txm_event(txm_event)
         scorer = scorer_from_configuration(configuration)
         donor_dto.score_with_related_recipient = scorer.score_transplant(donor, related_recipient, None)
         donor_dto.compatible_blood_with_related_recipient = blood_groups_compatible(

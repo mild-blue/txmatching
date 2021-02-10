@@ -36,12 +36,12 @@ def configuration_from_dict(config_model: Dict) -> Configuration:
     return configuration
 
 
-def get_configuration_for_txm_event(txm_event: TxmEvent) -> Configuration:
-    current_config_model = get_latest_config_model_for_txm_event(txm_event.db_id)
-    if current_config_model is None:
+def get_latest_configuration_for_txm_event(txm_event: TxmEvent) -> Configuration:
+    configuration_db_id = get_latest_configuration_db_id_for_txm_event(txm_event)
+    if configuration_db_id is None:
         return Configuration()
     else:
-        return configuration_from_dict(current_config_model.parameters)
+        return get_configuration_from_db_id(configuration_db_id)
 
 
 def save_configuration_to_db(configuration: Configuration, txm_event: TxmEvent, user_id: int) -> int:
@@ -53,10 +53,17 @@ def save_configuration_to_db(configuration: Configuration, txm_event: TxmEvent, 
     return config_model.id
 
 
-def get_latest_config_model_for_txm_event(txm_event_db_id: int) -> Optional[ConfigModel]:
-    config = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).order_by(
-        ConfigModel.updated_at.desc()).first()
-    return config
+def get_latest_configuration_db_id_for_txm_event(txm_event: TxmEvent) -> Optional[int]:
+    patients_hash = get_patients_persistent_hash(txm_event)
+    config = ConfigModel.query.filter(and_(
+        ConfigModel.txm_event_id == txm_event.db_id,
+        ConfigModel.patients_hash == patients_hash
+    )).order_by(
+        ConfigModel.updated_at.desc()
+    ).first()
+    if config:
+        return config.id
+    return None
 
 
 def _configuration_to_config_model(
