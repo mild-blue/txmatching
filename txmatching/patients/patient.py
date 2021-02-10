@@ -56,10 +56,11 @@ class Donor(Patient, PersistentlyHashable):
 class RecipientRequirements(PersistentlyHashable):
     """
     Attributes:
-        require_new_donor_having_better_match_in_compatibility_index: New donor for recipient needs to have
-        a better match in the compatibility index than (the best of) his original donor(s)
-        require_new_donor_having_better_match_in_compatibility_index_or_blood_group: New donor for recipient
-        has to have a better match in compatibility index or in blood group than (the best of) his original donor(s)
+    require_better_match_in_compatibility_index: New donor for recipient needs to have a better match in the
+    compatibility index than (the best of) his original donor(s)
+    require_better_match_in_compatibility_index_or_blood_group: New donor for recipient has to have a better match in
+    compatibility index or in blood group than (the best of) his original donor(s)
+    require_compatible_blood_group: New donor needs to have compatible blood group using the standard schema
     """
     require_better_match_in_compatibility_index: Optional[bool] = None
     require_better_match_in_compatibility_index_or_blood_group: Optional[bool] = None
