@@ -132,6 +132,7 @@ def parse_hla_raw_code(hla_raw_code: str) -> Optional[str]:
     :param hla_raw_code:
     :return:
     """
+    logger.debug('Parsing HLA code')
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not parsing_result.maybe_hla_code:
         logger.error(f'HLA code processing of {hla_raw_code} was not successful: {parsing_result.result_detail}')

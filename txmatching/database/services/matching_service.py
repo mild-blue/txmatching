@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
@@ -21,6 +22,8 @@ from txmatching.utils.hla_system.compatibility_index import (
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class MatchingsDetailed:
@@ -35,41 +38,45 @@ class MatchingsDetailed:
 
 def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
                                              configuration_db_id: int) -> MatchingsDetailed:
+    logger.debug('Getting detailed matchings')
     configuration = get_configuration_from_db_id(configuration_db_id)
 
     config_set_updated(configuration_db_id)
     database_pairing_result = get_pairing_result_for_configuration_db_id(configuration_db_id)
-
+    logger.debug('Getting matchings with score')
     matchings_with_score = _matchings_dto_to_matching_with_score(database_pairing_result.matchings,
                                                                  txm_event.active_donors_dict,
                                                                  txm_event.active_recipients_dict)
-
+    logger.debug('Getting score dict with score')
     score_dict = {
         (donor_db_id, recipient_db_id): score for donor_db_id, row in
         zip(txm_event.active_donors_dict, database_pairing_result.score_matrix) for recipient_db_id, score in
         zip(txm_event.active_recipients_dict, row)
     }
-
+    logger.debug('Getting compatible_blood dict with score')
     compatible_blood_dict = {(donor_db_id, recipient_db_id): blood_groups_compatible(donor.parameters.blood_group,
                                                                                      recipient.parameters.blood_group)
                              for donor_db_id, donor in txm_event.active_donors_dict.items()
-                             for recipient_db_id, recipient in txm_event.active_recipients_dict.items()
+                             for recipient_db_id, recipient in txm_event.active_recipients_dict.items() if
+                             score_dict[(donor_db_id, recipient_db_id)] >= 0
                              }
-
+    logger.debug('Getting ci dict dict with score')
     detailed_compatibility_index_dict = {
         (donor_db_id, recipient_db_id): get_detailed_compatibility_index(donor.parameters.hla_typing,
                                                                          recipient.parameters.hla_typing)
         for donor_db_id, donor in txm_event.active_donors_dict.items()
-        for recipient_db_id, recipient in txm_event.active_recipients_dict.items()
+        for recipient_db_id, recipient in txm_event.active_recipients_dict.items() if
+        score_dict[(donor_db_id, recipient_db_id)] >= 0
     }
-
+    logger.debug('Getting antibody matches dict dict with score')
     antibody_matches_dict = {
         (donor_db_id, recipient_db_id): get_crossmatched_antibodies(donor.parameters.hla_typing,
                                                                     recipient.hla_antibodies,
                                                                     configuration.use_split_resolution
                                                                     )
         for donor_db_id, donor in txm_event.active_donors_dict.items()
-        for recipient_db_id, recipient in txm_event.active_recipients_dict.items()
+        for recipient_db_id, recipient in txm_event.active_recipients_dict.items() if
+        score_dict[(donor_db_id, recipient_db_id)] >= 0
     }
 
     return MatchingsDetailed(
@@ -120,6 +127,7 @@ def create_calculated_matchings_dto(
     """
     Method that creates common DTOs for FE and reports.
     """
+    logger.debug('Creating calculated matchings DTO')
     return CalculatedMatchingsDTO(
         calculated_matchings=[MatchingDTO(
             rounds=[
