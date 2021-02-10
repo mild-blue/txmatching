@@ -6,14 +6,14 @@ from txmatching.configuration.configuration import (
 from txmatching.database.services.config_service import (
     configuration_from_dict, get_configuration_for_txm_event,
     save_configuration_to_db)
-from txmatching.database.services.txm_event_service import get_txm_event
+from txmatching.database.services.txm_event_service import get_txm_event_all
 from txmatching.utils.enums import Country
 
 
 class TestConfiguration(DbTests):
     def test_configuration(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_all(txm_event_db_id)
         time.sleep(1)
         configuration = Configuration(
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])

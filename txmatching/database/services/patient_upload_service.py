@@ -18,7 +18,7 @@ from txmatching.database.db import db
 from txmatching.database.services.parsing_utils import (
     check_existing_ids_for_duplicates, get_hla_code, parse_date_to_datetime)
 from txmatching.database.services.txm_event_service import (
-    get_txm_event, get_txm_event_db_id_by_name,
+    get_txm_event_all, get_txm_event_db_id_by_name,
     remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
@@ -176,7 +176,7 @@ def _add_patients_from_one_country(
     if len(duplicate_ids) > 0:
         raise InvalidArgumentException(f'Duplicate recipient medical ids found: {duplicate_ids}.')
 
-    txm_event = get_txm_event(txm_event_db_id)
+    txm_event = get_txm_event_all(txm_event_db_id)
 
     check_existing_ids_for_duplicates(txm_event, donors, recipients)
 

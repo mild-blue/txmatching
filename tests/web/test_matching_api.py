@@ -5,7 +5,7 @@ from tests.test_utilities.populate_db import (PATIENT_DATA_OBFUSCATED,
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.services import solver_service
-from txmatching.database.services.txm_event_service import get_txm_event
+from txmatching.database.services.txm_event_service import get_txm_event_all
 from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
@@ -26,7 +26,7 @@ class TestSaveAndGetConfiguration(DbTests):
             require_better_match_in_compatibility_index_or_blood_group=False,
             max_number_of_distinct_countries_in_round=10
         )
-        pairing_result = solve_from_configuration(configuration, get_txm_event(txm_event_db_id))
+        pairing_result = solve_from_configuration(configuration, get_txm_event_all(txm_event_db_id))
         solver_service.save_pairing_result(pairing_result, 1)
 
         with self.app.test_client() as client:
