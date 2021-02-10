@@ -92,9 +92,9 @@ def get_txm_event_db_id_by_name(txm_event_name: str) -> int:
 
 
 def get_txm_event_all(txm_event_db_id: int) -> TxmEvent:
-    logger.debug(f'Starting to lazy load data for TXM event {txm_event_db_id}')
+    logger.debug(f'Starting to eager load data for TXM event {txm_event_db_id}')
     maybe_txm_event_model = TxmEventModel.query.options(joinedload(TxmEventModel.donors)).get(txm_event_db_id)
-    logger.debug('Lazy loaded data via sql alchemy')
+    logger.debug('Eager loaded data via sql alchemy')
 
     return _get_txm_event_from_txm_event_model(maybe_txm_event_model)
 
