@@ -30,6 +30,8 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson)
+from txmatching.database.services.config_service import \
+    get_latest_configuration_for_txm_event
 from txmatching.database.services.patient_service import (update_donor,
                                                           update_recipient)
 from txmatching.database.services.patient_upload_service import (
@@ -37,6 +39,7 @@ from txmatching.database.services.patient_upload_service import (
 from txmatching.database.services.txm_event_service import (get_txm_event,
                                                             get_txm_event_all)
 from txmatching.database.services.upload_service import save_uploaded_file
+from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import patient_api
@@ -126,10 +129,16 @@ class AlterDonor(Resource):
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
         txm_event = get_txm_event_all(txm_event_id)
         all_recipients = txm_event.all_recipients
-        return jsonify(donor_to_donor_dto_out(
-            update_donor(donor_update_dto, txm_event_id),
-            all_recipients,
-            txm_event)
+        configuration = get_latest_configuration_for_txm_event(txm_event)
+        scorer = scorer_from_configuration(configuration)
+
+        return jsonify(
+            donor_to_donor_dto_out(
+                update_donor(donor_update_dto, txm_event_id),
+                all_recipients,
+                configuration,
+                scorer
+            )
         )
 
 
