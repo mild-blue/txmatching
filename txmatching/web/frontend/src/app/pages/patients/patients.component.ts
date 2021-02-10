@@ -36,16 +36,14 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
   public donorsCount: number = 0;
   public recipientCount: number = 0;
 
-  public configuration?: AppConfiguration;
-
-  constructor(private _configService: ConfigurationService,
-              private _patientService: PatientService,
-              private _uploadService: UploadService,
+  constructor(private _uploadService: UploadService,
               _authService: AuthService,
               _alertService: AlertService,
+              _configService: ConfigurationService,
               _eventService: EventService,
+              _patientService: PatientService,
               _logger: LoggerService) {
-    super(_authService, _alertService, _eventService, _logger);
+    super(_authService, _alertService, _configService, _eventService, _patientService, _logger);
   }
 
   ngOnInit(): void {
@@ -57,14 +55,16 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
   private async _initAll(): Promise<void> {
     await this._initTxmEvents();
-    await this._initPatients();
-    await this._initConfiguration();
+    await Promise.all([
+      this._initPatientsWithStats(),
+      this._initAppConfiguration()
+    ]);
   }
 
   public async setDefaultTxmEvent(event_id: number): Promise<void> {
     this.loading = true;
     this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
-    await Promise.all([this._initConfiguration(), this._initPatients()]);
+    await Promise.all([this._initAppConfiguration(), this._initPatientsWithStats()]);
     this.loading = false
   }
 
@@ -74,7 +74,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
       return;
     }
     this._uploadService.uploadFile(
-      this.defaultTxmEvent.id, 'Refresh patients', this._initPatients.bind(this)
+      this.defaultTxmEvent.id, 'Refresh patients', this._initPatientsWithStats.bind(this)
     );
   }
 
@@ -116,12 +116,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     this.items = [...items]; // make a copy, not a reference
   }
 
-  private async _initPatients(): Promise<void> {
-    if(!this.defaultTxmEvent) {
-      this._logger.error(`Patients init failed because defaultTxmEvent not set`);
-      return;
-    }
-
+  private async _initPatientsWithStats(): Promise<void> {
     // if not already loading before Promise.all
     let loadingWasSwitchedOn = false;
     if (!this.loading) {
@@ -131,38 +126,18 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
     // try getting patients
     try {
-      this.patients = await this._patientService.getPatients(this.defaultTxmEvent.id);
+      await this._initPatients();
+      if(!this.patients) return;
       this.donorsCount = this.patients.donors.length;
       this.recipientCount = this.patients.recipients.length;
       this._logger.log(`Got ${this.donorsCount + this.recipientCount} patients from server`, [this.patients]);
 
       // Init list items
       this._initItems();
-    } catch (e) {
-      this._alertService.error(`Error loading patients: "${e.message || e}"`);
-      this._logger.error(`Error loading patients: "${e.message || e}"`);
     } finally {
-      this._logger.log('End of loading patients');
-
-      // So we do not switch off loading called before Promise.all
       if (loadingWasSwitchedOn) {
         this.loading = false;
       }
-    }
-  }
-
-  private async _initConfiguration(): Promise<void> {
-    if(!this.defaultTxmEvent) {
-      this._logger.error(`Configuration init failed because defaultTxmEvent not set`);
-      return;
-    }
-
-    try {
-      this.configuration = await this._configService.getConfiguration(this.defaultTxmEvent.id);
-      this._logger.log('Got config from server', [this.configuration]);
-    } catch (e) {
-      this._alertService.error(`Error loading configuration: "${e.message || e}"`);
-      this._logger.error(`Error loading configuration: "${e.message || e}"`);
     }
   }
 }
