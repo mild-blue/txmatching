@@ -160,7 +160,7 @@ class TestPatientService(DbTests):
     def test_donor_recipient_pair_deletion(self):
         txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         self.assertEqual(len(txm_event.all_donors), 38)
         self.assertEqual(len(txm_event.all_recipients), 34)
 
@@ -182,7 +182,7 @@ class TestPatientService(DbTests):
         self.assertEqual('application/json', res.content_type)
 
         # Number of donors and recipients should decrease by 1
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         self.assertEqual(len(txm_event.all_donors), 37)
         self.assertEqual(len(txm_event.all_recipients), 33)
 

@@ -239,7 +239,7 @@ class TestPatientService(DbTests):
         replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
 
         # 3 donors and 3 recipients in db
-        txm_event_before = get_txm_event(txm_event_id)
+        txm_event_before = get_txm_event_complete(txm_event_id)
         self.assertCountEqual([donor.db_id for donor in txm_event_before.all_donors], [1, 2, 3])
         self.assertCountEqual([recipient.db_id for recipient in txm_event_before.all_recipients], [1, 2, 3])
 
@@ -253,7 +253,7 @@ class TestPatientService(DbTests):
 
         # Remove donor and its related recipient
         delete_donor_recipient_pair(2, txm_event_id)
-        txm_event_after = get_txm_event(txm_event_id)
+        txm_event_after = get_txm_event_complete(txm_event_id)
 
         # Now there are 2 donors and 2 recipients in db
         self.assertCountEqual([donor.db_id for donor in txm_event_after.all_donors], [1, 3])
