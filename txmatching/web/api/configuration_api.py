@@ -14,7 +14,8 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services.config_service import \
     get_latest_configuration_for_txm_event
-from txmatching.database.services.txm_event_service import get_txm_event_all
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_complete
 from txmatching.web.api.namespaces import configuration_api
 
 logger = logging.getLogger(__name__)
@@ -34,5 +35,5 @@ class ConfigurationApi(Resource):
     @require_user_login()
     @require_valid_txm_event_id()
     def get(self, txm_event_id: int) -> str:
-        txm_event = get_txm_event_all(txm_event_id)
+        txm_event = get_txm_event_complete(txm_event_id)
         return jsonify(get_latest_configuration_for_txm_event(txm_event))

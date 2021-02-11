@@ -38,7 +38,8 @@ from txmatching.database.services.config_service import (
     get_latest_configuration_db_id_for_txm_event)
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
-from txmatching.database.services.txm_event_service import get_txm_event_all
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_complete
 from txmatching.patients.hla_model import HLAAntibody, HLAType
 from txmatching.patients.patient import Donor, DonorType, Patient, Recipient
 from txmatching.solve_service.solve_from_configuration import \
@@ -93,7 +94,7 @@ class Report(Resource):
     @require_valid_txm_event_id()
     # pylint: disable=too-many-locals
     def get(self, txm_event_id: int, matching_id: int) -> str:
-        txm_event = get_txm_event_all(txm_event_id)
+        txm_event = get_txm_event_complete(txm_event_id)
         maybe_configuration_db_id = get_latest_configuration_db_id_for_txm_event(txm_event)
 
         if maybe_configuration_db_id is None:

@@ -19,7 +19,8 @@ from txmatching.database.db import db
 from txmatching.database.services import solver_service
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
-from txmatching.database.services.txm_event_service import get_txm_event_all
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
@@ -80,7 +81,7 @@ class DbTests(unittest.TestCase):
 
     def fill_db_with_patients_and_results(self) -> int:
         txm_event_db_id = self.fill_db_with_patients()
-        txm_event = get_txm_event_all(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         pairing_result = solve_from_configuration(Configuration(), txm_event)
         solver_service.save_pairing_result(pairing_result, 1)
         return txm_event_db_id

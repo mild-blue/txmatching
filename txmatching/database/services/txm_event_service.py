@@ -91,7 +91,7 @@ def get_txm_event_db_id_by_name(txm_event_name: str) -> int:
         raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.') from error
 
 
-def get_txm_event_all(txm_event_db_id: int) -> TxmEvent:
+def get_txm_event_complete(txm_event_db_id: int) -> TxmEvent:
     logger.debug(f'Starting to eager load data for TXM event {txm_event_db_id}')
     maybe_txm_event_model = TxmEventModel.query.options(joinedload(TxmEventModel.donors)).get(txm_event_db_id)
     logger.debug('Eager loaded data via sql alchemy')
@@ -99,7 +99,7 @@ def get_txm_event_all(txm_event_db_id: int) -> TxmEvent:
     return _get_txm_event_from_txm_event_model(maybe_txm_event_model)
 
 
-def get_txm_event(txm_event_db_id: int) -> TxmEventBase:
+def get_txm_event_base(txm_event_db_id: int) -> TxmEventBase:
     logger.debug(f'Starting to load data for TXM event {txm_event_db_id}')
     maybe_txm_event_model = TxmEventModel.query.options(raiseload(TxmEventModel.donors)).get(txm_event_db_id)
     logger.debug('Loaded data via sql alchemy')

@@ -10,7 +10,8 @@ from txmatching.database.db import db
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.txm_event_service import (
-    get_txm_event, remove_donors_and_recipients_from_txm_event_for_country)
+    get_txm_event_base,
+    remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
     AppUserModel, ConfigModel, DonorModel, PairingResultModel,
     RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
@@ -30,7 +31,7 @@ class TestLargeMatchingDoesNotFail(DbTests):
         patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), txm_event.name, None)
         replace_or_add_patients_from_excel(patients)
 
-        txm_event = get_txm_event(txm_event.db_id)
+        txm_event = get_txm_event_base(txm_event.db_id)
 
         self.assertEqual(42, len(txm_event.all_donors))
         solve_from_configuration(Configuration(), txm_event.db_id)

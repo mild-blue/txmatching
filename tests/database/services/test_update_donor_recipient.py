@@ -9,7 +9,8 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
     RecipientUpdateDTO
 from txmatching.database.services.patient_service import (update_donor,
                                                           update_recipient)
-from txmatching.database.services.txm_event_service import get_txm_event_all
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     RecipientModel)
 from txmatching.patients.patient import RecipientRequirements
@@ -92,7 +93,7 @@ class TestUpdateDonorRecipient(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         donor_db_id = 1
         original_donor_model = DonorModel.query.get(donor_db_id)
-        original_txm_event = get_txm_event_all(txm_event_db_id)
+        original_txm_event = get_txm_event_complete(txm_event_db_id)
         self.assertEqual(True, original_donor_model.active)
         self.assertIn(original_donor_model.id, original_txm_event.active_donors_dict.keys())
         self.assertIn(original_donor_model.recipient_id, original_txm_event.active_recipients_dict.keys())
@@ -101,7 +102,7 @@ class TestUpdateDonorRecipient(DbTests):
             active=False,
             db_id=donor_db_id
         ), txm_event_db_id)
-        new_txm_event = get_txm_event_all(txm_event_db_id)
+        new_txm_event = get_txm_event_complete(txm_event_db_id)
 
         self.assertEqual(False, DonorModel.query.get(donor_db_id).active)
         self.assertNotIn(donor_db_id, new_txm_event.active_donors_dict.keys())
