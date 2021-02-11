@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 PatientDbId = int
 

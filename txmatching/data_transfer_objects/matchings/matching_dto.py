@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from txmatching.patients.patient_types import MedicalId
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 # pylint: disable=too-many-instance-attributes
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 

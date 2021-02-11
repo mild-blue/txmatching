@@ -21,7 +21,8 @@ from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.patients.hla_model import HLAType
 from txmatching.patients.patient import DonorType, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, Sex
+from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import Sex
 from txmatching.utils.logged_user import get_current_user_id
 
 TXM_EVENT_NAME = 'test'

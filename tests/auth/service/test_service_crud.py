@@ -4,9 +4,10 @@ from uuid import uuid4
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.exceptions import UserUpdateException
-from txmatching.auth.service.service_auth_management import register_service, change_service_password
+from txmatching.auth.service.service_auth_management import (
+    change_service_password, register_service)
 from txmatching.database.sql_alchemy_schema import AppUserModel
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 
 class TestServiceCrudWithDb(DbTests):

@@ -10,21 +10,13 @@
  * Do not edit the class manually.
  */
 import { RecipientInputGenerated } from './recipientInputGenerated';
+import { CountryCodeGenerated } from './countryCodeGenerated';
 import { DonorInputGenerated } from './donorInputGenerated';
 
 
 export interface DonorModelPairInGenerated { 
-    country_code?: DonorModelPairInGeneratedCountryCodeEnum;
+    country_code?: CountryCodeGenerated;
     donor: DonorInputGenerated;
     recipient?: RecipientInputGenerated;
 }
-export enum DonorModelPairInGeneratedCountryCodeEnum {
-    Cze = 'CZE',
-    Isr = 'ISR',
-    Aut = 'AUT',
-    Can = 'CAN',
-    Ind = 'IND'
-};
-
-
 

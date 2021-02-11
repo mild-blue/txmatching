@@ -22,7 +22,7 @@ from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
 from txmatching.patients.hla_model import HLAType, HLATyping
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 
 

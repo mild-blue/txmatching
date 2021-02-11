@@ -4,7 +4,7 @@ from txmatching.patients.hla_model import HLAType, HLATyping
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 
 class TestHlaScorer(unittest.TestCase):
