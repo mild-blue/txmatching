@@ -7,9 +7,10 @@ from sqlalchemy.sql import func
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.patients.patient import DonorType, RecipientRequirements
+from txmatching.utils.country_enum import Country
 # pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
-from txmatching.utils.enums import Country, Sex
+from txmatching.utils.enums import Sex
 from txmatching.utils.hla_system.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 

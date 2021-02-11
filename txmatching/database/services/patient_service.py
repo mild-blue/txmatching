@@ -1,6 +1,6 @@
 import dataclasses
 import logging
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 import dacite
 
@@ -191,3 +191,29 @@ def _update_patient_preprocessed_typing(patient_update: PatientUpdateDTO) -> Pat
             for preprocessed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
         ])
     return patient_update
+
+
+def get_donor_recipient_pair(donor_id: int, txm_event_id: int) -> Tuple[Donor, Optional[Recipient]]:
+    donor_model = DonorModel.query.get(donor_id)  # type: DonorModel
+    if donor_model is None or donor_model.txm_event_id != txm_event_id:
+        raise InvalidArgumentException(f'Donor {donor_id} not found in txm event {txm_event_id}')
+    donor = get_donor_from_donor_model(donor_model)
+    recipient_id = donor_model.recipient_id
+
+    if recipient_id is not None:
+        recipient_model = RecipientModel.query.get(recipient_id)  # type: RecipientModel
+        maybe_recipient = get_recipient_from_recipient_model(recipient_model)
+    else:
+        maybe_recipient = None
+
+    return donor, maybe_recipient
+
+
+def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
+    donor, maybe_recipient = get_donor_recipient_pair(donor_id, txm_event_id)
+
+    DonorModel.query.filter(DonorModel.id == donor.db_id).delete()
+    if maybe_recipient is not None:
+        RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
+
+    db.session.commit()

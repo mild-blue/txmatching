@@ -8,7 +8,7 @@ from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching import Matching
 from txmatching.solvers.matching.transplant_round import TransplantRound
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 
 def _create_recipient(recipient_id: int, donor: Donor) -> Recipient:

@@ -4,17 +4,22 @@ from uuid import uuid4
 
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.crypto.jwt_crypto import decode_auth_token
-from txmatching.auth.data_types import UserRole, DecodedBearerToken, TokenType
-from txmatching.auth.exceptions import CredentialsMismatchException, InvalidIpAddressAccessException, \
-    InvalidOtpException, InvalidAuthCallException
-from txmatching.auth.login_flow import credentials_login, _refresh_token, _otp_login, _resend_otp
+from txmatching.auth.data_types import DecodedBearerToken, TokenType, UserRole
+from txmatching.auth.exceptions import (CredentialsMismatchException,
+                                        InvalidAuthCallException,
+                                        InvalidIpAddressAccessException,
+                                        InvalidOtpException)
+from txmatching.auth.login_flow import (_otp_login, _refresh_token,
+                                        _resend_otp, credentials_login)
 from txmatching.auth.service.service_auth_management import register_service
-from txmatching.auth.user.totp import generate_otp_for_user, verify_otp_for_user
+from txmatching.auth.user.totp import (generate_otp_for_user,
+                                       verify_otp_for_user)
 from txmatching.auth.user.user_auth_management import register_user
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
+from txmatching.configuration.app_configuration.application_configuration import \
+    get_application_configuration
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import AppUserModel
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 
 class TestLoginFlow(DbTests):

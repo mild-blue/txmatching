@@ -16,7 +16,7 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
                                                     UploadedDataModel,
                                                     UserToAllowedEvent)
 from txmatching.patients.patient import TxmEvent
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 from txmatching.utils.logged_user import get_current_user, get_current_user_id
 
 logger = logging.getLogger(__name__)

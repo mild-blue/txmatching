@@ -1,6 +1,6 @@
 import re
 
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 TEST_PATIENT_ID_REGEX = re.compile(r'([0-9A-Z]{1,5})-([A-Z]{3})-([DR])')
 PV28_PATIENT_ID_REGEX = re.compile(r'([A-Z]*)-[A-Z\d]*')
