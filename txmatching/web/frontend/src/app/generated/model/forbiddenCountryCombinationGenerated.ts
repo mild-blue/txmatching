@@ -9,26 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { CountryCodeGenerated } from './countryCodeGenerated';
 
 
 export interface ForbiddenCountryCombinationGenerated { 
-    donor_country: ForbiddenCountryCombinationGeneratedDonorCountryEnum;
-    recipient_country: ForbiddenCountryCombinationGeneratedRecipientCountryEnum;
+    donor_country: CountryCodeGenerated;
+    recipient_country: CountryCodeGenerated;
 }
-export enum ForbiddenCountryCombinationGeneratedDonorCountryEnum {
-    Cze = 'CZE',
-    Isr = 'ISR',
-    Aut = 'AUT',
-    Can = 'CAN',
-    Ind = 'IND'
-};
-export enum ForbiddenCountryCombinationGeneratedRecipientCountryEnum {
-    Cze = 'CZE',
-    Isr = 'ISR',
-    Aut = 'AUT',
-    Can = 'CAN',
-    Ind = 'IND'
-};
-
-
 

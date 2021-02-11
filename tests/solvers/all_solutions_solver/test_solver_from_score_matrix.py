@@ -12,7 +12,7 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.solvers.all_solutions_solver.score_matrix_solver import \
     find_possible_path_combinations_from_score_matrix
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 

@@ -10,7 +10,7 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
                                                     PairingResultModel,
                                                     RecipientModel,
                                                     TxmEventModel)
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 
 

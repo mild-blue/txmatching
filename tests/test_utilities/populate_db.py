@@ -16,7 +16,7 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
 from txmatching.patients.patient import TxmEvent
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import create_app

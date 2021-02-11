@@ -5,7 +5,7 @@ from typing import List
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore,
                                                  PatientDbId)
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Country.ISR),
                                   ForbiddenCountryCombination(Country.ISR, Country.AUT)]
