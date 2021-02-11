@@ -7,7 +7,8 @@ from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, HLAGroup, MatchTypes
+from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import HLAGroup, MatchTypes
 from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, HLAMatch,
     get_detailed_compatibility_index)

@@ -4,7 +4,8 @@ from typing import List, Optional
 from txmatching.patients.hla_model import HLAType
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country, Sex
+from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import Sex
 
 
 @dataclass

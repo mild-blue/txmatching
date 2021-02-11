@@ -9,13 +9,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { CountryCodeGenerated } from './countryCodeGenerated';
 
 
 export interface UserRegistrationGenerated { 
     /**
      * Countries that the user has access to.
      */
-    allowed_countries: Array<UserRegistrationGeneratedAllowedCountriesEnum>;
+    allowed_countries: Array<CountryCodeGenerated>;
     /**
      * Email/username used for authentication.
      */
@@ -33,13 +34,6 @@ export interface UserRegistrationGenerated {
      */
     second_factor: string;
 }
-export enum UserRegistrationGeneratedAllowedCountriesEnum {
-    Cze = 'CZE',
-    Isr = 'ISR',
-    Aut = 'AUT',
-    Can = 'CAN',
-    Ind = 'IND'
-};
 export enum UserRegistrationGeneratedRoleEnum {
     Admin = 'ADMIN',
     Viewer = 'VIEWER',

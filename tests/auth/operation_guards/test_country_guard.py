@@ -6,12 +6,13 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import GuardException
-from txmatching.auth.operation_guards.country_guard import guard_user_country_access_to_donor, \
-    guard_user_country_access_to_recipient, guard_user_has_access_to_country
+from txmatching.auth.operation_guards.country_guard import (
+    guard_user_country_access_to_donor, guard_user_country_access_to_recipient,
+    guard_user_has_access_to_country)
 from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.sql_alchemy_schema import AppUserModel
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 
 class TestCountryGuards(DbTests):

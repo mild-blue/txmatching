@@ -7,7 +7,7 @@ from txmatching.database.services.config_service import (
     configuration_from_dict, get_configuration_for_txm_event,
     save_configuration_to_db)
 from txmatching.database.services.txm_event_service import get_txm_event
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 
 class TestConfiguration(DbTests):

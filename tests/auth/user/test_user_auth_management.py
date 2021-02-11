@@ -9,7 +9,7 @@ from txmatching.auth.exceptions import (InvalidAuthCallException,
 from txmatching.auth.user.user_auth_management import (change_user_password,
                                                        register_user)
 from txmatching.database.sql_alchemy_schema import AppUserModel
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 
 class TestUserCrudWithDb(DbTests):

@@ -5,9 +5,10 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.user.totp import generate_totp_seed
-from txmatching.database.services.app_user_management import persist_user, get_app_user_by_email
+from txmatching.database.services.app_user_management import (
+    get_app_user_by_email, persist_user)
 from txmatching.database.sql_alchemy_schema import AppUserModel
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 
 
 class TestAppUserManagementWithDb(DbTests):
