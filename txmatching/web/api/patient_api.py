@@ -30,8 +30,9 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson)
-from txmatching.database.services.patient_service import (update_donor,
-                                                          update_recipient)
+from txmatching.database.services.patient_service import (
+    delete_donor_recipient_pair, get_donor_recipient_pair, update_donor,
+    update_recipient)
 from txmatching.database.services.patient_upload_service import (
     add_donor_recipient_pair, replace_or_add_patients_from_excel)
 from txmatching.database.services.txm_event_service import get_txm_event
@@ -62,7 +63,7 @@ class AllPatients(Resource):
 
 
 @patient_api.route('/pairs', methods=['POST'])
-class DonorRecipientPair(Resource):
+class DonorRecipientPairs(Resource):
     @patient_api.doc(body=DonorModelPairInJson, security='bearer')
     @patient_api.response(code=200, model=PatientUploadSuccessJson,
                           description='Added new donor (possibly with recipient)')
@@ -86,6 +87,46 @@ class DonorRecipientPair(Resource):
             donors_uploaded=1,
             recipients_uploaded=1 if donor_recipient_pair_dto_in.recipient else 0
         ))
+
+
+@patient_api.route('/pairs/<int:donor_db_id>', methods=['DELETE'])
+class DonorRecipientPair(Resource):
+    @patient_api.doc(
+        params={
+            'donor_db_id': {
+                'description': 'Donor id that will be deleted including its recipient if there is any',
+                'type': int,
+                'required': True,
+                'in': 'path'
+            }
+        },
+        security='bearer',
+        description='Delete existing donor recipient pair.'
+    )
+    @patient_api.response(
+        code=200,
+        model=None,
+        description='Returns status code representing result of donor recipient pair object deletion.'
+    )
+    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @patient_api.response(code=403, model=FailJson,
+                          description='Access denied. You do not have rights to access this endpoint.'
+                          )
+    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @require_user_edit_access()
+    @require_valid_txm_event_id()
+    def delete(self, txm_event_id: int, donor_db_id: int):
+        donor, maybe_recipient = get_donor_recipient_pair(donor_id=donor_db_id, txm_event_id=txm_event_id)
+
+        guard_user_has_access_to_country(user_id=get_current_user_id(),
+                                         country=donor.parameters.country_code)
+
+        if maybe_recipient is not None:
+            guard_user_has_access_to_country(user_id=get_current_user_id(),
+                                             country=maybe_recipient.parameters.country_code)
+
+        delete_donor_recipient_pair(donor_id=donor_db_id, txm_event_id=txm_event_id)
 
 
 @patient_api.route('/recipient', methods=['PUT'])
