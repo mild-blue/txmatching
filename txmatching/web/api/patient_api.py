@@ -31,7 +31,8 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson)
 from txmatching.database.services.patient_service import (
-    delete_donor_recipient_pair, update_donor, update_recipient)
+    delete_donor_recipient_pair, get_donor_recipient_pair, update_donor,
+    update_recipient)
 from txmatching.database.services.patient_upload_service import (
     add_donor_recipient_pair, replace_or_add_patients_from_excel)
 from txmatching.database.services.txm_event_service import get_txm_event
@@ -116,6 +117,15 @@ class DonorRecipientPair(Resource):
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def delete(self, txm_event_id: int, donor_db_id: int):
+        donor, maybe_recipient = get_donor_recipient_pair(donor_id=donor_db_id, txm_event_id=txm_event_id)
+
+        guard_user_has_access_to_country(user_id=get_current_user_id(),
+                                         country=donor.parameters.country_code)
+
+        if maybe_recipient is not None:
+            guard_user_has_access_to_country(user_id=get_current_user_id(),
+                                             country=maybe_recipient.parameters.country_code)
+
         delete_donor_recipient_pair(donor_id=donor_db_id, txm_event_id=txm_event_id)
 
 
