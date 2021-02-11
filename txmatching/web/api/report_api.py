@@ -35,7 +35,8 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     find_configuration_db_id_for_configuration,
-    get_latest_configuration_db_id_for_txm_event)
+    get_latest_configuration_db_id_for_txm_event,
+    get_latest_configuration_for_txm_event)
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
 from txmatching.database.services.txm_event_service import \
@@ -144,6 +145,8 @@ class Report(Resource):
         calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings)
 
         patients_dto = to_lists_for_fe(txm_event)
+
+        configuration = get_latest_configuration_for_txm_event(txm_event=txm_event)
 
         Report.prepare_tmp_dir()
         Report.copy_assets()
