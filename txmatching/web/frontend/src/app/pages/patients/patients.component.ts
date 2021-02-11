@@ -55,16 +55,21 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
   private async _initAll(): Promise<void> {
     await this._initTxmEvents();
-    await Promise.all([
-      this._initPatientsWithStats(),
-      this._initAppConfiguration()
-    ]);
+    await this._initPatientsAndConfiguration();
+  }
+
+  private async _initPatientsAndConfiguration(): Promise<void> {
+    // We could possibly run _initPatientsWithStats and _initAppConfiguration in parallel (using Promise.all),
+    // but we don't because due to the current BE limitations, it would not improve the performance significantly,
+    // and could introduce some risks
+    await this._initPatientsWithStats();
+    await this._initAppConfiguration();
   }
 
   public async setDefaultTxmEvent(event_id: number): Promise<void> {
     this.loading = true;
     this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
-    await Promise.all([this._initAppConfiguration(), this._initPatientsWithStats()]);
+    await this._initPatientsAndConfiguration();
     this.loading = false
   }
 

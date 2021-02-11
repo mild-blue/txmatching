@@ -203,10 +203,11 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       return;
     }
 
-    await Promise.all([
-      this._initPatients(),
-      this._initConfiguration()
-    ])
+    // We could possibly run _initPatients and _initConfiguration in parallel (using Promise.all), but we don't
+    // because due to the current BE limitations, it would not improve the performance significantly,
+    // and could introduce some risks
+    await this._initPatients();
+    await this._initConfiguration();
     await this._initMatchings();
 
     this._logger.log('End of matchings initialization');
