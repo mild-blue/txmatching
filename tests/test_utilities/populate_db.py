@@ -110,7 +110,10 @@ def add_users():
     _add_users(user_models)
     for user, user_model in zip(USERS, user_models):
         user['id'] = user_model.id
-        set_allowed_txm_event_ids_for_user(user_model, user.get('allowed_txm_events', []))
+        try:
+            set_allowed_txm_event_ids_for_user(user_model, user.get('allowed_txm_events', []))
+        except ValueError:
+            logger.warning(f'Skipping setting allowed txm events because txm events are not initialized')
 
 
 def _add_users(users: List[AppUserModel]):

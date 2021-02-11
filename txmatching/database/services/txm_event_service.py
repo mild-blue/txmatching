@@ -61,10 +61,17 @@ def get_txm_event_id_for_current_user() -> int:
     if current_user_model.default_txm_event_id and current_user_model.default_txm_event_id in allowed_events:
         return current_user_model.default_txm_event_id
     else:
-        if len(allowed_events) > 0:
-            return allowed_events[-1]
+        event_id = allowed_events[-1] if len(allowed_events) > 0 else None
+
+        if current_user_model.default_txm_event_id != event_id:
+            logger.info(f'Changing default TXM event to {event_id}.')
+            current_user_model.default_txm_event_id = event_id
+            db.session.commit()
+
+        if event_id is not None:
+            return event_id
         else:
-            return get_newest_txm_event_db_id()
+            raise ValueError('User has not access to any TXM event.')
 
 
 def update_default_txm_event_id_for_current_user(event_id: int):
@@ -139,6 +146,10 @@ def set_allowed_txm_event_ids_for_user(user: AppUserModel, txm_event_ids: List[i
         ).delete()
 
         for txm_event_id in txm_event_ids:
+            if TxmEventModel.query.get(txm_event_id) is None:
+                db.session.rollback()
+                raise ValueError(f'ID {txm_event_id} should be set as allowed TXM id but such txm event was not found')
+
             user_to_event = UserToAllowedEvent(user_id=user.id, txm_event_id=txm_event_id)
             db.session.add(user_to_event)
 
