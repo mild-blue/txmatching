@@ -26,6 +26,12 @@
         <div class="label">Use split resolution</div>
         <div class="value">{{ yes_no(configuration.use_split_resolution) }}</div>
       </li>
+      <li>
+        <div class="label">Manual donor recipient scores</div>
+        <div class="value">
+          <strong>{{ manual_donor_recipient_scores_with_medical_ids|map('donor_recipient_score_filter')|join('<br>') }}</strong>
+        </div>
+      </li>
     </ul>
     <ul>
       <li>
@@ -52,12 +58,6 @@
         <div class="label">Forbidden country combinations</div>
         <div class="value">
           <strong>{{ configuration.forbidden_country_combinations|map('country_combination_filter')|join('<br>') }}</strong>
-        </div>
-      </li>
-      <li>
-        <div class="label">Manual donor recipient scores</div>
-        <div class="value">
-          <strong>{{ manual_donor_recipient_scores_with_medical_ids|map('donor_recipient_score_filter')|join('<br>') }}</strong>
         </div>
       </li>
       <li>
