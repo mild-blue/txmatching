@@ -1,4 +1,9 @@
-import { DonorGenerated, PatientParametersGenerated, PatientParametersGeneratedSexEnum, RecipientGenerated } from '../generated';
+import {
+  DonorGenerated,
+  PatientParametersGenerated,
+  RecipientGenerated,
+  SexEnumGenerated
+} from '../generated';
 import { Patient, PatientParameters, PatientSexType } from '../model';
 import { DEFAULT_LIST_ITEM } from '../components/list-item/list-item.interface';
 import { parseAntigen, parseHlaPerGroup } from '@app/parsers/hla.parsers';
@@ -33,6 +38,6 @@ export const parsePatientParameters = ( data: PatientParametersGenerated ): Pati
 };
 
 
-export const parsePatientSexType = ( data: PatientParametersGeneratedSexEnum | undefined ): PatientSexType | undefined => {
+export const parsePatientSexType = ( data: SexEnumGenerated | undefined ): PatientSexType | undefined => {
   return data !== undefined ? PatientSexType[data] : undefined;
 };

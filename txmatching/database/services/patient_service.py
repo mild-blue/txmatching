@@ -75,6 +75,27 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
                      )
 
 
+def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> dict:
+    patient_update_dict = {}
+
+    if patient_update_dto.blood_group:
+        patient_update_dict['blood'] = patient_update_dto.blood_group
+    if patient_update_dto.country_code:
+        patient_update_dict['country'] = patient_update_dto.country_code
+    if patient_update_dto.hla_typing:
+        patient_update_dict['hla_typing'] = dataclasses.asdict(patient_update_dto.hla_typing_preprocessed)
+    if patient_update_dto.sex:
+        patient_update_dict['sex'] = patient_update_dto.sex
+    if patient_update_dto.height:
+        patient_update_dict['height'] = patient_update_dto.height
+    if patient_update_dto.weight:
+        patient_update_dict['weight'] = patient_update_dto.weight
+    if patient_update_dto.year_of_birth:
+        patient_update_dict['yob'] = patient_update_dto.year_of_birth
+
+    return patient_update_dict
+
+
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
     # TODO do not delete https://trello.com/c/zseK1Zcf
     recipient_update_dto = _update_patient_preprocessed_typing(recipient_update_dto)
@@ -82,7 +103,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
     if txm_event_db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to.')
 
-    recipient_update_dict = {}
+    recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto)
     if recipient_update_dto.acceptable_blood_groups:
         acceptable_blood_models = [
             RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient_update_dto.db_id) for blood
@@ -119,8 +140,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         RecipientHLAAntibodyModel.query.filter(
             RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id).delete()
         db.session.add_all(hla_antibodies)
-    if recipient_update_dto.hla_typing:
-        recipient_update_dict['hla_typing'] = dataclasses.asdict(recipient_update_dto.hla_typing_preprocessed)
     if recipient_update_dto.recipient_requirements:
         recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
             recipient_update_dto.recipient_requirements)
@@ -137,9 +156,7 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     if txm_event_db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to')
 
-    donor_update_dict = {}
-    if donor_update_dto.hla_typing:
-        donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing_preprocessed)
+    donor_update_dict = _create_patient_update_dict_base(donor_update_dto)
     if donor_update_dto.active is not None:
         donor_update_dict['active'] = donor_update_dto.active
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)

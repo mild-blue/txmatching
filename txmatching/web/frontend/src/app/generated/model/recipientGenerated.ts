@@ -11,11 +11,12 @@
  */
 import { RecipientRequirementsGenerated } from './recipientRequirementsGenerated';
 import { PatientParametersGenerated } from './patientParametersGenerated';
+import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 import { HlaAntibodiesGenerated } from './hlaAntibodiesGenerated';
 
 
 export interface RecipientGenerated { 
-    acceptable_blood_groups?: Array<RecipientGeneratedAcceptableBloodGroupsEnum>;
+    acceptable_blood_groups?: Array<BloodGroupEnumGenerated>;
     /**
      * Database id of the patient
      */
@@ -35,12 +36,4 @@ export interface RecipientGenerated {
     related_donor_db_id: number;
     waiting_since?: string;
 }
-export enum RecipientGeneratedAcceptableBloodGroupsEnum {
-    A = 'A',
-    B = 'B',
-    Ab = 'AB',
-    _0 = '0'
-};
-
-
 

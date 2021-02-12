@@ -10,14 +10,16 @@
  * Do not edit the class manually.
  */
 import { HLAAntibodyInGenerated } from './hLAAntibodyInGenerated';
+import { SexEnumGenerated } from './sexEnumGenerated';
+import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 
 
 export interface RecipientInputGenerated { 
     /**
      * Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.
      */
-    acceptable_blood_groups?: Array<RecipientInputGeneratedAcceptableBloodGroupsEnum>;
-    blood_group: RecipientInputGeneratedBloodGroupEnum;
+    acceptable_blood_groups?: Array<BloodGroupEnumGenerated>;
+    blood_group: BloodGroupEnumGenerated;
     /**
      * Height of the patient in centimeters.
      */
@@ -38,10 +40,7 @@ export interface RecipientInputGenerated {
      * Number of previous kidney transplants.
      */
     previous_transplants?: number;
-    /**
-     * Sex of the patient.
-     */
-    sex?: RecipientInputGeneratedSexEnum;
+    sex?: SexEnumGenerated;
     /**
      * Date since when the patient has been on waiting list. Use format YYYY-MM-DD.
      */
@@ -55,22 +54,4 @@ export interface RecipientInputGenerated {
      */
     year_of_birth?: number;
 }
-export enum RecipientInputGeneratedAcceptableBloodGroupsEnum {
-    A = 'A',
-    B = 'B',
-    Ab = 'AB',
-    _0 = '0'
-};
-export enum RecipientInputGeneratedBloodGroupEnum {
-    A = 'A',
-    B = 'B',
-    Ab = 'AB',
-    _0 = '0'
-};
-export enum RecipientInputGeneratedSexEnum {
-    M = 'M',
-    F = 'F'
-};
-
-
 

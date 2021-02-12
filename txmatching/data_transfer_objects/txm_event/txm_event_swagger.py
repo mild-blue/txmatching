@@ -34,16 +34,27 @@ HLAAntibodyJsonIn = txm_event_api.model('HLAAntibodyIn', {
                              description='Default cutoff value for the specific patient and HLA antibody.'),
 })
 
+BloodGroupEnumJson = txm_event_api.schema_model('BloodGroupEnum', {
+    'enum': [blood_group.value for blood_group in BloodGroup],
+    'type': 'string'
+})
+
+SexEnumJson = txm_event_api.schema_model('SexEnum', {
+    'enum': [sex.value for sex in Sex],
+    'type': 'string',
+    'description': 'Sex of the patient.'
+})
+
 DonorJsonIn = txm_event_api.model('DonorInput', {
     'medical_id': fields.String(required=True, example='D1037', description=MEDICAL_ID_DESCRIPTION),
-    'blood_group': fields.String(required=True, enum=[blood_group.value for blood_group in BloodGroup]),
+    'blood_group': fields.Nested(BloodGroupEnumJson, required=True),
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String,
                               example=ANTIGENS_EXAMPLE, description=HLA_TYPING_DESCRIPTION),
     'donor_type': fields.String(required=True, enum=[donor_type.value for donor_type in DonorType]),
     'related_recipient_medical_id': fields.String(required=False, example='R1037',
                                                   description='Medical ID of the related recipient, empty for bridging '
                                                               'and non-directed donors.'),
-    'sex': fields.String(required=False, description='Sex of the patient.', enum=[sex.value for sex in Sex]),
+    'sex': fields.Nested(SexEnumJson, required=False),
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
@@ -56,17 +67,16 @@ RecipientJsonIn = txm_event_api.model('RecipientInput', {
                                   cls_or_instance=fields.Nested(
                                       HLAAntibodyJsonIn
                                   )),
-    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(
-        enum=[blood_group.value for blood_group in BloodGroup]),
+    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.Nested(BloodGroupEnumJson),
                                            description='Acceptable blood groups for the patient. Leave empty to use \
                                             compatible blood groups.'),
     'medical_id': fields.String(required=True, example='R1037', description=MEDICAL_ID_DESCRIPTION),
-    'blood_group': fields.String(required=True, enum=[blood_group.value for blood_group in BloodGroup]),
+    'blood_group': fields.Nested(BloodGroupEnumJson, required=True),
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String,
                               example=ANTIGENS_EXAMPLE,
                               description=HLA_TYPING_DESCRIPTION),
 
-    'sex': fields.String(required=False, description='Sex of the patient.', enum=[sex.value for sex in Sex]),
+    'sex': fields.Nested(SexEnumJson, required=False),
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),

@@ -9,29 +9,19 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { SexEnumGenerated } from './sexEnumGenerated';
 import { CountryCodeGenerated } from './countryCodeGenerated';
 import { HlaTypingGenerated } from './hlaTypingGenerated';
+import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 
 
 export interface PatientParametersGenerated { 
-    blood_group?: PatientParametersGeneratedBloodGroupEnum;
+    blood_group?: BloodGroupEnumGenerated;
     country_code?: CountryCodeGenerated;
     height?: number;
     hla_typing?: HlaTypingGenerated;
-    sex?: PatientParametersGeneratedSexEnum;
+    sex?: SexEnumGenerated;
     weight?: number;
     year_of_birth?: number;
 }
-export enum PatientParametersGeneratedBloodGroupEnum {
-    A = 'A',
-    B = 'B',
-    Ab = 'AB',
-    _0 = '0'
-};
-export enum PatientParametersGeneratedSexEnum {
-    M = 'M',
-    F = 'F'
-};
-
-
 
