@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - aws_releases
+      - aws-releases
 
 jobs:
   build_server:
