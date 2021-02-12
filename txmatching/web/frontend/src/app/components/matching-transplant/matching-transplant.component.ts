@@ -5,6 +5,7 @@ import { AntibodyMatchType, AntigenMatchType, DetailedScorePerGroup } from '@app
 import { Recipient } from '@app/model/Recipient';
 import { Donor } from '@app/model/Donor';
 import { Patient } from '@app/model/Patient';
+import { PatientPairStyle } from '@app/components/patient-pair/patient-pair.interface';
 
 @Component({
   selector: 'app-matching-transplant',
@@ -20,6 +21,8 @@ export class MatchingTransplantComponent {
   @Input() recipient?: Recipient;
   @Input() isBloodCompatible?: boolean;
   @Input() detailedScorePerGroup?: DetailedScorePerGroup[];
+
+  public patientPairStyles = PatientPairStyle;
 
   constructor(private _patientService: PatientService) {
   }
