@@ -2,8 +2,8 @@ name: Staging Deployment
 
 env:
   DOCKER_FILE: Dockerfile
-  AWS_ECR_REPOSITORY: stg-txm-backend
-  AWS_EC2_HOST: 54.170.65.227
+  AWS_ECR_REPOSITORY: stg-txm
+  AWS_EC2_HOST: 63.35.210.79
   AWS_EC2_USER: centos
   PROJECT_DEPLOYMENT_FOLDER: txmatching
 
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - aws_releases
 
 jobs:
   build_server:
@@ -62,14 +62,14 @@ jobs:
           build-args: |
             release_version=${{ env.RELEASE_VERSION }}
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        if: ${{ startsWith(github.ref, 'refs/heads/master') }}
-        with:
-          key: ${{ secrets.SSH_KEY_STAGING }}
-          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS_STAGING }}
-
-      - name: Redeploy application
-        if: ${{ startsWith(github.ref, 'refs/heads/master') }}
-        run: |
-          ssh "${AWS_EC2_USER}@${AWS_EC2_HOST}" "cd /srv/${PROJECT_DEPLOYMENT_FOLDER} && ./redeploy.sh"
+#      - name: Install SSH key
+#        uses: shimataro/ssh-key-action@v2
+#        if: ${{ startsWith(github.ref, 'refs/heads/master') }}
+#        with:
+#          key: ${{ secrets.SSH_KEY_STAGING }}
+#          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS_STAGING }}
+#
+#      - name: Redeploy application
+#        if: ${{ startsWith(github.ref, 'refs/heads/master') }}
+#        run: |
+#          ssh "${AWS_EC2_USER}@${AWS_EC2_HOST}" "cd /srv/${PROJECT_DEPLOYMENT_FOLDER} && ./redeploy.sh"
