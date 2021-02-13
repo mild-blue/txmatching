@@ -34,10 +34,13 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
-    get_configuration_for_txm_event, get_latest_config_model_for_txm_event)
+    find_configuration_db_id_for_configuration,
+    get_latest_configuration_db_id_for_txm_event,
+    get_latest_configuration_for_txm_event)
 from txmatching.database.services.matching_service import (
-    create_calculated_matchings_dto, get_latest_matchings_detailed)
-from txmatching.database.services.txm_event_service import get_txm_event
+    create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_complete
 from txmatching.patients.hla_model import HLAAntibody, HLAType
 from txmatching.patients.patient import Donor, DonorType, Patient, Recipient
 from txmatching.solve_service.solve_from_configuration import \
@@ -92,7 +95,21 @@ class Report(Resource):
     @require_valid_txm_event_id()
     # pylint: disable=too-many-locals
     def get(self, txm_event_id: int, matching_id: int) -> str:
-        txm_event = get_txm_event(txm_event_id)
+        txm_event = get_txm_event_complete(txm_event_id)
+        maybe_configuration_db_id = get_latest_configuration_db_id_for_txm_event(txm_event)
+
+        if maybe_configuration_db_id is None:
+            configuration = Configuration()
+            pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
+            user_id = get_current_user_id()
+            solver_service.save_pairing_result(pairing_result, user_id)
+            maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
+                                                                                   configuration=configuration)
+
+        assert maybe_configuration_db_id is not None
+
+        latest_matchings_detailed = get_matchings_detailed_for_configuration(txm_event, maybe_configuration_db_id)
+
         matching_id = int(request.view_args['matching_id'])
         if request.args.get(MATCHINGS_BELOW_CHOSEN) is None or request.args.get(MATCHINGS_BELOW_CHOSEN) == '':
             raise InvalidArgumentException(f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
@@ -106,12 +123,6 @@ class Report(Resource):
                 f'Current value is {matching_range_limit}.'
             )
 
-        maybe_config_model = get_latest_config_model_for_txm_event(txm_event_id)
-        if maybe_config_model is None:
-            pairing_result = solve_from_configuration(Configuration(), txm_event=txm_event)
-            user_id = get_current_user_id()
-            solver_service.save_pairing_result(pairing_result, user_id)
-        latest_matchings_detailed = get_latest_matchings_detailed(txm_event)
         # lower ID -> better evaluation
         sorted_matchings = sorted(latest_matchings_detailed.matchings, key=lambda m: m.order_id())
 
@@ -135,7 +146,7 @@ class Report(Resource):
 
         patients_dto = to_lists_for_fe(txm_event)
 
-        configuration = get_configuration_for_txm_event(txm_event=txm_event)
+        configuration = get_latest_configuration_for_txm_event(txm_event=txm_event)
 
         Report.prepare_tmp_dir()
         Report.copy_assets()

@@ -33,23 +33,21 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   public matchings: Matching[] = [];
   public foundMatchingsCount: number = 0;
 
-  public patients?: PatientList;
-  public appConfiguration?: AppConfiguration;
   public configuration?: Configuration;
 
   public configIcon = faCog;
   public configOpened: boolean = false;
 
-  constructor(private _configService: ConfigurationService,
-              private _matchingService: MatchingService,
-              private _patientService: PatientService,
+  constructor(private _matchingService: MatchingService,
               private _reportService: ReportService,
               private _uploadService: UploadService,
               _authService: AuthService,
               _alertService: AlertService,
+              _configService: ConfigurationService,
               _eventService: EventService,
+              _patientService: PatientService,
               _logger: LoggerService) {
-    super(_authService, _alertService, _eventService, _logger);
+    super(_authService, _alertService, _configService, _eventService, _patientService, _logger);
   }
 
   ngOnInit(): void {
@@ -64,13 +62,13 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
   private async _initAll(): Promise<void> {
     await this._initTxmEvents();
-    await this._initMatchings();
+    await this._initPatientsConfigurationMatchings();
   }
 
   public async setDefaultTxmEvent(event_id: number): Promise<void> {
     this.loading = true;
     this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
-    await this._initMatchings();
+    await this._initPatientsConfigurationMatchings();
     this.loading = false;
   }
 
@@ -142,7 +140,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       return;
     }
     this._uploadService.uploadFile(
-      this.defaultTxmEvent.id, 'Recalculate matchings', this._initMatchings.bind(this)
+      this.defaultTxmEvent.id, 'Recalculate matchings', this._initPatientsConfigurationMatchings.bind(this)
     );
   }
 
@@ -199,46 +197,40 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     }
   }
 
-  private async _initMatchings(): Promise<void> {
+  private async _initPatientsConfigurationMatchings(): Promise<void> {
     if(!this.defaultTxmEvent) {
       this._logger.error(`Init matchings failed because defaultTxmEvent not set`);
       return;
     }
 
-    try {
-      // try getting patients
-      try {
-        this.patients = await this._patientService.getPatients(this.defaultTxmEvent.id);
-        this._logger.log('Got patients from server', [this.patients]);
-      } catch (e) {
-        this._alertService.error(`Error loading patients: "${e.message || e}"`);
-        this._logger.error(`Error loading patients: "${e.message || e}"`);
-        return; // jump to finally block
-      }
+    // We could possibly run _initPatients and _initConfiguration in parallel (using Promise.all), but we don't
+    // because due to the current BE limitations, it would not improve the performance significantly,
+    // and could introduce some risks
+    await this._initPatients();
+    await this._initConfiguration();
+    await this._initMatchings();
 
-      // try getting configuration
-      try {
-        this.appConfiguration = await this._configService.getConfiguration(this.defaultTxmEvent.id);
-        this._logger.log('Got config from server', [this.appConfiguration]);
-      } catch (e) {
-        this._alertService.error(`Error loading configuration: "${e.message || e}"`);
-        this._logger.error(`Error loading configuration: "${e.message || e}"`);
-        return; // jump to finally block
-      }
+    this._logger.log('End of matchings initialization');
+  }
 
-      // when successfully got patients & configuration
-      // get useful config properties
-      const {scorer_constructor_name, ...rest} = this.appConfiguration;
-      this.configuration = rest;
+  private async _initConfiguration(): Promise<void> {
+    await this._initAppConfiguration();
 
-      // calculate matchings
-      await this.calculate(this.configuration);
-    } catch (e) {
-      // just in case
-      this._alertService.error(e);
-      this._logger.error(e);
-    } finally {
-      this._logger.log('End of matchings initialization');
+    if(!this.appConfiguration) {
+      this._logger.error(`Configuration init failed because appConfiguration not set`);
+      return;
     }
+
+    const {scorer_constructor_name, ...rest} = this.appConfiguration;
+    this.configuration = rest;
+  }
+
+  private async _initMatchings(): Promise<void> {
+    if(!this.configuration) {
+      this._logger.error(`Init matchings failed because configuration not set`);
+      return;
+    }
+
+    await this.calculate(this.configuration);
   }
 }

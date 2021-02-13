@@ -11,7 +11,8 @@ from txmatching.database.services.patient_service import \
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.txm_event_service import (
-    get_txm_event, remove_donors_and_recipients_from_txm_event_for_country)
+    get_txm_event_complete,
+    remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
     AppUserModel, ConfigModel, DonorModel, PairingResultModel,
     RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
@@ -55,7 +56,7 @@ class TestUpdateDonorRecipient(DbTests):
         recipient_hla_antibodies = RecipientHLAAntibodyModel.query.all()
         app_users = AppUserModel.query.all()
 
-        txm_event = get_txm_event(txm_event.db_id)
+        txm_event = get_txm_event_complete(txm_event.db_id)
 
         recipients_tuples = [(
             recipient.medical_id,
@@ -157,7 +158,7 @@ class TestUpdateDonorRecipient(DbTests):
     def test_remove_patients(self):
         txm_event_db_id = self.fill_db_with_patients(file=get_absolute_path(PATIENT_DATA_OBFUSCATED))
         remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id, Country.IND)
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         country_donors = [donor for donor in txm_event.active_donors_dict.values() if
                           donor.parameters.country_code == Country.IND]
         self.assertEqual(0, len(country_donors))
