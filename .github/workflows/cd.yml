@@ -60,8 +60,8 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.STAGING_SSH_KEY }}
-          known_hosts: ${{ secrets.SSH_KNOWN_HOST }}
+          known_hosts: ${{ secrets.STAGING_SSH_KNOWN_HOST }}
 
       - name: Redeploy application
         run: |
-          ssh "${{ secrets.SSH_CONNECTION }}" "cd /srv/service && ./redeploy.sh ${DEPLOYMENT_SERVICE}"
+          ssh "${{ secrets.STAGING_SSH_CONNECTION }}" "cd /srv/service && ./redeploy.sh ${DEPLOYMENT_SERVICE}"
