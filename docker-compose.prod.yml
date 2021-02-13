@@ -26,17 +26,19 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   backend:
-    image: 913797522953.dkr.ecr.eu-west-1.amazonaws.com/stg-txm-backend
+    image: 913797522953.dkr.ecr.eu-west-1.amazonaws.com/stg-txm
     container_name: txm
     env_file:
       - .env
     restart: always
     expose:
       - 8080
+    ports:
+      - 8080:8080
     depends_on:
       - db
     volumes:
-      - /var/log/txmatching:/logs
+      - /var/log/mildblue/txmatching:/logs
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.txm.loadbalancer.server.port=8080"
@@ -49,6 +51,8 @@ services:
     container_name: db
     expose:
       - 5432
+    ports:
+      - 5432:5432
     env_file:
       - .env
     restart: always
