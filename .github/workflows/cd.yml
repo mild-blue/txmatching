@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - aws-releases
+      - master
 
 jobs:
   build_server:
@@ -58,12 +58,10 @@ jobs:
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
-        #        if: ${{ startsWith(github.ref, 'refs/heads/master') }}
         with:
           key: ${{ secrets.SSH_KEY_STAGING }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOST }}
 
       - name: Redeploy application
-        #        if: ${{ startsWith(github.ref, 'refs/heads/master') }}
         run: |
           ssh "${{ secrets.SSH_CONNECTION }}" "cd /srv/service && ./redeploy.sh ${DEPLOYMENT_SERVICE}"
