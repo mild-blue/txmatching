@@ -51,22 +51,3 @@ jobs:
           push: true
           build-args: |
             release_version=${{ env.RELEASE_VERSION }}
-
-      - name: Update configuration repository with new version
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          VERSION_TAG="${RELEASE_VERSION}"
-          echo "Updating version to ${VERSION_TAG}."
-          git config --global user.email "github@mild.blue"
-          git config --global user.name "Gihub action"
-          git clone "https://${{ secrets.REPOSITORY_CLONE_ACCESS_TOKEN }}@github.com/mild-blue/project-configuration.git"
-          cd project-configuration/prod/ikem/txmatching
-          git fetch --all
-          git reset --hard origin/master
-          echo "VERSION_TAG=${VERSION_TAG}" > version
-          git add version
-          git diff-index --quiet HEAD || git commit version -m "New version ${VERSION_TAG} of the TXMatching added."
-          git push
-          cd ../../../../
-          rm -rf project-configuration
-          echo "Version updated to ${VERSION_TAG}."
