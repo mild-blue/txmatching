@@ -61,7 +61,7 @@ jobs:
         #        if: ${{ startsWith(github.ref, 'refs/heads/master') }}
         with:
           key: ${{ secrets.SSH_KEY_STAGING }}
-          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS_STAGING }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOST }}
 
       - name: Redeploy application
         #        if: ${{ startsWith(github.ref, 'refs/heads/master') }}
