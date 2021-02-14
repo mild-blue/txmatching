@@ -27,7 +27,7 @@ COPY --from=frontend-build ./frontend/dist/frontend /app/txmatching/web/frontend
 
 # Create version file
 ARG release_version=development-docker
-ENV RELEASE_FILE_PATH=./release.txt
+ENV RELEASE_FILE_PATH=/app/release.txt
 RUN echo $release_version > $RELEASE_FILE_PATH
 
 ENV PORT=8080
