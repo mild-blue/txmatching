@@ -12,6 +12,16 @@
   </div>
 
   <form (ngSubmit)="handleSave()">
+    <!-- Checkboxes -->
+    <div class="checkboxes">
+      <mat-slide-toggle (change)="setActiveValue($event.checked)"
+                        [checked]="item.active"
+                        class="abc"
+      >
+        Active
+      </mat-slide-toggle>
+    </div>
+
     <h4>
       Antigens
       <app-count [count]="selected.length"></app-count>
