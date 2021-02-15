@@ -4,7 +4,8 @@ from tests.test_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
                                               PATIENT_DATA_OBFUSCATED,
                                               create_or_overwrite_txm_event)
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.database.services.txm_event_service import get_txm_event
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import UploadedFileModel
 from txmatching.patients.patient import DonorType
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -114,7 +115,7 @@ class TestPatientService(DbTests):
         self.assertEqual(1, res.json['recipients_uploaded'])
         self.assertEqual(1, res.json['donors_uploaded'])
 
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
 
         self.assertEqual(donor_medical_id, txm_event.all_donors[0].medical_id)
         self.assertEqual(1, txm_event.all_donors[0].related_recipient_db_id)
@@ -159,7 +160,7 @@ class TestPatientService(DbTests):
     def test_donor_recipient_pair_deletion(self):
         txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         self.assertEqual(len(txm_event.all_donors), 38)
         self.assertEqual(len(txm_event.all_recipients), 34)
 
@@ -181,7 +182,7 @@ class TestPatientService(DbTests):
         self.assertEqual('application/json', res.content_type)
 
         # Number of donors and recipients should decrease by 1
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         self.assertEqual(len(txm_event.all_donors), 37)
         self.assertEqual(len(txm_event.all_recipients), 33)
 

@@ -8,7 +8,8 @@ from txmatching.database.db import db
 from txmatching.database.services.config_service import \
     save_configuration_to_db
 from txmatching.database.services.scorer_service import score_matrix_to_dto
-from txmatching.database.services.txm_event_service import get_txm_event
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.solvers.pairing_result import PairingResult
 
@@ -18,7 +19,7 @@ def save_pairing_result(pairing_result: PairingResult, user_id: int):
         _calculated_matchings_to_model(pairing_result)
     )
 
-    txm_event = get_txm_event(pairing_result.txm_event_db_id)
+    txm_event = get_txm_event_complete(pairing_result.txm_event_db_id)
     config_id = save_configuration_to_db(pairing_result.configuration, txm_event, user_id)
 
     pairing_result_model = PairingResultModel(
