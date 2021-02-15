@@ -5,7 +5,9 @@ import { map, startWith } from 'rxjs/operators';
 import { countryFullTextSearch, countryNameValidator, separatorKeysCodes } from '@app/directives/validators/form.directive';
 import { Observable } from 'rxjs';
 import { AbstractFormHandlerComponent } from '@app/components/abstract-form-handler/abstract-form-handler.component';
-import { BloodGroup, DonorNew, DonorType, RecipientNew, Sex } from '@app/model';
+import { BloodGroup, DonorType, Sex } from '@app/model';
+import { DonorEditable } from '@app/model/DonorEditable';
+import { RecipientEditable } from '@app/model/RecipientEditable';
 
 @Component({
   selector: 'app-add-new-patient',
@@ -28,8 +30,8 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
   public filteredCountries: Observable<string[]>;
   public separatorKeysCodes: number[] = separatorKeysCodes;
 
-  public donor: DonorNew = new DonorNew();
-  public recipient: RecipientNew = new RecipientNew();
+  public donor: DonorEditable = new DonorEditable();
+  public recipient: RecipientEditable = new RecipientEditable();
 
   public loading: boolean = false;
   public success: boolean = false;
@@ -52,7 +54,7 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
     return this.form.controls.country?.value ?? '';
   }
 
-  public addAntigen(donor: DonorNew, code: string, control: HTMLInputElement): void {
+  public addAntigen(donor: DonorEditable, code: string, control: HTMLInputElement): void {
     if (!code) {
       return;
     }
@@ -64,6 +66,6 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
   }
 
   public handleSubmit() {
-    console.log(this.form.valid, this.donor);
+    console.log(this.form.valid, this.donor, this.recipient);
   }
 }

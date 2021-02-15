@@ -9,29 +9,6 @@ export interface Donor extends Patient {
   detailed_score_with_related_recipient: DetailedScorePerGroup[];
 }
 
-export class DonorNew {
-  medicalId: string = '';
-  antigens: string[] = [];
-  bloodGroup: BloodGroup = BloodGroup.A;
-  type: DonorType = DonorType.DONOR;
-  sex: Sex = Sex.M;
-  height?: number;
-  weight?: number;
-  yearOfBirth?: number;
-  relatedRecipientMedicalId?: string;
-
-  removeAntigen(code: string) {
-    const index = this.antigens.indexOf(code);
-    if (index !== -1) {
-      this.antigens.splice(index, 1);
-    }
-  }
-
-  addAntigen(code: string) {
-    this.antigens.push(code);
-  }
-}
-
 export enum BloodGroup {
   A = 'A',
   B = 'B',

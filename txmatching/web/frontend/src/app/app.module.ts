@@ -70,6 +70,9 @@ import { TemplatePopupComponent } from './components/template-popup/template-pop
 import { AbstractFormHandlerComponent } from './components/abstract-form-handler/abstract-form-handler.component';
 import { FormControlErrorsComponent } from './components/form-control-errors/form-control-errors.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { RecipientAntibodiesComponent } from '@app/components/add-new-patient/recipient-antibodies/antibodies.component';
 
 @NgModule({
   declarations: [
@@ -121,7 +124,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     AbstractFormHandlerComponent,
     FormControlErrorsComponent,
     LoadingIconComponent,
-    AbstractLoggedComponent
+    AbstractLoggedComponent,
+    RecipientAntibodiesComponent
   ],
   imports: [
     BrowserModule,
@@ -143,7 +147,9 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatBadgeModule,
     MatProgressSpinnerModule,
     MatListModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

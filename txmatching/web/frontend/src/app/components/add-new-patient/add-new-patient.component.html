@@ -1,10 +1,13 @@
 <div class="new-patient">
   <form [formGroup]="form" (ngSubmit)="handleSubmit()">
 
-    <!-- Country -->
-    <div class="new-patient__row--single-box">
+    <div class="new-patient__row">
+
+      <!-- Donor -->
       <div class="new-patient__box">
+        <h4>Donor</h4>
         <div class="content">
+          <!-- Donor Country -->
           <div class="new-patient__field">
             <div class="label">Select a country</div>
             <mat-form-field>
@@ -40,22 +43,11 @@
 
             </mat-form-field>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="new-patient__row">
-
-      <!-- Donor -->
-      <div class="new-patient__box">
-        <h4>Donor</h4>
-        <div class="content">
 
           <!-- Donor medical ID -->
           <div class="new-patient__field">
             <div class="label">Medical ID</div>
             <mat-form-field>
-              <mat-label>Medical ID</mat-label>
               <input [(ngModel)]="donor.medicalId" [ngModelOptions]="{standalone: true}" matInput type="text" required>
             </mat-form-field>
           </div>
@@ -89,7 +81,6 @@
               <app-count [count]="donor.antigens.length"></app-count>
             </div>
             <mat-form-field>
-              <mat-label>Donor's antigens</mat-label>
               <mat-chip-list #donorAntigensChipList>
                 <mat-chip *ngFor="let code of donor.antigens"
                           (removed)="donor.removeAntigen(code)"
@@ -129,7 +120,6 @@
           <div class="new-patient__field">
             <div class="label">Height [cm]</div>
             <mat-form-field>
-              <mat-label>Height [cm]</mat-label>
               <input [(ngModel)]="donor.height" [ngModelOptions]="{standalone: true}" matInput type="number">
             </mat-form-field>
           </div>
@@ -138,7 +128,6 @@
           <div class="new-patient__field">
             <div class="label">Weight [cm]</div>
             <mat-form-field>
-              <mat-label>Weight [kg]</mat-label>
               <input [(ngModel)]="donor.weight" [ngModelOptions]="{standalone: true}" matInput type="number">
             </mat-form-field>
           </div>
@@ -147,7 +136,6 @@
           <div class="new-patient__field">
             <div class="label">Year of birth</div>
             <mat-form-field>
-              <mat-label>Year of birth</mat-label>
               <input [(ngModel)]="donor.yearOfBirth" [ngModelOptions]="{standalone: true}" matInput type="number">
             </mat-form-field>
           </div>
@@ -155,16 +143,52 @@
       </div>
 
       <!-- Recipient -->
-      <div *ngIf="donor.type !== DonorType.NON_DIRECTED" class="new-patient__box">
+      <div *ngIf="donor.type === DonorType.DONOR" class="new-patient__box">
         <h4>Recipient</h4>
 
         <div class="content">
+
+          <!-- Recipient Country -->
+          <div class="new-patient__field">
+            <div class="label">Select a country</div>
+            <mat-form-field>
+              <mat-label>Country</mat-label>
+
+              <mat-chip-list #countryChip formControlName="country">
+                <mat-chip *ngIf="form.controls.country.valid"
+                          [removable]="true"
+                          (removed)="handleRemove('country', countryInput)">
+                  <country [country]="selectedCountry"></country>
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input formControlName="country"
+                       [matChipInputFor]="countryChip"
+                       [matAutocomplete]="donorAuto"
+                       [placeholder]="!selectedCountry ? 'Search by country code' : ''"
+                       #countryInput type="text">
+              </mat-chip-list>
+
+              <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleSelect(countryInput)">
+                <mat-option *ngFor="let c of filteredCountries | async" [value]="c">
+                  <country [country]="c"></country>
+                </mat-option>
+              </mat-autocomplete>
+
+              <mat-error>
+                <app-form-control-errors [control]="form.get('country')"></app-form-control-errors>
+              </mat-error>
+
+              <mat-hint>
+                Search and select 1 country from {{allCountries.length}} available countries.
+              </mat-hint>
+
+            </mat-form-field>
+          </div>
 
           <!-- Recipient medical ID -->
           <div class="new-patient__field">
             <div class="label">Medical ID</div>
             <mat-form-field>
-              <mat-label>Medical ID</mat-label>
               <input [(ngModel)]="recipient.medicalId" [ngModelOptions]="{standalone: true}" matInput type="text" required>
             </mat-form-field>
           </div>
@@ -180,6 +204,20 @@
             </mat-button-toggle-group>
           </div>
 
+          <!-- Recipient Acceptable blood groups -->
+          <div class="new-patient__field">
+            <div class="label">Acceptable blood group</div>
+            <mat-button-toggle-group [(ngModel)]="recipient.acceptableBloodGroups"
+                                     [multiple]="true"
+                                     [ngModelOptions]="{standalone: true}">
+              <mat-button-toggle *ngFor="let bg of allBloodGroups"
+                                 [checked]="recipient.acceptableBloodGroups.includes(bg)"
+                                 [value]="bg">
+                {{ bg }}
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+
           <!-- Recipient antigens -->
           <div class="new-patient__field">
             <div class="label">
@@ -187,7 +225,6 @@
               <app-count [count]="recipient.antigens.length"></app-count>
             </div>
             <mat-form-field>
-              <mat-label>Recipient's antigens</mat-label>
               <mat-chip-list #recipientAntigensChipList>
                 <mat-chip *ngFor="let code of recipient.antigens"
                           (removed)="recipient.removeAntigen(code)"
@@ -212,6 +249,43 @@
             </mat-form-field>
           </div>
 
+          <!-- Recipient antibodies -->
+          <div class="new-patient__field">
+            <div class="label">
+              Antibodies
+              <app-count [count]="recipient.antibodies.length"></app-count>
+            </div>
+            <mat-form-field>
+              <mat-chip-list>
+                <mat-chip *ngFor="let a of recipient.antibodies"
+                          [title]="'Raw code: ' + a.raw_code"
+                          (removed)="recipient.removeAntibody(a)">
+                  <div class="antibody-chip">
+                    {{a.code}}
+                    <div class="mfi">MFI: <strong>{{a.mfi}}</strong></div>
+                  </div>
+                  <mat-icon class="cancel" matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input disabled matInput>
+              </mat-chip-list>
+              <mat-hint>
+                Use the form below for adding recipient's antibodies.
+              </mat-hint>
+            </mat-form-field>
+          </div>
+
+          <app-recipient-antibodies [recipient]="recipient"></app-recipient-antibodies>
+
+          <!-- Recipient antibodies cutoff -->
+          <div class="new-patient__field">
+            <div class="label">
+              Antibodies cutoff
+            </div>
+            <mat-form-field>
+              <input [(ngModel)]="recipient.antibodiesCutoff" [ngModelOptions]="{standalone: true}" matInput type="number">
+            </mat-form-field>
+          </div>
+
           <!-- Recipient Sex -->
           <div class="new-patient__field">
             <div class="label">Sex</div>
@@ -227,7 +301,6 @@
           <div class="new-patient__field">
             <div class="label">Height [cm]</div>
             <mat-form-field>
-              <mat-label>Height [cm]</mat-label>
               <input [(ngModel)]="recipient.height" [ngModelOptions]="{standalone: true}" matInput type="number">
             </mat-form-field>
           </div>
@@ -236,7 +309,6 @@
           <div class="new-patient__field">
             <div class="label">Weight [cm]</div>
             <mat-form-field>
-              <mat-label>Weight [kg]</mat-label>
               <input [(ngModel)]="recipient.weight" [ngModelOptions]="{standalone: true}" matInput type="number">
             </mat-form-field>
           </div>
@@ -245,8 +317,26 @@
           <div class="new-patient__field">
             <div class="label">Year of birth</div>
             <mat-form-field>
-              <mat-label>Year of birth</mat-label>
               <input [(ngModel)]="recipient.yearOfBirth" [ngModelOptions]="{standalone: true}" matInput type="number">
+            </mat-form-field>
+          </div>
+
+          <!-- Recipient waiting since date -->
+          <div class="new-patient__field">
+            <div class="label">Waiting since</div>
+            <mat-form-field>
+              <input matInput [matDatepicker]="picker">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <!-- Recipient previous transplants -->
+          <div class="new-patient__field">
+            <div class="label">Previous transplants count</div>
+            <mat-form-field>
+              <input [(ngModel)]="recipient.previousTransplants"
+                     [ngModelOptions]="{standalone: true}" matInput type="number">
             </mat-form-field>
           </div>
         </div>
