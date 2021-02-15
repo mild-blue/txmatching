@@ -28,11 +28,11 @@
     </div>
   </app-container>
 
-  <app-template-popup *ngIf="showConfiguration"
-                      [isOpened]="configOpened"
+  <app-template-popup [isOpened]="configOpened"
                       [title]="'Configuration'"
                       (wasClosed)="toggleConfiguration()">
-    <app-configuration [configuration]="configuration"
+    <app-configuration *ngIf="configuration"
+                       [configuration]="configuration"
                        [patients]="patients"
                        (configSubmitted)="calculate($event)"></app-configuration>
   </app-template-popup>

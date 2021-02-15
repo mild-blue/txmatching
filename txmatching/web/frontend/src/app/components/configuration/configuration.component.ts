@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Configuration } from '@app/model/Configuration';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { PatientList } from '@app/model/PatientList';
 
 @Component({
@@ -16,7 +15,6 @@ export class ConfigurationComponent implements OnInit {
   @Output() configSubmitted: EventEmitter<Configuration> = new EventEmitter<Configuration>();
 
   public configForm?: FormGroup;
-  public closeIcon = faTimes;
 
   constructor(private _formBuilder: FormBuilder) {
   }

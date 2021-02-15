@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Role, User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
@@ -104,8 +103,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   public async downloadReport(): Promise<void> {
-    if(!this.defaultTxmEvent) {
-      this._logger.error(`Download report failed because defaultTxmEvent not set`);
+    if (!this.defaultTxmEvent) {
+      this._logger.error('Download report failed because defaultTxmEvent not set');
       return;
     }
 
@@ -136,8 +135,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   public uploadPatients(): void {
-    if(!this.defaultTxmEvent) {
-      this._logger.error(`uploadPatients failed because defaultTxmEvent not set`);
+    if (!this.defaultTxmEvent) {
+      this._logger.error('uploadPatients failed because defaultTxmEvent not set');
       return;
     }
     this._uploadService.uploadFile(
@@ -146,16 +145,16 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   public async calculate(configuration: Configuration): Promise<void> {
-    if(!this.appConfiguration) {
-      this._logger.error(`Calculate failed because appConfiguration not set`);
+    if (!this.appConfiguration) {
+      this._logger.error('Calculate failed because appConfiguration not set');
       return;
     }
-    if(!this.patients) {
-      this._logger.error(`Calculate failed because patients not set`);
+    if (!this.patients) {
+      this._logger.error('Calculate failed because patients not set');
       return;
     }
-    if(!this.defaultTxmEvent) {
-      this._logger.error(`Calculate failed because defaultTxmEvent not set`);
+    if (!this.defaultTxmEvent) {
+      this._logger.error('Calculate failed because defaultTxmEvent not set');
       return;
     }
 
@@ -201,8 +200,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   private async _initMatchings(): Promise<void> {
-    if(!this.defaultTxmEvent) {
-      this._logger.error(`Init matchings failed because defaultTxmEvent not set`);
+    if (!this.defaultTxmEvent) {
+      this._logger.error('Init matchings failed because defaultTxmEvent not set');
       return;
     }
 
@@ -229,7 +228,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
       // when successfully got patients & configuration
       // get useful config properties
-      const {scorer_constructor_name, solver_constructor_name, ...rest} = this.appConfiguration;
+      const { scorer_constructor_name, solver_constructor_name, ...rest } = this.appConfiguration;
       this.configuration = rest;
 
       // calculate matchings
