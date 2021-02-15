@@ -38,6 +38,12 @@
                 </div>
               {% endif %}
 
+              {% if not donor.active %}
+                <div class="donor-type-label">
+                  inactive
+                </div>
+              {% endif %}
+
             </div>
           </h4>
         </td>

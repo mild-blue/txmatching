@@ -1,5 +1,24 @@
-<div *ngIf="donor && recipient" class="patient-pair">
-  <patient [patient]="donor"></patient>
-  <mat-icon>chevron_right</mat-icon>
-  <patient [patient]="recipient"></patient>
+<div *ngIf="donor" class="patient-pair patient-pair-{{style}}">
+
+  <ng-container *ngIf="recipient; then template_pair; else template_donor"></ng-container>
+
+  <ng-template #template_pair>
+    <patient [patient]="donor"></patient>
+    <mat-icon>chevron_right</mat-icon>
+    <patient [patient]="recipient"></patient>
+  </ng-template>
+
+  <ng-template #template_donor>
+    <patient [patient]="donor"></patient>
+    <div class="donor-type-label">
+      {{ donor.donor_type | donorTypeLabel}}
+    </div>
+  </ng-template>
+
+  <div class="donor-type-label"
+       title="Patients are not included in matching calculations"
+       *ngIf="!donor.active">
+    inactive
+  </div>
+
 </div>

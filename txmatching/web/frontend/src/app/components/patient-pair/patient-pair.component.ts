@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Donor } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
+import { PatientPairStyle } from '@app/components/patient-pair/patient-pair.interface';
 
 @Component({
   selector: 'app-patient-pair',
@@ -11,6 +12,7 @@ export class PatientPairComponent implements OnInit {
 
   @Input() donor?: Donor;
   @Input() recipient?: Recipient;
+  @Input() style: PatientPairStyle = PatientPairStyle.Default;
 
   constructor() {
   }

@@ -3,18 +3,11 @@
        *ngIf="donor"
        [class.compatible]="isBloodCompatible">
 
-    <ng-container *ngIf="recipient; then template_pair; else template_donor"></ng-container>
-
-    <ng-template #template_pair>
-      <app-patient-pair [donor]="donor" [recipient]="recipient"></app-patient-pair>
-    </ng-template>
-
-    <ng-template #template_donor>
-      <patient [patient]="donor"></patient>
-      <div class="donor-type-label">
-        {{ donor.donor_type | donorTypeLabel}}
-      </div>
-    </ng-template>
+    <app-patient-pair
+      [donor]="donor"
+      [recipient]="recipient"
+      [style]="isBloodCompatible ? patientPairStyles.Compatible : patientPairStyles.Incompatible"
+    ></app-patient-pair>
 
     <app-score-indicator [configuration]="configuration"
                          [score]="score"
