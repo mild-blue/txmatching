@@ -169,8 +169,14 @@ class Report(Resource):
 
         manual_donor_recipient_scores_with_medical_ids = [
             (
-                txm_event.active_donors_dict[donor_recipient_score.donor_db_id].medical_id,
-                txm_event.active_recipients_dict[donor_recipient_score.recipient_db_id].medical_id,
+                next(
+                    donor for donor in txm_event.all_donors
+                    if donor.db_id == donor_recipient_score.donor_db_id
+                ).medical_id,
+                next(
+                    recipient for recipient in txm_event.all_recipients
+                    if recipient.db_id == donor_recipient_score.recipient_db_id
+                ).medical_id,
                 donor_recipient_score.score
             ) for donor_recipient_score in
             configuration.manual_donor_recipient_scores
