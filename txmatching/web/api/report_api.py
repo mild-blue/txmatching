@@ -180,6 +180,7 @@ class Report(Resource):
         html = (j2_env.get_template('report.html').render(
             title='Matching Report',
             date=now.strftime('%d.%m.%Y %H:%M:%S'),
+            txm_event_name=txm_event.name,
             configuration=configuration,
             matchings=calculated_matchings_dto,
             patients=patients_dto,

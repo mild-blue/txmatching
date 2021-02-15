@@ -5,6 +5,14 @@
   <div class="configuration">
     <ul>
       <li>
+        <div class="label">TXM event</div>
+        <div class="value"><strong>{{ txm_event_name }}</strong></div>
+      </li>
+      <li>
+        <div class="label">Solver</div>
+        <div class="value"><strong>{{ configuration.solver_constructor_name }}</strong></div>
+      </li>
+      <li>
         <div class="label">Require compatible blood group</div>
         <div class="value">{{ yes_no(configuration.require_compatible_blood_group) }}</div>
       </li>
