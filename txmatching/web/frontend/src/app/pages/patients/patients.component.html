@@ -24,9 +24,9 @@
   </app-container>
 
   <app-template-popup [isOpened]="patientPopupOpened"
-                      [title]="'Add new patient(s)'"
+                      [title]="'Add new patient pair'"
                       (wasClosed)="togglePatientPopup()">
-    <app-add-new-patient></app-add-new-patient>
+    <app-add-new-patient [defaultTxmEvent]="defaultTxmEvent" (patientsAdded)="onNewPatientsAdded()"></app-add-new-patient>
   </app-template-popup>
 
   <app-content>

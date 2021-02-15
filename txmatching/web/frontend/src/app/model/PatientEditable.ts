@@ -20,3 +20,8 @@ export class PatientEditable {
     this.antigens.push(code);
   }
 }
+
+// export interface PatientUploadMessage {
+//   recipients_uploaded: 0,
+//   donors_uploaded: 0
+// }

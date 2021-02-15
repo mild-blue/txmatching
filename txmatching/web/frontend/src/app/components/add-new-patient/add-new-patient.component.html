@@ -325,7 +325,7 @@
           <div class="new-patient__field">
             <div class="label">Waiting since</div>
             <mat-form-field>
-              <input matInput [matDatepicker]="picker">
+              <input matInput [matDatepicker]="picker" [(ngModel)]="recipient.waitingSince" [ngModelOptions]="{standalone: true}">
               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>

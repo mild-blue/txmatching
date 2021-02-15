@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Country } from '@app/model/Country';
 import { FormControl, FormGroup } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
@@ -8,6 +8,8 @@ import { AbstractFormHandlerComponent } from '@app/components/abstract-form-hand
 import { BloodGroup, DonorType, Sex } from '@app/model';
 import { DonorEditable } from '@app/model/DonorEditable';
 import { RecipientEditable } from '@app/model/RecipientEditable';
+import { PatientService } from '@app/services/patient/patient.service';
+import { TxmEvent } from '@app/model/Event';
 
 @Component({
   selector: 'app-add-new-patient',
@@ -16,11 +18,15 @@ import { RecipientEditable } from '@app/model/RecipientEditable';
 })
 export class AddNewPatientComponent extends AbstractFormHandlerComponent implements OnInit {
 
+  @Input() defaultTxmEvent?: TxmEvent;
+  @Output() patientsAdded: EventEmitter<void> = new EventEmitter<void>();
+
   public form: FormGroup = new FormGroup({
     country: new FormControl('')
   });
 
-  public allCountries: string[] = Object.keys(Country).map(key => `${Country[key as Country]}`);
+  // @ts-ignore
+  public allCountries: string[] = Object.keys(Country).map(key => `${Country[key]}`);
   public allDonorTypes: DonorType[] = Object.keys(DonorType).map(key => DonorType[key as DonorType]);
   public DonorType: typeof DonorType = DonorType;
   // @ts-ignore
@@ -36,7 +42,7 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
   public loading: boolean = false;
   public success: boolean = false;
 
-  constructor() {
+  constructor(private _patientService: PatientService) {
     super();
 
     // Country fulltext search
@@ -66,6 +72,16 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
   }
 
   public handleSubmit() {
+
     console.log(this.form.valid, this.donor, this.recipient);
+    if (this.form.invalid || !this.defaultTxmEvent) {
+      return;
+    }
+
+    const country = this.form.get('country')?.value;
+    const recipient = this.donor.type === DonorType.DONOR.valueOf() ? this.recipient : undefined;
+
+    this._patientService.addNewPair(this.defaultTxmEvent.id, country, this.donor, recipient)
+    .then(() => this.patientsAdded.emit());
   }
 }
