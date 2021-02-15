@@ -5,6 +5,14 @@
   <div class="configuration">
     <ul>
       <li>
+        <div class="label">TXM event</div>
+        <div class="value"><strong>{{ txm_event_name }}</strong></div>
+      </li>
+      <li>
+        <div class="label">Solver</div>
+        <div class="value"><strong>{{ configuration.solver_constructor_name }}</strong></div>
+      </li>
+      <li>
         <div class="label">Require compatible blood group</div>
         <div class="value">{{ yes_no(configuration.require_compatible_blood_group) }}</div>
       </li>
@@ -25,6 +33,12 @@
       <li>
         <div class="label">Use split resolution</div>
         <div class="value">{{ yes_no(configuration.use_split_resolution) }}</div>
+      </li>
+      <li>
+        <div class="label">Manual donor recipient scores</div>
+        <div class="value">
+          <strong>{{ manual_donor_recipient_scores_with_medical_ids|map('donor_recipient_score_filter')|join('<br>') }}</strong>
+        </div>
       </li>
     </ul>
     <ul>
@@ -52,12 +66,6 @@
         <div class="label">Forbidden country combinations</div>
         <div class="value">
           <strong>{{ configuration.forbidden_country_combinations|map('country_combination_filter')|join('<br>') }}</strong>
-        </div>
-      </li>
-      <li>
-        <div class="label">Manual donor recipient scores</div>
-        <div class="value">
-          <strong>{{ manual_donor_recipient_scores_with_medical_ids|map('donor_recipient_score_filter')|join('<br>') }}</strong>
         </div>
       </li>
       <li>

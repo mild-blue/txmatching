@@ -30,13 +30,17 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     FailJson, PatientUploadSuccessJson)
+from txmatching.database.services.config_service import \
+    get_latest_configuration_for_txm_event
 from txmatching.database.services.patient_service import (
     delete_donor_recipient_pair, get_donor_recipient_pair, update_donor,
     update_recipient)
 from txmatching.database.services.patient_upload_service import (
     add_donor_recipient_pair, replace_or_add_patients_from_excel)
-from txmatching.database.services.txm_event_service import get_txm_event
+from txmatching.database.services.txm_event_service import (
+    get_txm_event_base, get_txm_event_complete)
 from txmatching.database.services.upload_service import save_uploaded_file
+from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import patient_api
@@ -58,7 +62,8 @@ class AllPatients(Resource):
     @require_user_login()
     @require_valid_txm_event_id()
     def get(self, txm_event_id: int) -> str:
-        txm_event = get_txm_event(txm_event_id)
+        txm_event = get_txm_event_complete(txm_event_id)
+        logger.debug('Sending patients to FE')
         return jsonify(to_lists_for_fe(txm_event))
 
 
@@ -163,12 +168,18 @@ class AlterDonor(Resource):
     def put(self, txm_event_id: int):
         donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
-        txm_event = get_txm_event(txm_event_id)
+        txm_event = get_txm_event_complete(txm_event_id)
         all_recipients = txm_event.all_recipients
-        return jsonify(donor_to_donor_dto_out(
-            update_donor(donor_update_dto, txm_event_id),
-            all_recipients,
-            txm_event)
+        configuration = get_latest_configuration_for_txm_event(txm_event)
+        scorer = scorer_from_configuration(configuration)
+
+        return jsonify(
+            donor_to_donor_dto_out(
+                update_donor(donor_update_dto, txm_event_id),
+                all_recipients,
+                configuration,
+                scorer
+            )
         )
 
 
@@ -197,7 +208,7 @@ class AddPatientsFile(Resource):
     def put(self, txm_event_id: int):
         file = request.files['file']
         file_bytes = file.read()
-        txm_event_name = get_txm_event(txm_event_id).name
+        txm_event_name = get_txm_event_base(txm_event_id).name
         user_id = get_current_user_id()
         save_uploaded_file(file_bytes, file.filename, txm_event_id, user_id)
 

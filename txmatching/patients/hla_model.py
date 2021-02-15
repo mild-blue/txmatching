@@ -142,6 +142,7 @@ class HLAAntibodies(PersistentlyHashable):
                                                   logger_with_patient)
             if mfi >= cutoff:
                 new_antibody = HLAAntibody(
+                    code=antibody_group_list[0].code,
                     raw_code=hla_code_raw,
                     cutoff=cutoff,
                     mfi=mfi

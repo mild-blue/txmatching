@@ -11,7 +11,7 @@ from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.txm_event_service import (
-    get_txm_event, set_allowed_txm_event_ids_for_user)
+    get_txm_event_complete, set_allowed_txm_event_ids_for_user)
 from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
                                                     TxmEventModel)
 from txmatching.patients.patient import TxmEvent
@@ -137,7 +137,7 @@ def populate_db():
     #
     # replace_or_add_patients_from_excel(patients)
 
-    txm_event = get_txm_event(txm_event.db_id)
+    txm_event = get_txm_event_complete(txm_event.db_id)
 
     result = solve_from_configuration(txm_event=txm_event,
                                       configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
