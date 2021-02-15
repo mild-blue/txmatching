@@ -71,7 +71,7 @@ class TestPatientService(DbTests):
         self.login_with_credentials(EDITOR_WITH_ONLY_ONE_COUNTRY)
         res = self._upload_data()
         self.assertEqual(403, res.status_code)
-        self.assertEqual('User with email editor_only_one_country@example.com does not have access to CAN!',
+        self.assertEqual('TXM event 1 is not allowed for this user.',
                          res.json['message'])
 
     def _upload_data(self, file=PATIENT_DATA_OBFUSCATED):

@@ -165,6 +165,22 @@ class AppUserModel(db.Model):
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
 
+class UserToAllowedEvent(db.Model):
+    __tablename__ = 'user_to_allowed_event'
+    __table_args__ = {'extend_existing': True}
+
+    user_id = db.Column(
+        db.Integer,
+        ForeignKey('app_user.id', ondelete='CASCADE'),
+        unique=False, nullable=False, primary_key=True, index=True
+    )
+    txm_event_id = db.Column(
+        db.Integer,
+        ForeignKey('txm_event.id', ondelete='CASCADE'),
+        unique=False, nullable=False, primary_key=True, index=True
+    )
+
+
 class UploadedDataModel(db.Model):
     __tablename__ = 'uploaded_data'
     __table_args__ = {'extend_existing': True}
