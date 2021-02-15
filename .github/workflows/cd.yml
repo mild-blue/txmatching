@@ -1,10 +1,8 @@
 name: Staging Deployment
 
 env:
-  DOCKER_FILE: Dockerfile
-  AWS_ECR_REPOSITORY: stg-txm-backend
-  AWS_ECS_CLUSTER: stg-txm-backend
-  AWS_ECS_CLUSTER_SERVICE: stg-txm-backend-service
+  AWS_ECR_REPOSITORY: stg-txm
+  DEPLOYMENT_SERVICE: be
 
 on:
   # manual dispatch
@@ -27,8 +25,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
       - name: Login to Amazon ECR
@@ -52,21 +50,18 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          file: ${{ env.DOCKER_FILE }}
-          # TODO we might change that on the branch name
-          # tags: ${{ steps.docker_meta.outputs.tags }}
           tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
           push: true
           build-args: |
             release_version=${{ env.RELEASE_VERSION }}
 
-      - name: Redeploy the Service
-        env:
-          CLUSTER: ${{ env.AWS_ECS_CLUSTER }}
-          SERVICE: ${{ env.AWS_ECS_CLUSTER_SERVICE }}
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          known_hosts: ${{ secrets.STAGING_SSH_KNOWN_HOST }}
+
+      - name: Redeploy application
         run: |
-          aws ecs update-service \
-            --cluster "${CLUSTER}" \
-            --service "${SERVICE}" \
-            --force-new-deployment
+          ssh "${{ secrets.STAGING_SSH_CONNECTION }}" "cd /srv/service && ./redeploy.sh ${DEPLOYMENT_SERVICE}"
