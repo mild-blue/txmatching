@@ -6,6 +6,7 @@ import { parseDetailedScorePerGroup } from './hla.parsers';
 export const parseDonor = (data: DonorGenerated): Donor => {
   return {
     ...parsePatient(data),
+    active: data.active,
     donor_type: parseDonorType(data.donor_type),
     compatible_blood_with_related_recipient: data.compatible_blood_with_related_recipient,
     related_recipient_db_id: data.related_recipient_db_id,
