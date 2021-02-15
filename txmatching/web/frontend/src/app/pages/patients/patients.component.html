@@ -33,7 +33,7 @@
     <h3 *ngIf="!loading && !items.length">No patients were found.</h3>
     <app-item-list *ngIf="!loading && items.length"
                    [items]="items"
-                   [configuration]="configuration"
+                   [configuration]="appConfiguration"
                    [patients]="patients"
                    [saveLastViewedItem]="true"
                    [useInfiniteScroll]="false"

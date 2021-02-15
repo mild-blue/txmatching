@@ -28,7 +28,7 @@ from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
 from txmatching.database.services.txm_event_service import (
     create_txm_event, delete_txm_event,
-    get_allowed_txm_event_ids_for_current_user, get_txm_event,
+    get_allowed_txm_event_ids_for_current_user, get_txm_event_base,
     get_txm_event_id_for_current_user, save_original_data,
     update_default_txm_event_id_for_current_user)
 from txmatching.utils.logged_user import get_current_user_id
@@ -73,7 +73,7 @@ class TxmEventApi(Resource):
     @require_user_login()
     def get(self) -> str:
         txm_events = [
-            get_txm_event(e) for e in
+            get_txm_event_base(e) for e in
             get_allowed_txm_event_ids_for_current_user()
         ]
         txm_events_dto = [
@@ -105,7 +105,7 @@ class TxmDefaultEventApi(Resource):
     def put(self):
         default_event_in = from_dict(data_class=TxmDefaultEventDTOIn, data=request.json)
         update_default_txm_event_id_for_current_user(default_event_in.id)
-        event = get_txm_event(default_event_in.id)
+        event = get_txm_event_base(default_event_in.id)
 
         return make_response(jsonify(TxmEventDTOOut(id=event.db_id, name=event.name)))
 
@@ -122,7 +122,7 @@ class TxmDefaultEventApi(Resource):
     @txm_event_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     def get(self) -> str:
-        txm_event = get_txm_event(get_txm_event_id_for_current_user())
+        txm_event = get_txm_event_base(get_txm_event_id_for_current_user())
         return jsonify(TxmEventDTOOut(
             id=txm_event.db_id,
             name=txm_event.name,

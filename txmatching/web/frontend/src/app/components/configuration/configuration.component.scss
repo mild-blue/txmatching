@@ -49,6 +49,11 @@
       width: 50%;
 
       padding: 0 $item-gap;
+
+      &.full-width {
+        flex-basis: 100%;
+        width: 100%;
+      }
     }
   }
 

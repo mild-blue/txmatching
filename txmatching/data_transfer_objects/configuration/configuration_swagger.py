@@ -1,7 +1,9 @@
 from flask_restx import fields
 
 from txmatching.configuration.configuration import Configuration
-from txmatching.utils.enums import Country
+from txmatching.data_transfer_objects.matchings.matching_swagger import \
+    CountryCodeJson
+from txmatching.solvers.solver_from_config import SUPPORTED_SOLVERS
 from txmatching.web.api.namespaces import matching_api
 
 ManualDonorRecipientScoreJson = matching_api.model('ManualRecipientDonorScore', {
@@ -11,8 +13,8 @@ ManualDonorRecipientScoreJson = matching_api.model('ManualRecipientDonorScore', 
 })
 
 ForbiddenCountryCombination = matching_api.model('ForbiddenCountryCombination', {
-    'donor_country': fields.String(required=True, enum=[country.value for country in Country]),
-    'recipient_country': fields.String(required=True, enum=[country.value for country in Country]),
+    'donor_country': fields.Nested(CountryCodeJson, required=True),
+    'recipient_country': fields.Nested(CountryCodeJson, required=True),
 })
 _default_configuration = Configuration()
 ConfigurationJson = matching_api.model(
@@ -21,7 +23,8 @@ ConfigurationJson = matching_api.model(
         'scorer_constructor_name': fields.String(required=False,
                                                  example=_default_configuration.scorer_constructor_name),
         'solver_constructor_name': fields.String(required=False,
-                                                 example=_default_configuration.solver_constructor_name),
+                                                 example=_default_configuration.solver_constructor_name,
+                                                 enum=[solver.__name__ for solver in SUPPORTED_SOLVERS]),
         'require_compatible_blood_group': fields.Boolean(required=False,
                                                          example=_default_configuration.require_compatible_blood_group),
         'minimum_total_score': fields.Float(required=False, example=_default_configuration.minimum_total_score),
@@ -55,6 +58,14 @@ ConfigurationJson = matching_api.model(
         'max_matchings_to_show_to_viewer': fields.Integer(
             required=False,
             example=_default_configuration.max_matchings_to_show_to_viewer
+        ),
+        'max_matchings_to_store_in_db': fields.Integer(
+            required=False,
+            example=_default_configuration.max_matchings_to_store_in_db
+        ),
+        'max_allowed_number_of_matchings': fields.Integer(
+            required=False,
+            example=_default_configuration.max_allowed_number_of_matchings
         )
     }
 )

@@ -77,11 +77,17 @@ definitions:
                 items:
                     $ref: '#/definitions/ManualRecipientDonorScore'
                 type: array
+            max_allowed_number_of_matchings:
+                example: 10000
+                type: integer
             max_cycle_length:
                 example: 4
                 type: integer
             max_matchings_to_show_to_viewer:
                 example: 10
+                type: integer
+            max_matchings_to_store_in_db:
+                example: 100
                 type: integer
             max_number_of_distinct_countries_in_round:
                 example: 3
@@ -108,6 +114,9 @@ definitions:
                 example: HLAAdditiveScorer
                 type: string
             solver_constructor_name:
+                enum:
+                - AllSolutionsSolver
+                - ILPSolver
                 example: AllSolutionsSolver
                 type: string
             use_binary_scoring:
@@ -129,6 +138,259 @@ definitions:
         - donor_count
         - recipient_count
         type: object
+    CountryCode:
+        enum:
+        - TGO
+        - MNE
+        - LAO
+        - MRT
+        - NIC
+        - LVA
+        - OMN
+        - AFG
+        - CYP
+        - BEN
+        - ATA
+        - CHN
+        - COL
+        - CXR
+        - ATG
+        - MSR
+        - MDA
+        - ZMB
+        - VNM
+        - ATF
+        - TCD
+        - MYT
+        - LBN
+        - MAF
+        - LUX
+        - MTQ
+        - CZE
+        - ARE
+        - CMR
+        - BDI
+        - ARG
+        - ASM
+        - BHR
+        - CHL
+        - AND
+        - MNP
+        - LTU
+        - MDG
+        - LCA
+        - TUR
+        - UKR
+        - TUV
+        - VIR
+        - MLT
+        - NOR
+        - MCO
+        - CHE
+        - BLM
+        - ABW
+        - BLZ
+        - BMU
+        - CIV
+        - MUS
+        - USA
+        - TWN
+        - YEM
+        - MWI
+        - NLD
+        - LSO
+        - BOL
+        - AUT
+        - COK
+        - BLR
+        - AUS
+        - BRN
+        - MAR
+        - NZL
+        - LBR
+        - MDV
+        - TCA
+        - UGA
+        - TTO
+        - POL
+        - SRB
+        - IND
+        - GEO
+        - GRC
+        - SGS
+        - GRD
+        - IOT
+        - HKG
+        - PRK
+        - KGZ
+        - SPM
+        - SLV
+        - REU
+        - SAU
+        - SYC
+        - STP
+        - KEN
+        - IMN
+        - KOR
+        - GUF
+        - DJI
+        - GNQ
+        - GLP
+        - DNK
+        - GGY
+        - ISR
+        - PCN
+        - SLB
+        - PRY
+        - RUS
+        - KWT
+        - DOM
+        - GTM
+        - GBR
+        - GUM
+        - JEY
+        - HMD
+        - SGP
+        - PAK
+        - SUR
+        - SWE
+        - JPN
+        - GNB
+        - ESH
+        - DZA
+        - GAB
+        - FRA
+        - DMA
+        - HND
+        - SDN
+        - RWA
+        - PHL
+        - SSD
+        - QAT
+        - PER
+        - PRI
+        - SVN
+        - HTI
+        - ESP
+        - GRL
+        - GMB
+        - ERI
+        - FIN
+        - EST
+        - KNA
+        - HUN
+        - IRQ
+        - CYM
+        - SHN
+        - PSE
+        - PYF
+        - SJM
+        - IDN
+        - ISL
+        - EGY
+        - FLK
+        - FJI
+        - GIN
+        - GUY
+        - IRN
+        - COM
+        - IRL
+        - KAZ
+        - ROU
+        - SVK
+        - PNG
+        - PRT
+        - SOM
+        - SXM
+        - HRV
+        - KIR
+        - JAM
+        - ECU
+        - ETH
+        - FRO
+        - KHM
+        - SYR
+        - SEN
+        - PLW
+        - SLE
+        - FSM
+        - GIB
+        - DEU
+        - GHA
+        - JOR
+        - ITA
+        - PAN
+        - SWZ
+        - SMR
+        - TUN
+        - MLI
+        - COG
+        - ALA
+        - AGO
+        - BTN
+        - BRB
+        - CAF
+        - MMR
+        - LIE
+        - NAM
+        - MOZ
+        - TON
+        - VGB
+        - VEN
+        - TZA
+        - TKM
+        - MEX
+        - NCL
+        - MAC
+        - LKA
+        - COD
+        - ALB
+        - BWA
+        - CRI
+        - BVT
+        - ARM
+        - AZE
+        - BIH
+        - MNG
+        - NIU
+        - MYS
+        - TLS
+        - WSM
+        - THA
+        - XKX
+        - NFK
+        - LBY
+        - AIA
+        - BRA
+        - CPV
+        - BEL
+        - CAN
+        - BGD
+        - CUW
+        - BHS
+        - NGA
+        - MKD
+        - NPL
+        - VAT
+        - UZB
+        - UMI
+        - TKL
+        - VCT
+        - ZWE
+        - NRU
+        - NER
+        - CUB
+        - BES
+        - BFA
+        - BGR
+        - CCK
+        - MHL
+        - ZAF
+        - URY
+        - WLF
+        - VUT
+        - TJK
+        type: string
     DefaultTxmEvent:
         properties:
             id:
@@ -336,14 +598,7 @@ definitions:
     DonorModelPairIn:
         properties:
             country_code:
-                enum:
-                - CZE
-                - ISR
-                - AUT
-                - CAN
-                - IND
-                example: CZE
-                type: string
+                $ref: '#/definitions/CountryCode'
             donor:
                 $ref: '#/definitions/DonorInput'
             recipient:
@@ -386,23 +641,9 @@ definitions:
     ForbiddenCountryCombination:
         properties:
             donor_country:
-                enum:
-                - CZE
-                - ISR
-                - AUT
-                - CAN
-                - IND
-                example: CZE
-                type: string
+                $ref: '#/definitions/CountryCode'
             recipient_country:
-                enum:
-                - CZE
-                - ISR
-                - AUT
-                - CAN
-                - IND
-                example: CZE
-                type: string
+                $ref: '#/definitions/CountryCode'
         required:
         - donor_country
         - recipient_country
@@ -663,14 +904,7 @@ definitions:
                 example: A
                 type: string
             country_code:
-                enum:
-                - CZE
-                - ISR
-                - AUT
-                - CAN
-                - IND
-                example: CZE
-                type: string
+                $ref: '#/definitions/CountryCode'
             height:
                 type: integer
             hla_typing:
@@ -964,14 +1198,7 @@ definitions:
                 default: false
                 type: boolean
             country:
-                enum:
-                - CZE
-                - ISR
-                - AUT
-                - CAN
-                - IND
-                example: CZE
-                type: string
+                $ref: '#/definitions/CountryCode'
             donors:
                 items:
                     $ref: '#/definitions/DonorInput'
@@ -1010,14 +1237,7 @@ definitions:
                 - AUT
                 - CZE
                 items:
-                    enum:
-                    - CZE
-                    - ISR
-                    - AUT
-                    - CAN
-                    - IND
-                    example: CZE
-                    type: string
+                    $ref: '#/definitions/CountryCode'
                 type: array
             email:
                 description: Email/username used for authentication.
@@ -1509,7 +1729,7 @@ paths:
             required: true
             type: integer
         post:
-            operationId: post_donor_recipient_pair
+            operationId: post_donor_recipient_pairs
             parameters:
             -   in: body
                 name: payload
@@ -1542,6 +1762,47 @@ paths:
             -   bearer: []
             tags:
             - patients
+    /v1/txm-event/{txm_event_id}/patients/pairs/{donor_db_id}:
+        delete:
+            description: Delete existing donor recipient pair.
+            operationId: delete_donor_recipient_pair
+            parameters:
+            -   description: Donor id that will be deleted including its recipient
+                    if there is any
+                in: path
+                name: donor_db_id
+                required: true
+                type: integer
+            responses:
+                '200':
+                    description: Returns status code representing result of donor
+                        recipient pair object deletion.
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
     /v1/txm-event/{txm_event_id}/patients/recipient:
         parameters:
         -   in: path

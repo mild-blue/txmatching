@@ -7,9 +7,10 @@ from sqlalchemy.sql import func
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.patients.patient import DonorType, RecipientRequirements
+from txmatching.utils.country_enum import Country
 # pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
-from txmatching.utils.enums import Country, Sex
+from txmatching.utils.enums import Sex
 from txmatching.utils.hla_system.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 
@@ -22,6 +23,7 @@ class ConfigModel(db.Model):
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     txm_event_id = db.Column(db.Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=False)
     parameters = db.Column(db.JSON, unique=False, nullable=False)
+    patients_hash = db.Column(db.BigInteger, unique=False, nullable=False)
     created_by = db.Column(db.Integer, unique=False, nullable=False)
     # created at and updated at is not handled by triggers as then am not sure how tests would work, as triggers
     # seem to be specific as per db and I do not think its worth the effort as this simple approach works fine
@@ -55,7 +57,6 @@ class TxmEventModel(db.Model):
     name = db.Column(db.TEXT, unique=True, nullable=False)
     configs = db.relationship('ConfigModel', backref='txm_event', passive_deletes=True)
     donors = db.relationship('DonorModel', backref='txm_event', passive_deletes=True)
-    recipients = db.relationship('RecipientModel', backref='txm_event', passive_deletes=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
@@ -83,8 +84,10 @@ class RecipientModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
-    acceptable_blood = db.relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True)
-    hla_antibodies = db.relationship('RecipientHLAAntibodyModel', backref='recipient', passive_deletes=True)
+    acceptable_blood = db.relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True,
+                                       lazy='joined')
+    hla_antibodies = db.relationship('RecipientHLAAntibodyModel', backref='recipient', passive_deletes=True,
+                                     lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')
 
 
@@ -108,7 +111,9 @@ class DonorModel(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
     recipient_id = db.Column(db.Integer, ForeignKey('recipient.id'), unique=False, nullable=True)
-    recipient = db.relationship('RecipientModel', backref=backref('donor', uselist=False))
+    recipient = db.relationship('RecipientModel', backref=backref('donor', uselist=False),
+                                passive_deletes=True,
+                                lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')
 
 

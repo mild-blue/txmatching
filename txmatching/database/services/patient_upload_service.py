@@ -15,19 +15,17 @@ from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in
 from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.database.db import db
-from txmatching.database.services.config_service import \
-    remove_configs_from_txm_event
 from txmatching.database.services.parsing_utils import (
     check_existing_ids_for_duplicates, get_hla_code, parse_date_to_datetime)
 from txmatching.database.services.txm_event_service import (
-    get_txm_event, get_txm_event_db_id_by_name,
+    get_txm_event_complete, get_txm_event_db_id_by_name,
     remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
     RecipientModel)
 from txmatching.patients.hla_model import HLAAntibody, HLAType
 from txmatching.patients.patient import DonorType, calculate_cutoff
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 from txmatching.utils.hla_system.hla_transformations_store import \
     parse_hla_raw_code_and_store_parsing_error_in_db
 
@@ -35,7 +33,6 @@ logger = logging.getLogger(__name__)
 
 
 def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO, txm_event_db_id: int):
-    remove_configs_from_txm_event(txm_event_db_id)
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
 
@@ -53,7 +50,6 @@ def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDT
         remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id,
                                                                 patient_upload_dto.country)
 
-    remove_configs_from_txm_event(txm_event_db_id)
     _add_patients_from_one_country(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,
@@ -180,7 +176,7 @@ def _add_patients_from_one_country(
     if len(duplicate_ids) > 0:
         raise InvalidArgumentException(f'Duplicate recipient medical ids found: {duplicate_ids}.')
 
-    txm_event = get_txm_event(txm_event_db_id)
+    txm_event = get_txm_event_complete(txm_event_db_id)
 
     check_existing_ids_for_duplicates(txm_event, donors, recipients)
 

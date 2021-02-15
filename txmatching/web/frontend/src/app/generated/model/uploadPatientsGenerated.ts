@@ -10,12 +10,13 @@
  * Do not edit the class manually.
  */
 import { RecipientInputGenerated } from './recipientInputGenerated';
+import { CountryCodeGenerated } from './countryCodeGenerated';
 import { DonorInputGenerated } from './donorInputGenerated';
 
 
 export interface UploadPatientsGenerated { 
     add_to_existing_patients?: boolean;
-    country: UploadPatientsGeneratedCountryEnum;
+    country: CountryCodeGenerated;
     donors: Array<DonorInputGenerated>;
     recipients: Array<RecipientInputGenerated>;
     /**
@@ -23,13 +24,4 @@ export interface UploadPatientsGenerated {
      */
     txm_event_name: string;
 }
-export enum UploadPatientsGeneratedCountryEnum {
-    Cze = 'CZE',
-    Isr = 'ISR',
-    Aut = 'AUT',
-    Can = 'CAN',
-    Ind = 'IND'
-};
-
-
 

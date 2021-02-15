@@ -1,9 +1,8 @@
 import dataclasses
 import logging
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 import dacite
-from sqlalchemy import and_
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
@@ -15,22 +14,23 @@ from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto im
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.database.db import db
-from txmatching.database.services.config_service import \
-    remove_configs_from_txm_event
 from txmatching.database.services.parsing_utils import get_hla_code
 from txmatching.database.sql_alchemy_schema import (
-    ConfigModel, DonorModel, RecipientAcceptableBloodModel,
-    RecipientHLAAntibodyModel, RecipientModel)
+    DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
+    RecipientModel)
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
                                            HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
-                                         RecipientRequirements)
+                                         RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.hla_system.hla_transformations import \
     preprocess_hla_code_in
 from txmatching.utils.hla_system.hla_transformations_store import \
     parse_hla_raw_code_and_store_parsing_error_in_db
 from txmatching.utils.logging_tools import PatientAdapter
+from txmatching.utils.persistent_hash import (get_hash_digest,
+                                              initialize_persistent_hash,
+                                              update_persistent_hash)
 
 logger = logging.getLogger(__name__)
 
@@ -54,25 +54,26 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
     base_patient = _get_base_patient_from_patient_model(recipient_model)
     logger_with_patient = PatientAdapter(logger, {'patient_medical_id': recipient_model.medical_id})
 
-    return Recipient(base_patient.db_id,
-                     base_patient.medical_id,
-                     parameters=base_patient.parameters,
-                     related_donor_db_id=related_donor_db_id,
-                     hla_antibodies=HLAAntibodies(
-                         [HLAAntibody(code=get_hla_code(hla_antibody.code, hla_antibody.raw_code),
-                                      mfi=hla_antibody.mfi,
-                                      cutoff=hla_antibody.cutoff,
-                                      raw_code=hla_antibody.raw_code)
-                          for hla_antibody in recipient_model.hla_antibodies],
-                         logger_with_patient
-                     ),
-                     acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
-                                              recipient_model.acceptable_blood],
-                     recipient_cutoff=recipient_model.recipient_cutoff,
-                     recipient_requirements=RecipientRequirements(**recipient_model.recipient_requirements),
-                     waiting_since=recipient_model.waiting_since,
-                     previous_transplants=recipient_model.previous_transplants
-                     )
+    recipient = Recipient(base_patient.db_id,
+                          base_patient.medical_id,
+                          parameters=base_patient.parameters,
+                          related_donor_db_id=related_donor_db_id,
+                          hla_antibodies=HLAAntibodies(
+                              [HLAAntibody(code=get_hla_code(hla_antibody.code, hla_antibody.raw_code),
+                                           mfi=hla_antibody.mfi,
+                                           cutoff=hla_antibody.cutoff,
+                                           raw_code=hla_antibody.raw_code)
+                               for hla_antibody in recipient_model.hla_antibodies],
+                              logger_with_patient
+                          ),
+                          acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
+                                                   recipient_model.acceptable_blood],
+                          recipient_cutoff=recipient_model.recipient_cutoff,
+                          recipient_requirements=RecipientRequirements(**recipient_model.recipient_requirements),
+                          waiting_since=recipient_model.waiting_since,
+                          previous_transplants=recipient_model.previous_transplants
+                          )
+    return recipient
 
 
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
@@ -126,7 +127,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
             recipient_update_dto.recipient_requirements)
 
     RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
-    remove_configs_from_txm_event(txm_event_db_id)
     db.session.commit()
     return get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id))
 
@@ -137,8 +137,6 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
     if txm_event_db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to')
-    ConfigModel.query.filter(
-        and_(ConfigModel.id > 0, ConfigModel.txm_event_id == txm_event_db_id)).delete()
 
     donor_update_dict = {}
     if donor_update_dto.hla_typing:
@@ -146,9 +144,20 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     if donor_update_dto.active is not None:
         donor_update_dict['active'] = donor_update_dto.active
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
-    remove_configs_from_txm_event(txm_event_db_id)
     db.session.commit()
     return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
+
+
+def get_patients_persistent_hash(txm_event: TxmEvent) -> int:
+    donors = tuple(txm_event.active_donors_dict.values())
+    recipients = tuple(txm_event.active_recipients_dict.values())
+
+    hash_ = initialize_persistent_hash()
+    update_persistent_hash(hash_, donors)
+    update_persistent_hash(hash_, recipients)
+    hash_digest = get_hash_digest(hash_)
+
+    return hash_digest
 
 
 def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> Patient:
@@ -183,3 +192,29 @@ def _update_patient_preprocessed_typing(patient_update: PatientUpdateDTO) -> Pat
             for preprocessed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
         ])
     return patient_update
+
+
+def get_donor_recipient_pair(donor_id: int, txm_event_id: int) -> Tuple[Donor, Optional[Recipient]]:
+    donor_model = DonorModel.query.get(donor_id)  # type: DonorModel
+    if donor_model is None or donor_model.txm_event_id != txm_event_id:
+        raise InvalidArgumentException(f'Donor {donor_id} not found in txm event {txm_event_id}')
+    donor = get_donor_from_donor_model(donor_model)
+    recipient_id = donor_model.recipient_id
+
+    if recipient_id is not None:
+        recipient_model = RecipientModel.query.get(recipient_id)  # type: RecipientModel
+        maybe_recipient = get_recipient_from_recipient_model(recipient_model)
+    else:
+        maybe_recipient = None
+
+    return donor, maybe_recipient
+
+
+def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
+    donor, maybe_recipient = get_donor_recipient_pair(donor_id, txm_event_id)
+
+    DonorModel.query.filter(DonorModel.id == donor.db_id).delete()
+    if maybe_recipient is not None:
+        RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
+
+    db.session.commit()

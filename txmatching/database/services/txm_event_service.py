@@ -1,6 +1,8 @@
+import logging
 from typing import List
 
 from sqlalchemy import and_
+from sqlalchemy.orm import joinedload, raiseload
 from sqlalchemy.orm.exc import NoResultFound
 
 from txmatching.auth.data_types import UserRole
@@ -12,9 +14,11 @@ from txmatching.database.services.patient_service import (
 from txmatching.database.sql_alchemy_schema import (DonorModel, RecipientModel,
                                                     TxmEventModel,
                                                     UploadedDataModel)
-from txmatching.patients.patient import TxmEvent
-from txmatching.utils.enums import Country
+from txmatching.patients.patient import TxmEvent, TxmEventBase
+from txmatching.utils.country_enum import Country
 from txmatching.utils.logged_user import get_current_user
+
+logger = logging.getLogger(__name__)
 
 
 def get_newest_txm_event_db_id() -> int:
@@ -87,18 +91,36 @@ def get_txm_event_db_id_by_name(txm_event_name: str) -> int:
         raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.') from error
 
 
-def get_txm_event(txm_event_db_id: int) -> TxmEvent:
-    maybe_txm_event_model = TxmEventModel.query.get(txm_event_db_id)
-    if maybe_txm_event_model is None:
-        raise InvalidArgumentException(f'No TXM event with id {txm_event_db_id} found.')
+def get_txm_event_complete(txm_event_db_id: int) -> TxmEvent:
+    logger.debug(f'Starting to eager load data for TXM event {txm_event_db_id}')
+    maybe_txm_event_model = TxmEventModel.query.options(joinedload(TxmEventModel.donors)).get(txm_event_db_id)
+    logger.debug('Eager loaded data via sql alchemy')
 
-    all_donors = sorted([get_donor_from_donor_model(donor_model) for donor_model in maybe_txm_event_model.donors],
+    return _get_txm_event_from_txm_event_model(maybe_txm_event_model)
+
+
+def get_txm_event_base(txm_event_db_id: int) -> TxmEventBase:
+    logger.debug(f'Starting to load data for TXM event {txm_event_db_id}')
+    maybe_txm_event_model = TxmEventModel.query.options(raiseload(TxmEventModel.donors)).get(txm_event_db_id)
+    logger.debug('Loaded data via sql alchemy')
+
+    return _get_txm_event_base_from_txm_event_model(maybe_txm_event_model)
+
+
+def _get_txm_event_base_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEventBase:
+    return TxmEventBase(db_id=txm_event_model.id, name=txm_event_model.name)
+
+
+def _get_txm_event_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEvent:
+    all_donors = sorted([get_donor_from_donor_model(donor_model) for donor_model in txm_event_model.donors],
                         key=lambda donor: donor.db_id)
-    all_recipients = sorted([get_recipient_from_recipient_model(recipient_model, recipient_model.donor.id)
-                             for recipient_model in maybe_txm_event_model.recipients],
+    logger.debug('Prepared Donors')
+    all_recipients = sorted([get_recipient_from_recipient_model(donor.recipient, donor.id)
+                             for donor in txm_event_model.donors if donor.recipient is not None],
                             key=lambda recipient: recipient.db_id)
-
-    return TxmEvent(db_id=maybe_txm_event_model.id, name=maybe_txm_event_model.name, all_donors=all_donors,
+    logger.debug('Prepared Recipients')
+    logger.debug('Prepared TXM event')
+    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, all_donors=all_donors,
                     all_recipients=all_recipients)
 
 

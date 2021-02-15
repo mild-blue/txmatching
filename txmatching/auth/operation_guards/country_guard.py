@@ -1,9 +1,10 @@
-from typing import Union, Type
+from typing import Type, Union
 
-from txmatching.auth.exceptions import InvalidArgumentException, GuardException
+from txmatching.auth.exceptions import GuardException, InvalidArgumentException
 from txmatching.database.services.app_user_management import get_app_user_by_id
-from txmatching.database.sql_alchemy_schema import RecipientModel, DonorModel, AppUserModel
-from txmatching.utils.enums import Country
+from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
+                                                    RecipientModel)
+from txmatching.utils.country_enum import Country
 
 
 def guard_user_country_access_to_donor(user_id: int, donor_id: int):

@@ -10,13 +10,14 @@ from txmatching.database.services import solver_service
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
-from txmatching.database.services.txm_event_service import get_txm_event
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
                                                     TxmEventModel)
 from txmatching.patients.patient import TxmEvent
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import create_app
@@ -130,7 +131,7 @@ def populate_db():
     #
     # replace_or_add_patients_from_excel(patients)
 
-    txm_event = get_txm_event(txm_event.db_id)
+    txm_event = get_txm_event_complete(txm_event.db_id)
 
     result = solve_from_configuration(txm_event=txm_event,
                                       configuration=Configuration(max_sequence_length=100, max_cycle_length=100,

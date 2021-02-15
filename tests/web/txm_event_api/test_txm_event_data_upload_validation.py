@@ -16,13 +16,13 @@ from tests.web.txm_event_api.txm_event_upload_example_data import (
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import (
-    get_newest_txm_event_db_id, get_txm_event)
+    get_newest_txm_event_db_id, get_txm_event_complete)
 from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
                                                     UploadedDataModel)
 from txmatching.patients.hla_model import HLAType, HLATyping
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Country
+from txmatching.utils.country_enum import Country
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 
 
@@ -31,7 +31,7 @@ class TestMatchingApi(DbTests):
     def test_txm_event_patient_successful_upload(self):
         res, txm_event = self._txm_event_upload(donors_json=DONORS, recipients_json=RECIPIENTS)
         self._check_response(res, 200)
-        txm_event = get_txm_event(txm_event.db_id)
+        txm_event = get_txm_event_complete(txm_event.db_id)
         self.assertEqual(txm_event.name, txm_event.name)
         self.assertEqual(3, len(txm_event.active_recipients_dict))
         self.assertEqual(4, len(txm_event.active_donors_dict))
@@ -95,7 +95,7 @@ class TestMatchingApi(DbTests):
                                                 recipients_json=SPECIAL_RECIPIENTS_SPECIAL_HLA_CODES)
 
         self._check_response(res, 200)
-        txm_event = get_txm_event(txm_event.db_id)
+        txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
         expected_antibodies = {'DPA1', 'DP4', 'A23'}
         self.assertSetEqual(expected_antibodies, {hla_antibody.code for hla_antibody in
@@ -112,7 +112,7 @@ class TestMatchingApi(DbTests):
                                                 recipients_json=SPECIAL_RECIPIENTS_MULTIPLE_SAME_HLA_CODES)
 
         self._check_response(res, 200)
-        txm_event = get_txm_event(txm_event.db_id)
+        txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
         expected_antibodies = {'DQA6', 'DQ8'}
         self.assertSetEqual(expected_antibodies, _get_hla_antibodies_codes(recipient))
@@ -122,7 +122,7 @@ class TestMatchingApi(DbTests):
         res, txm_event = self._txm_event_upload(donors_json=SPECIAL_DONORS_SPECIAL_HLA_CODES,
                                                 recipients_json=SPECIAL_RECIPIENTS_EXCEPTIONAL_HLA_CODES)
         self._check_response(res, 200)
-        txm_event = get_txm_event(txm_event.db_id)
+        txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
         expected_antibodies = {'DR9', 'CW6', 'B82', 'CW4'}
         self.assertSetEqual(expected_antibodies, _get_hla_antibodies_codes(recipient))
@@ -138,7 +138,7 @@ class TestMatchingApi(DbTests):
             donors_json = []
         self.fill_db_with_patients_and_results()
         txm_event_db_id = get_newest_txm_event_db_id()
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         if not txm_event_name:
             txm_event_name = txm_event.name
 

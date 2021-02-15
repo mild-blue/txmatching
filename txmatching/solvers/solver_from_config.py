@@ -6,16 +6,17 @@ from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.solvers.all_solutions_solver.all_solutions_solver import \
     AllSolutionsSolver
+from txmatching.solvers.ilp_solver.ilp_solver import ILPSolver
 from txmatching.solvers.solver_base import SolverBase
 
-_supported_solvers = [AllSolutionsSolver]
+SUPPORTED_SOLVERS = [AllSolutionsSolver, ILPSolver]
 
 
 def solver_from_configuration(configuration: Configuration,
                               donors_dict: Dict[DonorDbId, Donor],
                               recipients_dict: Dict[RecipientDbId, Recipient],
                               scorer: AdditiveScorer) -> SolverBase:
-    solver_dict = {supported_object.__name__: supported_object for supported_object in _supported_solvers}
+    solver_dict = {supported_object.__name__: supported_object for supported_object in SUPPORTED_SOLVERS}
     solver = solver_dict.get(configuration.solver_constructor_name)
     if solver is None:
         raise NotImplementedError(f'{configuration.solver_constructor_name} not supported yet')
