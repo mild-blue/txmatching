@@ -1,5 +1,5 @@
 --
--- file: txmatching/database/db_migrations/0011.add-user-to-allowed-event-table.sql
+-- file: txmatching/database/db_migrations/0012.add-user-to-allowed-event-table.sql
 -- depends: 0010.add-patients-hash
 --
 
