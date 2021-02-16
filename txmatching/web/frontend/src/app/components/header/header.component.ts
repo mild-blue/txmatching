@@ -65,6 +65,10 @@ export class HeaderComponent {
     }
   }
 
+  private _closeAllDropdowns(): void {
+    this._openedDropdownId = '';
+  }
+
   public logOut(): void {
     this._authService.logout();
   }
@@ -79,5 +83,6 @@ export class HeaderComponent {
 
   public changeDefaultTxmEvent(change: MatSelectionListChange): void {
     this.defaultTxmEventSelected.emit(change.option.value);
+    this._closeAllDropdowns();
   }
 }
