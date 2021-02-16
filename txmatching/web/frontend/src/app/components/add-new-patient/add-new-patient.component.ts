@@ -25,13 +25,12 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
     country: new FormControl('')
   });
 
-  // @ts-ignore
-  public allCountries: string[] = Object.keys(Country).map(key => `${Country[key]}`);
-  public allDonorTypes: DonorType[] = Object.keys(DonorType).map(key => DonorType[key as DonorType]);
+  public allCountries: string[] = Object.values(Country);
+  public allDonorTypes: DonorType[] = Object.values(DonorType);
+  public allBloodGroups: BloodGroup[] = Object.values(BloodGroup);
+  public allSexes: Sex[] = Object.values(Sex);
+
   public DonorType: typeof DonorType = DonorType;
-  // @ts-ignore
-  public allBloodGroups: string[] = Object.keys(BloodGroup).map(key => `${BloodGroup[key as BloodGroup]}`);
-  public allSexes: string[] = Object.keys(Sex).map(key => `${Sex[key as Sex]}`);
 
   public filteredCountries: Observable<string[]>;
   public separatorKeysCodes: number[] = separatorKeysCodes;
@@ -52,6 +51,7 @@ export class AddNewPatientComponent extends AbstractFormHandlerComponent impleme
   }
 
   ngOnInit() {
+    console.log(Object.values(DonorType));
     // Allow only existing countries
     this.form.controls.country?.setValidators(countryNameValidator(this.allCountries));
   }

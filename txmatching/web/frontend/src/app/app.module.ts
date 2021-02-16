@@ -73,6 +73,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { RecipientAntibodiesComponent } from '@app/components/add-new-patient/recipient-antibodies/antibodies.component';
+import { DonorSettingsComponent } from './components/donor-settings/donor-settings.component';
 
 @NgModule({
   declarations: [
@@ -125,7 +126,8 @@ import { RecipientAntibodiesComponent } from '@app/components/add-new-patient/re
     FormControlErrorsComponent,
     LoadingIconComponent,
     AbstractLoggedComponent,
-    RecipientAntibodiesComponent
+    RecipientAntibodiesComponent,
+    DonorSettingsComponent
   ],
   imports: [
     BrowserModule,
