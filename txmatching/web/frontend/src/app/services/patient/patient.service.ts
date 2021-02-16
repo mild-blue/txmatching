@@ -59,4 +59,11 @@ export class PatientService {
       }
     ).pipe(first()).toPromise();
   }
+
+  public async deleteDonor(txmEventId: number, donorDbId: number): Promise<void> {
+    this._logger.log(`Deleting donor ${donorDbId}`);
+    await this._http.delete(
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs/${donorDbId}`
+    ).pipe(first()).toPromise();
+  }
 }

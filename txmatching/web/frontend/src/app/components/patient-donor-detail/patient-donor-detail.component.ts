@@ -11,6 +11,7 @@ import { Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
 import { TxmEvent } from '@app/model/Event';
 import { LoggerService } from '@app/services/logger/logger.service';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-patient-detail-donor',
@@ -31,6 +32,9 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
   public loading: boolean = false;
   public success: boolean = false;
+  public deleteLoading: boolean = false;
+  public deleteSuccess: boolean = false;
+  public deleteIcon = faTrash;
 
   constructor(private _patientService: PatientService,
               private _logger: LoggerService) {
@@ -122,6 +126,33 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
       this.success = true;
     })
     .catch(() => this.loading = false);
+  }
+
+  public handleDeleteDonor(): void {
+    if(!this.item) {
+      this._logger.error('handleDeleteDonor failed because item not set');
+      return;
+    }
+    if(!this.defaultTxmEvent) {
+      this._logger.error('handleDeleteDonor failed because defaultTxmEvent not set');
+      return;
+    }
+
+    const message = this.item.related_recipient_db_id != undefined
+      ? 'Are you sure you want to remove donor and its recipient?'
+      : 'Are you sure you want to remove donor?';
+    if(!confirm(message)) {
+      return;
+    }
+
+    this.deleteLoading = true;
+    this.deleteSuccess = false;
+    this._patientService.deleteDonor(this.defaultTxmEvent.id, this.item.db_id)
+    .then(() => {
+      this.deleteLoading = false;
+      this.deleteSuccess = true;
+    })
+    .catch(() => this.deleteLoading = false);
   }
 
   private _initAvailableCodes(): void {

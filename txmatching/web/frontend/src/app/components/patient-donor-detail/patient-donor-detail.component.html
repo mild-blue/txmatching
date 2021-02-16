@@ -59,11 +59,22 @@
       </mat-hint>
     </mat-form-field>
 
-    <app-button [type]="'submit'"
-                [loading]="loading"
-                [disabled]="loading"
-                [success]="!loading && success"
-                [variant]="'success'">Save changes
-    </app-button>
+    <div class="buttons">
+      <app-button [type]="'submit'"
+                  [loading]="loading"
+                  [disabled]="loading"
+                  [success]="!loading && success"
+                  [variant]="'success'">Save changes
+      </app-button>
+
+      <app-button [loading]="deleteLoading"
+                  [disabled]="deleteLoading"
+                  [success]="!deleteLoading && deleteSuccess"
+                  [variant]="'danger'"
+                  [size]="'sm'"
+                  (click)="handleDeleteDonor()">
+        <fa-icon [icon]="deleteIcon"></fa-icon>&nbsp;Delete
+      </app-button>
+    </div>
   </form>
 </div>
