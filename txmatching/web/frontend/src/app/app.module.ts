@@ -82,6 +82,7 @@ import { MedicalIdComponent } from './components/patient-settings/medical-id/med
 import { SimpleNumberComponent } from './components/patient-settings/simple-number/simple-number.component';
 import { CountryComponent } from '@app/components/country/country.component';
 import { RecipientSettingsComponent } from './components/recipient-settings/recipient-settings.component';
+import { FormDirective } from './directives/form/form.directive';
 
 @NgModule({
   declarations: [
@@ -147,7 +148,8 @@ import { RecipientSettingsComponent } from './components/recipient-settings/reci
     CountryComponent,
     CountrySettingComponent,
     RecipientSettingsComponent,
-    SimpleNumberComponent
+    SimpleNumberComponent,
+    FormDirective
   ],
   imports: [
     BrowserModule,
