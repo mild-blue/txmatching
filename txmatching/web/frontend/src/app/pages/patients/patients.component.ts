@@ -15,6 +15,8 @@ import { PatientDonorItemComponent } from '@app/components/patient-donor-item/pa
 import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
 import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
+import { PatientUploadSuccessResponseGenerated } from '@app/generated';
+import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
 
 @Component({
   selector: 'app-patients',
@@ -82,9 +84,22 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     );
   }
 
-  public onNewPatientsAdded(): void {
-    this.togglePatientPopup();
-    this._initPatientsWithStats();
+  public async addPatientPair(pair: PatientPairToAdd): Promise<void> {
+    if (!this.defaultTxmEvent) {
+      this._logger.error('uploadPatients failed because defaultTxmEvent not set');
+      return;
+    }
+
+    try {
+      const response: PatientUploadSuccessResponseGenerated = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
+      this._alertService.success(`Successfully uploaded ${response.donors_uploaded} donor and ${response.recipients_uploaded} recipient${response.recipients_uploaded === 0 ?? 's'}`);
+    } catch (e) {
+      this._alertService.error(`Error uploading patients: "${e.message || e}"`);
+      this._logger.error(`Error uploading patients: "${e.message || e}"`);
+    } finally {
+      this.togglePatientPopup();
+      this._initPatientsWithStats();
+    }
   }
 
   public togglePatientPopup(): void {

@@ -6,6 +6,7 @@ import { PatientService } from '@app/services/patient/patient.service';
 import { TxmEvent } from '@app/model/Event';
 import { PatientEditable } from '@app/model/PatientEditable';
 import { Country } from '@app/model/Country';
+import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
 
 @Component({
   selector: 'app-add-new-patient',
@@ -18,7 +19,7 @@ export class AddNewPatientComponent {
   private _recipientDiffer: KeyValueDiffer<string, unknown>;
 
   @Input() defaultTxmEvent?: TxmEvent;
-  @Output() patientsAdded: EventEmitter<void> = new EventEmitter<void>();
+  @Output() addPatientsClicked: EventEmitter<PatientPairToAdd> = new EventEmitter<PatientPairToAdd>();
   @ViewChild('formElement') form?: HTMLFormElement;
 
   public DonorType: typeof DonorType = DonorType;
@@ -46,15 +47,12 @@ export class AddNewPatientComponent {
   }
 
   public handleSubmit() {
-
-    console.log(this.form, this.donor, this.recipient, this.donor.type.valueOf() === DonorType.DONOR.valueOf());
     if (!this.defaultTxmEvent || !this.donor.country || !this.recipient.country ||
       !this.donor.medicalId || !this.recipient.medicalId) {
       return;
     }
 
-    this._patientService.addNewPair(this.defaultTxmEvent.id, this.donor, this.recipient)
-    .then(() => this.patientsAdded.emit());
+    this.addPatientsClicked.emit({ donor: this.donor, recipient: this.recipient });
   }
 
   private _changeOtherPatientCountry(changes: KeyValueChanges<string, unknown>, otherPatient: PatientEditable) {
