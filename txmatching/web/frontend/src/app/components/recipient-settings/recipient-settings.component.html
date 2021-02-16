@@ -48,19 +48,19 @@
   <app-recipient-antibodies [recipient]="recipient"></app-recipient-antibodies>
 
   <!-- Recipient antibodies cutoff -->
-  <app-simple-number label="Antibodies cutoff" [value]="recipient.antibodiesCutoff"></app-simple-number>
+  <app-simple-number label="Antibodies cutoff" [(ngModel)]="recipient.antibodiesCutoff" name="antibodiesCutoff" ngDefaultControl></app-simple-number>
 
   <!-- Recipient Sex -->
   <app-sex [patient]="recipient"></app-sex>
 
   <!-- Recipient height -->
-  <app-simple-number [value]="recipient.height" [label]="'Height [cm]'"></app-simple-number>
+  <app-simple-number label="Height [cm]" [(ngModel)]="recipient.height" name="height" ngDefaultControl></app-simple-number>
 
   <!-- Recipient weight -->
-  <app-simple-number [value]="recipient.weight" [label]="'Weight [cm]'"></app-simple-number>
+  <app-simple-number label="Weight [kg]" [(ngModel)]="recipient.weight" name="weight" ngDefaultControl></app-simple-number>
 
   <!-- Recipient year of birth -->
-  <app-simple-number [value]="recipient.yearOfBirth" [label]="'Year of birth'"></app-simple-number>
+  <app-simple-number label="Year of birth" [(ngModel)]="recipient.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
 
   <!-- Recipient waiting since date -->
   <app-setting-item label="Waiting since">
@@ -72,6 +72,6 @@
   </app-setting-item>
 
   <!-- Recipient previous transplants -->
-  <app-simple-number [label]="'Previous transplants count'" [value]="recipient.previousTransplants"></app-simple-number>
+  <app-simple-number label="Previous transplants count" [(ngModel)]="recipient.previousTransplants" name="previousTransplants" ngDefaultControl></app-simple-number>
 
 </ng-container>
