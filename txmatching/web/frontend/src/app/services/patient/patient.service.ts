@@ -76,9 +76,9 @@ export class PatientService {
         hla_typing: donor.antigens,
         donor_type: donor.type,
         sex: donor.sex === PatientSexType.NULL ? undefined : donor.sex,
-        height: donor.height,
-        weight: donor.weight,
-        year_of_birth: donor.yearOfBirth
+        height: donor.height ? +donor.height : undefined,
+        weight: donor.weight ? +donor.weight : undefined,
+        year_of_birth: donor.yearOfBirth ? +donor.yearOfBirth : undefined
       }
     };
 
@@ -88,15 +88,15 @@ export class PatientService {
       body.recipient = {
         acceptable_blood_groups: recipient.acceptableBloodGroups,
         blood_group: recipient.bloodGroup,
-        height: recipient.height,
+        height: recipient.height ? +recipient.height : undefined,
         hla_antibodies: recipient.antibodies,
         hla_typing: recipient.antigens,
         medical_id: recipient.medicalId,
-        previous_transplants: recipient.previousTransplants,
+        previous_transplants: recipient.previousTransplants ? +recipient.previousTransplants : undefined,
         sex: recipient.sex === PatientSexType.NULL ? undefined : recipient.sex,
         waiting_since: this._formatDate(recipient.waitingSince),
-        weight: recipient.weight,
-        year_of_birth: recipient.yearOfBirth
+        weight: recipient.weight ? +recipient.weight : undefined,
+        year_of_birth: recipient.yearOfBirth ? +recipient.yearOfBirth : undefined
       };
     }
 

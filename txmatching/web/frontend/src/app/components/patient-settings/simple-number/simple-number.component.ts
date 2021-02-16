@@ -9,18 +9,18 @@ import { ControlValueAccessor } from '@angular/forms';
 export class SimpleNumberComponent implements ControlValueAccessor {
 
   @Input() label?: string = '';
-  @Input() value: number = 0;
+  @Input() value?: number;
 
-  get currentValue() {
+  get currentValue(): number | undefined {
     return this.value;
   }
 
-  set currentValue(val) {
+  set currentValue(val: number | undefined) {
     this.value = val;
     this.propagateChange(this.value);
   }
 
-  writeValue(val: number): void {
+  writeValue(val: number | undefined): void {
     if (val !== undefined) {
       this.currentValue = val;
     }
