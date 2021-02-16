@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
 import { PatientEditable } from '@app/model/PatientEditable';
 import { Country } from '@app/model/Country';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -14,6 +14,8 @@ import { AbstractFormHandlerComponent } from '@app/components/abstract-form-hand
 })
 export class CountrySettingComponent extends AbstractFormHandlerComponent implements OnInit {
 
+  private _patientDiffer?: KeyValueDiffer<string, unknown>;
+
   @Input() patient?: PatientEditable;
 
   public allCountries: string[] = Object.values(Country);
@@ -24,7 +26,7 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
     country: new FormControl('')
   });
 
-  constructor() {
+  constructor(private _differs: KeyValueDiffers) {
     super();
 
     // Country fulltext search
@@ -40,18 +42,31 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
     // Set value to patient country
     if (this.patient) {
       this.form.controls.country?.setValue(this.patient.country.valueOf());
+
+      // Detect country change in patient
+      this._patientDiffer = this._differs.find(this.patient).create();
     }
   }
 
-  get selectedCountry(): string {
+  ngDoCheck(): void {
+    const patientChanges = this._patientDiffer?.diff((this.patient as unknown) as Map<string, unknown>);
+    patientChanges?.forEachChangedItem((record) => {
+      if (record.key === 'country') {
+        this.form.controls.country?.setValue(record.currentValue);
+      }
+    });
+  }
+
+  get selectedCountryValue(): string {
     return this.form.controls.country?.value ?? '';
   }
 
   public handleCountrySelect(control: HTMLInputElement): void {
+    const country: Country = this.selectedCountryValue as Country;
 
     // Set country to patient
     if (this.patient) {
-      this.patient.country = this.selectedCountry as Country;
+      this.patient.setCountry(country);
     }
 
     // Disable control, so multiple countries cannot be selected

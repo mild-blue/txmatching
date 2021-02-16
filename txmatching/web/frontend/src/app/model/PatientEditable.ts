@@ -21,6 +21,10 @@ export class PatientEditable {
   addAntigen(code: string) {
     this.antigens.push(code);
   }
+
+  setCountry(country: Country) {
+    this.country = country;
+  }
 }
 
 // export interface PatientUploadMessage {

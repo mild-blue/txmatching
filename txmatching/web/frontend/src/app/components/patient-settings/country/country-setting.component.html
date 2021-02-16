@@ -7,17 +7,17 @@
         <mat-chip *ngIf="form.controls.country.valid"
                   [removable]="true"
                   (removed)="handleRemove('country', countryInput)">
-          <country [country]="selectedCountry"></country>
+          <country [country]="selectedCountryValue"></country>
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input formControlName="country"
                [matChipInputFor]="countryChip"
                [matAutocomplete]="donorAuto"
-               [placeholder]="!selectedCountry ? 'Search by country code' : ''"
+               [placeholder]="!selectedCountryValue ? 'Search by country code' : ''"
                #countryInput type="text">
       </mat-chip-list>
 
-      <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleSelect(countryInput)">
+      <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleCountrySelect(countryInput)">
         <mat-option *ngFor="let c of filteredCountries | async" [value]="c">
           <country [country]="c"></country>
         </mat-option>

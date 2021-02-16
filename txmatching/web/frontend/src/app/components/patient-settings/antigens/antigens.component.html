@@ -11,15 +11,15 @@
       <input #donorAntigensInput
              [matChipInputFor]="patientAntigensChipList"
              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-             (matChipInputTokenEnd)="addAntigen(patient, $event.value, donorAntigensInput)"
+             (matChipInputTokenEnd)="addAntigen($event.value, donorAntigensInput)"
              matInput
              type="text">
     </mat-chip-list>
     <mat-hint>
       Add new antigens by typing codes followed by
-      <span class="key">Space <mat-icon>space_bar</mat-icon></span>
+      <span class="key">Space&nbsp;<mat-icon>space_bar</mat-icon></span>
       or
-      <span class="key">Enter <mat-icon>keyboard_return</mat-icon></span>
+      <span class="key">Enter&nbsp;<mat-icon>keyboard_return</mat-icon></span>
     </mat-hint>
   </mat-form-field>
 </app-setting-item>
