@@ -58,6 +58,10 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     return this.allAntigens.filter(a => !selectedAntigensCodes.includes(a.code));
   }
 
+  public setActiveValue(value: boolean): void {
+    if(this.item) this.item.active = value;
+  }
+
   public addNewAntigen(code: string, control: HTMLInputElement): void {
     if(!this.item) {
       this._logger.error(`addNewAntigen failed because item not set`);

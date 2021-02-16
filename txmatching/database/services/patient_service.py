@@ -54,25 +54,26 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
     base_patient = _get_base_patient_from_patient_model(recipient_model)
     logger_with_patient = PatientAdapter(logger, {'patient_medical_id': recipient_model.medical_id})
 
-    return Recipient(base_patient.db_id,
-                     base_patient.medical_id,
-                     parameters=base_patient.parameters,
-                     related_donor_db_id=related_donor_db_id,
-                     hla_antibodies=HLAAntibodies(
-                         [HLAAntibody(code=get_hla_code(hla_antibody.code, hla_antibody.raw_code),
-                                      mfi=hla_antibody.mfi,
-                                      cutoff=hla_antibody.cutoff,
-                                      raw_code=hla_antibody.raw_code)
-                          for hla_antibody in recipient_model.hla_antibodies],
-                         logger_with_patient
-                     ),
-                     acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
-                                              recipient_model.acceptable_blood],
-                     recipient_cutoff=recipient_model.recipient_cutoff,
-                     recipient_requirements=RecipientRequirements(**recipient_model.recipient_requirements),
-                     waiting_since=recipient_model.waiting_since,
-                     previous_transplants=recipient_model.previous_transplants
-                     )
+    recipient = Recipient(base_patient.db_id,
+                          base_patient.medical_id,
+                          parameters=base_patient.parameters,
+                          related_donor_db_id=related_donor_db_id,
+                          hla_antibodies=HLAAntibodies(
+                              [HLAAntibody(code=get_hla_code(hla_antibody.code, hla_antibody.raw_code),
+                                           mfi=hla_antibody.mfi,
+                                           cutoff=hla_antibody.cutoff,
+                                           raw_code=hla_antibody.raw_code)
+                               for hla_antibody in recipient_model.hla_antibodies],
+                              logger_with_patient
+                          ),
+                          acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
+                                                   recipient_model.acceptable_blood],
+                          recipient_cutoff=recipient_model.recipient_cutoff,
+                          recipient_requirements=RecipientRequirements(**recipient_model.recipient_requirements),
+                          waiting_since=recipient_model.waiting_since,
+                          previous_transplants=recipient_model.previous_transplants
+                          )
+    return recipient
 
 
 def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> dict:

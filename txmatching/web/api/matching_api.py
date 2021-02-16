@@ -21,7 +21,8 @@ from txmatching.database.services.config_service import (
     configuration_from_dict, find_configuration_db_id_for_configuration)
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
-from txmatching.database.services.txm_event_service import get_txm_event
+from txmatching.database.services.txm_event_service import \
+    get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
@@ -46,7 +47,7 @@ class CalculateFromConfig(Resource):
     @require_user_login()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int) -> str:
-        txm_event = get_txm_event(txm_event_id)
+        txm_event = get_txm_event_complete(txm_event_id)
         configuration = configuration_from_dict(request.json)
         user_id = get_current_user_id()
         maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
@@ -66,5 +67,5 @@ class CalculateFromConfig(Resource):
             calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[
                                                             :configuration.max_matchings_to_show_to_viewer]
             calculated_matchings_dto.show_not_all_matchings_found = False
-
+        logging.debug('Collected matchings and sending them')
         return jsonify(calculated_matchings_dto)

@@ -49,7 +49,7 @@ export class PatientService {
       weight: donor.parameters.weight,
       year_of_birth: donor.parameters.year_of_birth,
 
-      active: undefined // TODOO: replace in merge conflict
+      active: donor.active
     };
     return this._http.put<DonorGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/donor`,

@@ -1,10 +1,12 @@
 from typing import Dict, List, Union
 
+from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
     DonorDTOOut
 from txmatching.database.services.config_service import \
-    get_configuration_for_txm_event
+    get_latest_configuration_for_txm_event
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
+from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.hla_system.compatibility_index import (
@@ -16,8 +18,10 @@ from txmatching.utils.hla_system.hla_crossmatch import (
 
 
 def to_lists_for_fe(txm_event: TxmEvent) -> Dict[str, Union[List[DonorDTOOut], List[Recipient]]]:
+    configuration = get_latest_configuration_for_txm_event(txm_event)
+    scorer = scorer_from_configuration(configuration)
     return {
-        'donors': sorted([donor_to_donor_dto_out(donor, txm_event.all_recipients, txm_event) for donor in
+        'donors': sorted([donor_to_donor_dto_out(donor, txm_event.all_recipients, configuration, scorer) for donor in
                           txm_event.all_donors], key=_patient_order_for_fe),
         'recipients': sorted(txm_event.all_recipients, key=_patient_order_for_fe)
     }
@@ -29,7 +33,8 @@ def _patient_order_for_fe(patient: Union[DonorDTOOut, Recipient]) -> str:
 
 def donor_to_donor_dto_out(donor: Donor,
                            all_recipients: List[Recipient],
-                           txm_event: TxmEvent) -> DonorDTOOut:
+                           configuration: Configuration,
+                           scorer: AdditiveScorer) -> DonorDTOOut:
     donor_dto = DonorDTOOut(db_id=donor.db_id,
                             medical_id=donor.medical_id,
                             parameters=donor.parameters,
@@ -41,8 +46,6 @@ def donor_to_donor_dto_out(donor: Donor,
         related_recipient = next(recipient for recipient in all_recipients if
                                  recipient.db_id == donor.related_recipient_db_id)
 
-        configuration = get_configuration_for_txm_event(txm_event)
-        scorer = scorer_from_configuration(configuration)
         donor_dto.score_with_related_recipient = scorer.score_transplant(donor, related_recipient, None)
         donor_dto.compatible_blood_with_related_recipient = blood_groups_compatible(
             donor.parameters.blood_group,

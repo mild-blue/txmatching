@@ -10,7 +10,8 @@ from txmatching.database.services import solver_service
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
-from txmatching.database.services.txm_event_service import get_txm_event
+from txmatching.database.services.txm_event_service import (
+    get_txm_event_complete, set_allowed_txm_event_ids_for_user)
 from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
                                                     TxmEventModel)
 from txmatching.patients.patient import TxmEvent
@@ -35,7 +36,8 @@ VIEWER_USER = {
     'email': 'viewer@example.com',
     'password': 'viewer',
     'role': UserRole.VIEWER,
-    'require_2fa': False
+    'require_2fa': False,
+    'allowed_txm_events': [1]
 }
 
 OTP_USER = {
@@ -51,7 +53,8 @@ SERVICE_USER = {
     'password': 'admin',
     'role': UserRole.SERVICE,
     'require_2fa': False,
-    'default_txm_event_id': 1
+    'default_txm_event_id': 1,
+    'allowed_txm_events': [1, 2]
 }
 ADMIN_WITH_DEFAULT_TXM_EVENT = {
     'email': 'admin_default_txm_event@example.com',
@@ -107,6 +110,10 @@ def add_users():
     _add_users(user_models)
     for user, user_model in zip(USERS, user_models):
         user['id'] = user_model.id
+        try:
+            set_allowed_txm_event_ids_for_user(user_model, user.get('allowed_txm_events', []))
+        except ValueError:
+            logger.warning(f'Skipping setting allowed txm events because txm events are not initialized')
 
 
 def _add_users(users: List[AppUserModel]):
@@ -130,7 +137,7 @@ def populate_db():
     #
     # replace_or_add_patients_from_excel(patients)
 
-    txm_event = get_txm_event(txm_event.db_id)
+    txm_event = get_txm_event_complete(txm_event.db_id)
 
     result = solve_from_configuration(txm_event=txm_event,
                                       configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
