@@ -10,14 +10,12 @@
  * Do not edit the class manually.
  */
 import { SexEnumGenerated } from './sexEnumGenerated';
-import { CountryCodeGenerated } from './countryCodeGenerated';
 import { HlaTypingToUpdateGenerated } from './hlaTypingToUpdateGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 
 
 export interface PatientModelToUpdateGenerated { 
     blood_group?: BloodGroupEnumGenerated;
-    country_code?: CountryCodeGenerated;
     /**
      * Database id of the patient
      */

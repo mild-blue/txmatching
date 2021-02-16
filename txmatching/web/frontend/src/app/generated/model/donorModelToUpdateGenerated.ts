@@ -11,7 +11,6 @@
  */
 import { DonorModelToUpdateAllOfGenerated } from './donorModelToUpdateAllOfGenerated';
 import { SexEnumGenerated } from './sexEnumGenerated';
-import { CountryCodeGenerated } from './countryCodeGenerated';
 import { HlaTypingToUpdateGenerated } from './hlaTypingToUpdateGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 import { PatientModelToUpdateGenerated } from './patientModelToUpdateGenerated';
@@ -19,7 +18,6 @@ import { PatientModelToUpdateGenerated } from './patientModelToUpdateGenerated';
 
 export interface DonorModelToUpdateGenerated { 
     blood_group?: BloodGroupEnumGenerated;
-    country_code?: CountryCodeGenerated;
     /**
      * Database id of the patient
      */

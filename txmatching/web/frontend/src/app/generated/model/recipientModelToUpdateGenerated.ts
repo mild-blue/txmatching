@@ -12,7 +12,6 @@
 import { RecipientModelToUpdateAllOfGenerated } from './recipientModelToUpdateAllOfGenerated';
 import { RecipientRequirementsGenerated } from './recipientRequirementsGenerated';
 import { SexEnumGenerated } from './sexEnumGenerated';
-import { CountryCodeGenerated } from './countryCodeGenerated';
 import { HlaAntibodiesToUpdateGenerated } from './hlaAntibodiesToUpdateGenerated';
 import { HlaTypingToUpdateGenerated } from './hlaTypingToUpdateGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
@@ -21,7 +20,6 @@ import { PatientModelToUpdateGenerated } from './patientModelToUpdateGenerated';
 
 export interface RecipientModelToUpdateGenerated { 
     blood_group?: BloodGroupEnumGenerated;
-    country_code?: CountryCodeGenerated;
     /**
      * Database id of the patient
      */

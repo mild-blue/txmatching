@@ -879,8 +879,6 @@ definitions:
         properties:
             blood_group:
                 $ref: '#/definitions/BloodGroupEnum'
-            country_code:
-                $ref: '#/definitions/CountryCode'
             db_id:
                 description: Database id of the patient
                 example: 1
