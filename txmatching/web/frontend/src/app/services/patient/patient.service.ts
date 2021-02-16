@@ -41,7 +41,8 @@ export class PatientService {
         db_id: donor.db_id,
         hla_typing: {
           hla_types_list: donor.parameters.hla_typing.hla_types_list
-        }
+        },
+        active: donor.active
       }
     ).pipe(first()).toPromise();
   }

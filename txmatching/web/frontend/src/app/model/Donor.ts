@@ -2,6 +2,7 @@ import { Patient } from '@app/model/Patient';
 import { DetailedScorePerGroup } from '@app/model/Hla';
 
 export interface Donor extends Patient {
+  active: boolean;
   donor_type: DonorType;
   compatible_blood_with_related_recipient?: boolean;
   related_recipient_db_id?: number;

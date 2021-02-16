@@ -37,4 +37,9 @@
       vertical-align: -2px;
     }
   }
+
+  .checkboxes {
+    margin: $item-gap 0 $padding-y;
+    border-bottom: 1px solid $gray-500;
+  }
 }

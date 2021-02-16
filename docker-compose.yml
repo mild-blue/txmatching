@@ -16,7 +16,7 @@ services:
       - /var/log/txmatching:/logs
 
   db:
-    image: postgres:12.2
+    image: postgres:13
     env_file:
       - .env.pub
     ports:
