@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Output } from '@angular/core';
+import { Component, EventEmitter, Input, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Output, ViewChild } from '@angular/core';
 import { DonorType } from '@app/model';
 import { DonorEditable } from '@app/model/DonorEditable';
 import { RecipientEditable } from '@app/model/RecipientEditable';
@@ -19,6 +19,7 @@ export class AddNewPatientComponent {
 
   @Input() defaultTxmEvent?: TxmEvent;
   @Output() patientsAdded: EventEmitter<void> = new EventEmitter<void>();
+  @ViewChild('formElement') form?: HTMLFormElement;
 
   public DonorType: typeof DonorType = DonorType;
 
@@ -46,7 +47,7 @@ export class AddNewPatientComponent {
 
   public handleSubmit() {
 
-    console.log(this.donor, this.recipient);
+    console.log(this.form, this.donor, this.recipient);
     if (!this.defaultTxmEvent) {
       return;
     }

@@ -1,16 +1,15 @@
 <app-setting-item *ngIf="patient" label="Select a country">
-  <form [formGroup]="form">
     <mat-form-field>
       <mat-label>Country</mat-label>
 
-      <mat-chip-list #countryChip formControlName="country">
-        <mat-chip *ngIf="form.controls.country.valid"
+      <mat-chip-list #countryChip [formControl]="countryControl">
+        <mat-chip *ngIf="countryControl.valid"
                   [removable]="true"
-                  (removed)="handleRemove('country', countryInput)">
+                  (removed)="handleCountryRemove(countryInput)">
           <country [country]="selectedCountryValue"></country>
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
-        <input formControlName="country"
+        <input [formControl]="countryControl"
                [matChipInputFor]="countryChip"
                [matAutocomplete]="donorAuto"
                [placeholder]="!selectedCountryValue ? 'Search by country code' : ''"
@@ -24,7 +23,7 @@
       </mat-autocomplete>
 
       <mat-error>
-        <app-form-control-errors [control]="form.get('country')"></app-form-control-errors>
+        <app-form-control-errors [control]="countryControl"></app-form-control-errors>
       </mat-error>
 
       <mat-hint>
@@ -32,5 +31,4 @@
       </mat-hint>
 
     </mat-form-field>
-  </form>
 </app-setting-item>

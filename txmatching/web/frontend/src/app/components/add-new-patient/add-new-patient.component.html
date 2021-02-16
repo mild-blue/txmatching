@@ -1,4 +1,5 @@
 <div class="new-patient">
+  <form #formElement (ngSubmit)="handleSubmit()">
     <div class="new-patient__row">
 
       <!-- Donor -->
@@ -18,11 +19,13 @@
       </div>
 
     </div>
-  <app-button (click)="handleSubmit()"
-              variant="success"
-              [loading]="loading"
-              [disabled]="loading"
-              [success]="!loading && success">
-    Add patients
-  </app-button>
+    <app-button
+      type="submit"
+      variant="success"
+      [loading]="loading"
+      [disabled]="loading"
+      [success]="!loading && success">
+      Add patients
+    </app-button>
+  </form>
 </div>

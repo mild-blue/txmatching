@@ -8,9 +8,6 @@ export class AbstractFormHandlerComponent {
   public form?: FormGroup;
   public errorMatcher = new ControlErrorStateMatcher();
 
-  constructor() {
-  }
-
   public handleSelect(control: HTMLInputElement): void {
     if (!control) {
       return;

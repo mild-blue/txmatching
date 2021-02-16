@@ -1,7 +1,7 @@
 import { Component, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
 import { PatientEditable } from '@app/model/PatientEditable';
 import { Country } from '@app/model/Country';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 import { countryFullTextSearch, countryNameValidator, separatorKeysCodes } from '@app/directives/validators/form.directive';
 import { Observable } from 'rxjs';
@@ -21,27 +21,24 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
   public allCountries: string[] = Object.values(Country);
   public filteredCountries: Observable<string[]>;
   public separatorKeysCodes: number[] = separatorKeysCodes;
-
-  public form: FormGroup = new FormGroup({
-    country: new FormControl('')
-  });
+  public countryControl: FormControl = new FormControl('');
 
   constructor(private _differs: KeyValueDiffers) {
     super();
 
     // Country fulltext search
-    this.filteredCountries = this.form.controls.country?.valueChanges.pipe(
+    this.filteredCountries = this.countryControl.valueChanges.pipe(
       startWith(undefined),
       map((country: string | null) => country ? countryFullTextSearch(this.allCountries, country) : this.allCountries.slice()));
   }
 
   ngOnInit(): void {
     // Allow only existing countries
-    this.form.controls.country?.setValidators(countryNameValidator(this.allCountries));
+    this.countryControl.setValidators(countryNameValidator(this.allCountries));
 
     // Set value to patient country
     if (this.patient) {
-      this.form.controls.country?.setValue(this.patient.country.valueOf());
+      this.countryControl.setValue(this.patient.country.valueOf());
 
       // Detect country change in patient
       this._patientDiffer = this._differs.find(this.patient).create();
@@ -52,13 +49,13 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
     const patientChanges = this._patientDiffer?.diff((this.patient as unknown) as Map<string, unknown>);
     patientChanges?.forEachChangedItem((record) => {
       if (record.key === 'country') {
-        this.form.controls.country?.setValue(record.currentValue);
+        this.countryControl.setValue(record.currentValue);
       }
     });
   }
 
   get selectedCountryValue(): string {
-    return this.form.controls.country?.value ?? '';
+    return this.countryControl.value ?? '';
   }
 
   public handleCountrySelect(control: HTMLInputElement): void {
@@ -71,5 +68,10 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
 
     // Disable control, so multiple countries cannot be selected
     this.handleSelect(control);
+  }
+
+  handleCountryRemove(control: HTMLInputElement) {
+    this.countryControl.setValue('');
+    control.disabled = false;
   }
 }
