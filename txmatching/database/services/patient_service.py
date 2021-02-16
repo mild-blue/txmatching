@@ -78,26 +78,21 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
 def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> dict:
     patient_update_dict = {}
 
-    if patient_update_dto.blood_group:
+    if patient_update_dto.blood_group is not None:
         patient_update_dict['blood'] = patient_update_dto.blood_group
-    if patient_update_dto.country_code:
-        patient_update_dict['country'] = patient_update_dto.country_code
-    if patient_update_dto.hla_typing:
+    if patient_update_dto.hla_typing is not None:
         patient_update_dict['hla_typing'] = dataclasses.asdict(patient_update_dto.hla_typing_preprocessed)
-    if patient_update_dto.sex:
-        patient_update_dict['sex'] = patient_update_dto.sex
-    if patient_update_dto.height:
-        patient_update_dict['height'] = patient_update_dto.height
-    if patient_update_dto.weight:
-        patient_update_dict['weight'] = patient_update_dto.weight
-    if patient_update_dto.year_of_birth:
-        patient_update_dict['yob'] = patient_update_dto.year_of_birth
+
+    # For the following parameters we support setting null value
+    patient_update_dict['sex'] = patient_update_dto.sex
+    patient_update_dict['height'] = patient_update_dto.height
+    patient_update_dict['weight'] = patient_update_dto.weight
+    patient_update_dict['yob'] = patient_update_dto.year_of_birth
 
     return patient_update_dict
 
 
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
-    # TODO do not delete https://trello.com/c/zseK1Zcf
     recipient_update_dto = _update_patient_preprocessed_typing(recipient_update_dto)
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     if txm_event_db_id != old_recipient_model.txm_event_id:
@@ -127,7 +122,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         else:
             new_antibody_list = old_recipient.hla_antibodies.hla_antibodies_list
 
-        recipient_update_dict['recipient_cutoff'] = new_cutoff
         hla_antibodies = [
             RecipientHLAAntibodyModel(
                 recipient_id=recipient_update_dto.db_id,
@@ -150,7 +144,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
 
 
 def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
-    # TODO do not delete https://trello.com/c/zseK1Zcf
     donor_update_dto = _update_patient_preprocessed_typing(donor_update_dto)
     old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
     if txm_event_db_id != old_donor_model.txm_event_id:

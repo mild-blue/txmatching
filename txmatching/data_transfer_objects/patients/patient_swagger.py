@@ -83,7 +83,6 @@ HLAAntibodiesToUpdateJson = patient_api.model('HlaAntibodiesToUpdate', {
 PatientToUpdateJson = patient_api.model('PatientModelToUpdate', {
     'db_id': fields.Integer(required=True, description='Database id of the patient', example=1),
     'blood_group': fields.Nested(BloodGroupEnumJson, required=False),
-    'country_code': fields.Nested(CountryCodeJson, required=False),
     'hla_typing': fields.Nested(HLATypingToUpdateJson, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
                                             'the change set',

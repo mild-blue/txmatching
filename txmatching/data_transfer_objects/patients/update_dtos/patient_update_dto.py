@@ -8,7 +8,6 @@ from txmatching.data_transfer_objects.patients.update_dtos.hla_code_update_dtos 
 from txmatching.patients.hla_model import HLAType
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import Sex
 from txmatching.utils.hla_system.hla_transformations import \
     preprocess_hla_code_in
@@ -16,9 +15,10 @@ from txmatching.utils.hla_system.hla_transformations import \
 
 @dataclass
 class PatientUpdateDTO:
+    # pylint: disable=too-many-instance-attributes
+    # It is reasonable to have many attributes here
     db_id: int
     blood_group: Optional[BloodGroup] = None
-    country_code: Optional[Country] = None
     hla_typing: Optional[HLATypingUpdateDTO] = None
     sex: Optional[Sex] = None
     height: Optional[Centimeters] = None

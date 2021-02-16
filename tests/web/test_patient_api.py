@@ -6,7 +6,10 @@ from tests.test_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.services.txm_event_service import get_txm_event
 from txmatching.database.sql_alchemy_schema import UploadedFileModel
-from txmatching.patients.patient import DonorType
+from txmatching.patients.hla_model import HLAAntibodies, HLATyping
+from txmatching.patients.patient import DonorType, RecipientRequirements
+from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
 
@@ -199,3 +202,163 @@ class TestPatientService(DbTests):
                                 headers=self.auth_headers)
         self.assertEqual(400, res.status_code)
         self.assertEqual('application/json', res.content_type)
+
+    def test_update_donor(self):
+        txm_event_db_id = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        donor_db_id = 10
+
+        # 1. update patient
+        with self.app.test_client() as client:
+            json_data = {
+                'db_id': donor_db_id,
+                'blood_group': 'A',
+                'hla_typing': {
+                    'hla_types_list': []
+                },
+                'sex': 'M',
+                'height': 200,
+                'weight': 100,
+                'year_of_birth': 1990,
+                'active': True
+            }
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/donor',
+                             headers=self.auth_headers, json=json_data)
+        self.assertEqual(200, res.status_code)
+        self.assertEqual('application/json', res.content_type)
+
+        # Check that update was working
+        txm_event = get_txm_event(txm_event_db_id)
+        donor = txm_event.active_donors_dict[donor_db_id]
+        self.assertEqual(donor.parameters.blood_group, BloodGroup.A)
+        self.assertEqual(donor.parameters.hla_typing, HLATyping([]))
+        self.assertEqual(donor.parameters.sex, Sex.M)
+        self.assertEqual(donor.parameters.height, 200)
+        self.assertEqual(donor.parameters.weight, 100)
+        self.assertEqual(donor.parameters.year_of_birth, 1990)
+        self.assertEqual(donor.active, True)
+
+        # 2. update with unspecified values
+        with self.app.test_client() as client:
+            json_data = {
+                'db_id': donor_db_id,
+                'blood_group': 'B',
+                'hla_typing': {
+                    'hla_types_list': []
+                },
+                'sex': None,
+                'height': None,
+                'weight': None,
+                'year_of_birth': None,
+                'active': False
+            }
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/donor',
+                             headers=self.auth_headers, json=json_data)
+        self.assertEqual(200, res.status_code)
+        self.assertEqual('application/json', res.content_type)
+
+        # Check that update was working
+        txm_event = get_txm_event(txm_event_db_id)
+        donor = next(donor for donor in txm_event.all_donors if donor.db_id == donor_db_id)
+
+        self.assertEqual(donor.parameters.blood_group, BloodGroup.B)
+        self.assertEqual(donor.parameters.hla_typing, HLATyping([]))
+        self.assertEqual(donor.parameters.sex, None)
+        self.assertEqual(donor.parameters.height, None)
+        self.assertEqual(donor.parameters.weight, None)
+        self.assertEqual(donor.parameters.year_of_birth, None)
+        self.assertEqual(donor.active, False)
+
+    def test_update_recipient(self):
+        txm_event_db_id = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        recipient_db_id = 10
+
+        # 1. update patient
+        with self.app.test_client() as client:
+            json_data = {
+                'db_id': recipient_db_id,
+                'blood_group': 'A',
+                'hla_typing': {
+                    'hla_types_list': []
+                },
+                'sex': 'M',
+                'height': 200,
+                'weight': 100,
+                'year_of_birth': 1990,
+                'acceptable_blood_groups': ['A', 'B', 'AB'],
+                'hla_antibodies': {
+                    'hla_antibodies_list': []
+                },
+                'recipient_requirements': {
+                    'require_better_match_in_compatibility_index': True,
+                    'require_better_match_in_compatibility_index_or_blood_group': True,
+                    'require_compatible_blood_group': True
+                },
+                'cutoff': 42
+            }
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/recipient',
+                             headers=self.auth_headers, json=json_data)
+        self.assertEqual(200, res.status_code)
+        self.assertEqual('application/json', res.content_type)
+
+        # Check that update was working
+        txm_event = get_txm_event(txm_event_db_id)
+        recipient = txm_event.active_recipients_dict[recipient_db_id]
+        self.assertEqual(recipient.parameters.blood_group, BloodGroup.A)
+        self.assertEqual(recipient.parameters.hla_typing, HLATyping([]))
+        self.assertEqual(recipient.parameters.sex, Sex.M)
+        self.assertEqual(recipient.parameters.height, 200)
+        self.assertEqual(recipient.parameters.weight, 100)
+        self.assertEqual(recipient.parameters.year_of_birth, 1990)
+        self.assertEqual(recipient.acceptable_blood_groups, [BloodGroup.A, BloodGroup.B, BloodGroup.AB])
+        self.assertEqual(recipient.hla_antibodies, HLAAntibodies())
+        self.assertEqual(recipient.recipient_requirements, RecipientRequirements(True, True, True))
+        self.assertEqual(recipient.recipient_cutoff, 42)
+
+        # 2. update with unspecified values
+        with self.app.test_client() as client:
+            json_data = {
+                'db_id': recipient_db_id,
+                'blood_group': 'B',
+                'hla_typing': {
+                    'hla_types_list': []
+                },
+                'sex': None,
+                'height': None,
+                'weight': None,
+                'year_of_birth': None,
+                'acceptable_blood_groups': ['0'],
+                'hla_antibodies': {
+                    'hla_antibodies_list': []
+                },
+                'recipient_requirements': {
+                    'require_better_match_in_compatibility_index': False,
+                    'require_better_match_in_compatibility_index_or_blood_group': False,
+                    'require_compatible_blood_group': False
+                },
+                'cutoff': None
+            }
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/recipient',
+                             headers=self.auth_headers, json=json_data)
+        self.assertEqual(200, res.status_code)
+        self.assertEqual('application/json', res.content_type)
+
+        # Check that update was working
+        txm_event = get_txm_event(txm_event_db_id)
+        recipient = next(recipient for recipient in txm_event.all_recipients if recipient.db_id == recipient_db_id)
+
+        self.assertEqual(recipient.parameters.blood_group, BloodGroup.B)
+        self.assertEqual(recipient.parameters.hla_typing, HLATyping([]))
+        self.assertEqual(recipient.parameters.sex, None)
+        self.assertEqual(recipient.parameters.height, None)
+        self.assertEqual(recipient.parameters.weight, None)
+        self.assertEqual(recipient.parameters.year_of_birth, None)
+        self.assertEqual(recipient.acceptable_blood_groups, [BloodGroup.ZERO])
+        self.assertEqual(recipient.hla_antibodies, HLAAntibodies())
+        self.assertEqual(recipient.recipient_requirements, RecipientRequirements(False, False, False))
+        self.assertEqual(recipient.recipient_cutoff, 42)  # Cutoff is unchanged
