@@ -7,8 +7,16 @@ import { PatientList } from '@app/model/PatientList';
 import { Donor } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
 import { Antibody } from '@app/model/Hla';
-import { PatientsGenerated } from '@app/generated';
-import { parsePatientList } from '@app/parsers';
+import {
+  BloodGroupEnumGenerated,
+  DonorGenerated,
+  DonorModelToUpdateGenerated,
+  PatientsGenerated,
+  RecipientGenerated,
+  RecipientModelToUpdateGenerated,
+  SexEnumGenerated
+} from '@app/generated';
+import { parseDonor, parsePatientList, parseRecipient } from '@app/parsers';
 
 @Injectable({
   providedIn: 'root'
@@ -28,34 +36,56 @@ export class PatientService {
     ).toPromise();
   }
 
-  public async saveDonor(txmEventId: number, donor: Donor): Promise<Donor> {
+  public saveDonor(txmEventId: number, donor: Donor): Promise<Donor> {
     this._logger.log('Saving donor', [donor]);
-    return this._http.put<Donor>(
+    const payload: DonorModelToUpdateGenerated = {
+      db_id: donor.db_id,
+      blood_group: BloodGroupEnumGenerated['A'], // TODOO
+      hla_typing: {
+        hla_types_list: donor.parameters.hla_typing.hla_types_list
+      },
+      sex: SexEnumGenerated['M'], // TODOO
+      height: donor.parameters.height,
+      weight: donor.parameters.weight,
+      year_of_birth: donor.parameters.year_of_birth,
+
+      active: undefined // TODOO: replace in merge conflict
+    };
+    return this._http.put<DonorGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/donor`,
-      {
-        db_id: donor.db_id,
-        hla_typing: {
-          hla_types_list: donor.parameters.hla_typing.hla_types_list
-        }
-      }
-    ).pipe(first()).toPromise();
+      payload
+    ).pipe(
+      first(),
+      map(parseDonor)
+    ).toPromise();
   }
 
-  public async saveRecipient(txmEventId: number, recipient: Recipient, antibodies: Antibody[]): Promise<Recipient> {
+  public saveRecipient(txmEventId: number, recipient: Recipient, antibodies: Antibody[]): Promise<Recipient> {
     this._logger.log('Saving recipient', [recipient]);
-    return this._http.put<Recipient>(
+    const payload: RecipientModelToUpdateGenerated = {
+      db_id: recipient.db_id,
+      blood_group: BloodGroupEnumGenerated['A'], // TODOO
+      hla_typing: {
+        hla_types_list: recipient.parameters.hla_typing.hla_types_list
+      },
+      sex: SexEnumGenerated['M'], // TODOO
+      height: recipient.parameters.height,
+      weight: recipient.parameters.weight,
+      year_of_birth: recipient.parameters.year_of_birth,
+
+      acceptable_blood_groups: [BloodGroupEnumGenerated['A'], BloodGroupEnumGenerated['B']], // TODOO
+      hla_antibodies: {
+        hla_antibodies_list: antibodies
+      },
+      recipient_requirements: recipient.recipient_requirements,
+      cutoff: 42, // TODOO
+    };
+    return this._http.put<RecipientGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/recipient`,
-      {
-        db_id: recipient.db_id,
-        acceptable_blood_groups: recipient.acceptable_blood_groups,
-        hla_typing: {
-          hla_types_list: recipient.parameters.hla_typing.hla_types_list
-        },
-        hla_antibodies: {
-          hla_antibodies_list: antibodies
-        },
-        recipient_requirements: recipient.recipient_requirements
-      }
-    ).pipe(first()).toPromise();
+      payload
+    ).pipe(
+      first(),
+      map(parseRecipient)
+    ).toPromise();
   }
 }
