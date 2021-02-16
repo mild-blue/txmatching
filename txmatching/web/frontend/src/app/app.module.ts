@@ -42,7 +42,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { MatBadgeModule } from '@angular/material/badge';
 import { PatientComponent } from './components/patient/patient.component';
-import { CountryComponent } from './components/country/country.component';
 import { PatientsComponent } from './pages/patients/patients.component';
 import { ListItemComponent } from './components/list-item/list-item.component';
 import { PatientPairItemComponent } from './components/patient-pair-item/patient-pair-item.component';
@@ -72,8 +71,17 @@ import { FormControlErrorsComponent } from './components/form-control-errors/for
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { RecipientAntibodiesComponent } from '@app/components/add-new-patient/recipient-antibodies/antibodies.component';
+import { RecipientAntibodiesComponent } from '@app/components/recipient-settings/recipient-antibodies/antibodies.component';
 import { DonorSettingsComponent } from './components/donor-settings/donor-settings.component';
+import { SexComponent } from './components/patient-settings/sex/sex.component';
+import { SettingItemComponent } from './components/patient-settings/setting-item/setting-item.component';
+import { AntigensComponent } from './components/patient-settings/antigens/antigens.component';
+import { BloodGroupComponent } from './components/patient-settings/blood-group/blood-group.component';
+import { CountrySettingComponent } from '@app/components/patient-settings/country/country-setting.component';
+import { MedicalIdComponent } from './components/patient-settings/medical-id/medical-id.component';
+import { SimpleNumberComponent } from './components/patient-settings/simple-number/simple-number.component';
+import { CountryComponent } from '@app/components/country/country.component';
+import { RecipientSettingsComponent } from './components/recipient-settings/recipient-settings.component';
 
 @NgModule({
   declarations: [
@@ -127,7 +135,18 @@ import { DonorSettingsComponent } from './components/donor-settings/donor-settin
     LoadingIconComponent,
     AbstractLoggedComponent,
     RecipientAntibodiesComponent,
-    DonorSettingsComponent
+    DonorSettingsComponent,
+    SexComponent,
+    SettingItemComponent,
+    AntigensComponent,
+    BloodGroupComponent,
+    CountryComponent,
+    MedicalIdComponent,
+    SimpleNumberComponent,
+    CountryComponent,
+    CountryComponent,
+    CountrySettingComponent,
+    RecipientSettingsComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,35 @@
+<ng-container *ngIf="donor">
+  <!-- Donor Country -->
+  <app-country-setting [patient]="donor"></app-country-setting>
+
+  <!-- Donor medical ID -->
+  <app-medical-id [patient]="donor"></app-medical-id>
+
+  <!-- Donor Type -->
+  <app-setting-item label="Type">
+    <mat-button-toggle-group [(ngModel)]="donor.type" [ngModelOptions]="{standalone: true}">
+      <mat-button-toggle *ngFor="let type of allDonorTypes"
+                         [value]="type">
+        {{ type | donorTypeLabel | titlecase }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </app-setting-item>
+
+  <!-- Donor Blood Group -->
+  <app-blood-group [patient]="donor"></app-blood-group>
+
+  <!-- Donor antigens -->
+  <app-antigens [patient]="donor"></app-antigens>
+
+  <!-- Donor Sex -->
+  <app-sex [patient]="donor"></app-sex>
+
+  <!-- Donor height -->
+  <app-simple-number [value]="donor.height" [label]="'Height [cm]'"></app-simple-number>
+
+  <!-- Donor weight -->
+  <app-simple-number [value]="donor.weight" [label]="'Weight [cm]'"></app-simple-number>
+
+  <!-- Donor year of birth -->
+  <app-simple-number [value]="donor.yearOfBirth" [label]="'Year of birth'"></app-simple-number>
+</ng-container>

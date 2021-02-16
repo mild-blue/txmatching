@@ -1,6 +1,8 @@
 import { BloodGroup, Sex } from './Donor';
+import { Country } from '@app/model/Country';
 
 export class PatientEditable {
+  country: Country = Country.Cze;
   medicalId: string = '';
   antigens: string[] = [];
   bloodGroup: BloodGroup = BloodGroup.A;

@@ -62,9 +62,10 @@ export class PatientService {
     ).pipe(first()).toPromise();
   }
 
-  public async addNewPair(txmEventId: number, country: string, donor: DonorEditable, recipient?: RecipientEditable): Promise<PatientUploadSuccessResponseGenerated> {
+  public async addNewPair(txmEventId: number, donor: DonorEditable, recipient?: RecipientEditable): Promise<PatientUploadSuccessResponseGenerated> {
     this._logger.log('Adding new pair', [donor, recipient]);
 
+    const country = donor.country; // Assume same country for the donor and the recipient
     const body: DonorModelPairIn = {
       country_code: country,
       donor: {

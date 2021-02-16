@@ -1,0 +1,5 @@
+<app-setting-item *ngIf="patient" label="Medical ID">
+  <mat-form-field>
+    <input [(ngModel)]="patient.medicalId" [ngModelOptions]="{standalone: true}" matInput type="text" required>
+  </mat-form-field>
+</app-setting-item>

@@ -1,0 +1,77 @@
+<ng-container *ngIf="recipient">
+  <!-- Recipient Country -->
+  <app-country-setting [patient]="recipient"></app-country-setting>
+
+  <!-- Recipient medical ID -->
+  <app-medical-id [patient]="recipient"></app-medical-id>
+
+  <!-- Recipient Blood Group -->
+  <app-blood-group [patient]="recipient"></app-blood-group>
+
+  <!-- Recipient Acceptable blood groups -->
+  <app-setting-item label="Acceptable blood group">
+    <mat-button-toggle-group [(ngModel)]="recipient.acceptableBloodGroups"
+                             [multiple]="true"
+                             [ngModelOptions]="{standalone: true}">
+      <mat-button-toggle *ngFor="let bg of allBloodGroups"
+                         [checked]="recipient.acceptableBloodGroups.includes(bg)"
+                         [value]="bg">
+        {{ bg }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </app-setting-item>
+
+  <!-- Recipient antigens -->
+  <app-antigens [patient]="recipient"></app-antigens>
+
+  <!-- Recipient antibodies -->
+  <app-setting-item label="Antibodies">
+    <mat-form-field>
+      <mat-chip-list>
+        <mat-chip *ngFor="let a of recipient.antibodies"
+                  [title]="'Raw code: ' + a.raw_code"
+                  (removed)="recipient.removeAntibody(a)">
+          <div class="antibody-chip">
+            {{a.code}}
+            <div class="mfi">MFI: <strong>{{a.mfi}}</strong></div>
+          </div>
+          <mat-icon class="cancel" matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input disabled matInput>
+      </mat-chip-list>
+      <mat-hint>
+        Use the form below for adding recipient's antibodies.
+      </mat-hint>
+    </mat-form-field>
+  </app-setting-item>
+
+  <app-recipient-antibodies [recipient]="recipient"></app-recipient-antibodies>
+
+  <!-- Recipient antibodies cutoff -->
+  <app-simple-number label="Antibodies cutoff" [value]="recipient.antibodiesCutoff"></app-simple-number>
+
+  <!-- Recipient Sex -->
+  <app-sex [patient]="recipient"></app-sex>
+
+  <!-- Recipient height -->
+  <app-simple-number [value]="recipient.height" [label]="'Height [cm]'"></app-simple-number>
+
+  <!-- Recipient weight -->
+  <app-simple-number [value]="recipient.weight" [label]="'Weight [cm]'"></app-simple-number>
+
+  <!-- Recipient year of birth -->
+  <app-simple-number [value]="recipient.yearOfBirth" [label]="'Year of birth'"></app-simple-number>
+
+  <!-- Recipient waiting since date -->
+  <app-setting-item label="Waiting since">
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="recipient.waitingSince" [ngModelOptions]="{standalone: true}">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </app-setting-item>
+
+  <!-- Recipient previous transplants -->
+  <app-simple-number [label]="'Previous transplants count'" [value]="recipient.previousTransplants"></app-simple-number>
+
+</ng-container>
