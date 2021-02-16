@@ -1,0 +1,28 @@
+<div class="new-patient">
+    <div class="new-patient__row">
+
+      <!-- Donor -->
+      <div class="new-patient__box">
+        <h4>Donor</h4>
+        <div class="content">
+          <app-donor-settings [donor]="donor"></app-donor-settings>
+        </div>
+      </div>
+
+      <!-- Recipient -->
+      <div *ngIf="donor.type === DonorType.DONOR" class="new-patient__box">
+        <h4>Recipient</h4>
+        <div class="content">
+          <app-recipient-settings [recipient]="recipient"></app-recipient-settings>
+        </div>
+      </div>
+
+    </div>
+  <app-button (click)="handleSubmit()"
+              variant="success"
+              [loading]="loading"
+              [disabled]="loading"
+              [success]="!loading && success">
+    Add patients
+  </app-button>
+</div>

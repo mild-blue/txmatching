@@ -10,6 +10,18 @@ export interface Donor extends Patient {
   detailed_score_with_related_recipient: DetailedScorePerGroup[];
 }
 
+export enum BloodGroup {
+  A = 'A',
+  B = 'B',
+  AB = 'AB',
+  ZERO = '0'
+}
+
+export enum Sex {
+  F = 'F',
+  M = 'M'
+}
+
 export enum DonorType {
   DONOR = 'DONOR',
   BRIDGING_DONOR = 'BRIDGING_DONOR',

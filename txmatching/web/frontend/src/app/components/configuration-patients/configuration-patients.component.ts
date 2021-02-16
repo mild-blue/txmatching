@@ -5,7 +5,7 @@ import { Configuration } from '@app/model/Configuration';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { patientFullTextSearch } from '@app/directives/validators/configForm.directive';
+import { patientFullTextSearch } from '@app/directives/validators/form.directive';
 import { PatientList } from '@app/model/PatientList';
 
 @Component({

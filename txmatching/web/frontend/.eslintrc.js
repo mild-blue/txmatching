@@ -286,14 +286,10 @@ module.exports = {
         'format': ['camelCase', 'PascalCase', 'snake_case'],
         'leadingUnderscore': 'forbid'
       },
-      { 'selector': 'variableLike', 'format': ['camelCase', 'snake_case'] },
+      { 'selector': 'variableLike', 'format': ['camelCase', 'snake_case', 'PascalCase'] },
       {
         'selector': 'interface',
-        'format': ['PascalCase'],
-        'custom': {
-          'regex': '^I[A-Z]',
-          'match': false
-        }
+        'format': ['PascalCase']
       }
     ]
   }

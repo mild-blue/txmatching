@@ -1,17 +1,5 @@
 <div *ngIf="configuration && configForm"
-     [class.open]="isOpened"
-     #configElement
-     cdk-scrollable
      class="configuration">
-
-  <div class="configuration__header">
-    <h2>Configuration</h2>
-    <button class="close" (click)="close()">
-      <fa-icon [icon]="closeIcon"></fa-icon>
-    </button>
-  </div>
-
-  <div class="configuration__content">
 
     <form [formGroup]="configForm" class="config-form">
       <div class="configuration__box toggles">
@@ -111,8 +99,6 @@
       <app-configuration-patients [configuration]="configuration"
                                   [patients]="patients"></app-configuration-patients>
     </ng-container>
-
-  </div>
 
   <app-button (click)="submitAction()">Set values</app-button>
 </div>
