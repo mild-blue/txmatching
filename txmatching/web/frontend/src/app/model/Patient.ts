@@ -22,5 +22,6 @@ export interface PatientParameters {
 
 export enum PatientSexType {
   M = 'M',
-  F = 'F'
+  F = 'F',
+  NULL = 'Not specified'
 }

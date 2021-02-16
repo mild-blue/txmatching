@@ -47,15 +47,14 @@ export class AddNewPatientComponent {
 
   public handleSubmit() {
 
-    console.log(this.form, this.donor, this.recipient);
-    if (!this.defaultTxmEvent) {
+    console.log(this.form, this.donor, this.recipient, this.donor.type.valueOf() === DonorType.DONOR.valueOf());
+    if (!this.defaultTxmEvent || !this.donor.country || !this.recipient.country ||
+      !this.donor.medicalId || !this.recipient.medicalId) {
       return;
     }
 
-    const recipient = this.donor.type === DonorType.DONOR.valueOf() ? this.recipient : undefined;
-
-    // this._patientService.addNewPair(this.defaultTxmEvent.id, this.donor, recipient)
-    // .then(() => this.patientsAdded.emit());
+    this._patientService.addNewPair(this.defaultTxmEvent.id, this.donor, this.recipient)
+    .then(() => this.patientsAdded.emit());
   }
 
   private _changeOtherPatientCountry(changes: KeyValueChanges<string, unknown>, otherPatient: PatientEditable) {

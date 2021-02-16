@@ -38,7 +38,7 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
 
     // Set value to patient country
     if (this.patient) {
-      this.countryControl.setValue(this.patient.country.valueOf());
+      this.countryControl.setValue(this.patient.country?.valueOf());
 
       // Detect country change in patient
       this._patientDiffer = this._differs.find(this.patient).create();
@@ -62,9 +62,7 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
     const country: Country = this.selectedCountryValue as Country;
 
     // Set country to patient
-    if (this.patient) {
-      this.patient.setCountry(country);
-    }
+    this.patient?.setCountry(country);
 
     // Disable control, so multiple countries cannot be selected
     this.handleSelect(control);
@@ -72,6 +70,7 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
 
   handleCountryRemove(control: HTMLInputElement) {
     this.countryControl.setValue('');
+    this.patient?.setCountry(undefined);
     control.disabled = false;
   }
 }

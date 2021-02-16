@@ -16,11 +16,6 @@ export enum BloodGroup {
   ZERO = '0'
 }
 
-export enum Sex {
-  F = 'F',
-  M = 'M'
-}
-
 export enum DonorType {
   DONOR = 'DONOR',
   BRIDGING_DONOR = 'BRIDGING_DONOR',

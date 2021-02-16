@@ -1,12 +1,13 @@
-import { BloodGroup, Sex } from './Donor';
+import { BloodGroup } from './Donor';
 import { Country } from '@app/model/Country';
+import { PatientSexType } from '@app/model/Patient';
 
 export class PatientEditable {
-  country: Country = Country.Cze;
+  country?: Country = Country.Cze;
   medicalId: string = '';
   antigens: string[] = [];
   bloodGroup: BloodGroup = BloodGroup.A;
-  sex: Sex = Sex.M;
+  sex: PatientSexType = PatientSexType.M;
   height?: number;
   weight?: number;
   yearOfBirth?: number;
@@ -22,7 +23,7 @@ export class PatientEditable {
     this.antigens.push(code);
   }
 
-  setCountry(country: Country) {
+  setCountry(country: Country | undefined) {
     this.country = country;
   }
 }
