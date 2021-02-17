@@ -9,14 +9,21 @@ import { Recipient } from '@app/model/Recipient';
 import { Antibody } from '@app/model/Hla';
 import { PatientsGenerated } from '@app/generated';
 import { parsePatientList } from '@app/parsers';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PatientService {
 
+  private _deleteDonorSubject: Subject<number> = new Subject<number>();
+
   constructor(private _http: HttpClient,
               private _logger: LoggerService) {
+  }
+
+  public onDeleteDonor(): Observable<number> {
+    return this._deleteDonorSubject.asObservable();
   }
 
   public async getPatients(txmEventId: number): Promise<PatientList> {
@@ -65,5 +72,6 @@ export class PatientService {
     await this._http.delete(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs/${donorDbId}`
     ).pipe(first()).toPromise();
+    this._deleteDonorSubject.next(donorDbId);
   }
 }

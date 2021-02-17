@@ -2,11 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { AlertService } from '@app/services/alert/alert.service';
-import { User } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
-import { AppConfiguration } from '@app/model/Configuration';
 import { PatientList } from '@app/model/PatientList';
 import { PatientPair } from '@app/model/PatientPair';
 import { UploadService } from '@app/services/upload/upload.service';
@@ -17,6 +15,7 @@ import { PatientDonorItemComponent } from '@app/components/patient-donor-item/pa
 import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
 import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-patients',
@@ -24,6 +23,8 @@ import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-log
   styleUrls: ['./patients.component.scss']
 })
 export class PatientsComponent extends AbstractLoggedComponent implements OnInit {
+
+  private _deleteDonorSubscription?: Subscription;
 
   public patients?: PatientList;
   public pairs: PatientPair[] = [];
@@ -50,7 +51,17 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     super.ngOnInit();
 
     this.loading = true;
+
+    this._deleteDonorSubscription = this._patientService.onDeleteDonor().subscribe((donorDbId) => {
+      this._alertService.success('Patients were deleted');
+      this._initPatientsWithStats();
+    });
+
     this._initAll().finally(() => this.loading = false);
+  }
+
+  ngOnDestroy(): void {
+    this._deleteDonorSubscription?.unsubscribe();
   }
 
   private async _initAll(): Promise<void> {
@@ -121,6 +132,18 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     this.items = [...items]; // make a copy, not a reference
   }
 
+  private _initPatientStatsAndItems(): void {
+    if (!this.patients) {
+      this._logger.error('_initPatientStatsAndItems failed because patients not set');
+      return;
+    }
+    this.donorsCount = this.patients.donors.length;
+    this.recipientCount = this.patients.recipients.length;
+
+    // Init list items
+    this._initItems();
+  }
+
   private async _initPatientsWithStats(): Promise<void> {
     // if not already loading before Promise.all
     let loadingWasSwitchedOn = false;
@@ -132,13 +155,8 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     // try getting patients
     try {
       await this._initPatients();
-      if(!this.patients) return;
-      this.donorsCount = this.patients.donors.length;
-      this.recipientCount = this.patients.recipients.length;
+      this._initPatientStatsAndItems();
       this._logger.log(`Got ${this.donorsCount + this.recipientCount} patients from server`, [this.patients]);
-
-      // Init list items
-      this._initItems();
     } finally {
       if (loadingWasSwitchedOn) {
         this.loading = false;

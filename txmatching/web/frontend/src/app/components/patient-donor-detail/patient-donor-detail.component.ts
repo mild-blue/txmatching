@@ -149,10 +149,14 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     this.deleteSuccess = false;
     this._patientService.deleteDonor(this.defaultTxmEvent.id, this.item.db_id)
     .then(() => {
-      this.deleteLoading = false;
       this.deleteSuccess = true;
     })
-    .catch(() => this.deleteLoading = false);
+    .catch(() => {
+      this._logger.error('Error deleting donor');
+    })
+    .finally(() => {
+      this.deleteLoading = false;
+    });
   }
 
   private _initAvailableCodes(): void {
