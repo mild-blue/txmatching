@@ -1,11 +1,5 @@
 import * as uuid from 'uuid';
-
-export enum AlertType {
-  Success,
-  Error,
-  Info,
-  Warning
-}
+import { AlertType } from '@app/model/enums/AlertType';
 
 export class Alert {
   uuid: string;

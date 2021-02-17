@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ENTER } from '@angular/cdk/keycodes';
 import { ControlErrorStateMatcher } from '@app/directives/validators/form.directive';
@@ -13,8 +13,6 @@ import { RecipientEditable } from '@app/model/RecipientEditable';
 export class RecipientAntibodiesComponent {
 
   @Input() recipient?: RecipientEditable;
-  @Output() antibodyAdded: EventEmitter<Antibody> = new EventEmitter<Antibody>();
-
   @ViewChild('viewForm') viewForm?: NgForm;
 
   public form: FormGroup = new FormGroup({
@@ -36,17 +34,9 @@ export class RecipientAntibodiesComponent {
     const code = antibody instanceof Object ? antibody.code : antibody;
     const formattedCode = code.trim().toUpperCase();
 
-    this.antibodyAdded.emit({
-      code: formattedCode,
-      raw_code: formattedCode,
-      mfi,
-      cutoff: 0
-    });
     this.recipient.antibodies.push({
-      code: formattedCode,
-      raw_code: formattedCode,
-      mfi,
-      cutoff: 0
+      name: formattedCode,
+      mfi
     });
 
     // reset form

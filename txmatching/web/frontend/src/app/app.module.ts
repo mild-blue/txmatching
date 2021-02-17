@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { forwardRef, NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -8,7 +8,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ErrorInterceptor } from '@app/interceptors/error/error.interceptor';
 import { AuthInterceptor } from '@app/interceptors/auth/auth.interceptor';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { AlertComponent } from './components/alert/alert.component';
 import { ButtonComponent } from './components/button/button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -82,6 +82,7 @@ import { MedicalIdComponent } from './components/patient-settings/medical-id/med
 import { SimpleNumberComponent } from './components/patient-settings/simple-number/simple-number.component';
 import { CountryComponent } from '@app/components/country/country.component';
 import { RecipientSettingsComponent } from './components/recipient-settings/recipient-settings.component';
+import { FormDirective } from './directives/form/form.directive';
 
 @NgModule({
   declarations: [
@@ -146,7 +147,9 @@ import { RecipientSettingsComponent } from './components/recipient-settings/reci
     CountryComponent,
     CountryComponent,
     CountrySettingComponent,
-    RecipientSettingsComponent
+    RecipientSettingsComponent,
+    SimpleNumberComponent,
+    FormDirective
   ],
   imports: [
     BrowserModule,
@@ -174,7 +177,12 @@ import { RecipientSettingsComponent } from './components/recipient-settings/reci
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => SimpleNumberComponent),
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

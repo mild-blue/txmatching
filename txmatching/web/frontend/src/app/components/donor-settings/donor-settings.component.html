@@ -25,11 +25,12 @@
   <app-sex [patient]="donor"></app-sex>
 
   <!-- Donor height -->
-  <app-simple-number [value]="donor.height" [label]="'Height [cm]'"></app-simple-number>
+  <app-simple-number label="Height [cm]" [(ngModel)]="donor.height" name="height" ngDefaultControl></app-simple-number>
 
   <!-- Donor weight -->
-  <app-simple-number [value]="donor.weight" [label]="'Weight [cm]'"></app-simple-number>
+  <app-simple-number label="Weight [kg]" [(ngModel)]="donor.weight" name="weight" ngDefaultControl></app-simple-number>
 
   <!-- Donor year of birth -->
-  <app-simple-number [value]="donor.yearOfBirth" [label]="'Year of birth'"></app-simple-number>
+  <app-simple-number label="Year of birth" [(ngModel)]="donor.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
+
 </ng-container>

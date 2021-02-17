@@ -1,0 +1,6 @@
+export enum EnvironmentType {
+  PRODUCTION = 'PRODUCTION',
+  STAGING = 'STAGING',
+  DEVELOPMENT = 'DEVELOPMENT',
+  UNKNOWN = 'UNKNOWN'
+}

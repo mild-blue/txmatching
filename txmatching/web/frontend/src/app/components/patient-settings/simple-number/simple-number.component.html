@@ -1,5 +1,5 @@
-<app-setting-item *ngIf="value" [label]="label">
+<app-setting-item [label]="label">
   <mat-form-field>
-    <input [(ngModel)]="value" [ngModelOptions]="{standalone: true}" matInput type="number">
+    <input value="{{currentValue}}" matInput type="number">
   </mat-form-field>
 </app-setting-item>

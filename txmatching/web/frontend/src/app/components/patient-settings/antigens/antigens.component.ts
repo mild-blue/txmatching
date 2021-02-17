@@ -18,12 +18,12 @@ export class AntigensComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public addAntigen(patient: PatientEditable, code: string, control: HTMLInputElement): void {
+  public addAntigen(code: string, control: HTMLInputElement): void {
     if (!code) {
       return;
     }
 
-    patient.addAntigen(code);
+    this.patient?.addAntigen(code);
 
     // Reset input
     control.value = '';

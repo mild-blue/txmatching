@@ -1,4 +1,12 @@
-import { Antibody } from '@app/model';
+import { AntibodyEditable } from '@app/model';
+import { DonorEditable } from '@app/model/DonorEditable';
+import { RecipientEditable } from '@app/model/RecipientEditable';
+
+// TODO: Use generated models instead
+export interface PatientPairToAdd {
+  donor: DonorEditable;
+  recipient: RecipientEditable;
+}
 
 export interface DonorModelPairIn {
   country_code: string;
@@ -22,7 +30,7 @@ export interface RecipientInput {
   acceptable_blood_groups?: string[];
   blood_group: string;
   height?: number;
-  hla_antibodies: Antibody[];
+  hla_antibodies: AntibodyEditable[];
   hla_typing: string[];
   medical_id: string;
   previous_transplants?: number;

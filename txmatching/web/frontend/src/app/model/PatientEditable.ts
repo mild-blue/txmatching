@@ -1,9 +1,10 @@
-import { BloodGroup, Sex } from './Donor';
-import { Country } from '@app/model/Country';
+import { Country } from '@app/model/enums/Country';
+import { BloodGroup } from '@app/model/enums/BloodGroup';
+import { Sex } from '@app/model/enums/Sex';
 import { Patient } from '@app/model/Patient';
 
 export class PatientEditable {
-  country: Country = Country.Cze;
+  country?: Country = Country.Cze;
   medicalId: string = '';
   antigens: string[] = [];
   bloodGroup: BloodGroup = BloodGroup.A;
@@ -33,9 +34,8 @@ export class PatientEditable {
   addAntigen(code: string) {
     this.antigens.push(code);
   }
-}
 
-// export interface PatientUploadMessage {
-//   recipients_uploaded: 0,
-//   donors_uploaded: 0
-// }
+  setCountry(country: Country | undefined) {
+    this.country = country;
+  }
+}

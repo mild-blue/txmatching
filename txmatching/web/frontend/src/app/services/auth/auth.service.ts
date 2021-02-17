@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { DecodedToken, TokenType, User } from '@app/model/User';
+import { DecodedToken, User } from '@app/model/User';
 import { environment } from '@environments/environment';
 import { map } from 'rxjs/operators';
 import { AuthResponse } from '@app/services/auth/auth.interface';
 import * as jwt_decode from 'jwt-decode';
 import { Router } from '@angular/router';
+import { UserTokenType } from '@app/model/enums/UserTokenType';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,7 @@ export class AuthService {
     }
 
     // check if token is valid
-    return token.type === TokenType.ACCESS && token.exp > (Date.now() / 1000);
+    return token.type === UserTokenType.ACCESS && token.exp > (Date.now() / 1000);
   }
 
   public login(email: string, password: string): Observable<User> {

@@ -20,6 +20,9 @@ import { RecipientEditable } from '@app/model/RecipientEditable';
 import { DonorModelPairIn } from '@app/services/patient/patient.service.interface';
 import { fromDonorEditable } from '@app/parsers/to-generated/donor.parsers';
 import { fromRecipientEditable } from '@app/parsers/to-generated/recipient.parsers';
+import { Sex } from '@app/model';
+import { Country } from '@app/model/enums/Country';
+import { DonorType } from '@app/model/enums/DonorType';
 
 @Injectable({
   providedIn: 'root'
@@ -67,10 +70,10 @@ export class PatientService {
     ).toPromise();
   }
 
-  public async addNewPair(txmEventId: number, donor: DonorEditable, recipient?: RecipientEditable): Promise<PatientUploadSuccessResponseGenerated> {
+  public async addNewPair(txmEventId: number, donor: DonorEditable, recipient: RecipientEditable): Promise<PatientUploadSuccessResponseGenerated> {
     this._logger.log('Adding new pair', [donor, recipient]);
 
-    const country = donor.country; // Assume same country for the donor and the recipient
+    const country = donor.country ?? Country.Cze; // Assume same country for the donor and the recipient
     const body: DonorModelPairIn = {
       country_code: country,
       donor: {
@@ -78,28 +81,31 @@ export class PatientService {
         blood_group: donor.bloodGroup,
         hla_typing: donor.antigens,
         donor_type: donor.type,
-        sex: donor.sex,
-        height: donor.height,
-        weight: donor.weight,
-        year_of_birth: donor.yearOfBirth
+        sex: donor.sex === Sex.NULL ? undefined : donor.sex,
+        height: donor.height ? +donor.height : undefined,
+        weight: donor.weight ? +donor.weight : undefined,
+        year_of_birth: donor.yearOfBirth ? +donor.yearOfBirth : undefined
       }
     };
 
-    if (recipient) {
+    if (donor.type.valueOf() === DonorType.DONOR.valueOf()) {
       body.donor.related_recipient_medical_id = recipient.medicalId;
+
+      // Put cutoff value to antibodies
+      recipient.antibodies.forEach(a => a.cutoff = recipient.antibodiesCutoff ? +recipient.antibodiesCutoff : 0);
 
       body.recipient = {
         acceptable_blood_groups: recipient.acceptableBloodGroups,
         blood_group: recipient.bloodGroup,
-        height: recipient.height,
+        height: recipient.height ? +recipient.height : undefined,
         hla_antibodies: recipient.antibodies,
         hla_typing: recipient.antigens,
         medical_id: recipient.medicalId,
-        previous_transplants: recipient.previousTransplants,
-        sex: recipient.sex,
+        previous_transplants: recipient.previousTransplants ? +recipient.previousTransplants : undefined,
+        sex: recipient.sex === Sex.NULL ? undefined : recipient.sex,
         waiting_since: this._formatDate(recipient.waitingSince),
-        weight: recipient.weight,
-        year_of_birth: recipient.yearOfBirth
+        weight: recipient.weight ? +recipient.weight : undefined,
+        year_of_birth: recipient.yearOfBirth ? +recipient.yearOfBirth : undefined
       };
     }
 

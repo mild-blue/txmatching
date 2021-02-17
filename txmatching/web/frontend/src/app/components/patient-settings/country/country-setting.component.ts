@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
 import { PatientEditable } from '@app/model/PatientEditable';
-import { Country } from '@app/model/Country';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Country } from '@app/model/enums/Country';
+import { FormControl } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 import { countryFullTextSearch, countryNameValidator, separatorKeysCodes } from '@app/directives/validators/form.directive';
 import { Observable } from 'rxjs';
@@ -14,47 +14,63 @@ import { AbstractFormHandlerComponent } from '@app/components/abstract-form-hand
 })
 export class CountrySettingComponent extends AbstractFormHandlerComponent implements OnInit {
 
+  private _patientDiffer?: KeyValueDiffer<string, unknown>;
+
   @Input() patient?: PatientEditable;
 
   public allCountries: string[] = Object.values(Country);
   public filteredCountries: Observable<string[]>;
   public separatorKeysCodes: number[] = separatorKeysCodes;
+  public countryControl: FormControl = new FormControl('');
 
-  public form: FormGroup = new FormGroup({
-    country: new FormControl('')
-  });
-
-  constructor() {
+  constructor(private _differs: KeyValueDiffers) {
     super();
 
     // Country fulltext search
-    this.filteredCountries = this.form.controls.country?.valueChanges.pipe(
+    this.filteredCountries = this.countryControl.valueChanges.pipe(
       startWith(undefined),
       map((country: string | null) => country ? countryFullTextSearch(this.allCountries, country) : this.allCountries.slice()));
   }
 
   ngOnInit(): void {
     // Allow only existing countries
-    this.form.controls.country?.setValidators(countryNameValidator(this.allCountries));
+    this.countryControl.setValidators(countryNameValidator(this.allCountries));
 
     // Set value to patient country
     if (this.patient) {
-      this.form.controls.country?.setValue(this.patient.country.valueOf());
+      this.countryControl.setValue(this.patient.country?.valueOf());
+
+      // Detect country change in patient
+      this._patientDiffer = this._differs.find(this.patient).create();
     }
   }
 
-  get selectedCountry(): string {
-    return this.form.controls.country?.value ?? '';
+  ngDoCheck(): void {
+    const patientChanges = this._patientDiffer?.diff((this.patient as unknown) as Map<string, unknown>);
+    patientChanges?.forEachChangedItem((record) => {
+      if (record.key === 'country') {
+        this.countryControl.setValue(record.currentValue);
+      }
+    });
+  }
+
+  get selectedCountryValue(): string {
+    return this.countryControl.value ?? '';
   }
 
   public handleCountrySelect(control: HTMLInputElement): void {
+    const country: Country = this.selectedCountryValue as Country;
 
     // Set country to patient
-    if (this.patient) {
-      this.patient.country = this.selectedCountry as Country;
-    }
+    this.patient?.setCountry(country);
 
     // Disable control, so multiple countries cannot be selected
     this.handleSelect(control);
+  }
+
+  handleCountryRemove(control: HTMLInputElement) {
+    this.countryControl.setValue('');
+    this.patient?.setCountry(undefined);
+    control.disabled = false;
   }
 }
