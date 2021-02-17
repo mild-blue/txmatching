@@ -1,4 +1,4 @@
-import { Antibody } from '@app/model';
+import { AntibodyEditable } from '@app/model';
 import { DonorEditable } from '@app/model/DonorEditable';
 import { RecipientEditable } from '@app/model/RecipientEditable';
 
@@ -29,7 +29,7 @@ export interface RecipientInput {
   acceptable_blood_groups?: string[];
   blood_group: string;
   height?: number;
-  hla_antibodies: Antibody[];
+  hla_antibodies: AntibodyEditable[];
   hla_typing: string[];
   medical_id: string;
   previous_transplants?: number;

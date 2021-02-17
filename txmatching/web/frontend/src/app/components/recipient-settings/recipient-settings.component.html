@@ -29,10 +29,9 @@
     <mat-form-field>
       <mat-chip-list>
         <mat-chip *ngFor="let a of recipient.antibodies"
-                  [title]="'Raw code: ' + a.raw_code"
                   (removed)="recipient.removeAntibody(a)">
           <div class="antibody-chip">
-            {{a.code}}
+            {{a.name}}
             <div class="mfi">MFI: <strong>{{a.mfi}}</strong></div>
           </div>
           <mat-icon class="cancel" matChipRemove>cancel</mat-icon>
@@ -48,7 +47,7 @@
   <app-recipient-antibodies [recipient]="recipient"></app-recipient-antibodies>
 
   <!-- Recipient antibodies cutoff -->
-  <app-simple-number label="Antibodies cutoff" [(ngModel)]="recipient.antibodiesCutoff" name="antibodiesCutoff" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Antibodies cutoff" [value]="recipient.antibodiesCutoff" [(ngModel)]="recipient.antibodiesCutoff" name="antibodiesCutoff" ngDefaultControl></app-simple-number>
 
   <!-- Recipient Sex -->
   <app-sex [patient]="recipient"></app-sex>

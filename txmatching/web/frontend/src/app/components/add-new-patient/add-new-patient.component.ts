@@ -27,9 +27,6 @@ export class AddNewPatientComponent {
   public donor: DonorEditable = new DonorEditable();
   public recipient: RecipientEditable = new RecipientEditable();
 
-  public loading: boolean = false;
-  public success: boolean = false;
-
   constructor(private _patientService: PatientService,
               private _differs: KeyValueDiffers) {
     this._donorDiffer = this._differs.find(this.donor).create();
@@ -47,9 +44,16 @@ export class AddNewPatientComponent {
   }
 
   public handleSubmit() {
-    if (!this.defaultTxmEvent || !this.donor.country || !this.recipient.country ||
-      !this.donor.medicalId || !this.recipient.medicalId) {
+    if (!this.defaultTxmEvent || !this.donor.country) {
       return;
+    }
+
+    // Check if donor has recipient
+    if (this.donor.type === DonorType.DONOR) {
+      // Validate recipient
+      if (!this.recipient.country || !this.recipient.medicalId) {
+        return;
+      }
     }
 
     this.addPatientsClicked.emit({ donor: this.donor, recipient: this.recipient });

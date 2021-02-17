@@ -207,7 +207,8 @@ module.exports = {
           10,
           100,
           1000,
-          401
+          401,
+          2000
         ]
       }
     ],
@@ -286,7 +287,7 @@ module.exports = {
         'format': ['camelCase', 'PascalCase', 'snake_case'],
         'leadingUnderscore': 'forbid'
       },
-      { 'selector': 'variableLike', 'format': ['camelCase', 'snake_case', 'PascalCase'] },
+      { 'selector': 'variableLike', 'format': ['camelCase', 'snake_case'] },
       {
         'selector': 'interface',
         'format': ['PascalCase']

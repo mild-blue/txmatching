@@ -11,6 +11,12 @@ export interface Antibody extends Hla {
   cutoff: number;
 }
 
+export class AntibodyEditable {
+  name?: string;
+  mfi?: number;
+  cutoff?: number;
+}
+
 export interface DetailedScorePerGroup {
   hla_group: string;
   donor_matches: AntigenMatch[];

@@ -86,6 +86,9 @@ export class PatientService {
     if (donor.type.valueOf() === DonorType.DONOR.valueOf()) {
       body.donor.related_recipient_medical_id = recipient.medicalId;
 
+      // Put cutoff value to antibodies
+      recipient.antibodies.forEach(a => a.cutoff = recipient.antibodiesCutoff ? +recipient.antibodiesCutoff : 0);
+
       body.recipient = {
         acceptable_blood_groups: recipient.acceptableBloodGroups,
         blood_group: recipient.bloodGroup,
