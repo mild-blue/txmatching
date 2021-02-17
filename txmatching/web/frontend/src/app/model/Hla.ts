@@ -15,7 +15,7 @@ export interface Antibody extends Hla {
 }
 
 export class AntibodyEditable {
-  raw_code?: string; // TODOO: test that name->raw_code renaming still works
+  raw_code?: string; // TODOO: test that name->raw_code renaming still works (upload with this is currentl not working)
   mfi?: number;
   cutoff?: number;
 }
