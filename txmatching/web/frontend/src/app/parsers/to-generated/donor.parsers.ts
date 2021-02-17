@@ -5,6 +5,6 @@ import { fromPatientEditable } from './patient.parsers';
 export const fromDonorEditable = ( donor: DonorEditable, donorId: number ): DonorModelToUpdateGenerated => {
   return {
     ...fromPatientEditable(donor, donorId),
-    active: true // donor.active // TODOO
+    active: donor.active
   };
 };

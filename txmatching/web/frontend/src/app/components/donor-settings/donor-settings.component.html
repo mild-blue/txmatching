@@ -33,4 +33,10 @@
   <!-- Donor year of birth -->
   <app-simple-number label="Year of birth" [(ngModel)]="donor.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
 
+  <!-- Active checkbox -->
+  <div class="checkboxes">
+    <mat-slide-toggle [(ngModel)]="donor.active">
+      Active
+    </mat-slide-toggle>
+  </div>
 </ng-container>

@@ -31,7 +31,7 @@
         <mat-chip *ngFor="let a of recipient.antibodies"
                   (removed)="recipient.removeAntibody(a)">
           <div class="antibody-chip">
-            {{a.name}}
+            {{a.raw_code}}
             <div class="mfi">MFI: <strong>{{a.mfi}}</strong></div>
           </div>
           <mat-icon class="cancel" matChipRemove>cancel</mat-icon>
@@ -73,4 +73,17 @@
   <!-- Recipient previous transplants -->
   <app-simple-number label="Previous transplants count" [(ngModel)]="recipient.previousTransplants" name="previousTransplants" ngDefaultControl></app-simple-number>
 
+  <!-- Matching conditions -->
+  <h4>Matching conditions</h4>
+  <div class="checkboxes">
+    <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.require_compatible_blood_group">
+      Require compatible blood group
+    </mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.require_better_match_in_compatibility_index">
+      Require new donor having better CI match than original donor
+    </mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.require_better_match_in_compatibility_index_or_blood_group">
+      Require new donor having better CI match than original donor or blood group match
+    </mat-slide-toggle>
+  </div>
 </ng-container>

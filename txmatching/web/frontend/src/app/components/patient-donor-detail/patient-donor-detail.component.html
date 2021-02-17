@@ -15,16 +15,6 @@
 
     <app-donor-settings [donor]="donorEditable"></app-donor-settings>
 
-    <!-- Checkboxes -->
-    <div class="checkboxes">
-      <mat-slide-toggle (change)="setActiveValue($event.checked)"
-                        [checked]="item.active"
-                        class="abc"
-      >
-        Active
-      </mat-slide-toggle>
-    </div>
-
     <app-button [type]="'submit'"
                 [loading]="loading"
                 [disabled]="loading"

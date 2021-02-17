@@ -1,5 +1,5 @@
 import { PatientEditable } from '@app/model/PatientEditable';
-import { Recipient } from '@app/model/Recipient';
+import { Recipient, RecipientRequirements } from '@app/model/Recipient';
 import { AntibodyEditable } from '@app/model/Hla';
 
 export class RecipientEditable extends PatientEditable {
@@ -8,6 +8,11 @@ export class RecipientEditable extends PatientEditable {
   antibodiesCutoff: number = 2000;
   waitingSince: Date = new Date();
   previousTransplants: number = 0;
+  recipientRequirements: RecipientRequirements = {
+    require_better_match_in_compatibility_index: false,
+    require_better_match_in_compatibility_index_or_blood_group: false,
+    require_compatible_blood_group: false
+  };
 
   initializeFromPatient(recipient: Recipient) {
     super.initializeFromPatient(recipient);
@@ -16,6 +21,9 @@ export class RecipientEditable extends PatientEditable {
     this.antibodiesCutoff = 2000; // TODOO
     //this.waitingSince
     //this.previousTransplants
+    if (recipient.recipient_requirements) {
+      this.recipientRequirements = recipient.recipient_requirements;
+    }
     // TODOO
   }
 
