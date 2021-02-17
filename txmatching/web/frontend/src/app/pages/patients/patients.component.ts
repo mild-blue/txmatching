@@ -29,6 +29,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
   public patients?: PatientList;
   public pairs: PatientPair[] = [];
   public items: (Donor | PatientPair)[] = [];
+  public activeItem?: Donor | PatientPair;
 
   public loading: boolean = false;
   public error: boolean = false;
@@ -94,12 +95,21 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     try {
       const response: PatientUploadSuccessResponseGenerated = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
       this._alertService.success(`Successfully uploaded ${response.donors_uploaded} donor and ${response.recipients_uploaded} recipient${response.recipients_uploaded === 0 ? 's' : ''}`);
+      this.togglePatientPopup();
+      await this._initPatientsWithStats();
+
+      // Make added pair active
+      const addedDonorMedicalId = pair.donor.medicalId;
+      this.activeItem = this.items.find(item => {
+        if (('donor_type' in item && item.medical_id === addedDonorMedicalId) ||
+          ('d' in item && item.d?.medical_id === addedDonorMedicalId)) {
+          return item;
+        }
+        return undefined;
+      });
     } catch (e) {
       this._alertService.error(`Error uploading patients: "${e.message || e}"`);
       this._logger.error(`Error uploading patients: "${e.message || e}"`);
-    } finally {
-      this.togglePatientPopup();
-      this._initPatientsWithStats();
     }
   }
 

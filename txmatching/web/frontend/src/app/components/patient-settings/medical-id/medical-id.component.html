@@ -1,4 +1,4 @@
-<app-setting-item *ngIf="patient" label="Medical ID">
+<app-setting-item *ngIf="patient" label="Medical ID" [required]="true">
   <mat-form-field>
     <input [(ngModel)]="patient.medicalId" [ngModelOptions]="{standalone: true}" matInput type="text" required>
   </mat-form-field>

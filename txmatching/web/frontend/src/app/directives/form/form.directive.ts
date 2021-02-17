@@ -9,7 +9,7 @@ export class FormDirective {
 
   @HostListener('submit')
   onFormSubmit() {
-    const invalidControl = this._el.nativeElement.querySelector('.ng-invalid');
+    const invalidControl = this._el.nativeElement.querySelector('input.ng-invalid:not(.no-focus-when-invalid)');
 
     if (invalidControl) {
       invalidControl.scrollIntoView();

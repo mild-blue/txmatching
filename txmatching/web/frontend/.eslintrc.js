@@ -287,7 +287,11 @@ module.exports = {
         'format': ['camelCase', 'PascalCase', 'snake_case'],
         'leadingUnderscore': 'forbid'
       },
-      { 'selector': 'variableLike', 'format': ['camelCase', 'snake_case'] },
+      {
+        'selector': 'variableLike',
+        'format': ['camelCase', 'snake_case'],
+        'leadingUnderscore': 'allow'
+      },
       {
         'selector': 'interface',
         'format': ['PascalCase']

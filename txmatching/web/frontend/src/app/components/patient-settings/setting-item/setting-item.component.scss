@@ -10,6 +10,16 @@
   &__label {
     font-weight: 600;
     margin-right: $padding-x;
+
+    &.required {
+      &::after {
+        content: '*';
+        margin-left: 5px;
+        color: $danger;
+        position: relative;
+        top: -5px;
+      }
+    }
   }
 
   &__input {
