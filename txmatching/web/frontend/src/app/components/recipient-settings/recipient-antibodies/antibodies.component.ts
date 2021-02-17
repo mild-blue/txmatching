@@ -35,7 +35,7 @@ export class RecipientAntibodiesComponent {
     const formattedCode = code.trim().toUpperCase();
 
     this.recipient.antibodies.push({
-      name: formattedCode,
+      raw_code: formattedCode,
       mfi
     });
 

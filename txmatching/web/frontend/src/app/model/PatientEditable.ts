@@ -8,7 +8,7 @@ export class PatientEditable {
   medicalId: string = '';
   antigens: string[] = [];
   bloodGroup: BloodGroup = BloodGroup.A;
-  sex?: Sex = Sex.M;  // TODOO: change by merge
+  sex: Sex = Sex.M;  // TODOO: change by merge
   height?: number;
   weight?: number;
   yearOfBirth?: number;
@@ -18,7 +18,7 @@ export class PatientEditable {
     this.medicalId = patient.medical_id;
     this.antigens = patient.parameters.hla_typing.hla_types_list.map(antigen => antigen.raw_code);
     this.bloodGroup = BloodGroup.A; //this.item.parameters.blood_group,
-    this.sex = patient.parameters.sex && Sex[patient.parameters.sex]; // TODOO
+    this.sex = patient.parameters.sex || Sex.NULL; // TODOO
     this.height = patient.parameters.height;
     this.weight = patient.parameters.weight;
     this.yearOfBirth = patient.parameters.year_of_birth;
