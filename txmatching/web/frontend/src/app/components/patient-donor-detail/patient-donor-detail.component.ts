@@ -10,6 +10,7 @@ import { Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
 import { TxmEvent } from '@app/model/Event';
 import { LoggerService } from '@app/services/logger/logger.service';
+import { DonorEditable } from '@app/model/DonorEditable';
 
 @Component({
   selector: 'app-patient-detail-donor',
@@ -21,6 +22,8 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   @Input() patients?: PatientList;
   @Input() item?: Donor;
   @Input() defaultTxmEvent?: TxmEvent;
+
+  public donorEditable?: DonorEditable;
 
   public inputControl: FormControl = new FormControl('');
   public allAntigens: Antigen[] = [];
@@ -46,6 +49,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
   ngOnInit(): void {
     this._initAvailableCodes();
+    this._initDonorEditable();
   }
 
   get selected(): Antigen[] {
@@ -112,6 +116,10 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
       this._logger.error('handleSave failed because item not set');
       return;
     }
+    if (!this.donorEditable) {
+      this._logger.error('handleSave failed because donorEditable not set');
+      return;
+    }
     if (!this.defaultTxmEvent) {
       this._logger.error('handleSave failed because defaultTxmEvent not set');
       return;
@@ -119,12 +127,14 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
     this.loading = true;
     this.success = false;
-    this._patientService.saveDonor(this.defaultTxmEvent.id, this.item)
-    .then(() => {
-      this.loading = false;
+    this._patientService.saveDonor(this.defaultTxmEvent.id, this.item.db_id, this.donorEditable)
+    .then((updatedDonor) => {
+      this._logger.log('Donor updated', [updatedDonor]);
+      Object.assign(this.item, updatedDonor);
+      this._initDonorEditable();
       this.success = true;
     })
-    .catch(() => this.loading = false);
+    .finally(() => this.loading = false);
   }
 
   private _initAvailableCodes(): void {
@@ -141,5 +151,16 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     this.allAntigens = [...new Set(allAntigens.map(a => a.code))].map(code => {
       return { code, raw_code: code ?? '' };
     }); // only unique
+  }
+
+  private _initDonorEditable() {
+    if (!this.item) {
+      this._logger.error('_initDonorEditable failed because item not set');
+      return;
+    }
+
+    this.donorEditable = new DonorEditable();
+    this.donorEditable.initializeFromPatient(this.item);
+    this._logger.log('PatientEditable initialized', [this.donorEditable]);
   }
 }

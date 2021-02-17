@@ -9,6 +9,8 @@ import { Recipient } from '@app/model/Recipient';
 import { Antibody, Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
 import { TxmEvent } from '@app/model/Event';
+import { RecipientEditable } from '@app/model/RecipientEditable';
+import { LoggerService } from '@app/services/logger/logger.service';
 
 @Component({
   selector: 'app-patient-detail-recipient',
@@ -20,6 +22,8 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
   @Input() patients?: PatientList;
   @Input() item?: Recipient;
   @Input() defaultTxmEvent?: TxmEvent;
+
+  public recipientEditable?: RecipientEditable;
 
   public success: boolean = false;
 
@@ -34,7 +38,8 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
 
   public separatorKeysCodes: number[] = separatorKeysCodes;
 
-  constructor(private _patientService: PatientService) {
+  constructor(private _patientService: PatientService,
+              private _logger: LoggerService) {
     super(_patientService);
 
     this.filteredAntigensCodes = this.form.controls.antigens.valueChanges.pipe(
@@ -48,6 +53,7 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
 
   ngOnInit(): void {
     this._initAntigensCodes();
+    this._initRecipientEditable();
   }
 
   get selectedAntigens(): Antigen[] {
@@ -106,11 +112,14 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
     if (!this.item) {
       return;
     }
-    this.handleSave([antibody]);
+    // this.handleSave([antibody]); // TODOO: remove
   }
 
   public handleSave(newAntibodies?: Antibody[]): void {
     if (!this.item) {
+      return;
+    }
+    if (!this.recipientEditable) {
       return;
     }
     if (!this.defaultTxmEvent) {
@@ -119,12 +128,15 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
 
     this.loading = true;
     this.success = false;
-    const oldAntibodies = this.item.hla_antibodies.hla_antibodies_list;
-    const antibodies = newAntibodies ? [...oldAntibodies, ...newAntibodies] : oldAntibodies;
-    this._patientService.saveRecipient(this.defaultTxmEvent.id, this.item, antibodies)
-    .then((recipient) => {
+    // TODOO
+    //const oldAntibodies = this.item.hla_antibodies.hla_antibodies_list;
+    //const antibodies = newAntibodies ? [...oldAntibodies, ...newAntibodies] : oldAntibodies;
+    this._patientService.saveRecipient(this.defaultTxmEvent.id, this.item.db_id, this.recipientEditable)
+    .then((updatedRecipient) => {
+      this._logger.log('Recipient updated', [updatedRecipient]);
+      Object.assign(this.item, updatedRecipient);
+      this._initRecipientEditable();
       this.success = true;
-      this.item = recipient;
     })
     .finally(() => this.loading = false);
   }
@@ -142,5 +154,15 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
     this.allAntigens = [...new Set(allAntigens.map(a => a.code))].map(code => {
       return { code, raw_code: code ?? '' };
     }); // only unique
+  }
+
+  private _initRecipientEditable() {
+    if (!this.item) {
+      this._logger.error('_initDonorEditable failed because item not set');
+      return;
+    }
+
+    this.recipientEditable = new RecipientEditable();
+    this.recipientEditable.initializeFromPatient(this.item);
   }
 }

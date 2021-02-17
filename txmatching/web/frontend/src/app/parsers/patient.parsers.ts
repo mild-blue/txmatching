@@ -1,9 +1,4 @@
-import {
-  DonorGenerated,
-  PatientParametersGenerated,
-  RecipientGenerated,
-  SexEnumGenerated
-} from '../generated';
+import { DonorGenerated, PatientParametersGenerated, RecipientGenerated, SexEnumGenerated } from '../generated';
 import { Patient, PatientParameters, PatientSexType } from '../model';
 import { DEFAULT_LIST_ITEM } from '../components/list-item/list-item.interface';
 import { parseAntigen, parseHlaPerGroup } from '@app/parsers/hla.parsers';
@@ -34,7 +29,7 @@ export const parsePatientParameters = ( data: PatientParametersGenerated ): Pati
     height: data.height,
     weight: data.weight,
     year_of_birth: data.year_of_birth
-  }
+  };
 };
 
 
