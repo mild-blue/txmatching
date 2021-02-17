@@ -1,6 +1,6 @@
 import { Component, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
 import { PatientEditable } from '@app/model/PatientEditable';
-import { Country } from '@app/model/Country';
+import { Country } from '@app/model/enums/Country';
 import { FormControl } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 import { countryFullTextSearch, countryNameValidator, separatorKeysCodes } from '@app/directives/validators/form.directive';

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { VersionService } from '@app/services/version/version.service';
-import { EnvironmentType, Version } from '@app/model/Version';
+import { Version } from '@app/model/Version';
+import { EnvironmentType } from '@app/model/enums/EnvironmentType';
 
 @Component({
   selector: 'app-logo',

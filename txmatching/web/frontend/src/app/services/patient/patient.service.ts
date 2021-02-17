@@ -4,7 +4,7 @@ import { environment } from '@environments/environment';
 import { first, map } from 'rxjs/operators';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { PatientList } from '@app/model/PatientList';
-import { Donor, DonorType } from '@app/model/Donor';
+import { Donor } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
 import { Antibody } from '@app/model/Hla';
 import { PatientsGenerated, PatientUploadSuccessResponseGenerated } from '@app/generated';
@@ -12,8 +12,9 @@ import { parsePatientList } from '@app/parsers';
 import { DonorEditable } from '@app/model/DonorEditable';
 import { RecipientEditable } from '@app/model/RecipientEditable';
 import { DonorModelPairIn } from '@app/services/patient/patient.service.interface';
-import { PatientSexType } from '@app/model';
-import { Country } from '@app/model/Country';
+import { Sex } from '@app/model';
+import { Country } from '@app/model/enums/Country';
+import { DonorType } from '@app/model/enums/DonorType';
 
 @Injectable({
   providedIn: 'root'
@@ -76,7 +77,7 @@ export class PatientService {
         blood_group: donor.bloodGroup,
         hla_typing: donor.antigens,
         donor_type: donor.type,
-        sex: donor.sex === PatientSexType.NULL ? undefined : donor.sex,
+        sex: donor.sex === Sex.NULL ? undefined : donor.sex,
         height: donor.height ? +donor.height : undefined,
         weight: donor.weight ? +donor.weight : undefined,
         year_of_birth: donor.yearOfBirth ? +donor.yearOfBirth : undefined
@@ -97,7 +98,7 @@ export class PatientService {
         hla_typing: recipient.antigens,
         medical_id: recipient.medicalId,
         previous_transplants: recipient.previousTransplants ? +recipient.previousTransplants : undefined,
-        sex: recipient.sex === PatientSexType.NULL ? undefined : recipient.sex,
+        sex: recipient.sex === Sex.NULL ? undefined : recipient.sex,
         waiting_since: this._formatDate(recipient.waitingSince),
         weight: recipient.weight ? +recipient.weight : undefined,
         year_of_birth: recipient.yearOfBirth ? +recipient.yearOfBirth : undefined

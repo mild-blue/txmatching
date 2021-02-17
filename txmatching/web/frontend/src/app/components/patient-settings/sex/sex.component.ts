@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PatientEditable } from '@app/model/PatientEditable';
-import { PatientSexType } from '@app/model';
+import { Sex } from '@app/model';
 
 @Component({
   selector: 'app-sex',
@@ -10,7 +10,7 @@ import { PatientSexType } from '@app/model';
 export class SexComponent implements OnInit {
 
   @Input() patient?: PatientEditable;
-  public allSexes: PatientSexType[] = Object.values(PatientSexType);
+  public allSexes: Sex[] = Object.values(Sex);
 
   constructor() {
   }

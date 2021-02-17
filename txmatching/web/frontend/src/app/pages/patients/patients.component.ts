@@ -8,7 +8,7 @@ import { ConfigurationService } from '@app/services/configuration/configuration.
 import { PatientList } from '@app/model/PatientList';
 import { PatientPair } from '@app/model/PatientPair';
 import { UploadService } from '@app/services/upload/upload.service';
-import { Donor, DonorType } from '@app/model/Donor';
+import { Donor } from '@app/model/Donor';
 import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
 import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
 import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
@@ -17,6 +17,7 @@ import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 import { PatientUploadSuccessResponseGenerated } from '@app/generated';
 import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
+import { DonorType } from '@app/model/enums/DonorType';
 
 @Component({
   selector: 'app-patients',

@@ -1,11 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { PatientService } from '@app/services/patient/patient.service';
 import { Configuration } from '@app/model/Configuration';
-import { AntibodyMatchType, AntigenMatchType, DetailedScorePerGroup } from '@app/model/Hla';
+import { DetailedScorePerGroup } from '@app/model/Hla';
 import { Recipient } from '@app/model/Recipient';
 import { Donor } from '@app/model/Donor';
 import { Patient } from '@app/model/Patient';
 import { PatientPairStyle } from '@app/components/patient-pair/patient-pair.interface';
+import { AntigenMatchType } from '@app/model/enums/AntigenMatchType';
+import { AntibodyMatchType } from '@app/model/enums/AntibodyMatchType';
 
 @Component({
   selector: 'app-matching-transplant',

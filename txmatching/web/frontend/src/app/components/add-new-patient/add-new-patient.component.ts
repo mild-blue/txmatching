@@ -5,7 +5,7 @@ import { RecipientEditable } from '@app/model/RecipientEditable';
 import { PatientService } from '@app/services/patient/patient.service';
 import { TxmEvent } from '@app/model/Event';
 import { PatientEditable } from '@app/model/PatientEditable';
-import { Country } from '@app/model/Country';
+import { Country } from '@app/model/enums/Country';
 import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
 
 @Component({

@@ -3,7 +3,7 @@ import { TxmEvent, TxmEvents } from '@app/model/Event';
 import { EventService } from '@app/services/event/event.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { AlertService } from '@app/services/alert/alert.service';
-import { AppConfiguration, PatientList, Role, User } from '@app/model';
+import { AppConfiguration, PatientList, User, UserRole } from '@app/model';
 import { AuthService } from '@app/services/auth/auth.service';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
 import { PatientService } from '@app/services/patient/patient.service';
@@ -29,7 +29,7 @@ export class AbstractLoggedComponent implements OnInit {
   }
 
   get isViewer(): boolean {
-    return this.user ? this.user.decoded.role === Role.VIEWER : false;
+    return this.user ? this.user.decoded.role === UserRole.VIEWER : false;
   }
 
   protected async _initTxmEvents(): Promise<void> {
