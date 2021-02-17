@@ -94,12 +94,11 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     try {
       const response: PatientUploadSuccessResponseGenerated = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
       this._alertService.success(`Successfully uploaded ${response.donors_uploaded} donor and ${response.recipients_uploaded} recipient${response.recipients_uploaded === 0 ? 's' : ''}`);
+      this.togglePatientPopup();
+      this._initPatientsWithStats();
     } catch (e) {
       this._alertService.error(`Error uploading patients: "${e.message || e}"`);
       this._logger.error(`Error uploading patients: "${e.message || e}"`);
-    } finally {
-      this.togglePatientPopup();
-      this._initPatientsWithStats();
     }
   }
 
