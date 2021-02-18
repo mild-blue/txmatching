@@ -1,8 +1,9 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Alert, AlertType, fadeDurationMs } from '@app/model/Alert';
+import { Alert, fadeDurationMs } from '@app/model/Alert';
 import { Subscription } from 'rxjs';
 import { NavigationStart, Router } from '@angular/router';
 import { AlertService } from '@app/services/alert/alert.service';
+import { AlertType } from '@app/model/enums/AlertType';
 import Timeout = NodeJS.Timeout;
 
 @Component({

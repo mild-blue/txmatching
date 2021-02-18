@@ -2,6 +2,9 @@ import { AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn }
 import { Patient } from '@app/model/Patient';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Hla } from '@app/model/Hla';
+import { ENTER, SPACE } from '@angular/cdk/keycodes';
+
+export const separatorKeysCodes: number[] = [ENTER, SPACE];
 
 export function patientNameValidator(patients: Patient[]): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {
@@ -38,7 +41,7 @@ export function countryFullTextSearch(countries: string[], searchPhrase: string)
   return countries.filter(c => c.toLocaleLowerCase().match(searchPattern));
 }
 
-export class ConfigErrorStateMatcher implements ErrorStateMatcher {
+export class ControlErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (((control.touched || control.dirty) && control.value) || isSubmitted));

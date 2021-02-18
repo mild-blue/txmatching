@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { ENTER } from '@angular/cdk/keycodes';
-import { ConfigErrorStateMatcher, hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
+import { ControlErrorStateMatcher, hlaFullTextSearch } from '@app/directives/validators/form.directive';
 import { map, startWith } from 'rxjs/operators';
 import { PatientList } from '@app/model/PatientList';
 import { Recipient } from '@app/model/Recipient';
@@ -30,7 +30,7 @@ export class AntibodiesComponent implements OnInit {
   public filteredAntibodies: Observable<Hla[]>;
 
   public separatorKeysCodes: number[] = [ENTER];
-  public errorMatcher = new ConfigErrorStateMatcher();
+  public errorMatcher = new ControlErrorStateMatcher();
 
   public antibodyValue: string = '';
 

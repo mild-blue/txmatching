@@ -1,0 +1,8 @@
+<app-setting-item *ngIf="patient" label="Sex">
+  <mat-button-toggle-group [(ngModel)]="patient.sex" [ngModelOptions]="{standalone: true}">
+    <mat-button-toggle *ngFor="let sex of allSexes"
+                       [value]="sex">
+      {{ sex }}
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+</app-setting-item>

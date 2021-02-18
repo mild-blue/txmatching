@@ -1,5 +1,6 @@
 import { Patient } from '@app/model/Patient';
 import { DetailedScorePerGroup } from '@app/model/Hla';
+import { DonorType } from '@app/model/enums/DonorType';
 
 export interface Donor extends Patient {
   active: boolean;
@@ -10,8 +11,3 @@ export interface Donor extends Patient {
   detailed_score_with_related_recipient: DetailedScorePerGroup[];
 }
 
-export enum DonorType {
-  DONOR = 'DONOR',
-  BRIDGING_DONOR = 'BRIDGING_DONOR',
-  NON_DIRECTED = 'NON_DIRECTED'
-}

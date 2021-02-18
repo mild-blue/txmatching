@@ -42,6 +42,7 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO, tx
         country_code=donor_recipient_pair_dto.country_code,
         txm_event_db_id=txm_event_db_id
     )
+    db.session.commit()
 
 
 def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn):
