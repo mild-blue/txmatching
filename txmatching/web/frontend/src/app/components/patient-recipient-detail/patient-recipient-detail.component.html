@@ -11,22 +11,18 @@
     </app-button>
   </div>
 
-  <!-- TODOO -->
-  <form>
+  <form (ngSubmit)="handleSave()">
 
     <app-recipient-settings [recipient]="recipientEditable"
                             [showCountryAndMedicalId]="false"
                             [showMatchingConditions]="true">
     </app-recipient-settings>
 
-  </form>
-
-  <div class="save-button">
-    <app-button (click)="handleSave()"
+    <app-button [type]="'submit'"
                 [loading]="loading"
                 [disabled]="loading"
                 [success]="!loading && success"
                 [variant]="'success'">Save changes
     </app-button>
-  </div>
+  </form>
 </div>

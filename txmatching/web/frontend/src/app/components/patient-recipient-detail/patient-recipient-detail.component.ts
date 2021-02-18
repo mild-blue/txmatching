@@ -55,7 +55,6 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
       this.success = true;
     })
     .catch((e) => {
-      // TODOO: better alert reporting?
       this._alertService.error(`Error saving recipient: "${e.message || e}"`);
       this._logger.error(`Error saving recipient: "${e.message || e}"`);
     })

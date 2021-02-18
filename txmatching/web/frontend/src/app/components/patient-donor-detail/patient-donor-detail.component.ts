@@ -58,7 +58,6 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
       this.success = true;
     })
     .catch((e) => {
-      // TODOO: better alert reporting?
       this._alertService.error(`Error saving donor: "${e.message || e}"`);
       this._logger.error(`Error saving donor: "${e.message || e}"`);
     })
