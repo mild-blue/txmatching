@@ -1,8 +1,7 @@
 from flask_restx import fields
 
 from txmatching.configuration.configuration import Configuration
-from txmatching.data_transfer_objects.matchings.matching_swagger import \
-    CountryCodeJson
+from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
 from txmatching.solvers.solver_from_config import SUPPORTED_SOLVERS
 from txmatching.web.api.namespaces import matching_api
 

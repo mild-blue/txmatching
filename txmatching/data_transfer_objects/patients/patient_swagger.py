@@ -1,12 +1,16 @@
 from flask_restx import fields
 
+from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
+                                                            CountryCodeJson,
+                                                            DonorTypeEnumJson,
+                                                            SexEnumJson)
 from txmatching.data_transfer_objects.hla.hla_swagger import (
     EXAMPLE_HLA_TYPING, HLAAntibodies, HLATyping)
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
-    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE, CountryCodeJson,
+    DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
     DetailedScoreForGroupJson)
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
-    BloodGroupEnumJson, DonorJsonIn, RecipientJsonIn, SexEnumJson)
+    DonorJsonIn, RecipientJsonIn)
 from txmatching.patients.patient import DonorType
 from txmatching.web.api.namespaces import patient_api
 
@@ -31,7 +35,7 @@ DonorJson = patient_api.model('Donor', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
     'parameters': fields.Nested(required=True, model=PatientParametersJson),
-    'donor_type': fields.String(required=True, enum=[donor_type.value for donor_type in DonorType]),
+    'donor_type': fields.Nested(DonorTypeEnumJson, required=True),
     'related_recipient_db_id': fields.Integer(required=False, description='Database id of the related recipient'),
     'score_with_related_recipient': fields.Float(required=False, description='Score calculated with related recipient'),
     'compatible_blood_with_related_recipient': fields.Boolean(
