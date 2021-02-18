@@ -13,7 +13,10 @@
 
   <form (ngSubmit)="handleSave()">
 
-    <app-donor-settings [donor]="donorEditable"></app-donor-settings>
+    <app-donor-settings [donor]="donorEditable"
+                        [showCountryMedicalIdAndDonorType]="false"
+                        [showActiveCheckbox]="true">
+    </app-donor-settings>
 
     <app-button [type]="'submit'"
                 [loading]="loading"

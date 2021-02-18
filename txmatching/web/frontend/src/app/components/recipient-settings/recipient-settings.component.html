@@ -1,9 +1,11 @@
 <ng-container *ngIf="recipient">
-  <!-- Recipient Country -->
-  <app-country-setting [patient]="recipient"></app-country-setting>
+  <ng-container *ngIf="showCountryAndMedicalId">
+    <!-- Recipient Country -->
+    <app-country-setting [patient]="recipient"></app-country-setting>
 
-  <!-- Recipient medical ID -->
-  <app-medical-id [patient]="recipient"></app-medical-id>
+    <!-- Recipient medical ID -->
+    <app-medical-id [patient]="recipient"></app-medical-id>
+  </ng-container>
 
   <!-- Recipient Blood Group -->
   <app-blood-group [patient]="recipient"></app-blood-group>
@@ -74,16 +76,18 @@
   <app-simple-number label="Previous transplants count" [value]="recipient.previousTransplants" [(ngModel)]="recipient.previousTransplants" name="previousTransplants" ngDefaultControl></app-simple-number>
 
   <!-- Matching conditions -->
-  <h4>Matching conditions</h4>
-  <div class="checkboxes">
-    <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.require_compatible_blood_group">
-      Require compatible blood group
-    </mat-slide-toggle>
-    <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.require_better_match_in_compatibility_index">
-      Require new donor having better CI match than original donor
-    </mat-slide-toggle>
-    <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.require_better_match_in_compatibility_index_or_blood_group">
-      Require new donor having better CI match than original donor or blood group match
-    </mat-slide-toggle>
-  </div>
+  <ng-container *ngIf="showMatchingConditions">
+    <h4>Matching conditions</h4>
+    <div class="checkboxes">
+      <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.require_compatible_blood_group">
+        Require compatible blood group
+      </mat-slide-toggle>
+      <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.require_better_match_in_compatibility_index">
+        Require new donor having better CI match than original donor
+      </mat-slide-toggle>
+      <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.require_better_match_in_compatibility_index_or_blood_group">
+        Require new donor having better CI match than original donor or blood group match
+      </mat-slide-toggle>
+    </div>
+  </ng-container>
 </ng-container>

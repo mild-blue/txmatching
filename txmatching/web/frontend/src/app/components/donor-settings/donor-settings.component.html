@@ -1,19 +1,28 @@
 <ng-container *ngIf="donor">
-  <!-- Donor Country -->
-  <app-country-setting [patient]="donor"></app-country-setting>
+  <ng-container *ngIf="showCountryMedicalIdAndDonorType">
+    <!-- Donor Country -->
+    <app-country-setting [patient]="donor"></app-country-setting>
 
-  <!-- Donor medical ID -->
-  <app-medical-id [patient]="donor"></app-medical-id>
+    <!-- Donor medical ID -->
+    <app-medical-id [patient]="donor"></app-medical-id>
 
-  <!-- Donor Type -->
-  <app-setting-item label="Type">
-    <mat-button-toggle-group [(ngModel)]="donor.type" [ngModelOptions]="{standalone: true}">
-      <mat-button-toggle *ngFor="let type of allDonorTypes"
-                         [value]="type">
-        {{ type | donorTypeLabel | titlecase }}
-      </mat-button-toggle>
-    </mat-button-toggle-group>
-  </app-setting-item>
+    <!-- Donor Type -->
+    <app-setting-item label="Type">
+      <mat-button-toggle-group [(ngModel)]="donor.type" [ngModelOptions]="{standalone: true}">
+        <mat-button-toggle *ngFor="let type of allDonorTypes"
+                           [value]="type">
+          {{ type | donorTypeLabel | titlecase }}
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </app-setting-item>
+  </ng-container>
+
+  <!-- Active checkbox -->
+  <div *ngIf="showActiveCheckbox" class="checkboxes">
+    <mat-slide-toggle [(ngModel)]="donor.active">
+      Active
+    </mat-slide-toggle>
+  </div>
 
   <!-- Donor Blood Group -->
   <app-blood-group [patient]="donor"></app-blood-group>
@@ -33,10 +42,4 @@
   <!-- Donor year of birth -->
   <app-simple-number label="Year of birth" [value]="donor.yearOfBirth" [(ngModel)]="donor.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
 
-  <!-- Active checkbox -->
-  <div class="checkboxes">
-    <mat-slide-toggle [(ngModel)]="donor.active">
-      Active
-    </mat-slide-toggle>
-  </div>
 </ng-container>
