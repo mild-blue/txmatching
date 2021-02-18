@@ -1,4 +1,4 @@
-name: Staging Deployment
+name: Demo Deployment
 
 env:
   AWS_ECR_REPOSITORY: demo-txm
@@ -7,9 +7,6 @@ env:
 on:
   # manual dispatch
   workflow_dispatch:
-  push:
-    branches:
-      - demo-deployment
 
 jobs:
   build_server:
