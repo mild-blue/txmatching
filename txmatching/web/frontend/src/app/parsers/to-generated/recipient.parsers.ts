@@ -11,9 +11,9 @@ export const fromRecipientEditableToUpdateGenerated = (recipient: RecipientEdita
       hla_antibodies_list: recipient.antibodies
     },
     cutoff: recipient.antibodiesCutoff ? +recipient.antibodiesCutoff : undefined,
-    // TODOO:
-    // waitingSince - add to be
-    // previousTransplants
+    waiting_since: recipient.waitingSince ? fromDateToString(recipient.waitingSince) : undefined,
+    // TODO: convert value to number in SimpleNumberComponent, not here
+    previous_transplants: recipient.previousTransplants ? +recipient.previousTransplants : undefined,
     recipient_requirements: recipient.recipientRequirements
   };
 };

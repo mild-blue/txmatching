@@ -1066,6 +1066,9 @@ definitions:
                         hla_antibodies_list:
                         -   mfi: 10000
                             raw_code: A*01:02
+                previous_transplants:
+                    description: Number of previous kidney transplants.
+                    type: integer
                 recipient_requirements:
                     allOf:
                     -   $ref: '#/definitions/RecipientRequirements'
@@ -1073,6 +1076,12 @@ definitions:
                         it will be overwritten
                     example:
                         require_better_match_in_compatibility_index: true
+                waiting_since:
+                    description: Date since when the patient has been on waiting list.
+                        Use format YYYY-MM-DD.
+                    example: '2015-01-17'
+                    format: date
+                    type: string
             type: object
     RecipientRequirements:
         properties:

@@ -106,6 +106,7 @@ def _recipient_upload_dto_to_recipient_model(
         height=recipient.height,
         sex=recipient.sex,
         yob=recipient.year_of_birth,
+        previous_transplants=recipient.previous_transplants,
     )
     return recipient_model
 

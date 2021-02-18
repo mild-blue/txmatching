@@ -42,8 +42,16 @@ export interface RecipientModelToUpdateGenerated {
      */
     hla_antibodies?: HlaAntibodiesToUpdateGenerated;
     /**
+     * Number of previous kidney transplants.
+     */
+    previous_transplants?: number;
+    /**
      * Provide the whole recipients requirements object, it will be overwritten
      */
     recipient_requirements?: RecipientRequirementsGenerated;
+    /**
+     * Date since when the patient has been on waiting list. Use format YYYY-MM-DD.
+     */
+    waiting_since?: string;
 }
 

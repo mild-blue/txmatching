@@ -115,6 +115,13 @@ RecipientToUpdateJson = patient_api.inherit('RecipientModelToUpdate', PatientToU
                                             description='Provide the whole recipients requirements object, it will be'
                                                         ' overwritten',
                                             example={'require_better_match_in_compatibility_index': True}),
+    'waiting_since': fields.Date(required=False,
+                                 example='2015-01-17',
+                                 description='Date since when the patient has been on waiting list. '
+                                             'Use format YYYY-MM-DD.'),
+    'previous_transplants': fields.Integer(required=False,
+                                           example=0,
+                                           description='Number of previous kidney transplants.'),
     'cutoff': fields.Integer(required=False)
 })
 
