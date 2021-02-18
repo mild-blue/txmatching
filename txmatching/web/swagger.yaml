@@ -507,12 +507,7 @@ definitions:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array
             donor_type:
-                enum:
-                - DONOR
-                - BRIDGING_DONOR
-                - NON_DIRECTED
-                example: DONOR
-                type: string
+                $ref: '#/definitions/DonorType'
             medical_id:
                 description: Medical id of the patient
                 type: string
@@ -536,12 +531,7 @@ definitions:
             blood_group:
                 $ref: '#/definitions/BloodGroupEnum'
             donor_type:
-                enum:
-                - DONOR
-                - BRIDGING_DONOR
-                - NON_DIRECTED
-                example: DONOR
-                type: string
+                $ref: '#/definitions/DonorType'
             height:
                 description: Height of the patient in centimeters.
                 example: 178
@@ -612,6 +602,13 @@ definitions:
                         considered in exchange.
                     type: boolean
             type: object
+    DonorType:
+        description: Type of the donor.
+        enum:
+        - DONOR
+        - BRIDGING_DONOR
+        - NON_DIRECTED
+        type: string
     FailResponse:
         properties:
             error:

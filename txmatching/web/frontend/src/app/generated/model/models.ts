@@ -13,6 +13,7 @@ export * from './donorInputGenerated';
 export * from './donorModelPairInGenerated';
 export * from './donorModelToUpdateAllOfGenerated';
 export * from './donorModelToUpdateGenerated';
+export * from './donorTypeGenerated';
 export * from './failResponseGenerated';
 export * from './forbiddenCountryCombinationGenerated';
 export * from './hLAAntibodyInGenerated';

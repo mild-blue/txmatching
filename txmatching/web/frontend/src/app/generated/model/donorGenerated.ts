@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 import { PatientParametersGenerated } from './patientParametersGenerated';
+import { DonorTypeGenerated } from './donorTypeGenerated';
 import { DetailedScoreForGroupGenerated } from './detailedScoreForGroupGenerated';
 
 
@@ -30,7 +31,7 @@ export interface DonorGenerated {
      * Contains details for compatibility index for each HLA Group compatibility index is calculated for.
      */
     detailed_score_with_related_recipient?: Array<DetailedScoreForGroupGenerated>;
-    donor_type: DonorGeneratedDonorTypeEnum;
+    donor_type: DonorTypeGenerated;
     /**
      * Medical id of the patient
      */
@@ -45,11 +46,4 @@ export interface DonorGenerated {
      */
     score_with_related_recipient?: number;
 }
-export enum DonorGeneratedDonorTypeEnum {
-    Donor = 'DONOR',
-    BridgingDonor = 'BRIDGING_DONOR',
-    NonDirected = 'NON_DIRECTED'
-};
-
-
 

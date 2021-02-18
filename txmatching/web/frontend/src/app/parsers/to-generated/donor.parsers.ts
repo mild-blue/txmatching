@@ -1,5 +1,5 @@
 import { DonorEditable } from '../../model/DonorEditable';
-import { DonorInputGenerated, DonorInputGeneratedDonorTypeEnum, DonorModelToUpdateGenerated } from '../../generated';
+import { DonorInputGenerated, DonorModelToUpdateGenerated, DonorTypeGenerated } from '../../generated';
 import { fromBloodGroup, fromPatientEditableToUpdateGenerated, fromSex } from './patient.parsers';
 import { DonorType } from '@app/model';
 
@@ -26,12 +26,11 @@ export const fromDonorEditableToInputGenerated = ( donor: DonorEditable ): Donor
   };
 };
 
-// TODOO: modify enum name in BE
-export const fromDonorType = ( donorType: DonorType ): DonorInputGeneratedDonorTypeEnum => {
+export const fromDonorType = ( donorType: DonorType ): DonorTypeGenerated => {
   switch (donorType) {
-    case DonorType.DONOR: return DonorInputGeneratedDonorTypeEnum.Donor;
-    case DonorType.BRIDGING_DONOR: return DonorInputGeneratedDonorTypeEnum.BridgingDonor;
-    case DonorType.NON_DIRECTED: return DonorInputGeneratedDonorTypeEnum.NonDirected;
+    case DonorType.DONOR: return DonorTypeGenerated.Donor;
+    case DonorType.BRIDGING_DONOR: return DonorTypeGenerated.BridgingDonor;
+    case DonorType.NON_DIRECTED: return DonorTypeGenerated.NonDirected;
     default: throw new Error(`Parsing from donor type ${donorType} not implemented`);
   }
 };

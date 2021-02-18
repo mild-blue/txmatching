@@ -10,12 +10,13 @@
  * Do not edit the class manually.
  */
 import { SexEnumGenerated } from './sexEnumGenerated';
+import { DonorTypeGenerated } from './donorTypeGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 
 
 export interface DonorInputGenerated { 
     blood_group: BloodGroupEnumGenerated;
-    donor_type: DonorInputGeneratedDonorTypeEnum;
+    donor_type: DonorTypeGenerated;
     /**
      * Height of the patient in centimeters.
      */
@@ -42,11 +43,4 @@ export interface DonorInputGenerated {
      */
     year_of_birth?: number;
 }
-export enum DonorInputGeneratedDonorTypeEnum {
-    Donor = 'DONOR',
-    BridgingDonor = 'BRIDGING_DONOR',
-    NonDirected = 'NON_DIRECTED'
-};
-
-
 
