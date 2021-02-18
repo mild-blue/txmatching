@@ -1,3 +1,6 @@
+import { UserRole } from '@app/model/enums/UserRole';
+import { UserTokenType } from '@app/model/enums/UserTokenType';
+
 export interface User {
   email: string;
   token: string;
@@ -6,19 +9,9 @@ export interface User {
 
 export interface DecodedToken {
   user_id: number;
-  role: Role;
+  role: UserRole;
   iat: number;
   exp: number;
-  type: TokenType;
+  type: UserTokenType;
 }
 
-export enum Role {
-  ADMIN = 'ADMIN',
-  VIEWER = 'VIEWER',
-  EDITOR = 'EDITOR'
-}
-
-export enum TokenType {
-  OTP = 'OTP',
-  ACCESS = 'ACCESS'
-}

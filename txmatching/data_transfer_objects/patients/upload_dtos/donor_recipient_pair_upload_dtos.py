@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
@@ -11,4 +12,4 @@ from txmatching.utils.country_enum import Country
 class DonorRecipientPairDTO:
     country_code: Country
     donor: DonorUploadDTO
-    recipient: RecipientUploadDTO
+    recipient: Optional[RecipientUploadDTO] = None

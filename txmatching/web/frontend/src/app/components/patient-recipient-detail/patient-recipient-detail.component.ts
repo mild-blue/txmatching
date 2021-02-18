@@ -4,8 +4,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { PatientService } from '@app/services/patient/patient.service';
 import { map, startWith } from 'rxjs/operators';
-import { hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
-import { ENTER, SPACE } from '@angular/cdk/keycodes';
+import { hlaFullTextSearch, separatorKeysCodes } from '@app/directives/validators/form.directive';
 import { Recipient } from '@app/model/Recipient';
 import { Antibody, Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
@@ -33,7 +32,7 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
 
   public loading: boolean = false;
 
-  public separatorKeysCodes: number[] = [ENTER, SPACE];
+  public separatorKeysCodes: number[] = separatorKeysCodes;
 
   constructor(private _patientService: PatientService) {
     super(_patientService);

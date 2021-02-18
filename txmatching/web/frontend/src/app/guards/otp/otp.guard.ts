@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { TokenType } from '@app/model/User';
 import { AuthService } from '@app/services/auth/auth.service';
+import { UserTokenType } from '@app/model/enums/UserTokenType';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class OtpGuard implements CanActivate {
     const currentUser = this._authService.currentUserValue;
 
     if (currentUser) {
-      if (currentUser.decoded.type === TokenType.OTP) {
+      if (currentUser.decoded.type === UserTokenType.OTP) {
         return true;
       }
 

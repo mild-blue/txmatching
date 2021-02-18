@@ -7,7 +7,7 @@ import { PatientService } from '@app/services/patient/patient.service';
 import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
 import { Configuration } from '@app/model/Configuration';
 import { PatientList } from '@app/model/PatientList';
-import { DonorType } from '@app/model/Donor';
+import { DonorType } from '@app/model/enums/DonorType';
 
 @Component({
   selector: 'app-matching-detail',

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { AuthService } from '@app/services/auth/auth.service';
 import { catchError } from 'rxjs/operators';
 import { ResponseStatusCode } from '@app/services/auth/auth.interface';
-import { TokenType } from '@app/model/User';
+import { UserTokenType } from '@app/model/enums/UserTokenType';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
@@ -18,7 +18,7 @@ export class ErrorInterceptor implements HttpInterceptor {
       if (err.status === ResponseStatusCode.UNAUTHORIZED) {
         // auto logout if 401 response returned from api
         // and token does not have OTP type
-        if (this._authService.currentUserValue?.decoded.type !== TokenType.OTP) {
+        if (this._authService.currentUserValue?.decoded.type !== UserTokenType.OTP) {
           this._authService.logout();
         }
       }
