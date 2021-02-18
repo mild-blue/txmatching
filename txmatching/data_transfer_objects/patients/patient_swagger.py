@@ -11,7 +11,6 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DetailedScoreForGroupJson)
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     DonorJsonIn, RecipientJsonIn)
-from txmatching.patients.patient import DonorType
 from txmatching.web.api.namespaces import patient_api
 
 PatientParametersJson = patient_api.model('PatientParameters', {
