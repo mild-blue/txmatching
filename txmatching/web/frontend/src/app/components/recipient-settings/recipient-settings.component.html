@@ -53,13 +53,13 @@
   <app-sex [patient]="recipient"></app-sex>
 
   <!-- Recipient height -->
-  <app-simple-number label="Height [cm]" [(ngModel)]="recipient.height" name="height" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Height [cm]" [value]="recipient.height" [(ngModel)]="recipient.height" name="height" ngDefaultControl></app-simple-number>
 
   <!-- Recipient weight -->
-  <app-simple-number label="Weight [kg]" [(ngModel)]="recipient.weight" name="weight" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Weight [kg]" [value]="recipient.weight" [(ngModel)]="recipient.weight" name="weight" ngDefaultControl></app-simple-number>
 
   <!-- Recipient year of birth -->
-  <app-simple-number label="Year of birth" [(ngModel)]="recipient.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Year of birth" [value]="recipient.yearOfBirth" [(ngModel)]="recipient.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
 
   <!-- Recipient waiting since date -->
   <app-setting-item label="Waiting since">
@@ -71,7 +71,7 @@
   </app-setting-item>
 
   <!-- Recipient previous transplants -->
-  <app-simple-number label="Previous transplants count" [(ngModel)]="recipient.previousTransplants" name="previousTransplants" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Previous transplants count" [value]="recipient.previousTransplants" [(ngModel)]="recipient.previousTransplants" name="previousTransplants" ngDefaultControl></app-simple-number>
 
   <!-- Matching conditions -->
   <h4>Matching conditions</h4>

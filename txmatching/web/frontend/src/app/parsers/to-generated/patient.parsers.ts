@@ -2,17 +2,19 @@ import { BloodGroupEnumGenerated, PatientModelToUpdateGenerated, SexEnumGenerate
 import { BloodGroup, Sex } from '@app/model';
 import { PatientEditable } from '@app/model/PatientEditable';
 
-export const fromPatientEditable = ( patient: PatientEditable, patientId: number ): PatientModelToUpdateGenerated => {
+/* Used for editing patient */
+export const fromPatientEditableToUpdateGenerated = (patient: PatientEditable, patientId: number ): PatientModelToUpdateGenerated => {
   return {
     db_id: patientId,
     blood_group: fromBloodGroup(patient.bloodGroup),
     hla_typing: {
-      hla_types_list: patient.antigens.map(raw_code => {return {raw_code};})
+      hla_types_list: patient.antigens
     },
-    sex: fromSex(patient.sex),
-    height: patient.height,
-    weight: patient.weight,
-    year_of_birth: patient.yearOfBirth,
+    sex: patient.sex ? fromSex(patient.sex) : undefined,
+    // TODO: convert values to numbers in SimpleNumberComponent, not here
+    height: patient.height ? +patient.height : undefined,
+    weight: patient.weight ? +patient.weight : undefined,
+    year_of_birth: patient.yearOfBirth ? +patient.yearOfBirth : undefined
   };
 };
 
@@ -30,7 +32,15 @@ export const fromSex = ( sex: Sex ): SexEnumGenerated | undefined => {
   switch (sex) {
     case Sex.M: return SexEnumGenerated.M;
     case Sex.F: return SexEnumGenerated.F;
-    case Sex.NULL: return undefined;
     default: throw new Error(`Parsing from sex ${sex} not implemented`);
   }
+};
+
+export const fromDateToString = (date: Date): string => {
+  const y = date.getFullYear();
+  const d = date.getDate();
+  const m = date.getMonth();
+  const month = m < 10 ? `0${m}` : 'm';
+
+  return `${y}-${month}-${d}`;
 };

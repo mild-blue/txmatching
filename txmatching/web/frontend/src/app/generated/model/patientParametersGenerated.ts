@@ -16,8 +16,8 @@ import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 
 
 export interface PatientParametersGenerated { 
-    blood_group?: BloodGroupEnumGenerated;
-    country_code?: CountryCodeGenerated;
+    blood_group: BloodGroupEnumGenerated;
+    country_code: CountryCodeGenerated;
     height?: number;
     hla_typing?: HlaTypingGenerated;
     sex?: SexEnumGenerated;

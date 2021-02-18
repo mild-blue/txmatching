@@ -52,7 +52,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     this.success = false;
     this._patientService.saveDonor(this.defaultTxmEvent.id, this.item.db_id, this.donorEditable)
     .then((updatedDonor) => {
-      this._logger.log('Donor updated', [updatedDonor]);
+      this._logger.log('Updated donor received from BE', [updatedDonor]);
       Object.assign(this.item, updatedDonor);
       this._initDonorEditable();
       this.success = true;
@@ -73,6 +73,6 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
     this.donorEditable = new DonorEditable();
     this.donorEditable.initializeFromPatient(this.item);
-    this._logger.log('PatientEditable initialized', [this.donorEditable]);
+    this._logger.log('DonorEditable initialized', [this.donorEditable]);
   }
 }

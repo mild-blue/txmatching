@@ -25,13 +25,13 @@
   <app-sex [patient]="donor"></app-sex>
 
   <!-- Donor height -->
-  <app-simple-number label="Height [cm]" [(ngModel)]="donor.height" name="height" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Height [cm]" [value]="donor.height" [(ngModel)]="donor.height" name="height" ngDefaultControl></app-simple-number>
 
   <!-- Donor weight -->
-  <app-simple-number label="Weight [kg]" [(ngModel)]="donor.weight" name="weight" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Weight [kg]" [value]="donor.weight" [(ngModel)]="donor.weight" name="weight" ngDefaultControl></app-simple-number>
 
   <!-- Donor year of birth -->
-  <app-simple-number label="Year of birth" [(ngModel)]="donor.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Year of birth" [value]="donor.yearOfBirth" [(ngModel)]="donor.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
 
   <!-- Active checkbox -->
   <div class="checkboxes">

@@ -1,11 +1,11 @@
 import { Component, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
 import { PatientEditable } from '@app/model/PatientEditable';
-import { Country } from '@app/model/enums/Country';
 import { FormControl } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 import { countryFullTextSearch, countryNameValidator, separatorKeysCodes } from '@app/directives/validators/form.directive';
 import { Observable } from 'rxjs';
 import { AbstractFormHandlerComponent } from '@app/components/abstract-form-handler/abstract-form-handler.component';
+import { CountryCodeGenerated } from '@app/generated';
 
 @Component({
   selector: 'app-country-setting',
@@ -18,7 +18,7 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
 
   @Input() patient?: PatientEditable;
 
-  public allCountries: string[] = Object.values(Country);
+  public allCountries: string[] = Object.values(CountryCodeGenerated);
   public filteredCountries: Observable<string[]>;
   public separatorKeysCodes: number[] = separatorKeysCodes;
   public countryControl: FormControl = new FormControl('');
@@ -59,7 +59,7 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
   }
 
   public handleCountrySelect(control: HTMLInputElement): void {
-    const country: Country = this.selectedCountryValue as Country;
+    const country: CountryCodeGenerated = this.selectedCountryValue as CountryCodeGenerated;
 
     // Set country to patient
     this.patient?.setCountry(country);

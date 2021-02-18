@@ -11,9 +11,9 @@ from txmatching.patients.patient import DonorType
 from txmatching.web.api.namespaces import patient_api
 
 PatientParametersJson = patient_api.model('PatientParameters', {
-    'blood_group': fields.Nested(BloodGroupEnumJson, required=False),
+    'blood_group': fields.Nested(BloodGroupEnumJson, required=True),
     'hla_typing': fields.Nested(required=False, model=HLATyping),
-    'country_code': fields.Nested(CountryCodeJson, required=False),
+    'country_code': fields.Nested(CountryCodeJson, required=True),
     'sex': fields.Nested(SexEnumJson, required=False),
     'height': fields.Integer(required=False),
     'weight': fields.Float(required=False),
@@ -124,7 +124,7 @@ HLAAntibodyPairInJson = patient_api.model('HLAAntibodyPairIn', {
 })
 
 DonorModelPairInJson = patient_api.model('DonorModelPairIn', {
-    'country_code': fields.Nested(CountryCodeJson, required=False),
+    'country_code': fields.Nested(CountryCodeJson, required=True),
     'donor': fields.Nested(required=True, model=DonorJsonIn),
     'recipient': fields.Nested(required=False, model=RecipientJsonIn)
 })

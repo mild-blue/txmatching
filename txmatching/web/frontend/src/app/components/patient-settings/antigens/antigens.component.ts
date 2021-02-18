@@ -23,7 +23,7 @@ export class AntigensComponent implements OnInit {
       return;
     }
 
-    this.patient?.addAntigen(code);
+    this.patient?.addAntigen({raw_code: code});
 
     // Reset input
     control.value = '';

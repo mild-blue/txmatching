@@ -14,12 +14,6 @@ export interface Antibody extends Hla {
   cutoff: number;
 }
 
-export class AntibodyEditable {
-  raw_code?: string; // TODOO: test that name->raw_code renaming still works (upload with this is currentl not working)
-  mfi?: number;
-  cutoff?: number;
-}
-
 export interface DetailedScorePerGroup {
   hla_group: string;
   donor_matches: AntigenMatch[];

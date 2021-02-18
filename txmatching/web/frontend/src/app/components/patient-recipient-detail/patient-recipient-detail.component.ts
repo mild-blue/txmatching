@@ -49,7 +49,7 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
     this.success = false;
     this._patientService.saveRecipient(this.defaultTxmEvent.id, this.item.db_id, this.recipientEditable)
     .then((updatedRecipient) => {
-      this._logger.log('Recipient updated', [updatedRecipient]);
+      this._logger.log('Updated recipient received from BE', [updatedRecipient]);
       Object.assign(this.item, updatedRecipient);
       this._initRecipientEditable();
       this.success = true;
@@ -70,5 +70,6 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
 
     this.recipientEditable = new RecipientEditable();
     this.recipientEditable.initializeFromPatient(this.item);
+    this._logger.log('RecipientEditable initialized', [this.recipientEditable]);
   }
 }
