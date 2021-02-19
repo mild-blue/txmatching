@@ -237,7 +237,8 @@ class TestSaveAndGetConfiguration(DbTests):
                                     headers=self.auth_headers).json['recipients']
             self.assertEqual(recipient_update_dict['acceptable_blood_groups'], recipients[0]['acceptable_blood_groups'])
 
-            self.assertIsNone(ConfigModel.query.get(1))
+            # Config is not deleted
+            self.assertIsNotNone(ConfigModel.query.get(1))
 
     def test_correct_config_applied(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
@@ -250,7 +251,7 @@ class TestSaveAndGetConfiguration(DbTests):
                               json=conf_dto,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-            self.assertEqual(9, len(res.json))
+            self.assertEqual(9, res.json['found_matchings_count'])
 
             conf_dto2 = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=50))
 
@@ -259,7 +260,7 @@ class TestSaveAndGetConfiguration(DbTests):
                               json=conf_dto2,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-            self.assertEqual(503, len(res.json))
+            self.assertEqual(947, res.json['found_matchings_count'])
 
     def test_solver_multiple_txm_events(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
@@ -271,12 +272,13 @@ class TestSaveAndGetConfiguration(DbTests):
                               f'{MATCHING_NAMESPACE}/calculate-for-config',
                               json=conf_dto,
                               headers=self.auth_headers)
+            self.assertEqual(9, res.json['found_matchings_count'])
             self.assertEqual(200, res.status_code)
 
-            create_or_overwrite_txm_event(name='test2')
-            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+            txm_event_db_id_2 = create_or_overwrite_txm_event(name='test2').db_id
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id_2}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',
                               json=conf_dto,
                               headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-            self.assertEqual(0, len(res.json))
+            self.assertEqual(0, res.json['found_matchings_count'])
