@@ -1,0 +1,8 @@
+<app-setting-item *ngIf="patient" label="Blood group">
+  <mat-button-toggle-group [(ngModel)]="patient.bloodGroup" [ngModelOptions]="{standalone: true}">
+    <mat-button-toggle *ngFor="let bg of allBloodGroups"
+                       [value]="bg">
+      {{ bg }}
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+</app-setting-item>

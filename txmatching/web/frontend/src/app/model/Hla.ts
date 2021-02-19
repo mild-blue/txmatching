@@ -1,3 +1,6 @@
+import { AntigenMatchType } from '@app/model/enums/AntigenMatchType';
+import { AntibodyMatchType } from '@app/model/enums/AntibodyMatchType';
+
 export interface Hla {
   code: string;
   raw_code: string;
@@ -9,6 +12,12 @@ export interface Antigen extends Hla {
 export interface Antibody extends Hla {
   mfi: number;
   cutoff: number;
+}
+
+export class AntibodyEditable {
+  name?: string;
+  mfi?: number;
+  cutoff?: number;
 }
 
 export interface DetailedScorePerGroup {
@@ -40,16 +49,4 @@ export interface HlaPerGroup {
 export interface AntibodiesPerGroup {
   hla_group: string;
   hla_antibody_list: Antibody[];
-}
-
-export enum AntigenMatchType {
-  SPLIT = 'SPLIT',
-  BROAD = 'BROAD',
-  HIGH_RES = 'HIGH_RES',
-  NONE = 'NONE',
-}
-
-export enum AntibodyMatchType {
-  NONE = 'NONE',
-  MATCH = 'MATCH',
 }

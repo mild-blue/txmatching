@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { DonorType } from '@app/model/Donor';
+import { DonorType } from '@app/model/enums/DonorType';
 
 @Pipe({
   name: 'donorTypeLabel'

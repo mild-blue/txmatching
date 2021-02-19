@@ -28,13 +28,14 @@
     </div>
   </app-container>
 
-  <app-configuration (configClosed)="toggleConfiguration()"
-                     *ngIf="showConfiguration"
-                     [configuration]="configuration"
-                     [isOpened]="configOpened"
-                     [patients]="patients"
-                     (configSubmitted)="calculate($event)"
-  ></app-configuration>
+  <app-template-popup [isOpened]="configOpened"
+                      [title]="'Configuration'"
+                      (wasClosed)="toggleConfiguration()">
+    <app-configuration *ngIf="configuration"
+                       [configuration]="configuration"
+                       [patients]="patients"
+                       (configSubmitted)="calculate($event)"></app-configuration>
+  </app-template-popup>
 
   <app-content>
     <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>

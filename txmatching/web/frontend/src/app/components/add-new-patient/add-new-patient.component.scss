@@ -1,0 +1,72 @@
+@import "../../../styles/variables";
+
+.new-patient {
+  &__field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: $item-gap;
+
+    .label {
+      font-weight: 600;
+      margin-right: $padding-x;
+    }
+
+    mat-form-field {
+      flex: 1;
+      max-width: 50%;
+    }
+
+    ::ng-deep .mat-button-toggle-label-content {
+      line-height: 30px;
+    }
+  }
+
+  &__row {
+    display: flex;
+
+    margin-left: calc(#{$item-gap} * -1);
+    margin-right: calc(#{$item-gap} * -1);
+
+    &--single-box {
+      display: flex;
+      justify-content: center;
+
+      .new-patient__box {
+        background: $white;
+      }
+    }
+  }
+
+  &__box {
+    flex: 1;
+    max-width: calc(50% - #{$item-gap} * 2);
+
+    border-radius: $border-radius--wide;
+    background: var(--primary-color);
+    box-shadow: $box-shadow--wide;
+    margin-bottom: $box-shadow--wide-size;
+    overflow: hidden;
+
+    margin-left: $item-gap;
+    margin-right: $item-gap;
+
+    display: flex;
+    flex-direction: column;
+
+    h4 {
+      margin: 0;
+      padding: calc(#{$padding-y} / 2) $padding-x;
+      color: $white;
+    }
+
+    .content {
+      flex: 1;
+      border-radius: $border-radius--wide;
+      background: $white;
+      padding: $padding-y $padding-x;
+    }
+  }
+}
+

@@ -1,7 +1,6 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Configuration } from '@app/model/Configuration';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { PatientList } from '@app/model/PatientList';
 import { ConfigurationGeneratedSolverConstructorNameEnum } from '@app/generated';
 
@@ -10,18 +9,13 @@ import { ConfigurationGeneratedSolverConstructorNameEnum } from '@app/generated'
   templateUrl: './configuration.component.html',
   styleUrls: ['./configuration.component.scss']
 })
-export class ConfigurationComponent implements OnInit, OnChanges {
+export class ConfigurationComponent implements OnInit {
 
-  @Input() isOpened: boolean = false;
   @Input() configuration?: Configuration;
   @Input() patients?: PatientList;
   @Output() configSubmitted: EventEmitter<Configuration> = new EventEmitter<Configuration>();
-  @Output() configClosed: EventEmitter<void> = new EventEmitter<void>();
-
-  @ViewChild('configElement') configElement?: ElementRef;
 
   public configForm?: FormGroup;
-  public closeIcon = faTimes;
   public allSolverConstructorNames: string[] = Object.values(
     ConfigurationGeneratedSolverConstructorNameEnum
   );
@@ -31,20 +25,6 @@ export class ConfigurationComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this._buildFormFromConfig();
-  }
-
-  public ngOnChanges(changes: SimpleChanges): void {
-    if (changes && changes.isOpened) {
-      const wasOpened = changes.isOpened.previousValue;
-      const isOpened = changes.isOpened.currentValue;
-      if (!wasOpened && isOpened) {
-        this._scrollTop();
-      }
-    }
-  }
-
-  public close(): void {
-    this.configClosed.emit();
   }
 
   public submitAction(): void {
@@ -57,13 +37,6 @@ export class ConfigurationComponent implements OnInit, OnChanges {
         forbidden_country_combinations,
         required_patient_db_ids
       });
-    }
-  }
-
-  private _scrollTop(): void {
-    if (this.configElement) {
-      const element = this.configElement.nativeElement;
-      element.scrollTop = 0;
     }
   }
 

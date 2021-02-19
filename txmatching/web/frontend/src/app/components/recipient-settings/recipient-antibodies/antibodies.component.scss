@@ -1,0 +1,51 @@
+@import "../../../../styles/variables";
+
+.antibodies {
+  padding: 0;
+  margin-left: calc(-1 * #{$padding-x});
+  margin-right: calc(-1 * #{$padding-x});
+
+  &__add {
+    padding: 1.25em $padding-x;
+    background: $gray-200;
+
+    &-heading {
+      color: $gray-600;
+      display: block;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    &-form {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      max-width: $container-max-width;
+      margin: auto;
+
+      app-button {
+        margin-left: $item-gap;
+        padding-bottom: 1.25em;
+      }
+
+      form {
+        $field-gap: calc(#{$item-gap} / 2);
+
+        flex: 1;
+        display: flex;
+        align-items: flex-end;
+        margin: 0 calc(-1 * #{$field-gap});
+        min-height: 80px;
+
+        .mat-form-field {
+          flex: 1;
+          padding: 0 $field-gap;
+          margin: 0;
+        }
+      }
+    }
+  }
+}

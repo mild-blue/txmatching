@@ -71,7 +71,7 @@ class TestPatientService(DbTests):
         self.login_with_credentials(EDITOR_WITH_ONLY_ONE_COUNTRY)
         res = self._upload_data()
         self.assertEqual(403, res.status_code)
-        self.assertEqual('User with email editor_only_one_country@example.com does not have access to CAN!',
+        self.assertEqual('TXM event 1 is not allowed for this user.',
                          res.json['message'])
 
     def _upload_data(self, file=PATIENT_DATA_OBFUSCATED):
@@ -119,6 +119,32 @@ class TestPatientService(DbTests):
 
         self.assertEqual(donor_medical_id, txm_event.all_donors[0].medical_id)
         self.assertEqual(1, txm_event.all_donors[0].related_recipient_db_id)
+
+    def test_addition_of_bridging_donor(self):
+        txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
+        donor_medical_id = 'donor_test'
+        with self.app.test_client() as client:
+            json_data = {
+                'donor': {
+                    'medical_id': donor_medical_id,
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'donor_type': DonorType.BRIDGING_DONOR.value,
+                },
+                'country_code': 'CZE'
+            }
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/pairs',
+                              headers=self.auth_headers, json=json_data)
+
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(0, res.json['recipients_uploaded'])
+        self.assertEqual(1, res.json['donors_uploaded'])
+
+        txm_event = get_txm_event_complete(txm_event_db_id)
+
+        self.assertEqual(donor_medical_id, txm_event.all_donors[0].medical_id)
+
 
     def test_invalid_cuttoff_values(self):
         txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id

@@ -28,6 +28,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   @Input() saveLastViewedItem: boolean = false;
   @Input() useInfiniteScroll: boolean = true;
 
+  @Input() active?: ListItem;
   public activeItem?: ListItem;
   public displayedItems: ListItem[] = [];
 
@@ -177,13 +178,17 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
       this.displayedItems = this.items;
     }
 
-    // set first or saved item as active
-    let newActiveItem = this.displayedItems[0];
-    if (this.saveLastViewedItem && this.items.length) {
-      const lastViewedId = this._uiInteractionsService.getLastViewedItemId();
-      const foundItem = this.items.find(item => item.index === lastViewedId);
-      newActiveItem = foundItem ?? newActiveItem;
+    // set first or saved item as active if not set from @Input()
+    let newActiveItem = this.active;
+    if (!this.active) {
+      newActiveItem = this.displayedItems[0];
+      if (this.saveLastViewedItem && this.items.length) {
+        const lastViewedId = this._uiInteractionsService.getLastViewedItemId();
+        const foundItem = this.items.find(item => item.index === lastViewedId);
+        newActiveItem = foundItem ?? newActiveItem;
+      }
     }
+
     this.setActive(newActiveItem);
   }
 

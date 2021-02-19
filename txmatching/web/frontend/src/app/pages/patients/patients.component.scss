@@ -5,7 +5,12 @@
   &__header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
+    margin: calc(#{$padding-y} / 2) 0 0;
+
+    h1 {
+      margin-bottom: 0;
+    }
   }
 
   ::ng-deep .list-item {

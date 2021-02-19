@@ -3,9 +3,8 @@ import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { hlaFullTextSearch } from '@app/directives/validators/configForm.directive';
+import { hlaFullTextSearch, separatorKeysCodes } from '@app/directives/validators/form.directive';
 import { PatientService } from '@app/services/patient/patient.service';
-import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Donor } from '@app/model/Donor';
 import { Antigen } from '@app/model/Hla';
 import { PatientList } from '@app/model/PatientList';
@@ -27,7 +26,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   public allAntigens: Antigen[] = [];
 
   public filtered: Observable<Antigen[]>;
-  public separatorKeysCodes: number[] = [ENTER, SPACE];
+  public separatorKeysCodes: number[] = separatorKeysCodes;
 
   public loading: boolean = false;
   public success: boolean = false;
@@ -58,12 +57,18 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     return this.allAntigens.filter(a => !selectedAntigensCodes.includes(a.code));
   }
 
+  public setActiveValue(value: boolean): void {
+    if(this.item) this.item.active = value;
+  }
+
   public addNewAntigen(code: string, control: HTMLInputElement): void {
-    if(!this.item) {
-      this._logger.error(`addNewAntigen failed because item not set`);
+    if (!this.item) {
+      this._logger.error('addNewAntigen failed because item not set');
       return;
     }
-    if(!code.length) return;
+    if (!code.length) {
+      return;
+    }
 
     const formattedCode = code.trim().toUpperCase();
     this.item.parameters.hla_typing.hla_types_list.push({ code: formattedCode, raw_code: formattedCode });
@@ -74,11 +79,13 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   }
 
   public addAntigen(a: Antigen, control: HTMLInputElement): void {
-    if(!this.item) {
-      this._logger.error(`addAntigen failed because item not set`);
+    if (!this.item) {
+      this._logger.error('addAntigen failed because item not set');
       return;
     }
-    if (!a) return;
+    if (!a) {
+      return;
+    }
 
     this.item.parameters.hla_typing.hla_types_list.push(a);
 
@@ -88,8 +95,8 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   }
 
   public remove(code: Antigen): void {
-    if(!this.item) {
-      this._logger.error(`remove failed because item not set`);
+    if (!this.item) {
+      this._logger.error('remove failed because item not set');
       return;
     }
 
@@ -101,12 +108,12 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   }
 
   public handleSave(): void {
-    if(!this.item) {
-      this._logger.error(`handleSave failed because item not set`);
+    if (!this.item) {
+      this._logger.error('handleSave failed because item not set');
       return;
     }
-    if(!this.defaultTxmEvent) {
-      this._logger.error(`handleSave failed because defaultTxmEvent not set`);
+    if (!this.defaultTxmEvent) {
+      this._logger.error('handleSave failed because defaultTxmEvent not set');
       return;
     }
 
@@ -121,8 +128,8 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   }
 
   private _initAvailableCodes(): void {
-    if(!this.patients?.donors) {
-      this._logger.error(`initAvailableCodes failed because donors not set`);
+    if (!this.patients?.donors) {
+      this._logger.error('initAvailableCodes failed because donors not set');
       return;
     }
 

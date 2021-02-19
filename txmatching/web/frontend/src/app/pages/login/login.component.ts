@@ -4,9 +4,10 @@ import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
 import { finalize, first } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert/alert.service';
-import { TokenType, User } from '@app/model/User';
+import { User } from '@app/model/User';
 import { VersionService } from '@app/services/version/version.service';
 import { staging } from '@app/model/Theme';
+import { UserTokenType } from '@app/model/enums/UserTokenType';
 
 @Component({
   selector: 'app-login',
@@ -57,9 +58,9 @@ export class LoginComponent {
     )
     .subscribe(
       (user: User) => {
-        if (user.decoded.type === TokenType.OTP) {
+        if (user.decoded.type === UserTokenType.OTP) {
           this._router.navigate(['authentication']);
-        } else if (user.decoded.type === TokenType.ACCESS) {
+        } else if (user.decoded.type === UserTokenType.ACCESS) {
           this._router.navigate(['/']);
         } else {
           this._alertService.error('<strong>Authentication error:</strong> Unexpected token received, contact administrator.');

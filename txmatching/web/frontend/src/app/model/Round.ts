@@ -1,5 +1,5 @@
 import { Transplant } from '@app/model/Transplant';
-import { DonorType } from './Donor';
+import { DonorType } from '@app/model/enums/DonorType';
 
 export interface Round {
   index?: string;

@@ -5,6 +5,7 @@
   position: fixed;
   top: $padding-y;
   right: $padding-x;
+  z-index: 99999;
 }
 
 .alert + .alert {
