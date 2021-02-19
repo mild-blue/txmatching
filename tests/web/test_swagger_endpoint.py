@@ -36,7 +36,9 @@ class TestSwaggerEndpoints(DbTests):
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/change-password': [401],
                 f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/patients': [403],
-                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/add-patients-file': [400]
+                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/add-patients-file': [400],
+                # TODO: Fix swagger test https://github.com/mild-blue/swagger-unittest/issues/5
+                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/recipient': [400],
             }
         }
         # we need this user as we need the report to be generated from filled txm event, but we create an empty
