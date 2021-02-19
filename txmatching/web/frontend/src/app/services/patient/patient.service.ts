@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
-import { first, map } from 'rxjs/operators';
+import { filter, first, map } from 'rxjs/operators';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { PatientList } from '@app/model/PatientList';
 import { Donor } from '@app/model/Donor';
@@ -9,7 +9,7 @@ import { Recipient } from '@app/model/Recipient';
 import { Antibody } from '@app/model/Hla';
 import { PatientsGenerated, PatientUploadSuccessResponseGenerated } from '@app/generated';
 import { parsePatientList } from '@app/parsers';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { DonorEditable } from '@app/model/DonorEditable';
 import { RecipientEditable } from '@app/model/RecipientEditable';
 import { DonorModelPairIn } from '@app/services/patient/patient.service.interface';
@@ -22,14 +22,14 @@ import { DonorType } from '@app/model/enums/DonorType';
 })
 export class PatientService {
 
-  private _deleteDonorSubject: Subject<number> = new Subject<number>();
+  private _deletedDonorDbIdSubject: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
 
   constructor(private _http: HttpClient,
               private _logger: LoggerService) {
   }
 
   public onDeleteDonor(): Observable<number> {
-    return this._deleteDonorSubject.asObservable();
+    return this._deletedDonorDbIdSubject.asObservable().pipe(filter(dbId => dbId !== -1));
   }
 
   public async getPatients(txmEventId: number): Promise<PatientList> {
@@ -132,6 +132,6 @@ export class PatientService {
     await this._http.delete(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs/${donorDbId}`
     ).pipe(first()).toPromise();
-    this._deleteDonorSubject.next(donorDbId);
+    this._deletedDonorDbIdSubject.next(donorDbId);
   }
 }
