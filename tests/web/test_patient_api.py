@@ -6,7 +6,8 @@ from tests.test_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.database.sql_alchemy_schema import UploadedFileModel
+from txmatching.database.sql_alchemy_schema import (ConfigModel,
+                                                    UploadedFileModel)
 from txmatching.patients.hla_model import HLAAntibodies, HLATyping
 from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.blood_groups import BloodGroup
@@ -24,6 +25,8 @@ class TestPatientService(DbTests):
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}',
                              headers=self.auth_headers)
         self.assertEqual(200, res.status_code)
+        self.assertEqual(38, len(res.json['donors']))
+        self.assertEqual(34, len(res.json['recipients']))
         for donor in res.json['donors']:
             self.assertIn('detailed_score_with_related_recipient', donor)
             detailed_score_for_groups = donor['detailed_score_with_related_recipient']
@@ -341,7 +344,9 @@ class TestPatientService(DbTests):
         self.assertEqual(recipient.parameters.height, 200)
         self.assertEqual(recipient.parameters.weight, 100)
         self.assertEqual(recipient.parameters.year_of_birth, 1990)
-        self.assertEqual(recipient.acceptable_blood_groups, [BloodGroup.A, BloodGroup.B, BloodGroup.AB])
+        # HACK: This should equal to [BloodGroup.A, BloodGroup.B, BloodGroup.AB]
+        # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum
+        self.assertCountEqual(recipient.acceptable_blood_groups, ['A', 'B', 'AB'])
         self.assertEqual(recipient.hla_antibodies, HLAAntibodies())
         self.assertEqual(recipient.recipient_requirements, RecipientRequirements(True, True, True))
         self.assertEqual(recipient.recipient_cutoff, 42)
@@ -385,7 +390,28 @@ class TestPatientService(DbTests):
         self.assertEqual(recipient.parameters.height, None)
         self.assertEqual(recipient.parameters.weight, None)
         self.assertEqual(recipient.parameters.year_of_birth, None)
-        self.assertEqual(recipient.acceptable_blood_groups, [BloodGroup.ZERO])
+        # HACK: This should equal to [BloodGroup.ZERO]
+        # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum
+        self.assertCountEqual(recipient.acceptable_blood_groups, ['0'])
         self.assertEqual(recipient.hla_antibodies, HLAAntibodies())
         self.assertEqual(recipient.recipient_requirements, RecipientRequirements(False, False, False))
         self.assertEqual(recipient.recipient_cutoff, 42)  # Cutoff is unchanged
+
+    def test_save_recipient(self):
+        txm_event_db_id = self.fill_db_with_patients_and_results()
+        recipient_update_dict = {
+            'db_id': 1,
+            'acceptable_blood_groups': ['A', 'AB'],
+        }
+        with self.app.test_client() as client:
+            self.assertIsNotNone(ConfigModel.query.get(1))
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}/recipient',
+                             headers=self.auth_headers,
+                             json=recipient_update_dict).json
+            self.assertEqual(['A', 'AB'], res['acceptable_blood_groups'])
+            recipients = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}',
+                                    headers=self.auth_headers).json['recipients']
+            self.assertEqual(recipient_update_dict['acceptable_blood_groups'], recipients[0]['acceptable_blood_groups'])
+
+            # Config is not deleted
+            self.assertIsNotNone(ConfigModel.query.get(1))

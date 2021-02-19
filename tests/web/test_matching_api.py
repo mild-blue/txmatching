@@ -7,13 +7,11 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.database.services import solver_service
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.database.sql_alchemy_schema import ConfigModel
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.enums import HLAGroup, MatchTypes
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import (API_VERSION, MATCHING_NAMESPACE, PATIENT_NAMESPACE,
-                            TXM_EVENT_NAMESPACE)
+from txmatching.web import API_VERSION, MATCHING_NAMESPACE, TXM_EVENT_NAMESPACE
 
 
 class TestSaveAndGetConfiguration(DbTests):
@@ -212,33 +210,6 @@ class TestSaveAndGetConfiguration(DbTests):
                                  'detailed_score_per_group'][0][
                                  'recipient_matches'
                              ])
-
-    def test_get_patients(self):
-        txm_event_db_id = self.fill_db_with_patients()
-        with self.app.test_client() as client:
-            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}',
-                             headers=self.auth_headers)
-            self.assertEqual(2, len(res.json['donors']))
-            self.assertEqual(2, len(res.json['recipients']))
-
-    def test_save_recipient(self):
-        txm_event_db_id = self.fill_db_with_patients_and_results()
-        recipient_update_dict = {
-            'db_id': 1,
-            'acceptable_blood_groups': ['A', 'AB'],
-        }
-        with self.app.test_client() as client:
-            self.assertIsNotNone(ConfigModel.query.get(1))
-            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}/recipient',
-                             headers=self.auth_headers,
-                             json=recipient_update_dict).json
-            self.assertEqual(['A', 'AB'], res['acceptable_blood_groups'])
-            recipients = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}',
-                                    headers=self.auth_headers).json['recipients']
-            self.assertEqual(recipient_update_dict['acceptable_blood_groups'], recipients[0]['acceptable_blood_groups'])
-
-            # Config is not deleted
-            self.assertIsNotNone(ConfigModel.query.get(1))
 
     def test_correct_config_applied(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
