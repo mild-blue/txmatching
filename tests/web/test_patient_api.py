@@ -256,7 +256,7 @@ class TestPatientService(DbTests):
         self.assertEqual('application/json', res.content_type)
 
         # Check that update was working
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         donor = txm_event.active_donors_dict[donor_db_id]
         self.assertEqual(donor.parameters.blood_group, BloodGroup.A)
         self.assertEqual(donor.parameters.hla_typing, HLATyping([]))
@@ -287,7 +287,7 @@ class TestPatientService(DbTests):
         self.assertEqual('application/json', res.content_type)
 
         # Check that update was working
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         donor = next(donor for donor in txm_event.all_donors if donor.db_id == donor_db_id)
 
         self.assertEqual(donor.parameters.blood_group, BloodGroup.B)
@@ -298,7 +298,7 @@ class TestPatientService(DbTests):
         self.assertEqual(donor.parameters.year_of_birth, None)
         self.assertEqual(donor.active, False)
 
-    def test_update_recipient(self):
+    def test_update_recipient(self):  # TODOO
         txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         recipient_db_id = 10
@@ -333,7 +333,7 @@ class TestPatientService(DbTests):
         self.assertEqual('application/json', res.content_type)
 
         # Check that update was working
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         recipient = txm_event.active_recipients_dict[recipient_db_id]
         self.assertEqual(recipient.parameters.blood_group, BloodGroup.A)
         self.assertEqual(recipient.parameters.hla_typing, HLATyping([]))
@@ -376,7 +376,7 @@ class TestPatientService(DbTests):
         self.assertEqual('application/json', res.content_type)
 
         # Check that update was working
-        txm_event = get_txm_event(txm_event_db_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
         recipient = next(recipient for recipient in txm_event.all_recipients if recipient.db_id == recipient_db_id)
 
         self.assertEqual(recipient.parameters.blood_group, BloodGroup.B)
