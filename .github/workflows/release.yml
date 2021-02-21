@@ -46,7 +46,9 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:${{ env.RELEASE_VERSION }}
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:${{ env.RELEASE_VERSION }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
           push: true
           build-args: |
