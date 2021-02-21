@@ -17,9 +17,6 @@ export class HeaderComponent {
 
   @Input() user?: User;
 
-  @Input() uploadStatus: UploadDownloadStatus = UploadDownloadStatus.disabled;
-  @Output() uploadAction: EventEmitter<void> = new EventEmitter<void>();
-
   @Input() downloadStatus: UploadDownloadStatus = UploadDownloadStatus.disabled;
   @Output() downloadAction: EventEmitter<void> = new EventEmitter<void>();
 
@@ -75,10 +72,6 @@ export class HeaderComponent {
 
   public handleDownloadClick(): void {
     this.downloadAction.emit();
-  }
-
-  public handleUploadClick(): void {
-    this.uploadAction.emit();
   }
 
   public changeDefaultTxmEvent(change: MatSelectionListChange): void {

@@ -7,7 +7,6 @@ import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
 import { PatientList } from '@app/model/PatientList';
 import { PatientPair } from '@app/model/PatientPair';
-import { UploadService } from '@app/services/upload/upload.service';
 import { Donor } from '@app/model/Donor';
 import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
 import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
@@ -34,13 +33,11 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
   public loading: boolean = false;
   public error: boolean = false;
   public downloadStatus: UploadDownloadStatus = UploadDownloadStatus.hidden;
-  public uploadStatus: UploadDownloadStatus = UploadDownloadStatus.enabled;
   public donorsCount: number = 0;
   public recipientCount: number = 0;
   public patientPopupOpened: boolean = false;
 
-  constructor(private _uploadService: UploadService,
-              _authService: AuthService,
+  constructor(_authService: AuthService,
               _alertService: AlertService,
               _configService: ConfigurationService,
               _eventService: EventService,
@@ -74,16 +71,6 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
     await this._initPatientsAndConfiguration();
     this.loading = false;
-  }
-
-  public uploadPatients(): void {
-    if (!this.defaultTxmEvent) {
-      this._logger.error('uploadPatients failed because defaultTxmEvent not set');
-      return;
-    }
-    this._uploadService.uploadFile(
-      this.defaultTxmEvent.id, 'Refresh patients', this._initPatientsWithStats.bind(this)
-    );
   }
 
   public async addPatientPair(pair: PatientPairToAdd): Promise<void> {

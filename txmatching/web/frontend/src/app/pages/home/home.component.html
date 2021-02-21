@@ -1,8 +1,6 @@
 <app-header [user]="user"
             [downloadStatus]="downloadStatus"
-            [uploadStatus]="uploadStatus"
             (downloadAction)="downloadReport()"
-            (uploadAction)="uploadPatients()"
             [txmEvents]="txmEvents"
             [defaultTxmEvent]="defaultTxmEvent"
             (defaultTxmEventSelected)="setDefaultTxmEvent($event)"

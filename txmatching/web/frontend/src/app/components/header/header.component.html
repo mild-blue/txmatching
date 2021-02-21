@@ -59,15 +59,6 @@
       <mat-spinner *ngIf="downloadStatus === uploadDownloadStatus.loading" diameter="16"></mat-spinner>
     </button>
   </div>
-  <div class="upload"
-       [class.hidden]="uploadStatus === uploadDownloadStatus.hidden"
-       [class.disabled]="uploadStatus === uploadDownloadStatus.disabled">
-    <button (click)="handleUploadClick()">
-      Upload patients
-      <mat-icon *ngIf="uploadStatus !== uploadDownloadStatus.loading" [inline]="true">publish</mat-icon>
-      <mat-spinner *ngIf="uploadStatus === uploadDownloadStatus.loading" diameter="16"></mat-spinner>
-    </button>
-  </div>
 
   <div class="icons">
     <div *ngIf="user" class="user">
