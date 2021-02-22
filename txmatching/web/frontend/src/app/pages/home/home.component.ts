@@ -12,8 +12,6 @@ import { ReportService } from '@app/services/report/report.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
 import { finalize, first } from 'rxjs/operators';
-import { PatientList } from '@app/model/PatientList';
-import { UploadService } from '@app/services/upload/upload.service';
 import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 
@@ -25,7 +23,6 @@ import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-log
 export class HomeComponent extends AbstractLoggedComponent implements OnInit, OnDestroy {
 
   private _downloadInProgress: boolean = false;
-  private _uploadInProgress: boolean = false;
 
   public loading: boolean = false;
 
@@ -39,7 +36,6 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
   constructor(private _matchingService: MatchingService,
               private _reportService: ReportService,
-              private _uploadService: UploadService,
               _authService: AuthService,
               _alertService: AlertService,
               _configService: ConfigurationService,
@@ -83,13 +79,6 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     return this._downloadInProgress ? UploadDownloadStatus.loading : UploadDownloadStatus.enabled;
   }
 
-  get uploadStatus(): UploadDownloadStatus {
-    if (this.loading) {
-      return UploadDownloadStatus.disabled;
-    }
-    return this._uploadInProgress ? UploadDownloadStatus.loading : UploadDownloadStatus.enabled;
-  }
-
   get showConfiguration(): boolean {
     const configDefined = !!this.configuration;
     const patientsDefined = !!this.patients;
@@ -130,16 +119,6 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       (error: Error) => {
         this._alertService.error(`<strong>Error downloading PDF:</strong> ${error.message}`);
       });
-  }
-
-  public uploadPatients(): void {
-    if (!this.defaultTxmEvent) {
-      this._logger.error('uploadPatients failed because defaultTxmEvent not set');
-      return;
-    }
-    this._uploadService.uploadFile(
-      this.defaultTxmEvent.id, 'Recalculate matchings', this._initPatientsConfigurationMatchings.bind(this)
-    );
   }
 
   public async calculate(configuration: Configuration): Promise<void> {
@@ -197,7 +176,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
   private async _initPatientsConfigurationMatchings(): Promise<void> {
     if(!this.defaultTxmEvent) {
-      this._logger.error(`Init matchings failed because defaultTxmEvent not set`);
+      this._logger.error('Init matchings failed because defaultTxmEvent not set');
       return;
     }
 
@@ -215,7 +194,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     await this._initAppConfiguration();
 
     if(!this.appConfiguration) {
-      this._logger.error(`Configuration init failed because appConfiguration not set`);
+      this._logger.error('Configuration init failed because appConfiguration not set');
       return;
     }
 
@@ -225,7 +204,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
   private async _initMatchings(): Promise<void> {
     if(!this.configuration) {
-      this._logger.error(`Init matchings failed because configuration not set`);
+      this._logger.error('Init matchings failed because configuration not set');
       return;
     }
 
