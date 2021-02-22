@@ -5,8 +5,8 @@ import { RecipientEditable } from '@app/model/RecipientEditable';
 import { PatientService } from '@app/services/patient/patient.service';
 import { TxmEvent } from '@app/model/Event';
 import { PatientEditable } from '@app/model/PatientEditable';
-import { Country } from '@app/model/enums/Country';
 import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
+import { CountryCodeGenerated } from '@app/generated';
 
 @Component({
   selector: 'app-add-new-patient',
@@ -62,7 +62,7 @@ export class AddNewPatientComponent {
   private _changeOtherPatientCountry(changes: KeyValueChanges<string, unknown>, otherPatient: PatientEditable) {
     changes.forEachChangedItem((record) => {
       if (record.key === 'country') {
-        otherPatient.country = record.currentValue as Country;
+        otherPatient.country = record.currentValue as CountryCodeGenerated;
       }
     });
   }

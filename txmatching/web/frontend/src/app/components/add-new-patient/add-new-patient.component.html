@@ -6,7 +6,9 @@
       <div class="new-patient__box">
         <h4>Donor</h4>
         <div class="content">
-          <app-donor-settings [donor]="donor"></app-donor-settings>
+          <app-donor-settings [donor]="donor"
+                              [showCountryMedicalIdAndDonorType]="true"
+                              [showActiveCheckbox]="false"></app-donor-settings>
         </div>
       </div>
 
@@ -14,7 +16,9 @@
       <div *ngIf="donor.type === DonorType.DONOR" class="new-patient__box">
         <h4>Recipient</h4>
         <div class="content">
-          <app-recipient-settings [recipient]="recipient"></app-recipient-settings>
+          <app-recipient-settings [recipient]="recipient"
+                                  [showCountryAndMedicalId]="true"
+                                  [showMatchingConditions]="false"></app-recipient-settings>
         </div>
       </div>
 

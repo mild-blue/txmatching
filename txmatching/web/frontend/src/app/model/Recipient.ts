@@ -1,8 +1,12 @@
 import { Patient } from '@app/model/Patient';
 import { AntibodiesPerGroup, Antibody } from '@app/model/Hla';
+import { BloodGroup } from '@app/model/enums/BloodGroup';
 
 export interface Recipient extends Patient {
-  acceptable_blood_groups: string[];
+  acceptable_blood_groups: BloodGroup[];
+  cutoff?: number;
+  waitingSince?: Date;
+  previousTransplants?: number;
   hla_antibodies: {
     hla_antibodies_list: Antibody[];
     hla_antibodies_per_groups: AntibodiesPerGroup[];

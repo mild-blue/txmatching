@@ -9,14 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DonorModelToUpdateAllOfGenerated } from './donorModelToUpdateAllOfGenerated';
 import { SexEnumGenerated } from './sexEnumGenerated';
 import { HlaTypingToUpdateGenerated } from './hlaTypingToUpdateGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
-import { PatientModelToUpdateGenerated } from './patientModelToUpdateGenerated';
 
 
-export interface DonorModelToUpdateGenerated { 
+export interface PatientModelToUpdateGenerated { 
     blood_group?: BloodGroupEnumGenerated;
     /**
      * Database id of the patient
@@ -30,9 +28,5 @@ export interface DonorModelToUpdateGenerated {
     sex?: SexEnumGenerated;
     weight?: number;
     year_of_birth?: number;
-    /**
-     * Information, whether or not given donor shall be considered in exchange.
-     */
-    active?: boolean;
 }
 

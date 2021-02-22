@@ -1,19 +1,28 @@
 <ng-container *ngIf="donor">
-  <!-- Donor Country -->
-  <app-country-setting [patient]="donor"></app-country-setting>
+  <ng-container *ngIf="showCountryMedicalIdAndDonorType">
+    <!-- Donor Country -->
+    <app-country-setting [patient]="donor"></app-country-setting>
 
-  <!-- Donor medical ID -->
-  <app-medical-id [patient]="donor"></app-medical-id>
+    <!-- Donor medical ID -->
+    <app-medical-id [patient]="donor"></app-medical-id>
 
-  <!-- Donor Type -->
-  <app-setting-item label="Type">
-    <mat-button-toggle-group [(ngModel)]="donor.type" [ngModelOptions]="{standalone: true}">
-      <mat-button-toggle *ngFor="let type of allDonorTypes"
-                         [value]="type">
-        {{ type | donorTypeLabel | titlecase }}
-      </mat-button-toggle>
-    </mat-button-toggle-group>
-  </app-setting-item>
+    <!-- Donor Type -->
+    <app-setting-item label="Type">
+      <mat-button-toggle-group [(ngModel)]="donor.type" [ngModelOptions]="{standalone: true}">
+        <mat-button-toggle *ngFor="let type of allDonorTypes"
+                           [value]="type">
+          {{ type | donorTypeLabel | titlecase }}
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </app-setting-item>
+  </ng-container>
+
+  <!-- Active checkbox -->
+  <div *ngIf="showActiveCheckbox" class="active-checkbox">
+    <mat-slide-toggle [(ngModel)]="donor.active">
+      Active
+    </mat-slide-toggle>
+  </div>
 
   <!-- Donor Blood Group -->
   <app-blood-group [patient]="donor"></app-blood-group>
@@ -25,12 +34,12 @@
   <app-sex [patient]="donor"></app-sex>
 
   <!-- Donor height -->
-  <app-simple-number label="Height [cm]" [(ngModel)]="donor.height" name="height" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Height [cm]" [value]="donor.height" [(ngModel)]="donor.height" name="height" ngDefaultControl></app-simple-number>
 
   <!-- Donor weight -->
-  <app-simple-number label="Weight [kg]" [(ngModel)]="donor.weight" name="weight" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Weight [kg]" [value]="donor.weight" [(ngModel)]="donor.weight" name="weight" ngDefaultControl></app-simple-number>
 
   <!-- Donor year of birth -->
-  <app-simple-number label="Year of birth" [(ngModel)]="donor.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
+  <app-simple-number label="Year of birth" [value]="donor.yearOfBirth" [(ngModel)]="donor.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
 
 </ng-container>

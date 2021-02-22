@@ -22,7 +22,8 @@ from txmatching.web.api.namespaces import (CONFIGURATION_NAMESPACE,
                                            PATIENT_NAMESPACE,
                                            REPORTS_NAMESPACE,
                                            SERVICE_NAMESPACE,
-                                           TXM_EVENT_NAMESPACE, USER_NAMESPACE)
+                                           TXM_EVENT_NAMESPACE, USER_NAMESPACE,
+                                           enums_api)
 from txmatching.web.api.patient_api import patient_api
 from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
@@ -176,7 +177,7 @@ def create_app() -> Flask:
             if origin in allowed_origins:
                 response.headers.add('Access-Control-Allow-Origin', origin)
                 response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-                response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT')
+                response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
             return response
 
     def log_request_performance():
@@ -222,3 +223,4 @@ def add_all_namespaces(api: Api):
     api.add_namespace(report_api,
                       path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{REPORTS_NAMESPACE}')
     api.add_namespace(txm_event_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}')
+    api.add_namespace(enums_api)

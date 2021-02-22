@@ -12,58 +12,28 @@
   </div>
 
   <form (ngSubmit)="handleSave()">
-    <!-- Checkboxes -->
-    <div class="checkboxes">
-      <mat-slide-toggle (change)="setActiveValue($event.checked)"
-                        [checked]="item.active"
-                        class="abc"
-      >
-        Active
-      </mat-slide-toggle>
+
+    <app-donor-settings [donor]="donorEditable"
+                        [showCountryMedicalIdAndDonorType]="false"
+                        [showActiveCheckbox]="true">
+    </app-donor-settings>
+
+    <div class="buttons">
+      <app-button [type]="'submit'"
+                  [loading]="loading"
+                  [disabled]="loading"
+                  [success]="!loading && success"
+                  [variant]="'success'">Save changes
+      </app-button>
+
+      <app-button [loading]="deleteLoading"
+                  [disabled]="deleteLoading"
+                  [success]="!deleteLoading && deleteSuccess"
+                  [variant]="'danger'"
+                  [size]="'sm'"
+                  (click)="handleDeleteDonor()">
+        <fa-icon [icon]="deleteIcon"></fa-icon>&nbsp;Delete
+      </app-button>
     </div>
-
-    <h4>
-      Antigens
-      <app-count [count]="selected.length"></app-count>
-    </h4>
-    <mat-form-field>
-      <mat-label>Donor's antigens</mat-label>
-      <mat-chip-list #antigensChipList>
-        <mat-chip *ngFor="let code of selected"
-                  (removed)="remove(code)"
-                  [title]="'Raw code: ' + code.raw_code"
-                  [removable]="true">
-          {{code.code}}
-          <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-        <input #antigensInput
-               [formControl]="inputControl"
-               [matAutocomplete]="auto"
-               [matChipInputFor]="antigensChipList"
-               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               (matChipInputTokenEnd)="addNewAntigen($event.value, antigensInput)"
-               matInput
-               type="text">
-      </mat-chip-list>
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addAntigen($event.option.value, antigensInput)">
-        <mat-option *ngFor="let code of filtered | async" [value]="code">
-          {{code.code}}
-        </mat-option>
-      </mat-autocomplete>
-      <mat-hint>
-        Add new antigens by typing codes followed by
-        <span class="key">Space <mat-icon>space_bar</mat-icon></span>
-        or
-        <span class="key">Enter <mat-icon>keyboard_return</mat-icon></span>
-        or select from available antigens.
-      </mat-hint>
-    </mat-form-field>
-
-    <app-button [type]="'submit'"
-                [loading]="loading"
-                [disabled]="loading"
-                [success]="!loading && success"
-                [variant]="'success'">Save changes
-    </app-button>
   </form>
 </div>

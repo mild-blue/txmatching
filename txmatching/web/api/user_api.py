@@ -13,8 +13,7 @@ from txmatching.auth.login_flow import (credentials_login, otp_login,
                                         refresh_token, resend_otp)
 from txmatching.auth.user.topt_auth_check import allow_otp_request
 from txmatching.auth.user.user_auth_check import require_user_login
-from txmatching.data_transfer_objects.matchings.matching_swagger import \
-    CountryCodeJson
+from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     FailJson
 from txmatching.utils.country_enum import Country

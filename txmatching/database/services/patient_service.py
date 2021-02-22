@@ -14,7 +14,8 @@ from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto im
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.database.db import db
-from txmatching.database.services.parsing_utils import get_hla_code
+from txmatching.database.services.parsing_utils import (get_hla_code,
+                                                        parse_date_to_datetime)
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
     RecipientModel)
@@ -66,6 +67,8 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
                                for hla_antibody in recipient_model.hla_antibodies],
                               logger_with_patient
                           ),
+                          # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum,
+                          #       this conversion is not working properly now
                           acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
                                                    recipient_model.acceptable_blood],
                           recipient_cutoff=recipient_model.recipient_cutoff,
@@ -76,14 +79,30 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
     return recipient
 
 
+def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> dict:
+    patient_update_dict = {}
+
+    if patient_update_dto.blood_group is not None:
+        patient_update_dict['blood'] = patient_update_dto.blood_group
+    if patient_update_dto.hla_typing is not None:
+        patient_update_dict['hla_typing'] = dataclasses.asdict(patient_update_dto.hla_typing_preprocessed)
+
+    # For the following parameters we support setting null value
+    patient_update_dict['sex'] = patient_update_dto.sex
+    patient_update_dict['height'] = patient_update_dto.height
+    patient_update_dict['weight'] = patient_update_dto.weight
+    patient_update_dict['yob'] = patient_update_dto.year_of_birth
+
+    return patient_update_dict
+
+
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
-    # TODO do not delete https://trello.com/c/zseK1Zcf
     recipient_update_dto = _update_patient_preprocessed_typing(recipient_update_dto)
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     if txm_event_db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to.')
 
-    recipient_update_dict = {}
+    recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto)
     if recipient_update_dto.acceptable_blood_groups:
         acceptable_blood_models = [
             RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient_update_dto.db_id) for blood
@@ -107,7 +126,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         else:
             new_antibody_list = old_recipient.hla_antibodies.hla_antibodies_list
 
-        recipient_update_dict['recipient_cutoff'] = new_cutoff
         hla_antibodies = [
             RecipientHLAAntibodyModel(
                 recipient_id=recipient_update_dto.db_id,
@@ -120,11 +138,11 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         RecipientHLAAntibodyModel.query.filter(
             RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id).delete()
         db.session.add_all(hla_antibodies)
-    if recipient_update_dto.hla_typing:
-        recipient_update_dict['hla_typing'] = dataclasses.asdict(recipient_update_dto.hla_typing_preprocessed)
     if recipient_update_dto.recipient_requirements:
         recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
             recipient_update_dto.recipient_requirements)
+    recipient_update_dict['waiting_since'] = parse_date_to_datetime(recipient_update_dto.waiting_since)
+    recipient_update_dict['previous_transplants'] = recipient_update_dto.previous_transplants
 
     RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
     db.session.commit()
@@ -132,15 +150,12 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
 
 
 def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
-    # TODO do not delete https://trello.com/c/zseK1Zcf
     donor_update_dto = _update_patient_preprocessed_typing(donor_update_dto)
     old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
     if txm_event_db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to')
 
-    donor_update_dict = {}
-    if donor_update_dto.hla_typing:
-        donor_update_dict['hla_typing'] = dataclasses.asdict(donor_update_dto.hla_typing_preprocessed)
+    donor_update_dict = _create_patient_update_dict_base(donor_update_dto)
     if donor_update_dto.active is not None:
         donor_update_dict['active'] = donor_update_dto.active
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
@@ -165,6 +180,8 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
         db_id=patient_model.id,
         medical_id=patient_model.medical_id,
         parameters=PatientParameters(
+            # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood by enum,
+            #       this conversion is not working properly now
             blood_group=patient_model.blood,
             country_code=patient_model.country,
             hla_typing=dacite.from_dict(data_class=HLATyping, data=patient_model.hla_typing),

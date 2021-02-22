@@ -9,11 +9,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { SexEnumGenerated } from './sexEnumGenerated';
+import { DonorTypeGenerated } from './donorTypeGenerated';
+import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 
 
 export interface DonorInputGenerated { 
-    blood_group: DonorInputGeneratedBloodGroupEnum;
-    donor_type: DonorInputGeneratedDonorTypeEnum;
+    blood_group: BloodGroupEnumGenerated;
+    donor_type: DonorTypeGenerated;
     /**
      * Height of the patient in centimeters.
      */
@@ -30,10 +33,7 @@ export interface DonorInputGenerated {
      * Medical ID of the related recipient, empty for bridging and non-directed donors.
      */
     related_recipient_medical_id?: string;
-    /**
-     * Sex of the patient.
-     */
-    sex?: DonorInputGeneratedSexEnum;
+    sex?: SexEnumGenerated;
     /**
      * Weight of the patient in kilograms.
      */
@@ -43,21 +43,4 @@ export interface DonorInputGenerated {
      */
     year_of_birth?: number;
 }
-export enum DonorInputGeneratedBloodGroupEnum {
-    A = 'A',
-    B = 'B',
-    Ab = 'AB',
-    _0 = '0'
-};
-export enum DonorInputGeneratedDonorTypeEnum {
-    Donor = 'DONOR',
-    BridgingDonor = 'BRIDGING_DONOR',
-    NonDirected = 'NON_DIRECTED'
-};
-export enum DonorInputGeneratedSexEnum {
-    M = 'M',
-    F = 'F'
-};
-
-
 

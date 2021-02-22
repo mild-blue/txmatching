@@ -2,7 +2,6 @@ from flask_restx import fields
 
 from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
                                                               HLAType)
-from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER,
                                     AntibodyMatchTypes, HLAGroup, MatchTypes)
 from txmatching.web.api.namespaces import matching_api
@@ -82,11 +81,6 @@ TransplantJson = matching_api.model('Transplant', {
         description=DESCRIPTION_DETAILED_SCORE,
         example=EXAMPLE_DETAILED_SCORE,
         cls_or_instance=fields.Nested(DetailedScoreForGroupJson))
-})
-
-CountryCodeJson = matching_api.schema_model('CountryCode', {
-    'enum': [country.value for country in Country],
-    'type': 'string'
 })
 
 CountryInRoundJson = matching_api.model('Country', {

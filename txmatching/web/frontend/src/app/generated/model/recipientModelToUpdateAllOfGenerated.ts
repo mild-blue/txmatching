@@ -10,30 +10,31 @@
  * Do not edit the class manually.
  */
 import { RecipientRequirementsGenerated } from './recipientRequirementsGenerated';
-import { PatientParametersGenerated } from './patientParametersGenerated';
+import { HlaAntibodiesToUpdateGenerated } from './hlaAntibodiesToUpdateGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
-import { HlaAntibodiesGenerated } from './hlaAntibodiesGenerated';
 
 
-export interface RecipientGenerated { 
+export interface RecipientModelToUpdateAllOfGenerated { 
+    /**
+     * Provide full list of all the acceptable blood groups of the patient, not just the change set
+     */
     acceptable_blood_groups?: Array<BloodGroupEnumGenerated>;
+    cutoff?: number;
     /**
-     * Database id of the patient
+     * Provide full list of all the HLA antibodies of the patient, not just the change set
      */
-    db_id: number;
-    hla_antibodies: HlaAntibodiesGenerated;
+    hla_antibodies?: HlaAntibodiesToUpdateGenerated;
     /**
-     * Medical id of the patient
+     * Number of previous kidney transplants.
      */
-    medical_id: string;
-    parameters: PatientParametersGenerated;
     previous_transplants?: number;
-    recipient_cutoff?: number;
+    /**
+     * Provide the whole recipients requirements object, it will be overwritten
+     */
     recipient_requirements?: RecipientRequirementsGenerated;
     /**
-     * Database id of the related donor
+     * Date since when the patient has been on waiting list. Use format YYYY-MM-DD.
      */
-    related_donor_db_id: number;
     waiting_since?: string;
 }
 

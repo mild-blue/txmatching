@@ -21,3 +21,4 @@ export { Sex } from '@app/model/enums/Sex';
 export { UserRole } from '@app/model/enums/UserRole';
 export { UserTokenType } from '@app/model/enums/UserTokenType';
 export { EnvironmentType } from '@app/model/enums/EnvironmentType';
+export { AntibodyEditable } from '@app/model/HlaEditable';
