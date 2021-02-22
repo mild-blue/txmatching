@@ -22,27 +22,6 @@
     margin-top: $padding-y;
   }
 
-  mat-form-field {
-    margin-bottom: $padding-y;
-  }
-
-  .key {
-    background: $gray-200;
-    font-family: monospace;
-    border-radius: 3px;
-    padding: 2px 5px;
-    display: inline-block;
-
-    mat-icon {
-      vertical-align: -2px;
-    }
-  }
-
-  .checkboxes {
-    margin: $item-gap 0 $padding-y;
-    border-bottom: 1px solid $gray-500;
-  }
-
   .buttons {
     display: flex;
     align-items: baseline;

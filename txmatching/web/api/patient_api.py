@@ -148,7 +148,7 @@ class AlterRecipient(Resource):
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
-        recipient_update_dto = from_dict(data_class=RecipientUpdateDTO, data=request.json)
+        recipient_update_dto = from_dict(data_class=RecipientUpdateDTO, data=request.json, config=Config(cast=[Enum]))
         guard_user_country_access_to_recipient(user_id=get_current_user_id(), recipient_id=recipient_update_dto.db_id)
         return jsonify(update_recipient(recipient_update_dto, txm_event_id))
 
@@ -166,7 +166,7 @@ class AlterDonor(Resource):
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
-        donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json)
+        donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json, config=Config(cast=[Enum]))
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
         txm_event = get_txm_event_complete(txm_event_id)
         all_recipients = txm_event.all_recipients

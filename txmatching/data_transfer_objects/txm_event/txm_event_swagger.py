@@ -1,10 +1,9 @@
 from flask_restx import fields
 
-from txmatching.data_transfer_objects.matchings.matching_swagger import \
-    CountryCodeJson
-from txmatching.patients.patient import DonorType
-from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import Sex
+from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
+                                                            CountryCodeJson,
+                                                            DonorTypeEnumJson,
+                                                            SexEnumJson)
 from txmatching.web.api.namespaces import txm_event_api
 
 ANTIGENS_EXAMPLE = ['A1', 'A32', 'B7', 'B51', 'DR11', 'DR15', 'A*02:03', 'A*11:01:35', 'DPA1*01:07', 'DRB4*01:01',
@@ -36,14 +35,14 @@ HLAAntibodyJsonIn = txm_event_api.model('HLAAntibodyIn', {
 
 DonorJsonIn = txm_event_api.model('DonorInput', {
     'medical_id': fields.String(required=True, example='D1037', description=MEDICAL_ID_DESCRIPTION),
-    'blood_group': fields.String(required=True, enum=[blood_group.value for blood_group in BloodGroup]),
+    'blood_group': fields.Nested(BloodGroupEnumJson, required=True),
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String,
                               example=ANTIGENS_EXAMPLE, description=HLA_TYPING_DESCRIPTION),
-    'donor_type': fields.String(required=True, enum=[donor_type.value for donor_type in DonorType]),
+    'donor_type': fields.Nested(DonorTypeEnumJson, required=True),
     'related_recipient_medical_id': fields.String(required=False, example='R1037',
                                                   description='Medical ID of the related recipient, empty for bridging '
                                                               'and non-directed donors.'),
-    'sex': fields.String(required=False, description='Sex of the patient.', enum=[sex.value for sex in Sex]),
+    'sex': fields.Nested(SexEnumJson, required=False),
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
@@ -56,17 +55,16 @@ RecipientJsonIn = txm_event_api.model('RecipientInput', {
                                   cls_or_instance=fields.Nested(
                                       HLAAntibodyJsonIn
                                   )),
-    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.String(
-        enum=[blood_group.value for blood_group in BloodGroup]),
+    'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.Nested(BloodGroupEnumJson),
                                            description='Acceptable blood groups for the patient. Leave empty to use \
                                             compatible blood groups.'),
     'medical_id': fields.String(required=True, example='R1037', description=MEDICAL_ID_DESCRIPTION),
-    'blood_group': fields.String(required=True, enum=[blood_group.value for blood_group in BloodGroup]),
+    'blood_group': fields.Nested(BloodGroupEnumJson, required=True),
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String,
                               example=ANTIGENS_EXAMPLE,
                               description=HLA_TYPING_DESCRIPTION),
 
-    'sex': fields.String(required=False, description='Sex of the patient.', enum=[sex.value for sex in Sex]),
+    'sex': fields.Nested(SexEnumJson, required=False),
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),

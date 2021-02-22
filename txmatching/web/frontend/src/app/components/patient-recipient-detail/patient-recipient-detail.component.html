@@ -11,76 +11,18 @@
     </app-button>
   </div>
 
-  <form [formGroup]="form">
+  <form (ngSubmit)="handleSave()">
 
-    <!-- Checkboxes -->
-    <h4>Matching conditions</h4>
-    <div class="checkboxes">
-      <mat-slide-toggle *ngIf="item.recipient_requirements?.require_compatible_blood_group !== undefined"
-                        (change)="setCheckBoxValue('require_compatible_blood_group', $event.checked)"
-                        [checked]="item.recipient_requirements?.require_compatible_blood_group">
-        Require compatible blood group
-      </mat-slide-toggle>
-      <mat-slide-toggle *ngIf="item.recipient_requirements?.require_better_match_in_compatibility_index !== undefined"
-                        (change)="setCheckBoxValue('require_better_match_in_compatibility_index', $event.checked)"
-                        [checked]="item.recipient_requirements?.require_better_match_in_compatibility_index">
-        Require new donor having better CI match than original donor
-      </mat-slide-toggle>
-      <mat-slide-toggle *ngIf="item.recipient_requirements?.require_better_match_in_compatibility_index_or_blood_group !== undefined"
-                        (change)="setCheckBoxValue('require_better_match_in_compatibility_index_or_blood_group', $event.checked)"
-                        [checked]="item.recipient_requirements?.require_better_match_in_compatibility_index_or_blood_group">
-        Require new donor having better CI match than original donor or blood group match
-      </mat-slide-toggle>
-    </div>
+    <app-recipient-settings [recipient]="recipientEditable"
+                            [showCountryAndMedicalId]="false"
+                            [showMatchingConditions]="true">
+    </app-recipient-settings>
 
-    <!-- Antigens -->
-    <h4>
-      Antigens
-      <app-count [count]="selectedAntigens.length"></app-count>
-    </h4>
-    <mat-form-field>
-      <mat-label>Recipient's antigens</mat-label>
-      <mat-chip-list #antigensChipList>
-        <mat-chip *ngFor="let a of selectedAntigens"
-                  (removed)="removeAntigen(a)"
-                  [title]="'Raw code: ' + a.raw_code"
-                  [removable]="true">
-          {{a.code}}
-          <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-        <input #antigensInput
-               formControlName="antigens"
-               [matAutocomplete]="antigensAuto"
-               [matChipInputFor]="antigensChipList"
-               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               (matChipInputTokenEnd)="addNewAntigen($event.value, antigensInput)"
-               matInput
-               type="text">
-      </mat-chip-list>
-      <mat-autocomplete #antigensAuto (optionSelected)="addAntigen($event.option.value, antigensInput)">
-        <mat-option *ngFor="let a of filteredAntigensCodes | async" [value]="a">
-          {{a.code}}
-        </mat-option>
-      </mat-autocomplete>
-      <mat-hint>
-        Add new antigens by typing codes followed by
-        <span class="key">Space <mat-icon>space_bar</mat-icon></span>
-        or
-        <span class="key">Enter <mat-icon>keyboard_return</mat-icon></span>
-        or select from available antigens.
-      </mat-hint>
-    </mat-form-field>
-  </form>
-
-  <!-- Antibodies -->
-  <app-antibodies [recipient]="item" [patients]="patients" (antibodyAdded)="handleNewAntibody($event)"></app-antibodies>
-
-  <div class="save-button">
-    <app-button (click)="handleSave()"
+    <app-button [type]="'submit'"
                 [loading]="loading"
                 [disabled]="loading"
                 [success]="!loading && success"
                 [variant]="'success'">Save changes
     </app-button>
-  </div>
+  </form>
 </div>

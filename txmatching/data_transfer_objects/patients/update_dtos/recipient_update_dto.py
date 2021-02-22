@@ -17,6 +17,8 @@ class RecipientUpdateDTO(PatientUpdateDTO):
     hla_antibodies: Optional[HLAAntibodiesDTO] = None
     recipient_requirements: Optional[RecipientRequirements] = None
     cutoff: Optional[int] = None
+    waiting_since: Optional[str] = None
+    previous_transplants: Optional[int] = None
 
     def __post_init__(self):
         super().__post_init__()

@@ -10,6 +10,8 @@ import { BloodGroup } from '@app/model';
 export class RecipientSettingsComponent implements OnInit {
 
   @Input() recipient?: RecipientEditable;
+  @Input() showCountryAndMedicalId: boolean = false;
+  @Input() showMatchingConditions: boolean = false;
   public allBloodGroups: BloodGroup[] = Object.values(BloodGroup);
 
   constructor() {

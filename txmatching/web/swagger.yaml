@@ -50,6 +50,13 @@ definitions:
         - hla_type
         - match_type
         type: object
+    BloodGroupEnum:
+        enum:
+        - A
+        - B
+        - AB
+        - '0'
+        type: string
     CalculatedMatchings:
         properties:
             calculated_matchings:
@@ -447,7 +454,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: &id003
+                example: &id002
                 -   antibody_matches:
                     -   hla_antibody:
                             code: A9
@@ -500,12 +507,7 @@ definitions:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array
             donor_type:
-                enum:
-                - DONOR
-                - BRIDGING_DONOR
-                - NON_DIRECTED
-                example: DONOR
-                type: string
+                $ref: '#/definitions/DonorType'
             medical_id:
                 description: Medical id of the patient
                 type: string
@@ -527,20 +529,9 @@ definitions:
     DonorInput:
         properties:
             blood_group:
-                enum:
-                - A
-                - B
-                - AB
-                - '0'
-                example: A
-                type: string
+                $ref: '#/definitions/BloodGroupEnum'
             donor_type:
-                enum:
-                - DONOR
-                - BRIDGING_DONOR
-                - NON_DIRECTED
-                example: DONOR
-                type: string
+                $ref: '#/definitions/DonorType'
             height:
                 description: Height of the patient in centimeters.
                 example: 178
@@ -575,12 +566,7 @@ definitions:
                 example: R1037
                 type: string
             sex:
-                description: Sex of the patient.
-                enum:
-                - M
-                - F
-                example: M
-                type: string
+                $ref: '#/definitions/SexEnum'
             weight:
                 description: Weight of the patient in kilograms.
                 example: 78.4
@@ -604,31 +590,25 @@ definitions:
             recipient:
                 $ref: '#/definitions/RecipientInput'
         required:
+        - country_code
         - donor
         type: object
     DonorModelToUpdate:
-        properties:
-            active:
-                description: Information, whether or not given donor shall be considered
-                    in exchange.
-                type: boolean
-            db_id:
-                description: Database id of the patient
-                example: 1
-                type: integer
-            hla_typing:
-                allOf:
-                -   $ref: '#/definitions/HlaTypingToUpdate'
-                description: Provide full list of all the HLA types of the patient,
-                    not just the change set
-                example: &id002
-                    hla_types_list:
-                    -   raw_code: A*01:02
-                    -   raw_code: B7
-                    -   raw_code: DR11
-        required:
-        - db_id
-        type: object
+        allOf:
+        -   $ref: '#/definitions/PatientModelToUpdate'
+        -   properties:
+                active:
+                    description: Information, whether or not given donor shall be
+                        considered in exchange.
+                    type: boolean
+            type: object
+    DonorType:
+        description: Type of the donor.
+        enum:
+        - DONOR
+        - BRIDGING_DONOR
+        - NON_DIRECTED
+        type: string
     FailResponse:
         properties:
             error:
@@ -893,16 +873,42 @@ definitions:
         - current_password
         - new_password
         type: object
+    PatientModelToUpdate:
+        properties:
+            blood_group:
+                $ref: '#/definitions/BloodGroupEnum'
+            db_id:
+                description: Database id of the patient
+                example: 1
+                type: integer
+            height:
+                example: 180
+                type: integer
+            hla_typing:
+                allOf:
+                -   $ref: '#/definitions/HlaTypingToUpdate'
+                description: Provide full list of all the HLA types of the patient,
+                    not just the change set
+                example:
+                    hla_types_list:
+                    -   raw_code: A*01:02
+                    -   raw_code: B7
+                    -   raw_code: DR11
+            sex:
+                $ref: '#/definitions/SexEnum'
+            weight:
+                example: 90
+                type: number
+            year_of_birth:
+                example: 1990
+                type: integer
+        required:
+        - db_id
+        type: object
     PatientParameters:
         properties:
             blood_group:
-                enum:
-                - A
-                - B
-                - AB
-                - '0'
-                example: A
-                type: string
+                $ref: '#/definitions/BloodGroupEnum'
             country_code:
                 $ref: '#/definitions/CountryCode'
             height:
@@ -910,15 +916,14 @@ definitions:
             hla_typing:
                 $ref: '#/definitions/HlaTyping'
             sex:
-                enum:
-                - M
-                - F
-                example: M
-                type: string
+                $ref: '#/definitions/SexEnum'
             weight:
                 type: number
             year_of_birth:
                 type: integer
+        required:
+        - blood_group
+        - country_code
         type: object
     PatientUploadSuccessResponse:
         properties:
@@ -947,13 +952,7 @@ definitions:
         properties:
             acceptable_blood_groups:
                 items:
-                    enum:
-                    - A
-                    - B
-                    - AB
-                    - '0'
-                    example: A
-                    type: string
+                    $ref: '#/definitions/BloodGroupEnum'
                 type: array
             db_id:
                 description: Database id of the patient
@@ -991,22 +990,10 @@ definitions:
                     to use                                             compatible
                     blood groups.
                 items:
-                    enum:
-                    - A
-                    - B
-                    - AB
-                    - '0'
-                    example: A
-                    type: string
+                    $ref: '#/definitions/BloodGroupEnum'
                 type: array
             blood_group:
-                enum:
-                - A
-                - B
-                - AB
-                - '0'
-                example: A
-                type: string
+                $ref: '#/definitions/BloodGroupEnum'
             height:
                 description: Height of the patient in centimeters.
                 example: 178
@@ -1034,12 +1021,7 @@ definitions:
                 description: Number of previous kidney transplants.
                 type: integer
             sex:
-                description: Sex of the patient.
-                enum:
-                - M
-                - F
-                example: M
-                type: string
+                $ref: '#/definitions/SexEnum'
             waiting_since:
                 description: Date since when the patient has been on waiting list.
                     Use format YYYY-MM-DD.
@@ -1061,50 +1043,43 @@ definitions:
         - medical_id
         type: object
     RecipientModelToUpdate:
-        properties:
-            acceptable_blood_groups:
-                description: Provide full list of all the acceptable blood groups
-                    of the patient, not just the change set
-                items:
-                    enum:
-                    - A
-                    - B
-                    - AB
-                    - '0'
-                    example: A
+        allOf:
+        -   $ref: '#/definitions/PatientModelToUpdate'
+        -   properties:
+                acceptable_blood_groups:
+                    description: Provide full list of all the acceptable blood groups
+                        of the patient, not just the change set
+                    items:
+                        $ref: '#/definitions/BloodGroupEnum'
+                    type: array
+                cutoff:
+                    type: integer
+                hla_antibodies:
+                    allOf:
+                    -   $ref: '#/definitions/HlaAntibodiesToUpdate'
+                    description: Provide full list of all the HLA antibodies of the
+                        patient, not just the change set
+                    example:
+                        hla_antibodies_list:
+                        -   mfi: 10000
+                            raw_code: A*01:02
+                previous_transplants:
+                    description: Number of previous kidney transplants.
+                    type: integer
+                recipient_requirements:
+                    allOf:
+                    -   $ref: '#/definitions/RecipientRequirements'
+                    description: Provide the whole recipients requirements object,
+                        it will be overwritten
+                    example:
+                        require_better_match_in_compatibility_index: true
+                waiting_since:
+                    description: Date since when the patient has been on waiting list.
+                        Use format YYYY-MM-DD.
+                    example: '2015-01-17'
+                    format: date
                     type: string
-                type: array
-            cutoff:
-                type: integer
-            db_id:
-                description: Database id of the patient
-                example: 1
-                type: integer
-            hla_antibodies:
-                allOf:
-                -   $ref: '#/definitions/HlaAntibodiesToUpdate'
-                description: Provide full list of all the HLA antibodies of the patient,
-                    not just the change set
-                example:
-                    hla_antibodies_list:
-                    -   mfi: 10000
-                        raw_code: A*01:02
-            hla_typing:
-                allOf:
-                -   $ref: '#/definitions/HlaTypingToUpdate'
-                description: Provide full list of all the HLA types of the patient,
-                    not just the change set
-                example: *id002
-            recipient_requirements:
-                allOf:
-                -   $ref: '#/definitions/RecipientRequirements'
-                description: Provide the whole recipients requirements object, it
-                    will be overwritten
-                example:
-                    require_better_match_in_compatibility_index: true
-        required:
-        - db_id
-        type: object
+            type: object
     RecipientRequirements:
         properties:
             require_better_match_in_compatibility_index:
@@ -1140,6 +1115,12 @@ definitions:
         required:
         - status
         type: object
+    SexEnum:
+        description: Sex of the patient.
+        enum:
+        - M
+        - F
+        type: string
     StatusResponse:
         properties:
             status:
@@ -1156,7 +1137,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: *id003
+                example: *id002
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array

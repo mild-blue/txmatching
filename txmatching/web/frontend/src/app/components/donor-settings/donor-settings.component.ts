@@ -10,6 +10,8 @@ import { DonorType } from '@app/model';
 export class DonorSettingsComponent implements OnInit {
 
   @Input() donor?: DonorEditable;
+  @Input() showCountryMedicalIdAndDonorType: boolean = false;
+  @Input() showActiveCheckbox: boolean = false;
   public allDonorTypes: DonorType[] = Object.values(DonorType);
 
   constructor() {

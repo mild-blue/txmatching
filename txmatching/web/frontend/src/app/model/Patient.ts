@@ -1,6 +1,8 @@
 import { ListItem } from '@app/components/list-item/list-item.interface';
 import { Antigen, HlaPerGroup } from '@app/model/Hla';
 import { Sex } from '@app/model/enums/Sex';
+import { CountryCodeGenerated } from '@app/generated';
+import { BloodGroup } from '@app/model/enums/BloodGroup';
 
 export interface Patient extends ListItem {
   db_id: number;
@@ -9,12 +11,12 @@ export interface Patient extends ListItem {
 }
 
 export interface PatientParameters {
-  blood_group: string;
+  blood_group: BloodGroup;
   hla_typing: {
     hla_per_groups: HlaPerGroup[];
     hla_types_list: Antigen[];
   };
-  country_code: string;
+  country_code: CountryCodeGenerated;
   sex?: Sex;
   height?: number;
   weight?: number;
