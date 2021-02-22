@@ -67,7 +67,7 @@ class Configuration:
     max_matchings_to_show_to_viewer: int = field(default=10, compare=False)
     max_matchings_to_store_in_db: int = field(default=100, compare=False)
     max_allowed_number_of_matchings: int = field(default=10000, compare=False)
-    max_allowed_number_of_circuits: int = field(default=10000000, compare=False)
+    max_allowed_number_of_cycles_to_be_searched: int = field(default=10000000, compare=False)
 
     def __eq__(self, other):
         """

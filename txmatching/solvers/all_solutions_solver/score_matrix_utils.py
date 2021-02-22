@@ -6,6 +6,7 @@ import numpy as np
 from graph_tool import Graph, topology
 
 from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
 from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only import \
@@ -49,10 +50,8 @@ def get_compatible_donor_idxs_per_donor_idx(score_matrix: np.ndarray,
 
 def find_all_cycles(n_donors: int,
                     compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
-                    max_length: int,
                     donors: List[Donor],
-                    max_countries: int,
-                    max_circuits: int) -> List[Path]:
+                    configuration: Configuration) -> List[Path]:
     """
     Circuits between pairs, each pair is denoted by it's pair = donor index
     """
@@ -60,12 +59,13 @@ def find_all_cycles(n_donors: int,
                                                                            compatible_donor_idxs_per_donor_idx)
     all_circuits = []
     for i, circuit in enumerate(topology.all_circuits(donor_to_compatible_donor_graph)):
-        if len(circuit) <= max_length and country_count_in_path(circuit, donors) <= max_countries:
+        if (len(circuit) <= configuration.max_cycle_length and
+                country_count_in_path(circuit, donors) <= configuration.max_number_of_distinct_countries_in_round):
             circuit_with_end = tuple(list(circuit) + [circuit[0]])
             all_circuits.append(circuit_with_end)
-        if i > max_circuits:
+        if i > configuration.max_allowed_number_of_cycles_to_be_searched:
             raise InvalidArgumentException('The solution for this combination of patients and configurations '
-                                           'cannot be computed as there are too many possible combinations.')
+                                           'cannot be computed by AllSolutionsSolver, please use ILPSolver.')
 
     return all_circuits
 
