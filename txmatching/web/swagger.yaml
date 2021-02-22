@@ -84,6 +84,9 @@ definitions:
                 items:
                     $ref: '#/definitions/ManualRecipientDonorScore'
                 type: array
+            max_allowed_number_of_cycles_to_be_searched:
+                example: 10000000
+                type: integer
             max_allowed_number_of_matchings:
                 example: 10000
                 type: integer
