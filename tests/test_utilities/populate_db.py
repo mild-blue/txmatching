@@ -24,17 +24,20 @@ from txmatching.web import create_app
 
 ALLOWED_EDIT_COUNTRIES = 'allowed_edit_countries'
 PATIENT_DATA_OBFUSCATED = 'tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'
-
+PASSWORD = 'admin'
+PASSWORD_HASH = encode_password(PASSWORD)
 logger = logging.getLogger(__name__)
 ADMIN_USER = {
     'email': 'admin@example.com',
-    'password': 'admin',
+    'password_hash': PASSWORD_HASH,
+    'password': PASSWORD,
     'role': UserRole.ADMIN,
     'require_2fa': False
 }
 VIEWER_USER = {
     'email': 'viewer@example.com',
-    'password': 'viewer',
+    'password_hash': PASSWORD_HASH,
+    'password': PASSWORD,
     'role': UserRole.VIEWER,
     'require_2fa': False,
     'allowed_txm_events': [1]
@@ -42,7 +45,8 @@ VIEWER_USER = {
 
 OTP_USER = {
     'email': 'otp@example.com',
-    'password': 'admin',
+    'password_hash': PASSWORD_HASH,
+    'password': PASSWORD,
     'role': UserRole.ADMIN,
     'phone_number': '123456789',
     'require_2fa': False
@@ -50,7 +54,8 @@ OTP_USER = {
 
 SERVICE_USER = {
     'email': 'service@example.com',
-    'password': 'admin',
+    'password_hash': PASSWORD_HASH,
+    'password': PASSWORD,
     'role': UserRole.SERVICE,
     'require_2fa': False,
     'default_txm_event_id': 1,
@@ -58,7 +63,8 @@ SERVICE_USER = {
 }
 ADMIN_WITH_DEFAULT_TXM_EVENT = {
     'email': 'admin_default_txm_event@example.com',
-    'password': 'admin',
+    'password_hash': PASSWORD_HASH,
+    'password': PASSWORD,
     'role': UserRole.ADMIN,
     'require_2fa': False,
     'default_txm_event_id': 1
@@ -66,7 +72,8 @@ ADMIN_WITH_DEFAULT_TXM_EVENT = {
 
 EDITOR_WITH_ONLY_ONE_COUNTRY = {
     'email': 'editor_only_one_country@example.com',
-    'password': 'admin',
+    'password_hash': PASSWORD_HASH,
+    'password': PASSWORD,
     'role': UserRole.EDITOR,
     'require_2fa': False,
     'default_txm_event_id': 1,
@@ -97,7 +104,7 @@ def add_users():
             user[ALLOWED_EDIT_COUNTRIES] = [country for country in Country]
         user_model = AppUserModel(
             email=user.get('email'),
-            pass_hash=encode_password(user.get('password')),
+            pass_hash=user.get('password_hash'),
             role=user.get('role'),
             second_factor_material=generate_totp_seed(),
             phone_number=user.get('phone_number'),
@@ -110,10 +117,6 @@ def add_users():
     _add_users(user_models)
     for user, user_model in zip(USERS, user_models):
         user['id'] = user_model.id
-        try:
-            set_allowed_txm_event_ids_for_user(user_model, user.get('allowed_txm_events', []))
-        except ValueError:
-            logger.warning(f'Skipping setting allowed txm events because txm events are not initialized')
 
 
 def _add_users(users: List[AppUserModel]):

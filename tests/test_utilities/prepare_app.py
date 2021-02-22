@@ -48,7 +48,7 @@ class DbTests(unittest.TestCase):
     _database_name = 'memory.sqlite'
 
     def setUp(self):
-        formatter ='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
         logging.basicConfig(level=logging.INFO, format=formatter)
         """
