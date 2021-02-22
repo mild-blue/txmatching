@@ -84,21 +84,18 @@ def get_highest_scoring_paths(score_matrix: np.ndarray,
     compatible_donor_idxs_per_donor_idx = get_compatible_donor_idxs_per_donor_idx(score_matrix,
                                                                                   donor_idx_to_recipient_idx)
 
-    cycles, threshold_reached = find_all_cycles(n_donors,
-                                                compatible_donor_idxs_per_donor_idx,
-                                                configuration.max_cycle_length,
-                                                donors,
-                                                configuration.max_number_of_distinct_countries_in_round,
-                                                configuration.max_allowed_number_of_circuits)
-    if threshold_reached:
-        logger.warning('Too many cycles found, skipping search for sequences')
-        sequences = []
-    else:
-        sequences = find_all_sequences(score_matrix,
-                                       compatible_donor_idxs_per_donor_idx,
-                                       configuration.max_sequence_length,
-                                       donors,
-                                       configuration.max_number_of_distinct_countries_in_round)
+    cycles = find_all_cycles(n_donors,
+                             compatible_donor_idxs_per_donor_idx,
+                             configuration.max_cycle_length,
+                             donors,
+                             configuration.max_number_of_distinct_countries_in_round,
+                             configuration.max_allowed_number_of_circuits)
+
+    sequences = find_all_sequences(score_matrix,
+                                   compatible_donor_idxs_per_donor_idx,
+                                   configuration.max_sequence_length,
+                                   donors,
+                                   configuration.max_number_of_distinct_countries_in_round)
 
     highest_scoring_paths = keep_only_highest_scoring_paths(
         cycles,
