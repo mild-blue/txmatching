@@ -1,14 +1,18 @@
+include .env
+
 build-conda-base:
-	docker build -f Dockerfile.conda-base -t "mildblue/txmatching-conda-base:${VERSION}" .
+	docker build -f Dockerfile.conda-base -t "ghcr.io/mild-blue/txmatching-conda-base:${VERSION}" .
 
 publish-conda-base: build-conda-base
-	docker push "mildblue/txmatching-conda-base:${VERSION}"
+	echo ${PAT_TOKEN} | docker login ghcr.io -u ${GITHUB_USER} --password-stdin
+	docker push "ghcr.io/mild-blue/txmatching-conda-base:${VERSION}"
 
 build-conda-dependencies: build-conda-base
-	docker build -f Dockerfile.conda-dependencies -t "mildblue/txmatching-conda-dependencies:${VERSION}" ../
+	docker build -f Dockerfile.conda-dependencies -t "ghcr.io/mild-blue/txmatching-conda-dependencies:${VERSION}" ../
 
 publish-conda-dependencies: build-conda-dependencies
-	docker push "mildblue/txmatching-conda-dependencies:${VERSION}"
+	echo ${PAT_TOKEN} | docker login ghcr.io -u ${GITHUB_USER} --password-stdin
+	docker push "ghcr.io/mild-blue/txmatching-conda-dependencies:${VERSION}"
 
 build: build-conda-base build-conda-dependencies
 
