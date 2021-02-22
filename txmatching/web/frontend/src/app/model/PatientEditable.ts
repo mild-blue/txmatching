@@ -17,7 +17,7 @@ export class PatientEditable {
   initializeFromPatient(patient: Patient) {
     this.country = patient.parameters.country_code;
     this.medicalId = patient.medical_id;
-    this.antigens = patient.parameters.hla_typing.hla_types_list;
+    this.antigens = [...patient.parameters.hla_typing.hla_types_list];
     this.bloodGroup = patient.parameters.blood_group;
     this.sex = patient.parameters.sex;
     this.height = patient.parameters.height;

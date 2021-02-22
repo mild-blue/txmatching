@@ -17,11 +17,11 @@ export class RecipientEditable extends PatientEditable {
 
   initializeFromPatient(recipient: Recipient) {
     super.initializeFromPatient(recipient);
-    this.acceptableBloodGroups = recipient.acceptable_blood_groups;
-    this.antibodies = recipient.hla_antibodies.hla_antibodies_list;
+    this.acceptableBloodGroups = [...recipient.acceptable_blood_groups];
+    this.antibodies = [...recipient.hla_antibodies.hla_antibodies_list];
     this.antibodiesCutoff = recipient.cutoff;
     this.waitingSince = recipient.waitingSince;
-    this.previousTransplants = recipient.previousTransplants
+    this.previousTransplants = recipient.previousTransplants;
     if (recipient.recipient_requirements) {
       this.recipientRequirements = recipient.recipient_requirements;
     }
