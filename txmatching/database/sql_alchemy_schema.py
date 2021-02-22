@@ -7,7 +7,6 @@ from sqlalchemy.sql import func
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
 from txmatching.patients.patient import DonorType, RecipientRequirements
-from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 # pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
@@ -71,7 +70,7 @@ class RecipientModel(db.Model):
     txm_event_id = db.Column(db.Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=False)
     medical_id = db.Column(db.TEXT, unique=False, nullable=False)
     country = db.Column(db.Enum(Country), unique=False, nullable=False)
-    blood = db.Column(db.Enum(BloodGroup), unique=False, nullable=False)
+    blood = db.Column(db.TEXT, unique=False, nullable=False)
     hla_typing = db.Column(db.JSON, unique=False, nullable=False)  # HLATyping is model of the JSON
     recipient_requirements = db.Column(db.JSON, unique=False, nullable=False,
                                        default=dataclasses.asdict(RecipientRequirements()))
@@ -100,7 +99,7 @@ class DonorModel(db.Model):
     txm_event_id = db.Column(db.Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=False)
     medical_id = db.Column(db.TEXT, unique=False, nullable=False)
     country = db.Column(db.Enum(Country), unique=False, nullable=False)
-    blood = db.Column(db.Enum(BloodGroup), unique=False, nullable=False)
+    blood = db.Column(db.TEXT, unique=False, nullable=False)
     hla_typing = db.Column(db.JSON, unique=False, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, nullable=False)
     donor_type = db.Column(db.Enum(DonorType), unique=False, nullable=False)
@@ -124,7 +123,7 @@ class RecipientAcceptableBloodModel(db.Model):
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     recipient_id = db.Column(db.Integer, ForeignKey('recipient.id', ondelete='CASCADE'), unique=False, nullable=False)
-    blood_type = db.Column(db.Enum(BloodGroup), unique=False, nullable=False)
+    blood_type = db.Column(db.TEXT, unique=False, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
