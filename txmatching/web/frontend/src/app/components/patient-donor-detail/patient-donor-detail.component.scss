@@ -21,4 +21,14 @@
   form {
     margin-top: $padding-y;
   }
+
+  .buttons {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+
+    & > * {
+      margin: 0 20px;
+    }
+  }
 }
