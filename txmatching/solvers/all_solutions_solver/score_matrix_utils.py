@@ -1,9 +1,12 @@
+import logging
 from itertools import groupby
 from typing import Dict, List, Set, Tuple
 
 import numpy as np
 from graph_tool import Graph, topology
 
+from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
+from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
 from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only import \
@@ -12,6 +15,7 @@ from txmatching.solvers.all_solutions_solver.scoring_utils import \
     get_score_for_idx_pairs
 
 Path = Tuple[int]
+logger = logging.getLogger(__name__)
 
 
 def get_donor_idx_to_recipient_idx(score_matrix: np.ndarray) -> Dict[int, int]:
@@ -46,19 +50,22 @@ def get_compatible_donor_idxs_per_donor_idx(score_matrix: np.ndarray,
 
 def find_all_cycles(n_donors: int,
                     compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
-                    max_length: int,
                     donors: List[Donor],
-                    max_countries: int) -> List[Path]:
+                    configuration: Configuration) -> List[Path]:
     """
     Circuits between pairs, each pair is denoted by it's pair = donor index
     """
     donor_to_compatible_donor_graph = _get_donor_to_compatible_donor_graph(n_donors,
                                                                            compatible_donor_idxs_per_donor_idx)
     all_circuits = []
-    for circuit in topology.all_circuits(donor_to_compatible_donor_graph):
-        if len(circuit) <= max_length and country_count_in_path(circuit, donors) <= max_countries:
+    for i, circuit in enumerate(topology.all_circuits(donor_to_compatible_donor_graph)):
+        if (len(circuit) <= configuration.max_cycle_length and
+                country_count_in_path(circuit, donors) <= configuration.max_number_of_distinct_countries_in_round):
             circuit_with_end = tuple(list(circuit) + [circuit[0]])
             all_circuits.append(circuit_with_end)
+        if i > configuration.max_allowed_number_of_cycles_to_be_searched:
+            raise TooComplicatedDataForAllSolutionsSolver(f'Number of possible cycles in data was above threshold of '
+                                              f'{configuration.max_allowed_number_of_cycles_to_be_searched}')
 
     return all_circuits
 

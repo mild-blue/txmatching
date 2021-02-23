@@ -86,9 +86,9 @@ def get_highest_scoring_paths(score_matrix: np.ndarray,
 
     cycles = find_all_cycles(n_donors,
                              compatible_donor_idxs_per_donor_idx,
-                             configuration.max_cycle_length,
                              donors,
-                             configuration.max_number_of_distinct_countries_in_round)
+                             configuration)
+
     sequences = find_all_sequences(score_matrix,
                                    compatible_donor_idxs_per_donor_idx,
                                    configuration.max_sequence_length,

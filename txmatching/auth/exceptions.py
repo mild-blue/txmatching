@@ -80,6 +80,12 @@ class InvalidArgumentException(BaseTxmException):
     """
 
 
+class TooComplicatedDataForAllSolutionsSolver(BaseTxmException):
+    """
+    Raised if invalid argument received.
+    """
+
+
 # TODO remove in https://github.com/mild-blue/txmatching/issues/372
 class CachingNotReadyException(BaseTxmException):
     """

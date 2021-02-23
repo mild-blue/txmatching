@@ -17,6 +17,7 @@ export interface ConfigurationGenerated {
     blood_group_compatibility_bonus?: number;
     forbidden_country_combinations?: Array<ForbiddenCountryCombinationGenerated>;
     manual_donor_recipient_scores?: Array<ManualRecipientDonorScoreGenerated>;
+    max_allowed_number_of_cycles_to_be_searched?: number;
     max_allowed_number_of_matchings?: number;
     max_cycle_length?: number;
     max_matchings_to_show_to_viewer?: number;

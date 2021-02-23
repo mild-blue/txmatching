@@ -11,7 +11,8 @@ from txmatching.auth.exceptions import (
     CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
     GuardException, InvalidArgumentException, InvalidAuthCallException,
     InvalidIpAddressAccessException, InvalidJWTException, InvalidOtpException,
-    NotFoundException, SolverAlreadyRunningException, UnauthorizedException,
+    NotFoundException, SolverAlreadyRunningException,
+    TooComplicatedDataForAllSolutionsSolver, UnauthorizedException,
     UserUpdateException, WrongTokenUsedException)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
@@ -119,6 +120,13 @@ def _user_auth_handlers(api: Api):
         """unauthorized_exception"""
         _log_warning(error)
         return {'error': 'Not authorized.', 'message': str(error)}, 403
+
+    @api.errorhandler(TooComplicatedDataForAllSolutionsSolver)
+    def handle_too_complicated_data_for_solver_exception(error: TooComplicatedDataForAllSolutionsSolver):
+        """too complicated data for solver _exception"""
+        _log_warning(error)
+        return {'error': 'The solution for this combination of patients and configurations '
+                         'is too complicated for AllSolutionsSolver, please use ILPSolver.', 'message': str(error)}, 400
 
     @api.errorhandler(CachingNotReadyException)
     def handle_caching_not_ready_exception(error: CachingNotReadyException):
