@@ -8,8 +8,8 @@ import dacite
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
     HLAAntibodiesRawDTO, HLAAntibodyRawDTO)
-from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
-    HLATypingRawDTO
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
+    HLATypingDTO, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
@@ -114,7 +114,7 @@ def _recipient_upload_dto_to_recipient_model(
 
 def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
     hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
-
+    patient_model.hla_typing = dataclasses.asdict(HLATypingDTO(hla_types_list=[]))
     patient_model.hla_typing = dataclasses.asdict(
         parse_hla_typing_raw_and_store_parsing_error_in_db(
             hla_typing_raw

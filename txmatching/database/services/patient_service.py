@@ -150,7 +150,20 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
             )
             recipient_update_dict['hla_antibodies_raw'] = dataclasses.asdict(new_hla_antibodies_raw)
         else:
-            new_hla_antibodies_raw = dacite.from_dict(data_class=HLAAntibodiesRawDTO, data=old_recipient_model.hla_antibodies_raw)
+            old_hla_antibodies_raw = dacite.from_dict(
+                data_class=HLAAntibodiesRawDTO,
+                data=old_recipient_model.hla_antibodies_raw
+            )
+            new_hla_antibodies_raw = HLAAntibodiesRawDTO(
+                hla_antibodies_list=[
+                    HLAAntibodyRawDTO(
+                        raw_code=hla_antibody.raw_code,
+                        mfi=hla_antibody.mfi,
+                        cutoff=new_cutoff,
+                    )
+                    for hla_antibody in old_hla_antibodies_raw.hla_antibodies_list
+                ]
+            )
 
         hla_antibodies = parse_hla_antibodies_raw_and_store_parsing_error_in_db(new_hla_antibodies_raw, recipient_update_dto.db_id)
 
