@@ -8,3 +8,6 @@ ALTER TABLE donor
 
 ALTER TABLE recipient
     ADD COLUMN hla_typing_raw JSONB NOT NULL;
+
+ALTER TABLE recipient
+    ADD COLUMN hla_antibodies_raw JSONB NOT NULL;

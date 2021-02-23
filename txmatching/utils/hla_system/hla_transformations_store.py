@@ -1,17 +1,51 @@
+import itertools
 import logging
-from typing import Optional
+from typing import List, Optional
 
+from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
+    HLAAntibodiesRawDTO, HLAAntibodyRawDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypingDTO, HLATypingRawDTO)
 from txmatching.database.db import db
-from txmatching.database.sql_alchemy_schema import ParsingErrorModel
+from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
+                                                    RecipientHLAAntibodyModel)
 from txmatching.patients.hla_model import HLAType
 from txmatching.utils.hla_system.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 from txmatching.utils.hla_system.hla_transformations import (
-    parse_hla_raw_code_with_details, preprocess_hla_codes_in)
+    parse_hla_raw_code_with_details, preprocess_hla_code_in,
+    preprocess_hla_codes_in)
 
 logger = logging.getLogger(__name__)
+
+
+def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
+        hla_antibodies_raw: HLAAntibodiesRawDTO,
+        recipient_db_id: Optional[int] = None
+) -> List[RecipientHLAAntibodyModel]:
+    hla_antibodies_preprocessed = [
+        HLAAntibodyRawDTO(parsed_code, hla_antibody_in.mfi, hla_antibody_in.cutoff)
+        for hla_antibody_in in hla_antibodies_raw.hla_antibodies_list
+        for parsed_code in preprocess_hla_code_in(hla_antibody_in.raw_code)
+    ]
+
+    grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies_preprocessed, key=lambda x: x.raw_code),
+                                               key=lambda x: x.raw_code)
+    for hla_code_raw, antibody_group in grouped_hla_antibodies:
+        cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
+        if len(cutoffs) > 1:
+            # TODOO: report to file
+            raise InvalidArgumentException(f'There were multiple cutoff values for antibody {hla_code_raw} '
+                                           'This means inconsistency that is not allowed.')
+
+    return [RecipientHLAAntibodyModel(
+        recipient_id=recipient_db_id,
+        raw_code=hla_antibody.raw_code,
+        code=parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.raw_code),
+        cutoff=hla_antibody.cutoff,
+        mfi=hla_antibody.mfi
+    ) for hla_antibody in hla_antibodies_preprocessed]
 
 
 def parse_hla_typing_raw_and_store_parsing_error_in_db(hla_typing_raw: HLATypingRawDTO) -> HLATypingDTO:

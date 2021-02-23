@@ -19,12 +19,3 @@ class RecipientUpdateDTO(PatientUpdateDTO):
     cutoff: Optional[int] = None
     waiting_since: Optional[str] = None
     previous_transplants: Optional[int] = None
-
-    def __post_init__(self):
-        # TODOO: antibodies
-        if self.hla_antibodies:
-            self.hla_antibodies_preprocessed = HLAAntibodiesDTO([
-                HLAAntibodyDTO(preprocessed_code, hla_antibody_dto.mfi)
-                for hla_antibody_dto in self.hla_antibodies.hla_antibodies_list
-                for preprocessed_code in preprocess_hla_code_in(hla_antibody_dto.raw_code)
-            ])

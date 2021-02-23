@@ -26,19 +26,3 @@ class RecipientUploadDTO:
     year_of_birth: Optional[int] = None
     waiting_since: Optional[str] = None
     previous_transplants: Optional[int] = None
-
-    def __post_init__(self):
-        # TODOO: antibodies
-
-        self.hla_antibodies_preprocessed = [
-            HLAAntibodiesUploadDTO(parsed_code, hla_antibody_in.mfi, hla_antibody_in.cutoff)
-            for hla_antibody_in in self.hla_antibodies
-            for parsed_code in preprocess_hla_code_in(hla_antibody_in.name)
-        ]
-        grouped_hla_antibodies = itertools.groupby(sorted(self.hla_antibodies_preprocessed, key=lambda x: x.name),
-                                                   key=lambda x: x.name)
-        for hla_code_raw, antibody_group in grouped_hla_antibodies:
-            cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
-            if len(cutoffs) > 1:
-                raise InvalidArgumentException(f'There were multiple cutoff values for antibody {hla_code_raw} '
-                                               'This means inconsistency that is not allowed.')

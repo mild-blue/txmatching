@@ -87,6 +87,7 @@ class RecipientModel(db.Model):
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
     acceptable_blood = db.relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True,
                                        lazy='joined')
+    hla_antibodies_raw = db.Column(db.JSON, unique=False, nullable=False)
     hla_antibodies = db.relationship('RecipientHLAAntibodyModel', backref='recipient', passive_deletes=True,
                                      lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')

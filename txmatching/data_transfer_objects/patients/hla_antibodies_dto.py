@@ -13,9 +13,21 @@ class HLAAntibodyDTO:
     def __post_init__(self):
         if self.mfi < 0:
             self.mfi = 0
-            logger.warning("MFI should not be negative, setting to 0.")
+            logger.warning('MFI should not be negative, setting to 0.')
 
 
 @dataclass
 class HLAAntibodiesDTO:
     hla_antibodies_list: List[HLAAntibodyDTO] = field(default_factory=list)
+
+
+@dataclass
+class HLAAntibodyRawDTO:
+    raw_code: str
+    mfi: int
+    cutoff: int
+
+
+@dataclass
+class HLAAntibodiesRawDTO:
+    hla_antibodies_list: List[HLAAntibodyRawDTO] = field(default_factory=list)
