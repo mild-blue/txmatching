@@ -85,7 +85,7 @@ definitions:
                     $ref: '#/definitions/ManualRecipientDonorScore'
                 type: array
             max_allowed_number_of_cycles_to_be_searched:
-                example: 10000000
+                example: 1000000
                 type: integer
             max_allowed_number_of_matchings:
                 example: 10000
@@ -2111,6 +2111,8 @@ responses:
         description: When a mask can't be parsed
     SolverAlreadyRunningException:
         description: Solver already running
+    TooComplicatedDataForAllSolutionsSolver:
+        description: too complicated data for solver _exception
     UnauthorizedException:
         description: unauthorized_exception
     UserUpdateException:

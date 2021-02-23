@@ -5,7 +5,7 @@ from typing import Dict, List, Set, Tuple
 import numpy as np
 from graph_tool import Graph, topology
 
-from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
 from txmatching.configuration.configuration import Configuration
 from txmatching.patients.patient import Donor
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
@@ -64,8 +64,8 @@ def find_all_cycles(n_donors: int,
             circuit_with_end = tuple(list(circuit) + [circuit[0]])
             all_circuits.append(circuit_with_end)
         if i > configuration.max_allowed_number_of_cycles_to_be_searched:
-            raise InvalidArgumentException('The solution for this combination of patients and configurations '
-                                           'cannot be computed by AllSolutionsSolver, please use ILPSolver.')
+            raise TooComplicatedDataForAllSolutionsSolver(f'Number of possible cycles in data was above threshold of '
+                                              f'{configuration.max_allowed_number_of_cycles_to_be_searched}')
 
     return all_circuits
 
