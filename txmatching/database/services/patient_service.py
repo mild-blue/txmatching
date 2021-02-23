@@ -6,7 +6,7 @@ import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
-    HLATypingDTO
+    HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto import \
@@ -19,15 +19,13 @@ from txmatching.database.services.parsing_utils import (get_hla_code,
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
     RecipientModel)
-from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
-                                           HLATyping)
+from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLATyping
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
-from txmatching.utils.hla_system.hla_transformations import \
-    preprocess_hla_code_in
-from txmatching.utils.hla_system.hla_transformations_store import \
-    parse_hla_raw_code_and_store_parsing_error_in_db
+from txmatching.utils.hla_system.hla_transformations_store import (
+    parse_hla_raw_code_and_store_parsing_error_in_db,
+    parse_hla_typing_raw_and_store_parsing_error_in_db)
 from txmatching.utils.logging_tools import PatientAdapter
 from txmatching.utils.persistent_hash import (get_hash_digest,
                                               initialize_persistent_hash,
@@ -85,7 +83,15 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> di
     if patient_update_dto.blood_group is not None:
         patient_update_dict['blood'] = patient_update_dto.blood_group
     if patient_update_dto.hla_typing is not None:
-        patient_update_dict['hla_typing'] = dataclasses.asdict(patient_update_dto.hla_typing_preprocessed)
+        hla_typing_raw = HLATypingRawDTO(
+            raw_codes=[hla_type.raw_code for hla_type in patient_update_dto.hla_typing.hla_types_list]
+        )
+        patient_update_dict['hla_typing_raw'] = dataclasses.asdict(hla_typing_raw)
+        patient_update_dict['hla_typing'] = dataclasses.asdict(
+            parse_hla_typing_raw_and_store_parsing_error_in_db(
+                hla_typing_raw
+            )
+        )
 
     # For the following parameters we support setting null value
     patient_update_dict['sex'] = patient_update_dto.sex
@@ -97,7 +103,6 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> di
 
 
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
-    recipient_update_dto = _update_patient_preprocessed_typing(recipient_update_dto)
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     if txm_event_db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to.')
@@ -112,6 +117,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
             RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
         db.session.add_all(acceptable_blood_models)
     if recipient_update_dto.hla_antibodies or recipient_update_dto.cutoff:
+        # TODOO: antibodies
         # not the best approach: in case cutoff was different per antibody before it will be unified now, but
         # but good for the moment
         old_recipient = get_recipient_from_recipient_model(old_recipient_model)
@@ -150,7 +156,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
 
 
 def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
-    donor_update_dto = _update_patient_preprocessed_typing(donor_update_dto)
     old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
     if txm_event_db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to')
@@ -190,25 +195,6 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
             year_of_birth=patient_model.yob,
             sex=patient_model.sex
         ))
-
-
-def _update_patient_preprocessed_typing(patient_update: PatientUpdateDTO) -> PatientUpdateDTO:
-    """
-    Updates u patient's hla typing.
-    This method is partially redundant to PatientUpdateDTO.__post_init__ so in case of update, update it too.
-    :param patient_update: patient to be updated
-    :return: updated patient
-    """
-    if patient_update.hla_typing:
-        patient_update.hla_typing_preprocessed = HLATypingDTO([
-            HLAType(
-                raw_code=preprocessed_code,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(preprocessed_code)
-            )
-            for hla_type_update_dto in patient_update.hla_typing.hla_types_list
-            for preprocessed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
-        ])
-    return patient_update
 
 
 def get_donor_recipient_pair(donor_id: int, txm_event_id: int) -> Tuple[Donor, Optional[Recipient]]:

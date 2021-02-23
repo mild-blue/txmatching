@@ -301,7 +301,7 @@ class TestPatientService(DbTests):
         self.assertEqual(donor.parameters.year_of_birth, None)
         self.assertEqual(donor.active, False)
 
-    def test_update_recipient(self):  # TODOO
+    def test_update_recipient(self):
         txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         recipient_db_id = 10

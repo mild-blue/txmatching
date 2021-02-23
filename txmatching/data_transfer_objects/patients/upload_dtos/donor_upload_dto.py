@@ -20,6 +20,3 @@ class DonorUploadDTO:
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None
     year_of_birth: Optional[int] = None
-
-    def __post_init__(self):
-        self.hla_typing_preprocessed = preprocess_hla_codes_in(self.hla_typing)

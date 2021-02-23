@@ -28,7 +28,8 @@ class RecipientUploadDTO:
     previous_transplants: Optional[int] = None
 
     def __post_init__(self):
-        self.hla_typing_preprocessed = preprocess_hla_codes_in(self.hla_typing)
+        # TODOO: antibodies
+
         self.hla_antibodies_preprocessed = [
             HLAAntibodiesUploadDTO(parsed_code, hla_antibody_in.mfi, hla_antibody_in.cutoff)
             for hla_antibody_in in self.hla_antibodies

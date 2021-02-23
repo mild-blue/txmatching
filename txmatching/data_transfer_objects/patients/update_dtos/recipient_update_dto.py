@@ -21,7 +21,7 @@ class RecipientUpdateDTO(PatientUpdateDTO):
     previous_transplants: Optional[int] = None
 
     def __post_init__(self):
-        super().__post_init__()
+        # TODOO: antibodies
         if self.hla_antibodies:
             self.hla_antibodies_preprocessed = HLAAntibodiesDTO([
                 HLAAntibodyDTO(preprocessed_code, hla_antibody_dto.mfi)

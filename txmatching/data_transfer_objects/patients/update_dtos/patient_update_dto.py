@@ -24,14 +24,3 @@ class PatientUpdateDTO:
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None
     year_of_birth: Optional[int] = None
-
-    def __post_init__(self):
-        """
-        This method is partially redundant to update_patient_preprocessed_typing so in case of update, update it too.
-        """
-        if self.hla_typing:
-            self.hla_typing_preprocessed = HLATypingDTO([
-                HLAType(preprocessed_code)
-                for hla_type_update_dto in self.hla_typing.hla_types_list
-                for preprocessed_code in preprocess_hla_code_in(hla_type_update_dto.raw_code)
-            ])

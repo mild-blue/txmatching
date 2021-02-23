@@ -3,9 +3,11 @@ import dataclasses
 import logging
 from typing import Dict, List
 
+import dacite
+
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
-    HLATypingDTO
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
+    HLATypingDTO, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
@@ -23,11 +25,12 @@ from txmatching.database.services.txm_event_service import (
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
     RecipientModel)
-from txmatching.patients.hla_model import HLAAntibody, HLAType
+from txmatching.patients.hla_model import HLAAntibody
 from txmatching.patients.patient import DonorType, calculate_cutoff
 from txmatching.utils.country_enum import Country
-from txmatching.utils.hla_system.hla_transformations_store import \
-    parse_hla_raw_code_and_store_parsing_error_in_db
+from txmatching.utils.hla_system.hla_transformations_store import (
+    parse_hla_raw_code_and_store_parsing_error_in_db,
+    parse_hla_typing_raw_and_store_parsing_error_in_db)
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +73,7 @@ def _recipient_upload_dto_to_recipient_model(
         country_code: Country,
         txm_event_db_id: int
 ) -> RecipientModel:
+    # TODOO: antibodies
     hla_antibodies = [RecipientHLAAntibodyModel(
         raw_code=hla_antibody.name,
         code=parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.name),
@@ -90,12 +94,10 @@ def _recipient_upload_dto_to_recipient_model(
         medical_id=recipient.medical_id,
         country=country_code,
         blood=recipient.blood_group,
-        hla_typing=dataclasses.asdict(HLATypingDTO(
-            [HLAType(
-                raw_code=typing,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(typing)
-            ) for typing in
-                recipient.hla_typing_preprocessed])),
+        hla_typing_raw=dataclasses.asdict(HLATypingRawDTO(
+            raw_codes=recipient.hla_typing
+        )),
+        hla_typing=dataclasses.asdict(HLATypingDTO.get_empty()),
         hla_antibodies=hla_antibodies,
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in acceptable_blood_groups],
@@ -108,7 +110,20 @@ def _recipient_upload_dto_to_recipient_model(
         yob=recipient.year_of_birth,
         previous_transplants=recipient.previous_transplants,
     )
+
+    _parse_and_update_hla_typing_in_model(recipient_model)
+
     return recipient_model
+
+
+def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
+    hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
+
+    patient_model.hla_typing = dataclasses.asdict(
+        parse_hla_typing_raw_and_store_parsing_error_in_db(
+            hla_typing_raw
+        )
+    )
 
 
 def _donor_upload_dto_to_donor_model(
@@ -147,12 +162,10 @@ def _donor_upload_dto_to_donor_model(
         medical_id=donor.medical_id,
         country=country_code,
         blood=donor.blood_group,
-        hla_typing=dataclasses.asdict(HLATypingDTO(
-            [HLAType(
-                raw_code=typing,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(typing)
-            ) for typing in
-                donor.hla_typing_preprocessed])),
+        hla_typing_raw=dataclasses.asdict(HLATypingRawDTO(
+            raw_codes=donor.hla_typing
+        )),
+        hla_typing=dataclasses.asdict(HLATypingDTO.get_empty()),
         active=True,
         recipient=maybe_related_recipient,
         donor_type=donor.donor_type,
@@ -162,6 +175,9 @@ def _donor_upload_dto_to_donor_model(
         yob=donor.year_of_birth,
         txm_event_id=txm_event_db_id
     )
+
+    _parse_and_update_hla_typing_in_model(donor_model)
+
     return donor_model
 
 
