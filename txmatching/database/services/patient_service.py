@@ -167,7 +167,10 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
                 ]
             )
 
-        hla_antibodies = parse_hla_antibodies_raw_and_store_parsing_error_in_db(new_hla_antibodies_raw, recipient_update_dto.db_id)
+        hla_antibodies = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
+            new_hla_antibodies_raw,
+            recipient_update_dto.db_id
+        )
 
         RecipientHLAAntibodyModel.query.filter(
             RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id
@@ -198,7 +201,9 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
 
 
-def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id: int) -> PatientsRecomputeParsingSuccessDTOOut:
+def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
+        txm_event_id: int
+) -> PatientsRecomputeParsingSuccessDTOOut:
     patients_checked = 0
     patients_changed = 0
 

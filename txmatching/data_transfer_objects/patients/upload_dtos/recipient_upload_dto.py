@@ -1,15 +1,11 @@
-import itertools
 from dataclasses import dataclass
 from typing import List, Optional
 
-from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
-from txmatching.utils.hla_system.hla_transformations import (
-    preprocess_hla_code_in, preprocess_hla_codes_in)
 
 
 @dataclass

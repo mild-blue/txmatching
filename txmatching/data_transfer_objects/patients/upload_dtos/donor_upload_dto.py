@@ -4,8 +4,6 @@ from typing import List, Optional
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
-from txmatching.utils.hla_system.hla_transformations import \
-    preprocess_hla_codes_in
 
 
 @dataclass

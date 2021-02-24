@@ -240,9 +240,11 @@ class RecomputeParsing(Resource):
     @patient_api.doc(
         body=None,
         security='bearer',
-        description='Endpoint that lets an ADMIN recompute parsed antigens and antibodies for all patients in the given txm event.'
+        description='Endpoint that lets an ADMIN recompute parsed antigens and antibodies for '
+                    'all patients in the given txm event.'
     )
-    @patient_api.response(code=201, model=PatientsRecomputeParsingSuccessJson, description='Returns the recomputation statistics.')
+    @patient_api.response(code=201, model=PatientsRecomputeParsingSuccessJson,
+                          description='Returns the recomputation statistics.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
     @patient_api.response(code=403, model=FailJson,

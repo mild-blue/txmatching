@@ -1,16 +1,11 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
-    HLATypingDTO
 from txmatching.data_transfer_objects.patients.update_dtos.hla_code_update_dtos import \
     HLATypingUpdateDTO
-from txmatching.patients.hla_model import HLAType
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
-from txmatching.utils.hla_system.hla_transformations import \
-    preprocess_hla_code_in
 
 
 @dataclass

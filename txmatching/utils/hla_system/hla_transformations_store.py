@@ -2,7 +2,6 @@ import itertools
 import logging
 from typing import List, Optional
 
-from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
     HLAAntibodiesRawDTO, HLAAntibodyRawDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
@@ -24,6 +23,7 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
         hla_antibodies_raw: HLAAntibodiesRawDTO,
         recipient_db_id: Optional[int] = None
 ) -> List[RecipientHLAAntibodyModel]:
+    # TODOO
     hla_antibodies_preprocessed = [
         HLAAntibodyRawDTO(parsed_code, hla_antibody_in.mfi, hla_antibody_in.cutoff)
         for hla_antibody_in in hla_antibodies_raw.hla_antibodies_list

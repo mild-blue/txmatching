@@ -153,7 +153,8 @@ class RecipientHLAAntibodyModel(db.Model):
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
     def __repr__(self):
-        return f'<RecipientHLAAntibodyModel {self.code} (raw_code={self.raw_code}, mfi={self.mfi}, cutoff={self.cutoff})>'
+        return f'<RecipientHLAAntibodyModel {self.code} ' \
+               f'(raw_code={self.raw_code}, mfi={self.mfi}, cutoff={self.cutoff})>'
 
 
 class AppUserModel(db.Model):
