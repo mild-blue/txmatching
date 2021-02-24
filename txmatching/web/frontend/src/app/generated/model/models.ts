@@ -36,6 +36,7 @@ export * from './patientModelToUpdateGenerated';
 export * from './patientParametersGenerated';
 export * from './patientUploadSuccessResponseGenerated';
 export * from './patientsGenerated';
+export * from './patientsRecomputeParsingSuccessGenerated';
 export * from './recipientGenerated';
 export * from './recipientInputGenerated';
 export * from './recipientModelToUpdateAllOfGenerated';

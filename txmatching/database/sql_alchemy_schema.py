@@ -92,6 +92,9 @@ class RecipientModel(db.Model):
                                      lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')
 
+    def __repr__(self):
+        return f'<RecipientModel {self.id} (medical_id={self.medical_id})>'
+
 
 class DonorModel(db.Model):
     __tablename__ = 'donor'
@@ -119,6 +122,9 @@ class DonorModel(db.Model):
                                 lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')
 
+    def __repr__(self):
+        return f'<DonorModel {self.id} (medical_id={self.medical_id})>'
+
 
 class RecipientAcceptableBloodModel(db.Model):
     __tablename__ = 'recipient_acceptable_blood'
@@ -145,6 +151,9 @@ class RecipientHLAAntibodyModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+    def __repr__(self):
+        return f'<RecipientHLAAntibodyModel {self.code} (raw_code={self.raw_code}, mfi={self.mfi}, cutoff={self.cutoff})>'
 
 
 class AppUserModel(db.Model):

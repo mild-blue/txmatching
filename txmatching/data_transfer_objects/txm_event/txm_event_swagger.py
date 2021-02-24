@@ -106,6 +106,12 @@ PatientUploadSuccessJson = txm_event_api.model('PatientUploadSuccessResponse', {
                                       description='Number of donors successfully loaded into the application.'),
 })
 
+PatientsRecomputeParsingSuccessJson = txm_event_api.model('PatientsRecomputeParsingSuccess', {
+    'patients_checked': fields.Integer(required=True),
+    'patients_changed': fields.Integer(required=True),
+    'parsing_errors': fields.List(required=True, cls_or_instance=fields.Raw()),
+})
+
 TxmEventsJson = txm_event_api.model('TxmEvents', {
     'events': fields.List(required=True, cls_or_instance=fields.Nested(
         TxmEventJsonOut

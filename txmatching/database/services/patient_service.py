@@ -9,6 +9,8 @@ from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
     HLAAntibodiesRawDTO, HLAAntibodyRawDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
     HLATypingRawDTO
+from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
+    PatientsRecomputeParsingSuccessDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto import \
@@ -19,8 +21,8 @@ from txmatching.database.db import db
 from txmatching.database.services.parsing_utils import (get_hla_code,
                                                         parse_date_to_datetime)
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
-    RecipientModel)
+    DonorModel, ParsingErrorModel, RecipientAcceptableBloodModel,
+    RecipientHLAAntibodyModel, RecipientModel)
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLATyping
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
@@ -194,6 +196,76 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
     db.session.commit()
     return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
+
+
+def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id: int) -> PatientsRecomputeParsingSuccessDTOOut:
+    patients_checked = 0
+    patients_changed = 0
+
+    # Clear parsing errors table
+    ParsingErrorModel.query.delete()
+
+    # Get donors and recipients
+    donor_models = DonorModel.query.filter(DonorModel.txm_event_id == txm_event_id).all()
+    recipient_models = RecipientModel.query.filter(RecipientModel.txm_event_id == txm_event_id).all()
+
+    # Update hla_typing for donors and recipients
+    for patient_model in donor_models + recipient_models:
+        hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
+        new_hla_typing = dataclasses.asdict(
+            parse_hla_typing_raw_and_store_parsing_error_in_db(
+                hla_typing_raw
+            )
+        )
+
+        if new_hla_typing != patient_model.hla_typing:
+            logger.debug(f'Updating hla_typing of {patient_model}:')
+            logger.debug(f'hla_typing before: {patient_model.hla_typing}')
+            logger.debug(f'hla_typing now: {new_hla_typing}')
+            patient_model.hla_typing = new_hla_typing
+            patients_changed += 1
+
+        patients_checked += 1
+
+    # Update hla_antibodies for recipients
+    for recipient_model in recipient_models:
+        hla_antibodies_raw = dacite.from_dict(data_class=HLAAntibodiesRawDTO, data=recipient_model.hla_antibodies_raw)
+        new_hla_antibodies = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
+            hla_antibodies_raw,
+            recipient_model.id
+        )
+
+        if new_hla_antibodies != recipient_model.hla_antibodies:
+            logger.debug(f'Updating hla_antibodies of {recipient_model}:')
+            logger.debug(f'hla_antibodies before: {recipient_model.hla_antibodies}')
+            logger.debug(f'hla_antibodies now: {new_hla_antibodies}')
+
+            RecipientHLAAntibodyModel.query.filter(
+                RecipientHLAAntibodyModel.recipient_id == recipient_model.id
+            ).delete()
+            db.session.add_all(new_hla_antibodies)
+
+            patients_changed += 1
+
+        patients_checked += 1
+
+    if patients_changed > 0:
+        db.session.commit()
+
+    # Get parsing errors
+    parsing_error_models = ParsingErrorModel.query.all()
+    parsing_errors = [
+        {
+            'hla_code': parsing_error_model.hla_code,
+            'hla_code_processing_result_detail': parsing_error_model.hla_code_processing_result_detail
+        } for parsing_error_model in parsing_error_models
+    ]
+
+    return PatientsRecomputeParsingSuccessDTOOut(
+        patients_checked=patients_checked,
+        patients_changed=patients_changed,
+        parsing_errors=parsing_errors,
+    )
 
 
 def get_patients_persistent_hash(txm_event: TxmEvent) -> int:

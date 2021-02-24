@@ -951,6 +951,21 @@ definitions:
                     $ref: '#/definitions/Recipient'
                 type: array
         type: object
+    PatientsRecomputeParsingSuccess:
+        properties:
+            parsing_errors:
+                items:
+                    type: object
+                type: array
+            patients_changed:
+                type: integer
+            patients_checked:
+                type: integer
+        required:
+            - parsing_errors
+            - patients_changed
+            - patients_checked
+        type: object
     Recipient:
         properties:
             acceptable_blood_groups:
@@ -1824,14 +1839,54 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
-            -   bearer: []
+                - bearer: [ ]
             tags:
-            - patients
+                - patients
+    /v1/txm-event/{txm_event_id}/patients/recompute-parsing:
+        parameters:
+            - in: path
+              name: txm_event_id
+              required: true
+              type: integer
+        post:
+            description: Endpoint that lets an ADMIN recompute parsed antigens and
+                antibodies for all patients in the given txm event.
+            operationId: post_recompute_parsing
+            responses:
+                '201':
+                    description: Returns the recomputation statistics.
+                    schema:
+                        $ref: '#/definitions/PatientsRecomputeParsingSuccess'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '409':
+                    description: Non-unique patients provided.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+                - bearer: [ ]
+            tags:
+                - patients
     /v1/txm-event/{txm_event_id}/reports/{matching_id}:
         get:
             operationId: get_report
             parameters:
-            -   description: Id of matching that was chosen
+                - description: Id of matching that was chosen
                 in: path
                 name: matching_id
                 required: true
