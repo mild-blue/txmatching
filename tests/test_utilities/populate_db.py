@@ -117,6 +117,14 @@ def add_users():
     _add_users(user_models)
     for user, user_model in zip(USERS, user_models):
         user['id'] = user_model.id
+    return user_models
+
+
+def add_allowed_events_to_users(user_models: List[AppUserModel]):
+    for user, user_model in zip(USERS, user_models):
+        allowed_txm_events = user.get('allowed_txm_events')
+        if allowed_txm_events:
+            set_allowed_txm_event_ids_for_user(user_model, allowed_txm_events )
 
 
 def _add_users(users: List[AppUserModel]):
@@ -128,7 +136,8 @@ def _add_users(users: List[AppUserModel]):
 def populate_db():
     create_or_overwrite_txm_event(name='test')
     txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
-    add_users()
+    user_models = add_users()
+    add_allowed_events_to_users(user_models)
     patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), country=None,
                                 txm_event_name='mock_data_CZE_CAN_IND')
 
