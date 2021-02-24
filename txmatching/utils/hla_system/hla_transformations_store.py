@@ -35,9 +35,8 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
     for hla_code_raw, antibody_group in grouped_hla_antibodies:
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
         if len(cutoffs) > 1:
-            # TODOO: report to file
-            raise InvalidArgumentException(f'There were multiple cutoff values for antibody {hla_code_raw} '
-                                           'This means inconsistency that is not allowed.')
+            _store_parsing_error(hla_code_raw, HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY)
+            return []
 
     return [RecipientHLAAntibodyModel(
         recipient_id=recipient_db_id,
