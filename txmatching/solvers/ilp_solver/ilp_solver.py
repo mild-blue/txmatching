@@ -47,11 +47,13 @@ class ILPSolver(SolverBase):
         self.config_for_ilp_solver = prepare_data_for_ilp(self.donors_dict, self.recipients_dict, self.configuration)
 
     def solve(self) -> Iterator[MatchingWithScore]:
-        ilp_solution = solve_ilp(self.config_for_ilp_solver).solution
-        if ilp_solution is not None:
-            possible_path_combination = self.get_path_combinations(ilp_solution.edges)
+        result = solve_ilp(self.config_for_ilp_solver)
+        if result.solution is not None:
+            possible_path_combination = self.get_path_combinations(result.solution.edges)
 
             yield self._get_matching_from_path_combinations(possible_path_combination)
+        else:
+            logger.warning(f'No solution was found via ILP. The status of the result was {result.status}')
         return
 
     def _get_matching_from_path_combinations(

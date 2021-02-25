@@ -1,3 +1,5 @@
+import logging
+
 import mip
 
 from txmatching.solvers.ilp_solver.generate_dynamic_constraints import \
@@ -10,6 +12,8 @@ from txmatching.solvers.ilp_solver.result import Result
 from txmatching.solvers.ilp_solver.solution import Solution, Status
 from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
     DataAndConfigurationForILPSolver
+
+logger = logging.getLogger(__name__)
 
 
 def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
@@ -35,7 +39,7 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
         if not dynamic_constraints_added:
             break
 
-    if status in (Status.Optimal, Status.Heuristic):
+    if status == Status.Optimal:
         solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
         solution = Solution(solution_edges)
     else:
