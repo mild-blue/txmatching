@@ -6,8 +6,6 @@ from typing import Dict, List
 import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
-    HLAAntibodiesRawDTO, HLAAntibodyRawDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypeRaw, HLATypingDTO, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
@@ -27,7 +25,8 @@ from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, get_txm_event_db_id_by_name,
     remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, RecipientAcceptableBloodModel, RecipientModel)
+    DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
+    RecipientModel)
 from txmatching.patients.patient import DonorType, calculate_cutoff
 from txmatching.utils.country_enum import Country
 from txmatching.utils.hla_system.hla_transformations_store import (
@@ -85,16 +84,13 @@ def _recipient_upload_dto_to_recipient_model(
         hla_typing_raw=dataclasses.asdict(HLATypingRawDTO(
             hla_types_list=[HLATypeRaw(raw_code) for raw_code in recipient.hla_typing]
         )),
-        hla_antibodies_raw=dataclasses.asdict(HLAAntibodiesRawDTO(
-            hla_antibodies_list=[
-                HLAAntibodyRawDTO(
-                    raw_code=hla_antibody.name,
-                    mfi=hla_antibody.mfi,
-                    cutoff=hla_antibody.cutoff,
-                )
-                for hla_antibody in recipient.hla_antibodies
-            ]
-        )),
+        hla_antibodies_raw=[
+            RecipientHLAAntibodyModel(
+                raw_code=hla_antibody.name,
+                cutoff=hla_antibody.cutoff,
+                mfi=hla_antibody.mfi
+            ) for hla_antibody in recipient.hla_antibodies
+        ],  # TODOO fix type
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in acceptable_blood_groups],
         txm_event_id=txm_event_db_id,
@@ -123,11 +119,11 @@ def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
 
 
 def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
-    hla_antibodies_raw = dacite.from_dict(data_class=HLAAntibodiesRawDTO, data=recipient_model.hla_antibodies_raw)
+    hla_antibodies_raw = recipient_model.hla_antibodies_raw  # TODOO: maybe fix type list
     hla_antibodies_parsed = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
         hla_antibodies_raw
     )
-    recipient_model.hla_antibodies = hla_antibodies_parsed
+    recipient_model.hla_antibodies = dataclasses.asdict(hla_antibodies_parsed)
 
     transformed_hla_antibodies = get_antibodies_from_antibodies_model(hla_antibodies_parsed)
     recipient_model.recipient_cutoff = calculate_cutoff(transformed_hla_antibodies.hla_antibodies_list)

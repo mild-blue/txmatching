@@ -16,7 +16,7 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
 @dataclass
 class HLAType(PersistentlyHashable):
     raw_code: str
-    code: Optional[str] = None
+    code: Optional[str] = None  # TODOO: not optional
 
     def __post_init__(self):
         if self.code is None:

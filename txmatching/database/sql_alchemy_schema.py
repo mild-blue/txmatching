@@ -87,9 +87,9 @@ class RecipientModel(db.Model):
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
     acceptable_blood = db.relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True,
                                        lazy='joined')
-    hla_antibodies_raw = db.Column(db.JSON, unique=False, nullable=False)
-    hla_antibodies = db.relationship('RecipientHLAAntibodyModel', backref='recipient', passive_deletes=True,
-                                     lazy='joined')
+    hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
+    hla_antibodies_raw = db.relationship('RecipientHLAAntibodyModel', backref='recipient', passive_deletes=True,
+                                         lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')
 
     def __repr__(self):
@@ -147,13 +147,12 @@ class RecipientHLAAntibodyModel(db.Model):
     raw_code = db.Column(db.TEXT, unique=False, nullable=False)
     mfi = db.Column(db.Integer, unique=False, nullable=False)
     cutoff = db.Column(db.Integer, unique=False, nullable=False)
-    code = db.Column(db.TEXT, unique=False, nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
     def __repr__(self):
-        return f'<RecipientHLAAntibodyModel {self.code} ' \
+        return f'<RecipientHLAAntibodyModel {self.id} ' \
                f'(raw_code={self.raw_code}, mfi={self.mfi}, cutoff={self.cutoff})>'
 
 

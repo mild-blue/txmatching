@@ -1,12 +1,12 @@
 import dataclasses
 import logging
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
-    HLAAntibodiesRawDTO, HLAAntibodyRawDTO)
+from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
+    HLAAntibodiesParsedDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypeRaw, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
@@ -18,8 +18,7 @@ from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto im
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.database.db import db
-from txmatching.database.services.parsing_utils import (get_hla_code,
-                                                        parse_date_to_datetime)
+from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, ParsingErrorModel, RecipientAcceptableBloodModel,
     RecipientHLAAntibodyModel, RecipientModel)
@@ -62,7 +61,7 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
                           parameters=base_patient.parameters,
                           related_donor_db_id=related_donor_db_id,
                           hla_antibodies=get_antibodies_from_antibodies_model(
-                              recipient_model.hla_antibodies,
+                              dacite.from_dict(data_class=HLAAntibodiesParsedDTO, data=recipient_model.hla_antibodies),
                               logger_with_patient,
                           ),
                           # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum,
@@ -78,15 +77,15 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
 
 
 def get_antibodies_from_antibodies_model(
-        antibodies_model: List[RecipientHLAAntibodyModel],
+        antibodies_model: HLAAntibodiesParsedDTO,
         logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
 ) -> HLAAntibodies:
     return HLAAntibodies(
-        [HLAAntibody(code=get_hla_code(hla_antibody.code, hla_antibody.raw_code),
+        [HLAAntibody(raw_code=hla_antibody.raw_code,
+                     code=hla_antibody.code,
                      mfi=hla_antibody.mfi,
-                     cutoff=hla_antibody.cutoff,
-                     raw_code=hla_antibody.raw_code)
-         for hla_antibody in antibodies_model],
+                     cutoff=hla_antibody.cutoff)
+         for hla_antibody in antibodies_model.hla_antibodies_list],
         logger_with_patient
     )
 
@@ -139,43 +138,32 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         else:
             new_cutoff = old_recipient_model.recipient_cutoff
 
-        if recipient_update_dto.hla_antibodies is not None:
-            new_hla_antibodies_raw = HLAAntibodiesRawDTO(
-                hla_antibodies_list=[
-                    HLAAntibodyRawDTO(
-                        raw_code=hla_antibody.raw_code,
-                        mfi=hla_antibody.mfi,
-                        cutoff=new_cutoff,
-                    )
-                    for hla_antibody in recipient_update_dto.hla_antibodies.hla_antibodies_list
-                ]
-            )
-            recipient_update_dict['hla_antibodies_raw'] = dataclasses.asdict(new_hla_antibodies_raw)
-        else:
-            old_hla_antibodies_raw = dacite.from_dict(
-                data_class=HLAAntibodiesRawDTO,
-                data=old_recipient_model.hla_antibodies_raw
-            )
-            new_hla_antibodies_raw = HLAAntibodiesRawDTO(
-                hla_antibodies_list=[
-                    HLAAntibodyRawDTO(
-                        raw_code=hla_antibody.raw_code,
-                        mfi=hla_antibody.mfi,
-                        cutoff=new_cutoff,
-                    )
-                    for hla_antibody in old_hla_antibodies_raw.hla_antibodies_list
-                ]
-            )
+        # hla_antibodies_raw will be updated
+        # - with new hla antibodies and new cutoff (if update hla antibodies are specified)
+        # - or with old hla antibodies from db and new cutoff (if only cutoff is specified)
+        hla_antibodies_raw_source = recipient_update_dto.hla_antibodies.hla_antibodies_list \
+            if recipient_update_dto.hla_antibodies is not None \
+            else old_recipient_model.hla_antibodies_raw.hla_antibodies_list
+        new_hla_antibodies_raw = [
+            RecipientHLAAntibodyModel(  # TODOO: rename
+                recipient_id=recipient_update_dto.db_id,
+                raw_code=hla_antibody.raw_code,
+                cutoff=new_cutoff,
+                mfi=hla_antibody.mfi,
+            ) for hla_antibody in hla_antibodies_raw_source
+        ]
 
-        hla_antibodies = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
-            new_hla_antibodies_raw,
-            recipient_update_dto.db_id
-        )
-
+        # Change hla_antibodies_raw for a given patient in db
         RecipientHLAAntibodyModel.query.filter(
             RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id
         ).delete()
-        db.session.add_all(hla_antibodies)
+        db.session.add_all(new_hla_antibodies_raw)
+
+        # Change parsed hla_antibodies for a given patient in db
+        hla_antibodies = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
+            new_hla_antibodies_raw
+        )
+        recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
 
     if recipient_update_dto.recipient_requirements:
         recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
@@ -234,22 +222,16 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
 
     # Update hla_antibodies for recipients
     for recipient_model in recipient_models:
-        hla_antibodies_raw = dacite.from_dict(data_class=HLAAntibodiesRawDTO, data=recipient_model.hla_antibodies_raw)
-        new_hla_antibodies = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
-            hla_antibodies_raw,
-            recipient_model.id
+        hla_antibodies_raw = recipient_model.hla_antibodies_raw
+        new_hla_antibodies = dataclasses.asdict(
+            parse_hla_antibodies_raw_and_store_parsing_error_in_db(hla_antibodies_raw)
         )
 
         if new_hla_antibodies != recipient_model.hla_antibodies:
             logger.debug(f'Updating hla_antibodies of {recipient_model}:')
             logger.debug(f'hla_antibodies before: {recipient_model.hla_antibodies}')
             logger.debug(f'hla_antibodies now: {new_hla_antibodies}')
-
-            RecipientHLAAntibodyModel.query.filter(
-                RecipientHLAAntibodyModel.recipient_id == recipient_model.id
-            ).delete()
-            db.session.add_all(new_hla_antibodies)
-
+            recipient_model.hla_antibodies = new_hla_antibodies
             patients_changed += 1
 
         patients_checked += 1

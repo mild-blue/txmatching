@@ -20,6 +20,7 @@ def parse_date_to_datetime(date: Optional[str]) -> Optional[datetime]:
                                        ' "2020-12-31".') from ex
 
 
+# TODOO: find usages and remove
 def get_hla_code(code: Optional[str], raw_code: str) -> Optional[str]:
     return code if code is not None else parse_hla_raw_code(raw_code)
 

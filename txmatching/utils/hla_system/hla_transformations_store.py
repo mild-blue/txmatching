@@ -1,9 +1,10 @@
 import itertools
 import logging
+from dataclasses import dataclass
 from typing import List, Optional
 
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
-    HLAAntibodiesRawDTO, HLAAntibodyRawDTO)
+    HLAAntibodiesParsedDTO, HLAAntibodyParsedDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypingDTO, HLATypingRawDTO)
 from txmatching.database.db import db
@@ -19,46 +20,68 @@ logger = logging.getLogger(__name__)
 
 
 def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
-        hla_antibodies_raw: HLAAntibodiesRawDTO,
-        recipient_db_id: Optional[int] = None
-) -> List[RecipientHLAAntibodyModel]:
-    # TODOO
+        hla_antibodies_raw: List[RecipientHLAAntibodyModel]
+) -> HLAAntibodiesParsedDTO:
+    # TODOO: refactor
+    @dataclass
+    class HLAAntibodyPreprocessedDTO:
+        raw_code: str
+        mfi: int
+        cutoff: int
+
     hla_antibodies_preprocessed = [
-        HLAAntibodyRawDTO(parsed_code, hla_antibody_in.mfi, hla_antibody_in.cutoff)
-        for hla_antibody_in in hla_antibodies_raw.hla_antibodies_list
-        for parsed_code in preprocess_hla_code_in(hla_antibody_in.raw_code)
+        HLAAntibodyPreprocessedDTO(preprocessed_raw_code, hla_antibody_raw.mfi, hla_antibody_raw.cutoff)
+        for hla_antibody_raw in hla_antibodies_raw
+        for preprocessed_raw_code in preprocess_hla_code_in(hla_antibody_raw.raw_code)
     ]
 
+    # TODOO: return the rest at least
     grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies_preprocessed, key=lambda x: x.raw_code),
                                                key=lambda x: x.raw_code)
     for hla_code_raw, antibody_group in grouped_hla_antibodies:
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
         if len(cutoffs) > 1:
             _store_parsing_error(hla_code_raw, HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY)
-            return []
+            hla_antibodies_preprocessed = []
 
-    return [RecipientHLAAntibodyModel(
-        recipient_id=recipient_db_id,
-        raw_code=hla_antibody.raw_code,
-        code=parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.raw_code),
-        cutoff=hla_antibody.cutoff,
-        mfi=hla_antibody.mfi
-    ) for hla_antibody in hla_antibodies_preprocessed]
+    hla_antibodies_parsed = []
+    for hla_antibody in hla_antibodies_preprocessed:
+        code = parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.raw_code)
+        if code is not None:
+            hla_antibodies_parsed.append(
+                HLAAntibodyParsedDTO(
+                    raw_code=hla_antibody.raw_code,
+                    code=code,
+                    mfi=hla_antibody.mfi,
+                    cutoff=hla_antibody.cutoff,
+                )
+            )
+
+    return HLAAntibodiesParsedDTO(
+        hla_antibodies_list=hla_antibodies_parsed
+    )
 
 
 def parse_hla_typing_raw_and_store_parsing_error_in_db(hla_typing_raw: HLATypingRawDTO) -> HLATypingDTO:
-    preprocessed_raw_codes = [
-        preprocessed_raw_code
+    raw_codes_preprocessed = [
+        raw_code_preprocessed
         for hla_type_raw in hla_typing_raw.hla_types_list
-        for preprocessed_raw_code in preprocess_hla_code_in(hla_type_raw.raw_code)
+        for raw_code_preprocessed in preprocess_hla_code_in(hla_type_raw.raw_code)
     ]
 
+    hla_types_parsed = []
+    for raw_code in raw_codes_preprocessed:
+        code = parse_hla_raw_code_and_store_parsing_error_in_db(raw_code)
+        if code is not None:
+            hla_types_parsed.append(
+                HLAType(
+                    raw_code=raw_code,
+                    code=code
+                )
+            )
+
     return HLATypingDTO(
-        [HLAType(
-            raw_code=raw_code,
-            code=parse_hla_raw_code_and_store_parsing_error_in_db(raw_code)
-        ) for raw_code in preprocessed_raw_codes
-        ]
+        hla_types_list=hla_types_parsed
     )
 
 
