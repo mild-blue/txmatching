@@ -121,41 +121,14 @@ class HLAAntibodies(PersistentlyHashable):
     hla_antibodies_per_groups: List[AntibodiesPerGroup] = field(default_factory=list)
 
     # TODOO: remove functionality from here maybe
-    def __init__(self, hla_antibodies_list: List[HLAAntibody] = None,
+    def __init__(self, hla_antibodies_list: List[HLAAntibody] = None,  # TODOO: Not none
                  logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)):
+        # TODOO: comment
         if hla_antibodies_list is None:
             hla_antibodies_list = []
         self.hla_antibodies_list = hla_antibodies_list
-        hla_antibodies_list_without_none = [hla_antibody for hla_antibody in hla_antibodies_list if hla_antibody.code]
 
-        def _group_key(hla_antibody: HLAAntibody) -> str:
-            return hla_antibody.raw_code
-
-        grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies_list_without_none, key=_group_key),
-                                                   key=_group_key)
-        hla_antibodies_over_cutoff_list = []
-        for hla_code_raw, antibody_group in grouped_hla_antibodies:
-            antibody_group_list = list(antibody_group)
-            assert len(antibody_group_list) > 0
-            cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group_list}
-            if len(cutoffs) != 1:
-                raise AssertionError(f'There were multiple cutoff values s for antibody {hla_code_raw} '
-                                     'This means inconsistency that is not allowed.')
-            cutoff = cutoffs.pop()
-            mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in antibody_group_list],
-                                                  cutoff,
-                                                  hla_code_raw,
-                                                  logger_with_patient)
-            if mfi >= cutoff:
-                new_antibody = HLAAntibody(
-                    code=antibody_group_list[0].code,
-                    raw_code=hla_code_raw,
-                    cutoff=cutoff,
-                    mfi=mfi
-                )
-                hla_antibodies_over_cutoff_list.append(new_antibody)
-        # TODOO: move functionality
-
+        hla_antibodies_over_cutoff_list = _filter_antibodies_over_cutoff(hla_antibodies_list)
         self.hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_over_cutoff_list)
 
     def update_persistent_hash(self, hash_: HashType):
@@ -177,6 +150,43 @@ def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[Antib
                                sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
                                ) for hla_group, hla_codes_in_group in
             hla_antibodies_in_groups.items()]
+
+
+def _filter_antibodies_over_cutoff(
+        hla_antibodies: List[HLAAntibody],
+        logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
+) -> List[HLAAntibody]:
+    # TODOO: maybe line not needed
+    hla_antibodies_list_without_none = [hla_antibody for hla_antibody in hla_antibodies if hla_antibody.code]
+
+    def _group_key(hla_antibody: HLAAntibody) -> str:
+        return hla_antibody.raw_code
+
+    grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies_list_without_none, key=_group_key),
+                                               key=_group_key)
+    hla_antibodies_over_cutoff = []
+    for hla_code_raw, antibody_group in grouped_hla_antibodies:
+        antibody_group_list = list(antibody_group)
+        assert len(antibody_group_list) > 0
+        cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group_list}
+        if len(cutoffs) != 1:
+            raise AssertionError(f'There were multiple cutoff values s for antibody {hla_code_raw} '
+                                 'This means inconsistency that is not allowed.')
+        cutoff = cutoffs.pop()
+        mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in antibody_group_list],
+                                              cutoff,
+                                              hla_code_raw,
+                                              logger_with_patient)
+        if mfi >= cutoff:
+            new_antibody = HLAAntibody(
+                code=antibody_group_list[0].code,
+                raw_code=hla_code_raw,
+                cutoff=cutoff,
+                mfi=mfi
+            )
+            hla_antibodies_over_cutoff.append(new_antibody)
+
+    return hla_antibodies_over_cutoff
 
 
 HLACodeAlias = Union[HLAType, HLAAntibody]
