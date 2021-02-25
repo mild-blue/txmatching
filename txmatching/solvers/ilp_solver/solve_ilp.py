@@ -113,7 +113,8 @@ def _solve_with_logging(ilp_model: mip.Model):
         close(orig_std_out)
         if logging.DEBUG >= logging.root.level:
             tmp_output.seek(0)
-            [logger.debug(line.decode('utf8')) for line in tmp_output.read().splitlines()]
+            for line in tmp_output.read().splitlines():
+                logger.debug(line.decode('utf8'))
 
 
 def _add_constraints_removing_solution(ilp_model: mip.Model,
