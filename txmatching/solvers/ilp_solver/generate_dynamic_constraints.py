@@ -11,10 +11,10 @@ from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
 
 
 # pylint: disable=too-many-locals
-def generate_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSolver,
-                                 internal_configuration: InternalILPSolverParameters,
-                                 ilp_model: mip.Model,
-                                 edge_to_var: Dict[Tuple[int, int], mip.Var]):
+def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSolver,
+                            internal_configuration: InternalILPSolverParameters,
+                            ilp_model: mip.Model,
+                            edge_to_var: Dict[Tuple[int, int], mip.Var]):
     edges_in_solution = {edge_nodes: mip_var_to_bool(edge_present) for edge_nodes, edge_present in edge_to_var.items()}
 
     sol_graph = nx.DiGraph()
