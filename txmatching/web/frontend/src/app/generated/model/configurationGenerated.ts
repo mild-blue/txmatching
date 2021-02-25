@@ -23,6 +23,7 @@ export interface ConfigurationGenerated {
     max_matchings_to_show_to_viewer?: number;
     max_matchings_to_store_in_db?: number;
     max_number_of_distinct_countries_in_round?: number;
+    max_number_of_solutions_for_ilp?: number;
     max_sequence_length?: number;
     maximum_total_score?: number;
     minimum_total_score?: number;

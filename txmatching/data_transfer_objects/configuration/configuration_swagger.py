@@ -69,6 +69,10 @@ ConfigurationJson = matching_api.model(
         'max_allowed_number_of_cycles_to_be_searched': fields.Integer(
             required=False,
             example=_default_configuration.max_allowed_number_of_cycles_to_be_searched
+        ),
+        'max_number_of_solutions_for_ilp': fields.Integer(
+            required=False,
+            example=_default_configuration.max_number_of_solutions_for_ilp
         )
     }
 )
