@@ -14,10 +14,9 @@ from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only impor
 from txmatching.solvers.all_solutions_solver.scoring_utils import \
     get_score_for_idx_pairs
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
-from txmatching.solvers.ilp_solver.anderson_recursive_nocb import (
-    MaxSequenceLimitMethod, ObjectiveType, SolverConfig, solve_ilp)
 from txmatching.solvers.ilp_solver.prepare_data_for_ilp_solver import \
     prepare_data_for_ilp
+from txmatching.solvers.ilp_solver.solve_ilp import solve_ilp
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.solver_base import SolverBase
 
@@ -48,11 +47,7 @@ class ILPSolver(SolverBase):
         self.config_for_ilp_solver = prepare_data_for_ilp(self.donors_dict, self.recipients_dict, self.configuration)
 
     def solve(self) -> Iterator[MatchingWithScore]:
-        solver_config = SolverConfig(
-            objective_type=ObjectiveType.MaxTransplantsMaxWeights,
-            max_sequence_limit_method=MaxSequenceLimitMethod.LazyForbidAllMaximalSequences
-        )
-        ilp_solution = solve_ilp(self.config_for_ilp_solver, solver_config).solution
+        ilp_solution = solve_ilp(self.config_for_ilp_solver).solution
         if ilp_solution is not None:
             possible_path_combination = self.get_path_combinations(ilp_solution.edges)
 
