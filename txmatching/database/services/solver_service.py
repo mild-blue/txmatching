@@ -39,8 +39,8 @@ def _calculated_matchings_to_model(pairing_result: PairingResult) -> MatchingsMo
                 DonorRecipientModel(pair.donor.db_id, pair.recipient.db_id)
                 for pair in matching.get_donor_recipient_pairs()
             ],
-            score=matching.score(),
-            db_id=matching.order_id()
+            score=matching.score,
+            db_id=matching.order_id
         )
         for matching in pairing_result.calculated_matchings_list
     ],
