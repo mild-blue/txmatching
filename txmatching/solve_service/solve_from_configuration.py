@@ -55,7 +55,7 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
         if matching_filter.keep(matching):
             matching_entry = (
                 len(matching.get_donor_recipient_pairs()),
-                matching.score(),
+                matching.score,
                 len(matching.get_rounds()),
                 i,  # we want to skip sorting by matching
                 matching
