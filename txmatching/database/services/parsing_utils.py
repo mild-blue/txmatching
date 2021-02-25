@@ -20,11 +20,6 @@ def parse_date_to_datetime(date: Optional[str]) -> Optional[datetime]:
                                        ' "2020-12-31".') from ex
 
 
-# TODOO: find usages and remove
-def get_hla_code(code: Optional[str], raw_code: str) -> Optional[str]:
-    return code if code is not None else parse_hla_raw_code(raw_code)
-
-
 def check_existing_ids_for_duplicates(txm_event: TxmEvent, donors: List[DonorUploadDTO],
                                       recipients: List[RecipientUploadDTO]):
     new_donor_ids = {donor.medical_id for donor in donors}

@@ -16,9 +16,11 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
 @dataclass
 class HLAType(PersistentlyHashable):
     raw_code: str
-    code: Optional[str] = None  # TODOO: not optional
+    code: str
 
     def __post_init__(self):
+        # The only places where the init is called without code specified should be
+        # tests and data initializations
         if self.code is None:
             self.code = parse_hla_raw_code(self.raw_code)
 
@@ -49,6 +51,7 @@ class HLAPerGroup(PersistentlyHashable):
 
 @dataclass
 class HLATyping(PersistentlyHashable):
+    # TODOO: remove the list (this is in db)
     hla_types_list: List[HLAType]
     hla_per_groups: Optional[List[HLAPerGroup]] = None
 
@@ -65,11 +68,13 @@ class HLATyping(PersistentlyHashable):
 @dataclass
 class HLAAntibody(PersistentlyHashable):
     raw_code: str
+    code: str
     mfi: int
     cutoff: int
-    code: Optional[str] = None
 
     def __post_init__(self):
+        # The only places where the init is called without code specified should be
+        # tests and data initializations
         if self.code is None:
             self.code = parse_hla_raw_code(self.raw_code)
 
@@ -115,6 +120,7 @@ class HLAAntibodies(PersistentlyHashable):
     hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
     hla_antibodies_per_groups: List[AntibodiesPerGroup] = field(default_factory=list)
 
+    # TODOO: remove functionality from here maybe
     def __init__(self, hla_antibodies_list: List[HLAAntibody] = None,
                  logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)):
         if hla_antibodies_list is None:
@@ -148,6 +154,7 @@ class HLAAntibodies(PersistentlyHashable):
                     mfi=mfi
                 )
                 hla_antibodies_over_cutoff_list.append(new_antibody)
+        # TODOO: move functionality
 
         self.hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_over_cutoff_list)
 

@@ -23,6 +23,7 @@ class HLAAntibodiesUpdateDTO:
 
 @dataclass
 class HLAAntibodyDTO:
+    # TODOO: replace by HLAAntibody
     raw_code: str
     code: str
     mfi: int
@@ -31,4 +32,5 @@ class HLAAntibodyDTO:
 
 @dataclass
 class HLAAntibodiesDTO:
+    # TODOO: also
     hla_antibodies_list: List[HLAAntibodyDTO] = field(default_factory=list)

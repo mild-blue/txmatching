@@ -130,11 +130,12 @@ def calculate_cutoff(hla_antibodies_list: List[HLAAntibody]) -> int:
     :return: Patient cutoff.
     """
     helper_raw_code = 'A1'
+    helper_code = 'A1'
     return max(hla_antibodies_list,
                key=lambda antibody: antibody.cutoff,
                default=HLAAntibody(
                    raw_code=helper_raw_code,
                    mfi=0,
                    cutoff=DEFAULT_CUTOFF,
-                   code=parse_hla_raw_code(helper_raw_code)
+                   code=helper_code
                )).cutoff

@@ -95,7 +95,6 @@ def parse_hla_raw_code_and_store_parsing_error_in_db(hla_raw_code: str) -> Optio
     :param hla_raw_code: HLA raw code
     :return:
     """
-    # TODOO: update comment as soon as parse_hla_raw_code is removed
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not parsing_result.maybe_hla_code or \
             parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:

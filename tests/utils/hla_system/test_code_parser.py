@@ -52,7 +52,6 @@ class TestCodeParser(DbTests):
     def test_parsing(self):
         for code, (expected_result, expected_result_detail) in codes.items():
             result = parse_hla_raw_code_with_details(code)
-            parse_hla_raw_code(code)  # here just to test logging
             self.assertTupleEqual((expected_result_detail, expected_result),
                                   (result.result_detail, result.maybe_hla_code),
                                   f'{code} was processed to {result.maybe_hla_code} '
