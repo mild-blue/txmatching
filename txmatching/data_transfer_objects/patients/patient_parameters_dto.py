@@ -32,5 +32,16 @@ class PatientParametersDTO:
 
 
 @dataclass
+class HLATypeRaw:
+    """
+    Antigen in a format as uploaded without being parsed
+    """
+    raw_code: str
+
+
+@dataclass
 class HLATypingRawDTO:
-    raw_codes: List[str]
+    """
+    List of antigens in a format as uploaded without being parsed
+    """
+    hla_types_list: List[HLATypeRaw]

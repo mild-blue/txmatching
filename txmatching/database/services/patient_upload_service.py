@@ -9,7 +9,7 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
     HLAAntibodiesRawDTO, HLAAntibodyRawDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
-    HLATypingDTO, HLATypingRawDTO)
+    HLATypeRaw, HLATypingDTO, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
@@ -83,7 +83,7 @@ def _recipient_upload_dto_to_recipient_model(
         country=country_code,
         blood=recipient.blood_group,
         hla_typing_raw=dataclasses.asdict(HLATypingRawDTO(
-            raw_codes=recipient.hla_typing
+            hla_types_list=[HLATypeRaw(raw_code) for raw_code in recipient.hla_typing]
         )),
         hla_antibodies_raw=dataclasses.asdict(HLAAntibodiesRawDTO(
             hla_antibodies_list=[
@@ -170,7 +170,7 @@ def _donor_upload_dto_to_donor_model(
         country=country_code,
         blood=donor.blood_group,
         hla_typing_raw=dataclasses.asdict(HLATypingRawDTO(
-            raw_codes=donor.hla_typing
+            hla_types_list=[HLATypeRaw(raw_code) for raw_code in donor.hla_typing]
         )),
         active=True,
         recipient=maybe_related_recipient,

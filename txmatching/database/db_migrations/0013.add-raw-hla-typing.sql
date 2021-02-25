@@ -4,10 +4,16 @@
 --
 
 ALTER TABLE donor
-    ADD COLUMN hla_typing_raw JSONB NOT NULL;
+    RENAME COLUMN hla_typing TO hla_typing_raw;
+
+ALTER TABLE donor
+    ADD COLUMN hla_typing JSONB default '{}' NOT NULL;
 
 ALTER TABLE recipient
-    ADD COLUMN hla_typing_raw JSONB NOT NULL;
+    RENAME COLUMN hla_typing TO hla_typing_raw;
+
+ALTER TABLE recipient
+    ADD COLUMN hla_typing JSONB default '{}' NOT NULL;
 
 ALTER TABLE recipient
     ADD COLUMN hla_antibodies_raw JSONB NOT NULL;

@@ -161,10 +161,6 @@ def preprocess_hla_code_in(hla_code_in: str) -> List[str]:
         return [hla_code_in]
 
 
-def preprocess_hla_codes_in(hla_codes_in: List[str]) -> List[str]:
-    return [parsed_code for hla_code_in in hla_codes_in for parsed_code in preprocess_hla_code_in(hla_code_in)]
-
-
 def get_broad_codes(hla_codes: List[str]) -> List[str]:
     return [split_to_broad(hla_code) for hla_code in hla_codes]
 

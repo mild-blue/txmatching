@@ -7,8 +7,8 @@ import dacite
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
     HLAAntibodiesRawDTO, HLAAntibodyRawDTO)
-from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
-    HLATypingRawDTO
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
+    HLATypeRaw, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientsRecomputeParsingSuccessDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
@@ -98,7 +98,7 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> di
         patient_update_dict['blood'] = patient_update_dto.blood_group
     if patient_update_dto.hla_typing is not None:
         hla_typing_raw = HLATypingRawDTO(
-            raw_codes=[hla_type.raw_code for hla_type in patient_update_dto.hla_typing.hla_types_list]
+            hla_types_list=[HLATypeRaw(hla_type.raw_code) for hla_type in patient_update_dto.hla_typing.hla_types_list]
         )
         patient_update_dict['hla_typing_raw'] = dataclasses.asdict(hla_typing_raw)
         patient_update_dict['hla_typing'] = dataclasses.asdict(

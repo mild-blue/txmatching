@@ -13,8 +13,7 @@ from txmatching.patients.hla_model import HLAType
 from txmatching.utils.hla_system.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 from txmatching.utils.hla_system.hla_transformations import (
-    parse_hla_raw_code_with_details, preprocess_hla_code_in,
-    preprocess_hla_codes_in)
+    parse_hla_raw_code_with_details, preprocess_hla_code_in)
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +47,11 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
 
 
 def parse_hla_typing_raw_and_store_parsing_error_in_db(hla_typing_raw: HLATypingRawDTO) -> HLATypingDTO:
-    preprocessed_raw_codes = preprocess_hla_codes_in(hla_typing_raw.raw_codes)
+    preprocessed_raw_codes = [
+        preprocessed_raw_code
+        for hla_type_raw in hla_typing_raw.hla_types_list
+        for preprocessed_raw_code in preprocess_hla_code_in(hla_type_raw.raw_code)
+    ]
 
     return HLATypingDTO(
         [HLAType(
