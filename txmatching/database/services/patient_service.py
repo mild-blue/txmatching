@@ -144,8 +144,8 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         hla_antibodies_raw_source = recipient_update_dto.hla_antibodies.hla_antibodies_list \
             if recipient_update_dto.hla_antibodies is not None \
             else old_recipient_model.hla_antibodies_raw.hla_antibodies_list
-        new_hla_antibodies_raw = [
-            HLAAntibodyRawModel(  # TODOO: rename
+        new_hla_antibody_raw_models = [
+            HLAAntibodyRawModel(
                 recipient_id=recipient_update_dto.db_id,
                 raw_code=hla_antibody.raw_code,
                 cutoff=new_cutoff,
@@ -157,11 +157,11 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         HLAAntibodyRawModel.query.filter(
             HLAAntibodyRawModel.recipient_id == recipient_update_dto.db_id
         ).delete()
-        db.session.add_all(new_hla_antibodies_raw)
+        db.session.add_all(new_hla_antibody_raw_models)
 
         # Change parsed hla_antibodies for a given patient in db
         hla_antibodies = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
-            new_hla_antibodies_raw
+            new_hla_antibody_raw_models
         )
         recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
 

@@ -35,7 +35,7 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
         for preprocessed_raw_code in preprocess_hla_code_in(hla_antibody_raw.raw_code)
     ]
 
-    # TODOO: return the rest at least
+    # TODOO: improvement: return the rest at least
     grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies_preprocessed, key=lambda x: x.raw_code),
                                                key=lambda x: x.raw_code)
     for hla_code_raw, antibody_group in grouped_hla_antibodies:

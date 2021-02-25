@@ -1,4 +1,5 @@
 import dataclasses
+from typing import List
 
 from sqlalchemy import ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import backref
@@ -55,8 +56,8 @@ class TxmEventModel(db.Model):
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.TEXT, unique=True, nullable=False)
-    configs = db.relationship('ConfigModel', backref='txm_event', passive_deletes=True)
-    donors = db.relationship('DonorModel', backref='txm_event', passive_deletes=True)
+    configs = db.relationship('ConfigModel', backref='txm_event', passive_deletes=True)  # type: List[ConfigModel]
+    donors = db.relationship('DonorModel', backref='txm_event', passive_deletes=True)  # type: List[DonorModel]
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
@@ -86,10 +87,10 @@ class RecipientModel(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
     acceptable_blood = db.relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True,
-                                       lazy='joined')
+                                       lazy='joined')  # type: List[RecipientAcceptableBloodModel]
     hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
     hla_antibodies_raw = db.relationship('HLAAntibodyRawModel', backref='recipient', passive_deletes=True,
-                                         lazy='joined')
+                                         lazy='joined')  # type: List[HLAAntibodyRawModel]
     UniqueConstraint('medical_id', 'txm_event_id')
 
     def __repr__(self):

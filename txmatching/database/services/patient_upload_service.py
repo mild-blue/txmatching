@@ -90,7 +90,7 @@ def _recipient_upload_dto_to_recipient_model(
                 cutoff=hla_antibody.cutoff,
                 mfi=hla_antibody.mfi
             ) for hla_antibody in recipient.hla_antibodies
-        ],  # TODOO fix type
+        ],
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in acceptable_blood_groups],
         txm_event_id=txm_event_db_id,
@@ -119,7 +119,7 @@ def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
 
 
 def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
-    hla_antibodies_raw = recipient_model.hla_antibodies_raw  # TODOO: maybe fix type list
+    hla_antibodies_raw = recipient_model.hla_antibodies_raw
     hla_antibodies_parsed = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
         hla_antibodies_raw
     )
