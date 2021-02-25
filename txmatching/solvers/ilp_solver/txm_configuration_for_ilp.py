@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-from typing import Iterable, Tuple
+from typing import Dict, Iterable, Tuple
 
 import networkx as nx
 
 from txmatching.configuration.configuration import Configuration
+from txmatching.utils.country_enum import Country
 
 
 @dataclass
@@ -12,6 +13,7 @@ class DataAndConfigurationForILPSolver:
     non_directed_donors: Iterable[int]
     configuration: Configuration
     edges: Iterable[Tuple[int, int, int]]
+    country_codes_dict: Dict[int, Country]
 
     def __post_init__(self):
         self.graph = nx.DiGraph()

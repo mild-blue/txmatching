@@ -27,7 +27,7 @@ def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSo
     # Components with isolated nodes are considered to be sequences.
     comps = list(nx.weakly_connected_components(sol_graph))
     cycles = []
-    seqs = []
+    sequences = []
 
     # Split components to sequences and cycles.
     for comp in comps:
@@ -36,7 +36,7 @@ def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSo
             cycle = nx.find_cycle(sol_graph, source=comp[0])
             cycles.append(cycle)
         except nx.NetworkXNoCycle:
-            seqs.append(sol_graph.edges(comp))
+            sequences.append(sol_graph.edges(comp))
 
     cons_added = False
 
@@ -47,24 +47,35 @@ def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSo
     # TODO: config for which cycles to forbid
     cycles_to_forbid = []
     for cycle in cycles:
-        if len(cycle) > data_and_configuration.configuration.max_cycle_length:
+        too_many_transplations = len(cycle) > data_and_configuration.configuration.max_cycle_length
+        if too_many_transplations or _too_many_countries(cycle, data_and_configuration):
             cycles_to_forbid.append(cycle)
     for cycle in cycles_to_forbid:
         ilp_model.add_constr(mip.xsum([edge_to_var[edge] for edge in cycle]) <= len(cycle) - 1)
         cons_added = True
 
     # Limiting max sequence length.
-    violating_seqs = [seq for seq in seqs if len(seq) > data_and_configuration.configuration.max_sequence_length]
-    if violating_seqs:
-        seqs_to_forbid = []
+    non_compliant_sequences = []
+    for sequence in sequences:
+        too_many_transplations = len(sequence) > data_and_configuration.configuration.max_cycle_length
+        if too_many_transplations or _too_many_countries(sequence, data_and_configuration):
+            non_compliant_sequences.append(sequence)
+
+    if non_compliant_sequences:
+        sequences_to_forbid = []
         if internal_configuration.max_sequence_limit_method == MaxSequenceLimitMethod.LazyForbidAllMaximalSequences:
-            seqs_to_forbid.extend(violating_seqs)
+            sequences_to_forbid.extend(non_compliant_sequences)
         elif internal_configuration.max_sequence_limit_method == \
                 MaxSequenceLimitMethod.LazyForbidSmallestMaximalSequence:
-            seqs_to_forbid.append(min(violating_seqs, key=len))
+            sequences_to_forbid.append(min(non_compliant_sequences, key=len))
 
-        for seq in seqs_to_forbid:
+        for seq in sequences_to_forbid:
             ilp_model.add_constr(mip.xsum([edge_to_var[edge] for edge in seq]) <= len(seq) - 1)
             cons_added = True
 
     return cons_added
+
+
+def _too_many_countries(cycle, data_and_configuration) -> int:
+    return len({data_and_configuration.country_codes_dict[i] for edge in cycle for i in
+                edge}) > data_and_configuration.configuration.max_number_of_distinct_countries_in_round
