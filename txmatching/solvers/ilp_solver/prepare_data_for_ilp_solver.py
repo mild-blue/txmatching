@@ -38,6 +38,7 @@ def prepare_data_for_ilp(active_donors_dict: Dict[DonorDbId, Donor],
         non_directed_donors=bridging_donors,
         configuration=configuration,
         edges=_create_edges(score_matrix),
+        country_codes_dict={i: donor.parameters.country_code for i, donor in enumerate(active_donors_dict.values())}
     )
 
 

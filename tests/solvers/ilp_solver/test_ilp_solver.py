@@ -34,19 +34,29 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(configuration.max_number_of_solutions_for_ilp,
                          len(list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)))
 
-    @unittest.skip('Support for limitation of number of countries in round has not yet been implemented')
-    # TODO: improve the code https://github.com/mild-blue/txmatching/issues/430
-    def test_solve_from_configuration_multiple_countries(self):
+    def test_solve_from_configuration_multiple_countries_old_version(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data2.xlsx'))
         txm_event = get_txm_event_complete(txm_event_db_id)
         max_country_count = 1
-        configuration = Configuration(
-            solver_constructor_name='ILPSolver',
-            max_number_of_distinct_countries_in_round=max_country_count)
+        configuration = Configuration(max_number_of_distinct_countries_in_round=max_country_count,
+                                      solver_constructor_name='ILPSolver')
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-        self.assertEqual(configuration.max_number_of_solutions_for_ilp, len(solutions))
+        self.assertEqual(1, len(solutions))
         for round in solutions[0].get_rounds():
             self.assertGreaterEqual(1, round.country_count())
+
+
+    def test_solve_from_configuration_multiple_countries(self):
+        txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        txm_event = get_txm_event_complete(txm_event_db_id)
+        for max_country_count in range(1, 3):
+            configuration = Configuration(
+                solver_constructor_name='ILPSolver',
+                max_number_of_distinct_countries_in_round=max_country_count)
+            solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
+            self.assertLessEqual(1, len(solutions))
+            for round in solutions[0].get_rounds():
+                self.assertEqual(max_country_count, round.country_count())
 
     def test_solve_from_configuration_forbidden_countries(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data3.xlsx'))
