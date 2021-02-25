@@ -88,7 +88,7 @@ class RecipientModel(db.Model):
     acceptable_blood = db.relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True,
                                        lazy='joined')
     hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
-    hla_antibodies_raw = db.relationship('RecipientHLAAntibodyModel', backref='recipient', passive_deletes=True,
+    hla_antibodies_raw = db.relationship('HLAAntibodyRawModel', backref='recipient', passive_deletes=True,
                                          lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')
 
@@ -138,8 +138,8 @@ class RecipientAcceptableBloodModel(db.Model):
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
 
-class RecipientHLAAntibodyModel(db.Model):
-    __tablename__ = 'recipient_hla_antibodies'
+class HLAAntibodyRawModel(db.Model):
+    __tablename__ = 'hla_antibody_raw'
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
@@ -152,7 +152,7 @@ class RecipientHLAAntibodyModel(db.Model):
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
     def __repr__(self):
-        return f'<RecipientHLAAntibodyModel {self.id} ' \
+        return f'<HLAAntibodyRawModel {self.id} ' \
                f'(raw_code={self.raw_code}, mfi={self.mfi}, cutoff={self.cutoff})>'
 
 

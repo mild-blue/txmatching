@@ -25,5 +25,8 @@ ALTER TABLE recipient_hla_antibodies
 DROP
 COLUMN code;
 
+ALTER TABLE recipient_hla_antibodies
+    RENAME TO hla_antibody_raw;
+
 -- add new enum value for parsing error
 ALTER TYPE HLA_CODE_PROCESSING_RESULT_DETAIL ADD VALUE 'MULTIPLE_CUTOFFS_PER_ANTIBODY';

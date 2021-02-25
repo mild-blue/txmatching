@@ -4,12 +4,12 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
-    HLAAntibodiesParsedDTO, HLAAntibodyParsedDTO)
+    HLAAntibodiesDTO, HLAAntibodyDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypingDTO, HLATypingRawDTO)
 from txmatching.database.db import db
-from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
-                                                    RecipientHLAAntibodyModel)
+from txmatching.database.sql_alchemy_schema import (HLAAntibodyRawModel,
+                                                    ParsingErrorModel)
 from txmatching.patients.hla_model import HLAType
 from txmatching.utils.hla_system.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
-        hla_antibodies_raw: List[RecipientHLAAntibodyModel]
-) -> HLAAntibodiesParsedDTO:
+        hla_antibodies_raw: List[HLAAntibodyRawModel]
+) -> HLAAntibodiesDTO:
     # TODOO: refactor
     @dataclass
     class HLAAntibodyPreprocessedDTO:
@@ -49,7 +49,7 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
         code = parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.raw_code)
         if code is not None:
             hla_antibodies_parsed.append(
-                HLAAntibodyParsedDTO(
+                HLAAntibodyDTO(
                     raw_code=hla_antibody.raw_code,
                     code=code,
                     mfi=hla_antibody.mfi,
@@ -57,7 +57,7 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
                 )
             )
 
-    return HLAAntibodiesParsedDTO(
+    return HLAAntibodiesDTO(
         hla_antibodies_list=hla_antibodies_parsed
     )
 

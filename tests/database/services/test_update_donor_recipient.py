@@ -1,6 +1,6 @@
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
-    HLAAntibodiesDTO, HLAAntibodyDTO)
+    HLAAntibodiesUpdateDTO, HLAAntibodyUpdateDTO)
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.hla_code_update_dtos import (
@@ -31,9 +31,9 @@ class TestUpdateDonorRecipient(DbTests):
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
         update_recipient(RecipientUpdateDTO(
             acceptable_blood_groups=['AB'],
-            hla_antibodies=HLAAntibodiesDTO([HLAAntibodyDTO(mfi=20, raw_code='B42'),
-                                             HLAAntibodyDTO(mfi=20, raw_code='DQ[01:03,      06:03]')
-                                             ]),
+            hla_antibodies=HLAAntibodiesUpdateDTO([HLAAntibodyUpdateDTO(mfi=20, raw_code='B42'),
+                                                   HLAAntibodyUpdateDTO(mfi=20, raw_code='DQ[01:03,      06:03]')
+                                                   ]),
             hla_typing=HLATypingUpdateDTO([
                 HLATypeUpdateDTO('A11'),
                 HLATypeUpdateDTO('DQ[01:03,      06:03]')

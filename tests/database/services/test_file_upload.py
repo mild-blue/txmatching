@@ -14,8 +14,8 @@ from txmatching.database.services.txm_event_service import (
     get_txm_event_complete,
     remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
-    AppUserModel, ConfigModel, DonorModel, PairingResultModel,
-    RecipientAcceptableBloodModel, RecipientHLAAntibodyModel, RecipientModel)
+    AppUserModel, ConfigModel, DonorModel, HLAAntibodyRawModel,
+    PairingResultModel, RecipientAcceptableBloodModel, RecipientModel)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.country_enum import Country
@@ -53,7 +53,7 @@ class TestUpdateDonorRecipient(DbTests):
         donors = DonorModel.query.all()
         pairing_results = PairingResultModel.query.all()
         recipient_acceptable_bloods = RecipientAcceptableBloodModel.query.all()
-        recipient_hla_antibodies = RecipientHLAAntibodyModel.query.all()
+        hla_antibodies_raw = HLAAntibodyRawModel.query.all()
         app_users = AppUserModel.query.all()
 
         txm_event = get_txm_event_complete(txm_event.db_id)
@@ -85,7 +85,7 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(3, len({recipient.country for recipient in recipients}))
         self.assertEqual(0, len(pairing_results))
         self.assertEqual(91, len(recipient_acceptable_bloods))
-        self.assertEqual(1059, len(recipient_hla_antibodies))
+        self.assertEqual(1059, len(hla_antibodies_raw))
         self.assertEqual(6, len(app_users))
 
         all_matchings = list(solve_from_configuration(Configuration(

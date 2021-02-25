@@ -5,9 +5,8 @@ from typing import List
 logger = logging.getLogger(__name__)
 
 
-# TODOO: prob rename, used in update
 @dataclass
-class HLAAntibodyDTO:
+class HLAAntibodyUpdateDTO:
     raw_code: str
     mfi: int
 
@@ -18,19 +17,18 @@ class HLAAntibodyDTO:
 
 
 @dataclass
-class HLAAntibodiesDTO:
-    hla_antibodies_list: List[HLAAntibodyDTO] = field(default_factory=list)
+class HLAAntibodiesUpdateDTO:
+    hla_antibodies_list: List[HLAAntibodyUpdateDTO] = field(default_factory=list)
 
 
 @dataclass
-class HLAAntibodyParsedDTO:
+class HLAAntibodyDTO:
     raw_code: str
     code: str
     mfi: int
     cutoff: int
 
 
-# TODOO: prob rename when renamed above
 @dataclass
-class HLAAntibodiesParsedDTO:
-    hla_antibodies_list: List[HLAAntibodyParsedDTO] = field(default_factory=list)
+class HLAAntibodiesDTO:
+    hla_antibodies_list: List[HLAAntibodyDTO] = field(default_factory=list)

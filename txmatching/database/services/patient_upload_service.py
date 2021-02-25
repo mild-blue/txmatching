@@ -25,7 +25,7 @@ from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, get_txm_event_db_id_by_name,
     remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
+    DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
     RecipientModel)
 from txmatching.patients.patient import DonorType, calculate_cutoff
 from txmatching.utils.country_enum import Country
@@ -85,7 +85,7 @@ def _recipient_upload_dto_to_recipient_model(
             hla_types_list=[HLATypeRaw(raw_code) for raw_code in recipient.hla_typing]
         )),
         hla_antibodies_raw=[
-            RecipientHLAAntibodyModel(
+            HLAAntibodyRawModel(
                 raw_code=hla_antibody.name,
                 cutoff=hla_antibody.cutoff,
                 mfi=hla_antibody.mfi

@@ -6,7 +6,7 @@ import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
-    HLAAntibodiesParsedDTO
+    HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypeRaw, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
@@ -20,8 +20,8 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
 from txmatching.database.db import db
 from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, ParsingErrorModel, RecipientAcceptableBloodModel,
-    RecipientHLAAntibodyModel, RecipientModel)
+    DonorModel, HLAAntibodyRawModel, ParsingErrorModel,
+    RecipientAcceptableBloodModel, RecipientModel)
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLATyping
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
@@ -61,7 +61,7 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
                           parameters=base_patient.parameters,
                           related_donor_db_id=related_donor_db_id,
                           hla_antibodies=get_antibodies_from_antibodies_model(
-                              dacite.from_dict(data_class=HLAAntibodiesParsedDTO, data=recipient_model.hla_antibodies),
+                              dacite.from_dict(data_class=HLAAntibodiesDTO, data=recipient_model.hla_antibodies),
                               logger_with_patient,
                           ),
                           # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum,
@@ -77,7 +77,7 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
 
 
 def get_antibodies_from_antibodies_model(
-        antibodies_model: HLAAntibodiesParsedDTO,
+        antibodies_model: HLAAntibodiesDTO,
         logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
 ) -> HLAAntibodies:
     return HLAAntibodies(
@@ -145,7 +145,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
             if recipient_update_dto.hla_antibodies is not None \
             else old_recipient_model.hla_antibodies_raw.hla_antibodies_list
         new_hla_antibodies_raw = [
-            RecipientHLAAntibodyModel(  # TODOO: rename
+            HLAAntibodyRawModel(  # TODOO: rename
                 recipient_id=recipient_update_dto.db_id,
                 raw_code=hla_antibody.raw_code,
                 cutoff=new_cutoff,
@@ -154,8 +154,8 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         ]
 
         # Change hla_antibodies_raw for a given patient in db
-        RecipientHLAAntibodyModel.query.filter(
-            RecipientHLAAntibodyModel.recipient_id == recipient_update_dto.db_id
+        HLAAntibodyRawModel.query.filter(
+            HLAAntibodyRawModel.recipient_id == recipient_update_dto.db_id
         ).delete()
         db.session.add_all(new_hla_antibodies_raw)
 
