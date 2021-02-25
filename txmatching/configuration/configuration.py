@@ -68,6 +68,7 @@ class Configuration:
     max_matchings_to_store_in_db: int = field(default=100, compare=False)
     max_allowed_number_of_matchings: int = field(default=10000, compare=False)
     max_allowed_number_of_cycles_to_be_searched: int = field(default=1000000, compare=False)
+    max_number_of_solutions_for_ilp: int = field(default=5, compare=False)
 
     def __eq__(self, other):
         """

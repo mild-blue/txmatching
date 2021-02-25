@@ -3,14 +3,15 @@ from typing import Iterable, Tuple
 
 import networkx as nx
 
+from txmatching.configuration.configuration import Configuration
+
 
 @dataclass
 class DataAndConfigurationForILPSolver:
     num_nodes: int
     non_directed_donors: Iterable[int]
+    configuration: Configuration
     edges: Iterable[Tuple[int, int, int]]
-    max_cycle_length: int  # in number of edges.
-    max_sequence_length: int  # in number of edges.
 
     def __post_init__(self):
         self.graph = nx.DiGraph()

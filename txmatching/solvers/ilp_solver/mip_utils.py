@@ -6,7 +6,7 @@ from txmatching.solvers.ilp_solver.solution import Status
 def mip_var_to_bool(var: mip.Var) -> bool:
     maybe_value = var.x
     if maybe_value is None:
-        raise AssertionError('Variable should never be None')
+        return False
     return maybe_value.real >= 0.5
 
 

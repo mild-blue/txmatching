@@ -47,14 +47,14 @@ def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSo
     # TODO: config for which cycles to forbid
     cycles_to_forbid = []
     for cycle in cycles:
-        if len(cycle) > data_and_configuration.max_cycle_length:
+        if len(cycle) > data_and_configuration.configuration.max_cycle_length:
             cycles_to_forbid.append(cycle)
     for cycle in cycles_to_forbid:
         ilp_model.add_constr(mip.xsum([edge_to_var[edge] for edge in cycle]) <= len(cycle) - 1)
         cons_added = True
 
     # Limiting max sequence length.
-    violating_seqs = [seq for seq in seqs if len(seq) > data_and_configuration.max_sequence_length]
+    violating_seqs = [seq for seq in seqs if len(seq) > data_and_configuration.configuration.max_sequence_length]
     if violating_seqs:
         seqs_to_forbid = []
         if internal_configuration.max_sequence_limit_method == MaxSequenceLimitMethod.LazyForbidAllMaximalSequences:
