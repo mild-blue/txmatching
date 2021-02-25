@@ -1,42 +1,15 @@
-from dataclasses import dataclass
-from typing import Dict, Tuple
-
 import mip
 
 from txmatching.solvers.ilp_solver.generate_dynamic_constraints import \
-    generate_dynamic_constraints
+    add_dynamic_constraints
 from txmatching.solvers.ilp_solver.ilp_dataclasses import (
-    InternalILPSolverParameters, ObjectiveType)
+    InternalILPSolverParameters, ObjectiveType, VariableMapping)
 from txmatching.solvers.ilp_solver.mip_utils import (mip_get_result_status,
                                                      mip_var_to_bool)
 from txmatching.solvers.ilp_solver.result import Result
 from txmatching.solvers.ilp_solver.solution import Solution, Status
 from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
     DataAndConfigurationForILPSolver
-
-
-@dataclass(init=False)
-class VariableMapping:
-    edge_to_var: Dict[Tuple[int, int], mip.Var]
-    node_to_in_var: Dict[int, mip.Var]
-    node_to_out_var: Dict[int, mip.Var]
-
-    def __init__(self, ilp_model: mip.Model, data_and_configuration: DataAndConfigurationForILPSolver):
-        # Mapping from edge e to variable y_e
-        self.edge_to_var = dict()
-        for (from_node, to_node) in data_and_configuration.graph.edges():
-            self.edge_to_var[from_node, to_node] = ilp_model.add_var(var_type=mip.BINARY,
-                                                                     name=f'y[{from_node},{to_node}]')
-
-        # Mapping from node v to variable f^i_v
-        self.node_to_in_var = dict()
-        for node in data_and_configuration.graph.nodes():
-            self.node_to_in_var[node] = ilp_model.add_var(lb=0, var_type=mip.INTEGER, name=f'fi[{node}]')
-
-        # Mapping from node v to variable f^o_v
-        self.node_to_out_var = dict()
-        for node in data_and_configuration.graph.nodes():
-            self.node_to_out_var[node] = ilp_model.add_var(lb=0, var_type=mip.INTEGER, name=f'fo[{node}]')
 
 
 def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
@@ -48,32 +21,32 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
     ilp_model = mip.Model(sense=mip.MAXIMIZE, solver_name=mip.CBC)
     mapping = VariableMapping(ilp_model, data_and_configuration)
 
-    add_objective(ilp_model, internal_parameters, data_and_configuration, mapping)
+    _add_objective(ilp_model, internal_parameters, data_and_configuration, mapping)
 
-    add_static_constraints(data_and_configuration, ilp_model, mapping)
+    _add_static_constraints(data_and_configuration, ilp_model, mapping)
 
-    reoptimize = True
-    status = Status.NoSolution
-    solution = None
-
-    while reoptimize:
+    while True:
         ilp_model.optimize()
         status = mip_get_result_status(ilp_model)
-        reoptimize = generate_dynamic_constraints(data_and_configuration,
-                                                  internal_parameters,
-                                                  ilp_model,
-                                                  mapping.edge_to_var)
+        dynamic_constraints_added = add_dynamic_constraints(data_and_configuration,
+                                                            internal_parameters,
+                                                            ilp_model,
+                                                            mapping.edge_to_var)
+        if not dynamic_constraints_added:
+            break
 
     if status in (Status.Optimal, Status.Heuristic):
         solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
         solution = Solution(solution_edges)
+    else:
+        solution = None
 
     return Result(status=status, solution=solution)
 
 
-def add_static_constraints(data_and_configuration: DataAndConfigurationForILPSolver,
-                           ilp_model: mip.Model,
-                           mapping: VariableMapping):
+def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSolver,
+                            ilp_model: mip.Model,
+                            mapping: VariableMapping):
     # Total inflow into node.
     for node in data_and_configuration.graph.nodes():
         ilp_model.add_constr(
@@ -96,10 +69,10 @@ def add_static_constraints(data_and_configuration: DataAndConfigurationForILPSol
         ilp_model.add_constr(mapping.node_to_out_var[node] <= 1)
 
 
-def add_objective(ilp_model: mip.Model,
-                  internal_parameters: InternalILPSolverParameters,
-                  data_and_configuration: DataAndConfigurationForILPSolver,
-                  mapping: VariableMapping):
+def _add_objective(ilp_model: mip.Model,
+                   internal_parameters: InternalILPSolverParameters,
+                   data_and_configuration: DataAndConfigurationForILPSolver,
+                   mapping: VariableMapping):
     # Objective.
     if internal_parameters.objective_type == ObjectiveType.MaxTransplantsMaxWeights:
         weight_of_addition_of_extra_pair = max([data['weight'] for (_, _, data) in data_and_configuration.graph.edges(
