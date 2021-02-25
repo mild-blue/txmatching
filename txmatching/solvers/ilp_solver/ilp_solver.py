@@ -18,17 +18,15 @@ class ILPSolver(SolverBase):
 
     def solve(self) -> Iterator[MatchingWithScore]:
         config_for_ilp_solver = prepare_data_for_ilp(self.donors_dict, self.recipients_dict, self.configuration)
-        result = solve_ilp(config_for_ilp_solver)
+        solutions = solve_ilp(config_for_ilp_solver)
         recipients_db_id_to_order_id = {
             recipient.db_id: order_id for order_id, recipient in enumerate(self.recipients)
         }
 
-        if result.solution is not None:
-            possible_path_combination = self._get_path_combinations(result.solution.edges, recipients_db_id_to_order_id)
+        for solution in solutions:
+            possible_path_combination = self._get_path_combinations(solution.edges, recipients_db_id_to_order_id)
 
             yield self.get_matching_from_path_combinations(possible_path_combination)
-        else:
-            logger.warning(f'No solution was found via ILP. The status of the result was {result.status}')
 
     def _get_path_combinations(self,
                                donor_idx_tuples: Iterable[Tuple[int, int]],

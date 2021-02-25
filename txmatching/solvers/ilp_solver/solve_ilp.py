@@ -1,4 +1,7 @@
 import logging
+import tempfile
+from os import close, dup, dup2
+from typing import Iterable, List, Tuple
 
 import mip
 
@@ -8,7 +11,6 @@ from txmatching.solvers.ilp_solver.ilp_dataclasses import (
     InternalILPSolverParameters, ObjectiveType, VariableMapping)
 from txmatching.solvers.ilp_solver.mip_utils import (mip_get_result_status,
                                                      mip_var_to_bool)
-from txmatching.solvers.ilp_solver.result import Result
 from txmatching.solvers.ilp_solver.solution import Solution, Status
 from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
     DataAndConfigurationForILPSolver
@@ -17,35 +19,36 @@ logger = logging.getLogger(__name__)
 
 
 def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
-              internal_parameters: InternalILPSolverParameters = InternalILPSolverParameters()) -> Result:
+              internal_parameters: InternalILPSolverParameters = InternalILPSolverParameters()) -> List[Solution]:
     if len(data_and_configuration.graph.edges) < 1:
-        return Result(
-            status=Status.NoSolution
-        )
+        return []
     ilp_model = mip.Model(sense=mip.MAXIMIZE, solver_name=mip.CBC)
     mapping = VariableMapping(ilp_model, data_and_configuration)
 
     _add_objective(ilp_model, internal_parameters, data_and_configuration, mapping)
 
     _add_static_constraints(data_and_configuration, ilp_model, mapping)
+    solutions = []
+    for _ in range(data_and_configuration.configuration.max_number_of_solutions_for_ilp):
+        while True:
+            _solve_with_logging(ilp_model)
 
-    while True:
-        ilp_model.optimize()
-        status = mip_get_result_status(ilp_model)
-        dynamic_constraints_added = add_dynamic_constraints(data_and_configuration,
-                                                            internal_parameters,
-                                                            ilp_model,
-                                                            mapping.edge_to_var)
-        if not dynamic_constraints_added:
+            status = mip_get_result_status(ilp_model)
+            dynamic_constraints_added = add_dynamic_constraints(data_and_configuration,
+                                                                internal_parameters,
+                                                                ilp_model,
+                                                                mapping.edge_to_var)
+            if not dynamic_constraints_added:
+                break
+
+        if status == Status.Optimal:
+            solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
+            solutions.append(Solution(solution_edges))
+            _add_constraints_removing_solution(ilp_model, data_and_configuration, solution_edges, mapping)
+        else:
             break
 
-    if status == Status.Optimal:
-        solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
-        solution = Solution(solution_edges)
-    else:
-        solution = None
-
-    return Result(status=status, solution=solution)
+    return solutions
 
 
 def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSolver,
@@ -99,3 +102,27 @@ def _add_objective(ilp_model: mip.Model,
         ])
     else:
         raise Exception('Unknown objective type.')
+
+
+def _solve_with_logging(ilp_model: mip.Model):
+    with tempfile.TemporaryFile() as tmp_output:
+        orig_std_out = dup(1)
+        dup2(tmp_output.fileno(), 1)
+        ilp_model.optimize()
+        dup2(orig_std_out, 1)
+        close(orig_std_out)
+        if logging.DEBUG >= logging.root.level:
+            tmp_output.seek(0)
+            [logger.debug(line.decode('utf8')) for line in tmp_output.read().splitlines()]
+
+
+def _add_constraints_removing_solution(ilp_model: mip.Model,
+                                       data_and_configuration: DataAndConfigurationForILPSolver,
+                                       solution_edges: Iterable[Tuple[int, int]],
+                                       mapping: VariableMapping
+                                       ):
+    sol_edges_set = set(solution_edges)
+    missing = {(from_node, to_node) for (from_node, to_node) in data_and_configuration.graph.edges if
+               (from_node, to_node) not in sol_edges_set}
+
+    ilp_model.add_constr(mip.xsum([mapping.edge_to_var[edge] for edge in missing]) >= 0.5)

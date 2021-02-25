@@ -36,8 +36,7 @@ def prepare_data_for_ilp(active_donors_dict: Dict[DonorDbId, Donor],
     return DataAndConfigurationForILPSolver(
         num_nodes=len(score_matrix),
         non_directed_donors=bridging_donors,
-        max_sequence_length=configuration.max_sequence_length,
-        max_cycle_length=configuration.max_cycle_length,
+        configuration=configuration,
         edges=_create_edges(score_matrix),
     )
 

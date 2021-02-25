@@ -20,8 +20,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_no_new_config_is_saved_if_one_already_exists(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
-        self.assertEqual(1, len(list(solve_from_configuration(
-            Configuration(solver_constructor_name='ILPSolver'), txm_event).calculated_matchings_list)))
+        configuration = Configuration(solver_constructor_name='ILPSolver')
+        self.assertEqual(configuration.max_number_of_solutions_for_ilp,
+                         len(list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)))
 
     def test_solve_from_configuration(self):
         txm_event_db_id = self.fill_db_with_patients()
@@ -30,7 +31,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             solver_constructor_name='ILPSolver',
             manual_donor_recipient_scores=[
                 ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=4, score=1.0)])
-        self.assertEqual(1, len(list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)))
+        self.assertEqual(configuration.max_number_of_solutions_for_ilp,
+                         len(list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)))
 
     @unittest.skip('Support for limitation of number of countries in round has not yet been implemented')
     # TODO: improve the code https://github.com/mild-blue/txmatching/issues/430
@@ -42,7 +44,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             solver_constructor_name='ILPSolver',
             max_number_of_distinct_countries_in_round=max_country_count)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-        self.assertEqual(1, len(solutions))
+        self.assertEqual(configuration.max_number_of_solutions_for_ilp, len(solutions))
         for round in solutions[0].get_rounds():
             self.assertGreaterEqual(1, round.country_count())
 
@@ -53,7 +55,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             solver_constructor_name='ILPSolver',
             max_number_of_distinct_countries_in_round=3)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-        self.assertEqual(1, len(solutions))
+        self.assertEqual(configuration.max_number_of_solutions_for_ilp, len(solutions))
 
     def test_solve_from_example_dataset(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
@@ -63,7 +65,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             use_split_resolution=True,
             max_matchings_to_store_in_db=1000)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-        self.assertEqual(1, len(solutions))
+        self.assertEqual(configuration.max_number_of_solutions_for_ilp, len(solutions))
         self.assertSetEqual(BEST_SOLUTION_USE_SPLIT_RESOLUTION_TRUE,
                             get_donor_recipient_pairs_from_solution(solutions[0].matching_pairs))
 
@@ -75,7 +77,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                 solver_constructor_name='ILPSolver',
                 use_split_resolution=True, max_sequence_length=max_sequence_length, max_cycle_length=0)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-            self.assertEqual(1, len(solutions))
+            self.assertEqual(configuration.max_number_of_solutions_for_ilp, len(solutions))
 
             real_max_sequence_length = max(
                 [max([sequence.length() for sequence in solution.get_sequences()]) for solution
@@ -90,11 +92,12 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             configuration = Configuration(solver_constructor_name='ILPSolver', use_split_resolution=True,
                                           max_cycle_length=max_cycle_length, max_sequence_length=0)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-            self.assertEqual(1, len(solutions))
+            self.assertLessEqual(3, len(solutions),
+                                 f'Failed for {max_cycle_length}')
             real_max_cycle_length = max(
                 [max([cycle.length() for cycle in solution.get_cycles()], default=0) for solution in
                  solutions])
-            self.assertGreaterEqual(max_cycle_length, real_max_cycle_length)
+            self.assertGreaterEqual(max_cycle_length, real_max_cycle_length, f'Failed for {max_cycle_length}')
 
     def test_solver_no_patients(self):
         txm_event = create_or_overwrite_txm_event(name='test')
