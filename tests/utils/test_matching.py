@@ -73,7 +73,7 @@ class TestMatching(unittest.TestCase):
 
     def test_get_count_of_transplants(self):
         matching = MatchingWithScore(
-            donor_recipient_pairs=frozenset(),
+            matching_pairs=frozenset(),
             score=0,
             order_id=0
         )
@@ -82,7 +82,7 @@ class TestMatching(unittest.TestCase):
         self.assertEquals(0, result)
 
         matching = MatchingWithScore(
-            donor_recipient_pairs=frozenset(),
+            matching_pairs=frozenset(),
             score=0,
             order_id=0
         )

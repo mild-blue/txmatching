@@ -182,7 +182,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
     The reason some antibodies occur multiple times is because antibodies existence is tested together for alpha and
     beta alleles. And we need to distinguish whether the MFI value relates to alpha or beta or both.
 
-    To identify large variance two conditions have to be fulfilled:
+    To identify large variance two condition s have to be fulfilled:
      - difference between min max values has to be higher than cutoff.
      - relative difference between min max values has to be higher than RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI
 

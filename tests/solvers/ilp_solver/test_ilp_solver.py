@@ -1,5 +1,3 @@
-import unittest
-
 from tests.solvers.best_solution_use_split_resolution_true import (
     BEST_SOLUTION_USE_SPLIT_RESOLUTION_TRUE,
     get_donor_recipient_pairs_from_solution)
@@ -82,18 +80,19 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_with_sequence_length_limit(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
-        for max_sequence_length in range(1, 6):
+        for max_sequence_length in range(1, 5):
             configuration = Configuration(
                 solver_constructor_name='ILPSolver',
                 use_split_resolution=True, max_sequence_length=max_sequence_length, max_cycle_length=0)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-            self.assertEqual(configuration.max_number_of_solutions_for_ilp, len(solutions))
+            self.assertLessEqual(1, len(solutions),
+                                 f'Failed for {max_sequence_length}')
 
             real_max_sequence_length = max(
-                [max([sequence.length() for sequence in solution.get_sequences()]) for solution
+                [max([sequence.length() for sequence in solution.get_sequences()], default=0) for solution
                  in
                  solutions])
-            self.assertGreaterEqual(max_sequence_length, real_max_sequence_length)
+            self.assertEqual(max_sequence_length, real_max_sequence_length)
 
     def test_with_cycle_length_limit(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
@@ -107,7 +106,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             real_max_cycle_length = max(
                 [max([cycle.length() for cycle in solution.get_cycles()], default=0) for solution in
                  solutions])
-            self.assertGreaterEqual(max_cycle_length, real_max_cycle_length, f'Failed for {max_cycle_length}')
+            self.assertEqual(max_cycle_length, real_max_cycle_length, f'Failed for {max_cycle_length}')
 
     def test_solver_no_patients(self):
         txm_event = create_or_overwrite_txm_event(name='test')

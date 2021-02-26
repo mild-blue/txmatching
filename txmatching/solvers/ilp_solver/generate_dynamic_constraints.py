@@ -57,7 +57,7 @@ def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSo
     # Limiting max sequence length.
     non_compliant_sequences = []
     for sequence in sequences:
-        too_many_transplations = len(sequence) > data_and_configuration.configuration.max_cycle_length
+        too_many_transplations = len(sequence) > data_and_configuration.configuration.max_sequence_length
         if too_many_transplations or _too_many_countries(sequence, data_and_configuration):
             non_compliant_sequences.append(sequence)
 
