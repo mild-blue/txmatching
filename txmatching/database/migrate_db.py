@@ -46,7 +46,7 @@ def migrate_db(db_uri: Optional[str] = None):
     logger.info(f'Applying DB migrations from {migration_directory}.')
     migrations = read_migrations(migration_directory)
 
-    logger.info('Applying DB migrations:')
+    logger.info('Available DB migrations:')
     for migration in migrations:
         logger.info(migration.id)
 
