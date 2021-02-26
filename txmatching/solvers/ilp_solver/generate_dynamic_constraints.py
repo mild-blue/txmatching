@@ -20,11 +20,6 @@ def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSo
     sol_graph = nx.DiGraph()
     sol_graph.add_edges_from([edge for edge, is_edge in edges_in_solution.items() if is_edge])
 
-    # 2. Split the graph into weakly connected components
-    # 3. Split the components to cycles and sequences (in correctly constructed model, each component is either a
-    #  cycle or sequence).
-    #
-    # Components with isolated nodes are considered to be sequences.
     comps = list(nx.weakly_connected_components(sol_graph))
     cycles = []
     sequences = []
@@ -36,6 +31,7 @@ def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSo
             cycle = nx.find_cycle(sol_graph, source=comp[0])
             cycles.append(cycle)
         except nx.NetworkXNoCycle:
+            # Components with isolated nodes are considered to be sequences.
             sequences.append(sol_graph.edges(comp))
 
     cons_added = False
