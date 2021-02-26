@@ -47,7 +47,8 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
         key=lambda x: x.raw_code
     )
     hla_antibodies_parsed = []
-    for raw_code, antibody_group in grouped_hla_antibodies:
+    for raw_code, antibody_group_generator in grouped_hla_antibodies:
+        antibody_group = list(antibody_group_generator)
         # Antibodies with the same raw code does need to have the same cutoff
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
         if len(cutoffs) > 1:
