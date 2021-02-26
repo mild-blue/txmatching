@@ -1,27 +1,34 @@
 import itertools
 import logging
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
-    HLAAntibodiesDTO, HLAAntibodyDTO)
+from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
+    HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypingDTO, HLATypingRawDTO)
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import (HLAAntibodyRawModel,
                                                     ParsingErrorModel)
-from txmatching.patients.hla_model import HLAType
+from txmatching.patients.hla_model import (
+    HLAAntibody, HLAType, create_hla_antibodies_per_groups_from_hla_antibodies,
+    split_hla_types_to_groups)
 from txmatching.utils.hla_system.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 from txmatching.utils.hla_system.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
+from txmatching.utils.logging_tools import PatientAdapter
 
 logger = logging.getLogger(__name__)
 
 
 def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
-        hla_antibodies_raw: List[HLAAntibodyRawModel]
+        hla_antibodies_raw: List[HLAAntibodyRawModel],
+        # TODOO: add issue
+        # TODO: replace logging with storing parsing errors in db along with patient medical id
+        logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
 ) -> HLAAntibodiesDTO:
+    # 1. preprocess raw codes (their count can increase)
     # TODOO: refactor
     @dataclass
     class HLAAntibodyPreprocessedDTO:
@@ -35,6 +42,7 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
         for preprocessed_raw_code in preprocess_hla_code_in(hla_antibody_raw.raw_code)
     ]
 
+    # TODOO: comment
     # TODOO: improvement: return the rest at least
     grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies_preprocessed, key=lambda x: x.raw_code),
                                                key=lambda x: x.raw_code)
@@ -44,12 +52,13 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
             _store_parsing_error(hla_code_raw, HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY)
             hla_antibodies_preprocessed = []
 
+    # 2. parse preprocessed codes and keep only valid ones
     hla_antibodies_parsed = []
     for hla_antibody in hla_antibodies_preprocessed:
         code = parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.raw_code)
         if code is not None:
             hla_antibodies_parsed.append(
-                HLAAntibodyDTO(
+                HLAAntibody(
                     raw_code=hla_antibody.raw_code,
                     code=code,
                     mfi=hla_antibody.mfi,
@@ -57,18 +66,24 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
                 )
             )
 
+    # 3. filter antibodies over cutoff and split to groups
+    hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(hla_antibodies_parsed, logger_with_patient)
+
     return HLAAntibodiesDTO(
-        hla_antibodies_list=hla_antibodies_parsed
+        hla_antibodies_list=hla_antibodies_parsed,
+        hla_antibodies_per_groups=hla_antibodies_per_groups
     )
 
 
 def parse_hla_typing_raw_and_store_parsing_error_in_db(hla_typing_raw: HLATypingRawDTO) -> HLATypingDTO:
+    # 1. preprocess raw codes (their count can increase)
     raw_codes_preprocessed = [
         raw_code_preprocessed
         for hla_type_raw in hla_typing_raw.hla_types_list
         for raw_code_preprocessed in preprocess_hla_code_in(hla_type_raw.raw_code)
     ]
 
+    # 2. parse preprocessed codes and keep only valid ones
     hla_types_parsed = []
     for raw_code in raw_codes_preprocessed:
         code = parse_hla_raw_code_and_store_parsing_error_in_db(raw_code)
@@ -80,8 +95,12 @@ def parse_hla_typing_raw_and_store_parsing_error_in_db(hla_typing_raw: HLATyping
                 )
             )
 
+    # 3. split hla_types_parsed to the groups
+    hla_per_groups = split_hla_types_to_groups(hla_types_parsed)
+
     return HLATypingDTO(
-        hla_types_list=hla_types_parsed
+        hla_types_list=hla_types_parsed,
+        hla_per_groups=hla_per_groups,
     )
 
 

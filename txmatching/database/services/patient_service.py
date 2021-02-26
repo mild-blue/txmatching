@@ -1,5 +1,6 @@
 import dataclasses
 import logging
+from enum import Enum
 from typing import Optional, Tuple, Union
 
 import dacite
@@ -8,7 +9,7 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
-    HLATypeRaw, HLATypingRawDTO)
+    HLATypeRaw, HLATypingDTO, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientsRecomputeParsingSuccessDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
@@ -22,7 +23,8 @@ from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, HLAAntibodyRawModel, ParsingErrorModel,
     RecipientAcceptableBloodModel, RecipientModel)
-from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLATyping
+from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
+                                           HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
@@ -54,15 +56,16 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
     if not related_donor_db_id:
         related_donor_db_id = DonorModel.query.filter(DonorModel.recipient_id == recipient_model.id).one().id
     base_patient = _get_base_patient_from_patient_model(recipient_model)
-    logger_with_patient = PatientAdapter(logger, {'patient_medical_id': recipient_model.medical_id})
 
     recipient = Recipient(base_patient.db_id,
                           base_patient.medical_id,
                           parameters=base_patient.parameters,
                           related_donor_db_id=related_donor_db_id,
-                          hla_antibodies=get_antibodies_from_antibodies_model(
-                              dacite.from_dict(data_class=HLAAntibodiesDTO, data=recipient_model.hla_antibodies),
-                              logger_with_patient,
+                          hla_antibodies=get_hla_antibodies_from_hla_antibodies_dto(
+                              dacite.from_dict(
+                                  data_class=HLAAntibodiesDTO, data=recipient_model.hla_antibodies,
+                                  config=dacite.Config(cast=[Enum])
+                              ),
                           ),
                           # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum,
                           #       this conversion is not working properly now
@@ -76,17 +79,21 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
     return recipient
 
 
-def get_antibodies_from_antibodies_model(
-        antibodies_model: HLAAntibodiesDTO,
-        logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
+def get_hla_antibodies_from_hla_antibodies_dto(
+        antibodies_dto: HLAAntibodiesDTO
 ) -> HLAAntibodies:
     return HLAAntibodies(
-        [HLAAntibody(raw_code=hla_antibody.raw_code,
-                     code=hla_antibody.code,
-                     mfi=hla_antibody.mfi,
-                     cutoff=hla_antibody.cutoff)
-         for hla_antibody in antibodies_model.hla_antibodies_list],
-        logger_with_patient
+        hla_antibodies_list=antibodies_dto.hla_antibodies_list,
+        hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups
+    )
+
+
+def get_hla_typing_from_hla_typing_model(
+        hla_typing_dto: HLATypingDTO
+) -> HLATyping:
+    return HLATyping(
+        hla_types_list=hla_typing_dto.hla_types_list,
+        hla_per_groups=hla_typing_dto.hla_per_groups,
     )
 
 
@@ -160,8 +167,10 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         db.session.add_all(new_hla_antibody_raw_models)
 
         # Change parsed hla_antibodies for a given patient in db
+        logger_with_patient = PatientAdapter(logger, {'patient_medical_id': old_recipient_model.medical_id})
         hla_antibodies = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
-            new_hla_antibody_raw_models
+            new_hla_antibody_raw_models,
+            logger_with_patient
         )
         recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
 
@@ -223,8 +232,9 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     # Update hla_antibodies for recipients
     for recipient_model in recipient_models:
         hla_antibodies_raw = recipient_model.hla_antibodies_raw
+        logger_with_patient = PatientAdapter(logger, {'patient_medical_id': recipient_model.medical_id})
         new_hla_antibodies = dataclasses.asdict(
-            parse_hla_antibodies_raw_and_store_parsing_error_in_db(hla_antibodies_raw)
+            parse_hla_antibodies_raw_and_store_parsing_error_in_db(hla_antibodies_raw, logger_with_patient)
         )
 
         if new_hla_antibodies != recipient_model.hla_antibodies:
@@ -276,7 +286,12 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
             #       this conversion is not working properly now
             blood_group=patient_model.blood,
             country_code=patient_model.country,
-            hla_typing=dacite.from_dict(data_class=HLATyping, data=patient_model.hla_typing),
+            hla_typing=get_hla_typing_from_hla_typing_model(
+                dacite.from_dict(
+                    data_class=HLATypingDTO, data=patient_model.hla_typing,
+                    config=dacite.Config(cast=[Enum])
+                )
+            ),
             height=patient_model.height,
             weight=patient_model.weight,
             year_of_birth=patient_model.yob,

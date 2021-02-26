@@ -347,7 +347,7 @@ class TestPatientService(DbTests):
         # HACK: This should equal to [BloodGroup.A, BloodGroup.B, BloodGroup.AB]
         # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum
         self.assertCountEqual(recipient.acceptable_blood_groups, ['A', 'B', 'AB'])
-        self.assertEqual(recipient.hla_antibodies, HLAAntibodies())
+        self.assertEqual(recipient.hla_antibodies, HLAAntibodies([]))
         self.assertEqual(recipient.recipient_requirements, RecipientRequirements(True, True, True))
         self.assertEqual(recipient.recipient_cutoff, 42)
 
@@ -393,7 +393,7 @@ class TestPatientService(DbTests):
         # HACK: This should equal to [BloodGroup.ZERO]
         # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum
         self.assertCountEqual(recipient.acceptable_blood_groups, ['0'])
-        self.assertEqual(recipient.hla_antibodies, HLAAntibodies())
+        self.assertEqual(recipient.hla_antibodies, HLAAntibodies([]))
         self.assertEqual(recipient.recipient_requirements, RecipientRequirements(False, False, False))
         self.assertEqual(recipient.recipient_cutoff, 42)  # Cutoff is unchanged
 

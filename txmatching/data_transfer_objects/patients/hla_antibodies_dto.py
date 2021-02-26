@@ -2,6 +2,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import List
 
+from txmatching.patients.hla_model import AntibodiesPerGroup, HLAAntibody
+
 logger = logging.getLogger(__name__)
 
 
@@ -22,15 +24,6 @@ class HLAAntibodiesUpdateDTO:
 
 
 @dataclass
-class HLAAntibodyDTO:
-    # TODOO: replace by HLAAntibody
-    raw_code: str
-    code: str
-    mfi: int
-    cutoff: int
-
-
-@dataclass
 class HLAAntibodiesDTO:
-    # TODOO: also
-    hla_antibodies_list: List[HLAAntibodyDTO] = field(default_factory=list)
+    hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
+    hla_antibodies_per_groups: List[AntibodiesPerGroup] = field(default_factory=list)

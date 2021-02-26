@@ -79,7 +79,7 @@ class Recipient(Patient, PersistentlyHashable):
     related_donor_db_id: DonorDbId
     acceptable_blood_groups: List[BloodGroup]
     recipient_cutoff: Optional[int] = None
-    hla_antibodies: HLAAntibodies = HLAAntibodies()
+    hla_antibodies: HLAAntibodies = HLAAntibodies([])
     recipient_requirements: RecipientRequirements = RecipientRequirements()
     waiting_since: Optional[datetime] = None
     previous_transplants: Optional[int] = None

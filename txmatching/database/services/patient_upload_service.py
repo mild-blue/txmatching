@@ -20,7 +20,7 @@ from txmatching.database.db import db
 from txmatching.database.services.parsing_utils import (
     check_existing_ids_for_duplicates, parse_date_to_datetime)
 from txmatching.database.services.patient_service import \
-    get_antibodies_from_antibodies_model
+    get_hla_antibodies_from_hla_antibodies_dto
 from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, get_txm_event_db_id_by_name,
     remove_donors_and_recipients_from_txm_event_for_country)
@@ -32,6 +32,7 @@ from txmatching.utils.country_enum import Country
 from txmatching.utils.hla_system.hla_transformations_store import (
     parse_hla_antibodies_raw_and_store_parsing_error_in_db,
     parse_hla_typing_raw_and_store_parsing_error_in_db)
+from txmatching.utils.logging_tools import PatientAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +111,8 @@ def _recipient_upload_dto_to_recipient_model(
 
 def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
     hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
-    patient_model.hla_typing = dataclasses.asdict(HLATypingDTO(hla_types_list=[]))
+    # for the case that the db commit would be called during parsing, we need to have valid value in hla_typing
+    patient_model.hla_typing = dataclasses.asdict(HLATypingDTO())
     patient_model.hla_typing = dataclasses.asdict(
         parse_hla_typing_raw_and_store_parsing_error_in_db(
             hla_typing_raw
@@ -120,12 +122,14 @@ def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
 
 def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
     hla_antibodies_raw = recipient_model.hla_antibodies_raw
+    logger_with_patient = PatientAdapter(logger, {'patient_medical_id': recipient_model.medical_id})
     hla_antibodies_parsed = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
-        hla_antibodies_raw
+        hla_antibodies_raw,
+        logger_with_patient
     )
     recipient_model.hla_antibodies = dataclasses.asdict(hla_antibodies_parsed)
 
-    transformed_hla_antibodies = get_antibodies_from_antibodies_model(hla_antibodies_parsed)
+    transformed_hla_antibodies = get_hla_antibodies_from_hla_antibodies_dto(hla_antibodies_parsed)
     recipient_model.recipient_cutoff = calculate_cutoff(transformed_hla_antibodies.hla_antibodies_list)
 
 

@@ -2,7 +2,7 @@ import itertools
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Union
 
 from txmatching.utils.enums import (HLA_GROUP_SPLIT_CODE_REGEX,
                                     HLA_GROUPS_NAMES_WITH_OTHER, HLAGroup)
@@ -18,11 +18,11 @@ class HLAType(PersistentlyHashable):
     raw_code: str
     code: str
 
-    def __post_init__(self):
+    def __init__(self, raw_code: str, code: str = None):
         # The only places where the init is called without code specified should be
-        # tests and data initializations
-        if self.code is None:
-            self.code = parse_hla_raw_code(self.raw_code)
+        # tests and data initialization
+        self.raw_code = raw_code
+        self.code = code if code is not None else parse_hla_raw_code(raw_code)
 
     def __eq__(self, other):
         """
@@ -51,14 +51,17 @@ class HLAPerGroup(PersistentlyHashable):
 
 @dataclass
 class HLATyping(PersistentlyHashable):
-    # TODOO: remove the list (this is in db)
-    hla_types_list: List[HLAType]
-    hla_per_groups: Optional[List[HLAPerGroup]] = None
+    # TODOO: remove the hla_types_list (this is in db) (maybe)
+    hla_types_list: List[HLAType] = field(default_factory=list)
+    hla_per_groups: List[HLAPerGroup] = field(default_factory=list)
 
-    def __post_init__(self):
-        if self.hla_per_groups is None:
-            hla_types = [hla_type for hla_type in self.hla_types_list if hla_type.code]
-            self.hla_per_groups = _split_hla_types_to_groups(hla_types)
+    def __init__(self, hla_types_list: List[HLAType], hla_per_groups: List[HLAPerGroup] = None):
+        # The only places where the init is called without hla_per_groups specified should be
+        # tests and data initialization
+        self.hla_types_list = hla_types_list
+        if hla_per_groups is None:
+            hla_per_groups = split_hla_types_to_groups(hla_types_list)
+        self.hla_per_groups = hla_per_groups
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLATyping)
@@ -68,15 +71,17 @@ class HLATyping(PersistentlyHashable):
 @dataclass
 class HLAAntibody(PersistentlyHashable):
     raw_code: str
-    code: str
     mfi: int
     cutoff: int
+    code: str
 
-    def __post_init__(self):
+    def __init__(self, raw_code: str, mfi: int, cutoff: int, code: str = None):
         # The only places where the init is called without code specified should be
-        # tests and data initializations
-        if self.code is None:
-            self.code = parse_hla_raw_code(self.raw_code)
+        # tests and data initialization
+        self.raw_code = raw_code
+        self.mfi = mfi
+        self.cutoff = cutoff
+        self.code = code if code is not None else parse_hla_raw_code(raw_code)
 
     def __eq__(self, other):
         return (isinstance(other, HLAAntibody) and
@@ -120,28 +125,42 @@ class HLAAntibodies(PersistentlyHashable):
     hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
     hla_antibodies_per_groups: List[AntibodiesPerGroup] = field(default_factory=list)
 
-    # TODOO: remove functionality from here maybe
-    def __init__(self, hla_antibodies_list: List[HLAAntibody] = None,  # TODOO: Not none
-                 logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)):
-        # TODOO: comment
+    def __init__(
+            self,
+            hla_antibodies_list: List[HLAAntibody],
+            hla_antibodies_per_groups: List[AntibodiesPerGroup] = None
+    ):
         if hla_antibodies_list is None:
             hla_antibodies_list = []
         self.hla_antibodies_list = hla_antibodies_list
 
-        hla_antibodies_over_cutoff_list = _filter_antibodies_over_cutoff(hla_antibodies_list)
-        self.hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_over_cutoff_list)
+        # The only places where the init is called without hla_antibodies_per_groups specified should be tests
+        if hla_antibodies_per_groups is None:
+            # We do not set logger because computing hla_antibodies_per_groups is done here only in tests
+            hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(hla_antibodies_list)
+
+        self.hla_antibodies_per_groups = hla_antibodies_per_groups
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLAAntibodies)
         update_persistent_hash(hash_, self.hla_antibodies_per_groups)
 
 
-def _split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
+def split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
     hla_types_in_groups = _split_hla_codes_to_groups(hla_types)
     return [HLAPerGroup(hla_group,
                         sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
                         ) for hla_group, hla_codes_in_group in
             hla_types_in_groups.items()]
+
+
+def create_hla_antibodies_per_groups_from_hla_antibodies(
+        hla_antibodies: List[HLAAntibody],
+        logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
+) -> List[AntibodiesPerGroup]:
+    hla_antibodies_over_cutoff_list = _filter_antibodies_over_cutoff(hla_antibodies, logger_with_patient)
+    hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_over_cutoff_list)
+    return hla_antibodies_per_groups
 
 
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[AntibodiesPerGroup]:
@@ -154,15 +173,12 @@ def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[Antib
 
 def _filter_antibodies_over_cutoff(
         hla_antibodies: List[HLAAntibody],
-        logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
+        logger_with_patient: Union[logging.Logger, PatientAdapter]
 ) -> List[HLAAntibody]:
-    # TODOO: maybe line not needed
-    hla_antibodies_list_without_none = [hla_antibody for hla_antibody in hla_antibodies if hla_antibody.code]
-
     def _group_key(hla_antibody: HLAAntibody) -> str:
         return hla_antibody.raw_code
 
-    grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies_list_without_none, key=_group_key),
+    grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies, key=_group_key),
                                                key=_group_key)
     hla_antibodies_over_cutoff = []
     for hla_code_raw, antibody_group in grouped_hla_antibodies:
