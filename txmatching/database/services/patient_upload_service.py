@@ -7,7 +7,7 @@ import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
-    HLATypeRaw, HLATypingDTO, HLATypingRawDTO)
+    HLATypeRaw, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
