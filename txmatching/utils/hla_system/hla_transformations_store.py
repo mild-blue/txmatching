@@ -24,12 +24,11 @@ logger = logging.getLogger(__name__)
 
 def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
         hla_antibodies_raw: List[HLAAntibodyRawModel],
-        # TODOO: add issue
-        # TODO: replace logging with storing parsing errors in db along with patient medical id
+        # TODO: https://github.com/mild-blue/txmatching/issues/496 replace logging with storing in db along
+        #  with patient medical id. Change it also in other places.
         logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
 ) -> HLAAntibodiesDTO:
     # 1. preprocess raw codes (their count can increase)
-    # TODOO: refactor
     @dataclass
     class HLAAntibodyPreprocessedDTO:
         raw_code: str
@@ -42,29 +41,31 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
         for preprocessed_raw_code in preprocess_hla_code_in(hla_antibody_raw.raw_code)
     ]
 
-    # TODOO: comment
-    # TODOO: improvement: return the rest at least
-    grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies_preprocessed, key=lambda x: x.raw_code),
-                                               key=lambda x: x.raw_code)
-    for hla_code_raw, antibody_group in grouped_hla_antibodies:
+    # 2. parse preprocessed codes and keep only valid ones
+    grouped_hla_antibodies = itertools.groupby(
+        sorted(hla_antibodies_preprocessed, key=lambda x: x.raw_code),
+        key=lambda x: x.raw_code
+    )
+    hla_antibodies_parsed = []
+    for raw_code, antibody_group in grouped_hla_antibodies:
+        # Antibodies with the same raw code does need to have the same cutoff
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
         if len(cutoffs) > 1:
-            _store_parsing_error(hla_code_raw, HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY)
-            hla_antibodies_preprocessed = []
+            _store_parsing_error(raw_code, HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY)
+            continue
 
-    # 2. parse preprocessed codes and keep only valid ones
-    hla_antibodies_parsed = []
-    for hla_antibody in hla_antibodies_preprocessed:
-        code = parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.raw_code)
-        if code is not None:
-            hla_antibodies_parsed.append(
-                HLAAntibody(
-                    raw_code=hla_antibody.raw_code,
-                    code=code,
-                    mfi=hla_antibody.mfi,
-                    cutoff=hla_antibody.cutoff,
+        # Parse antibodies and keep only valid ones
+        for hla_antibody in antibody_group:
+            code = parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.raw_code)
+            if code is not None:
+                hla_antibodies_parsed.append(
+                    HLAAntibody(
+                        raw_code=hla_antibody.raw_code,
+                        code=code,
+                        mfi=hla_antibody.mfi,
+                        cutoff=hla_antibody.cutoff,
+                    )
                 )
-            )
 
     # 3. filter antibodies over cutoff and split to groups
     hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(hla_antibodies_parsed, logger_with_patient)

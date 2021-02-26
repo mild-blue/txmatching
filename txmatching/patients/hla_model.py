@@ -51,7 +51,7 @@ class HLAPerGroup(PersistentlyHashable):
 
 @dataclass
 class HLATyping(PersistentlyHashable):
-    # TODOO: remove the hla_types_list (this is in db) (maybe)
+    # TODO: https://github.com/mild-blue/txmatching/issues/497 change the hla_types_list
     hla_types_list: List[HLAType] = field(default_factory=list)
     hla_per_groups: List[HLAPerGroup] = field(default_factory=list)
 
@@ -122,6 +122,7 @@ class AntibodiesPerGroup(PersistentlyHashable):
 
 @dataclass
 class HLAAntibodies(PersistentlyHashable):
+    # TODO: https://github.com/mild-blue/txmatching/issues/497 change the hla_antibodies_list
     hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
     hla_antibodies_per_groups: List[AntibodiesPerGroup] = field(default_factory=list)
 
