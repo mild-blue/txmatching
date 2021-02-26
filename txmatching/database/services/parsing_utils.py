@@ -7,7 +7,6 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto impo
 from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.patients.patient import TxmEvent
-from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 
 
 def parse_date_to_datetime(date: Optional[str]) -> Optional[datetime]:

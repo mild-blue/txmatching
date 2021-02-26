@@ -23,8 +23,7 @@ from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, HLAAntibodyRawModel, ParsingErrorModel,
     RecipientAcceptableBloodModel, RecipientModel)
-from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
-                                           HLATyping)
+from txmatching.patients.hla_model import HLAAntibodies, HLATyping
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters

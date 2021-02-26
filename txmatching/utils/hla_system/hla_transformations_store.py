@@ -69,7 +69,9 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
                 )
 
     # 3. filter antibodies over cutoff and split to groups
-    hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(hla_antibodies_parsed, logger_with_patient)
+    hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(
+        hla_antibodies_parsed, logger_with_patient
+    )
 
     return HLAAntibodiesDTO(
         hla_antibodies_list=hla_antibodies_parsed,

@@ -1,7 +1,7 @@
 import itertools
 import logging
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, List, Union
 
 from txmatching.utils.enums import (HLA_GROUP_SPLIT_CODE_REGEX,

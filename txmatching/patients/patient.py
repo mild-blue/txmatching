@@ -7,7 +7,6 @@ from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 

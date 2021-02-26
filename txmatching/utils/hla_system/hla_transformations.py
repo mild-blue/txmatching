@@ -137,7 +137,7 @@ def parse_hla_raw_code(hla_raw_code: str) -> str:
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not parsing_result.maybe_hla_code:
         raise ValueError(f'HLA code processing of {hla_raw_code} was not successful: {parsing_result.result_detail}')
-    elif parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:
+    if parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:
         logger.warning(
             f'HLA code processing of {hla_raw_code} was successful to {parsing_result.maybe_hla_code} with warning: '
             f'{parsing_result.result_detail}')
