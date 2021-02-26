@@ -93,15 +93,15 @@ class Configuration:
         """
         Compare list fields as sets
         """
-        for field in dataclasses.fields(self):
-            if field.compare:
-                val1 = getattr(self, field.name, None)
-                val2 = getattr(other, field.name, None)
+        for fld in dataclasses.fields(self):
+            if fld.compare:
+                val1 = getattr(self, fld.name, None)
+                val2 = getattr(other, fld.name, None)
 
-                if field.metadata.get(COMPARISON_MODE, None) == ComparisonMode.Set:
+                if fld.metadata.get(COMPARISON_MODE, None) == ComparisonMode.Set:
                     if set(val1) != set(val2):
                         return False
-                elif field.metadata.get(COMPARISON_MODE, None) == ComparisonMode.Smaller:
+                elif fld.metadata.get(COMPARISON_MODE, None) == ComparisonMode.Smaller:
                     if val1 > val2:
                         return False
                 else:
