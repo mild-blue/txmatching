@@ -1,6 +1,3 @@
-from tests.solvers.best_solution_use_split_resolution_true import (
-    BEST_SOLUTION_USE_SPLIT_RESOLUTION_TRUE,
-    get_donor_recipient_pairs_from_solution)
 from tests.test_utilities.populate_db import (PATIENT_DATA_OBFUSCATED,
                                               create_or_overwrite_txm_event)
 from tests.test_utilities.prepare_app import DbTests
@@ -43,17 +40,6 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         configuration = Configuration(max_number_of_distinct_countries_in_round=3)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
         self.assertEqual(1, len(solutions))
-
-    def test_solve_from_example_dataset(self):
-        txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
-        txm_event = get_txm_event_complete(txm_event_db_id)
-        configuration = Configuration(use_split_resolution=True,
-                                      max_matchings_to_store_in_db=1000)
-        solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-
-        self.assertEqual(947, len(solutions))
-        self.assertSetEqual(BEST_SOLUTION_USE_SPLIT_RESOLUTION_TRUE,
-                            get_donor_recipient_pairs_from_solution(solutions[0].matching_pairs))
 
     def test_with_sequence_length_limit(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))

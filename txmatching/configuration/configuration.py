@@ -79,7 +79,7 @@ class Configuration:
         metadata={COMPARISON_MODE: ComparisonMode.Set}
     )
     max_matchings_to_show_to_viewer: int = field(default=10, compare=False)
-    max_number_of_matchings: int = field(default=10,
+    max_number_of_matchings: int = field(default=100,
                                          compare=True,
                                          metadata={COMPARISON_MODE: ComparisonMode.Smaller})
     max_matchings_in_all_solutions_solver: int = field(default=10000,
