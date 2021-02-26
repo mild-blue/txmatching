@@ -962,9 +962,9 @@ definitions:
             patients_checked:
                 type: integer
         required:
-            - parsing_errors
-            - patients_changed
-            - patients_checked
+        - parsing_errors
+        - patients_changed
+        - patients_checked
         type: object
     Recipient:
         properties:
@@ -1839,21 +1839,21 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
-                - bearer: [ ]
+            -   bearer: []
             tags:
-                - patients
+            - patients
     /v1/txm-event/{txm_event_id}/patients/recompute-parsing:
         parameters:
-            - in: path
-              name: txm_event_id
-              required: true
-              type: integer
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
         post:
             description: Endpoint that lets an ADMIN recompute parsed antigens and
                 antibodies for all patients in the given txm event.
             operationId: post_recompute_parsing
             responses:
-                '201':
+                '200':
                     description: Returns the recomputation statistics.
                     schema:
                         $ref: '#/definitions/PatientsRecomputeParsingSuccess'
@@ -1879,18 +1879,18 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
-                - bearer: [ ]
+            -   bearer: []
             tags:
-                - patients
+            - patients
     /v1/txm-event/{txm_event_id}/reports/{matching_id}:
         get:
             operationId: get_report
             parameters:
-                - description: Id of matching that was chosen
-                  in: path
-                  name: matching_id
-                  required: true
-                  type: integer
+            -   description: Id of matching that was chosen
+                in: path
+                name: matching_id
+                required: true
+                type: integer
             -   description: Number of matchings with lower score than chosen to include
                     in report.
                 in: query

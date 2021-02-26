@@ -40,7 +40,7 @@ class TestMatchingApi(DbTests):
         self.assertEqual(1, len(UploadedDataModel.query.all()))
         self.assertSetEqual({BloodGroup.ZERO, BloodGroup.A},
                             set(blood for blood in txm_event.active_recipients_dict[1].acceptable_blood_groups))
-        self.assertEqual(HLATyping(hla_types_list=[HLAType('A1'), HLAType('A23'), HLAType('INVALID')]),
+        self.assertEqual(HLATyping(hla_types_list=[HLAType('A1'), HLAType('A23')]),
                          txm_event.active_donors_dict[1].parameters.hla_typing)
         self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_codes(txm_event.active_donors_dict[1]))
         self.assertSetEqual({'A9'}, _get_hla_antibodies_codes(txm_event.active_recipients_dict[1]))

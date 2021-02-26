@@ -155,7 +155,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         # - or with old hla antibodies from db and new cutoff (if only cutoff is specified)
         hla_antibodies_raw_source = recipient_update_dto.hla_antibodies.hla_antibodies_list \
             if recipient_update_dto.hla_antibodies is not None \
-            else old_recipient_model.hla_antibodies_raw.hla_antibodies_list
+            else old_recipient_model.hla_antibodies_raw
         new_hla_antibody_raw_models = [
             HLAAntibodyRawModel(
                 recipient_id=recipient_update_dto.db_id,

@@ -243,7 +243,7 @@ class RecomputeParsing(Resource):
         description='Endpoint that lets an ADMIN recompute parsed antigens and antibodies for '
                     'all patients in the given txm event.'
     )
-    @patient_api.response(code=201, model=PatientsRecomputeParsingSuccessJson,
+    @patient_api.response(code=200, model=PatientsRecomputeParsingSuccessJson,
                           description='Returns the recomputation statistics.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')

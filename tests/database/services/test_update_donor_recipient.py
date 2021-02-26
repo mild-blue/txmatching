@@ -26,8 +26,8 @@ class TestUpdateDonorRecipient(DbTests):
 
         self.assertSetEqual({'0', 'A'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
         self.assertSetEqual({'B7', 'DQ6', 'DQ5'},
-                            {hla_antibody.code for hla_antibody in RecipientModel.query.get(1).hla_antibodies})
-        # TODOO fix
+                            {hla_antibody['code'] for hla_antibody in
+                             RecipientModel.query.get(1).hla_antibodies['hla_antibodies_list']})
         self.assertFalse(
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
         update_recipient(RecipientUpdateDTO(
@@ -47,7 +47,8 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(1, len(configs))
 
         self.assertSetEqual({'AB'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
-        self.assertSetEqual({'B42', 'DQ6', 'DQA1'}, {code.code for code in RecipientModel.query.get(1).hla_antibodies})
+        self.assertSetEqual({'B42', 'DQ6', 'DQA1'}, {hla_antibody['code'] for hla_antibody in
+                                                     RecipientModel.query.get(1).hla_antibodies['hla_antibodies_list']})
         self.assertTrue(
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
         self.assertSetEqual({'A11', 'DQ6', 'DQA1'},
@@ -57,14 +58,13 @@ class TestUpdateDonorRecipient(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         new_cutoff = 8000
         self.assertSetEqual({2000},
-                            {hla_antibody.cutoff for hla_antibody in RecipientModel.query.get(1).hla_antibodies})
-        # TODOO fix
+                            {hla_antibody.cutoff for hla_antibody in RecipientModel.query.get(1).hla_antibodies_raw})
         update_recipient(RecipientUpdateDTO(
             cutoff=new_cutoff,
             db_id=1
         ), txm_event_db_id)
         self.assertEqual(new_cutoff, RecipientModel.query.get(1).recipient_cutoff)
-        self.assertSetEqual({new_cutoff}, {code.cutoff for code in RecipientModel.query.get(1).hla_antibodies})
+        self.assertSetEqual({new_cutoff}, {code.cutoff for code in RecipientModel.query.get(1).hla_antibodies_raw})
 
     def test_update_donor(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
