@@ -91,7 +91,7 @@ def find_configuration_db_id_for_configuration(configuration: Configuration,
 
     for config_model in config_models:
         config_from_model = configuration_from_dict(config_model.parameters)
-        if configuration == config_from_model:
+        if configuration.comparable(config_from_model):
             logger.debug('Found config for configuration')
             return config_model.id
 

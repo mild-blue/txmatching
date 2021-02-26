@@ -19,7 +19,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
         configuration = Configuration(solver_constructor_name='ILPSolver')
-        self.assertEqual(configuration.max_number_of_solutions_for_ilp,
+        self.assertEqual(configuration.max_number_of_matchings_to_find,
                          len(list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)))
 
     def test_solve_from_configuration(self):
@@ -29,7 +29,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             solver_constructor_name='ILPSolver',
             manual_donor_recipient_scores=[
                 ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=4, score=1.0)])
-        self.assertEqual(configuration.max_number_of_solutions_for_ilp,
+        self.assertEqual(configuration.max_number_of_matchings_to_find,
                          len(list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)))
 
     def test_solve_from_configuration_multiple_countries_old_version(self):
@@ -63,7 +63,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             solver_constructor_name='ILPSolver',
             max_number_of_distinct_countries_in_round=3)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-        self.assertEqual(configuration.max_number_of_solutions_for_ilp, len(solutions))
+        self.assertEqual(configuration.max_number_of_matchings_to_find, len(solutions))
 
     def test_solve_from_example_dataset(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
@@ -73,7 +73,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             use_split_resolution=True,
             max_matchings_to_store_in_db=1000)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-        self.assertEqual(configuration.max_number_of_solutions_for_ilp, len(solutions))
+        self.assertEqual(configuration.max_number_of_matchings_to_find, len(solutions))
         self.assertSetEqual(BEST_SOLUTION_USE_SPLIT_RESOLUTION_TRUE,
                             get_donor_recipient_pairs_from_solution(solutions[0].matching_pairs))
 

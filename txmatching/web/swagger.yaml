@@ -97,13 +97,10 @@ definitions:
                 example: 10
                 type: integer
             max_matchings_to_store_in_db:
-                example: 100
+                example: 10
                 type: integer
             max_number_of_distinct_countries_in_round:
                 example: 3
-                type: integer
-            max_number_of_solutions_for_ilp:
-                example: 5
                 type: integer
             max_sequence_length:
                 example: 4
