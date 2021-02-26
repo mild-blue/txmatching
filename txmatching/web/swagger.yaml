@@ -1887,10 +1887,10 @@ paths:
             operationId: get_report
             parameters:
                 - description: Id of matching that was chosen
-                in: path
-                name: matching_id
-                required: true
-                type: integer
+                  in: path
+                  name: matching_id
+                  required: true
+                  type: integer
             -   description: Number of matchings with lower score than chosen to include
                     in report.
                 in: query

@@ -27,6 +27,7 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertSetEqual({'0', 'A'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
         self.assertSetEqual({'B7', 'DQ6', 'DQ5'},
                             {hla_antibody.code for hla_antibody in RecipientModel.query.get(1).hla_antibodies})
+        # TODOO fix
         self.assertFalse(
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
         update_recipient(RecipientUpdateDTO(
@@ -57,6 +58,7 @@ class TestUpdateDonorRecipient(DbTests):
         new_cutoff = 8000
         self.assertSetEqual({2000},
                             {hla_antibody.cutoff for hla_antibody in RecipientModel.query.get(1).hla_antibodies})
+        # TODOO fix
         update_recipient(RecipientUpdateDTO(
             cutoff=new_cutoff,
             db_id=1

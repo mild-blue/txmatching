@@ -111,8 +111,9 @@ def _recipient_upload_dto_to_recipient_model(
 
 def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
     hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
-    # for the case that the db commit would be called during parsing, we need to have valid value in hla_typing
-    patient_model.hla_typing = dataclasses.asdict(HLATypingDTO())
+    # for the case that the db commit would be called during parsing, we need to have some value set in hla_typing
+    # because this db column is not nullable
+    patient_model.hla_typing = dict()
     patient_model.hla_typing = dataclasses.asdict(
         parse_hla_typing_raw_and_store_parsing_error_in_db(
             hla_typing_raw
