@@ -10,15 +10,16 @@ from txmatching.utils.enums import Sex
 
 @dataclass
 class HLATypingDTO:
-    hla_types_list: List[HLAType] = field(default_factory=list)
-    hla_per_groups: List[HLAPerGroup] = field(default_factory=list)
+    # The field does not have default value because want dacite to raise exception if data stored in db are not valid
+    hla_types_list: List[HLAType]
+    hla_per_groups: List[HLAPerGroup]
 
 
 @dataclass
 class PatientParametersDTO:
     blood_group: BloodGroup
     country_code: Country
-    hla_typing: HLATypingDTO = HLATypingDTO()
+    hla_typing: HLATypingDTO
     sex: Optional[Sex] = None
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None

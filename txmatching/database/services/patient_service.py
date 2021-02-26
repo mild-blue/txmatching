@@ -82,6 +82,9 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
 def get_hla_antibodies_from_hla_antibodies_dto(
         antibodies_dto: HLAAntibodiesDTO
 ) -> HLAAntibodies:
+    if antibodies_dto.hla_antibodies_list is None or antibodies_dto.hla_antibodies_per_groups is None:
+        raise ValueError(f'Parsed antibodies have invalid format. '
+                         f'Running recompute-parsing api could help: ${antibodies_dto}')
     return HLAAntibodies(
         hla_antibodies_list=antibodies_dto.hla_antibodies_list,
         hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups
@@ -91,6 +94,9 @@ def get_hla_antibodies_from_hla_antibodies_dto(
 def get_hla_typing_from_hla_typing_model(
         hla_typing_dto: HLATypingDTO
 ) -> HLATyping:
+    if hla_typing_dto.hla_types_list is None or hla_typing_dto.hla_per_groups is None:
+        raise ValueError(f'Parsed antigens have invalid format. '
+                         f'Running recompute-parsing api could help: ${hla_typing_dto}')
     return HLATyping(
         hla_types_list=hla_typing_dto.hla_types_list,
         hla_per_groups=hla_typing_dto.hla_per_groups,

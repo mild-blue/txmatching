@@ -25,5 +25,6 @@ class HLAAntibodiesUpdateDTO:
 
 @dataclass
 class HLAAntibodiesDTO:
-    hla_antibodies_list: List[HLAAntibody] = field(default_factory=list)
-    hla_antibodies_per_groups: List[AntibodiesPerGroup] = field(default_factory=list)
+    # The field does not have default value because want dacite to raise exception if data stored in db are not valid
+    hla_antibodies_list: List[HLAAntibody]
+    hla_antibodies_per_groups: List[AntibodiesPerGroup]
