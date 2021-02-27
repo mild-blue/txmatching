@@ -58,17 +58,21 @@ ConfigurationJson = matching_api.model(
             required=False,
             example=_default_configuration.max_matchings_to_show_to_viewer
         ),
-        'max_matchings_to_store_in_db': fields.Integer(
+        'max_number_of_matchings': fields.Integer(
             required=False,
             example=_default_configuration.max_number_of_matchings
         ),
-        'max_allowed_number_of_matchings': fields.Integer(
+        'max_matchings_in_all_solutions_solver': fields.Integer(
             required=False,
             example=_default_configuration.max_matchings_in_all_solutions_solver
         ),
-        'max_allowed_number_of_cycles_to_be_searched': fields.Integer(
+        'max_cycles_in_all_solutions_solver': fields.Integer(
             required=False,
             example=_default_configuration.max_cycles_in_all_solutions_solver
+        ),
+        'max_matchings_in_ilp_solver': fields.Integer(
+            required=False,
+            example=_default_configuration.max_matchings_in_ilp_solver
         )
     }
 )

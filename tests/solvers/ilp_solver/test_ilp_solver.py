@@ -49,7 +49,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         for max_country_count in range(1, 3):
             configuration = Configuration(
                 solver_constructor_name='ILPSolver',
-                max_number_of_distinct_countries_in_round=max_country_count)
+                max_number_of_distinct_countries_in_round=max_country_count,
+                max_number_of_matchings=1)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertLessEqual(1, len(solutions))
             for round in solutions[0].get_rounds():
@@ -70,7 +71,10 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         for max_sequence_length in range(1, 5):
             configuration = Configuration(
                 solver_constructor_name='ILPSolver',
-                use_split_resolution=True, max_sequence_length=max_sequence_length, max_cycle_length=0)
+                use_split_resolution=True,
+                max_sequence_length=max_sequence_length,
+                max_cycle_length=0,
+                max_number_of_matchings=3)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertLessEqual(1, len(solutions),
                                  f'Failed for {max_sequence_length}')
@@ -85,8 +89,11 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_cycle_length in range(2, 5):
-            configuration = Configuration(solver_constructor_name='ILPSolver', use_split_resolution=True,
-                                          max_cycle_length=max_cycle_length, max_sequence_length=0)
+            configuration = Configuration(solver_constructor_name='ILPSolver',
+                                          use_split_resolution=True,
+                                          max_cycle_length=max_cycle_length,
+                                          max_sequence_length=0,
+                                          max_number_of_matchings=3)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertLessEqual(3, len(solutions),
                                  f'Failed for {max_cycle_length}')

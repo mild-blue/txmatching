@@ -47,8 +47,13 @@ class Configuration:
     forbidden_country_combinations: Pairs of countries which do not support mutual transplantations.
     manual_donor_recipient_scores: Manual setting of score for tuple of recipient and donor.
     max_matchings_to_show_to_viewer: Viewer cannot see all the details of the app.
-    max_matchings_to_show_to_store_in_db: Max matchings we keep in database and show to EDITOR.
-    max_allowed_number_of_matchings: Max allowed number of matchings the user is allowed to work with.
+    max_number_of_matchings: Max matchings we keep in database and show to EDITOR.
+    max_matchings_in_all_solutions_solver: Max allowed number of matchings all solutions solver searches for (to limit
+     the duration of the computation)
+    max_matchings_in_all_solutions_solver: Max allowed number of cycles all solutions solver searches for in the
+    initial step of the comutation (to limit the duration of the computation)
+    max_matchings_in_all_solutions_solver: Max allowed number of matchings ilp solver searches for (to limit
+     the duration of the computation)
     """
     scorer_constructor_name: str = 'HLAAdditiveScorer'
     solver_constructor_name: str = 'AllSolutionsSolver'
@@ -72,8 +77,8 @@ class Configuration:
         default_factory=list,
         metadata={COMPARISON_MODE: ComparisonMode.Set}
     )
-    max_matchings_to_show_to_viewer: int = field(default=10, compare=False)
-    max_number_of_matchings: int = field(default=100,
+    max_matchings_to_show_to_viewer: int = field(default=5, compare=False)
+    max_number_of_matchings: int = field(default=5,
                                          compare=True,
                                          metadata={COMPARISON_MODE: ComparisonMode.Smaller})
     max_matchings_in_all_solutions_solver: int = field(default=10000,
@@ -82,6 +87,9 @@ class Configuration:
     max_cycles_in_all_solutions_solver: int = field(default=1000000,
                                                     compare=True,
                                                     metadata={COMPARISON_MODE: ComparisonMode.Smaller})
+    max_matchings_in_ilp_solver: int = field(default=20,
+                                             compare=True,
+                                             metadata={COMPARISON_MODE: ComparisonMode.Smaller})
 
     def comparable(self, other):
         """
