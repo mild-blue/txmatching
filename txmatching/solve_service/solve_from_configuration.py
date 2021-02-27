@@ -1,6 +1,6 @@
 import heapq
 import logging
-from typing import Iterator, List, Tuple
+from typing import Iterator, List, Optional, Tuple
 
 from txmatching.configuration.configuration import Configuration
 from txmatching.filters.filter_base import FilterBase
@@ -47,7 +47,7 @@ def _solve_from_configuration_unsafe(configuration: Configuration, txm_event: Tx
 def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
                                matching_filter: FilterBase,
                                configuration: Configuration
-                               ) -> Tuple[List[MatchingWithScore], bool, int]:
+                               ) -> Tuple[List[MatchingWithScore], bool, Optional[int]]:
     matchings_heap = []
     all_results_found = True
     i = -1
@@ -80,4 +80,9 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
     for idx, matching_in_good_order in enumerate(matchings):
         matching_in_good_order.set_order_id(idx + 1)
 
-    return matchings, all_results_found, i + 1
+    if configuration.solver_constructor_name == 'ILPSolver':
+        result_count = None
+    else:
+        result_count = i + 1
+
+    return matchings, all_results_found, result_count
