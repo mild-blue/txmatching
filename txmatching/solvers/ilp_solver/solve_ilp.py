@@ -29,7 +29,10 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
 
     _add_static_constraints(data_and_configuration, ilp_model, mapping)
     solutions = []
-    for _ in range(data_and_configuration.configuration.max_number_of_solutions_for_ilp):
+
+    matchings_to_search_for = min(data_and_configuration.configuration.max_number_of_matchings,
+                                  data_and_configuration.configuration.max_matchings_in_ilp_solver)
+    for _ in range(matchings_to_search_for):
         while True:
             _solve_with_logging(ilp_model)
 

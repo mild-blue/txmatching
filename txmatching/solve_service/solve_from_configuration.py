@@ -62,17 +62,17 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
             )
 
             heapq.heappush(matchings_heap, matching_entry)
-            if len(matchings_heap) > configuration.max_matchings_to_store_in_db:
+            if len(matchings_heap) > configuration.max_number_of_matchings:
                 heapq.heappop(matchings_heap)
 
             if i % 100000 == 0:
                 logger.info(f'Processed {i} matchings')
 
-            if i == configuration.max_allowed_number_of_matchings - 1:
+            if i == configuration.max_matchings_in_all_solutions_solver - 1:
                 logger.error(
-                    f'Max number of matchings {configuration.max_allowed_number_of_matchings} was reached. '
-                    f'Returning only best {configuration.max_matchings_to_store_in_db} matchings from '
-                    f'{configuration.max_allowed_number_of_matchings} found up to now.')
+                    f'Max number of matchings {configuration.max_matchings_in_all_solutions_solver} was reached. '
+                    f'Returning only best {configuration.max_number_of_matchings} matchings from '
+                    f'{configuration.max_matchings_in_all_solutions_solver} found up to now.')
                 all_results_found = False
                 break
 

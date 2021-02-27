@@ -17,13 +17,13 @@ export interface ConfigurationGenerated {
     blood_group_compatibility_bonus?: number;
     forbidden_country_combinations?: Array<ForbiddenCountryCombinationGenerated>;
     manual_donor_recipient_scores?: Array<ManualRecipientDonorScoreGenerated>;
-    max_allowed_number_of_cycles_to_be_searched?: number;
-    max_allowed_number_of_matchings?: number;
     max_cycle_length?: number;
+    max_cycles_in_all_solutions_solver?: number;
+    max_matchings_in_all_solutions_solver?: number;
+    max_matchings_in_ilp_solver?: number;
     max_matchings_to_show_to_viewer?: number;
-    max_matchings_to_store_in_db?: number;
     max_number_of_distinct_countries_in_round?: number;
-    max_number_of_solutions_for_ilp?: number;
+    max_number_of_matchings?: number;
     max_sequence_length?: number;
     maximum_total_score?: number;
     minimum_total_score?: number;
