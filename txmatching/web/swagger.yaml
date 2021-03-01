@@ -982,14 +982,20 @@ definitions:
                 items:
                     type: object
                 type: array
-            patients_changed:
+            patients_changed_antibodies:
                 type: integer
-            patients_checked:
+            patients_changed_antigens:
+                type: integer
+            patients_checked_antibodies:
+                type: integer
+            patients_checked_antigens:
                 type: integer
         required:
         - parsing_errors
-        - patients_changed
-        - patients_checked
+        - patients_changed_antibodies
+        - patients_changed_antigens
+        - patients_checked_antibodies
+        - patients_checked_antigens
         type: object
     Recipient:
         properties:

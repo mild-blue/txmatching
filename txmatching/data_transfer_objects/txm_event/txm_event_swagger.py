@@ -107,8 +107,10 @@ PatientUploadSuccessJson = txm_event_api.model('PatientUploadSuccessResponse', {
 })
 
 PatientsRecomputeParsingSuccessJson = txm_event_api.model('PatientsRecomputeParsingSuccess', {
-    'patients_checked': fields.Integer(required=True),
-    'patients_changed': fields.Integer(required=True),
+    'patients_checked_antigens': fields.Integer(required=True),
+    'patients_changed_antigens': fields.Integer(required=True),
+    'patients_checked_antibodies': fields.Integer(required=True),
+    'patients_changed_antibodies': fields.Integer(required=True),
     'parsing_errors': fields.List(required=True, cls_or_instance=fields.Raw()),
 })
 

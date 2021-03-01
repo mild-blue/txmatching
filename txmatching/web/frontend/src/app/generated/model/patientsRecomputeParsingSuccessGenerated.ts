@@ -13,7 +13,9 @@
 
 export interface PatientsRecomputeParsingSuccessGenerated { 
     parsing_errors: Array<object>;
-    patients_changed: number;
-    patients_checked: number;
+    patients_changed_antibodies: number;
+    patients_changed_antigens: number;
+    patients_checked_antibodies: number;
+    patients_checked_antigens: number;
 }
 
