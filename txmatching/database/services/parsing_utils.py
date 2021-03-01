@@ -7,7 +7,6 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto impo
 from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.patients.patient import TxmEvent
-from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 
 
 def parse_date_to_datetime(date: Optional[str]) -> Optional[datetime]:
@@ -18,10 +17,6 @@ def parse_date_to_datetime(date: Optional[str]) -> Optional[datetime]:
     except (ValueError, TypeError) as ex:
         raise InvalidArgumentException(f'Invalid date "{date}". It must be in format "YYYY-MM-DD", e.g.,'
                                        ' "2020-12-31".') from ex
-
-
-def get_hla_code(code: Optional[str], raw_code: str) -> Optional[str]:
-    return code if code is not None else parse_hla_raw_code(raw_code)
 
 
 def check_existing_ids_for_duplicates(txm_event: TxmEvent, donors: List[DonorUploadDTO],

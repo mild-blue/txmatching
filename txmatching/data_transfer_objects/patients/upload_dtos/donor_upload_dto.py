@@ -4,8 +4,6 @@ from typing import List, Optional
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
-from txmatching.utils.hla_system.hla_transformations import \
-    preprocess_hla_codes_in
 
 
 @dataclass
@@ -20,6 +18,3 @@ class DonorUploadDTO:
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None
     year_of_birth: Optional[int] = None
-
-    def __post_init__(self):
-        self.hla_typing_preprocessed = preprocess_hla_codes_in(self.hla_typing)

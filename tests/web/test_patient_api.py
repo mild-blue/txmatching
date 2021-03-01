@@ -7,12 +7,15 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
+                                                    ParsingErrorModel,
                                                     UploadedFileModel)
 from txmatching.patients.hla_model import HLAAntibodies, HLATyping
 from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
+from txmatching.utils.hla_system.hla_code_processing_result_detail import \
+    HlaCodeProcessingResultDetail
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
 
 
@@ -151,7 +154,6 @@ class TestPatientService(DbTests):
 
         self.assertEqual(donor_medical_id, txm_event.all_donors[0].medical_id)
 
-
     def test_invalid_cuttoff_values(self):
         txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
         donor_medical_id = 'donor_test'
@@ -187,7 +189,15 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
 
-        self.assertEqual(400, res.status_code)
+        self.assertEqual(200, res.status_code)
+
+        errors = ParsingErrorModel.query.all()
+        self.assertEqual(1, len(errors))
+        self.assertEqual('TEST', errors[0].hla_code)
+        self.assertEqual(
+            HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
+            errors[0].hla_code_processing_result_detail
+        )
 
     def test_donor_recipient_pair_deletion(self):
         txm_event_db_id = self.fill_db_with_patients(
@@ -301,7 +311,7 @@ class TestPatientService(DbTests):
         self.assertEqual(donor.parameters.year_of_birth, None)
         self.assertEqual(donor.active, False)
 
-    def test_update_recipient(self):  # TODOO
+    def test_update_recipient(self):
         txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         recipient_db_id = 10
@@ -347,7 +357,7 @@ class TestPatientService(DbTests):
         # HACK: This should equal to [BloodGroup.A, BloodGroup.B, BloodGroup.AB]
         # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum
         self.assertCountEqual(recipient.acceptable_blood_groups, ['A', 'B', 'AB'])
-        self.assertEqual(recipient.hla_antibodies, HLAAntibodies())
+        self.assertEqual(recipient.hla_antibodies, HLAAntibodies([]))
         self.assertEqual(recipient.recipient_requirements, RecipientRequirements(True, True, True))
         self.assertEqual(recipient.recipient_cutoff, 42)
 
@@ -393,7 +403,7 @@ class TestPatientService(DbTests):
         # HACK: This should equal to [BloodGroup.ZERO]
         # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum
         self.assertCountEqual(recipient.acceptable_blood_groups, ['0'])
-        self.assertEqual(recipient.hla_antibodies, HLAAntibodies())
+        self.assertEqual(recipient.hla_antibodies, HLAAntibodies([]))
         self.assertEqual(recipient.recipient_requirements, RecipientRequirements(False, False, False))
         self.assertEqual(recipient.recipient_cutoff, 42)  # Cutoff is unchanged
 

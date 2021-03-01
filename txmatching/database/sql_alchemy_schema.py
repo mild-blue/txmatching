@@ -1,4 +1,5 @@
 import dataclasses
+from typing import List
 
 from sqlalchemy import ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import backref
@@ -55,8 +56,8 @@ class TxmEventModel(db.Model):
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     name = db.Column(db.TEXT, unique=True, nullable=False)
-    configs = db.relationship('ConfigModel', backref='txm_event', passive_deletes=True)
-    donors = db.relationship('DonorModel', backref='txm_event', passive_deletes=True)
+    configs = db.relationship('ConfigModel', backref='txm_event', passive_deletes=True)  # type: List[ConfigModel]
+    donors = db.relationship('DonorModel', backref='txm_event', passive_deletes=True)  # type: List[DonorModel]
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
@@ -71,6 +72,7 @@ class RecipientModel(db.Model):
     medical_id = db.Column(db.TEXT, unique=False, nullable=False)
     country = db.Column(db.Enum(Country), unique=False, nullable=False)
     blood = db.Column(db.TEXT, unique=False, nullable=False)
+    hla_typing_raw = db.Column(db.JSON, unique=False, nullable=False)
     hla_typing = db.Column(db.JSON, unique=False, nullable=False)  # HLATyping is model of the JSON
     recipient_requirements = db.Column(db.JSON, unique=False, nullable=False,
                                        default=dataclasses.asdict(RecipientRequirements()))
@@ -85,10 +87,14 @@ class RecipientModel(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
     acceptable_blood = db.relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True,
-                                       lazy='joined')
-    hla_antibodies = db.relationship('RecipientHLAAntibodyModel', backref='recipient', passive_deletes=True,
-                                     lazy='joined')
+                                       lazy='joined')  # type: List[RecipientAcceptableBloodModel]
+    hla_antibodies = db.Column(db.JSON, unique=False, nullable=False)
+    hla_antibodies_raw = db.relationship('HLAAntibodyRawModel', backref='recipient', passive_deletes=True,
+                                         lazy='joined')  # type: List[HLAAntibodyRawModel]
     UniqueConstraint('medical_id', 'txm_event_id')
+
+    def __repr__(self):
+        return f'<RecipientModel {self.id} (medical_id={self.medical_id})>'
 
 
 class DonorModel(db.Model):
@@ -100,6 +106,7 @@ class DonorModel(db.Model):
     medical_id = db.Column(db.TEXT, unique=False, nullable=False)
     country = db.Column(db.Enum(Country), unique=False, nullable=False)
     blood = db.Column(db.TEXT, unique=False, nullable=False)
+    hla_typing_raw = db.Column(db.JSON, unique=False, nullable=False)
     hla_typing = db.Column(db.JSON, unique=False, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, nullable=False)
     donor_type = db.Column(db.Enum(DonorType), unique=False, nullable=False)
@@ -116,6 +123,9 @@ class DonorModel(db.Model):
                                 lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')
 
+    def __repr__(self):
+        return f'<DonorModel {self.id} (medical_id={self.medical_id})>'
+
 
 class RecipientAcceptableBloodModel(db.Model):
     __tablename__ = 'recipient_acceptable_blood'
@@ -129,8 +139,8 @@ class RecipientAcceptableBloodModel(db.Model):
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
 
-class RecipientHLAAntibodyModel(db.Model):
-    __tablename__ = 'recipient_hla_antibodies'
+class HLAAntibodyRawModel(db.Model):
+    __tablename__ = 'hla_antibody_raw'
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(Integer, primary_key=True, autoincrement=True, nullable=False)
@@ -138,10 +148,13 @@ class RecipientHLAAntibodyModel(db.Model):
     raw_code = db.Column(db.TEXT, unique=False, nullable=False)
     mfi = db.Column(db.Integer, unique=False, nullable=False)
     cutoff = db.Column(db.Integer, unique=False, nullable=False)
-    code = db.Column(db.TEXT, unique=False, nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+    def __repr__(self):
+        return f'<HLAAntibodyRawModel {self.id} ' \
+               f'(raw_code={self.raw_code}, mfi={self.mfi}, cutoff={self.cutoff})>'
 
 
 class AppUserModel(db.Model):

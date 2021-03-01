@@ -8,7 +8,8 @@ from dacite import Config, from_dict
 from flask import jsonify, request
 from flask_restx import Resource
 
-from txmatching.auth.auth_check import require_valid_txm_event_id
+from txmatching.auth.auth_check import require_role, require_valid_txm_event_id
+from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.auth.operation_guards.country_guard import (
     get_user_default_country, guard_user_country_access_to_donor,
@@ -29,12 +30,13 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
-    FailJson, PatientUploadSuccessJson)
+    FailJson, PatientsRecomputeParsingSuccessJson, PatientUploadSuccessJson)
 from txmatching.database.services.config_service import \
     get_latest_configuration_for_txm_event
 from txmatching.database.services.patient_service import (
-    delete_donor_recipient_pair, get_donor_recipient_pair, update_donor,
-    update_recipient)
+    delete_donor_recipient_pair, get_donor_recipient_pair,
+    recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
+    update_donor, update_recipient)
 from txmatching.database.services.patient_upload_service import (
     add_donor_recipient_pair, replace_or_add_patients_from_excel)
 from txmatching.database.services.txm_event_service import (
@@ -231,3 +233,26 @@ class AddPatientsFile(Resource):
             recipients_uploaded=sum(len(parsed_data_country.recipients) for parsed_data_country in parsed_data),
             donors_uploaded=sum(len(parsed_data_country.donors) for parsed_data_country in parsed_data))
         )
+
+
+@patient_api.route('/recompute-parsing', methods=['POST'])
+class RecomputeParsing(Resource):
+    @patient_api.doc(
+        body=None,
+        security='bearer',
+        description='Endpoint that lets an ADMIN recompute parsed antigens and antibodies for '
+                    'all patients in the given txm event.'
+    )
+    @patient_api.response(code=200, model=PatientsRecomputeParsingSuccessJson,
+                          description='Returns the recomputation statistics.')
+    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @patient_api.response(code=403, model=FailJson,
+                          description='Access denied. You do not have rights to access this endpoint.')
+    @patient_api.response(code=409, model=FailJson, description='Non-unique patients provided.')
+    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @require_role(UserRole.ADMIN)
+    @require_valid_txm_event_id()
+    def post(self, txm_event_id: int):
+        result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id)
+        return jsonify(result)

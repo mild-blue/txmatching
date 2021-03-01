@@ -7,7 +7,6 @@ from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
@@ -79,7 +78,7 @@ class Recipient(Patient, PersistentlyHashable):
     related_donor_db_id: DonorDbId
     acceptable_blood_groups: List[BloodGroup]
     recipient_cutoff: Optional[int] = None
-    hla_antibodies: HLAAntibodies = HLAAntibodies()
+    hla_antibodies: HLAAntibodies = HLAAntibodies([])
     recipient_requirements: RecipientRequirements = RecipientRequirements()
     waiting_since: Optional[datetime] = None
     previous_transplants: Optional[int] = None
@@ -130,11 +129,12 @@ def calculate_cutoff(hla_antibodies_list: List[HLAAntibody]) -> int:
     :return: Patient cutoff.
     """
     helper_raw_code = 'A1'
+    helper_code = 'A1'
     return max(hla_antibodies_list,
                key=lambda antibody: antibody.cutoff,
                default=HLAAntibody(
                    raw_code=helper_raw_code,
                    mfi=0,
                    cutoff=DEFAULT_CUTOFF,
-                   code=parse_hla_raw_code(helper_raw_code)
+                   code=helper_code
                )).cutoff

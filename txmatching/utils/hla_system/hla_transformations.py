@@ -125,18 +125,19 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
         return HlaCodeProcessingResult(None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
 
 
-def parse_hla_raw_code(hla_raw_code: str) -> Optional[str]:
+def parse_hla_raw_code(hla_raw_code: str) -> str:
     """
-    This method is partially redundant to parse_hla_raw_code_and_store_parsing_error_in_db so in case of update,
-    update it too.
+    This method is used in tests and should never be used in other code. For that, please use
+    parse_hla_raw_code_and_store_parsing_error_in_db. These two method are partially redundant so in case of update,
+    update the second one too.
     :param hla_raw_code:
-    :return:
+    :return: parsed raw code
     """
     logger.debug('Parsing HLA code')
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not parsing_result.maybe_hla_code:
-        logger.error(f'HLA code processing of {hla_raw_code} was not successful: {parsing_result.result_detail}')
-    elif parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:
+        raise ValueError(f'HLA code processing of {hla_raw_code} was not successful: {parsing_result.result_detail}')
+    if parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:
         logger.warning(
             f'HLA code processing of {hla_raw_code} was successful to {parsing_result.maybe_hla_code} with warning: '
             f'{parsing_result.result_detail}')
@@ -158,10 +159,6 @@ def preprocess_hla_code_in(hla_code_in: str) -> List[str]:
         return []
     else:
         return [hla_code_in]
-
-
-def preprocess_hla_codes_in(hla_codes_in: List[str]) -> List[str]:
-    return [parsed_code for hla_code_in in hla_codes_in for parsed_code in preprocess_hla_code_in(hla_code_in)]
 
 
 def get_broad_codes(hla_codes: List[str]) -> List[str]:

@@ -3,9 +3,11 @@ import dataclasses
 import logging
 from typing import Dict, List
 
+import dacite
+
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
-    HLATypingDTO
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
+    HLATypeRaw, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
@@ -16,18 +18,21 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.parsing_utils import (
-    check_existing_ids_for_duplicates, get_hla_code, parse_date_to_datetime)
+    check_existing_ids_for_duplicates, parse_date_to_datetime)
+from txmatching.database.services.patient_service import \
+    get_hla_antibodies_from_hla_antibodies_dto
 from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, get_txm_event_db_id_by_name,
     remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, RecipientAcceptableBloodModel, RecipientHLAAntibodyModel,
+    DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
     RecipientModel)
-from txmatching.patients.hla_model import HLAAntibody, HLAType
 from txmatching.patients.patient import DonorType, calculate_cutoff
 from txmatching.utils.country_enum import Country
-from txmatching.utils.hla_system.hla_transformations_store import \
-    parse_hla_raw_code_and_store_parsing_error_in_db
+from txmatching.utils.hla_system.hla_transformations_store import (
+    parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
+    parse_hla_typing_raw_and_add_parsing_error_to_db_session)
+from txmatching.utils.logging_tools import PatientAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -70,19 +75,6 @@ def _recipient_upload_dto_to_recipient_model(
         country_code: Country,
         txm_event_db_id: int
 ) -> RecipientModel:
-    hla_antibodies = [RecipientHLAAntibodyModel(
-        raw_code=hla_antibody.name,
-        code=parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.name),
-        cutoff=hla_antibody.cutoff,
-        mfi=hla_antibody.mfi
-    ) for hla_antibody in recipient.hla_antibodies_preprocessed]
-
-    transformed_hla_antibodies = [HLAAntibody(
-        raw_code=hla_antibody.raw_code,
-        mfi=hla_antibody.mfi,
-        code=get_hla_code(hla_antibody.code, hla_antibody.raw_code),
-        cutoff=hla_antibody.cutoff) for hla_antibody in hla_antibodies]
-
     acceptable_blood_groups = [] if recipient.acceptable_blood_groups is None \
         else recipient.acceptable_blood_groups
 
@@ -90,17 +82,19 @@ def _recipient_upload_dto_to_recipient_model(
         medical_id=recipient.medical_id,
         country=country_code,
         blood=recipient.blood_group,
-        hla_typing=dataclasses.asdict(HLATypingDTO(
-            [HLAType(
-                raw_code=typing,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(typing)
-            ) for typing in
-                recipient.hla_typing_preprocessed])),
-        hla_antibodies=hla_antibodies,
+        hla_typing_raw=dataclasses.asdict(HLATypingRawDTO(
+            hla_types_list=[HLATypeRaw(raw_code) for raw_code in recipient.hla_typing]
+        )),
+        hla_antibodies_raw=[
+            HLAAntibodyRawModel(
+                raw_code=hla_antibody.name,
+                cutoff=hla_antibody.cutoff,
+                mfi=hla_antibody.mfi
+            ) for hla_antibody in recipient.hla_antibodies
+        ],
         acceptable_blood=[RecipientAcceptableBloodModel(blood_type=blood)
                           for blood in acceptable_blood_groups],
         txm_event_id=txm_event_db_id,
-        recipient_cutoff=calculate_cutoff(transformed_hla_antibodies),
         waiting_since=parse_date_to_datetime(recipient.waiting_since),
         weight=recipient.weight,
         height=recipient.height,
@@ -108,7 +102,33 @@ def _recipient_upload_dto_to_recipient_model(
         yob=recipient.year_of_birth,
         previous_transplants=recipient.previous_transplants,
     )
+
+    _parse_and_update_hla_typing_in_model(recipient_model)
+    _parse_and_update_hla_antibodies_in_model(recipient_model)
+
     return recipient_model
+
+
+def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
+    hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
+    patient_model.hla_typing = dataclasses.asdict(
+        parse_hla_typing_raw_and_add_parsing_error_to_db_session(
+            hla_typing_raw
+        )
+    )
+
+
+def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
+    hla_antibodies_raw = recipient_model.hla_antibodies_raw
+    logger_with_patient = PatientAdapter(logger, {'patient_medical_id': recipient_model.medical_id})
+    hla_antibodies_parsed = parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
+        hla_antibodies_raw,
+        logger_with_patient
+    )
+    recipient_model.hla_antibodies = dataclasses.asdict(hla_antibodies_parsed)
+
+    transformed_hla_antibodies = get_hla_antibodies_from_hla_antibodies_dto(hla_antibodies_parsed)
+    recipient_model.recipient_cutoff = calculate_cutoff(transformed_hla_antibodies.hla_antibodies_list)
 
 
 def _donor_upload_dto_to_donor_model(
@@ -147,12 +167,9 @@ def _donor_upload_dto_to_donor_model(
         medical_id=donor.medical_id,
         country=country_code,
         blood=donor.blood_group,
-        hla_typing=dataclasses.asdict(HLATypingDTO(
-            [HLAType(
-                raw_code=typing,
-                code=parse_hla_raw_code_and_store_parsing_error_in_db(typing)
-            ) for typing in
-                donor.hla_typing_preprocessed])),
+        hla_typing_raw=dataclasses.asdict(HLATypingRawDTO(
+            hla_types_list=[HLATypeRaw(raw_code) for raw_code in donor.hla_typing]
+        )),
         active=True,
         recipient=maybe_related_recipient,
         donor_type=donor.donor_type,
@@ -162,6 +179,9 @@ def _donor_upload_dto_to_donor_model(
         yob=donor.year_of_birth,
         txm_event_id=txm_event_db_id
     )
+
+    _parse_and_update_hla_typing_in_model(donor_model)
+
     return donor_model
 
 
