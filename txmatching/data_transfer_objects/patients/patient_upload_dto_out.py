@@ -10,6 +10,8 @@ class PatientUploadDTOOut:
 
 @dataclass
 class PatientsRecomputeParsingSuccessDTOOut:
-    patients_checked: int
-    patients_changed: int
+    patients_checked_antigens: int
+    patients_changed_antigens: int
+    patients_checked_antibodies: int
+    patients_changed_antibodies: int
     parsing_errors: List[dict]

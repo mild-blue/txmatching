@@ -1,3 +1,5 @@
+import dacite
+
 from tests.test_utilities.create_dataclasses import (get_test_donors,
                                                      get_test_recipients)
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
@@ -13,12 +15,14 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import (
-    delete_donor_recipient_pair, get_patients_persistent_hash)
+    delete_donor_recipient_pair, get_patients_persistent_hash,
+    recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event)
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.database.sql_alchemy_schema import ConfigModel
+from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
+                                                    RecipientModel)
 from txmatching.patients.hla_model import HLAType
 from txmatching.patients.patient import DonorType, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
@@ -258,3 +262,43 @@ class TestPatientService(DbTests):
         # Now there are 2 donors and 2 recipients in db
         self.assertCountEqual([donor.db_id for donor in txm_event_after.all_donors], [1, 3])
         self.assertCountEqual([recipient.db_id for recipient in txm_event_after.all_recipients], [1, 3])
+
+    def test_recompute_hla_and_antibodies_parsing(self):
+        # Create txm events and few patients
+        txm_event_id = create_or_overwrite_txm_event(name=TXM_EVENT_NAME).db_id
+        replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
+
+        txm_event = get_txm_event_complete(txm_event_id)
+        self.assertEqual(3, len(txm_event.all_donors))
+        self.assertEqual(3, len(txm_event.all_recipients))
+        donor_db_id = txm_event.all_donors[0].db_id
+        recipient_db_id = txm_event.all_recipients[0].db_id
+
+        # recompute parsing function changes nothing
+        result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id)
+        self.assertEqual(6, result.patients_checked_antigens)
+        self.assertEqual(0, result.patients_changed_antigens)
+        self.assertEqual(3, result.patients_checked_antibodies)
+        self.assertEqual(0, result.patients_changed_antibodies)
+
+        # Update patient parsed data in db
+        donor_model = DonorModel.query.get(donor_db_id)  # type: DonorModel
+        donor_model.hla_typing = {}
+        recipient_model = RecipientModel.query.get(recipient_db_id)  # type: RecipientModel
+        recipient_model.hla_typing = {}
+        recipient_model.hla_antibodies = {}
+        db.session.commit()
+
+        # Get event raises error
+        with self.assertRaises(dacite.exceptions.MissingValueError):
+            get_txm_event_complete(txm_event_id)
+
+        # recompute parsing function make changes
+        result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id)
+        self.assertEqual(6, result.patients_checked_antigens)
+        self.assertEqual(2, result.patients_changed_antigens)
+        self.assertEqual(3, result.patients_checked_antibodies)
+        self.assertEqual(1, result.patients_changed_antibodies)
+
+        # Get event works properly
+        get_txm_event_complete(txm_event_id)
