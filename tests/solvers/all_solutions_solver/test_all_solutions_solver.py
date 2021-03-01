@@ -1,6 +1,3 @@
-from tests.solvers.best_solution_use_split_resolution_true import (
-    BEST_SOLUTION_USE_SPLIT_RESOLUTION_TRUE,
-    get_donor_recipient_pairs_from_solution)
 from tests.test_utilities.populate_db import (PATIENT_DATA_OBFUSCATED,
                                               create_or_overwrite_txm_event)
 from tests.test_utilities.prepare_app import DbTests
@@ -44,22 +41,12 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
         self.assertEqual(1, len(solutions))
 
-    def test_solve_from_example_dataset(self):
-        txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
-        txm_event = get_txm_event_complete(txm_event_db_id)
-        configuration = Configuration(use_split_resolution=True,
-                                      max_matchings_to_store_in_db=1000)
-        solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
-
-        self.assertEqual(947, len(solutions))
-        self.assertSetEqual(BEST_SOLUTION_USE_SPLIT_RESOLUTION_TRUE,
-                            get_donor_recipient_pairs_from_solution(solutions[0].matching_pairs))
-
     def test_with_sequence_length_limit(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_sequence_length in range(1, 6):
-            configuration = Configuration(use_split_resolution=True, max_sequence_length=max_sequence_length)
+            configuration = Configuration(use_split_resolution=True, max_sequence_length=max_sequence_length,
+                                          max_number_of_matchings=1000)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertEqual(max_sequence_length,
                              max([max([sequence.length() for sequence in solution.get_sequences()]) for solution in
@@ -69,7 +56,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_cycle_length in range(2, 5):
-            configuration = Configuration(use_split_resolution=True, max_cycle_length=max_cycle_length)
+            configuration = Configuration(use_split_resolution=True, max_cycle_length=max_cycle_length,
+                                          max_number_of_matchings=1000)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertEqual(max_cycle_length,
                              max([max([cycle.length() for cycle in solution.get_cycles()], default=0) for solution in

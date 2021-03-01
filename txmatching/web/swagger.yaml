@@ -84,23 +84,26 @@ definitions:
                 items:
                     $ref: '#/definitions/ManualRecipientDonorScore'
                 type: array
-            max_allowed_number_of_cycles_to_be_searched:
-                example: 1000000
-                type: integer
-            max_allowed_number_of_matchings:
-                example: 10000
-                type: integer
             max_cycle_length:
                 example: 4
                 type: integer
-            max_matchings_to_show_to_viewer:
-                example: 10
+            max_cycles_in_all_solutions_solver:
+                example: 1000000
                 type: integer
-            max_matchings_to_store_in_db:
-                example: 100
+            max_matchings_in_all_solutions_solver:
+                example: 10000
+                type: integer
+            max_matchings_in_ilp_solver:
+                example: 20
+                type: integer
+            max_matchings_to_show_to_viewer:
+                example: 5
                 type: integer
             max_number_of_distinct_countries_in_round:
                 example: 3
+                type: integer
+            max_number_of_matchings:
+                example: 5
                 type: integer
             max_sequence_length:
                 example: 4
@@ -134,6 +137,28 @@ definitions:
             use_split_resolution:
                 example: true
                 type: boolean
+        required:
+        - blood_group_compatibility_bonus
+        - forbidden_country_combinations
+        - manual_donor_recipient_scores
+        - max_cycle_length
+        - max_cycles_in_all_solutions_solver
+        - max_matchings_in_all_solutions_solver
+        - max_matchings_in_ilp_solver
+        - max_matchings_to_show_to_viewer
+        - max_number_of_distinct_countries_in_round
+        - max_number_of_matchings
+        - max_sequence_length
+        - maximum_total_score
+        - minimum_total_score
+        - require_better_match_in_compatibility_index
+        - require_better_match_in_compatibility_index_or_blood_group
+        - require_compatible_blood_group
+        - required_patient_db_ids
+        - scorer_constructor_name
+        - solver_constructor_name
+        - use_binary_scoring
+        - use_split_resolution
         type: object
     Country:
         properties:

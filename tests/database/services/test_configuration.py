@@ -48,36 +48,45 @@ class TestConfiguration(DbTests):
                          config.required_patient_db_ids, )
 
     def test_configuration_comparison(self):
-        self.assertEqual(
-            Configuration(),
-            Configuration()
+        self.assertFalse(
+            Configuration(max_cycle_length=5).comparable(
+                Configuration(max_cycle_length=4))
         )
-        self.assertNotEqual(
-            Configuration(max_cycle_length=5),
-            Configuration(max_cycle_length=4)
+        self.assertFalse(Configuration(
+            forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)]).comparable(
+            Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.AUT, Country.CZE)]))
         )
-        self.assertNotEqual(
-            Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)]),
-            Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.AUT, Country.CZE)])
-        )
-        self.assertEqual(
+        self.assertTrue(
             Configuration(forbidden_country_combinations=[
                 ForbiddenCountryCombination(Country.CZE, Country.AUT),
                 ForbiddenCountryCombination(Country.ISR, Country.CAN),
-            ]),
-            Configuration(forbidden_country_combinations=[
-                ForbiddenCountryCombination(Country.ISR, Country.CAN),
-                ForbiddenCountryCombination(Country.CZE, Country.AUT),
-            ])
+            ]).comparable(
+                Configuration(forbidden_country_combinations=[
+                    ForbiddenCountryCombination(Country.ISR, Country.CAN),
+                    ForbiddenCountryCombination(Country.CZE, Country.AUT),
+                ])
+            )
         )
-        self.assertEqual(
-            Configuration(max_matchings_to_show_to_viewer=10),
-            Configuration(max_matchings_to_show_to_viewer=20),
+        self.assertTrue(
+            Configuration(max_matchings_to_show_to_viewer=10).comparable(
+                Configuration(max_matchings_to_show_to_viewer=20)
+            )
         )
 
-        self.assertEqual(
+        self.assertTrue(
             Configuration(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 2, 1),
-                                                         ManualDonorRecipientScore(1, 3, 1)]),
-            Configuration(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 3, 1),
-                                                         ManualDonorRecipientScore(1, 2, 1)])
+                                                         ManualDonorRecipientScore(1, 3, 1)]).comparable(
+                Configuration(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 3, 1),
+                                                             ManualDonorRecipientScore(1, 2, 1)])
+            )
         )
+
+        self.assertTrue(Configuration().comparable(Configuration()))
+        self.assertTrue(Configuration(max_matchings_in_all_solutions_solver=10).comparable(
+            Configuration(max_matchings_in_all_solutions_solver=100)))
+        self.assertFalse(Configuration(max_matchings_in_all_solutions_solver=100).comparable(
+            Configuration(max_matchings_in_all_solutions_solver=10)))
+        self.assertTrue(
+            Configuration(required_patient_db_ids=[2, 1]).comparable(Configuration(required_patient_db_ids=[1, 2])))
+        self.assertFalse(
+            Configuration(required_patient_db_ids=[1]).comparable(Configuration(required_patient_db_ids=[1, 2])))

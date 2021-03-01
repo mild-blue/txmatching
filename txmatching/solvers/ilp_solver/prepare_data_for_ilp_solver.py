@@ -6,14 +6,14 @@ from txmatching.patients.patient import Donor, DonorType, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
-    TXMConfigurationForILPSolver
+    DataAndConfigurationForILPSolver
 
 logger = logging.getLogger(__name__)
 
 
 def prepare_data_for_ilp(active_donors_dict: Dict[DonorDbId, Donor],
                          active_recipients_dict: Dict[RecipientDbId, Recipient],
-                         configuration: Configuration) -> TXMConfigurationForILPSolver:
+                         configuration: Configuration) -> DataAndConfigurationForILPSolver:
     scorer = scorer_from_configuration(configuration)
 
     score_matrix = []
@@ -33,12 +33,12 @@ def prepare_data_for_ilp(active_donors_dict: Dict[DonorDbId, Donor],
     bridging_donors = [i for i, donor in enumerate(active_donors_dict.values()) if
                        donor.donor_type != DonorType.DONOR]
 
-    return TXMConfigurationForILPSolver(
+    return DataAndConfigurationForILPSolver(
         num_nodes=len(score_matrix),
         non_directed_donors=bridging_donors,
-        max_sequence_length=configuration.max_sequence_length,
-        max_cycle_length=configuration.max_cycle_length,
+        configuration=configuration,
         edges=_create_edges(score_matrix),
+        country_codes_dict={i: donor.parameters.country_code for i, donor in enumerate(active_donors_dict.values())}
     )
 
 

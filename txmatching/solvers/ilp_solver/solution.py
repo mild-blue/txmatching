@@ -1,13 +1,14 @@
 from dataclasses import dataclass
-from enum import IntEnum
+from enum import Enum
 from typing import Iterable, Tuple
 
 
-class Status(IntEnum):
-    NoSolution = 0
-    Optimal = 1
-    Infeasible = 2
-    Heuristic = 3
+class Status(str, Enum):
+    NoSolution = 'NoSolution'
+    Optimal = 'Optimal'
+    Infeasible = 'Infeasible'
+    Heuristic = 'Heuristic'
+
 
 @dataclass
 class Solution:
