@@ -74,7 +74,10 @@ class HLATyping(PersistentlyHashable):
 
         if hla_types_raw_list is None:
             hla_types_raw_list = [HLATypeRaw(hla_type.raw_code) for hla_type in hla_types_list]
-        self.hla_types_raw_list = hla_types_raw_list  # TODOO: order
+        self.hla_types_raw_list = sorted(
+            hla_types_raw_list,
+            key=lambda hla_type_raw: hla_type_raw.raw_code.upper()
+        )
 
         if hla_per_groups is None:
             hla_per_groups = split_hla_types_to_groups(hla_types_list)
@@ -170,7 +173,10 @@ class HLAAntibodies(PersistentlyHashable):
                 )
                 for hla_antibody in hla_antibodies_list
             ]
-        self.hla_antibodies_raw_list = hla_antibodies_raw_list  # TODOO: order
+        self.hla_antibodies_raw_list = sorted(
+            hla_antibodies_raw_list,
+            key=lambda hla_antibody_raw: (hla_antibody_raw.raw_code.upper(), hla_antibody_raw.mfi)
+        )
 
         if hla_antibodies_per_groups is None:
             # We do not set logger because computing hla_antibodies_per_groups is done here only in tests
