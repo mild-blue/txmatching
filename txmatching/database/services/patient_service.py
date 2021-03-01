@@ -206,10 +206,13 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
 def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         txm_event_id: int
 ) -> PatientsRecomputeParsingSuccessDTOOut:
-    patients_checked_antigens = 0
-    patients_changed_antigens = 0
-    patients_checked_antibodies = 0
-    patients_changed_antibodies = 0
+    result = PatientsRecomputeParsingSuccessDTOOut(
+        patients_checked_antigens=0,
+        patients_changed_antigens=0,
+        patients_checked_antibodies=0,
+        patients_changed_antibodies=0,
+        parsing_errors=[],
+    )
 
     # Clear parsing errors table
     ParsingErrorModel.query.delete()
@@ -230,9 +233,9 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         if new_hla_typing != patient_model.hla_typing:
             logger.debug(f'Updating hla_typing of {patient_model}:')
             patient_model.hla_typing = new_hla_typing
-            patients_changed_antigens += 1
+            result.patients_changed_antigens += 1
 
-        patients_checked_antigens += 1
+        result.patients_checked_antigens += 1
 
     # Update hla_antibodies for recipients
     for recipient_model in recipient_models:
@@ -245,28 +248,22 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         if new_hla_antibodies != recipient_model.hla_antibodies:
             logger.debug(f'Updating hla_antibodies of {recipient_model}:')
             recipient_model.hla_antibodies = new_hla_antibodies
-            patients_changed_antibodies += 1
+            result.patients_changed_antibodies += 1
 
-        patients_checked_antibodies += 1
+        result.patients_checked_antibodies += 1
 
     db.session.commit()
 
     # Get parsing errors
     parsing_error_models = ParsingErrorModel.query.all()
-    parsing_errors = [
+    result.parsing_errors = [
         {
             'hla_code': parsing_error_model.hla_code,
             'hla_code_processing_result_detail': parsing_error_model.hla_code_processing_result_detail
         } for parsing_error_model in parsing_error_models
     ]
 
-    return PatientsRecomputeParsingSuccessDTOOut(
-        patients_checked_antigens=patients_checked_antigens,
-        patients_changed_antigens=patients_changed_antigens,
-        patients_checked_antibodies=patients_checked_antibodies,
-        patients_changed_antibodies=patients_changed_antibodies,
-        parsing_errors=parsing_errors,
-    )
+    return result
 
 
 def get_patients_persistent_hash(txm_event: TxmEvent) -> int:
