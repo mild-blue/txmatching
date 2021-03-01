@@ -22,7 +22,7 @@ from txmatching.utils.logging_tools import PatientAdapter
 logger = logging.getLogger(__name__)
 
 
-def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
+def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
         hla_antibodies_raw: List[HLAAntibodyRawModel],
         # TODO: https://github.com/mild-blue/txmatching/issues/496 replace logging with storing in db along
         #  with patient medical id. Change it also in other places.
@@ -52,12 +52,12 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
         # Antibodies with the same raw code does need to have the same cutoff
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
         if len(cutoffs) > 1:
-            _store_parsing_error(raw_code, HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY)
+            _add_parsing_error_to_db_session(raw_code, HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY)
             continue
 
         # Parse antibodies and keep only valid ones
         for hla_antibody in antibody_group:
-            code = parse_hla_raw_code_and_store_parsing_error_in_db(hla_antibody.raw_code)
+            code = parse_hla_raw_code_and_add_parsing_error_to_db_session(hla_antibody.raw_code)
             if code is not None:
                 hla_antibodies_parsed.append(
                     HLAAntibody(
@@ -79,7 +79,7 @@ def parse_hla_antibodies_raw_and_store_parsing_error_in_db(
     )
 
 
-def parse_hla_typing_raw_and_store_parsing_error_in_db(hla_typing_raw: HLATypingRawDTO) -> HLATypingDTO:
+def parse_hla_typing_raw_and_add_parsing_error_to_db_session(hla_typing_raw: HLATypingRawDTO) -> HLATypingDTO:
     # 1. preprocess raw codes (their count can increase)
     raw_codes_preprocessed = [
         raw_code_preprocessed
@@ -90,7 +90,7 @@ def parse_hla_typing_raw_and_store_parsing_error_in_db(hla_typing_raw: HLATyping
     # 2. parse preprocessed codes and keep only valid ones
     hla_types_parsed = []
     for raw_code in raw_codes_preprocessed:
-        code = parse_hla_raw_code_and_store_parsing_error_in_db(raw_code)
+        code = parse_hla_raw_code_and_add_parsing_error_to_db_session(raw_code)
         if code is not None:
             hla_types_parsed.append(
                 HLAType(
@@ -108,7 +108,7 @@ def parse_hla_typing_raw_and_store_parsing_error_in_db(hla_typing_raw: HLATyping
     )
 
 
-def parse_hla_raw_code_and_store_parsing_error_in_db(hla_raw_code: str) -> Optional[str]:
+def parse_hla_raw_code_and_add_parsing_error_to_db_session(hla_raw_code: str) -> Optional[str]:
     """
     Method to store information about error during parsing HLA code.
     This method is partially redundant to parse_hla_raw_code so in case of update, update it too.
@@ -121,11 +121,12 @@ def parse_hla_raw_code_and_store_parsing_error_in_db(hla_raw_code: str) -> Optio
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not parsing_result.maybe_hla_code or \
             parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:
-        _store_parsing_error(hla_raw_code, parsing_result.result_detail)
+        _add_parsing_error_to_db_session(hla_raw_code, parsing_result.result_detail)
     return parsing_result.maybe_hla_code
 
 
-def _store_parsing_error(
+# You need to commit the session to save the changes to the db (db.session.commit())
+def _add_parsing_error_to_db_session(
         hla_code: str,
         hla_code_processing_result_detail: HlaCodeProcessingResultDetail
 ):
@@ -134,4 +135,3 @@ def _store_parsing_error(
         hla_code_processing_result_detail=hla_code_processing_result_detail
     )
     db.session.add(parsing_error)
-    db.session.commit()

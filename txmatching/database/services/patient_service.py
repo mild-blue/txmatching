@@ -28,8 +28,8 @@ from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.hla_system.hla_transformations_store import (
-    parse_hla_antibodies_raw_and_store_parsing_error_in_db,
-    parse_hla_typing_raw_and_store_parsing_error_in_db)
+    parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
+    parse_hla_typing_raw_and_add_parsing_error_to_db_session)
 from txmatching.utils.logging_tools import PatientAdapter
 from txmatching.utils.persistent_hash import (get_hash_digest,
                                               initialize_persistent_hash,
@@ -113,7 +113,7 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> di
         )
         patient_update_dict['hla_typing_raw'] = dataclasses.asdict(hla_typing_raw)
         patient_update_dict['hla_typing'] = dataclasses.asdict(
-            parse_hla_typing_raw_and_store_parsing_error_in_db(
+            parse_hla_typing_raw_and_add_parsing_error_to_db_session(
                 hla_typing_raw
             )
         )
@@ -173,7 +173,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
 
         # Change parsed hla_antibodies for a given patient in db
         logger_with_patient = PatientAdapter(logger, {'patient_medical_id': old_recipient_model.medical_id})
-        hla_antibodies = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
+        hla_antibodies = parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
             new_hla_antibody_raw_models,
             logger_with_patient
         )
@@ -220,15 +220,13 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     for patient_model in donor_models + recipient_models:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
         new_hla_typing = dataclasses.asdict(
-            parse_hla_typing_raw_and_store_parsing_error_in_db(
+            parse_hla_typing_raw_and_add_parsing_error_to_db_session(
                 hla_typing_raw
             )
         )
 
         if new_hla_typing != patient_model.hla_typing:
             logger.debug(f'Updating hla_typing of {patient_model}:')
-            logger.debug(f'hla_typing before: {patient_model.hla_typing}')
-            logger.debug(f'hla_typing now: {new_hla_typing}')
             patient_model.hla_typing = new_hla_typing
             patients_changed += 1
 
@@ -239,20 +237,17 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         hla_antibodies_raw = recipient_model.hla_antibodies_raw
         logger_with_patient = PatientAdapter(logger, {'patient_medical_id': recipient_model.medical_id})
         new_hla_antibodies = dataclasses.asdict(
-            parse_hla_antibodies_raw_and_store_parsing_error_in_db(hla_antibodies_raw, logger_with_patient)
+            parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(hla_antibodies_raw, logger_with_patient)
         )
 
         if new_hla_antibodies != recipient_model.hla_antibodies:
             logger.debug(f'Updating hla_antibodies of {recipient_model}:')
-            logger.debug(f'hla_antibodies before: {recipient_model.hla_antibodies}')
-            logger.debug(f'hla_antibodies now: {new_hla_antibodies}')
             recipient_model.hla_antibodies = new_hla_antibodies
             patients_changed += 1
 
         patients_checked += 1
 
-    if patients_changed > 0:
-        db.session.commit()
+    db.session.commit()
 
     # Get parsing errors
     parsing_error_models = ParsingErrorModel.query.all()

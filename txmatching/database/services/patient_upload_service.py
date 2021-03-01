@@ -30,8 +30,8 @@ from txmatching.database.sql_alchemy_schema import (
 from txmatching.patients.patient import DonorType, calculate_cutoff
 from txmatching.utils.country_enum import Country
 from txmatching.utils.hla_system.hla_transformations_store import (
-    parse_hla_antibodies_raw_and_store_parsing_error_in_db,
-    parse_hla_typing_raw_and_store_parsing_error_in_db)
+    parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
+    parse_hla_typing_raw_and_add_parsing_error_to_db_session)
 from txmatching.utils.logging_tools import PatientAdapter
 
 logger = logging.getLogger(__name__)
@@ -111,11 +111,8 @@ def _recipient_upload_dto_to_recipient_model(
 
 def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
     hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
-    # for the case that the db commit would be called during parsing, we need to have some value set in hla_typing
-    # because this db column is not nullable
-    patient_model.hla_typing = dict()
     patient_model.hla_typing = dataclasses.asdict(
-        parse_hla_typing_raw_and_store_parsing_error_in_db(
+        parse_hla_typing_raw_and_add_parsing_error_to_db_session(
             hla_typing_raw
         )
     )
@@ -124,7 +121,7 @@ def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
 def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
     hla_antibodies_raw = recipient_model.hla_antibodies_raw
     logger_with_patient = PatientAdapter(logger, {'patient_medical_id': recipient_model.medical_id})
-    hla_antibodies_parsed = parse_hla_antibodies_raw_and_store_parsing_error_in_db(
+    hla_antibodies_parsed = parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
         hla_antibodies_raw,
         logger_with_patient
     )

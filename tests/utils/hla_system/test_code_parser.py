@@ -12,7 +12,7 @@ from txmatching.utils.hla_system.hla_transformations import (
     parse_hla_raw_code, parse_hla_raw_code_with_details,
     preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations_store import \
-    parse_hla_raw_code_and_store_parsing_error_in_db
+    parse_hla_raw_code_and_add_parsing_error_to_db_session
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
 
 codes = {
@@ -60,7 +60,7 @@ class TestCodeParser(DbTests):
 
     def test_parsing_with_db_storing(self):
         for code, _ in codes.items():
-            parse_hla_raw_code_and_store_parsing_error_in_db(code)
+            parse_hla_raw_code_and_add_parsing_error_to_db_session(code)
         errors = ParsingErrorModel.query.all()
         self.assertEqual(6, len(errors))
 
