@@ -124,16 +124,16 @@ class Report(Resource):
             )
 
         # lower ID -> better evaluation
-        sorted_matchings = sorted(latest_matchings_detailed.matchings, key=lambda m: m.order_id())
+        sorted_matchings = sorted(latest_matchings_detailed.matchings, key=lambda m: m.order_id)
 
-        requested_matching = list(filter(lambda matching: matching.order_id() == matching_id, sorted_matchings))
+        requested_matching = list(filter(lambda matching: matching.order_id == matching_id, sorted_matchings))
         if len(requested_matching) == 0:
             raise NotFoundException(f'Matching with id {matching_id} not found.')
 
         other_matchings_to_include = list(
             itertools.islice(
                 filter(
-                    lambda matching: matching.order_id() != matching_id,
+                    lambda matching: matching.order_id != matching_id,
                     sorted_matchings
                 ),
                 matching_range_limit

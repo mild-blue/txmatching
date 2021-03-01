@@ -9,4 +9,5 @@ from txmatching.solve_service.solve_from_configuration import \
 class TestLargeMatchingDoesNotFail(DbTests):
     def testing_computation_for_patients_that_create_extremely_many_matchings(self):
         txm_event = prepare_txm_event_with_many_solutions()
-        solve_from_configuration(Configuration(solver_constructor_name='ILPSolver'), txm_event)
+        solve_from_configuration(Configuration(solver_constructor_name='ILPSolver',
+                                               max_number_of_matchings=1), txm_event)

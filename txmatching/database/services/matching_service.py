@@ -138,8 +138,8 @@ def create_calculated_matchings_dto(
                         ) for pair in matching_round.donor_recipient_pairs], )
                 for matching_round in matching.get_rounds()],
             countries=matching.get_country_codes_counts(),
-            score=matching.score(),
-            order_id=matching.order_id(),
+            score=matching.score,
+            order_id=matching.order_id,
             count_of_transplants=get_count_of_transplants(matching)
         ) for matching in matchings
         ],
