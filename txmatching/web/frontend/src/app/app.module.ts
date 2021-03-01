@@ -51,7 +51,6 @@ import { ListItemDetailDirective } from './directives/list-item-detail/list-item
 import { ItemComponent } from './components/list-item/item/item.component';
 import { PatientPairComponent } from './components/patient-pair/patient-pair.component';
 import { TabSwitchComponent } from './components/tab-switch/tab-switch.component';
-import { AntibodiesComponent } from './components/patient-recipient-detail/antibodies/antibodies.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthenticationComponent } from './pages/authentication/authentication.component';
 import { ScoreIndicatorComponent } from './components/score-indicator/score-indicator.component';
@@ -122,7 +121,6 @@ import { FormDirective } from './directives/form/form.directive';
     PatientRecipientDetailComponent,
     PatientPairComponent,
     TabSwitchComponent,
-    AntibodiesComponent,
     AuthenticationComponent,
     ScoreIndicatorComponent,
     PatientDonorItemComponent,

@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { HlaTypeRawGenerated } from './hlaTypeRawGenerated';
 import { HlaTypeGenerated } from './hlaTypeGenerated';
 import { HlaCodesInGroupsGenerated } from './hlaCodesInGroupsGenerated';
 
@@ -19,5 +20,6 @@ export interface HlaTypingGenerated {
      */
     hla_per_groups: Array<HlaCodesInGroupsGenerated>;
     hla_types_list: Array<HlaTypeGenerated>;
+    hla_types_raw_list: Array<HlaTypeRawGenerated>;
 }
 
