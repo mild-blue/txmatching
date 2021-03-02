@@ -184,6 +184,12 @@ class HLAAntibodies(PersistentlyHashable):
 
         self.hla_antibodies_per_groups = hla_antibodies_per_groups
 
+    def get_hla_antibodies_per_groups_over_cutoff(
+            self,
+            logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
+    ) -> List[AntibodiesPerGroup]:
+        return filter_antibodies_per_groups_over_cutoff(self.hla_antibodies_per_groups, logger_with_patient)
+
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLAAntibodies)
         update_persistent_hash(hash_, self.hla_antibodies_per_groups)
@@ -198,12 +204,25 @@ def split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
 
 
 def create_hla_antibodies_per_groups_from_hla_antibodies(
-        hla_antibodies: List[HLAAntibody],
+        hla_antibodies: List[HLAAntibody]
+) -> List[AntibodiesPerGroup]:
+    # hla_antibodies_over_cutoff_list = _filter_antibodies_over_cutoff(hla_antibodies, logger_with_patient)
+    hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies)
+    return hla_antibodies_per_groups
+
+
+def filter_antibodies_per_groups_over_cutoff(
+        hla_antibodies_per_groups: List[AntibodiesPerGroup],
         logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
 ) -> List[AntibodiesPerGroup]:
-    hla_antibodies_over_cutoff_list = _filter_antibodies_over_cutoff(hla_antibodies, logger_with_patient)
-    hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_over_cutoff_list)
-    return hla_antibodies_per_groups
+    return [
+        AntibodiesPerGroup(
+            hla_group=antibodies_per_group.hla_group,
+            hla_antibody_list=_filter_antibodies_over_cutoff(
+                antibodies_per_group.hla_antibody_list, logger_with_patient
+            )
+        ) for antibodies_per_group in hla_antibodies_per_groups
+    ]
 
 
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[AntibodiesPerGroup]:
