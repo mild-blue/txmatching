@@ -11,8 +11,9 @@
  */
 
 
-export interface HlaTypeGenerated { 
-    code: string;
+export interface HlaAntibodyRawGenerated { 
+    cutoff: number;
+    mfi: number;
     raw_code: string;
 }
 

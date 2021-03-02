@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from txmatching.patients.hla_model import HLAPerGroup, HLAType
+from txmatching.patients.hla_model import HLAPerGroup, HLAType, HLATypeRaw
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
@@ -24,14 +24,6 @@ class PatientParametersDTO:
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None
     yob: Optional[int] = None
-
-
-@dataclass
-class HLATypeRaw:
-    """
-    Antigen in a format as uploaded without being parsed
-    """
-    raw_code: str
 
 
 @dataclass

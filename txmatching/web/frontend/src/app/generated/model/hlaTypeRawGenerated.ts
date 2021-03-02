@@ -11,8 +11,10 @@
  */
 
 
-export interface HlaTypeGenerated { 
-    code: string;
+export interface HlaTypeRawGenerated { 
+    /**
+     * Antigen raw code
+     */
     raw_code: string;
 }
 

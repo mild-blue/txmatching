@@ -12,7 +12,7 @@
 
 
 export interface HlaAntibodyGenerated { 
-    code?: string;
+    code: string;
     cutoff: number;
     mfi: number;
     raw_code: string;

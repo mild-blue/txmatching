@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 import { HlaAntibodyGenerated } from './hlaAntibodyGenerated';
+import { HlaAntibodyRawGenerated } from './hlaAntibodyRawGenerated';
 import { AntibodiesPerGroupGenerated } from './antibodiesPerGroupGenerated';
 
 
@@ -19,5 +20,6 @@ export interface HlaAntibodiesGenerated {
      * hla antibodies split to hla groups
      */
     hla_antibodies_per_groups: Array<AntibodiesPerGroupGenerated>;
+    hla_antibodies_raw_list: Array<HlaAntibodyRawGenerated>;
 }
 
