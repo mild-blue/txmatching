@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from txmatching.configuration.configuration import Configuration
 from txmatching.scorers.score_matrix import ScoreMatrix
@@ -12,5 +12,5 @@ class PairingResult:
     configuration: Configuration
     score_matrix: ScoreMatrix
     calculated_matchings_list: List[MatchingWithScore]
-    found_matchings_count: int
+    found_matchings_count: Optional[int]
     all_results_found: bool

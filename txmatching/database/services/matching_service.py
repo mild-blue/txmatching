@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CalculatedMatchingsDTO, MatchingDTO, RoundDTO, TransplantDTOOut)
@@ -31,7 +31,7 @@ class MatchingsDetailed:
     blood_compatibility_tuples: Dict[Tuple[int, int], bool]
     detailed_score_tuples: Dict[Tuple[int, int], List[DetailedCompatibilityIndexForHLAGroup]]
     antibody_matches_tuples: Dict[Tuple[int, int], List[AntibodyMatchForHLAGroup]]
-    found_matchings_count: int
+    found_matchings_count: Optional[int]
     show_not_all_matchings_found: bool
 
 

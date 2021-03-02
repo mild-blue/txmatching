@@ -69,7 +69,6 @@ definitions:
                 type: boolean
         required:
         - calculated_matchings
-        - found_matchings_count
         - show_not_all_matchings_found
         type: object
     Configuration:
