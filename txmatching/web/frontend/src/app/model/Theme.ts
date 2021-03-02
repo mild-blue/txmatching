@@ -16,10 +16,10 @@ const ikemTheme: ThemeDefinition = {
   'logo-background-size': 'contain',
   'logo-width': '57px',
   'logo-height': '50px',
-  'favicon-ico': 'favicon.ico',
-  'favicon-16x16': 'favicon-16x16.png',
-  'favicon-32x32': 'favicon-32x32.png',
-  'apple-touch-icon': 'apple-touch-icon.png'
+  'favicon-ico': 'assets/img/favicons_ikem/favicon.ico',
+  'favicon-16x16': 'assets/img/favicons_ikem/favicon-16x16.png',
+  'favicon-32x32': 'assets/img/favicons_ikem/favicon-32x32.png',
+  'apple-touch-icon': 'assets/img/favicons_ikem/apple-touch-icon.png'
 };
 
 
