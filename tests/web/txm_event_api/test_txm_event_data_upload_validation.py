@@ -19,7 +19,7 @@ from txmatching.database.services.txm_event_service import (
     get_newest_txm_event_db_id, get_txm_event_complete)
 from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
                                                     UploadedDataModel)
-from txmatching.patients.hla_model import HLAType, HLATyping
+from txmatching.patients.hla_model import HLAType, HLATypeRaw, HLATyping
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
@@ -40,8 +40,16 @@ class TestMatchingApi(DbTests):
         self.assertEqual(1, len(UploadedDataModel.query.all()))
         self.assertSetEqual({BloodGroup.ZERO, BloodGroup.A},
                             set(blood for blood in txm_event.active_recipients_dict[1].acceptable_blood_groups))
-        self.assertEqual(HLATyping(hla_types_list=[HLAType('A1'), HLAType('A23')]),
-                         txm_event.active_donors_dict[1].parameters.hla_typing)
+        self.assertEqual(
+            HLATyping(
+                hla_types_list=[HLAType('A1'), HLAType('A23')],
+                hla_types_raw_list=[
+                    HLATypeRaw('A1'), HLATypeRaw('A23'),
+                    HLATypeRaw(raw_code='B*01:01N'), HLATypeRaw(raw_code='Invalid')
+                ]
+            ),
+            txm_event.active_donors_dict[1].parameters.hla_typing
+        )
         self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_codes(txm_event.active_donors_dict[1]))
         self.assertSetEqual({'A9'}, _get_hla_antibodies_codes(txm_event.active_recipients_dict[1]))
         self._check_expected_errors_in_db(2)

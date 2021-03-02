@@ -9,7 +9,7 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
-    HLATypeRaw, HLATypingDTO, HLATypingRawDTO)
+    HLATypingDTO, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientsRecomputeParsingSuccessDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
@@ -23,7 +23,8 @@ from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, HLAAntibodyRawModel, ParsingErrorModel,
     RecipientAcceptableBloodModel, RecipientModel)
-from txmatching.patients.hla_model import HLAAntibodies, HLATyping
+from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibodyRaw,
+                                           HLATypeRaw, HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
@@ -60,12 +61,7 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
                           base_patient.medical_id,
                           parameters=base_patient.parameters,
                           related_donor_db_id=related_donor_db_id,
-                          hla_antibodies=get_hla_antibodies_from_hla_antibodies_dto(
-                              dacite.from_dict(
-                                  data_class=HLAAntibodiesDTO, data=recipient_model.hla_antibodies,
-                                  config=dacite.Config(cast=[Enum])
-                              ),
-                          ),
+                          hla_antibodies=get_hla_antibodies_from_recipient_model(recipient_model),
                           # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum,
                           #       this conversion is not working properly now
                           acceptable_blood_groups=[acceptable_blood_model.blood_type for acceptable_blood_model in
@@ -78,26 +74,52 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
     return recipient
 
 
-def get_hla_antibodies_from_hla_antibodies_dto(
-        antibodies_dto: HLAAntibodiesDTO
+def get_hla_antibodies_from_recipient_model(
+        recipient_model: RecipientModel,
 ) -> HLAAntibodies:
+    antibodies_dto: HLAAntibodiesDTO = dacite.from_dict(
+        data_class=HLAAntibodiesDTO, data=recipient_model.hla_antibodies,
+        config=dacite.Config(cast=[Enum])
+    )
+
+    antibodies_raw_models = recipient_model.hla_antibodies_raw
+    antibodies_raw = [
+        HLAAntibodyRaw(
+            raw_code=antibody_raw_model.raw_code,
+            mfi=antibody_raw_model.mfi,
+            cutoff=antibody_raw_model.cutoff
+        ) for antibody_raw_model in antibodies_raw_models
+    ]
+
     if antibodies_dto.hla_antibodies_list is None or antibodies_dto.hla_antibodies_per_groups is None:
         raise ValueError(f'Parsed antibodies have invalid format. '
                          f'Running recompute-parsing api could help: ${antibodies_dto}')
     return HLAAntibodies(
         hla_antibodies_list=antibodies_dto.hla_antibodies_list,
+        hla_antibodies_raw_list=antibodies_raw,
         hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups
     )
 
 
-def get_hla_typing_from_hla_typing_model(
-        hla_typing_dto: HLATypingDTO
+def _get_hla_typing_from_patient_model(
+        patient_model: Union[DonorModel, RecipientModel],
 ) -> HLATyping:
+    hla_typing_dto: HLATypingDTO = dacite.from_dict(
+        data_class=HLATypingDTO, data=patient_model.hla_typing,
+        config=dacite.Config(cast=[Enum])
+    )
+
+    hla_typing_raw_dto: HLATypingRawDTO = dacite.from_dict(
+        data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw,
+        config=dacite.Config(cast=[Enum])
+    )
+
     if hla_typing_dto.hla_types_list is None or hla_typing_dto.hla_per_groups is None:
         raise ValueError(f'Parsed antigens have invalid format. '
                          f'Running recompute-parsing api could help: ${hla_typing_dto}')
     return HLATyping(
         hla_types_list=hla_typing_dto.hla_types_list,
+        hla_types_raw_list=hla_typing_raw_dto.hla_types_list,
         hla_per_groups=hla_typing_dto.hla_per_groups,
     )
 
@@ -287,12 +309,7 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
             #       this conversion is not working properly now
             blood_group=patient_model.blood,
             country_code=patient_model.country,
-            hla_typing=get_hla_typing_from_hla_typing_model(
-                dacite.from_dict(
-                    data_class=HLATypingDTO, data=patient_model.hla_typing,
-                    config=dacite.Config(cast=[Enum])
-                )
-            ),
+            hla_typing=_get_hla_typing_from_patient_model(patient_model),
             height=patient_model.height,
             weight=patient_model.weight,
             year_of_birth=patient_model.yob,

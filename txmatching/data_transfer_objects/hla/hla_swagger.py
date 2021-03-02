@@ -28,15 +28,12 @@ EXAMPLE_HLA_TYPING = {'hla_types_list': [{'raw_code': 'A*01:02'},
                                          {'raw_code': 'DR11'}]}
 
 HLAType = patient_api.model('HlaType', {
-    'code': fields.String(required=False),
+    'code': fields.String(required=True),
     'raw_code': fields.String(required=True),
 })
 
-HLAAntibody = patient_api.model('HlaAntibody', {
-    'raw_code': fields.String(required=True),
-    'mfi': fields.Integer(required=True),
-    'cutoff': fields.Integer(required=True),
-    'code': fields.String(required=False)
+HLATypeRaw = patient_api.model('HlaTypeRaw', {
+    'raw_code': fields.String(required=True, example='A32', description='Antigen raw code'),
 })
 
 HlaPerGroup = patient_api.model('HlaCodesInGroups', {
@@ -46,10 +43,24 @@ HlaPerGroup = patient_api.model('HlaCodesInGroups', {
 
 HLATyping = patient_api.model('HlaTyping', {
     'hla_types_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAType)),
+    'hla_types_raw_list': fields.List(required=True, cls_or_instance=fields.Nested(HLATypeRaw)),
     'hla_per_groups': fields.List(required=True,
                                   description='hla types split to hla groups',
                                   example=HLA_TYPES_PER_GROUPS_EXAMPLE,
                                   cls_or_instance=fields.Nested(HlaPerGroup)),
+})
+
+HLAAntibody = patient_api.model('HlaAntibody', {
+    'raw_code': fields.String(required=True),
+    'mfi': fields.Integer(required=True),
+    'cutoff': fields.Integer(required=True),
+    'code': fields.String(required=True)
+})
+
+HLAAntibodyRaw = patient_api.model('HlaAntibodyRaw', {
+    'raw_code': fields.String(required=True),
+    'mfi': fields.Integer(required=True),
+    'cutoff': fields.Integer(required=True)
 })
 
 AntibodiesPerGroup = patient_api.model('AntibodiesPerGroup', {
@@ -59,6 +70,7 @@ AntibodiesPerGroup = patient_api.model('AntibodiesPerGroup', {
 
 HLAAntibodies = patient_api.model('HlaAntibodies', {
     'hla_antibodies_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAAntibody)),
+    'hla_antibodies_raw_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAAntibodyRaw)),
     'hla_antibodies_per_groups': fields.List(required=True,
                                              description='hla antibodies split to hla groups',
                                              example=HLA_ANTIBODIES_PER_GROUPS_EXAMPLE,

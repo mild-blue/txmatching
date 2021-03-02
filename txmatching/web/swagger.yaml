@@ -712,9 +712,14 @@ definitions:
                 items:
                     $ref: '#/definitions/AntibodiesPerGroup'
                 type: array
+            hla_antibodies_raw_list:
+                items:
+                    $ref: '#/definitions/HlaAntibodyRaw'
+                type: array
         required:
         - hla_antibodies_list
         - hla_antibodies_per_groups
+        - hla_antibodies_raw_list
         type: object
     HlaAntibodiesToUpdate:
         properties:
@@ -729,6 +734,20 @@ definitions:
         properties:
             code:
                 type: string
+            cutoff:
+                type: integer
+            mfi:
+                type: integer
+            raw_code:
+                type: string
+        required:
+        - code
+        - cutoff
+        - mfi
+        - raw_code
+        type: object
+    HlaAntibodyRaw:
+        properties:
             cutoff:
                 type: integer
             mfi:
@@ -777,6 +796,16 @@ definitions:
             raw_code:
                 type: string
         required:
+        - code
+        - raw_code
+        type: object
+    HlaTypeRaw:
+        properties:
+            raw_code:
+                description: Antigen raw code
+                example: A32
+                type: string
+        required:
         - raw_code
         type: object
     HlaTypeToUpdate:
@@ -815,9 +844,14 @@ definitions:
                 items:
                     $ref: '#/definitions/HlaType'
                 type: array
+            hla_types_raw_list:
+                items:
+                    $ref: '#/definitions/HlaTypeRaw'
+                type: array
         required:
         - hla_per_groups
         - hla_types_list
+        - hla_types_raw_list
         type: object
     HlaTypingToUpdate:
         properties:

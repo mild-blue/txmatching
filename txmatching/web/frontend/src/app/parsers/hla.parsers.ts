@@ -1,36 +1,59 @@
 import {
   AntibodiesPerGroupGenerated,
-  AntibodyMatchGenerated, AntibodyMatchGeneratedMatchTypeEnum,
-  AntigenMatchGenerated, AntigenMatchGeneratedMatchTypeEnum,
+  AntibodyMatchGenerated,
+  AntibodyMatchGeneratedMatchTypeEnum,
+  AntigenMatchGenerated,
+  AntigenMatchGeneratedMatchTypeEnum,
   DetailedScoreForGroupGenerated,
-  HlaAntibodyGenerated, HlaCodesInGroupsGenerated,
-  HlaTypeGenerated
+  HlaAntibodyGenerated,
+  HlaAntibodyRawGenerated,
+  HlaCodesInGroupsGenerated,
+  HlaTypeGenerated,
+  HlaTypeRawGenerated
 } from '../generated';
 import {
   AntibodiesPerGroup,
-  Antibody, AntibodyMatch, AntibodyMatchType,
-  Antigen, AntigenMatch, AntigenMatchType,
+  Antibody,
+  AntibodyMatch,
+  AntibodyMatchType,
+  AntibodyRaw,
+  Antigen,
+  AntigenMatch,
+  AntigenMatchType,
+  AntigenRaw,
   DetailedScorePerGroup,
   Hla,
-  HlaMatch, HlaPerGroup,
+  HlaMatch,
+  HlaPerGroup,
+  HlaRaw
 } from '../model';
 
+export const parseHlaRaw = ( data: HlaTypeRawGenerated | HlaAntibodyGenerated ): HlaRaw => {
+  return {
+    raw_code: data.raw_code
+  };
+};
 
 export const parseHla = ( data: HlaTypeGenerated | HlaAntibodyGenerated ): Hla => {
   const {
-    code = '',
-    raw_code,
+    code
   } = data;
 
   return {
-    code,
-    raw_code,
+    ...parseHlaRaw(data),
+    code
   };
 };
 
 export const parseAntigen = ( data: HlaTypeGenerated ): Antigen => {
   return {
     ...parseHla(data)
+  };
+};
+
+export const parseAntigenRaw = ( data: HlaTypeRawGenerated ): AntigenRaw => {
+  return {
+    ...parseHlaRaw(data)
   };
 };
 
@@ -42,6 +65,19 @@ export const parseAntibody = ( data: HlaAntibodyGenerated ): Antibody => {
 
   return {
     ...parseHla(data),
+    mfi,
+    cutoff
+  };
+};
+
+export const parseAntibodyRaw = ( data: HlaAntibodyRawGenerated ): AntibodyRaw => {
+  const {
+    mfi,
+    cutoff
+  } = data;
+
+  return {
+    ...parseHlaRaw(data),
     mfi,
     cutoff
   };
