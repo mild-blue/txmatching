@@ -45,6 +45,20 @@
           </mat-select>
         </mat-form-field>
 
+        <mat-form-field *ngIf="configuration.max_number_of_matchings !== undefined">
+          <mat-label>Maximum number of matchings</mat-label>
+          <input value="{{ configuration.max_number_of_matchings }}"
+                 formControlName="max_number_of_matchings"
+                 matInput type="number">
+        </mat-form-field>
+
+        <mat-form-field *ngIf="configuration.max_matchings_to_show_to_viewer !== undefined">
+          <mat-label>Maximum matchings to show to viewer</mat-label>
+          <input value="{{ configuration.max_matchings_to_show_to_viewer }}"
+                 formControlName="max_matchings_to_show_to_viewer"
+                 matInput type="number">
+        </mat-form-field>
+
         <mat-form-field *ngIf="configuration.minimum_total_score !== undefined">
           <mat-label>Minimum transplant score</mat-label>
           <input value="{{ configuration.minimum_total_score }}"
@@ -77,13 +91,6 @@
           <mat-label>Compatible blood group bonus</mat-label>
           <input value="{{ configuration.blood_group_compatibility_bonus }}"
                  formControlName="blood_group_compatibility_bonus"
-                 matInput type="number">
-        </mat-form-field>
-
-        <mat-form-field *ngIf="configuration.max_matchings_to_show_to_viewer !== undefined">
-          <mat-label>Maximum matchings to show to viewer</mat-label>
-          <input value="{{ configuration.max_matchings_to_show_to_viewer }}"
-                 formControlName="max_matchings_to_show_to_viewer"
                  matInput type="number">
         </mat-form-field>
       </div>

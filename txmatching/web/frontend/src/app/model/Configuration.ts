@@ -1,3 +1,5 @@
+import { ConfigurationGeneratedSolverConstructorNameEnum, CountryCodeGenerated } from '@app/generated';
+
 export interface Configuration {
   use_split_resolution: boolean;
   require_compatible_blood_group: boolean;
@@ -12,13 +14,19 @@ export interface Configuration {
   max_sequence_length: number;
   max_number_of_distinct_countries_in_round: number;
   max_matchings_to_show_to_viewer: number;
+  max_number_of_matchings: number;
 
   // complex FE
   manual_donor_recipient_scores: DonorRecipientScore[];
   required_patient_db_ids: number[];
   forbidden_country_combinations: CountryCombination[];
 
-  solver_constructor_name: string;
+  solver_constructor_name: ConfigurationGeneratedSolverConstructorNameEnum;
+
+  // Parameters that should not be modified in FE
+  max_cycles_in_all_solutions_solver: number;
+  max_matchings_in_all_solutions_solver: number;
+  max_matchings_in_ilp_solver: number;
 
   [key: string]: boolean | string | number | number[] | CountryCombination[] | DonorRecipientScore[];
 }
@@ -34,6 +42,6 @@ export interface DonorRecipientScore {
 }
 
 export interface CountryCombination {
-  donor_country: string;
-  recipient_country: string;
+  donor_country: CountryCodeGenerated;
+  recipient_country: CountryCodeGenerated;
 }
