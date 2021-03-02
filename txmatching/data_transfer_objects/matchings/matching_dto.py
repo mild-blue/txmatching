@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from txmatching.patients.patient_types import MedicalId
 from txmatching.utils.country_enum import Country
@@ -40,5 +40,5 @@ class MatchingDTO:
 @dataclass
 class CalculatedMatchingsDTO:
     calculated_matchings: List[MatchingDTO]
-    found_matchings_count: int
+    found_matchings_count: Optional[int]
     show_not_all_matchings_found: bool
