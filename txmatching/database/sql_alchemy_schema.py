@@ -1,7 +1,6 @@
 import dataclasses
 from typing import List
 
-from flask_sqlalchemy import Model
 from sqlalchemy import (BOOLEAN, JSON, TEXT, BigInteger, Column, DateTime,
                         Enum, Float, ForeignKey, Integer, LargeBinary,
                         UniqueConstraint)
@@ -9,6 +8,7 @@ from sqlalchemy.orm import backref, relationship
 from sqlalchemy.sql import func
 
 from txmatching.auth.data_types import UserRole
+from txmatching.database.db import db
 from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.country_enum import Country
 # pylint: disable=too-few-public-methods,too-many-arguments
@@ -18,7 +18,7 @@ from txmatching.utils.hla_system.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 
 
-class ConfigModel(Model):
+class ConfigModel(db.Model):
     __tablename__ = 'config'
     __table_args__ = {'extend_existing': True}
     # Here and below I am using Integer instead of BigInt because it seems that there is a bug and BigInteger is not
@@ -37,7 +37,7 @@ class ConfigModel(Model):
     UniqueConstraint('txm_event_id')
 
 
-class PairingResultModel(Model):
+class PairingResultModel(db.Model):
     __tablename__ = 'pairing_result'
     __table_args__ = {'extend_existing': True}
 
@@ -52,7 +52,7 @@ class PairingResultModel(Model):
     UniqueConstraint('config_id')
 
 
-class TxmEventModel(Model):
+class TxmEventModel(db.Model):
     __tablename__ = 'txm_event'
     __table_args__ = {'extend_existing': True}
 
@@ -65,7 +65,7 @@ class TxmEventModel(Model):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
-class RecipientModel(Model):
+class RecipientModel(db.Model):
     __tablename__ = 'recipient'
     __table_args__ = {'extend_existing': True}
 
@@ -99,7 +99,7 @@ class RecipientModel(Model):
         return f'<RecipientModel {self.id} (medical_id={self.medical_id})>'
 
 
-class DonorModel(Model):
+class DonorModel(db.Model):
     __tablename__ = 'donor'
     __table_args__ = {'extend_existing': True}
 
@@ -129,7 +129,7 @@ class DonorModel(Model):
         return f'<DonorModel {self.id} (medical_id={self.medical_id})>'
 
 
-class RecipientAcceptableBloodModel(Model):
+class RecipientAcceptableBloodModel(db.Model):
     __tablename__ = 'recipient_acceptable_blood'
     __table_args__ = {'extend_existing': True}
 
@@ -141,7 +141,7 @@ class RecipientAcceptableBloodModel(Model):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
-class HLAAntibodyRawModel(Model):
+class HLAAntibodyRawModel(db.Model):
     __tablename__ = 'hla_antibody_raw'
     __table_args__ = {'extend_existing': True}
 
@@ -159,7 +159,7 @@ class HLAAntibodyRawModel(Model):
                f'(raw_code={self.raw_code}, mfi={self.mfi}, cutoff={self.cutoff})>'
 
 
-class AppUserModel(Model):
+class AppUserModel(db.Model):
     __tablename__ = 'app_user'
     __table_args__ = {'extend_existing': True}
 
@@ -180,7 +180,7 @@ class AppUserModel(Model):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
-class UserToAllowedEvent(Model):
+class UserToAllowedEvent(db.Model):
     __tablename__ = 'user_to_allowed_event'
     __table_args__ = {'extend_existing': True}
 
@@ -196,7 +196,7 @@ class UserToAllowedEvent(Model):
     )
 
 
-class UploadedDataModel(Model):
+class UploadedDataModel(db.Model):
     __tablename__ = 'uploaded_data'
     __table_args__ = {'extend_existing': True}
 
@@ -210,7 +210,7 @@ class UploadedDataModel(Model):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
-class ParsingErrorModel(Model):
+class ParsingErrorModel(db.Model):
     __tablename__ = 'parsing_error'
     __table_args__ = {'extend_existing': True}
 
@@ -228,7 +228,7 @@ class ParsingErrorModel(Model):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
-class UploadedFileModel(Model):
+class UploadedFileModel(db.Model):
     __tablename__ = 'uploaded_file'
     __table_args__ = {'extend_existing': True}
 
