@@ -122,8 +122,10 @@ class TestMatchingApi(DbTests):
         self._check_response(res, 200)
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
-        expected_antibodies = {'DQA6', 'DQ8'}
+        expected_antibodies = {'DQA6', 'DQ8', 'DQA5', 'DQ2', 'DQ7'}
         self.assertSetEqual(expected_antibodies, _get_hla_antibodies_codes(recipient))
+        expected_antibodies_over_cutoff = {'DQA6', 'DQ8'}
+        self.assertSetEqual(expected_antibodies_over_cutoff, _get_hla_antibodies_codes_over_cutoff(recipient))
         self._check_expected_errors_in_db(0)
 
     def test_txm_event_patient_successful_upload_exceptional_hla_types(self):
@@ -193,4 +195,10 @@ def _get_hla_typing_codes(donor_or_recipient: Patient) -> Set[str]:
 def _get_hla_antibodies_codes(donor_or_recipient: Recipient) -> Set[str]:
     return {hla.code for codes_per_group in
             donor_or_recipient.hla_antibodies.hla_antibodies_per_groups for hla in
+            codes_per_group.hla_antibody_list}
+
+
+def _get_hla_antibodies_codes_over_cutoff(donor_or_recipient: Recipient) -> Set[str]:
+    return {hla.code for codes_per_group in
+            donor_or_recipient.hla_antibodies.hla_antibodies_per_groups_over_cutoff for hla in
             codes_per_group.hla_antibody_list}
