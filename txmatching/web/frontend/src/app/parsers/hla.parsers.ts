@@ -90,7 +90,7 @@ export const parseDetailedScorePerGroup = ( data: DetailedScoreForGroupGenerated
     recipient_matches: data.recipient_matches.map(parseAntigenMatch),
     antibody_matches: data.antibody_matches.map(parseAntibodyMatch),
     group_compatibility_index: data.group_compatibility_index
-  }
+  };
 };
 
 export const parseHlaMatch = ( data: AntigenMatchGenerated | AntibodyMatchGenerated ): HlaMatch => {

@@ -17,7 +17,7 @@ export const parseRecipient = (data: RecipientGenerated): Recipient => {
     waitingSince: data.waiting_since ? parseDate(data.waiting_since) : undefined,
     previousTransplants: data.previous_transplants,
     recipient_requirements: data.recipient_requirements && parseRecipientRequirements(data.recipient_requirements),
-    related_donor_db_id: data.related_donor_db_id,
+    related_donor_db_id: data.related_donor_db_id
   };
 };
 
