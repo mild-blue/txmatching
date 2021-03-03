@@ -90,7 +90,7 @@ definitions:
                 example: 1000000
                 type: integer
             max_debt_for_country:
-                example: 1
+                example: 3
                 type: integer
             max_matchings_in_all_solutions_solver:
                 example: 10000

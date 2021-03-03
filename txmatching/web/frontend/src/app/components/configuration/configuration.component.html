@@ -93,6 +93,13 @@
                  formControlName="blood_group_compatibility_bonus"
                  matInput type="number">
         </mat-form-field>
+
+        <mat-form-field *ngIf="configuration.max_debt_for_country !== undefined">
+          <mat-label>Max difference between received and given kidneys for one country</mat-label>
+          <input value="{{ configuration.max_debt_for_country }}"
+                 formControlName="max_debt_for_country"
+                 matInput type="number">
+        </mat-form-field>
       </div>
     </form>
 
