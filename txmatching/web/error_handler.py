@@ -133,7 +133,9 @@ def _user_auth_handlers(api: Api):
         """too complicated data for solver _exception"""
         _log_warning(error)
         return {'error': 'The solution for this combination of patients and configurations '
-                         'is too complicated for ILPSolver, please change configuration.', 'message': str(error)}, 400
+                         'was not found by ILPSolver. Probably no solution exits. '
+                         'Please change configuration or contact administrators on info@mild.blue'
+                         ' or +420 723 927 536.', 'message': str(error)}, 400
 
     @api.errorhandler(CachingNotReadyException)
     def handle_caching_not_ready_exception(error: CachingNotReadyException):
