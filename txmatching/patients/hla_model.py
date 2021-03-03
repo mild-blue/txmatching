@@ -184,11 +184,9 @@ class HLAAntibodies(PersistentlyHashable):
 
         self.hla_antibodies_per_groups = hla_antibodies_per_groups
 
-    def get_hla_antibodies_per_groups_over_cutoff(
-            self,
-            logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
-    ) -> List[AntibodiesPerGroup]:
-        return filter_antibodies_per_groups_over_cutoff(self.hla_antibodies_per_groups, logger_with_patient)
+    @property
+    def hla_antibodies_per_groups_over_cutoff(self) -> List[AntibodiesPerGroup]:
+        return _filter_antibodies_per_groups_over_cutoff(self.hla_antibodies_per_groups)
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLAAntibodies)
@@ -204,22 +202,22 @@ def split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
 
 
 def create_hla_antibodies_per_groups_from_hla_antibodies(
-        hla_antibodies: List[HLAAntibody]
+        hla_antibodies: List[HLAAntibody],
+        logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
 ) -> List[AntibodiesPerGroup]:
-    # hla_antibodies_over_cutoff_list = _filter_antibodies_over_cutoff(hla_antibodies, logger_with_patient)
-    hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies)
+    hla_antibodies_joined = _join_duplicate_antibodies(hla_antibodies, logger_with_patient)
+    hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_joined)
     return hla_antibodies_per_groups
 
 
-def filter_antibodies_per_groups_over_cutoff(
-        hla_antibodies_per_groups: List[AntibodiesPerGroup],
-        logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
+def _filter_antibodies_per_groups_over_cutoff(
+        hla_antibodies_per_groups: List[AntibodiesPerGroup]
 ) -> List[AntibodiesPerGroup]:
     return [
         AntibodiesPerGroup(
             hla_group=antibodies_per_group.hla_group,
             hla_antibody_list=_filter_antibodies_over_cutoff(
-                antibodies_per_group.hla_antibody_list, logger_with_patient
+                antibodies_per_group.hla_antibody_list
             )
         ) for antibodies_per_group in hla_antibodies_per_groups
     ]
@@ -233,7 +231,7 @@ def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[Antib
             hla_antibodies_in_groups.items()]
 
 
-def _filter_antibodies_over_cutoff(
+def _join_duplicate_antibodies(
         hla_antibodies: List[HLAAntibody],
         logger_with_patient: Union[logging.Logger, PatientAdapter]
 ) -> List[HLAAntibody]:
@@ -242,7 +240,7 @@ def _filter_antibodies_over_cutoff(
 
     grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies, key=_group_key),
                                                key=_group_key)
-    hla_antibodies_over_cutoff = []
+    hla_antibodies_joined = []
     for hla_code_raw, antibody_group in grouped_hla_antibodies:
         antibody_group_list = list(antibody_group)
         assert len(antibody_group_list) > 0
@@ -255,16 +253,24 @@ def _filter_antibodies_over_cutoff(
                                               cutoff,
                                               hla_code_raw,
                                               logger_with_patient)
-        if mfi >= cutoff:
-            new_antibody = HLAAntibody(
-                code=antibody_group_list[0].code,
-                raw_code=hla_code_raw,
-                cutoff=cutoff,
-                mfi=mfi
-            )
-            hla_antibodies_over_cutoff.append(new_antibody)
+        new_antibody = HLAAntibody(
+            code=antibody_group_list[0].code,
+            raw_code=hla_code_raw,
+            cutoff=cutoff,
+            mfi=mfi
+        )
+        hla_antibodies_joined.append(new_antibody)
 
-    return hla_antibodies_over_cutoff
+    return hla_antibodies_joined
+
+
+def _filter_antibodies_over_cutoff(
+        hla_antibodies: List[HLAAntibody]
+) -> List[HLAAntibody]:
+    return [
+        hla_antibody for hla_antibody in hla_antibodies
+        if hla_antibody.mfi >= hla_antibody.cutoff
+    ]
 
 
 HLACodeAlias = Union[HLAType, HLAAntibody]

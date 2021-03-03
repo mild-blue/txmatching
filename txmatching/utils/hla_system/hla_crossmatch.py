@@ -47,7 +47,7 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 use_split_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
     antibody_matches = []
     for hla_per_group, antibodies_per_group in zip(donor_hla_typing.hla_per_groups,
-                                                   recipient_antibodies.get_hla_antibodies_per_groups_over_cutoff()):
+                                                   recipient_antibodies.hla_antibodies_per_groups_over_cutoff):
         assert hla_per_group.hla_group == antibodies_per_group.hla_group
         recipient_antibodies_set = set()
         if use_split_resolution:
