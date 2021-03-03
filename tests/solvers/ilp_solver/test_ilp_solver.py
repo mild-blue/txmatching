@@ -116,15 +116,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             self.assertLessEqual(1, len(solutions),
                                  f'Failed for {debt}')
 
-            max_debt = max(_max_debt_from_matching(matching) for matching in solutions)
+            max_debt = max(matching.max_debt_from_matching() for matching in solutions)
             self.assertEqual(debt, max_debt, f'Fail: max_debt: {max_debt} but configuration said {debt}')
 
     def test_solver_no_patients(self):
         txm_event = create_or_overwrite_txm_event(name='test')
         solve_from_configuration(Configuration(solver_constructor_name='ILPSolver'), txm_event)
-
-
-def _max_debt_from_matching(matching: Matching) -> int:
-    return max([np.abs([matching.get_donors_for_country_count(country) -
-                        matching.get_recipients_for_country_count(country)])
-                for country in [Country.CZE, Country.IND, Country.CAN]])

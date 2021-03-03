@@ -1,5 +1,7 @@
 from dataclasses import dataclass
-from typing import FrozenSet, List
+from typing import FrozenSet, List, Set
+
+import numpy as np
 
 from txmatching.data_transfer_objects.matchings.matching_dto import CountryDTO
 from txmatching.patients.patient import DonorType
@@ -7,6 +9,7 @@ from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_round import TransplantRound
 from txmatching.solvers.matching.transplant_sequence import TransplantSequence
+from txmatching.utils.country_enum import Country
 
 
 @dataclass
@@ -78,12 +81,10 @@ class Matching:
                     pair.recipient.parameters.country_code == country_code])
 
     def get_country_codes_counts(self) -> List[CountryDTO]:
-        countries = {patient.parameters.country_code for donor_recipient in self.matching_pairs for patient in
-                     [donor_recipient.donor, donor_recipient.recipient]}
 
         return [CountryDTO(country,
                            self.get_donors_for_country_count(country),
-                           self.get_recipients_for_country_count(country)) for country in countries]
+                           self.get_recipients_for_country_count(country)) for country in self._countries()]
 
     def get_cycles(self) -> List[TransplantCycle]:
         return self._cycles
@@ -95,3 +96,12 @@ class Matching:
         cycles = self.get_cycles()
         sequences = self.get_sequences()
         return cycles + sequences
+
+    def _countries(self) -> Set[Country]:
+        return {patient.parameters.country_code for donor_recipient in self.matching_pairs for patient in
+                [donor_recipient.donor, donor_recipient.recipient]}
+
+    def max_debt_from_matching(self) -> int:
+        return max([np.abs([self.get_donors_for_country_count(country) -
+                            self.get_recipients_for_country_count(country)])
+                    for country in self._countries()])
