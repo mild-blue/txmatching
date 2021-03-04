@@ -49,7 +49,7 @@ ConfigurationJson = matching_api.model(
         ),
         'required_patient_db_ids': fields.List(required=True, cls_or_instance=fields.Integer,
                                                example=_default_configuration.required_patient_db_ids),
-        'use_split_resolution': fields.Boolean(required=True, example=_default_configuration.use_split_resolution),
+        'use_high_res_resolution': fields.Boolean(required=True, example=_default_configuration.use_high_res_resolution),
         'forbidden_country_combinations': fields.List(required=True, cls_or_instance=fields.Nested(
             ForbiddenCountryCombination)),
         'manual_donor_recipient_scores': fields.List(required=True, cls_or_instance=fields.Nested(

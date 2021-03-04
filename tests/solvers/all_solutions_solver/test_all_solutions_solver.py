@@ -45,7 +45,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_sequence_length in range(1, 6):
-            configuration = Configuration(use_split_resolution=True, max_sequence_length=max_sequence_length,
+            configuration = Configuration(use_high_res_resolution=True, max_sequence_length=max_sequence_length,
                                           max_number_of_matchings=1000)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertEqual(max_sequence_length,
@@ -56,7 +56,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_cycle_length in range(2, 5):
-            configuration = Configuration(use_split_resolution=True, max_cycle_length=max_cycle_length,
+            configuration = Configuration(use_high_res_resolution=True, max_cycle_length=max_cycle_length,
                                           max_number_of_matchings=1000)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertEqual(max_cycle_length,

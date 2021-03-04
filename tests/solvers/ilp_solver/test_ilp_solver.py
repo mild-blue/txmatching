@@ -1,5 +1,5 @@
-from tests.solvers.best_solution_use_split_resolution_true import (
-    BEST_SOLUTION_USE_SPLIT_RESOLUTION_TRUE,
+from tests.solvers.best_solution_use_high_res_resolution_true import (
+    BEST_SOLUTION_use_high_res_resolution_TRUE,
     get_donor_recipient_pairs_from_solution)
 from tests.test_utilities.populate_db import (PATIENT_DATA_OBFUSCATED,
                                               create_or_overwrite_txm_event)
@@ -71,7 +71,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         for max_sequence_length in range(1, 5):
             configuration = Configuration(
                 solver_constructor_name='ILPSolver',
-                use_split_resolution=True,
+                use_high_res_resolution=True,
                 max_sequence_length=max_sequence_length,
                 max_cycle_length=0,
                 max_number_of_matchings=3)
@@ -90,7 +90,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_cycle_length in range(2, 5):
             configuration = Configuration(solver_constructor_name='ILPSolver',
-                                          use_split_resolution=True,
+                                          use_high_res_resolution=True,
                                           max_cycle_length=max_cycle_length,
                                           max_sequence_length=0,
                                           max_number_of_matchings=3)

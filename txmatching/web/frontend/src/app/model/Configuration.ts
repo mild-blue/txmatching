@@ -1,7 +1,7 @@
 import { ConfigurationGeneratedSolverConstructorNameEnum, CountryCodeGenerated } from '@app/generated';
 
 export interface Configuration {
-  use_split_resolution: boolean;
+  use_high_res_resolution: boolean;
   require_compatible_blood_group: boolean;
   require_better_match_in_compatibility_index: boolean;
   require_better_match_in_compatibility_index_or_blood_group: boolean;
