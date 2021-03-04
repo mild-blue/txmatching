@@ -116,7 +116,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             self.assertLessEqual(1, len(solutions),
                                  f'Failed for {debt}')
 
-            max_debt = max(matching.max_debt_from_matching() for matching in solutions)
+            max_debt = max(matching.max_debt_from_matching for matching in solutions)
             self.assertEqual(debt, max_debt, f'Fail: max_debt: {max_debt} but configuration said {debt}')
 
     def test_solver_no_patients(self):

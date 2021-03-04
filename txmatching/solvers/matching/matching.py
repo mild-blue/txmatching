@@ -84,7 +84,7 @@ class Matching:
 
         return [CountryDTO(country,
                            self.get_donors_for_country_count(country),
-                           self.get_recipients_for_country_count(country)) for country in self._countries()]
+                           self.get_recipients_for_country_count(country)) for country in self._countries]
 
     def get_cycles(self) -> List[TransplantCycle]:
         return self._cycles
@@ -97,11 +97,13 @@ class Matching:
         sequences = self.get_sequences()
         return cycles + sequences
 
+    @property
     def _countries(self) -> Set[Country]:
         return {patient.parameters.country_code for donor_recipient in self.matching_pairs for patient in
                 [donor_recipient.donor, donor_recipient.recipient]}
 
+    @property
     def max_debt_from_matching(self) -> int:
         return max([np.abs([self.get_donors_for_country_count(country) -
                             self.get_recipients_for_country_count(country)])
-                    for country in self._countries()])
+                    for country in self._countries])

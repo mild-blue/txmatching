@@ -55,12 +55,12 @@ def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSo
     return constraints_added
 
 
-def _too_many_countries(cycle, data_and_configuration: DataAndConfigurationForILPSolver) -> int:
+def _too_many_countries(cycle, data_and_configuration: DataAndConfigurationForILPSolver) -> bool:
     return len({data_and_configuration.country_codes_dict[i] for edge in cycle for i in
                 edge}) > data_and_configuration.configuration.max_number_of_distinct_countries_in_round
 
 
-def _is_debt_too_big(edges_in_solution, data_and_configuration: DataAndConfigurationForILPSolver):
+def _is_debt_too_big(edges_in_solution, data_and_configuration: DataAndConfigurationForILPSolver) -> bool:
     countries = set(data_and_configuration.country_codes_dict.values())
     debt_dict = dict()
     for country in countries:
