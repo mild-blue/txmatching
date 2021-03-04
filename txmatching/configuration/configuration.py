@@ -77,6 +77,8 @@ class Configuration:
         default_factory=list,
         metadata={COMPARISON_MODE: ComparisonMode.Set}
     )
+    max_debt_for_country: int = field(default=3,
+                                      compare=True)
     max_matchings_to_show_to_viewer: int = field(default=5, compare=False)
     max_number_of_matchings: int = field(default=5,
                                          compare=True,
@@ -90,6 +92,10 @@ class Configuration:
     max_matchings_in_ilp_solver: int = field(default=20,
                                              compare=True,
                                              metadata={COMPARISON_MODE: ComparisonMode.Smaller})
+
+    max_number_of_dynamic_constrains_ilp_solver: int = field(default=100,
+                                                             compare=True,
+                                                             metadata={COMPARISON_MODE: ComparisonMode.Smaller})
 
     def comparable(self, other):
         """
