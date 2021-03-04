@@ -51,27 +51,6 @@ export class RecipientAntibodiesComponent {
     }
   }
 
-  public removeAntibody(a: Antibody): void {
-    if (!this.recipient) {
-      return;
-    }
-
-    const index = this.recipient.antibodies.indexOf(a);
-
-    if (index >= 0) {
-      this.recipient.antibodies.splice(index, 1);
-    }
-  }
-
-  public handleNewAntibodySelect(antibody: Antibody, control: HTMLInputElement): void {
-    if (!control) {
-      return;
-    }
-    this.antibodyValue = antibody.code ?? '';
-    control.value = '';
-    control.disabled = true;
-  }
-
   public handleNewAntibodyRemove(control: HTMLInputElement): void {
     const formControl = this.form.controls.antibody;
     if (!formControl || !control) {
@@ -89,9 +68,5 @@ export class RecipientAntibodiesComponent {
     this.antibodyValue = value.trim().toUpperCase();
     control.value = '';
     control.disabled = true;
-  }
-
-  public displayFn(a: Antibody): string {
-    return a?.code ?? '';
   }
 }

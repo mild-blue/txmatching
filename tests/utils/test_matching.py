@@ -6,7 +6,7 @@ from tests.test_utilities.create_dataclasses import (get_test_antibodies,
                                                      get_test_recipients)
 from txmatching.scorers.matching import (
     calculate_compatibility_index_for_group, get_count_of_transplants,
-    get_matching_hla_typing_code)
+    get_matching_hla_typing_display_code)
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
@@ -24,19 +24,19 @@ TEST_ANTIBODIES = get_test_antibodies()
 
 class TestMatching(unittest.TestCase):
     def test_get_matching_hla_typing(self):
-        result = get_matching_hla_typing_code(DONORS[0], RECIPIENTS[0])
+        result = get_matching_hla_typing_display_code(DONORS[0], RECIPIENTS[0])
         result.sort()
         self.assertListEqual([RAW_CODES[1]], result)
 
-        result = get_matching_hla_typing_code(DONORS[0], RECIPIENTS[1])
+        result = get_matching_hla_typing_display_code(DONORS[0], RECIPIENTS[1])
         result.sort()
         self.assertListEqual([], result)
 
-        result = get_matching_hla_typing_code(DONORS[1], RECIPIENTS[0])
+        result = get_matching_hla_typing_display_code(DONORS[1], RECIPIENTS[0])
         result.sort()
         self.assertListEqual([RAW_CODES[1], RAW_CODES[2]], result)
 
-        result = get_matching_hla_typing_code(DONORS[1], RECIPIENTS[1])
+        result = get_matching_hla_typing_display_code(DONORS[1], RECIPIENTS[1])
         result.sort()
         self.assertListEqual([], result)
 

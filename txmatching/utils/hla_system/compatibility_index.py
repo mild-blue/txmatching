@@ -12,8 +12,7 @@ from txmatching.utils.enums import (HLA_GROUPS_GENE,
 # For our purposes, we will use the index of compatibility, which is the inverse of index of incompatibility
 # -- see function compatibility_index -- and is calculated as the number of matches in A, B, DR alleles.
 # For each matching allele a certain bonus is added to compatibility index depending on the allele type.
-from txmatching.utils.hla_system.hla_transformations import (broad_to_split,
-                                                             get_broad_codes)
+from txmatching.utils.hla_system.hla_transformations import broad_to_split
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +114,8 @@ def _match_through_split_codes(current_compatibility_index: float,
                                hla_group: HLAGroup):
     for donor_hla_type in donor_hla_types.copy():
         matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
-                              recipient_hla_type.code == donor_hla_type.code]
+                              recipient_hla_type.code.split == donor_hla_type.code.split
+                              and donor_hla_type.code.split is not None]
         if len(matching_hla_types) > 0:
             donor_hla_types.remove(donor_hla_type)
             recipient_hla_types.remove(matching_hla_types[0])
@@ -127,34 +127,29 @@ def _match_through_split_codes(current_compatibility_index: float,
     return current_compatibility_index
 
 
-def _hla_type_to_broad(hla_types: List[HLAType]) -> List[str]:
-    return get_broad_codes(
-        [hla_type.code for hla_type in hla_types]
-    )
-
-
 def _match_through_broad_codes(current_compatibility_index: float,
                                donor_matches: List[HLAMatch],
                                recipient_matches: List[HLAMatch],
                                donor_hla_types: List[HLAType],
                                recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup):
-    for hla_type, broad_code in zip(donor_hla_types.copy(), _hla_type_to_broad(donor_hla_types)):
-        if broad_code in _hla_type_to_broad(recipient_hla_types):
+    # TODOO REFACTOR
+    for donor_hla_type, donor_broad_code in zip(donor_hla_types.copy(), [hla_type.code.broad for hla_type in donor_hla_types]):
+        if donor_broad_code in [recipient_hla_type.code.broad for recipient_hla_type in recipient_hla_types]:
             matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
-                                  recipient_hla_type.code == broad_code]
+                                  recipient_hla_type.code.split_or_broad == donor_broad_code]  # TODOO: maybe .broad
             if len(matching_hla_types) > 0:
                 recipient_match_hla_type = matching_hla_types[0]
             else:
-                split_codes_for_broad = broad_to_split(broad_code)
+                split_codes_for_broad = broad_to_split(donor_broad_code)
                 hla_types_to_remove = {recipient_hla_type for recipient_hla_type in recipient_hla_types if
-                                       recipient_hla_type.code in split_codes_for_broad}
+                                       recipient_hla_type.code.split_or_broad in split_codes_for_broad}  # TODOO: maybe .broad
                 assert len(hla_types_to_remove) > 0
                 recipient_match_hla_type = hla_types_to_remove.pop()
 
             recipient_hla_types.remove(recipient_match_hla_type)
-            donor_hla_types.remove(hla_type)
-            donor_matches.append(HLAMatch(hla_type, MatchTypes.BROAD))
+            donor_hla_types.remove(donor_hla_type)
+            donor_matches.append(HLAMatch(donor_hla_type, MatchTypes.BROAD))
             recipient_matches.append(HLAMatch(recipient_match_hla_type, MatchTypes.BROAD))
             current_compatibility_index += MATCH_TYPE_BONUS[MatchTypes.BROAD] * HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS[
                 hla_group]

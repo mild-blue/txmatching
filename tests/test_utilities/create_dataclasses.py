@@ -130,11 +130,11 @@ def get_test_recipients():
 def get_test_antibodies():
     return HLAAntibodies(
         hla_antibodies_list=[
-            HLAAntibody('A7', 1200, 1000, 'A7'),
-            HLAAntibody('B32', 1200, 1000, 'B32'),
-            HLAAntibody('DR40', 1200, 1000, 'DR40'),
-            HLAAntibody('B5', 1200, 1000, 'B5'),
-            HLAAntibody('DR9', 1200, 1000, 'DR9'),
-            HLAAntibody('A23', 1200, 1000, 'A23')
+            HLAAntibody('A7', 1200, 1000),
+            HLAAntibody('B32', 1200, 1000),
+            HLAAntibody('DR40', 1200, 1000),
+            HLAAntibody('B5', 1200, 1000),
+            HLAAntibody('DR9', 1200, 1000),
+            HLAAntibody('A23', 1200, 1000)
         ]
     )

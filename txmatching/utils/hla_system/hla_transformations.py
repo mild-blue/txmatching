@@ -5,9 +5,11 @@ from typing import List, Optional, Set, Union
 
 import numpy as np
 
+from txmatching.patients.hla_code import HLACode
 from txmatching.utils.hla_system.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
+                                                   BROAD_CODES, SPLIT_CODES,
                                                    SPLIT_TO_BROAD)
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import (
     PARSE_HLA_CODE_EXCEPTIONS,
@@ -46,7 +48,7 @@ def split_to_broad(hla_code: str) -> str:
 
 @dataclass
 class HlaCodeProcessingResult:
-    maybe_hla_code: Optional[str]
+    maybe_hla_code: Optional[HLACode]
     result_detail: HlaCodeProcessingResultDetail
 
 
@@ -89,43 +91,79 @@ def _high_res_to_split(high_res_code: str) -> Union[str, HlaCodeProcessingResult
 
 
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
-    maybe_exception_hla_code = PARSE_HLA_CODE_EXCEPTIONS.get(hla_raw_code)
-    if maybe_exception_hla_code:
-        return HlaCodeProcessingResult(maybe_exception_hla_code, HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
+    # Raw code is high res exception
+    maybe_exception_split_code = PARSE_HLA_CODE_EXCEPTIONS.get(hla_raw_code)
+    if maybe_exception_split_code:
+        hla_code = HLACode(
+            high_res=hla_raw_code,
+            split=maybe_exception_split_code,
+            broad=split_to_broad(maybe_exception_split_code)
+        )
+        return HlaCodeProcessingResult(hla_code, HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
 
     if re.match(HIGH_RES_REGEX, hla_raw_code):
-        hla_code_or_error = _high_res_to_split(hla_raw_code)
+        high_res = hla_raw_code
+        split_or_broad_or_error = _high_res_to_split(hla_raw_code)
     else:
-        hla_code_or_error = hla_raw_code
+        high_res = None
+        split_or_broad_or_error = hla_raw_code
 
-    if isinstance(hla_code_or_error, str) and re.match(SPLIT_RES_REGEX, hla_code_or_error):
-        c_match = re.match(CW_SEROLOGICAL_CODE_WITHOUT_W_REGEX, hla_code_or_error)
+    if isinstance(split_or_broad_or_error, str) and re.match(SPLIT_RES_REGEX, split_or_broad_or_error):
+        c_match = re.match(CW_SEROLOGICAL_CODE_WITHOUT_W_REGEX, split_or_broad_or_error)
         if c_match:
-            hla_code_or_error = f'CW{int(c_match.group(1))}'
+            split_or_broad_or_error = f'CW{int(c_match.group(1))}'
 
-        b_match = re.match(B_SEROLOGICAL_CODE_WITH_W_REGEX, hla_code_or_error)
+        b_match = re.match(B_SEROLOGICAL_CODE_WITH_W_REGEX, split_or_broad_or_error)
         if b_match:
             # doesn't actually do anything atm, but Bw is a special kind of antigen so we want to keep the branch here
-            hla_code_or_error = f'BW{int(b_match.group(1))}'
+            split_or_broad_or_error = f'BW{int(b_match.group(1))}'
 
-        dpqb_match = re.match(DQ_DP_SEROLOGICAL_CODE_WITH_AB_REGEX, hla_code_or_error)
+        dpqb_match = re.match(DQ_DP_SEROLOGICAL_CODE_WITH_AB_REGEX, split_or_broad_or_error)
         if dpqb_match:
             subtype_str = 'A' if dpqb_match.group(2) == 'A' else ''
-            hla_code_or_error = f'{dpqb_match.group(1)}{subtype_str}{int(dpqb_match.group(3))}'
+            split_or_broad_or_error = f'{dpqb_match.group(1)}{subtype_str}{int(dpqb_match.group(3))}'
 
-        if hla_code_or_error in ALL_SPLIT_BROAD_CODES:
-            return HlaCodeProcessingResult(hla_code_or_error, HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
-        # Some split HLA codes are missing in our table, therefore we still return the found HLA code if it matches
-        # expected format of split codes.
-        return HlaCodeProcessingResult(hla_code_or_error,
-                                       HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)
-    elif isinstance(hla_code_or_error, HlaCodeProcessingResultDetail):
-        return HlaCodeProcessingResult(None, hla_code_or_error)
+        if split_or_broad_or_error in SPLIT_CODES:
+            # Raw code was high res or split
+            return HlaCodeProcessingResult(
+                HLACode(
+                    high_res=high_res,
+                    split=split_or_broad_or_error,
+                    broad=split_to_broad(split_or_broad_or_error)
+                ),
+                HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED
+            )
+        elif split_or_broad_or_error in BROAD_CODES:
+            # Raw code was broad
+            assert high_res is None, \
+                f'Broad code of high res {high_res} is {split_or_broad_or_error} but split code is unknown'
+            return HlaCodeProcessingResult(
+                HLACode(
+                    high_res=high_res,
+                    split=None,
+                    broad=split_or_broad_or_error
+                ),
+                HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED
+            )
+        else:
+            # Some split HLA codes are missing in our table, therefore we still return the found HLA code if it matches
+            # expected format of split codes. In this case split = broad.
+            return HlaCodeProcessingResult(
+                HLACode(
+                    high_res=high_res,
+                    split=split_or_broad_or_error,
+                    broad=split_or_broad_or_error
+                ),
+                HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE
+            )
+
+    elif isinstance(split_or_broad_or_error, HlaCodeProcessingResultDetail):
+        return HlaCodeProcessingResult(None, split_or_broad_or_error)
     else:
         return HlaCodeProcessingResult(None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
 
 
-def parse_hla_raw_code(hla_raw_code: str) -> str:
+def parse_hla_raw_code(hla_raw_code: str) -> HLACode:
     """
     This method is used in tests and should never be used in other code. For that, please use
     parse_hla_raw_code_and_store_parsing_error_in_db. These two method are partially redundant so in case of update,
@@ -159,10 +197,6 @@ def preprocess_hla_code_in(hla_code_in: str) -> List[str]:
         return []
     else:
         return [hla_code_in]
-
-
-def get_broad_codes(hla_codes: List[str]) -> List[str]:
-    return [split_to_broad(hla_code) for hla_code in hla_codes]
 
 
 def get_mfi_from_multiple_hla_codes(mfis: List[int],

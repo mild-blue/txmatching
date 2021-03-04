@@ -9,10 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { HlaCodeGenerated } from './hlaCodeGenerated';
 
 
 export interface HlaTypeGenerated { 
-    code: string;
+    code: HlaCodeGenerated;
     raw_code: string;
 }
 

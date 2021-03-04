@@ -22,6 +22,7 @@ export * from './hlaAntibodiesToUpdateGenerated';
 export * from './hlaAntibodyGenerated';
 export * from './hlaAntibodyRawGenerated';
 export * from './hlaAntibodyToUpdateGenerated';
+export * from './hlaCodeGenerated';
 export * from './hlaCodesInGroupsGenerated';
 export * from './hlaTypeGenerated';
 export * from './hlaTypeRawGenerated';

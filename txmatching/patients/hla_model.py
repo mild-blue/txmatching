@@ -4,6 +4,7 @@ import re
 from dataclasses import dataclass
 from typing import Dict, List, Union
 
+from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import (HLA_GROUP_SPLIT_CODE_REGEX,
                                     HLA_GROUPS_NAMES_WITH_OTHER, HLAGroup)
 from txmatching.utils.hla_system.hla_transformations import (
@@ -16,9 +17,9 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
 @dataclass
 class HLAType(PersistentlyHashable):
     raw_code: str
-    code: str
+    code: HLACode
 
-    def __init__(self, raw_code: str, code: str = None):
+    def __init__(self, raw_code: str, code: HLACode = None):
         # The only places where the init is called without code specified should be
         # tests and data initialization
         self.raw_code = raw_code
@@ -93,11 +94,13 @@ class HLAAntibody(PersistentlyHashable):
     raw_code: str
     mfi: int
     cutoff: int
-    code: str
+    code: HLACode
 
-    def __init__(self, raw_code: str, mfi: int, cutoff: int, code: str = None):
+    def __init__(self, raw_code: str, mfi: int, cutoff: int, code: HLACode = None):
         # The only places where the init is called without code specified should be
         # tests and data initialization
+        assert code is None or isinstance(code, HLACode)
+
         self.raw_code = raw_code
         self.mfi = mfi
         self.cutoff = cutoff
@@ -284,7 +287,7 @@ def _split_hla_codes_to_groups(hla_types: List[HLACodeAlias]
     for hla_type in hla_types:
         match_found = False
         for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
-            if re.match(HLA_GROUP_SPLIT_CODE_REGEX[hla_group], hla_type.code):
+            if re.match(HLA_GROUP_SPLIT_CODE_REGEX[hla_group], hla_type.code.broad):
                 hla_types_in_groups[hla_group].append(hla_type)
                 match_found = True
                 break
