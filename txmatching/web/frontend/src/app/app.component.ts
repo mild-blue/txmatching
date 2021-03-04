@@ -46,10 +46,22 @@ export class AppComponent implements OnDestroy {
           document.body.style.setProperty(`--${key}`, currentTheme[key])
         );
 
-        (<HTMLLinkElement>document.getElementById('favicon-ico')).href = currentTheme['favicon-ico'];
-        (<HTMLLinkElement>document.getElementById('favicon-16x16')).href = currentTheme['favicon-16x16'];
-        (<HTMLLinkElement>document.getElementById('favicon-32x32')).href = currentTheme['favicon-32x32'];
-        (<HTMLLinkElement>document.getElementById('apple-touch-icon')).href = currentTheme['apple-touch-icon'];
+        const faviconIco = document.getElementById('favicon-ico') as HTMLLinkElement;
+        if(faviconIco){
+          faviconIco.href = currentTheme['favicon-ico'];
+        }
+        const favicon16 = document.getElementById('favicon-16x16') as HTMLLinkElement;
+        if(favicon16){
+          favicon16.href = currentTheme['favicon-16x16'];
+        }
+        const favicon32 = document.getElementById('favicon-32x32') as HTMLLinkElement;
+        if(favicon32){
+          favicon32.href = currentTheme['favicon-32x32'];
+        }
+        const appleTouchIcon = document.getElementById('apple-touch-icon') as HTMLLinkElement;
+        if(appleTouchIcon){
+          appleTouchIcon.href = currentTheme['apple-touch-icon'];
+        }
 
         this.isThemeSet = true;
       })
