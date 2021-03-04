@@ -68,8 +68,7 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
                     )
                 )
 
-    # 3. filter antibodies over cutoff and split to groups
-    # TODO: https://github.com/mild-blue/txmatching/issues/505
+    # 3. split antibodies to groups (and join duplicates)
     hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(
         hla_antibodies_parsed, logger_with_patient
     )

@@ -125,15 +125,14 @@ class TestCodeParser(DbTests):
         ).hla_antibodies_per_groups[3].hla_antibody_list})
         # Similar case as in the lines above. All hla_codes are the same in high res. This invokes call of
         # get_mfi_from_multiple_hla_codes, where the average is calculated (1900), which is below cutoff.
-        # The antibody set is thus empty.
-        self.assertSetEqual(set(), set(
-            HLAAntibodies(
+        # The antibody is not removed.
+        self.assertSetEqual({'DQA1'}, {hla_antibody.code for hla_antibody in HLAAntibodies(
                 [
                     HLAAntibody('DQA1*01:02', cutoff=2000, mfi=6000),
                     HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2000),
                     HLAAntibody('DQA1*01:02', cutoff=2000, mfi=1800)
                 ]
-            ).hla_antibodies_per_groups[3].hla_antibody_list))
+            ).hla_antibodies_per_groups[3].hla_antibody_list})
 
         self.assertSetEqual({
             HLAAntibody(raw_code='DQA1*01:01', mfi=4500, cutoff=2000, code='DQA1'),

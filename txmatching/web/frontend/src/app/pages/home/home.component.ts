@@ -27,7 +27,10 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   public loading: boolean = false;
 
   public matchings: Matching[] = [];
-  public foundMatchingsCount: number = 0;
+
+  /* All possible matchings that the solver found. This can be much higher then number of returned
+   * top matchings. This is set only for AllSolution solver. */
+  public foundMatchingsCount?: number;
 
   public configuration?: Configuration;
 

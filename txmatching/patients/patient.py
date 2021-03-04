@@ -3,7 +3,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 
-from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
+from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
@@ -85,7 +85,7 @@ class Recipient(Patient, PersistentlyHashable):
 
     def __post_init__(self):
         if self.recipient_cutoff is None:
-            self.recipient_cutoff = calculate_cutoff(self.hla_antibodies.hla_antibodies_list)
+            self.recipient_cutoff = calculate_cutoff(self.hla_antibodies.hla_antibodies_raw_list)
 
     def update_persistent_hash(self, hash_: HashType):
         super().update_persistent_hash(hash_)
@@ -122,19 +122,17 @@ class TxmEvent(TxmEventBase):
                                        recipient.related_donor_db_id in self.active_donors_dict}
 
 
-def calculate_cutoff(hla_antibodies_list: List[HLAAntibody]) -> int:
+def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
     """
     Calculates patient cutoff.
-    :param hla_antibodies_list: list of HLA antibodies.
+    :param hla_antibodies_raw_list: list of HLA raw antibodies.
     :return: Patient cutoff.
     """
     helper_raw_code = 'A1'
-    helper_code = 'A1'
-    return max(hla_antibodies_list,
+    return max(hla_antibodies_raw_list,
                key=lambda antibody: antibody.cutoff,
-               default=HLAAntibody(
+               default=HLAAntibodyRaw(
                    raw_code=helper_raw_code,
                    mfi=0,
-                   cutoff=DEFAULT_CUTOFF,
-                   code=helper_code
+                   cutoff=DEFAULT_CUTOFF
                )).cutoff

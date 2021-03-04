@@ -9,12 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MatchingGenerated } from './matchingGenerated';
 
 
-export interface CalculatedMatchingsGenerated { 
-    calculated_matchings: Array<MatchingGenerated>;
-    found_matchings_count?: number;
-    show_not_all_matchings_found: boolean;
+export interface HlaAntibodyRawGenerated { 
+    cutoff: number;
+    mfi: number;
+    raw_code: string;
 }
 

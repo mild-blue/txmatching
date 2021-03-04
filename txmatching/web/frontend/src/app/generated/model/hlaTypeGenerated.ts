@@ -12,7 +12,7 @@
 
 
 export interface HlaTypeGenerated { 
-    code?: string;
+    code: string;
     raw_code: string;
 }
 

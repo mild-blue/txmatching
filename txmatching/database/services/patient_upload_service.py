@@ -6,8 +6,8 @@ from typing import Dict, List
 import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
-    HLATypeRaw, HLATypingRawDTO)
+from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
+    HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
@@ -20,13 +20,14 @@ from txmatching.database.db import db
 from txmatching.database.services.parsing_utils import (
     check_existing_ids_for_duplicates, parse_date_to_datetime)
 from txmatching.database.services.patient_service import \
-    get_hla_antibodies_from_hla_antibodies_dto
+    get_hla_antibodies_from_recipient_model
 from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, get_txm_event_db_id_by_name,
     remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
     RecipientModel)
+from txmatching.patients.hla_model import HLATypeRaw
 from txmatching.patients.patient import DonorType, calculate_cutoff
 from txmatching.utils.country_enum import Country
 from txmatching.utils.hla_system.hla_transformations_store import (
@@ -127,8 +128,8 @@ def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
     )
     recipient_model.hla_antibodies = dataclasses.asdict(hla_antibodies_parsed)
 
-    transformed_hla_antibodies = get_hla_antibodies_from_hla_antibodies_dto(hla_antibodies_parsed)
-    recipient_model.recipient_cutoff = calculate_cutoff(transformed_hla_antibodies.hla_antibodies_list)
+    transformed_hla_antibodies = get_hla_antibodies_from_recipient_model(recipient_model)
+    recipient_model.recipient_cutoff = calculate_cutoff(transformed_hla_antibodies.hla_antibodies_raw_list)
 
 
 def _donor_upload_dto_to_donor_model(

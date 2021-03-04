@@ -1,7 +1,7 @@
 import { BloodGroupEnumGenerated, DonorGenerated, PatientParametersGenerated, RecipientGenerated, SexEnumGenerated } from '../generated';
 import { BloodGroup, Patient, PatientParameters, Sex } from '../model';
 import { DEFAULT_LIST_ITEM } from '../components/list-item/list-item.interface';
-import { parseAntigen, parseHlaPerGroup } from '@app/parsers/hla.parsers';
+import { parseAntigen, parseAntigenRaw, parseHlaPerGroup } from '@app/parsers/hla.parsers';
 
 export const parsePatient = ( data: DonorGenerated | RecipientGenerated ): Patient => {
   return {
@@ -20,7 +20,8 @@ export const parsePatientParameters = ( data: PatientParametersGenerated ): Pati
     // TODO: https://github.com/mild-blue/txmatching/issues/401 create hla typing model
     hla_typing: {
       hla_per_groups: data.hla_typing?.hla_per_groups.map(parseHlaPerGroup) ?? [],
-      hla_types_list: data.hla_typing?.hla_types_list.map(parseAntigen) ?? []
+      hla_types_list: data.hla_typing?.hla_types_list.map(parseAntigen) ?? [],
+      hla_types_raw_list: data.hla_typing?.hla_types_raw_list.map(parseAntigenRaw) ?? []
     },
     country_code: data.country_code,
     sex: parsePatientSexType(data.sex),

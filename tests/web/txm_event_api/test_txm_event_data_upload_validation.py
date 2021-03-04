@@ -19,7 +19,7 @@ from txmatching.database.services.txm_event_service import (
     get_newest_txm_event_db_id, get_txm_event_complete)
 from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
                                                     UploadedDataModel)
-from txmatching.patients.hla_model import HLAType, HLATyping
+from txmatching.patients.hla_model import HLAType, HLATypeRaw, HLATyping
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
@@ -40,8 +40,16 @@ class TestMatchingApi(DbTests):
         self.assertEqual(1, len(UploadedDataModel.query.all()))
         self.assertSetEqual({BloodGroup.ZERO, BloodGroup.A},
                             set(blood for blood in txm_event.active_recipients_dict[1].acceptable_blood_groups))
-        self.assertEqual(HLATyping(hla_types_list=[HLAType('A1'), HLAType('A23')]),
-                         txm_event.active_donors_dict[1].parameters.hla_typing)
+        self.assertEqual(
+            HLATyping(
+                hla_types_list=[HLAType('A1'), HLAType('A23')],
+                hla_types_raw_list=[
+                    HLATypeRaw('A1'), HLATypeRaw('A23'),
+                    HLATypeRaw(raw_code='B*01:01N'), HLATypeRaw(raw_code='Invalid')
+                ]
+            ),
+            txm_event.active_donors_dict[1].parameters.hla_typing
+        )
         self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_codes(txm_event.active_donors_dict[1]))
         self.assertSetEqual({'A9'}, _get_hla_antibodies_codes(txm_event.active_recipients_dict[1]))
         self._check_expected_errors_in_db(2)
@@ -114,8 +122,10 @@ class TestMatchingApi(DbTests):
         self._check_response(res, 200)
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
-        expected_antibodies = {'DQA6', 'DQ8'}
+        expected_antibodies = {'DQA6', 'DQ8', 'DQA5', 'DQ2', 'DQ7'}
         self.assertSetEqual(expected_antibodies, _get_hla_antibodies_codes(recipient))
+        expected_antibodies_over_cutoff = {'DQA6', 'DQ8'}
+        self.assertSetEqual(expected_antibodies_over_cutoff, _get_hla_antibodies_codes_over_cutoff(recipient))
         self._check_expected_errors_in_db(0)
 
     def test_txm_event_patient_successful_upload_exceptional_hla_types(self):
@@ -185,4 +195,10 @@ def _get_hla_typing_codes(donor_or_recipient: Patient) -> Set[str]:
 def _get_hla_antibodies_codes(donor_or_recipient: Recipient) -> Set[str]:
     return {hla.code for codes_per_group in
             donor_or_recipient.hla_antibodies.hla_antibodies_per_groups for hla in
+            codes_per_group.hla_antibody_list}
+
+
+def _get_hla_antibodies_codes_over_cutoff(donor_or_recipient: Recipient) -> Set[str]:
+    return {hla.code for codes_per_group in
+            donor_or_recipient.hla_antibodies.hla_antibodies_per_groups_over_cutoff for hla in
             codes_per_group.hla_antibody_list}

@@ -39,6 +39,14 @@ class HLAType(PersistentlyHashable):
 
 
 @dataclass
+class HLATypeRaw:
+    """
+    Antigen in a format as uploaded without being parsed
+    """
+    raw_code: str
+
+
+@dataclass
 class HLAPerGroup(PersistentlyHashable):
     hla_group: HLAGroup
     hla_types: List[HLAType]
@@ -51,14 +59,26 @@ class HLAPerGroup(PersistentlyHashable):
 
 @dataclass
 class HLATyping(PersistentlyHashable):
-    # TODO: https://github.com/mild-blue/txmatching/issues/497 change the hla_types_list
     hla_types_list: List[HLAType]
+    hla_types_raw_list: List[HLATypeRaw]
     hla_per_groups: List[HLAPerGroup]
 
-    def __init__(self, hla_types_list: List[HLAType], hla_per_groups: List[HLAPerGroup] = None):
-        # The only places where the init is called without hla_per_groups specified should be
-        # tests and data initialization
+    def __init__(
+            self,
+            hla_types_list: List[HLAType],
+            hla_types_raw_list: List[HLATypeRaw] = None,
+            hla_per_groups: List[HLAPerGroup] = None
+    ):
+        # The only places where the init is called without all parameters should be tests
         self.hla_types_list = hla_types_list
+
+        if hla_types_raw_list is None:
+            hla_types_raw_list = [HLATypeRaw(hla_type.raw_code) for hla_type in hla_types_list]
+        self.hla_types_raw_list = sorted(
+            hla_types_raw_list,
+            key=lambda hla_type_raw: hla_type_raw.raw_code.upper()
+        )
+
         if hla_per_groups is None:
             hla_per_groups = split_hla_types_to_groups(hla_types_list)
         self.hla_per_groups = hla_per_groups
@@ -100,6 +120,13 @@ class HLAAntibody(PersistentlyHashable):
 
 
 @dataclass
+class HLAAntibodyRaw:
+    raw_code: str
+    mfi: int
+    cutoff: int
+
+
+@dataclass
 class AntibodiesPerGroup(PersistentlyHashable):
     hla_group: HLAGroup
     hla_antibody_list: List[HLAAntibody]
@@ -122,25 +149,44 @@ class AntibodiesPerGroup(PersistentlyHashable):
 
 @dataclass
 class HLAAntibodies(PersistentlyHashable):
-    # TODO: https://github.com/mild-blue/txmatching/issues/497 change the hla_antibodies_list
     hla_antibodies_list: List[HLAAntibody]
+    hla_antibodies_raw_list: List[HLAAntibodyRaw]
     hla_antibodies_per_groups: List[AntibodiesPerGroup]
 
     def __init__(
             self,
             hla_antibodies_list: List[HLAAntibody],
+            hla_antibodies_raw_list: List[HLAAntibodyRaw] = None,
             hla_antibodies_per_groups: List[AntibodiesPerGroup] = None
     ):
         if hla_antibodies_list is None:
             hla_antibodies_list = []
         self.hla_antibodies_list = hla_antibodies_list
 
-        # The only places where the init is called without hla_antibodies_per_groups specified should be tests
+        # The only places where the init is called without all parameters should be tests
+        if hla_antibodies_raw_list is None:
+            hla_antibodies_raw_list = [
+                HLAAntibodyRaw(
+                    raw_code=hla_antibody.raw_code,
+                    mfi=hla_antibody.mfi,
+                    cutoff=hla_antibody.cutoff
+                )
+                for hla_antibody in hla_antibodies_list
+            ]
+        self.hla_antibodies_raw_list = sorted(
+            hla_antibodies_raw_list,
+            key=lambda hla_antibody_raw: (hla_antibody_raw.raw_code.upper(), hla_antibody_raw.mfi)
+        )
+
         if hla_antibodies_per_groups is None:
             # We do not set logger because computing hla_antibodies_per_groups is done here only in tests
             hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(hla_antibodies_list)
 
         self.hla_antibodies_per_groups = hla_antibodies_per_groups
+
+    @property
+    def hla_antibodies_per_groups_over_cutoff(self) -> List[AntibodiesPerGroup]:
+        return _filter_antibodies_per_groups_over_cutoff(self.hla_antibodies_per_groups)
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLAAntibodies)
@@ -159,9 +205,22 @@ def create_hla_antibodies_per_groups_from_hla_antibodies(
         hla_antibodies: List[HLAAntibody],
         logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
 ) -> List[AntibodiesPerGroup]:
-    hla_antibodies_over_cutoff_list = _filter_antibodies_over_cutoff(hla_antibodies, logger_with_patient)
-    hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_over_cutoff_list)
+    hla_antibodies_joined = _join_duplicate_antibodies(hla_antibodies, logger_with_patient)
+    hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_joined)
     return hla_antibodies_per_groups
+
+
+def _filter_antibodies_per_groups_over_cutoff(
+        hla_antibodies_per_groups: List[AntibodiesPerGroup]
+) -> List[AntibodiesPerGroup]:
+    return [
+        AntibodiesPerGroup(
+            hla_group=antibodies_per_group.hla_group,
+            hla_antibody_list=_filter_antibodies_over_cutoff(
+                antibodies_per_group.hla_antibody_list
+            )
+        ) for antibodies_per_group in hla_antibodies_per_groups
+    ]
 
 
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[AntibodiesPerGroup]:
@@ -172,7 +231,7 @@ def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[Antib
             hla_antibodies_in_groups.items()]
 
 
-def _filter_antibodies_over_cutoff(
+def _join_duplicate_antibodies(
         hla_antibodies: List[HLAAntibody],
         logger_with_patient: Union[logging.Logger, PatientAdapter]
 ) -> List[HLAAntibody]:
@@ -181,7 +240,7 @@ def _filter_antibodies_over_cutoff(
 
     grouped_hla_antibodies = itertools.groupby(sorted(hla_antibodies, key=_group_key),
                                                key=_group_key)
-    hla_antibodies_over_cutoff = []
+    hla_antibodies_joined = []
     for hla_code_raw, antibody_group in grouped_hla_antibodies:
         antibody_group_list = list(antibody_group)
         assert len(antibody_group_list) > 0
@@ -194,16 +253,24 @@ def _filter_antibodies_over_cutoff(
                                               cutoff,
                                               hla_code_raw,
                                               logger_with_patient)
-        if mfi >= cutoff:
-            new_antibody = HLAAntibody(
-                code=antibody_group_list[0].code,
-                raw_code=hla_code_raw,
-                cutoff=cutoff,
-                mfi=mfi
-            )
-            hla_antibodies_over_cutoff.append(new_antibody)
+        new_antibody = HLAAntibody(
+            code=antibody_group_list[0].code,
+            raw_code=hla_code_raw,
+            cutoff=cutoff,
+            mfi=mfi
+        )
+        hla_antibodies_joined.append(new_antibody)
 
-    return hla_antibodies_over_cutoff
+    return hla_antibodies_joined
+
+
+def _filter_antibodies_over_cutoff(
+        hla_antibodies: List[HLAAntibody]
+) -> List[HLAAntibody]:
+    return [
+        hla_antibody for hla_antibody in hla_antibodies
+        if hla_antibody.mfi >= hla_antibody.cutoff
+    ]
 
 
 HLACodeAlias = Union[HLAType, HLAAntibody]

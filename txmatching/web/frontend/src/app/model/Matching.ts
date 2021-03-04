@@ -3,7 +3,7 @@ import { Round } from '@app/model/Round';
 
 export interface CalculatedMatchings {
   calculated_matchings: Matching[];
-  found_matchings_count: number;
+  found_matchings_count?: number;
   show_not_all_matchings_found: boolean;
 }
 

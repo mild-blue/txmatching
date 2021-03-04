@@ -122,6 +122,9 @@ generate-and-copy-ts-from-swagger: \
 	copy-generated-ts-to-fe
 
 generate-ts-from-swagger:
+	if [ -d $(SWAGGER_OUTPUT_DIR) ]; then \
+	    rm -rf $(SWAGGER_OUTPUT_DIR); \
+	fi;
 	#npx @openapitools/openapi-generator-cli generate
 	openapi-generator-cli generate \
 		-i $(SWAGGER_INPUT_FILE) \
