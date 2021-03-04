@@ -133,17 +133,17 @@ def _match_through_broad_codes(current_compatibility_index: float,
                                donor_hla_types: List[HLAType],
                                recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup):
-    # TODOO REFACTOR
-    for donor_hla_type, donor_broad_code in zip(donor_hla_types.copy(), [hla_type.code.broad for hla_type in donor_hla_types]):
+    for donor_hla_type in donor_hla_types.copy():
+        donor_broad_code = donor_hla_type.code.broad
         if donor_broad_code in [recipient_hla_type.code.broad for recipient_hla_type in recipient_hla_types]:
-            matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
-                                  recipient_hla_type.code.split_or_broad == donor_broad_code]  # TODOO: maybe .broad
+            matching_hla_types = [hla_type for hla_type in recipient_hla_types if
+                                  hla_type.code.split_or_broad == donor_broad_code]
             if len(matching_hla_types) > 0:
                 recipient_match_hla_type = matching_hla_types[0]
             else:
                 split_codes_for_broad = broad_to_split(donor_broad_code)
                 hla_types_to_remove = {recipient_hla_type for recipient_hla_type in recipient_hla_types if
-                                       recipient_hla_type.code.split_or_broad in split_codes_for_broad}  # TODOO: maybe .broad
+                                       recipient_hla_type.code.split_or_broad in split_codes_for_broad}
                 assert len(hla_types_to_remove) > 0
                 recipient_match_hla_type = hla_types_to_remove.pop()
 
