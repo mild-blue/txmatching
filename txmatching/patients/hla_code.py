@@ -14,10 +14,11 @@ class HLACode:
     def split_or_broad(self) -> str:
         return self.split if self.split is not None else self.broad
 
+    # pylint: disable=unused-argument
+    # display_code: Currently display_code is stored in db as well and we need to have this parameter in
+    #   the constructor so that dacite.from_dict would work. We have display_code here because we want to send it
+    #   to FE
     def __init__(self, high_res: Optional[str], split: Optional[str], broad: str, display_code: str = None):
-        # display_code: Currently display_code is stored in db as well and we need to have this parameter in
-        #   the constructor so that dacite.from_dict would work. We have display_code here because we want to send it
-        #   to FE
         self.high_res = high_res
         self.split = split
         self.broad = broad

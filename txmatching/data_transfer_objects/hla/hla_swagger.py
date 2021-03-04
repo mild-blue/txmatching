@@ -5,13 +5,17 @@ from txmatching.web.api.namespaces import patient_api
 
 HLA_TYPES_PER_GROUPS_EXAMPLE = [
     {'hla_group': HLAGroup.A.name,
-     'hla_types': [{'code': {'display_code': 'A1', 'high_res': None, 'split': None, 'broad': 'A1'}, 'raw_code': 'A1'}]},
+     'hla_types': [{'code': {'display_code': 'A1', 'high_res': None, 'split': None, 'broad': 'A1'},
+                    'raw_code': 'A1'}]},
     {'hla_group': HLAGroup.B.name,
-     'hla_types': [{'code': {'display_code': 'B38', 'high_res': None, 'split': None, 'broad': 'B38'}, 'raw_code': 'B38'}]},
+     'hla_types': [{'code': {'display_code': 'B38', 'high_res': None, 'split': None, 'broad': 'B38'},
+                    'raw_code': 'B38'}]},
     {'hla_group': HLAGroup.DRB1.name,
-     'hla_types': [{'code': {'display_code': 'DR7', 'high_res': None, 'split': None, 'broad': 'DR7'}, 'raw_code': 'DR7'}]},
+     'hla_types': [{'code': {'display_code': 'DR7', 'high_res': None, 'split': None, 'broad': 'DR7'},
+                    'raw_code': 'DR7'}]},
     {'hla_group': HLAGroup.Other.name,
-     'hla_types': [{'code': {'display_code': 'CW4', 'high_res': None, 'split': None, 'broad': 'CW4'}, 'raw_code': 'CW4'}]}
+     'hla_types': [{'code': {'display_code': 'CW4', 'high_res': None, 'split': None, 'broad': 'CW4'},
+                    'raw_code': 'CW4'}]}
 ]
 HLA_ANTIBODIES_PER_GROUPS_EXAMPLE = [
     {'hla_group': HLAGroup.A.name,
