@@ -91,7 +91,7 @@ def _high_res_to_split(high_res_code: str) -> Union[str, HlaCodeProcessingResult
 
 
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
-    # Raw code is high res exception
+    # firstly, if raw code is in hla code exceptions list, create parsing result
     maybe_exception_split_code = PARSE_HLA_CODE_EXCEPTIONS.get(hla_raw_code)
     if maybe_exception_split_code:
         hla_code = HLACode(
