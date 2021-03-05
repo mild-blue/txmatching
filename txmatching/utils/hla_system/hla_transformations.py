@@ -65,7 +65,8 @@ def _high_res_to_split_or_broad(high_res_code: str) -> Union[str, HlaCodeProcess
     :param high_res_code: High res code to transform.
     :return: Either found split code or broad code or HlaCodeProcessingResultDetail in case no code is found.
     """
-    maybe_split_or_broad = HIGH_RES_TO_SPLIT_OR_BROAD.get(high_res_code, _get_possible_splits_for_high_res_code(high_res_code))
+    maybe_split_or_broad = HIGH_RES_TO_SPLIT_OR_BROAD.get(
+        high_res_code, _get_possible_splits_for_high_res_code(high_res_code))
     if maybe_split_or_broad is None:
         # Code found in the HIGH_RES_TO_SPLIT_OR_BROAD but none was returned as the transformation is unknown.
         return HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES
@@ -91,6 +92,8 @@ def _high_res_to_split_or_broad(high_res_code: str) -> Union[str, HlaCodeProcess
                 return HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND
 
 
+# I think that many return statements and many branches are meaningful here
+# pylint: disable=too-many-return-statements, too-many-branches
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
     # firstly, if raw code is in hla code exceptions list, create parsing result
     maybe_exception_split_code = PARSE_HLA_CODE_EXCEPTIONS.get(hla_raw_code)
