@@ -73,17 +73,17 @@
         <td>
           <app-code *ngFor="let match of compatibilityIndex.donor_matches"
                     [class]="getAntigenMatchClass(match.match_type)"
-                    [title]="'Raw code: ' + match.hla_type.raw_code">{{ match.hla_type.code }}</app-code>
+                    [title]="match.hla_type | antigenTitle">{{ match.hla_type.code.displayCode }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.recipient_matches"
                     [class]="getAntigenMatchClass(match.match_type)"
-                    [title]="'Raw code: ' + match.hla_type.raw_code">{{ match.hla_type.code }}</app-code>
+                    [title]="match.hla_type | antigenTitle">{{ match.hla_type.code.displayCode }}</app-code>
         </td>
         <td>
           <app-code *ngFor="let match of compatibilityIndex.antibody_matches"
                     [class]="getAntibodyMatchClass(match.match_type)"
-                    [title]="match.hla_antibody | antibodyTitle">{{ match.hla_antibody.code }}</app-code>
+                    [title]="match.hla_antibody | antibodyTitle">{{ match.hla_antibody.code.displayCode }}</app-code>
         </td>
         <td>
           {{ recipient ? compatibilityIndex.group_compatibility_index : "-"}}

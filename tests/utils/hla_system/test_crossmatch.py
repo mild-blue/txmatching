@@ -41,5 +41,5 @@ class TestCrossmatch(unittest.TestCase):
 
         self.assertFalse(is_positive_hla_crossmatch(HLATyping(hla_types_list=[HLAType('A9')]),
                                                    HLAAntibodies(
-                                                       hla_antibodies_list=[HLAAntibody('A1', 2100, 2000, 'A1')]),
+                                                       hla_antibodies_list=[HLAAntibody('A1', 2100, 2000)]),
                                                    False))

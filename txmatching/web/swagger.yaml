@@ -489,38 +489,47 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: &id002
+                example: &id004
                 -   antibody_matches:
                     -   hla_antibody:
-                            code: A9
+                            code: &id002
+                                broad: A9
+                                high_res: null
+                                split: null
                             cutoff: 0
                             mfi: 0
                             raw_code: A9
                         match_type: NONE
                     -   hla_antibody:
-                            code: A1
+                            code: &id001
+                                broad: A1
+                                high_res: null
+                                split: null
                             cutoff: 0
                             mfi: 0
                             raw_code: A1
                         match_type: MATCH
                     donor_matches:
                     -   hla_type:
-                            code: A23
+                            code:
+                                broad: A23
+                                high_res: null
+                                split: null
                             raw_code: A23
                         match_type: BROAD
                     -   hla_type:
-                            code: A1
+                            code: *id001
                             raw_code: A1
                         match_type: SPLIT
                     group_compatibility_index: 2.0
                     hla_group: A
                     recipient_matches:
                     -   hla_type:
-                            code: A9
+                            code: *id002
                             raw_code: A9
                         match_type: BROAD
                     -   hla_type:
-                            code: A1
+                            code: *id001
                             raw_code: A1
                         match_type: SPLIT
                 -   antibody_matches: []
@@ -573,7 +582,7 @@ definitions:
                 type: integer
             hla_typing:
                 description: HLA typing of the patient. Use high resolution if available.
-                example: &id001
+                example: &id003
                 - A1
                 - A32
                 - B7
@@ -693,25 +702,37 @@ definitions:
                 description: hla antibodies split to hla groups
                 example:
                 -   hla_antibody_list:
-                    -   code: A1
+                    -   code:
+                            broad: A1
+                            high_res: null
+                            split: null
                         cutoff: 0
                         mfi: 0
                         raw_code: A1
                     hla_group: A
                 -   hla_antibody_list:
-                    -   code: B38
+                    -   code:
+                            broad: B38
+                            high_res: null
+                            split: null
                         cutoff: 0
                         mfi: 10
                         raw_code: B38
                     hla_group: B
                 -   hla_antibody_list:
-                    -   code: DR7
+                    -   code:
+                            broad: DR7
+                            high_res: null
+                            split: null
                         cutoff: 300
                         mfi: 0
                         raw_code: DR7
                     hla_group: DRB1
                 -   hla_antibody_list:
-                    -   code: CW4
+                    -   code:
+                            broad: CW4
+                            high_res: null
+                            split: null
                         cutoff: 500
                         mfi: 500
                         raw_code: CW4
@@ -740,7 +761,7 @@ definitions:
     HlaAntibody:
         properties:
             code:
-                type: string
+                $ref: '#/definitions/HlaCode'
             cutoff:
                 type: integer
             mfi:
@@ -778,6 +799,17 @@ definitions:
         - mfi
         - raw_code
         type: object
+    HlaCode:
+        properties:
+            broad:
+                type: string
+            high_res:
+                type: string
+            split:
+                type: string
+        required:
+        - broad
+        type: object
     HlaCodesInGroups:
         properties:
             hla_group:
@@ -799,7 +831,7 @@ definitions:
     HlaType:
         properties:
             code:
-                type: string
+                $ref: '#/definitions/HlaCode'
             raw_code:
                 type: string
         required:
@@ -830,19 +862,31 @@ definitions:
                 example:
                 -   hla_group: A
                     hla_types:
-                    -   code: A1
+                    -   code:
+                            broad: A1
+                            high_res: null
+                            split: null
                         raw_code: A1
                 -   hla_group: B
                     hla_types:
-                    -   code: B38
+                    -   code:
+                            broad: B38
+                            high_res: null
+                            split: null
                         raw_code: B38
                 -   hla_group: DRB1
                     hla_types:
-                    -   code: DR7
+                    -   code:
+                            broad: DR7
+                            high_res: null
+                            split: null
                         raw_code: DR7
                 -   hla_group: Other
                     hla_types:
-                    -   code: CW4
+                    -   code:
+                            broad: CW4
+                            high_res: null
+                            split: null
                         raw_code: CW4
                 items:
                     $ref: '#/definitions/HlaCodesInGroups'
@@ -1096,7 +1140,7 @@ definitions:
                 type: array
             hla_typing:
                 description: HLA typing of the patient. Use high resolution if available.
-                example: *id001
+                example: *id003
                 items:
                     type: string
                 type: array
@@ -1227,7 +1271,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: *id002
+                example: *id004
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array

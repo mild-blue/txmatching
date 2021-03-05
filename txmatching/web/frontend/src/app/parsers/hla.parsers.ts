@@ -35,13 +35,14 @@ export const parseHlaRaw = ( data: HlaTypeRawGenerated | HlaAntibodyGenerated ):
 };
 
 export const parseHla = ( data: HlaTypeGenerated | HlaAntibodyGenerated ): Hla => {
-  const {
-    code
-  } = data;
-
   return {
     ...parseHlaRaw(data),
-    code
+    code: {
+      displayCode: data.code.high_res ?? data.code.split ?? data.code.broad,
+      highRes: data.code.high_res,
+      split: data.code.split,
+      broad: data.code.broad
+    }
   };
 };
 

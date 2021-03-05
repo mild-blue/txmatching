@@ -9,13 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { HlaCodeGenerated } from './hlaCodeGenerated';
 
 
-export interface HlaAntibodyGenerated { 
-    code: HlaCodeGenerated;
-    cutoff: number;
-    mfi: number;
-    raw_code: string;
+export interface HlaCodeGenerated { 
+    broad: string;
+    high_res?: string;
+    split?: string;
 }
 

@@ -10,6 +10,7 @@ from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import (HLAAntibodyRawModel,
                                                     ParsingErrorModel)
+from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import (
     HLAAntibody, HLAType, create_hla_antibodies_per_groups_from_hla_antibodies,
     split_hla_types_to_groups)
@@ -108,7 +109,7 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(hla_typing_raw: HLA
     )
 
 
-def parse_hla_raw_code_and_add_parsing_error_to_db_session(hla_raw_code: str) -> Optional[str]:
+def parse_hla_raw_code_and_add_parsing_error_to_db_session(hla_raw_code: str) -> Optional[HLACode]:
     """
     Method to store information about error during parsing HLA code.
     This method is partially redundant to parse_hla_raw_code so in case of update, update it too.

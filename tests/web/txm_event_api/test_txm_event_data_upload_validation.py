@@ -19,6 +19,7 @@ from txmatching.database.services.txm_event_service import (
     get_newest_txm_event_db_id, get_txm_event_complete)
 from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
                                                     UploadedDataModel)
+from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAType, HLATypeRaw, HLATyping
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
@@ -50,8 +51,8 @@ class TestMatchingApi(DbTests):
             ),
             txm_event.active_donors_dict[1].parameters.hla_typing
         )
-        self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_codes(txm_event.active_donors_dict[1]))
-        self.assertSetEqual({'A9'}, _get_hla_antibodies_codes(txm_event.active_recipients_dict[1]))
+        self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_split_or_broad_codes(txm_event.active_donors_dict[1]))
+        self.assertSetEqual({'A9'}, _get_hla_antibodies_split_or_broad_codes(txm_event.active_recipients_dict[1]))
         self._check_expected_errors_in_db(2)
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
@@ -105,14 +106,18 @@ class TestMatchingApi(DbTests):
         self._check_response(res, 200)
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
-        expected_antibodies = {'DPA1', 'DP4', 'A23'}
+        expected_antibodies = {
+            HLACode('DPA1*01:03', 'DPA1', 'DPA1'),
+            HLACode('DPB1*04:02', 'DP4', 'DP4'),
+            HLACode(None, 'A23', 'A9')
+        }
         self.assertSetEqual(expected_antibodies, {hla_antibody.code for hla_antibody in
                                                   recipient.hla_antibodies.hla_antibodies_list})
         expected_typing = {'DQA1', 'A1', 'DQ6', 'B7'}
-        self.assertSetEqual(expected_typing, _get_hla_typing_codes(recipient))
+        self.assertSetEqual(expected_typing, _get_hla_typing_split_or_broad_codes(recipient))
         donor = txm_event.active_donors_dict[1]
         expected_typing = {'B7', 'DQA1', 'DQ6'}
-        self.assertSetEqual(expected_typing, _get_hla_typing_codes(donor))
+        self.assertSetEqual(expected_typing, _get_hla_typing_split_or_broad_codes(donor))
         self._check_expected_errors_in_db(0)
 
     def test_txm_event_patient_successful_upload_multiple_same_hla_types(self):
@@ -123,9 +128,9 @@ class TestMatchingApi(DbTests):
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
         expected_antibodies = {'DQA6', 'DQ8', 'DQA5', 'DQ2', 'DQ7'}
-        self.assertSetEqual(expected_antibodies, _get_hla_antibodies_codes(recipient))
+        self.assertSetEqual(expected_antibodies, _get_hla_antibodies_split_or_broad_codes(recipient))
         expected_antibodies_over_cutoff = {'DQA6', 'DQ8'}
-        self.assertSetEqual(expected_antibodies_over_cutoff, _get_hla_antibodies_codes_over_cutoff(recipient))
+        self.assertSetEqual(expected_antibodies_over_cutoff, _get_hla_antibodies_over_cutoff_split_or_broad_codes(recipient))
         self._check_expected_errors_in_db(0)
 
     def test_txm_event_patient_successful_upload_exceptional_hla_types(self):
@@ -135,7 +140,7 @@ class TestMatchingApi(DbTests):
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
         expected_antibodies = {'DR9', 'CW6', 'B82', 'CW4'}
-        self.assertSetEqual(expected_antibodies, _get_hla_antibodies_codes(recipient))
+        self.assertSetEqual(expected_antibodies, _get_hla_antibodies_split_or_broad_codes(recipient))
 
     def _txm_event_upload(self,
                           donors_json: Optional[List[Dict]] = None,
@@ -186,19 +191,19 @@ class TestMatchingApi(DbTests):
         self.assertEqual(expected_count, len(errors))
 
 
-def _get_hla_typing_codes(donor_or_recipient: Patient) -> Set[str]:
-    return {hla.code for codes_per_group in
+def _get_hla_typing_split_or_broad_codes(donor_or_recipient: Patient) -> Set[str]:
+    return {hla.code.split_or_broad for codes_per_group in
             donor_or_recipient.parameters.hla_typing.hla_per_groups for hla in
             codes_per_group.hla_types}
 
 
-def _get_hla_antibodies_codes(donor_or_recipient: Recipient) -> Set[str]:
-    return {hla.code for codes_per_group in
+def _get_hla_antibodies_split_or_broad_codes(donor_or_recipient: Recipient) -> Set[str]:
+    return {hla.code.split_or_broad for codes_per_group in
             donor_or_recipient.hla_antibodies.hla_antibodies_per_groups for hla in
             codes_per_group.hla_antibody_list}
 
 
-def _get_hla_antibodies_codes_over_cutoff(donor_or_recipient: Recipient) -> Set[str]:
-    return {hla.code for codes_per_group in
+def _get_hla_antibodies_over_cutoff_split_or_broad_codes(donor_or_recipient: Recipient) -> Set[str]:
+    return {hla.code.split_or_broad for codes_per_group in
             donor_or_recipient.hla_antibodies.hla_antibodies_per_groups_over_cutoff for hla in
             codes_per_group.hla_antibody_list}
