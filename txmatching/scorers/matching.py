@@ -1,24 +1,8 @@
-from typing import List
-
 from txmatching.patients.patient import Patient
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
-from txmatching.utils.enums import HLAGroup, MatchTypes
+from txmatching.utils.enums import HLAGroup
 from txmatching.utils.hla_system.compatibility_index import \
     get_detailed_compatibility_index
-
-
-def get_matching_hla_typing_display_code(donor: Patient, recipient: Patient) -> List[str]:
-    """
-    Gets matching HLA typings of donor and recipient.
-    :param donor:
-    :param recipient:
-    :return: List of same HLA typings of donor and recipient.
-    """
-    scores = get_detailed_compatibility_index(donor.parameters.hla_typing,
-                                              recipient.parameters.hla_typing)
-    return list({match.hla_type.code.display_code for ci_detail_group in scores
-                 for match in ci_detail_group.recipient_matches
-                 if match.match_type != MatchTypes.NONE})
 
 
 def calculate_compatibility_index_for_group(donor: Patient, recipient: Patient, hla_group: HLAGroup) -> float:

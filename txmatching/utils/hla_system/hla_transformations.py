@@ -14,7 +14,8 @@ from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import (
     PARSE_HLA_CODE_EXCEPTIONS,
     PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES)
-from txmatching.utils.hla_system.rel_dna_ser_parsing import HIGH_RES_TO_SPLIT
+from txmatching.utils.hla_system.rel_dna_ser_parsing import \
+    HIGH_RES_TO_SPLIT_OR_BROAD
 
 logger = logging.getLogger(__name__)
 
@@ -53,45 +54,48 @@ class HlaCodeProcessingResult:
 
 
 def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
-    return {split for high_res, split in HIGH_RES_TO_SPLIT.items() if
+    return {split for high_res, split in HIGH_RES_TO_SPLIT_OR_BROAD.items() if
             high_res.startswith(f'{high_res_code}:')}
 
 
-def _high_res_to_split(high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
+def _high_res_to_split_or_broad(high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
     """
-    Transforms high resolution code to serological (split) code. In the case no code is found
+    Transforms high resolution code to serological (split) code or broad code. In the case no code is found
     HlaCodeProcessingResultDetail with details is returned.
     :param high_res_code: High res code to transform.
-    :return: Either found split code or HlaCodeProcessingResultDetail in case no split code is found.
+    :return: Either found split code or broad code or HlaCodeProcessingResultDetail in case no code is found.
     """
-    maybe_split_hla_code = HIGH_RES_TO_SPLIT.get(high_res_code, _get_possible_splits_for_high_res_code(high_res_code))
-    if maybe_split_hla_code is None:
-        # Code found in the HIGH_RES_TO_SPLIT but none was returned as the transformation is unknown.
-        return HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
-    elif isinstance(maybe_split_hla_code, str):
-        return maybe_split_hla_code
+    maybe_split_or_broad = HIGH_RES_TO_SPLIT_OR_BROAD.get(
+        high_res_code, _get_possible_splits_for_high_res_code(high_res_code))
+    if maybe_split_or_broad is None:
+        # Code found in the HIGH_RES_TO_SPLIT_OR_BROAD but none was returned as the transformation is unknown.
+        return HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES
+    elif isinstance(maybe_split_or_broad, str):
+        return maybe_split_or_broad
     else:
-        assert isinstance(maybe_split_hla_code, set), 'Unexpected type'
-        if len(maybe_split_hla_code) == 0:
-            # No code found in HIGH_RES_TO_SPLIT so it is code in high_res_code that does not exist in our
+        assert isinstance(maybe_split_or_broad, set), 'Unexpected type'
+        if len(maybe_split_or_broad) == 0:
+            # No code found in HIGH_RES_TO_SPLIT_OR_BROAD so it is code in high_res_code that does not exist in our
             # transformation table at all.
             return HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE
-        possible_split_resolutions = maybe_split_hla_code.difference({None})
-        if len(possible_split_resolutions) == 0:
-            return HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT
+        possible_split_or_broad_resolutions = maybe_split_or_broad.difference({None})
+        if len(possible_split_or_broad_resolutions) == 0:
+            return HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES
         else:
-            found_splits = set(possible_split_resolutions)
+            found_splits = set(possible_split_or_broad_resolutions)
             if len(found_splits) == 1:
-                return possible_split_resolutions.pop()
+                return possible_split_or_broad_resolutions.pop()
             else:
                 # in case there are multiple possibilities we do not know which to choose and return None.
-                logger.warning(f'Multiple possible split resolutions for high res code {high_res_code}'
-                               f' found: {possible_split_resolutions}')
-                return HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_FOUND
+                logger.warning(f'Multiple possible split or broad resolutions for high res code {high_res_code}'
+                               f' found: {possible_split_or_broad_resolutions}')
+                return HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND
 
 
+# I think that many return statements and many branches are meaningful here
+# pylint: disable=too-many-return-statements, too-many-branches
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
-    # Raw code is high res exception
+    # firstly, if raw code is in hla code exceptions list, create parsing result
     maybe_exception_split_code = PARSE_HLA_CODE_EXCEPTIONS.get(hla_raw_code)
     if maybe_exception_split_code:
         hla_code = HLACode(
@@ -103,7 +107,7 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
     if re.match(HIGH_RES_REGEX, hla_raw_code):
         high_res = hla_raw_code
-        split_or_broad_or_error = _high_res_to_split(hla_raw_code)
+        split_or_broad_or_error = _high_res_to_split_or_broad(hla_raw_code)
     else:
         high_res = None
         split_or_broad_or_error = hla_raw_code
@@ -135,16 +139,25 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
             )
         elif split_or_broad_or_error in BROAD_CODES:
             # Raw code was broad
-            assert high_res is None, \
-                f'Broad code of high res {high_res} is {split_or_broad_or_error} but split code is unknown'
-            return HlaCodeProcessingResult(
-                HLACode(
-                    high_res=high_res,
-                    split=None,
-                    broad=split_or_broad_or_error
-                ),
-                HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED
-            )
+            if high_res is None:
+                return HlaCodeProcessingResult(
+                    HLACode(
+                        high_res=None,
+                        split=None,
+                        broad=split_or_broad_or_error
+                    ),
+                    HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED
+                )
+            # Raw code was high res
+            else:
+                return HlaCodeProcessingResult(
+                    HLACode(
+                        high_res=high_res,
+                        split=None,
+                        broad=split_or_broad_or_error
+                    ),
+                    HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT
+                )
         else:
             # Some split HLA codes are missing in our table, therefore we still return the found HLA code if it matches
             # expected format of split codes. In this case split = broad.

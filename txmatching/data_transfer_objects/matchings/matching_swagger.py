@@ -6,9 +6,9 @@ from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER,
                                     AntibodyMatchTypes, HLAGroup, MatchTypes)
 from txmatching.web.api.namespaces import matching_api
 
-_CODE_A1 = {'display_code': 'A1', 'high_res': None, 'split': None, 'broad': 'A1'}
-_CODE_A23 = {'display_code': 'A23', 'high_res': None, 'split': None, 'broad': 'A23'}
-_CODE_A9 = {'display_code': 'A9', 'high_res': None, 'split': None, 'broad': 'A9'}
+_CODE_A1 = {'high_res': None, 'split': None, 'broad': 'A1'}
+_CODE_A23 = {'high_res': None, 'split': None, 'broad': 'A23'}
+_CODE_A9 = {'high_res': None, 'split': None, 'broad': 'A9'}
 
 EXAMPLE_DETAILED_SCORE = [
     {'hla_group': HLAGroup.A.name,
