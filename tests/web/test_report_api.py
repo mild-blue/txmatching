@@ -25,11 +25,30 @@ class TestMatchingApi(DbTests):
 
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                             f'{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}=2',
+                             f'{REPORTS_NAMESPACE}/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}=2',
                              headers=self.auth_headers)
 
             self.assertEqual(200, res.status_code)
             self.assertEqual('application/pdf', res.content_type)
+            self.assertIsNotNone(res.data)
+            self.assertTrue(res.content_length > 0)
+            self.assertIsNotNone(res.headers['x-filename'])
+
+    def test_patients_xlsx(self):
+        self.txm_event_db_id = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED)
+        )
+        txm_event = get_txm_event_complete(self.txm_event_db_id)
+        pairing_result = solve_from_configuration(Configuration(), txm_event)
+        solver_service.save_pairing_result(pairing_result, 1)
+
+        with self.app.test_client() as client:
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                             f'{REPORTS_NAMESPACE}/patients/xlsx',
+                             headers=self.auth_headers)
+
+            self.assertEqual(200, res.status_code)
+            self.assertEqual('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', res.content_type)
             self.assertIsNotNone(res.data)
             self.assertTrue(res.content_length > 0)
             self.assertIsNotNone(res.headers['x-filename'])
@@ -43,7 +62,7 @@ class TestMatchingApi(DbTests):
 
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                             f'{REPORTS_NAMESPACE}/6666?{MATCHINGS_BELOW_CHOSEN}=2',
+                             f'{REPORTS_NAMESPACE}/matchings/6666/pdf?{MATCHINGS_BELOW_CHOSEN}=2',
                              headers=self.auth_headers)
 
             self.assertEqual(401, res.status_code)
@@ -64,7 +83,7 @@ class TestMatchingApi(DbTests):
         with self.app.test_client() as client:
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                f'{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
+                f'{REPORTS_NAMESPACE}/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
                 headers=self.auth_headers
             )
 
@@ -81,7 +100,7 @@ class TestMatchingApi(DbTests):
         with self.app.test_client() as client:
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                f'{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
+                f'{REPORTS_NAMESPACE}/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
                 headers=self.auth_headers
             )
 
@@ -98,7 +117,7 @@ class TestMatchingApi(DbTests):
         with self.app.test_client() as client:
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                f'{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN}',
+                f'{REPORTS_NAMESPACE}/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN}',
                 headers=self.auth_headers
             )
 
@@ -112,7 +131,7 @@ class TestMatchingApi(DbTests):
         with self.app.test_client() as client:
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                f'{REPORTS_NAMESPACE}/3?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN}',
+                f'{REPORTS_NAMESPACE}/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN}',
                 headers=self.auth_headers
             )
 
