@@ -23,9 +23,6 @@ class HLACode:
         self.split = split
         self.broad = broad
 
-        if high_res is not None and split is None:
-            raise ValueError(f'High res was specified ({high_res}) but split was not specified')
-
         # Set display code
         if high_res is not None:
             self.display_code = high_res
