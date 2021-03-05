@@ -486,7 +486,6 @@ definitions:
                     -   hla_antibody:
                             code: &id002
                                 broad: A9
-                                display_code: A9
                                 high_res: null
                                 split: null
                             cutoff: 0
@@ -496,7 +495,6 @@ definitions:
                     -   hla_antibody:
                             code: &id001
                                 broad: A1
-                                display_code: A1
                                 high_res: null
                                 split: null
                             cutoff: 0
@@ -507,7 +505,6 @@ definitions:
                     -   hla_type:
                             code:
                                 broad: A23
-                                display_code: A23
                                 high_res: null
                                 split: null
                             raw_code: A23
@@ -699,7 +696,6 @@ definitions:
                 -   hla_antibody_list:
                     -   code:
                             broad: A1
-                            display_code: A1
                             high_res: null
                             split: null
                         cutoff: 0
@@ -709,7 +705,6 @@ definitions:
                 -   hla_antibody_list:
                     -   code:
                             broad: B38
-                            display_code: B38
                             high_res: null
                             split: null
                         cutoff: 0
@@ -719,7 +714,6 @@ definitions:
                 -   hla_antibody_list:
                     -   code:
                             broad: DR7
-                            display_code: DR7
                             high_res: null
                             split: null
                         cutoff: 300
@@ -729,7 +723,6 @@ definitions:
                 -   hla_antibody_list:
                     -   code:
                             broad: CW4
-                            display_code: CW4
                             high_res: null
                             split: null
                         cutoff: 500
@@ -802,15 +795,12 @@ definitions:
         properties:
             broad:
                 type: string
-            display_code:
-                type: string
             high_res:
                 type: string
             split:
                 type: string
         required:
         - broad
-        - display_code
         type: object
     HlaCodesInGroups:
         properties:
@@ -866,7 +856,6 @@ definitions:
                     hla_types:
                     -   code:
                             broad: A1
-                            display_code: A1
                             high_res: null
                             split: null
                         raw_code: A1
@@ -874,7 +863,6 @@ definitions:
                     hla_types:
                     -   code:
                             broad: B38
-                            display_code: B38
                             high_res: null
                             split: null
                         raw_code: B38
@@ -882,7 +870,6 @@ definitions:
                     hla_types:
                     -   code:
                             broad: DR7
-                            display_code: DR7
                             high_res: null
                             split: null
                         raw_code: DR7
@@ -890,7 +877,6 @@ definitions:
                     hla_types:
                     -   code:
                             broad: CW4
-                            display_code: CW4
                             high_res: null
                             split: null
                         raw_code: CW4

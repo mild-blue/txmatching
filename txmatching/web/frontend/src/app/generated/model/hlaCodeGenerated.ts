@@ -13,7 +13,6 @@
 
 export interface HlaCodeGenerated { 
     broad: string;
-    display_code: string;
     high_res?: string;
     split?: string;
 }

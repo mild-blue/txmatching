@@ -18,7 +18,7 @@ class TestSaveAndGetConfiguration(DbTests):
 
     def _get_split(self, split_code: str, broad_code: str = None):
         return {
-            'display_code': split_code, 'high_res': None, 'split': split_code,
+            'high_res': None, 'split': split_code,
             'broad': broad_code if broad_code is not None else split_code
         }
 
