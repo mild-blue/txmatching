@@ -63,6 +63,21 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                              max([max([cycle.length() for cycle in solution.get_cycles()], default=0) for solution in
                                   solutions]))
 
+    def test_max_debt_between_countries(self):
+        txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        txm_event = get_txm_event_complete(txm_event_db_id)
+        for debt in range(1, 4):
+            configuration = Configuration(
+                use_split_resolution=True,
+                max_debt_for_country=debt,
+                max_number_of_matchings=3)
+            solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
+            self.assertLessEqual(1, len(solutions),
+                                 f'Failed for {debt}')
+
+            max_debt = max(matching.max_debt_from_matching for matching in solutions)
+            self.assertEqual(debt, max_debt, f'Fail: max_debt: {max_debt} but configuration said {debt}')
+
     def test_solver_no_patients(self):
         txm_event = create_or_overwrite_txm_event(name='test')
         solve_from_configuration(Configuration(), txm_event)

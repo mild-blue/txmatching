@@ -86,6 +86,12 @@ class TooComplicatedDataForAllSolutionsSolver(BaseTxmException):
     """
 
 
+class TooComplicatedDataForIlpSolver(BaseTxmException):
+    """
+    Raised if invalid argument received.
+    """
+
+
 # TODO remove in https://github.com/mild-blue/txmatching/issues/372
 class CachingNotReadyException(BaseTxmException):
     """
