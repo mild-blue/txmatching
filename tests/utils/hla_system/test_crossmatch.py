@@ -47,7 +47,7 @@ class TestCrossmatch(unittest.TestCase):
         """
         self._assert_raw_code_equal('A23', HLACode(None, 'A23', 'A9'))
         self._assert_raw_code_equal('A24', HLACode(None, 'A24', 'A9'))
-        self._assert_raw_code_equal('A9', HLACode(None, 'A9', 'A9'))
+        self._assert_raw_code_equal('A9', HLACode(None, None, 'A9'))
         self._assert_raw_code_equal('A1', HLACode(None, 'A1', 'A1'))
         self._assert_raw_code_equal('A*23:01', HLACode('A*23:01', 'A23', 'A9'))
         self._assert_raw_code_equal('A*23:04', HLACode('A*23:04', 'A23', 'A9'))
@@ -56,10 +56,10 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_positive_crossmatch(HLAType('A9'), [HLAAntibody('A9', 2100, 2000)], False)
         self._assert_negative_crossmatch(HLAType('A9'), [HLAAntibody('A9', 1900, 2000)], False)
 
-        # TODOO: HLACode parsing split None
         self._assert_negative_crossmatch(HLAType('A23'), [HLAAntibody('A24', 2100, 2000)], False)
-        # self._assert_positive_crossmatch(HLAType('A9'), [HLAAntibody('A23', 2100, 2000)], False)
 
+        # broad crossmatch
+        self._assert_positive_crossmatch(HLAType('A9'), [HLAAntibody('A23', 2100, 2000)], False)
         self._assert_negative_crossmatch(HLAType('A9'), [HLAAntibody('A1', 2100, 2000)], False)
 
         # with high res code specified:

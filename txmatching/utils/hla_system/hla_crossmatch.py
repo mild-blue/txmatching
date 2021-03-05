@@ -42,7 +42,7 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
 
 def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
-                                use_high_res_resolution: bool) -> List[AntibodyMatchForHLAGroup]:  # TODOO: rename
+                                use_high_res_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
     antibody_matches_for_groups = []
     for hla_per_group, antibodies_per_group in zip(donor_hla_typing.hla_per_groups,
                                                    recipient_antibodies.hla_antibodies_per_groups):
