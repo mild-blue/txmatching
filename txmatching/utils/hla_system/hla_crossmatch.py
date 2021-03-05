@@ -33,9 +33,10 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
     :param use_high_res_resolution: setting whether to high res resolution for crossmatch determination
     :return:
     """
-    common_codes = {code.hla_antibody for code_group in
-                    get_crossmatched_antibodies(donor_hla_typing, recipient_antibodies, use_high_res_resolution) for code
-                    in code_group.antibody_matches if code.match_type is not AntibodyMatchTypes.NONE}
+    common_codes = {antibody_match.hla_antibody for antibody_match_group in
+                    get_crossmatched_antibodies(donor_hla_typing, recipient_antibodies, use_high_res_resolution)
+                    for antibody_match in antibody_match_group.antibody_matches
+                    if antibody_match.match_type is not AntibodyMatchTypes.NONE}
     # if there are any common codes, positive crossmatch is found
     return len(common_codes) > 0
 
@@ -44,6 +45,8 @@ def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody]) -> List[HLAAntibo
     return [antibody for antibody in antibodies if antibody.mfi >= antibody.cutoff]
 
 
+# Many branches make sense here
+# pylint: disable=too-many-branches
 def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
                                 use_high_res_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
