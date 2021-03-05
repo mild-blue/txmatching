@@ -47,27 +47,12 @@ class DataAndConfigurationForILPSolver:
                       active_donors_dict: Dict[DonorDbId, Donor],
                       active_recipients_dict: Dict[RecipientDbId, Recipient]) -> nx.Graph:
 
-        scorer = scorer_from_configuration(configuration)
-
-        score_matrix = []
-        for donor in active_donors_dict.values():
-            row = []
-            for donor_for_recipient in active_donors_dict.values():
-
-                if donor_for_recipient.related_recipient_db_id and donor.db_id != donor_for_recipient.db_id:
-                    recipient = active_recipients_dict[donor_for_recipient.related_recipient_db_id]
-                    score = scorer.score_transplant_including_original_tuple(donor, recipient, donor_for_recipient)
-                    row.append(score)
-                else:
-                    row.append(-1)
-
-            score_matrix.append(row)
-
-        num_nodes = len(score_matrix)
+        donor_score_matrix = self._get_donor_score_matrix(configuration, active_donors_dict, active_recipients_dict)
+        num_nodes = len(donor_score_matrix)
         edges = []
         for from_node in range(0, num_nodes):
             for to_node in range(0, num_nodes):
-                weight = int(score_matrix[from_node][to_node])
+                weight = int(donor_score_matrix[from_node][to_node])
                 if weight >= 0:
                     edges.append((from_node, to_node, weight))
         graph = nx.DiGraph()
@@ -82,3 +67,23 @@ class DataAndConfigurationForILPSolver:
             for (from_node, to_node, weight) in edges
         ])
         return graph
+
+    @staticmethod
+    def _get_donor_score_matrix(configuration: Configuration,
+                                active_donors_dict: Dict[DonorDbId, Donor],
+                                active_recipients_dict: Dict[RecipientDbId, Recipient]):
+        scorer = scorer_from_configuration(configuration)
+        score_matrix = []
+        for donor in active_donors_dict.values():
+            row = []
+            for donor_for_recipient in active_donors_dict.values():
+
+                if donor_for_recipient.related_recipient_db_id and donor.db_id != donor_for_recipient.db_id:
+                    recipient = active_recipients_dict[donor_for_recipient.related_recipient_db_id]
+                    score = scorer.score_transplant_including_original_tuple(donor, recipient, donor_for_recipient)
+                    row.append(score)
+                else:
+                    row.append(-1)
+
+            score_matrix.append(row)
+        return score_matrix
