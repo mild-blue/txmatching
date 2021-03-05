@@ -40,6 +40,10 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
     return len(common_codes) > 0
 
 
+def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody]) -> List[HLAAntibody]:
+    return [antibody for antibody in antibodies if antibody.mfi >= antibody.cutoff]
+
+
 def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
                                 use_high_res_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
@@ -57,19 +61,16 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                 matching_antibodies = [antibody for antibody in antibodies
                                        if antibody.code.high_res == hla_type.code.high_res]
                 if len(matching_antibodies) > 0:
-                    if matching_antibodies[0].mfi >= matching_antibodies[0].cutoff:
-                        positive_match_antibodies.add(matching_antibodies[0])
+                    for antibody_over_cutoff in _get_antibodies_over_cutoff(matching_antibodies):
+                        positive_match_antibodies.add(antibody_over_cutoff)
                     continue
             # check split crossmatch
             if hla_type.code.split is not None:
                 matching_antibodies = [antibody for antibody in antibodies
-                                       if antibody.code.split == hla_type.code.split
-                                       and (not use_high_res_resolution
-                                            or antibody.code.high_res is None
-                                            or hla_type.code.high_res is None)]
+                                       if antibody.code.split == hla_type.code.split]
                 if len(matching_antibodies) > 0:
-                    if matching_antibodies[0].mfi >= matching_antibodies[0].cutoff:
-                        positive_match_antibodies.add(matching_antibodies[0])
+                    for antibody_over_cutoff in _get_antibodies_over_cutoff(matching_antibodies):
+                        positive_match_antibodies.add(antibody_over_cutoff)
                     continue
             # check broad crossmatch
             matching_antibodies = [antibody for antibody in antibodies
@@ -77,8 +78,8 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                    and (antibody.code.split is None
                                         or hla_type.code.split is None)]
             if len(matching_antibodies) > 0:
-                if matching_antibodies[0].mfi >= matching_antibodies[0].cutoff:
-                    positive_match_antibodies.add(matching_antibodies[0])
+                for antibody_over_cutoff in _get_antibodies_over_cutoff(matching_antibodies):
+                    positive_match_antibodies.add(antibody_over_cutoff)
 
         # Construct antibody matches set
         antibody_matches_set = set()
