@@ -13,9 +13,9 @@ from txmatching.web.api.report_api import (MATCHINGS_BELOW_CHOSEN,
                                            MIN_MATCHINGS_BELOW_CHOSEN)
 
 
-class TestMatchingApi(DbTests):
+class TestReportApi(DbTests):
 
-    def test_get_report(self):
+    def test_get_matchings_report(self):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
