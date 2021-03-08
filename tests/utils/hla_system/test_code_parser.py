@@ -4,6 +4,7 @@ import pandas as pd
 
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
+from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -16,35 +17,38 @@ from txmatching.utils.hla_system.hla_transformations_store import \
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
 
 codes = {
-    'A1': ('A1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A32': ('A32', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'B7': ('B7', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'B51': ('B51', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DR11': ('DR11', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DR15': ('DR15', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*23': ('A23', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*23:01': ('A23', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*23:04': ('A23', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*24:02': ('A24', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*01:52:01N': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
-    'A*02:03': ('A203', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*11:01:35': ('A11', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'C*01:02': ('CW1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DPA1*01:07': ('DPA1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DRB4*01:01': ('DR53', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DQB1*02:01:01:01': ('DQ2', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A1': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A32': (HLACode(None, 'A32', 'A19'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'B7': (HLACode(None, 'B7', 'B7'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'B51': (HLACode(None, 'B51', 'B5'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DR11': (HLACode(None, 'DR11', 'DR5'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DR15': (HLACode(None, 'DR15', 'DR2'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*23': (HLACode('A*23', 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*23:01': (HLACode('A*23:01', 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*23:04': (HLACode('A*23:04', 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*24:02': (HLACode('A*24:02', 'A24', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*01:52:01N': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'A*02:03': (HLACode('A*02:03', 'A203', 'A203'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*11:01:35': (HLACode('A*11:01:35', 'A11', 'A11'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'C*01:02': (HLACode('C*01:02', 'CW1', 'CW1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DPA1*01:07': (HLACode('DPA1*01:07', 'DPA1', 'DPA1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DRB4*01:01': (HLACode('DRB4*01:01', 'DR53', 'DR53'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DQB1*02:01:01:01': (HLACode('DQB1*02:01:01:01', 'DQ2', 'DQ2'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'NONEXISTENT': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT*11': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
-    'A*68:06': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
-    'B*46:10': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
-    'A*02:719': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_TO_SPLIT),
-    'DQA1*01:03': ('DQA1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DQB01': ('DQ1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'C12': ('CW12', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'B*15:10': ('B71', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'B*15:11': ('B75', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'C1': ('CW1', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DPB13': ('DP13', HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
+    'A*68:06': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'B*46:10': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'A*02:719': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'DQA1*01:03': (HLACode('DQA1*01:03', 'DQA1', 'DQA1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DQB01': (HLACode(None, None, 'DQ1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'C12': (HLACode(None, 'CW12', 'CW12'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'B*15:10': (HLACode('B*15:10', 'B71', 'B70'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'B*15:11': (HLACode('B*15:11', 'B75', 'B15'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'C1': (HLACode(None, 'CW1', 'CW1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DPB13': (HLACode(None, 'DP13', 'DP13'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A9': (HLACode(None, None, 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A23': (HLACode(None, 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*24:19': (HLACode('A*24:19', None, 'A9'), HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT)
 }
 
 
@@ -62,7 +66,7 @@ class TestCodeParser(DbTests):
         for code, _ in codes.items():
             parse_hla_raw_code_and_add_parsing_error_to_db_session(code)
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(6, len(errors))
+        self.assertEqual(7, len(errors))
 
     def test_parse_hla_ser(self):
         parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))
@@ -78,7 +82,7 @@ class TestCodeParser(DbTests):
     def test_preprocessing(self):
         self.assertSetEqual({'DPA1*01:03', 'DPB1*04:02'}, set(preprocess_hla_code_in('DP4 [01:03, 04:02]')))
         self.assertSetEqual({'DQA1*01:03', 'DQB1*06:03'}, set(preprocess_hla_code_in('DQ[01:03,      06:03]')))
-        self.assertSetEqual({'DPA1', 'DP2'},
+        self.assertSetEqual({HLACode('DPA1*01:03', 'DPA1', 'DPA1'), HLACode('DPB1*02:01', 'DP2', 'DP2')},
                             set(parse_hla_raw_code(code) for code in preprocess_hla_code_in('DP[01:03,02:01]')))
 
     def test_group_assignment(self):
@@ -115,18 +119,17 @@ class TestCodeParser(DbTests):
         self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test'))
 
         # Checks that we truly group by high res codes. In this case both DQA1*01:01 and DQA1*01:02 are DQA1 in split.
-        # DQA1*01:01 is dropped whereas DQA1*01:02 is kept. After conversion into split this results in DQA1 in the
-        # antibody set
-        self.assertSetEqual({'DQA1'}, {hla_antibody.code for hla_antibody in HLAAntibodies(
+        # DQA1*01:01 is dropped whereas DQA1*01:02 is kept.
+        self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')}, {hla_antibody.code for hla_antibody in HLAAntibodies(
             [
                 HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2500),
                 HLAAntibody('DQA1*01:01', cutoff=2000, mfi=10)
             ]
-        ).hla_antibodies_per_groups[3].hla_antibody_list})
+        ).hla_antibodies_per_groups_over_cutoff[3].hla_antibody_list})
         # Similar case as in the lines above. All hla_codes are the same in high res. This invokes call of
         # get_mfi_from_multiple_hla_codes, where the average is calculated (1900), which is below cutoff.
         # The antibody is not removed.
-        self.assertSetEqual({'DQA1'}, {hla_antibody.code for hla_antibody in HLAAntibodies(
+        self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')}, {hla_antibody.code for hla_antibody in HLAAntibodies(
                 [
                     HLAAntibody('DQA1*01:02', cutoff=2000, mfi=6000),
                     HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2000),
@@ -135,8 +138,8 @@ class TestCodeParser(DbTests):
             ).hla_antibodies_per_groups[3].hla_antibody_list})
 
         self.assertSetEqual({
-            HLAAntibody(raw_code='DQA1*01:01', mfi=4500, cutoff=2000, code='DQA1'),
-            HLAAntibody(raw_code='DQA1*01:02', mfi=2000, cutoff=2000, code='DQA1')
+            HLAAntibody(raw_code='DQA1*01:01', mfi=4500, cutoff=2000),
+            HLAAntibody(raw_code='DQA1*01:02', mfi=2000, cutoff=2000)
         }, set(
             HLAAntibodies(
                 [

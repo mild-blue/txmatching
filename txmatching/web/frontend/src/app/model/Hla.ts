@@ -5,8 +5,16 @@ export interface HlaRaw {
   raw_code: string;
 }
 
+export interface HlaCode {
+  displayCode: string;
+
+  highRes?: string;
+  split?: string;
+  broad: string;
+}
+
 export interface Hla extends HlaRaw {
-  code: string;
+  code: HlaCode;
 }
 
 export interface Antigen extends Hla {

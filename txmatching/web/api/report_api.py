@@ -472,10 +472,10 @@ def round_index_from_order_filter(order: int, matching_round: RoundDTO, donors: 
 
 
 def hla_type_filter(hla: Union[HLAType, HLAAntibody]):
-    if hla.code == hla.raw_code:
-        return f'{hla.code}'
+    if hla.code.display_code == hla.raw_code:
+        return f'{hla.code.display_code}'
     else:
-        return f'{hla.code} ({hla.raw_code})'
+        return f'{hla.code.display_code} ({hla.raw_code})'
 
 
 jinja2.filters.FILTERS.update({

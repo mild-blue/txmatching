@@ -26,7 +26,7 @@ class TestUpdateDonorRecipient(DbTests):
 
         self.assertSetEqual({'0', 'A'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
         self.assertSetEqual({'B7', 'DQ6', 'DQ5'},
-                            {hla_antibody['code'] for hla_antibody in
+                            {hla_antibody['code']['split'] for hla_antibody in
                              RecipientModel.query.get(1).hla_antibodies['hla_antibodies_list']})
         self.assertFalse(
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
@@ -47,12 +47,13 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(1, len(configs))
 
         self.assertSetEqual({'AB'}, {blood.blood_type for blood in RecipientModel.query.get(1).acceptable_blood})
-        self.assertSetEqual({'B42', 'DQ6', 'DQA1'}, {hla_antibody['code'] for hla_antibody in
-                                                     RecipientModel.query.get(1).hla_antibodies['hla_antibodies_list']})
+        self.assertSetEqual({None, 'DQB1*06:03', 'DQA1*01:03'},
+                            {hla_antibody['code']['high_res'] for hla_antibody in
+                            RecipientModel.query.get(1).hla_antibodies['hla_antibodies_list']})
         self.assertTrue(
             RecipientModel.query.get(1).recipient_requirements['require_better_match_in_compatibility_index'])
-        self.assertSetEqual({'A11', 'DQ6', 'DQA1'},
-                            {hla_type['code'] for hla_type in RecipientModel.query.get(1).hla_typing['hla_types_list']})
+        self.assertSetEqual({None, 'DQB1*06:03', 'DQA1*01:03'},
+                            {hla_type['code']['high_res'] for hla_type in RecipientModel.query.get(1).hla_typing['hla_types_list']})
 
     def test_update_recipient_cutoff(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
@@ -75,7 +76,8 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertSetEqual({'A11',
                              'B8',
                              'DR11'},
-                            {hla_type['code'] for hla_type in DonorModel.query.get(1).hla_typing['hla_types_list']})
+                            {hla_type['code']['split']
+                             for hla_type in DonorModel.query.get(1).hla_typing['hla_types_list']})
 
         update_donor(DonorUpdateDTO(
             hla_typing=HLATypingUpdateDTO([
@@ -88,8 +90,8 @@ class TestUpdateDonorRecipient(DbTests):
         configs = ConfigModel.query.filter(ConfigModel.txm_event_id == txm_event_db_id).all()
         self.assertEqual(1, len(configs))
 
-        self.assertSetEqual({'A11', 'DQ6', 'DQA1'},
-                            {hla_type['code'] for hla_type in DonorModel.query.get(1).hla_typing['hla_types_list']})
+        self.assertSetEqual({None, 'DQB1*06:03', 'DQA1*01:03'},
+                            {hla_type['code']['high_res'] for hla_type in DonorModel.query.get(1).hla_typing['hla_types_list']})
 
     def test_update_donor_active(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()

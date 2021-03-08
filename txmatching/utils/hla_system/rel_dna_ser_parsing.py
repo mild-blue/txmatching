@@ -61,8 +61,8 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
     return rel_dna_ser_df
 
 
-HIGH_RES_TO_SPLIT = {high_res: split if not pd.isna(split) else None for high_res, split in
-                     parse_rel_dna_ser(PATH_TO_REL_DNA_SER).split.to_dict().items()}
+HIGH_RES_TO_SPLIT_OR_BROAD = {high_res: split if not pd.isna(split) else None for high_res, split in
+                              parse_rel_dna_ser(PATH_TO_REL_DNA_SER).split.to_dict().items()}
 
-SEROLOGICAL_CODES_IN_REL_DNA_SER = set(HIGH_RES_TO_SPLIT.values())
+SEROLOGICAL_CODES_IN_REL_DNA_SER = set(HIGH_RES_TO_SPLIT_OR_BROAD.values())
 SEROLOGICAL_CODES_IN_REL_DNA_SER.remove(None)

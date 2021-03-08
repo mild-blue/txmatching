@@ -5,30 +5,52 @@ from txmatching.web.api.namespaces import patient_api
 
 HLA_TYPES_PER_GROUPS_EXAMPLE = [
     {'hla_group': HLAGroup.A.name,
-     'hla_types': [{'code': 'A1', 'raw_code': 'A1'}]},
+     'hla_types': [{'code': {'high_res': None, 'split': None, 'broad': 'A1'},
+                    'raw_code': 'A1'}]},
     {'hla_group': HLAGroup.B.name,
-     'hla_types': [{'code': 'B38', 'raw_code': 'B38'}]},
+     'hla_types': [{'code': {'high_res': None, 'split': None, 'broad': 'B38'},
+                    'raw_code': 'B38'}]},
     {'hla_group': HLAGroup.DRB1.name,
-     'hla_types': [{'code': 'DR7', 'raw_code': 'DR7'}]},
+     'hla_types': [{'code': {'high_res': None, 'split': None, 'broad': 'DR7'},
+                    'raw_code': 'DR7'}]},
     {'hla_group': HLAGroup.Other.name,
-     'hla_types': [{'code': 'CW4', 'raw_code': 'CW4'}]}
+     'hla_types': [{'code': {'high_res': None, 'split': None, 'broad': 'CW4'},
+                    'raw_code': 'CW4'}]}
 ]
 HLA_ANTIBODIES_PER_GROUPS_EXAMPLE = [
     {'hla_group': HLAGroup.A.name,
-     'hla_antibody_list': [{'code': 'A1', 'raw_code': 'A1', 'mfi': 0, 'cutoff': 0}]},
+     'hla_antibody_list': [{
+         'code': {'high_res': None, 'split': None, 'broad': 'A1'},
+         'raw_code': 'A1', 'mfi': 0, 'cutoff': 0
+     }]},
     {'hla_group': HLAGroup.B.name,
-     'hla_antibody_list': [{'code': 'B38', 'raw_code': 'B38', 'mfi': 10, 'cutoff': 0}]},
+     'hla_antibody_list': [{
+         'code': {'high_res': None, 'split': None, 'broad': 'B38'},
+         'raw_code': 'B38', 'mfi': 10, 'cutoff': 0
+     }]},
     {'hla_group': HLAGroup.DRB1.name,
-     'hla_antibody_list': [{'code': 'DR7', 'raw_code': 'DR7', 'mfi': 0, 'cutoff': 300}]},
+     'hla_antibody_list': [{
+         'code': {'high_res': None, 'split': None, 'broad': 'DR7'},
+         'raw_code': 'DR7', 'mfi': 0, 'cutoff': 300
+     }]},
     {'hla_group': HLAGroup.Other.name,
-     'hla_antibody_list': [{'code': 'CW4', 'raw_code': 'CW4', 'mfi': 500, 'cutoff': 500}]}
+     'hla_antibody_list': [{
+         'code': {'high_res': None, 'split': None, 'broad': 'CW4'},
+         'raw_code': 'CW4', 'mfi': 500, 'cutoff': 500
+     }]}
 ]
 EXAMPLE_HLA_TYPING = {'hla_types_list': [{'raw_code': 'A*01:02'},
                                          {'raw_code': 'B7'},
                                          {'raw_code': 'DR11'}]}
 
+HLACode = patient_api.model('HlaCode', {
+    'high_res': fields.String(required=False),
+    'split': fields.String(required=False),
+    'broad': fields.String(required=True),
+})
+
 HLAType = patient_api.model('HlaType', {
-    'code': fields.String(required=True),
+    'code': fields.Nested(HLACode, required=True),
     'raw_code': fields.String(required=True),
 })
 
@@ -54,7 +76,7 @@ HLAAntibody = patient_api.model('HlaAntibody', {
     'raw_code': fields.String(required=True),
     'mfi': fields.Integer(required=True),
     'cutoff': fields.Integer(required=True),
-    'code': fields.String(required=True)
+    'code': fields.Nested(HLACode, required=True)
 })
 
 HLAAntibodyRaw = patient_api.model('HlaAntibodyRaw', {
