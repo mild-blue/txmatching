@@ -7,12 +7,13 @@ import os
 import time
 from dataclasses import dataclass, replace
 from distutils.dir_util import copy_tree
+from io import BytesIO
 from typing import Dict, List, Optional, Tuple, Union
 
 import jinja2
 import pandas as pd
 import pdfkit
-from flask import request, send_from_directory
+from flask import request, send_file, send_from_directory
 from flask_restx import Resource
 from jinja2 import Environment, FileSystemLoader
 
@@ -261,12 +262,10 @@ class PatientsXLSReport(Resource):
 
         # Uncomment to export patients to xlsx file
         xls_file_name = f'patients_{_get_formatted_now()}.xlsx'
-        xls_file_full_path = os.path.join(TMP_DIR, xls_file_name)
-        export_patients_to_xlsx_file(patients_dto, xls_file_full_path)
+        buffer = _export_patients_to_xlsx_file(patients_dto)
 
-        response = send_from_directory(
-            TMP_DIR,
-            xls_file_name,
+        response = send_file(
+            buffer,
             as_attachment=True,
             attachment_filename=xls_file_name,
             cache_timeout=0
@@ -301,7 +300,7 @@ def _get_formatted_now() -> str:
     return now.strftime('%Y_%m_%d_%H_%M_%S')
 
 
-def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut], List[Recipient]]], output_file: str):
+def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut], List[Recipient]]]) -> BytesIO:
     @dataclass
     class PatientPair:
         # pylint: disable=too-many-instance-attributes
@@ -370,7 +369,8 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
 
     # Save to xls file and set some formatting
     # pylint: disable=abstract-class-instantiated
-    writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
+    buffer = BytesIO()
+    writer = pd.ExcelWriter(buffer, engine='xlsxwriter')
     df_with_patients.to_excel(writer, sheet_name='Patients', index=False)
     workbook = writer.book
     worksheet = writer.sheets['Patients']
@@ -378,7 +378,11 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
     workbook_format = workbook.add_format({'text_wrap': True})
     # increase columns width to 20
     worksheet.set_column('A:S', 20, workbook_format)
-    writer.save()
+
+    writer.close()
+    buffer.seek(0)
+
+    return buffer
 
 
 def country_combination_filter(country_combination: ForbiddenCountryCombination) -> str:
