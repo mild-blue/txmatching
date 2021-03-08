@@ -34,7 +34,7 @@ def _solve_from_configuration_unsafe(configuration: Configuration, txm_event: Tx
         matching_filter,
         configuration)
 
-    logger.info(f'{matching_count} matchings were found.')
+    logger.info(f'{len(matchings_filtered_sorted)} matchings were found.')
 
     return PairingResult(configuration=configuration,
                          score_matrix=solver.score_matrix,

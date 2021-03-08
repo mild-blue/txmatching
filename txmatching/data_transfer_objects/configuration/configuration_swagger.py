@@ -71,6 +71,14 @@ ConfigurationJson = matching_api.model(
             required=True,
             example=_default_configuration.max_cycles_in_all_solutions_solver
         ),
+        'max_debt_for_country': fields.Integer(
+            required=True,
+            example=_default_configuration.max_debt_for_country
+        ),
+        'max_number_of_dynamic_constrains_ilp_solver': fields.Integer(
+            required=True,
+            example=_default_configuration.max_number_of_dynamic_constrains_ilp_solver
+        ),
         'max_matchings_in_ilp_solver': fields.Integer(
             required=True,
             example=_default_configuration.max_matchings_in_ilp_solver

@@ -15,6 +15,7 @@ export interface Configuration {
   max_number_of_distinct_countries_in_round: number;
   max_matchings_to_show_to_viewer: number;
   max_number_of_matchings: number;
+  max_debt_for_country: number;
 
   // complex FE
   manual_donor_recipient_scores: DonorRecipientScore[];
@@ -27,6 +28,7 @@ export interface Configuration {
   max_cycles_in_all_solutions_solver: number;
   max_matchings_in_all_solutions_solver: number;
   max_matchings_in_ilp_solver: number;
+  max_number_of_dynamic_constrains_ilp_solver: number;
 
   [key: string]: boolean | string | number | number[] | CountryCombination[] | DonorRecipientScore[];
 }

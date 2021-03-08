@@ -19,10 +19,12 @@ export interface ConfigurationGenerated {
     manual_donor_recipient_scores: Array<ManualRecipientDonorScoreGenerated>;
     max_cycle_length: number;
     max_cycles_in_all_solutions_solver: number;
+    max_debt_for_country: number;
     max_matchings_in_all_solutions_solver: number;
     max_matchings_in_ilp_solver: number;
     max_matchings_to_show_to_viewer: number;
     max_number_of_distinct_countries_in_round: number;
+    max_number_of_dynamic_constrains_ilp_solver: number;
     max_number_of_matchings: number;
     max_sequence_length: number;
     maximum_total_score: number;

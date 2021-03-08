@@ -89,6 +89,9 @@ definitions:
             max_cycles_in_all_solutions_solver:
                 example: 1000000
                 type: integer
+            max_debt_for_country:
+                example: 3
+                type: integer
             max_matchings_in_all_solutions_solver:
                 example: 10000
                 type: integer
@@ -100,6 +103,9 @@ definitions:
                 type: integer
             max_number_of_distinct_countries_in_round:
                 example: 3
+                type: integer
+            max_number_of_dynamic_constrains_ilp_solver:
+                example: 100
                 type: integer
             max_number_of_matchings:
                 example: 5
@@ -142,10 +148,12 @@ definitions:
         - manual_donor_recipient_scores
         - max_cycle_length
         - max_cycles_in_all_solutions_solver
+        - max_debt_for_country
         - max_matchings_in_all_solutions_solver
         - max_matchings_in_ilp_solver
         - max_matchings_to_show_to_viewer
         - max_number_of_distinct_countries_in_round
+        - max_number_of_dynamic_constrains_ilp_solver
         - max_number_of_matchings
         - max_sequence_length
         - maximum_total_score
@@ -2275,6 +2283,8 @@ responses:
     SolverAlreadyRunningException:
         description: Solver already running
     TooComplicatedDataForAllSolutionsSolver:
+        description: too complicated data for solver _exception
+    TooComplicatedDataForIlpSolver:
         description: too complicated data for solver _exception
     UnauthorizedException:
         description: unauthorized_exception
