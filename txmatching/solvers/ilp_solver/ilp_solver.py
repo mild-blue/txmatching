@@ -4,9 +4,9 @@ from typing import Dict, Iterable, Iterator, List, Tuple
 
 from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
-from txmatching.solvers.ilp_solver.prepare_data_for_ilp_solver import \
-    prepare_data_for_ilp
 from txmatching.solvers.ilp_solver.solve_ilp import solve_ilp
+from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
+    DataAndConfigurationForILPSolver
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.solver_base import SolverBase
 
@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 class ILPSolver(SolverBase):
 
     def solve(self) -> Iterator[MatchingWithScore]:
-        config_for_ilp_solver = prepare_data_for_ilp(self.donors_dict, self.recipients_dict, self.configuration)
+        config_for_ilp_solver = DataAndConfigurationForILPSolver(self.donors_dict, self.recipients_dict,
+                                                                 self.configuration)
         solutions = solve_ilp(config_for_ilp_solver)
         recipients_db_id_to_order_id = {
             recipient.db_id: order_id for order_id, recipient in enumerate(self.recipients)
