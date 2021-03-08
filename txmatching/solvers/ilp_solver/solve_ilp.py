@@ -1,10 +1,11 @@
 import logging
 import tempfile
 from os import close, dup, dup2
-from typing import Iterable, List, Tuple
+from typing import Iterable, Tuple
 
 import mip
 
+from txmatching.auth.exceptions import TooComplicatedDataForIlpSolver
 from txmatching.solvers.ilp_solver.generate_dynamic_constraints import \
     add_dynamic_constraints
 from txmatching.solvers.ilp_solver.ilp_dataclasses import (
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
-              internal_parameters: InternalILPSolverParameters = InternalILPSolverParameters()) -> List[Solution]:
+              internal_parameters: InternalILPSolverParameters = InternalILPSolverParameters()) -> Iterable[Solution]:
     if len(data_and_configuration.graph.edges) < 1:
         return []
     ilp_model = mip.Model(sense=mip.MAXIMIZE, solver_name=mip.CBC)
@@ -28,11 +29,12 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
     _add_objective(ilp_model, internal_parameters, data_and_configuration, mapping)
 
     _add_static_constraints(data_and_configuration, ilp_model, mapping)
-    solutions = []
 
     matchings_to_search_for = min(data_and_configuration.configuration.max_number_of_matchings,
                                   data_and_configuration.configuration.max_matchings_in_ilp_solver)
+    some_solution_yielded = False
     for _ in range(matchings_to_search_for):
+        number_of_times_dynamic_constraint_added = 0
         while True:
             _solve_with_logging(ilp_model)
 
@@ -43,15 +45,20 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
                                                                 mapping.edge_to_var)
             if not dynamic_constraints_added:
                 break
+            number_of_times_dynamic_constraint_added += 1
+            if number_of_times_dynamic_constraint_added > \
+                    data_and_configuration.configuration.max_number_of_dynamic_constrains_ilp_solver:
+                if not some_solution_yielded:
+                    raise TooComplicatedDataForIlpSolver(
+                        'No solution found and dynamic constranints added too many times')
 
         if status == Status.Optimal:
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
-            solutions.append(Solution(solution_edges))
+            yield Solution(solution_edges)
+            some_solution_yielded = True
             _add_constraints_removing_solution(ilp_model, data_and_configuration, solution_edges, mapping)
         else:
             break
-
-    return solutions
 
 
 def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSolver,
