@@ -44,7 +44,7 @@ class TestCompatibilityIndex(unittest.TestCase):
         )
 
         expected = {HLAMatch(hla_type=HLAType(raw_code='DRB1*04:02'), match_type=MatchTypes.SPLIT),
-                    HLAMatch(hla_type=HLAType(raw_code='DRB1*07:01'), match_type=MatchTypes.SPLIT)}
+                    HLAMatch(hla_type=HLAType(raw_code='DRB1*07:01'), match_type=MatchTypes.HIGH_RES)}
 
         self.assertSetEqual(expected, set(ci[DR_INDEX].recipient_matches))
 

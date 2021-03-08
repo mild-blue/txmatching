@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import List
+from typing import Callable, List
 
 from txmatching.patients.hla_model import HLAType, HLATyping
 from txmatching.utils.enums import HLA_GROUPS_GENE, HLAGroup, MatchTypes
@@ -130,7 +130,51 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
 
 # pylint: disable=too-many-arguments
 # I think it is reasonable to have multiple arguments here
-# TODOO: refactor
+def _match_through_lambda(current_incompatibility_index: float,
+                          donor_matches: List[HLAMatch],
+                          recipient_matches: List[HLAMatch],
+                          donor_hla_types: List[HLAType],
+                          recipient_hla_types: List[HLAType],
+                          hla_group: HLAGroup,
+                          matching_hla_types_func: Callable[[HLAType, HLAType], bool],
+                          result_match_type: MatchTypes,
+                          ci_configuration: CIConfiguration):
+    for donor_hla_type in donor_hla_types.copy():
+        matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
+                              matching_hla_types_func(recipient_hla_type, donor_hla_type)]
+        if len(matching_hla_types) > 0:
+            donor_hla_types.remove(donor_hla_type)
+            recipient_hla_types.remove(matching_hla_types[0])
+
+            donor_matches.append(HLAMatch(donor_hla_type, result_match_type))
+            recipient_matches.append(HLAMatch(matching_hla_types[0], result_match_type))
+            current_incompatibility_index += ci_configuration.compute_match_incompatibility_index(
+                result_match_type, hla_group
+            )
+    return current_incompatibility_index
+
+
+def _match_through_high_res_codes(current_incompatibility_index: float,
+                                  donor_matches: List[HLAMatch],
+                                  recipient_matches: List[HLAMatch],
+                                  donor_hla_types: List[HLAType],
+                                  recipient_hla_types: List[HLAType],
+                                  hla_group: HLAGroup,
+                                  ci_configuration: CIConfiguration):
+    return _match_through_lambda(
+        current_incompatibility_index,
+        donor_matches,
+        recipient_matches,
+        donor_hla_types,
+        recipient_hla_types,
+        hla_group,
+        lambda recipient_hla_type, donor_hla_type:
+        recipient_hla_type.code.high_res == donor_hla_type.code.high_res and donor_hla_type.code.high_res is not None,
+        MatchTypes.HIGH_RES,
+        ci_configuration
+    )
+
+
 def _match_through_split_codes(current_incompatibility_index: float,
                                donor_matches: List[HLAMatch],
                                recipient_matches: List[HLAMatch],
@@ -138,20 +182,18 @@ def _match_through_split_codes(current_incompatibility_index: float,
                                recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup,
                                ci_configuration: CIConfiguration):
-    for donor_hla_type in donor_hla_types.copy():
-        matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
-                              recipient_hla_type.code.split == donor_hla_type.code.split
-                              and donor_hla_type.code.split is not None]
-        if len(matching_hla_types) > 0:
-            donor_hla_types.remove(donor_hla_type)
-            recipient_hla_types.remove(matching_hla_types[0])
-
-            donor_matches.append(HLAMatch(donor_hla_type, MatchTypes.SPLIT))
-            recipient_matches.append(HLAMatch(matching_hla_types[0], MatchTypes.SPLIT))
-            current_incompatibility_index += ci_configuration.compute_match_incompatibility_index(
-                MatchTypes.SPLIT, hla_group
-            )
-    return current_incompatibility_index
+    return _match_through_lambda(
+        current_incompatibility_index,
+        donor_matches,
+        recipient_matches,
+        donor_hla_types,
+        recipient_hla_types,
+        hla_group,
+        lambda recipient_hla_type, donor_hla_type:
+        recipient_hla_type.code.split == donor_hla_type.code.split and donor_hla_type.code.split is not None,
+        MatchTypes.SPLIT,
+        ci_configuration
+    )
 
 
 def _match_through_broad_codes(current_incompatibility_index: float,
@@ -161,19 +203,19 @@ def _match_through_broad_codes(current_incompatibility_index: float,
                                recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup,
                                ci_configuration: CIConfiguration):
-    for donor_hla_type in donor_hla_types.copy():
-        matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
-                                     recipient_hla_type.code.broad == donor_hla_type.code.broad]
-        if len(matching_hla_types) > 0:
-            donor_hla_types.remove(donor_hla_type)
-            recipient_hla_types.remove(matching_hla_types[0])
 
-            donor_matches.append(HLAMatch(donor_hla_type, MatchTypes.BROAD))
-            recipient_matches.append(HLAMatch(matching_hla_types[0], MatchTypes.BROAD))
-            current_incompatibility_index += ci_configuration.compute_match_incompatibility_index(
-                MatchTypes.BROAD, hla_group
-            )
-    return current_incompatibility_index
+    return _match_through_lambda(
+        current_incompatibility_index,
+        donor_matches,
+        recipient_matches,
+        donor_hla_types,
+        recipient_hla_types,
+        hla_group,
+        lambda recipient_hla_type, donor_hla_type:
+        recipient_hla_type.code.broad == donor_hla_type.code.broad,
+        MatchTypes.BROAD,
+        ci_configuration
+    )
 
 
 # pylint: enable=too-many-arguments
@@ -196,7 +238,14 @@ def _get_ci_for_recipient_donor_split_codes(
     donor_matches = []
     recipient_matches = []
 
-    group_incompatibility_index = _match_through_split_codes(0.0,
+    group_incompatibility_index = _match_through_high_res_codes(0.0,
+                                                                donor_matches,
+                                                                recipient_matches,
+                                                                donor_hla_types,
+                                                                recipient_hla_types,
+                                                                hla_group,
+                                                                ci_configuration)
+    group_incompatibility_index = _match_through_split_codes(group_incompatibility_index,
                                                              donor_matches,
                                                              recipient_matches,
                                                              donor_hla_types,
@@ -211,6 +260,7 @@ def _get_ci_for_recipient_donor_split_codes(
                                                              hla_group,
                                                              ci_configuration)
 
+    # TODOO: refactor
     for recipient_hla_type in recipient_hla_types:
         recipient_matches.append(HLAMatch(recipient_hla_type, MatchTypes.NONE))
     for donor_hla_type in donor_hla_types:
