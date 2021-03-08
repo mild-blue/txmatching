@@ -260,7 +260,6 @@ class PatientsXLSReport(Resource):
         _prepare_tmp_dir()
         _prune_old_reports()
 
-        # Uncomment to export patients to xlsx file
         xls_file_name = f'patients_{_get_formatted_now()}.xlsx'
         buffer = _export_patients_to_xlsx_file(patients_dto)
 
