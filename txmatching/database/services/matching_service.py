@@ -13,6 +13,7 @@ from txmatching.database.services.config_service import (
     get_pairing_result_for_configuration_db_id)
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.matching import get_count_of_transplants
+from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.utils.blood_groups import blood_groups_compatible
@@ -39,6 +40,7 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
                                              configuration_db_id: int) -> MatchingsDetailed:
     logger.debug('Getting detailed matchings')
     configuration = get_configuration_from_db_id(configuration_db_id)
+    ci_configuration = scorer_from_configuration(configuration).ci_configuration
 
     config_set_updated(configuration_db_id)
     database_pairing_result = get_pairing_result_for_configuration_db_id(configuration_db_id)
@@ -62,7 +64,8 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
     logger.debug('Getting ci dict dict with score')
     detailed_compatibility_index_dict = {
         (donor_db_id, recipient_db_id): get_detailed_compatibility_index(donor.parameters.hla_typing,
-                                                                         recipient.parameters.hla_typing)
+                                                                         recipient.parameters.hla_typing,
+                                                                         ci_configuration=ci_configuration)
         for donor_db_id, donor in txm_event.active_donors_dict.items()
         for recipient_db_id, recipient in txm_event.active_recipients_dict.items() if
         score_dict[(donor_db_id, recipient_db_id)] >= 0

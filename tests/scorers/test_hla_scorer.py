@@ -4,6 +4,7 @@ from txmatching.patients.hla_model import HLAType, HLATyping
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
+from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 
 
@@ -14,7 +15,7 @@ class TestHlaScorer(unittest.TestCase):
             db_id=1,
             medical_id='donor',
             parameters=PatientParameters(
-                blood_group='A',
+                blood_group=BloodGroup.A,
                 country_code=Country.CZE,
                 hla_typing=HLATyping(
                     [HLAType('A1'),
@@ -37,7 +38,7 @@ class TestHlaScorer(unittest.TestCase):
             related_donor_db_id=1,
             medical_id='recipient',
             parameters=PatientParameters(
-                blood_group='A',
+                blood_group=BloodGroup.A,
                 country_code=Country.CZE,
                 hla_typing=HLATyping(
                     [HLAType('A1'),
@@ -55,7 +56,7 @@ class TestHlaScorer(unittest.TestCase):
             medical_id='original_donor',
             related_recipient_db_id=1,
             parameters=PatientParameters(
-                blood_group='A',
+                blood_group=BloodGroup.A,
                 country_code=Country.CZE,
                 hla_typing=HLATyping(
                     [HLAType('A1'),

@@ -10,6 +10,7 @@ from txmatching.scorers.score_matrix import ScoreMatrix
 from txmatching.scorers.scorer_base import ScorerBase
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
 from txmatching.solvers.matching.matching import Matching
+from txmatching.utils.hla_system.compatibility_index import CIConfiguration
 
 
 class AdditiveScorer(ScorerBase):
@@ -68,4 +69,8 @@ class AdditiveScorer(ScorerBase):
 
     @classmethod
     def from_config(cls, configuration: Configuration) -> 'AdditiveScorer':
+        raise NotImplementedError('Has to be overridden')
+
+    @property
+    def ci_configuration(self) -> CIConfiguration:
         raise NotImplementedError('Has to be overridden')

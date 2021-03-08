@@ -5,6 +5,8 @@ from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack,
                                                     recipient_parameters_Wrong)
 from txmatching.patients.hla_model import HLAType, HLATyping
+from txmatching.scorers.hla_additive_scorer import \
+    HLAAdditiveScorerCIConfiguration
 from txmatching.utils.enums import MatchTypes
 from txmatching.utils.hla_system.compatibility_index import (
     HLAMatch, compatibility_index, get_detailed_compatibility_index)
@@ -22,12 +24,14 @@ class TestCompatibilityIndex(unittest.TestCase):
     def test_compatibility_index(self):
         for donor_params, recipient_params, expected_compatibility_index in self._donor_recipient_index:
             calculated_compatibility_index = compatibility_index(donor_params.hla_typing,
-                                                                 recipient_params.hla_typing)
+                                                                 recipient_params.hla_typing,
+                                                                 ci_configuration=HLAAdditiveScorerCIConfiguration())
             self.assertEqual(expected_compatibility_index, calculated_compatibility_index)
 
     def test_failing_compatibility_index(self):
         self.assertEqual(22,
-                         compatibility_index(donor_parameters_Joe.hla_typing, recipient_parameters_Wrong.hla_typing))
+                         compatibility_index(donor_parameters_Joe.hla_typing, recipient_parameters_Wrong.hla_typing,
+                                             ci_configuration=HLAAdditiveScorerCIConfiguration()))
 
     def test_compatibility_index_with_high_res(self):
         ci = get_detailed_compatibility_index(
@@ -73,7 +77,7 @@ class TestCompatibilityIndex(unittest.TestCase):
             ),
             HLATyping(
                 [HLAType(raw_code='A*23:01')]
-            ),
+            )
         )
 
         expected = {HLAMatch(hla_type=HLAType(raw_code='A*23:01'), match_type=MatchTypes.SPLIT)}

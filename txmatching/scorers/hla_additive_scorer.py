@@ -6,9 +6,28 @@ from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
 from txmatching.utils.blood_groups import blood_groups_compatible
-from txmatching.utils.hla_system.compatibility_index import compatibility_index
+from txmatching.utils.enums import HLAGroup, MatchTypes
+from txmatching.utils.hla_system.compatibility_index import (
+    CIConfiguration, compatibility_index)
 from txmatching.utils.hla_system.hla_crossmatch import \
     is_positive_hla_crossmatch
+
+
+class HLAAdditiveScorerCIConfiguration(CIConfiguration):
+    _match_type_bonus = {
+        MatchTypes.BROAD: 1,
+        MatchTypes.SPLIT: 1,
+        MatchTypes.HIGH_RES: 1
+    }
+    _hla_typing_bonus_per_gene_code_groups = {
+        HLAGroup.A: 1.0,
+        HLAGroup.B: 3.0,
+        HLAGroup.DRB1: 9.0,
+        HLAGroup.Other: 0.0
+    }
+
+    def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup):
+        return self._match_type_bonus[match_type] * self._hla_typing_bonus_per_gene_code_groups[hla_group]
 
 
 class HLAAdditiveScorer(AdditiveScorer):
@@ -19,10 +38,15 @@ class HLAAdditiveScorer(AdditiveScorer):
     # pylint: disable=too-many-return-statements
     # it seems that it is reasonable to want many return statements here as it is still well readable
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Optional[Donor]) -> float:
-        donor_recipient_ci = compatibility_index(donor.parameters.hla_typing, recipient.parameters.hla_typing)
+        donor_recipient_ci = compatibility_index(
+            donor.parameters.hla_typing,
+            recipient.parameters.hla_typing,
+            ci_configuration=self.ci_configuration
+        )
         if original_donor:
             related_donor_recipient_ci = compatibility_index(original_donor.parameters.hla_typing,
-                                                             recipient.parameters.hla_typing)
+                                                             recipient.parameters.hla_typing,
+                                                             ci_configuration=self.ci_configuration)
         else:
             related_donor_recipient_ci = 0.0
 
@@ -97,3 +121,7 @@ class HLAAdditiveScorer(AdditiveScorer):
                                               setting_name):
         setting_val = getattr(recipient.recipient_requirements, setting_name)
         return setting_val if setting_val is not None else getattr(self._configuration, setting_name)
+
+    @property
+    def ci_configuration(self) -> CIConfiguration:
+        return HLAAdditiveScorerCIConfiguration()

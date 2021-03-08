@@ -58,7 +58,8 @@ def donor_to_donor_dto_out(donor: Donor,
         )
         compatibility_index_detailed = get_detailed_compatibility_index(
             donor_hla_typing=donor.parameters.hla_typing,
-            recipient_hla_typing=related_recipient.parameters.hla_typing)
+            recipient_hla_typing=related_recipient.parameters.hla_typing,
+            ci_configuration=scorer.ci_configuration)
         donor_dto.detailed_score_with_related_recipient = get_detailed_score(
             compatibility_index_detailed,
             antibodies

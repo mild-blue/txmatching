@@ -36,13 +36,6 @@ HLA_GROUP_SPLIT_CODE_REGEX = {
 HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.Other] = '|'.join(
     HLA_GROUP_SPLIT_CODE_REGEX[hla_group] for hla_group in HLA_GROUPS_OTHER)
 
-HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS = {
-    HLAGroup.A: 1.0,
-    HLAGroup.B: 3.0,
-    HLAGroup.DRB1: 9.0,
-    HLAGroup.Other: 0.0
-}
-
 
 class AntibodyMatchTypes(str, Enum):
     NONE = 'NONE'
@@ -54,10 +47,3 @@ class MatchTypes(str, Enum):
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
-
-
-MATCH_TYPE_BONUS = {
-    MatchTypes.BROAD: 1,
-    MatchTypes.SPLIT: 1,
-    MatchTypes.HIGH_RES: 1
-}
