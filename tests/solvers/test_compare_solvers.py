@@ -1,4 +1,4 @@
-from tests.solvers.best_solution_use_high_res_resolution_true import (
+from tests.solvers.best_solution_use_split_resolution_true import (
     BEST_SOLUTION_use_high_res_resolution_TRUE,
     get_donor_recipient_pairs_from_solution)
 from tests.test_utilities.populate_db import PATIENT_DATA_OBFUSCATED
