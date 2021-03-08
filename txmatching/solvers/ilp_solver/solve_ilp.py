@@ -77,13 +77,17 @@ def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSo
             mapping.node_to_out_var[node])
 
     # Donor-patient pair flows.
-    for node in data_and_configuration.dp_pairs:
+    for node in data_and_configuration.regular_donors:
         ilp_model.add_constr(mapping.node_to_out_var[node] <= mapping.node_to_in_var[node])
         ilp_model.add_constr(mapping.node_to_in_var[node] <= 1)
 
     # Non-directed donor flows.
     for node in data_and_configuration.non_directed_donors:
         ilp_model.add_constr(mapping.node_to_out_var[node] <= 1)
+
+    # Required patients
+    for node in data_and_configuration.required_patients:
+        ilp_model.add_constr(mapping.node_to_in_var[node] >= 0.5)
 
 
 def _add_objective(ilp_model: mip.Model,

@@ -22,8 +22,6 @@ from txmatching.utils.logged_user import get_current_user, get_current_user_id
 
 logger = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
-
 
 def get_newest_txm_event_db_id() -> int:
     txm_event_model = TxmEventModel.query.order_by(TxmEventModel.id.desc()).first()
