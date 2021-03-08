@@ -84,7 +84,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         required_patient = 5
         configuration = Configuration(
-            use_split_resolution=True,
+            use_high_res_resolution=True,
             max_number_of_matchings=10,
             max_cycle_length=10)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
@@ -92,7 +92,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertNotIn(required_patient, {pair.recipient.db_id for pair in solutions[0].matching_pairs})
 
         configuration = Configuration(
-            use_split_resolution=True,
+            use_high_res_resolution=True,
             required_patient_db_ids=[required_patient],
             max_number_of_matchings=3,
             max_cycle_length=10)

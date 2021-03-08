@@ -122,7 +122,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         required_patient = 5
         configuration = Configuration(
             solver_constructor_name='ILPSolver',
-            use_split_resolution=True,
+            use_high_res_resolution=True,
             max_number_of_matchings=10,
             max_cycle_length=10)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
@@ -131,7 +131,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
 
         configuration = Configuration(
             solver_constructor_name='ILPSolver',
-            use_split_resolution=True,
+            use_high_res_resolution=True,
             required_patient_db_ids=[required_patient],
             max_number_of_matchings=3,
             max_cycle_length=10)
