@@ -1,5 +1,3 @@
-import numpy as np
-
 from tests.test_utilities.populate_db import (PATIENT_DATA_OBFUSCATED,
                                               create_or_overwrite_txm_event)
 from tests.test_utilities.prepare_app import DbTests
@@ -9,8 +7,6 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.solvers.matching.matching import Matching
-from txmatching.utils.country_enum import Country
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 
@@ -106,7 +102,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_max_debt_between_countries(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
-        for debt in range(1, 4):
+        for debt in range(0, 4):
             configuration = Configuration(
                 solver_constructor_name='ILPSolver',
                 use_split_resolution=True,
