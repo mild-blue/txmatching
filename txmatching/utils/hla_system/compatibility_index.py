@@ -34,12 +34,24 @@ class DetailedCompatibilityIndexForHLAGroup:
 
 
 class CIConfiguration:
-    def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup) -> float:
+    def compute_match_incompatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup) -> float:
+        raise NotImplementedError('Has to be overridden')
+
+    def get_max_compatibility_index_for_group(self, hla_group: HLAGroup) -> float:
+        raise NotImplementedError('Has to be overridden')
+
+    def get_max_compatibility_index(self) -> float:
         raise NotImplementedError('Has to be overridden')
 
 
 class DefaultCIConfiguration(CIConfiguration):
-    def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup) -> float:
+    def compute_match_incompatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup) -> float:
+        return 0
+
+    def get_max_compatibility_index_for_group(self, hla_group: HLAGroup) -> float:
+        return 0
+
+    def get_max_compatibility_index(self) -> float:
         return 0
 
 
@@ -118,7 +130,8 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
 
 # pylint: disable=too-many-arguments
 # I think it is reasonable to have multiple arguments here
-def _match_through_split_codes(current_compatibility_index: float,
+# TODOO: refactor
+def _match_through_split_codes(current_incompatibility_index: float,
                                donor_matches: List[HLAMatch],
                                recipient_matches: List[HLAMatch],
                                donor_hla_types: List[HLAType],
@@ -135,13 +148,13 @@ def _match_through_split_codes(current_compatibility_index: float,
 
             donor_matches.append(HLAMatch(donor_hla_type, MatchTypes.SPLIT))
             recipient_matches.append(HLAMatch(matching_hla_types[0], MatchTypes.SPLIT))
-            current_compatibility_index += ci_configuration.compute_match_compatibility_index(
+            current_incompatibility_index += ci_configuration.compute_match_incompatibility_index(
                 MatchTypes.SPLIT, hla_group
             )
-    return current_compatibility_index
+    return current_incompatibility_index
 
 
-def _match_through_broad_codes(current_compatibility_index: float,
+def _match_through_broad_codes(current_incompatibility_index: float,
                                donor_matches: List[HLAMatch],
                                recipient_matches: List[HLAMatch],
                                donor_hla_types: List[HLAType],
@@ -149,21 +162,30 @@ def _match_through_broad_codes(current_compatibility_index: float,
                                hla_group: HLAGroup,
                                ci_configuration: CIConfiguration):
     for donor_hla_type in donor_hla_types.copy():
-        recipient_match_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
+        matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
                                      recipient_hla_type.code.broad == donor_hla_type.code.broad]
-        if len(recipient_match_hla_types) > 0:
+        if len(matching_hla_types) > 0:
             donor_hla_types.remove(donor_hla_type)
-            recipient_hla_types.remove(recipient_match_hla_types[0])
+            recipient_hla_types.remove(matching_hla_types[0])
 
             donor_matches.append(HLAMatch(donor_hla_type, MatchTypes.BROAD))
-            recipient_matches.append(HLAMatch(recipient_match_hla_types[0], MatchTypes.BROAD))
-            current_compatibility_index += ci_configuration.compute_match_compatibility_index(
+            recipient_matches.append(HLAMatch(matching_hla_types[0], MatchTypes.BROAD))
+            current_incompatibility_index += ci_configuration.compute_match_incompatibility_index(
                 MatchTypes.BROAD, hla_group
             )
-    return current_compatibility_index
+    return current_incompatibility_index
 
 
 # pylint: enable=too-many-arguments
+
+
+def _convert_incompatibility_index_to_ci_for_group(incompatibility_index: float,
+                                                   hla_group: HLAGroup,
+                                                   ci_configuration: CIConfiguration) -> float:
+    max_ci = ci_configuration.get_max_compatibility_index_for_group(hla_group)
+    ci = max_ci - incompatibility_index
+    assert 0 <= ci <= max_ci
+    return ci
 
 
 def _get_ci_for_recipient_donor_split_codes(
@@ -174,31 +196,36 @@ def _get_ci_for_recipient_donor_split_codes(
     donor_matches = []
     recipient_matches = []
 
-    group_compatibility_index = _match_through_split_codes(0.0,
-                                                           donor_matches,
-                                                           recipient_matches,
-                                                           donor_hla_types,
-                                                           recipient_hla_types,
-                                                           hla_group,
-                                                           ci_configuration)
-    group_compatibility_index = _match_through_broad_codes(group_compatibility_index,
-                                                           donor_matches,
-                                                           recipient_matches,
-                                                           donor_hla_types,
-                                                           recipient_hla_types,
-                                                           hla_group,
-                                                           ci_configuration)
+    group_incompatibility_index = _match_through_split_codes(0.0,
+                                                             donor_matches,
+                                                             recipient_matches,
+                                                             donor_hla_types,
+                                                             recipient_hla_types,
+                                                             hla_group,
+                                                             ci_configuration)
+    group_incompatibility_index = _match_through_broad_codes(group_incompatibility_index,
+                                                             donor_matches,
+                                                             recipient_matches,
+                                                             donor_hla_types,
+                                                             recipient_hla_types,
+                                                             hla_group,
+                                                             ci_configuration)
 
-    for left_recipient_hla_type in recipient_hla_types:
-        recipient_matches.append(HLAMatch(left_recipient_hla_type, MatchTypes.NONE))
-    for left_donor_hla_type in donor_hla_types:
-        donor_matches.append(HLAMatch(left_donor_hla_type, MatchTypes.NONE))
+    for recipient_hla_type in recipient_hla_types:
+        recipient_matches.append(HLAMatch(recipient_hla_type, MatchTypes.NONE))
+    for donor_hla_type in donor_hla_types:
+        donor_matches.append(HLAMatch(donor_hla_type, MatchTypes.NONE))
+        group_incompatibility_index += ci_configuration.compute_match_incompatibility_index(
+            MatchTypes.NONE, hla_group
+        )
 
     return DetailedCompatibilityIndexForHLAGroup(
         hla_group=hla_group,
         donor_matches=donor_matches,
         recipient_matches=recipient_matches,
-        group_compatibility_index=group_compatibility_index
+        group_compatibility_index=_convert_incompatibility_index_to_ci_for_group(
+            group_incompatibility_index, hla_group, ci_configuration
+        )
     )
 
 
