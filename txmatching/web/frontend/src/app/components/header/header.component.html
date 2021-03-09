@@ -51,12 +51,22 @@
   </div>
 
   <div class="download"
-       [class.hidden]="downloadStatus === uploadDownloadStatus.hidden"
-       [class.disabled]="downloadStatus === uploadDownloadStatus.disabled">
-    <button (click)="handleDownloadClick()">
+       [class.hidden]="downloadMatchingStatus === uploadDownloadStatus.hidden"
+       [class.disabled]="downloadMatchingStatus === uploadDownloadStatus.disabled">
+    <button (click)="handleDownloadMatchingClick()">
       Generate report
-      <mat-icon *ngIf="downloadStatus !== uploadDownloadStatus.loading" [inline]="true">get_app</mat-icon>
-      <mat-spinner *ngIf="downloadStatus === uploadDownloadStatus.loading" diameter="16"></mat-spinner>
+      <mat-icon *ngIf="downloadMatchingStatus !== uploadDownloadStatus.loading" [inline]="true">get_app</mat-icon>
+      <mat-spinner *ngIf="downloadMatchingStatus === uploadDownloadStatus.loading" diameter="16"></mat-spinner>
+    </button>
+  </div>
+
+  <div class="download"
+       [class.hidden]="downloadPatientsStatus === uploadDownloadStatus.hidden"
+       [class.disabled]="downloadPatientsStatus === uploadDownloadStatus.disabled">
+    <button (click)="handleDownloadPatientsClick()">
+      Export patients
+      <mat-icon *ngIf="downloadPatientsStatus !== uploadDownloadStatus.loading" [inline]="true">get_app</mat-icon>
+      <mat-spinner *ngIf="downloadPatientsStatus === uploadDownloadStatus.loading" diameter="16"></mat-spinner>
     </button>
   </div>
 

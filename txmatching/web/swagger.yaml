@@ -1998,9 +1998,9 @@ paths:
             -   bearer: []
             tags:
             - patients
-    /v1/txm-event/{txm_event_id}/reports/{matching_id}:
+    /v1/txm-event/{txm_event_id}/reports/matchings/{matching_id}/pdf:
         get:
-            operationId: get_report
+            operationId: get_matching_report
             parameters:
             -   description: Id of matching that was chosen
                 in: path
@@ -2016,6 +2016,38 @@ paths:
             responses:
                 '200':
                     description: Generates PDF report.
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '404':
+                    description: Matching for provided id was not found.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - reports
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+    /v1/txm-event/{txm_event_id}/reports/patients/xlsx:
+        get:
+            operationId: get_patients_xls_report
+            responses:
+                '200':
+                    description: Generates XLSX report.
                 '401':
                     description: Authentication failed.
                     schema:
