@@ -7,12 +7,13 @@ import os
 import time
 from dataclasses import dataclass, replace
 from distutils.dir_util import copy_tree
+from io import BytesIO
 from typing import Dict, List, Optional, Tuple, Union
 
 import jinja2
 import pandas as pd
 import pdfkit
-from flask import request, send_from_directory
+from flask import request, send_file, send_from_directory
 from flask_restx import Resource
 from jinja2 import Environment, FileSystemLoader
 
@@ -65,8 +66,8 @@ COLOR_MILD_BLUE = '#2D4496'
 
 # Query params:
 #   - matchingRangeLimit
-@report_api.route('/<int:matching_id>', methods=['GET'])
-class Report(Resource):
+@report_api.route('/matchings/<int:matching_id>/pdf', methods=['GET'])
+class MatchingReport(Resource):
 
     @report_api.doc(
         security='bearer',
@@ -148,21 +149,14 @@ class Report(Resource):
 
         configuration = get_latest_configuration_for_txm_event(txm_event=txm_event)
 
-        Report.prepare_tmp_dir()
-        Report.copy_assets()
-        Report.prune_old_reports()
+        _prepare_tmp_dir()
+        MatchingReport.copy_assets()
+        _prune_old_reports()
 
         j2_env = Environment(
             loader=FileSystemLoader(os.path.join(THIS_DIR, '../templates')),
             trim_blocks=True
         )
-
-        now = datetime.datetime.now()
-        now_formatted = now.strftime('%Y_%m_%d_%H_%M_%S')
-
-        # Uncomment to export patients to xlsx file
-        # xls_file_full_path = os.path.join(TMP_DIR, f'patients_{now_formatted}.xlsx')
-        # export_patients_to_xlsx_file(patients_dto, xls_file_full_path)
 
         required_patients_medical_ids = [txm_event.active_recipients_dict[recipient_db_id].medical_id
                                          for recipient_db_id in configuration.required_patient_db_ids]
@@ -182,10 +176,11 @@ class Report(Resource):
             configuration.manual_donor_recipient_scores
         ]
 
-        logo, color = Report.get_theme()
+        now_formatted = _get_formatted_now()
+        logo, color = _get_theme()
         html = (j2_env.get_template('report.html').render(
             title='Matching Report',
-            date=now.strftime('%d.%m.%Y %H:%M:%S'),
+            date=datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
             txm_event_name=txm_event.name,
             configuration=configuration,
             matchings=calculated_matchings_dto,
@@ -235,33 +230,76 @@ class Report(Resource):
         return response
 
     @staticmethod
-    def prepare_tmp_dir():
-        if not os.path.exists(TMP_DIR):
-            os.makedirs(TMP_DIR)
-
-    @staticmethod
     def copy_assets():
         if os.path.exists(TMP_DIR):
             old_dir = os.path.join(THIS_DIR, '../templates/assets/')
             new_dir = TMP_DIR + '/assets/'
             copy_tree(old_dir, new_dir)
 
-    @staticmethod
-    def prune_old_reports():
-        now = time.time()
-        for filename in os.listdir(TMP_DIR):
-            if os.path.getmtime(os.path.join(TMP_DIR, filename)) < now - 1 * 86400:  # 1 day
-                if os.path.isfile(os.path.join(TMP_DIR, filename)):
-                    os.remove(os.path.join(TMP_DIR, filename))
 
-    @staticmethod
-    def get_theme() -> Tuple[str, str]:
-        conf = get_application_configuration()
-        return (LOGO_MILD_BLUE, COLOR_MILD_BLUE) if conf.environment == ApplicationEnvironment.STAGING \
-            else (LOGO_IKEM, COLOR_IKEM)
+@report_api.route('/patients/xlsx', methods=['GET'])
+class PatientsXLSReport(Resource):
+
+    @report_api.doc(
+        security='bearer'
+    )
+    @report_api.response(code=200, model=None, description='Generates XLSX report.')
+    @report_api.response(code=404, model=FailJson, description='Matching for provided id was not found.')
+    @report_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @report_api.response(code=403, model=FailJson,
+                         description='Access denied. You do not have rights to access this endpoint.'
+                         )
+    @report_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @require_user_login()
+    @require_valid_txm_event_id()
+    def get(self, txm_event_id: int) -> str:
+        txm_event = get_txm_event_complete(txm_event_id)
+
+        patients_dto = to_lists_for_fe(txm_event)
+
+        _prepare_tmp_dir()
+        _prune_old_reports()
+
+        xls_file_name = f'patients_{_get_formatted_now()}.xlsx'
+        buffer = _export_patients_to_xlsx_file(patients_dto)
+
+        response = send_file(
+            buffer,
+            as_attachment=True,
+            attachment_filename=xls_file_name,
+            cache_timeout=0
+        )
+
+        response.headers['x-filename'] = xls_file_name
+        response.headers['Access-Control-Expose-Headers'] = 'x-filename'
+        return response
 
 
-def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut], List[Recipient]]], output_file: str):
+def _prepare_tmp_dir():
+    if not os.path.exists(TMP_DIR):
+        os.makedirs(TMP_DIR)
+
+
+def _prune_old_reports():
+    now = time.time()
+    for filename in os.listdir(TMP_DIR):
+        if os.path.getmtime(os.path.join(TMP_DIR, filename)) < now - 1 * 86400:  # 1 day
+            if os.path.isfile(os.path.join(TMP_DIR, filename)):
+                os.remove(os.path.join(TMP_DIR, filename))
+
+
+def _get_theme() -> Tuple[str, str]:
+    conf = get_application_configuration()
+    return (LOGO_MILD_BLUE, COLOR_MILD_BLUE) if conf.environment == ApplicationEnvironment.STAGING \
+        else (LOGO_IKEM, COLOR_IKEM)
+
+
+def _get_formatted_now() -> str:
+    now = datetime.datetime.now()
+    return now.strftime('%Y_%m_%d_%H_%M_%S')
+
+
+def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut], List[Recipient]]]) -> BytesIO:
     @dataclass
     class PatientPair:
         # pylint: disable=too-many-instance-attributes
@@ -330,7 +368,8 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
 
     # Save to xls file and set some formatting
     # pylint: disable=abstract-class-instantiated
-    writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
+    buffer = BytesIO()
+    writer = pd.ExcelWriter(buffer, engine='xlsxwriter')
     df_with_patients.to_excel(writer, sheet_name='Patients', index=False)
     workbook = writer.book
     worksheet = writer.sheets['Patients']
@@ -338,7 +377,11 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
     workbook_format = workbook.add_format({'text_wrap': True})
     # increase columns width to 20
     worksheet.set_column('A:S', 20, workbook_format)
-    writer.save()
+
+    writer.close()
+    buffer.seek(0)
+
+    return buffer
 
 
 def country_combination_filter(country_combination: ForbiddenCountryCombination) -> str:

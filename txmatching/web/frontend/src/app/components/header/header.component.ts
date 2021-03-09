@@ -17,8 +17,10 @@ export class HeaderComponent {
 
   @Input() user?: User;
 
-  @Input() downloadStatus: UploadDownloadStatus = UploadDownloadStatus.disabled;
-  @Output() downloadAction: EventEmitter<void> = new EventEmitter<void>();
+  @Input() downloadMatchingStatus: UploadDownloadStatus = UploadDownloadStatus.disabled;
+  @Input() downloadPatientsStatus: UploadDownloadStatus = UploadDownloadStatus.disabled;
+  @Output() downloadMatchingAction: EventEmitter<void> = new EventEmitter<void>();
+  @Output() downloadPatientsAction: EventEmitter<void> = new EventEmitter<void>();
 
   @Input() txmEvents?: TxmEvents;
 
@@ -70,8 +72,12 @@ export class HeaderComponent {
     this._authService.logout();
   }
 
-  public handleDownloadClick(): void {
-    this.downloadAction.emit();
+  public handleDownloadMatchingClick(): void {
+    this.downloadMatchingAction.emit();
+  }
+
+  public handleDownloadPatientsClick(): void {
+    this.downloadPatientsAction.emit();
   }
 
   public changeDefaultTxmEvent(change: MatSelectionListChange): void {

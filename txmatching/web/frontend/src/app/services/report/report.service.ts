@@ -15,14 +15,32 @@ export class ReportService {
   constructor(private _http: HttpClient) {
   }
 
-  public downloadReport(txmEventId: number, matchingId: number): Observable<Report> {
+  public downloadMatchingPdfReport(txmEventId: number, matchingId: number): Observable<Report> {
     const httpOptions: Object = {
       responseType: 'blob',
       observe: 'response'
     };
     // &v=${Date.now()} is done according to https://stackoverflow.com/questions/53207420/how-to-download-new-version-of-file-without-using-the-client-cache
     return this._http.get<HttpResponse<Blob>>(
-      `${environment.apiUrl}/txm-event/${txmEventId}/reports/${matchingId}?matchingsBelowChosen=${otherMatchingsCount}&v=${Date.now()}`,
+      `${environment.apiUrl}/txm-event/${txmEventId}/reports/matchings/${matchingId}/pdf?matchingsBelowChosen=${otherMatchingsCount}&v=${Date.now()}`,
+      httpOptions
+    ).pipe(
+      map((response: HttpResponse<Blob>) => {
+        const data = response.body as Blob;
+        const filename = response.headers.get('x-filename') ?? this._generateFilename();
+        return { data, filename };
+      })
+    );
+  }
+
+  public downloadPatientsXlsxReport(txmEventId: number): Observable<Report> {
+    const httpOptions: Object = {
+      responseType: 'blob',
+      observe: 'response'
+    };
+    // &v=${Date.now()} is done according to https://stackoverflow.com/questions/53207420/how-to-download-new-version-of-file-without-using-the-client-cache
+    return this._http.get<HttpResponse<Blob>>(
+      `${environment.apiUrl}/txm-event/${txmEventId}/reports/patients/xlsx?v=${Date.now()}`,
       httpOptions
     ).pipe(
       map((response: HttpResponse<Blob>) => {

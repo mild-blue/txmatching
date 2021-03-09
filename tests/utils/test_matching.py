@@ -6,9 +6,9 @@ from tests.test_utilities.create_dataclasses import (get_test_antibodies,
                                                      get_test_raw_codes,
                                                      get_test_recipients)
 from txmatching.patients.patient import Patient
-from txmatching.scorers.hla_additive_scorer import \
-    HLAAdditiveScorerCIConfiguration
 from txmatching.scorers.matching import get_count_of_transplants
+from txmatching.scorers.split_hla_additive_scorer import \
+    SplitHLAAdditiveScorerCIConfiguration
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
@@ -37,7 +37,7 @@ def calculate_compatibility_index_for_group(donor: Patient, recipient: Patient, 
 
     scores = get_detailed_compatibility_index(donor.parameters.hla_typing,
                                               recipient.parameters.hla_typing,
-                                              ci_configuration=HLAAdditiveScorerCIConfiguration())
+                                              ci_configuration=SplitHLAAdditiveScorerCIConfiguration())
     return next(group_ci_detailed.group_compatibility_index for group_ci_detailed in scores if
                 group_ci_detailed.hla_group == hla_group)
 

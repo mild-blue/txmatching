@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
 import { PatientUploadSuccessResponseGenerated } from '@app/generated';
 import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
 import { DonorType } from '@app/model/enums/DonorType';
+import { ReportService } from '@app/services/report/report.service';
 
 @Component({
   selector: 'app-patients',
@@ -33,20 +34,20 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
   public items: (Donor | PatientPair)[] = [];
   public activeItem?: Donor | PatientPair;
 
-  public loading: boolean = false;
   public error: boolean = false;
-  public downloadStatus: UploadDownloadStatus = UploadDownloadStatus.hidden;
+  public downloadMatchingStatus: UploadDownloadStatus = UploadDownloadStatus.hidden;
   public donorsCount: number = 0;
   public recipientCount: number = 0;
   public patientPopupOpened: boolean = false;
 
-  constructor(_authService: AuthService,
+  constructor(_reportService: ReportService,
+              _authService: AuthService,
               _alertService: AlertService,
               _configService: ConfigurationService,
               _eventService: EventService,
               _patientService: PatientService,
               _logger: LoggerService) {
-    super(_authService, _alertService, _configService, _eventService, _patientService, _logger);
+    super(_reportService, _authService, _alertService, _configService, _eventService, _patientService, _logger);
   }
 
   ngOnInit(): void {

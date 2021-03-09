@@ -22,9 +22,7 @@ import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-log
 })
 export class HomeComponent extends AbstractLoggedComponent implements OnInit, OnDestroy {
 
-  private _downloadInProgress: boolean = false;
-
-  public loading: boolean = false;
+  private _downloadMatchingInProgress: boolean = false;
 
   public matchings: Matching[] = [];
 
@@ -38,14 +36,14 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   public configOpened: boolean = false;
 
   constructor(private _matchingService: MatchingService,
-              private _reportService: ReportService,
+              _reportService: ReportService,
               _authService: AuthService,
               _alertService: AlertService,
               _configService: ConfigurationService,
               _eventService: EventService,
               _patientService: PatientService,
               _logger: LoggerService) {
-    super(_authService, _alertService, _configService, _eventService, _patientService, _logger);
+    super(_reportService, _authService, _alertService, _configService, _eventService, _patientService, _logger);
   }
 
   ngOnInit(): void {
@@ -74,12 +72,12 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     return this.matchings.find(m => m.isActive);
   }
 
-  get downloadStatus(): UploadDownloadStatus {
+  get downloadMatchingStatus(): UploadDownloadStatus {
     const activeMatchingExists = !this.loading && this.getActiveMatching() !== undefined;
     if (!activeMatchingExists) {
       return UploadDownloadStatus.disabled;
     }
-    return this._downloadInProgress ? UploadDownloadStatus.loading : UploadDownloadStatus.enabled;
+    return this._downloadMatchingInProgress ? UploadDownloadStatus.loading : UploadDownloadStatus.enabled;
   }
 
   get showConfiguration(): boolean {
@@ -92,7 +90,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.configOpened = !this.configOpened;
   }
 
-  public async downloadReport(): Promise<void> {
+  public async downloadMatchingPdfReport(): Promise<void> {
     if (!this.defaultTxmEvent) {
       this._logger.error('Download report failed because defaultTxmEvent not set');
       return;
@@ -105,11 +103,11 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
     this._logger.log('Downloading with active matching', [activeMatching]);
 
-    this._downloadInProgress = true;
-    this._reportService.downloadReport(this.defaultTxmEvent.id, activeMatching.order_id)
+    this._downloadMatchingInProgress = true;
+    this._reportService.downloadMatchingPdfReport(this.defaultTxmEvent.id, activeMatching.order_id)
     .pipe(
       first(),
-      finalize(() => this._downloadInProgress = false)
+      finalize(() => this._downloadMatchingInProgress = false)
     )
     .subscribe(
       (report: Report) => {
