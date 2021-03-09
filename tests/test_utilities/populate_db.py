@@ -153,7 +153,7 @@ def populate_db():
 
     result = solve_from_configuration(txm_event=txm_event,
                                       configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
-                                                                  use_split_resolution=True))
+                                                                  use_high_resolution=True))
     solver_service.save_pairing_result(result, 1)
 
     logger.info(f'Successfully stored {len(list(result.calculated_matchings_list))} matchings into the database.')

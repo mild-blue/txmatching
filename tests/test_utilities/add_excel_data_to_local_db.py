@@ -48,5 +48,5 @@ if __name__ == '__main__':
 
         result = solve_from_configuration(txm_event_db_id=txm_event_db_id,
                                           configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
-                                                                      use_split_resolution=True))
+                                                                      use_high_resolution=True))
         logger.info(f'Successfully stored {len(list(result.calculated_matchings_list))} matchings into the database.')
