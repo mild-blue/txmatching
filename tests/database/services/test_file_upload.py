@@ -92,7 +92,7 @@ class TestUpdateDonorRecipient(DbTests):
             max_cycle_length=100,
             max_sequence_length=100,
             max_number_of_distinct_countries_in_round=100,
-            use_high_res_resolution=True,
+            use_high_resolution=True,
             max_number_of_matchings=1000,
             max_debt_for_country=10,
         ),

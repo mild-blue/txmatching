@@ -68,7 +68,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         for max_sequence_length in range(1, 5):
             configuration = Configuration(
                 solver_constructor_name='ILPSolver',
-                use_high_res_resolution=True,
+                use_high_resolution=True,
                 max_sequence_length=max_sequence_length,
                 max_cycle_length=0,
                 max_number_of_matchings=3)
@@ -87,7 +87,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_cycle_length in range(2, 5):
             configuration = Configuration(solver_constructor_name='ILPSolver',
-                                          use_high_res_resolution=True,
+                                          use_high_resolution=True,
                                           max_cycle_length=max_cycle_length,
                                           max_sequence_length=0,
                                           max_number_of_matchings=3)
@@ -105,7 +105,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         for debt in range(1, 4):
             configuration = Configuration(
                 solver_constructor_name='ILPSolver',
-                use_high_res_resolution=True,
+                use_high_resolution=True,
                 max_debt_for_country=debt,
                 max_number_of_matchings=3)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
@@ -122,7 +122,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         required_patient = 5
         configuration = Configuration(
             solver_constructor_name='ILPSolver',
-            use_high_res_resolution=True,
+            use_high_resolution=True,
             max_number_of_matchings=10,
             max_cycle_length=10)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
@@ -131,7 +131,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
 
         configuration = Configuration(
             solver_constructor_name='ILPSolver',
-            use_high_res_resolution=True,
+            use_high_resolution=True,
             required_patient_db_ids=[required_patient],
             max_number_of_matchings=3,
             max_cycle_length=10)

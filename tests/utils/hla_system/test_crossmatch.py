@@ -15,22 +15,22 @@ logger = logging.getLogger(__name__)
 
 class TestCrossmatch(unittest.TestCase):
 
-    def _assert_positive_crossmatch(self, hla_type: HLAType, hla_antibodies: List[HLAAntibody], use_high_res_resolution: bool):
+    def _assert_positive_crossmatch(self, hla_type: HLAType, hla_antibodies: List[HLAAntibody], use_high_resolution: bool):
         self.assertTrue(
             is_positive_hla_crossmatch(
                 HLATyping(hla_types_list=[hla_type]),
                 HLAAntibodies(hla_antibodies_list=hla_antibodies),
-                use_high_res_resolution
-            ), f'{hla_type} and {hla_antibodies} has NEGATIVE crossmatch (use_high_res_resolution={use_high_res_resolution})'
+                use_high_resolution
+            ), f'{hla_type} and {hla_antibodies} has NEGATIVE crossmatch (use_high_resolution={use_high_resolution})'
         )
 
-    def _assert_negative_crossmatch(self, hla_type: HLAType, hla_antibodies: List[HLAAntibody], use_high_res_resolution: bool):
+    def _assert_negative_crossmatch(self, hla_type: HLAType, hla_antibodies: List[HLAAntibody], use_high_resolution: bool):
         self.assertFalse(
             is_positive_hla_crossmatch(
                 HLATyping(hla_types_list=[hla_type]),
                 HLAAntibodies(hla_antibodies_list=hla_antibodies),
-                use_high_res_resolution
-            ), f'{hla_type} and {hla_antibodies} has POSITIVE crossmatch (use_high_res_resolution={use_high_res_resolution})'
+                use_high_resolution
+            ), f'{hla_type} and {hla_antibodies} has POSITIVE crossmatch (use_high_resolution={use_high_resolution})'
         )
 
     def _assert_raw_code_equal(self, raw_code: str, expected_hla_code: HLACode):
@@ -148,12 +148,12 @@ class TestCrossmatch(unittest.TestCase):
 
     def _assert_matches_equal(self,
                               hla_type: HLAType, hla_antibodies: List[HLAAntibody],
-                              use_high_res_resolution: bool,
+                              use_high_resolution: bool,
                               expected_antibody_matches: List[AntibodyMatch]):
         crossmatched_antibodies = get_crossmatched_antibodies(
             HLATyping(hla_types_list=[hla_type]),
             HLAAntibodies(hla_antibodies_list=hla_antibodies),
-            use_high_res_resolution
+            use_high_resolution
         )
 
         actual_antibody_matches = [antibody_match for match_group in crossmatched_antibodies

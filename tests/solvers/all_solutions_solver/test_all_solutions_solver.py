@@ -45,7 +45,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_sequence_length in range(1, 6):
-            configuration = Configuration(use_high_res_resolution=True, max_sequence_length=max_sequence_length,
+            configuration = Configuration(use_high_resolution=True, max_sequence_length=max_sequence_length,
                                           max_number_of_matchings=1000)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertEqual(max_sequence_length,
@@ -56,7 +56,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_cycle_length in range(2, 5):
-            configuration = Configuration(use_high_res_resolution=True, max_cycle_length=max_cycle_length,
+            configuration = Configuration(use_high_resolution=True, max_cycle_length=max_cycle_length,
                                           max_number_of_matchings=1000)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertEqual(max_cycle_length,
@@ -68,7 +68,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         for debt in range(1, 4):
             configuration = Configuration(
-                use_high_res_resolution=True,
+                use_high_resolution=True,
                 max_debt_for_country=debt,
                 max_number_of_matchings=3)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
@@ -84,7 +84,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         required_patient = 5
         configuration = Configuration(
-            use_high_res_resolution=True,
+            use_high_resolution=True,
             max_number_of_matchings=10,
             max_cycle_length=10)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
@@ -92,7 +92,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertNotIn(required_patient, {pair.recipient.db_id for pair in solutions[0].matching_pairs})
 
         configuration = Configuration(
-            use_high_res_resolution=True,
+            use_high_resolution=True,
             required_patient_db_ids=[required_patient],
             max_number_of_matchings=3,
             max_cycle_length=10)

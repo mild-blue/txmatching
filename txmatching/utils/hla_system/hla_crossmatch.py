@@ -19,22 +19,22 @@ class AntibodyMatchForHLAGroup:
 
 def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
                                recipient_antibodies: HLAAntibodies,
-                               use_high_res_resolution: bool) -> bool:
+                               use_high_resolution: bool) -> bool:
     """
     Do donor and recipient have positive crossmatch in HLA system?
     e.g. A23 -> A23 True
          A9 -> A9  True
          A23 -> A9 True
-         A23 -> A24 False if use_high_res_resolution else True
+         A23 -> A24 False if use_high_resolution else True
          A9 -> A23 True
          A9 broad <=> A23, A24 split
     :param donor_hla_typing: donor hla_typing to crossmatch
     :param recipient_antibodies: recipient antibodies to crossmatch
-    :param use_high_res_resolution: setting whether to high res resolution for crossmatch determination
+    :param use_high_resolution: setting whether to high res resolution for crossmatch determination
     :return:
     """
     common_codes = {antibody_match.hla_antibody for antibody_match_group in
-                    get_crossmatched_antibodies(donor_hla_typing, recipient_antibodies, use_high_res_resolution)
+                    get_crossmatched_antibodies(donor_hla_typing, recipient_antibodies, use_high_resolution)
                     for antibody_match in antibody_match_group.antibody_matches
                     if antibody_match.match_type is not AntibodyMatchTypes.NONE}
     # if there are any common codes, positive crossmatch is found
@@ -49,7 +49,7 @@ def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody]) -> List[HLAAntibo
 # pylint: disable=too-many-branches
 def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
-                                use_high_res_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
+                                use_high_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
     antibody_matches_for_groups = []
     for hla_per_group, antibodies_per_group in zip(donor_hla_typing.hla_per_groups,
                                                    recipient_antibodies.hla_antibodies_per_groups):
@@ -60,7 +60,7 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
 
         for hla_type in hla_per_group.hla_types:
             # check high res crossmatch
-            if use_high_res_resolution and hla_type.code.high_res is not None:
+            if use_high_resolution and hla_type.code.high_res is not None:
                 matching_antibodies = [antibody for antibody in antibodies
                                        if antibody.code.high_res == hla_type.code.high_res]
                 if len(matching_antibodies) > 0:
