@@ -145,19 +145,15 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.matchings = [];
     this.foundMatchingsCount = 0;
 
-    const { scorer_constructor_name } = this.appConfiguration;
-    const updatedConfig: AppConfiguration = {
-      ...configuration,
-      scorer_constructor_name
-    };
-    this._logger.log('Calculating with config', [updatedConfig]);
+    this._logger.log('Calculating with config', [configuration]);
 
-    this.appConfiguration = updatedConfig;
+    // TODOO
+    this.appConfiguration = configuration;
     this.configuration = configuration;
 
     try {
       const calculatedMatchings = await this._matchingService.calculate(
-        this.defaultTxmEvent.id, updatedConfig, this.patients
+        this.defaultTxmEvent.id, configuration, this.patients
       );
       this.matchings = calculatedMatchings.calculated_matchings;
       this.foundMatchingsCount = calculatedMatchings.found_matchings_count;
@@ -201,8 +197,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       return;
     }
 
-    const {scorer_constructor_name, ...rest} = this.appConfiguration;
-    this.configuration = rest;
+    this.configuration = this.appConfiguration;
   }
 
   private async _initMatchings(): Promise<void> {

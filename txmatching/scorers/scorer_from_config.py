@@ -6,7 +6,7 @@ from txmatching.scorers.split_hla_additive_scorer import SplitHLAAdditiveScorer
 from txmatching.utils.construct_configurable_object import \
     construct_configurable_object
 
-_supported_scorers = [SplitHLAAdditiveScorer, HighResHLAAdditiveScorer]
+SUPPORTED_SCORERS = [SplitHLAAdditiveScorer, HighResHLAAdditiveScorer]
 
 
 def scorer_from_configuration(configuration: Configuration) -> AdditiveScorer:
@@ -14,4 +14,4 @@ def scorer_from_configuration(configuration: Configuration) -> AdditiveScorer:
     if configuration.scorer_constructor_name == 'HLAAdditiveScorer':
         configuration.scorer_constructor_name = 'SplitHLAAdditiveScorer'
 
-    return construct_configurable_object(configuration.scorer_constructor_name, _supported_scorers, configuration)
+    return construct_configurable_object(configuration.scorer_constructor_name, SUPPORTED_SCORERS, configuration)
