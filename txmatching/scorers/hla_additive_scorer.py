@@ -15,10 +15,10 @@ from txmatching.utils.hla_system.hla_crossmatch import \
 
 class HLAAdditiveScorerCIConfiguration(CIConfiguration):
     _match_type_bonus = {
-        MatchTypes.BROAD: 0,
-        MatchTypes.SPLIT: 0,
-        MatchTypes.HIGH_RES: 0,
-        MatchTypes.NONE: 1,
+        MatchTypes.BROAD: 1,
+        MatchTypes.SPLIT: 1,
+        MatchTypes.HIGH_RES: 1,
+        MatchTypes.NONE: 0,
     }
     _hla_typing_bonus_per_groups = {
         HLAGroup.A: 1.0,
@@ -27,9 +27,10 @@ class HLAAdditiveScorerCIConfiguration(CIConfiguration):
         HLAGroup.Other: 0.0
     }
 
-    def compute_match_incompatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup):
+    def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup):
         return self._match_type_bonus[match_type] * self._hla_typing_bonus_per_groups[hla_group]
 
+    # TODOO: maybe remove
     def get_max_compatibility_index_for_group(self, hla_group: HLAGroup) -> float:
         return self._hla_typing_bonus_per_groups[hla_group] * 2
 
