@@ -139,7 +139,7 @@ definitions:
                 type: string
             use_binary_scoring:
                 type: boolean
-            use_high_res_resolution:
+            use_high_resolution:
                 example: true
                 type: boolean
         required:
@@ -165,7 +165,7 @@ definitions:
         - scorer_constructor_name
         - solver_constructor_name
         - use_binary_scoring
-        - use_high_res_resolution
+        - use_high_resolution
         type: object
     Country:
         properties:

@@ -74,7 +74,7 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
     antibody_matches_dict = {
         (donor_db_id, recipient_db_id): get_crossmatched_antibodies(donor.parameters.hla_typing,
                                                                     recipient.hla_antibodies,
-                                                                    configuration.use_high_res_resolution
+                                                                    configuration.use_high_resolution
                                                                     )
         for donor_db_id, donor in txm_event.active_donors_dict.items()
         for recipient_db_id, recipient in txm_event.active_recipients_dict.items() if
