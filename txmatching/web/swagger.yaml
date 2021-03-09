@@ -129,7 +129,7 @@ definitions:
                     type: integer
                 type: array
             scorer_constructor_name:
-                example: HighResHLAAdditiveScorer
+                example: SplitHLAAdditiveScorer
                 type: string
             solver_constructor_name:
                 enum:

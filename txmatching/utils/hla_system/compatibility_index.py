@@ -33,6 +33,7 @@ class DetailedCompatibilityIndexForHLAGroup:
     group_compatibility_index: float
 
 
+# pylint: disable=too-few-public-methods
 class CIConfiguration:
     def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup) -> float:
         raise NotImplementedError('Has to be overridden')

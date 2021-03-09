@@ -55,7 +55,7 @@ class Configuration:
     max_matchings_in_all_solutions_solver: Max allowed number of matchings ilp solver searches for (to limit
      the duration of the computation)
     """
-    scorer_constructor_name: str = 'HighResHLAAdditiveScorer'
+    scorer_constructor_name: str = 'SplitHLAAdditiveScorer'
     solver_constructor_name: str = 'AllSolutionsSolver'
     require_compatible_blood_group: bool = False
     minimum_total_score: float = 0.0

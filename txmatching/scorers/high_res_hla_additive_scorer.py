@@ -4,6 +4,7 @@ from txmatching.utils.enums import HLAGroup, MatchTypes
 from txmatching.utils.hla_system.compatibility_index import CIConfiguration
 
 
+# pylint: disable=too-few-public-methods
 class HighResHLAAdditiveScorerCIConfiguration(CIConfiguration):
     _match_type_bonus = {
         MatchTypes.BROAD: 1,
