@@ -102,7 +102,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_max_debt_between_countries(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
-        for debt in range(1, 4):
+        for debt in range(0, 4):
             configuration = Configuration(
                 solver_constructor_name='ILPSolver',
                 use_high_resolution=True,
