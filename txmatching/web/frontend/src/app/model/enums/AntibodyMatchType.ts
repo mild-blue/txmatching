@@ -1,4 +1,6 @@
 export enum AntibodyMatchType {
   NONE = 'NONE',
-  MATCH = 'MATCH',
+  SPLIT = 'SPLIT',
+  BROAD = 'BROAD',
+  HIGH_RES = 'HIGH_RES',
 }

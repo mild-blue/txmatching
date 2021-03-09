@@ -39,7 +39,7 @@ export class MatchingTransplantComponent {
   }
 
   public getAntibodyMatchClass(match: AntibodyMatchType): string {
-    if (match === AntibodyMatchType.MATCH) {
+    if (match !== AntibodyMatchType.NONE) {
       // recipient antibody matches some donor antigen
       return 'bad-matching';
     }

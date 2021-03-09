@@ -13,7 +13,7 @@
 {% endmacro %}
 
 {% macro antibody_class(code) %}
-  {% if code == 'MATCH' %}
+  {% if code != 'NONE' %}
     bad-matching
   {% endif %}
 {% endmacro %}

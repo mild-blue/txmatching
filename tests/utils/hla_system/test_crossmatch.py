@@ -173,10 +173,10 @@ class TestCrossmatch(unittest.TestCase):
 
         # positive high res crossmatch
         self._assert_matches_equal(HLAType('A*23:01'), [HLAAntibody('A*23:01', 2100, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.MATCH)])
+                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.HIGH_RES)])
         # positive split crossmatch
         self._assert_matches_equal(HLAType('A*23:01'), [HLAAntibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.MATCH)])
+                                   [AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.SPLIT)])
         # negative split crossmatch
         self._assert_matches_equal(HLAType('A*23:01'), [HLAAntibody('A*24:02', 2100, 2000)], True,
                                    [AntibodyMatch(HLAAntibody('A*24:02', 2100, 2000), AntibodyMatchTypes.NONE)])
@@ -193,7 +193,7 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal(HLAType('A*23:01'),
                                    [HLAAntibody('A*23:01', 2100, 2000),
                                     HLAAntibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.MATCH),
+                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.HIGH_RES),
                                     AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.NONE)])
         # negative high res crossmatch
         self._assert_matches_equal(HLAType('A*23:01'),
@@ -204,7 +204,7 @@ class TestCrossmatch(unittest.TestCase):
         # positive split crossmatch
         self._assert_matches_equal(HLAType('A*23:01'),
                                    [HLAAntibody('A23', 2100, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A23', 2100, 2000), AntibodyMatchTypes.MATCH)])
+                                   [AntibodyMatch(HLAAntibody('A23', 2100, 2000), AntibodyMatchTypes.SPLIT)])
         # negative high res crossmatch
         self._assert_matches_equal(HLAType('A*23:01'),
                                    [HLAAntibody('A*23:01', 1900, 2000),
@@ -223,26 +223,26 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal(HLAType('A23'),
                                    [HLAAntibody('A*23:01', 2100, 2000),
                                     HLAAntibody('A*23:04', 1900, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.MATCH),
+                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.SPLIT),
                                     AntibodyMatch(HLAAntibody('A*23:04', 1900, 2000), AntibodyMatchTypes.NONE)])
         # first matching antibody with mfi < cutoff, second with mfi > cutoff
         self._assert_matches_equal(HLAType('A23'),
                                    [HLAAntibody('A*23:01', 1900, 2000),
                                     HLAAntibody('A*23:04', 2100, 2000)], True,
                                    [AntibodyMatch(HLAAntibody('A*23:01', 1900, 2000), AntibodyMatchTypes.NONE),
-                                    AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.MATCH)])
+                                    AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.SPLIT)])
         # first matching antibody with mfi1 > cutoff, second with mfi2 > mfi1
         self._assert_matches_equal(HLAType('A23'),
                                    [HLAAntibody('A*23:01', 2100, 2000),
                                     HLAAntibody('A*23:04', 2200, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.MATCH),
-                                    AntibodyMatch(HLAAntibody('A*23:04', 2200, 2000), AntibodyMatchTypes.MATCH)])
+                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.SPLIT),
+                                    AntibodyMatch(HLAAntibody('A*23:04', 2200, 2000), AntibodyMatchTypes.SPLIT)])
         # first matching antibody with mfi1 > cutoff, second with mfi2 < mfi1
         self._assert_matches_equal(HLAType('A23'),
                                    [HLAAntibody('A*23:01', 2200, 2000),
                                     HLAAntibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 2200, 2000), AntibodyMatchTypes.MATCH),
-                                    AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.MATCH)])
+                                   [AntibodyMatch(HLAAntibody('A*23:01', 2200, 2000), AntibodyMatchTypes.SPLIT),
+                                    AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.SPLIT)])
         # first matching antibody with mfi < cutoff, second with mfi < cutoff
         self._assert_matches_equal(HLAType('A23'),
                                    [HLAAntibody('A*23:01', 1900, 2000),
@@ -258,14 +258,14 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal(HLAType('A*23:01'),
                                    [HLAAntibody('A*23:01', 1900, 2000),
                                     HLAAntibody('A*23:01', 2200, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 2050, 2000), AntibodyMatchTypes.MATCH)])
+                                   [AntibodyMatch(HLAAntibody('A*23:01', 2050, 2000), AntibodyMatchTypes.HIGH_RES)])
         # antibodies duplicity should not raise duplicity assert, because the antibodies are joined before creating
         # antibodies per groups. Instead, mean mfi is computed.
         # first matching antibody with mfi1 > cutoff, second with mfi2 > mfi1
         self._assert_matches_equal(HLAType('A*23:01'),
                                    [HLAAntibody('A*23:01', 2100, 2000),
                                     HLAAntibody('A*23:01', 2200, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 2150, 2000), AntibodyMatchTypes.MATCH)])
+                                   [AntibodyMatch(HLAAntibody('A*23:01', 2150, 2000), AntibodyMatchTypes.HIGH_RES)])
 
         # broad matches:
 
@@ -273,9 +273,9 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal(HLAType('A9'),
                                    [HLAAntibody('A9', 1900, 2000),
                                     HLAAntibody('A9', 2100, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A9', 2000, 2000), AntibodyMatchTypes.MATCH)])
+                                   [AntibodyMatch(HLAAntibody('A9', 2000, 2000), AntibodyMatchTypes.BROAD)])
         # first matching antibody with mfi1 > cutoff, second with mfi2 > mfi1
         self._assert_matches_equal(HLAType('A9'),
                                    [HLAAntibody('A9', 2100, 2000),
                                     HLAAntibody('A9', 2200, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A9', 2150, 2000), AntibodyMatchTypes.MATCH)])
+                                   [AntibodyMatch(HLAAntibody('A9', 2150, 2000), AntibodyMatchTypes.BROAD)])
