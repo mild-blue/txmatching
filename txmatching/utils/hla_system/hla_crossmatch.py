@@ -64,6 +64,7 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                 matching_antibodies = [antibody for antibody in antibodies
                                        if antibody.code.high_res == hla_type.code.high_res]
                 if len(matching_antibodies) > 0:
+                    assert len(matching_antibodies) == 1, 'due to parsing, each antibody should be unique'
                     for antibody_over_cutoff in _get_antibodies_over_cutoff(matching_antibodies):
                         positive_match_antibodies.add(antibody_over_cutoff)
                     continue

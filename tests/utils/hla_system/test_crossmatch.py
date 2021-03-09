@@ -252,11 +252,15 @@ class TestCrossmatch(unittest.TestCase):
 
         # high res match
 
+        # antibodies duplicity should not raise duplicity assert, because the antibodies are joined before creating
+        # antibodies per groups. Instead, mean mfi is computed.
         # first matching antibody with mfi < cutoff, second with mfi > cutoff
         self._assert_matches_equal(HLAType('A*23:01'),
                                    [HLAAntibody('A*23:01', 1900, 2000),
                                     HLAAntibody('A*23:01', 2200, 2000)], True,
                                    [AntibodyMatch(HLAAntibody('A*23:01', 2050, 2000), AntibodyMatchTypes.MATCH)])
+        # antibodies duplicity should not raise duplicity assert, because the antibodies are joined before creating
+        # antibodies per groups. Instead, mean mfi is computed.
         # first matching antibody with mfi1 > cutoff, second with mfi2 > mfi1
         self._assert_matches_equal(HLAType('A*23:01'),
                                    [HLAAntibody('A*23:01', 2100, 2000),
