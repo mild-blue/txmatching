@@ -43,7 +43,7 @@ class Configuration:
     max_sequence_length: Number of patients in a sequence.
     max_number_of_distinct_countries_in_round: Number of countries in a round.
     required_patient_db_ids: Only matchings with specified recipients are considered.
-    use_split_resolution: Split codes are used for virtual crossmatch if true, broad otherwise.
+    use_high_resolution: Split codes are used for virtual crossmatch if true, broad otherwise.
     forbidden_country_combinations: Pairs of countries which do not support mutual transplantations.
     manual_donor_recipient_scores: Manual setting of score for tuple of recipient and donor.
     max_matchings_to_show_to_viewer: Viewer cannot see all the details of the app.
@@ -69,7 +69,7 @@ class Configuration:
     max_number_of_distinct_countries_in_round: int = 3
     required_patient_db_ids: List[PatientDbId] = field(default_factory=list,
                                                        metadata={COMPARISON_MODE: ComparisonMode.Set})
-    use_split_resolution: bool = True
+    use_high_resolution: bool = True
     forbidden_country_combinations: List[ForbiddenCountryCombination] = field(
         default_factory=lambda: DEFAULT_FORBIDDEN_COUNTRY_LIST,
         metadata={COMPARISON_MODE: ComparisonMode.Set})

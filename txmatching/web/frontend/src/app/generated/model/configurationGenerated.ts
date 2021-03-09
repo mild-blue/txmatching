@@ -36,7 +36,7 @@ export interface ConfigurationGenerated {
     scorer_constructor_name: string;
     solver_constructor_name: ConfigurationGeneratedSolverConstructorNameEnum;
     use_binary_scoring: boolean;
-    use_split_resolution: boolean;
+    use_high_resolution: boolean;
 }
 export enum ConfigurationGeneratedSolverConstructorNameEnum {
     AllSolutionsSolver = 'AllSolutionsSolver',

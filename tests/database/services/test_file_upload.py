@@ -92,12 +92,12 @@ class TestUpdateDonorRecipient(DbTests):
             max_cycle_length=100,
             max_sequence_length=100,
             max_number_of_distinct_countries_in_round=100,
-            use_split_resolution=False,
+            use_high_resolution=True,
             max_number_of_matchings=1000,
             max_debt_for_country=10,
         ),
             txm_event).calculated_matchings_list)
-        self.assertEqual(358, len(all_matchings))
+        self.assertEqual(961, len(all_matchings))
 
         matching_tuples = [[(found_pair.donor.medical_id, found_pair.recipient.medical_id)
                             for found_pair in res.get_donor_recipient_pairs()] for res in all_matchings]

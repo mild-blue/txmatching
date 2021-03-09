@@ -54,7 +54,7 @@ def donor_to_donor_dto_out(donor: Donor,
         antibodies = get_crossmatched_antibodies(
             donor.parameters.hla_typing,
             related_recipient.hla_antibodies,
-            configuration.use_split_resolution
+            configuration.use_high_resolution
         )
         compatibility_index_detailed = get_detailed_compatibility_index(
             donor_hla_typing=donor.parameters.hla_typing,
