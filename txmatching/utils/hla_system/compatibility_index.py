@@ -37,21 +37,9 @@ class CIConfiguration:
     def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup) -> float:
         raise NotImplementedError('Has to be overridden')
 
-    def get_max_compatibility_index_for_group(self, hla_group: HLAGroup) -> float:
-        raise NotImplementedError('Has to be overridden')
-
-    def get_max_compatibility_index(self) -> float:
-        raise NotImplementedError('Has to be overridden')
-
 
 class DefaultCIConfiguration(CIConfiguration):
     def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup) -> float:
-        return 0
-
-    def get_max_compatibility_index_for_group(self, hla_group: HLAGroup) -> float:
-        return 0
-
-    def get_max_compatibility_index(self) -> float:
         return 0
 
 
@@ -225,16 +213,6 @@ def _match_through_broad_codes(current_compatibility_index: float,
 
 
 # pylint: enable=too-many-arguments
-
-
-# TODOO: remove
-def _convert_incompatibility_index_to_ci_for_group(incompatibility_index: float,
-                                                   hla_group: HLAGroup,
-                                                   ci_configuration: CIConfiguration) -> float:
-    max_ci = ci_configuration.get_max_compatibility_index_for_group(hla_group)
-    ci = max_ci - incompatibility_index
-    assert 0 <= ci <= max_ci
-    return ci
 
 
 def _get_ci_for_recipient_donor_split_codes(

@@ -21,14 +21,6 @@ class HighResHLAAdditiveScorerCIConfiguration(CIConfiguration):
     def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup):
         return self._match_type_bonus[match_type] * self._hla_typing_bonus_per_groups[hla_group]
 
-    # TODOO: maybe remove
-    def get_max_compatibility_index_for_group(self, hla_group: HLAGroup) -> float:
-        return self._hla_typing_bonus_per_groups[hla_group] * 2
-
-    def get_max_compatibility_index(self) -> float:
-        return sum(self.get_max_compatibility_index_for_group(hla_group)
-                   for hla_group in self._hla_typing_bonus_per_groups.keys())
-
 
 class HighResHLAAdditiveScorer(HLAAdditiveScorer):
 

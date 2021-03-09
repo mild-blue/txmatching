@@ -53,7 +53,6 @@ class TestHlaScorer(unittest.TestCase):
                 )
             )
         )
-        # A1 SPLIT
 
         original_donor = Donor(
             db_id=2,
@@ -77,6 +76,7 @@ class TestHlaScorer(unittest.TestCase):
             )
         )
 
-        self.assertEqual(4, split_scorer.score_transplant(donor=donor, recipient=recipient, original_donor=original_donor))
-        # TODOO: adjust test to get different results
-        self.assertEqual(4, high_res_scorer.score_transplant(donor=donor, recipient=recipient, original_donor=original_donor))
+        self.assertEqual(4, split_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                          original_donor=original_donor))
+        self.assertEqual(4, high_res_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                             original_donor=original_donor))
