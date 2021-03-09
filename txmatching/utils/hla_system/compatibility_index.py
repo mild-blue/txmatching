@@ -136,7 +136,7 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
 
 # pylint: disable=too-many-arguments
 # I think it is reasonable to have multiple arguments here
-def _match_through_lambda(current_incompatibility_index: float,
+def _match_through_lambda(current_compatibility_index: float,
                           donor_matches: List[HLAMatch],
                           recipient_matches: List[HLAMatch],
                           donor_hla_types: List[HLAType],
@@ -154,10 +154,10 @@ def _match_through_lambda(current_incompatibility_index: float,
 
             donor_matches.append(HLAMatch(donor_hla_type, result_match_type))
             recipient_matches.append(HLAMatch(matching_hla_types[0], result_match_type))
-            current_incompatibility_index += ci_configuration.compute_match_compatibility_index(
+            current_compatibility_index += ci_configuration.compute_match_compatibility_index(
                 result_match_type, hla_group
             )
-    return current_incompatibility_index
+    return current_compatibility_index
 
 
 def _match_through_high_res_codes(current_compatibility_index: float,
@@ -227,6 +227,7 @@ def _match_through_broad_codes(current_compatibility_index: float,
 # pylint: enable=too-many-arguments
 
 
+# TODOO: remove
 def _convert_incompatibility_index_to_ci_for_group(incompatibility_index: float,
                                                    hla_group: HLAGroup,
                                                    ci_configuration: CIConfiguration) -> float:
@@ -275,9 +276,7 @@ def _get_ci_for_recipient_donor_split_codes(
         hla_group=hla_group,
         donor_matches=donor_matches,
         recipient_matches=recipient_matches,
-        group_compatibility_index=_convert_incompatibility_index_to_ci_for_group(
-            group_compatibility_index, hla_group, ci_configuration
-        )
+        group_compatibility_index=group_compatibility_index
     )
 
 

@@ -6,37 +6,10 @@ from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
 from txmatching.utils.blood_groups import blood_groups_compatible
-from txmatching.utils.enums import HLAGroup, MatchTypes
 from txmatching.utils.hla_system.compatibility_index import (
     CIConfiguration, compatibility_index)
 from txmatching.utils.hla_system.hla_crossmatch import \
     is_positive_hla_crossmatch
-
-
-class HLAAdditiveScorerCIConfiguration(CIConfiguration):
-    _match_type_bonus = {
-        MatchTypes.BROAD: 1,
-        MatchTypes.SPLIT: 1,
-        MatchTypes.HIGH_RES: 1,
-        MatchTypes.NONE: 0,
-    }
-    _hla_typing_bonus_per_groups = {
-        HLAGroup.A: 1.0,
-        HLAGroup.B: 3.0,
-        HLAGroup.DRB1: 9.0,
-        HLAGroup.Other: 0.0
-    }
-
-    def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup):
-        return self._match_type_bonus[match_type] * self._hla_typing_bonus_per_groups[hla_group]
-
-    # TODOO: maybe remove
-    def get_max_compatibility_index_for_group(self, hla_group: HLAGroup) -> float:
-        return self._hla_typing_bonus_per_groups[hla_group] * 2
-
-    def get_max_compatibility_index(self) -> float:
-        return sum(self.get_max_compatibility_index_for_group(hla_group)
-                   for hla_group in self._hla_typing_bonus_per_groups.keys())
 
 
 class HLAAdditiveScorer(AdditiveScorer):
@@ -113,13 +86,6 @@ class HLAAdditiveScorer(AdditiveScorer):
             else:
                 return total_score
 
-    # pylint: enable=too-many-return-statements
-
-    @classmethod
-    def from_config(cls, configuration: Configuration) -> 'HLAAdditiveScorer':
-        hla_additive_scorer = HLAAdditiveScorer(configuration)
-        return hla_additive_scorer
-
     def _blood_group_compatibility_bonus(self, donor: Donor, recipient: Recipient):
         if blood_groups_compatible(donor.parameters.blood_group, recipient.parameters.blood_group):
             return self._configuration.blood_group_compatibility_bonus
@@ -131,6 +97,10 @@ class HLAAdditiveScorer(AdditiveScorer):
         setting_val = getattr(recipient.recipient_requirements, setting_name)
         return setting_val if setting_val is not None else getattr(self._configuration, setting_name)
 
+    @classmethod
+    def from_config(cls, configuration: Configuration) -> 'HLAAdditiveScorer':
+        raise NotImplementedError('Has to be overridden')
+
     @property
     def ci_configuration(self) -> CIConfiguration:
-        return HLAAdditiveScorerCIConfiguration()
+        raise NotImplementedError('Has to be overridden')

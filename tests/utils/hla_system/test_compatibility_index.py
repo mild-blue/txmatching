@@ -5,8 +5,10 @@ from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack,
                                                     recipient_parameters_Wrong)
 from txmatching.patients.hla_model import HLAType, HLATyping
-from txmatching.scorers.hla_additive_scorer import \
-    HLAAdditiveScorerCIConfiguration
+from txmatching.scorers.high_res_hla_additive_scorer import \
+    HighResHLAAdditiveScorerCIConfiguration
+from txmatching.scorers.split_hla_additive_scorer import \
+    SplitHLAAdditiveScorerCIConfiguration
 from txmatching.utils.enums import MatchTypes
 from txmatching.utils.hla_system.compatibility_index import (
     HLAMatch, compatibility_index, get_detailed_compatibility_index)
@@ -19,19 +21,21 @@ A_INDEX = 0
 
 class TestCompatibilityIndex(unittest.TestCase):
     def setUp(self):
-        self._donor_recipient_index = [(donor_parameters_Joe, recipient_parameters_Jack, 22.0)]
+        self._donor_recipient_index = [
+            (donor_parameters_Joe, recipient_parameters_Jack, 22.0, 6.0),
+            (donor_parameters_Joe, recipient_parameters_Wrong, 22.0, 6.0)
+        ]
 
     def test_compatibility_index(self):
-        for donor_params, recipient_params, expected_compatibility_index in self._donor_recipient_index:
-            calculated_compatibility_index = compatibility_index(donor_params.hla_typing,
-                                                                 recipient_params.hla_typing,
-                                                                 ci_configuration=HLAAdditiveScorerCIConfiguration())
-            self.assertEqual(expected_compatibility_index, calculated_compatibility_index)
-
-    def test_failing_compatibility_index(self):
-        self.assertEqual(22,
-                         compatibility_index(donor_parameters_Joe.hla_typing, recipient_parameters_Wrong.hla_typing,
-                                             ci_configuration=HLAAdditiveScorerCIConfiguration()))
+        for donor_params, recipient_params, expected_ci_split, expected_ci_high_res in self._donor_recipient_index:
+            calculated_ci_split = compatibility_index(donor_params.hla_typing,
+                                                      recipient_params.hla_typing,
+                                                      ci_configuration=SplitHLAAdditiveScorerCIConfiguration())
+            calculated_ci_high_res = compatibility_index(donor_params.hla_typing,
+                                                         recipient_params.hla_typing,
+                                                         ci_configuration=HighResHLAAdditiveScorerCIConfiguration())
+            self.assertEqual(expected_ci_split, calculated_ci_split)
+            self.assertEqual(expected_ci_high_res, calculated_ci_high_res)
 
     def test_compatibility_index_with_high_res(self):
         ci = get_detailed_compatibility_index(

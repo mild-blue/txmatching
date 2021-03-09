@@ -3,14 +3,17 @@ import unittest
 from txmatching.patients.hla_model import HLAType, HLATyping
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
-from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
+from txmatching.scorers.high_res_hla_additive_scorer import \
+    HighResHLAAdditiveScorer
+from txmatching.scorers.split_hla_additive_scorer import SplitHLAAdditiveScorer
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 
 
 class TestHlaScorer(unittest.TestCase):
-    def test_scorer_on_some_patients(self):
-        scorer = HLAAdditiveScorer()
+    def test_scorers_on_some_patients(self):
+        split_scorer = SplitHLAAdditiveScorer()
+        high_res_scorer = HighResHLAAdditiveScorer()
         donor = Donor(
             db_id=1,
             medical_id='donor',
@@ -50,6 +53,7 @@ class TestHlaScorer(unittest.TestCase):
                 )
             )
         )
+        # A1 SPLIT
 
         original_donor = Donor(
             db_id=2,
@@ -72,4 +76,7 @@ class TestHlaScorer(unittest.TestCase):
                 )
             )
         )
-        self.assertEqual(4, scorer.score_transplant(donor=donor, recipient=recipient, original_donor=original_donor))
+
+        self.assertEqual(4, split_scorer.score_transplant(donor=donor, recipient=recipient, original_donor=original_donor))
+        # TODOO: adjust test to get different results
+        self.assertEqual(4, high_res_scorer.score_transplant(donor=donor, recipient=recipient, original_donor=original_donor))

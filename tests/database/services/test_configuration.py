@@ -26,7 +26,7 @@ class TestConfiguration(DbTests):
     def test_configuration_from_dto(self):
         self.fill_db_with_patients_and_results()
 
-        dto_dict = {'scorer_constructor_name': 'HLAAdditiveScorer',
+        dto_dict = {'scorer_constructor_name': 'SplitHLAAdditiveScorer',
                     'solver_constructor_name': 'AllSolutionsSolver',
                     'minimum_total_score': 0.0,
                     'maximum_total_score': 27.0,
