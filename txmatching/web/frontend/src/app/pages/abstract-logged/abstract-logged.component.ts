@@ -7,17 +7,25 @@ import { AppConfiguration, PatientList, User, UserRole } from '@app/model';
 import { AuthService } from '@app/services/auth/auth.service';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
 import { PatientService } from '@app/services/patient/patient.service';
+import { UploadDownloadStatus } from '@app/components/header/header.interface';
+import { Report } from '@app/services/report/report.interface';
+import { first, finalize } from 'rxjs/operators';
+import { ReportService } from '@app/services/report/report.service';
 
 @Component({ template: '' })
 export class AbstractLoggedComponent implements OnInit {
 
+  private _downloadPatientsInProgress: boolean = false;
+
+  public loading: boolean = false;
   public txmEvents?: TxmEvents;
   public defaultTxmEvent?: TxmEvent;
   public user?: User;
   public appConfiguration?: AppConfiguration;
   public patients?: PatientList;
 
-  constructor(protected _authService: AuthService,
+  constructor(protected _reportService: ReportService,
+              protected _authService: AuthService,
               protected _alertService: AlertService,
               protected _configService: ConfigurationService,
               protected _eventService: EventService,
@@ -71,5 +79,39 @@ export class AbstractLoggedComponent implements OnInit {
       this._logger.error(`Error loading patients: "${e.message || e}"`);
       throw e;
     }
+  }
+
+  get downloadPatientsStatus(): UploadDownloadStatus {
+    const isLoaded = !this.loading && this.defaultTxmEvent;
+    if (!isLoaded) {
+      return UploadDownloadStatus.disabled;
+    }
+    return this._downloadPatientsInProgress ? UploadDownloadStatus.loading : UploadDownloadStatus.enabled;
+  }
+
+
+  public async downloadPatientsXlsxReport(): Promise<void> {
+    if (!this.defaultTxmEvent) {
+      this._logger.error('Download report failed because defaultTxmEvent not set');
+      return;
+    }
+
+    this._downloadPatientsInProgress = true;
+    this._reportService.downloadPatientsXlsxReport(this.defaultTxmEvent.id)
+    .pipe(
+      first(),
+      finalize(() => this._downloadPatientsInProgress = false)
+    )
+    .subscribe(
+      (report: Report) => {
+        const blob = new Blob([report.data], { type: 'application/xlsx' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = report.filename;
+        link.dispatchEvent(new MouseEvent('click'));
+      },
+      (error: Error) => {
+        this._alertService.error(`<strong>Error downloading XLSX:</strong> ${error.message}`);
+      });
   }
 }
