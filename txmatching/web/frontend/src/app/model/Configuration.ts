@@ -34,9 +34,6 @@ export interface Configuration {
   [key: string]: boolean | string | number | number[] | CountryCombination[] | DonorRecipientScore[];
 }
 
-export interface AppConfiguration extends Configuration {
-}
-
 export interface DonorRecipientScore {
   donor_db_id: number;
   recipient_db_id: number;
