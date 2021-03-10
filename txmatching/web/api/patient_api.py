@@ -16,6 +16,8 @@ from txmatching.auth.operation_guards.country_guard import (
     guard_user_country_access_to_recipient, guard_user_has_access_to_country)
 from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
+from txmatching.data_transfer_objects.external_patient_upload.swagger import (
+    FailJson, PatientUploadSuccessJson)
 from txmatching.data_transfer_objects.patients.out_dots.conversions import (
     donor_to_donor_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
@@ -29,8 +31,8 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
     RecipientUpdateDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
-    FailJson, PatientsRecomputeParsingSuccessJson, PatientUploadSuccessJson)
+from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
+    PatientsRecomputeParsingSuccessJson
 from txmatching.database.services.config_service import \
     get_latest_configuration_for_txm_event
 from txmatching.database.services.patient_service import (

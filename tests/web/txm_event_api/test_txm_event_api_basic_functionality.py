@@ -11,7 +11,8 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
                                                     RecipientModel,
                                                     TxmEventModel)
 from txmatching.utils.country_enum import Country
-from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
+from txmatching.web import (API_VERSION, EXTERNAL_PATIENT_UPLOAD_NAMESPACE,
+                            TXM_EVENT_NAMESPACE)
 
 
 class TestMatchingApi(DbTests):
@@ -150,7 +151,7 @@ class TestMatchingApi(DbTests):
         self.login_with(usr.email, user_pass, usr.id, usr.role)
         with self.app.test_client() as client:
             res = client.put(
-                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/patients',
+                f'{API_VERSION}/{EXTERNAL_PATIENT_UPLOAD_NAMESPACE}',
                 headers=self.auth_headers,
                 json=upload_patients
             )

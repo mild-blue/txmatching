@@ -24,7 +24,8 @@ from txmatching.patients.hla_model import HLAType, HLATypeRaw, HLATyping
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
-from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
+from txmatching.web import (API_VERSION, EXTERNAL_PATIENT_UPLOAD_NAMESPACE,
+                            TXM_EVENT_NAMESPACE)
 
 
 class TestMatchingApi(DbTests):
@@ -167,7 +168,7 @@ class TestMatchingApi(DbTests):
         self.login_with_role(UserRole.SERVICE)
         with self.app.test_client() as client:
             res = client.put(
-                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/patients',
+                f'{API_VERSION}/{EXTERNAL_PATIENT_UPLOAD_NAMESPACE}',
                 headers=self.auth_headers,
                 json=upload_patients
             )

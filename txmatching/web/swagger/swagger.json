@@ -1,0 +1,3456 @@
+{
+    "swagger": "2.0",
+    "basePath": "/",
+    "paths": {
+        "/v1/external-patient-upload": {
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Success.",
+                        "schema": {
+                            "$ref": "#/definitions/PatientUploadSuccessResponse"
+                        }
+                    }
+                },
+                "description": "This endpoint allows the country editor to upload patient data for given                         TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients                         from respective country in case there were any.",
+                "operationId": "put_txm_event_upload_patients",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/UploadPatients"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "external-patient-upload"
+                ]
+            }
+        },
+        "/v1/service/status": {
+            "get": {
+                "responses": {
+                    "503": {
+                        "description": "Some services are failing.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns ok if the service is healthy.",
+                        "schema": {
+                            "$ref": "#/definitions/ServiceStatus"
+                        }
+                    }
+                },
+                "operationId": "get_status",
+                "tags": [
+                    "service"
+                ]
+            }
+        },
+        "/v1/service/version": {
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns version of the code",
+                        "schema": {
+                            "$ref": "#/definitions/Version"
+                        }
+                    }
+                },
+                "operationId": "get_version",
+                "tags": [
+                    "service"
+                ]
+            }
+        },
+        "/v1/txm-event": {
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Non-unique patients provided.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "201": {
+                        "description": "Returns the newly created TXM event object.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "Endpoint that lets an ADMIN create a new TXM event. The ADMIN should specify TXM event name.",
+                "operationId": "post_txm_event_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/NewTxmEvent"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "List of allowed txmEvents.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvents"
+                        }
+                    }
+                },
+                "description": "Get list of allowed txm txmEvents for the logged user.",
+                "operationId": "get_txm_event_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            }
+        },
+        "/v1/txm-event/default": {
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Non-unique patients provided.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns the default event.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "Set default txm event for the logged user.",
+                "operationId": "put_txm_default_event_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/DefaultTxmEvent"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Default event.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "Get default event",
+                "operationId": "get_txm_default_event_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            }
+        },
+        "/v1/txm-event/{name}": {
+            "delete": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns status code representing result of TXM event object deletion."
+                    }
+                },
+                "description": "Endpoint that lets an ADMIN delete existing TXM event. The ADMIN should know the TXM event name.",
+                "operationId": "delete_txm_event_delete_api",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Name of the TXM event to be deleted."
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/configuration": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns the latest matching configuration for the current user.",
+                        "schema": {
+                            "$ref": "#/definitions/Configuration"
+                        }
+                    }
+                },
+                "operationId": "get_configuration_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "configuration"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/matching/calculate-for-config": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "List of all matchings for given configuration.",
+                        "schema": {
+                            "$ref": "#/definitions/CalculatedMatchings"
+                        }
+                    }
+                },
+                "operationId": "post_calculate_from_config",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Configuration"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "matching"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/patients": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "List of donors and list of recipients.",
+                        "schema": {
+                            "$ref": "#/definitions/Patients"
+                        }
+                    }
+                },
+                "operationId": "get_all_patients",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/patients/add-patients-file": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Success.",
+                        "schema": {
+                            "$ref": "#/definitions/PatientUploadSuccessResponse"
+                        }
+                    }
+                },
+                "operationId": "put_add_patients_file",
+                "parameters": [
+                    {
+                        "name": "file",
+                        "in": "formData",
+                        "description": "Excel file to upload data.",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/patients/donor": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Updates single donor.",
+                        "schema": {
+                            "$ref": "#/definitions/Donor"
+                        }
+                    }
+                },
+                "operationId": "put_alter_donor",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/DonorModelToUpdate"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/patients/pairs": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Added new donor (possibly with recipient)",
+                        "schema": {
+                            "$ref": "#/definitions/PatientUploadSuccessResponse"
+                        }
+                    }
+                },
+                "operationId": "post_donor_recipient_pairs",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/DonorModelPairIn"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/patients/pairs/{donor_db_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "delete": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns status code representing result of donor recipient pair object deletion."
+                    }
+                },
+                "description": "Delete existing donor recipient pair.",
+                "operationId": "delete_donor_recipient_pair",
+                "parameters": [
+                    {
+                        "name": "donor_db_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Donor id that will be deleted including its recipient if there is any"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/patients/recipient": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Updated recipient.",
+                        "schema": {
+                            "$ref": "#/definitions/Recipient"
+                        }
+                    }
+                },
+                "operationId": "put_alter_recipient",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/RecipientModelToUpdate"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/patients/recompute-parsing": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Non-unique patients provided.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns the recomputation statistics.",
+                        "schema": {
+                            "$ref": "#/definitions/PatientsRecomputeParsingSuccess"
+                        }
+                    }
+                },
+                "description": "Endpoint that lets an ADMIN recompute parsed antigens and antibodies for all patients in the given txm event.",
+                "operationId": "post_recompute_parsing",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/reports/matchings/{matching_id}/pdf": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Matching for provided id was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Generates PDF report."
+                    }
+                },
+                "operationId": "get_matching_report",
+                "parameters": [
+                    {
+                        "name": "matching_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Id of matching that was chosen"
+                    },
+                    {
+                        "description": "Number of matchings with lower score than chosen to include in report.",
+                        "type": "integer",
+                        "required": true,
+                        "name": "matchingsBelowChosen",
+                        "in": "query"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "reports"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/reports/patients/xlsx": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Matching for provided id was not found.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Generates XLSX report."
+                    }
+                },
+                "operationId": "get_patients_xls_report",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "reports"
+                ]
+            }
+        },
+        "/v1/user/change-password": {
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Password changed successfully.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_password_change_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/PasswordChange"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/login": {
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Login successful. JWT generated. User must attach the token to every request in the \"Authorization\" header with the prefix \"Bearer\". Example: \"Authorization: Bearer some_token\", where some_token is the token received in the response.",
+                        "schema": {
+                            "$ref": "#/definitions/LoginSuccessResponse"
+                        }
+                    }
+                },
+                "operationId": "post_login_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/UserLogin"
+                        }
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/otp": {
+            "post": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "OTP validation was successful. JWT generated.",
+                        "schema": {
+                            "$ref": "#/definitions/LoginSuccessResponse"
+                        }
+                    }
+                },
+                "operationId": "post_otp_login_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/OtpLogin"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            },
+            "put": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "New OTP was generated and sent.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_otp_login_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/refresh-token": {
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Token successfully refreshed.",
+                        "schema": {
+                            "$ref": "#/definitions/LoginSuccessResponse"
+                        }
+                    }
+                },
+                "operationId": "get_refresh_token_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/register": {
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "User registered successfully.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "post_registration_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/UserRegistration"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "API",
+        "version": "1.0"
+    },
+    "produces": [
+        "application/json"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "tags": [
+        {
+            "name": "user"
+        },
+        {
+            "name": "service"
+        },
+        {
+            "name": "external-patient-upload"
+        },
+        {
+            "name": "matching"
+        },
+        {
+            "name": "patients"
+        },
+        {
+            "name": "configuration"
+        },
+        {
+            "name": "reports"
+        },
+        {
+            "name": "txm-event"
+        }
+    ],
+    "definitions": {
+        "UserLogin": {
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "description": "Email of the user to login."
+                },
+                "password": {
+                    "type": "string",
+                    "description": "User's password."
+                }
+            },
+            "type": "object"
+        },
+        "FailResponse": {
+            "required": [
+                "error"
+            ],
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "LoginSuccessResponse": {
+            "required": [
+                "auth_token"
+            ],
+            "properties": {
+                "auth_token": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "OtpLogin": {
+            "required": [
+                "otp"
+            ],
+            "properties": {
+                "otp": {
+                    "type": "string",
+                    "description": "OTP for this login."
+                }
+            },
+            "type": "object"
+        },
+        "StatusResponse": {
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "PasswordChange": {
+            "required": [
+                "current_password",
+                "new_password"
+            ],
+            "properties": {
+                "current_password": {
+                    "type": "string",
+                    "description": "Current password."
+                },
+                "new_password": {
+                    "type": "string",
+                    "description": "New password."
+                }
+            },
+            "type": "object"
+        },
+        "UserRegistration": {
+            "required": [
+                "allowed_countries",
+                "email",
+                "password",
+                "role",
+                "second_factor"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "description": "Email/username used for authentication."
+                },
+                "password": {
+                    "type": "string",
+                    "description": "User's password."
+                },
+                "role": {
+                    "type": "string",
+                    "description": "User's role.",
+                    "example": "ADMIN",
+                    "enum": [
+                        "ADMIN",
+                        "VIEWER",
+                        "EDITOR",
+                        "SERVICE"
+                    ]
+                },
+                "second_factor": {
+                    "type": "string",
+                    "description": "2FA: Phone number for user account in standard format (see example), IP address for SERVICE account.",
+                    "example": "+420657123987"
+                },
+                "allowed_countries": {
+                    "type": "array",
+                    "description": "Countries that the user has access to.",
+                    "example": [
+                        "AUT",
+                        "CZE"
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/CountryCode"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "CountryCode": {
+            "enum": [
+                "TGO",
+                "MNE",
+                "LAO",
+                "MRT",
+                "NIC",
+                "LVA",
+                "OMN",
+                "AFG",
+                "CYP",
+                "BEN",
+                "ATA",
+                "CHN",
+                "COL",
+                "CXR",
+                "ATG",
+                "MSR",
+                "MDA",
+                "ZMB",
+                "VNM",
+                "ATF",
+                "TCD",
+                "MYT",
+                "LBN",
+                "MAF",
+                "LUX",
+                "MTQ",
+                "CZE",
+                "ARE",
+                "CMR",
+                "BDI",
+                "ARG",
+                "ASM",
+                "BHR",
+                "CHL",
+                "AND",
+                "MNP",
+                "LTU",
+                "MDG",
+                "LCA",
+                "TUR",
+                "UKR",
+                "TUV",
+                "VIR",
+                "MLT",
+                "NOR",
+                "MCO",
+                "CHE",
+                "BLM",
+                "ABW",
+                "BLZ",
+                "BMU",
+                "CIV",
+                "MUS",
+                "USA",
+                "TWN",
+                "YEM",
+                "MWI",
+                "NLD",
+                "LSO",
+                "BOL",
+                "AUT",
+                "COK",
+                "BLR",
+                "AUS",
+                "BRN",
+                "MAR",
+                "NZL",
+                "LBR",
+                "MDV",
+                "TCA",
+                "UGA",
+                "TTO",
+                "POL",
+                "SRB",
+                "IND",
+                "GEO",
+                "GRC",
+                "SGS",
+                "GRD",
+                "IOT",
+                "HKG",
+                "PRK",
+                "KGZ",
+                "SPM",
+                "SLV",
+                "REU",
+                "SAU",
+                "SYC",
+                "STP",
+                "KEN",
+                "IMN",
+                "KOR",
+                "GUF",
+                "DJI",
+                "GNQ",
+                "GLP",
+                "DNK",
+                "GGY",
+                "ISR",
+                "PCN",
+                "SLB",
+                "PRY",
+                "RUS",
+                "KWT",
+                "DOM",
+                "GTM",
+                "GBR",
+                "GUM",
+                "JEY",
+                "HMD",
+                "SGP",
+                "PAK",
+                "SUR",
+                "SWE",
+                "JPN",
+                "GNB",
+                "ESH",
+                "DZA",
+                "GAB",
+                "FRA",
+                "DMA",
+                "HND",
+                "SDN",
+                "RWA",
+                "PHL",
+                "SSD",
+                "QAT",
+                "PER",
+                "PRI",
+                "SVN",
+                "HTI",
+                "ESP",
+                "GRL",
+                "GMB",
+                "ERI",
+                "FIN",
+                "EST",
+                "KNA",
+                "HUN",
+                "IRQ",
+                "CYM",
+                "SHN",
+                "PSE",
+                "PYF",
+                "SJM",
+                "IDN",
+                "ISL",
+                "EGY",
+                "FLK",
+                "FJI",
+                "GIN",
+                "GUY",
+                "IRN",
+                "COM",
+                "IRL",
+                "KAZ",
+                "ROU",
+                "SVK",
+                "PNG",
+                "PRT",
+                "SOM",
+                "SXM",
+                "HRV",
+                "KIR",
+                "JAM",
+                "ECU",
+                "ETH",
+                "FRO",
+                "KHM",
+                "SYR",
+                "SEN",
+                "PLW",
+                "SLE",
+                "FSM",
+                "GIB",
+                "DEU",
+                "GHA",
+                "JOR",
+                "ITA",
+                "PAN",
+                "SWZ",
+                "SMR",
+                "TUN",
+                "MLI",
+                "COG",
+                "ALA",
+                "AGO",
+                "BTN",
+                "BRB",
+                "CAF",
+                "MMR",
+                "LIE",
+                "NAM",
+                "MOZ",
+                "TON",
+                "VGB",
+                "VEN",
+                "TZA",
+                "TKM",
+                "MEX",
+                "NCL",
+                "MAC",
+                "LKA",
+                "COD",
+                "ALB",
+                "BWA",
+                "CRI",
+                "BVT",
+                "ARM",
+                "AZE",
+                "BIH",
+                "MNG",
+                "NIU",
+                "MYS",
+                "TLS",
+                "WSM",
+                "THA",
+                "XKX",
+                "NFK",
+                "LBY",
+                "AIA",
+                "BRA",
+                "CPV",
+                "BEL",
+                "CAN",
+                "BGD",
+                "CUW",
+                "BHS",
+                "NGA",
+                "MKD",
+                "NPL",
+                "VAT",
+                "UZB",
+                "UMI",
+                "TKL",
+                "VCT",
+                "ZWE",
+                "NRU",
+                "NER",
+                "CUB",
+                "BES",
+                "BFA",
+                "BGR",
+                "CCK",
+                "MHL",
+                "ZAF",
+                "URY",
+                "WLF",
+                "VUT",
+                "TJK"
+            ],
+            "type": "string"
+        },
+        "ServiceStatus": {
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "Indication of service's health.",
+                    "example": "OK",
+                    "enum": [
+                        "OK",
+                        "Failing"
+                    ]
+                },
+                "exception": {
+                    "type": "string",
+                    "description": "Additional indication what is wrong."
+                }
+            },
+            "type": "object"
+        },
+        "Version": {
+            "required": [
+                "environment",
+                "version"
+            ],
+            "properties": {
+                "version": {
+                    "type": "string",
+                    "description": "Version of the running code."
+                },
+                "environment": {
+                    "type": "string",
+                    "description": "Environment the code was build for.",
+                    "example": "PRODUCTION",
+                    "enum": [
+                        "PRODUCTION",
+                        "STAGING",
+                        "DEVELOPMENT",
+                        "UNKNOWN"
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "UploadPatients": {
+            "required": [
+                "country",
+                "donors",
+                "recipients",
+                "txm_event_name"
+            ],
+            "properties": {
+                "country": {
+                    "$ref": "#/definitions/CountryCode"
+                },
+                "txm_event_name": {
+                    "type": "string",
+                    "description": "The TXM event name has to be provided by an ADMIN.",
+                    "example": "2020-10-CZE-ISR-AUT"
+                },
+                "donors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DonorInput"
+                    }
+                },
+                "recipients": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RecipientInput"
+                    }
+                },
+                "add_to_existing_patients": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "type": "object"
+        },
+        "DonorInput": {
+            "required": [
+                "blood_group",
+                "donor_type",
+                "hla_typing",
+                "medical_id"
+            ],
+            "properties": {
+                "medical_id": {
+                    "type": "string",
+                    "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
+                    "example": "D1037"
+                },
+                "blood_group": {
+                    "$ref": "#/definitions/BloodGroupEnum"
+                },
+                "hla_typing": {
+                    "type": "array",
+                    "description": "HLA typing of the patient. Use high resolution if available.",
+                    "example": [
+                        "A1",
+                        "A32",
+                        "B7",
+                        "B51",
+                        "DR11",
+                        "DR15",
+                        "A*02:03",
+                        "A*11:01:35",
+                        "DPA1*01:07",
+                        "DRB4*01:01",
+                        "DQB1*02:01:01:01"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "donor_type": {
+                    "$ref": "#/definitions/DonorType"
+                },
+                "related_recipient_medical_id": {
+                    "type": "string",
+                    "description": "Medical ID of the related recipient, empty for bridging and non-directed donors.",
+                    "example": "R1037"
+                },
+                "sex": {
+                    "$ref": "#/definitions/SexEnum"
+                },
+                "height": {
+                    "type": "integer",
+                    "description": "Height of the patient in centimeters.",
+                    "example": 178
+                },
+                "weight": {
+                    "type": "number",
+                    "description": "Weight of the patient in kilograms.",
+                    "example": 78.4
+                },
+                "year_of_birth": {
+                    "type": "integer",
+                    "description": "Year of birth of the patient.",
+                    "example": 1945
+                }
+            },
+            "type": "object"
+        },
+        "BloodGroupEnum": {
+            "enum": [
+                "A",
+                "B",
+                "AB",
+                "0"
+            ],
+            "type": "string"
+        },
+        "DonorType": {
+            "enum": [
+                "DONOR",
+                "BRIDGING_DONOR",
+                "NON_DIRECTED"
+            ],
+            "type": "string",
+            "description": "Type of the donor."
+        },
+        "SexEnum": {
+            "enum": [
+                "M",
+                "F"
+            ],
+            "type": "string",
+            "description": "Sex of the patient."
+        },
+        "RecipientInput": {
+            "required": [
+                "blood_group",
+                "hla_antibodies",
+                "hla_typing",
+                "medical_id"
+            ],
+            "properties": {
+                "hla_antibodies": {
+                    "type": "array",
+                    "description": "Detected HLA antibodies of the patient. Use high resolution                                   if available. If high resolution is provided it is assumed that all tested antibodieswere provided. If not it is assumed that either all or just positiveones were.",
+                    "items": {
+                        "$ref": "#/definitions/HLAAntibodyIn"
+                    }
+                },
+                "acceptable_blood_groups": {
+                    "type": "array",
+                    "description": "Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.",
+                    "items": {
+                        "$ref": "#/definitions/BloodGroupEnum"
+                    }
+                },
+                "medical_id": {
+                    "type": "string",
+                    "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
+                    "example": "R1037"
+                },
+                "blood_group": {
+                    "$ref": "#/definitions/BloodGroupEnum"
+                },
+                "hla_typing": {
+                    "type": "array",
+                    "description": "HLA typing of the patient. Use high resolution if available.",
+                    "example": [
+                        "A1",
+                        "A32",
+                        "B7",
+                        "B51",
+                        "DR11",
+                        "DR15",
+                        "A*02:03",
+                        "A*11:01:35",
+                        "DPA1*01:07",
+                        "DRB4*01:01",
+                        "DQB1*02:01:01:01"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sex": {
+                    "$ref": "#/definitions/SexEnum"
+                },
+                "height": {
+                    "type": "integer",
+                    "description": "Height of the patient in centimeters.",
+                    "example": 178
+                },
+                "weight": {
+                    "type": "number",
+                    "description": "Weight of the patient in kilograms.",
+                    "example": 78.4
+                },
+                "year_of_birth": {
+                    "type": "integer",
+                    "description": "Year of birth of the patient.",
+                    "example": 1945
+                },
+                "waiting_since": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Date since when the patient has been on waiting list. Use format YYYY-MM-DD.",
+                    "example": "2015-01-17"
+                },
+                "previous_transplants": {
+                    "type": "integer",
+                    "description": "Number of previous kidney transplants."
+                }
+            },
+            "type": "object"
+        },
+        "HLAAntibodyIn": {
+            "required": [
+                "cutoff",
+                "mfi",
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "HLA antibody name in high (A*01:01), low (A*01), split (A1) or broad (A9) resolutions.In the case of DP, DQ when alpha and beta are provided the expected format is DQ[01:01,02:02]",
+                    "example": "A*01:01"
+                },
+                "mfi": {
+                    "type": "integer",
+                    "description": "Mean fluorescence intensity. Use exact value.",
+                    "example": 2350
+                },
+                "cutoff": {
+                    "type": "integer",
+                    "description": "Default cutoff value for the specific patient and HLA antibody.",
+                    "example": 2000
+                }
+            },
+            "type": "object"
+        },
+        "PatientUploadSuccessResponse": {
+            "required": [
+                "donors_uploaded",
+                "recipients_uploaded"
+            ],
+            "properties": {
+                "recipients_uploaded": {
+                    "type": "integer",
+                    "description": "Number of recipients successfully loaded into the application."
+                },
+                "donors_uploaded": {
+                    "type": "integer",
+                    "description": "Number of donors successfully loaded into the application."
+                }
+            },
+            "type": "object"
+        },
+        "Configuration": {
+            "required": [
+                "blood_group_compatibility_bonus",
+                "forbidden_country_combinations",
+                "manual_donor_recipient_scores",
+                "max_cycle_length",
+                "max_cycles_in_all_solutions_solver",
+                "max_debt_for_country",
+                "max_matchings_in_all_solutions_solver",
+                "max_matchings_in_ilp_solver",
+                "max_matchings_to_show_to_viewer",
+                "max_number_of_distinct_countries_in_round",
+                "max_number_of_dynamic_constrains_ilp_solver",
+                "max_number_of_matchings",
+                "max_sequence_length",
+                "maximum_total_score",
+                "minimum_total_score",
+                "require_better_match_in_compatibility_index",
+                "require_better_match_in_compatibility_index_or_blood_group",
+                "require_compatible_blood_group",
+                "required_patient_db_ids",
+                "scorer_constructor_name",
+                "solver_constructor_name",
+                "use_binary_scoring",
+                "use_high_resolution"
+            ],
+            "properties": {
+                "scorer_constructor_name": {
+                    "type": "string",
+                    "example": "HLAAdditiveScorer"
+                },
+                "solver_constructor_name": {
+                    "type": "string",
+                    "example": "AllSolutionsSolver",
+                    "enum": [
+                        "AllSolutionsSolver",
+                        "ILPSolver"
+                    ]
+                },
+                "require_compatible_blood_group": {
+                    "type": "boolean"
+                },
+                "minimum_total_score": {
+                    "type": "number"
+                },
+                "maximum_total_score": {
+                    "type": "number",
+                    "example": 26.0
+                },
+                "require_better_match_in_compatibility_index": {
+                    "type": "boolean"
+                },
+                "require_better_match_in_compatibility_index_or_blood_group": {
+                    "type": "boolean"
+                },
+                "blood_group_compatibility_bonus": {
+                    "type": "number"
+                },
+                "use_binary_scoring": {
+                    "type": "boolean"
+                },
+                "max_cycle_length": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "max_sequence_length": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "max_number_of_distinct_countries_in_round": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "required_patient_db_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "use_high_resolution": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "forbidden_country_combinations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ForbiddenCountryCombination"
+                    }
+                },
+                "manual_donor_recipient_scores": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ManualRecipientDonorScore"
+                    }
+                },
+                "max_matchings_to_show_to_viewer": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "max_number_of_matchings": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "max_matchings_in_all_solutions_solver": {
+                    "type": "integer",
+                    "example": 10000
+                },
+                "max_cycles_in_all_solutions_solver": {
+                    "type": "integer",
+                    "example": 1000000
+                },
+                "max_debt_for_country": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "max_number_of_dynamic_constrains_ilp_solver": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "max_matchings_in_ilp_solver": {
+                    "type": "integer",
+                    "example": 20
+                }
+            },
+            "type": "object"
+        },
+        "ForbiddenCountryCombination": {
+            "required": [
+                "donor_country",
+                "recipient_country"
+            ],
+            "properties": {
+                "donor_country": {
+                    "$ref": "#/definitions/CountryCode"
+                },
+                "recipient_country": {
+                    "$ref": "#/definitions/CountryCode"
+                }
+            },
+            "type": "object"
+        },
+        "ManualRecipientDonorScore": {
+            "required": [
+                "donor_db_id",
+                "recipient_db_id",
+                "score"
+            ],
+            "properties": {
+                "donor_db_id": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "recipient_db_id": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "score": {
+                    "type": "number",
+                    "example": 2.0
+                }
+            },
+            "type": "object"
+        },
+        "CalculatedMatchings": {
+            "required": [
+                "calculated_matchings",
+                "show_not_all_matchings_found"
+            ],
+            "properties": {
+                "calculated_matchings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Matching"
+                    }
+                },
+                "found_matchings_count": {
+                    "type": "integer"
+                },
+                "show_not_all_matchings_found": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "Matching": {
+            "required": [
+                "count_of_transplants",
+                "countries",
+                "order_id",
+                "rounds",
+                "score"
+            ],
+            "properties": {
+                "score": {
+                    "type": "number"
+                },
+                "rounds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Round"
+                    }
+                },
+                "countries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Country"
+                    }
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "count_of_transplants": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "Round": {
+            "properties": {
+                "transplants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Transplant"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "Transplant": {
+            "required": [
+                "compatible_blood",
+                "detailed_score_per_group",
+                "donor",
+                "recipient",
+                "score"
+            ],
+            "properties": {
+                "score": {
+                    "type": "number"
+                },
+                "compatible_blood": {
+                    "type": "boolean"
+                },
+                "donor": {
+                    "type": "string"
+                },
+                "recipient": {
+                    "type": "string"
+                },
+                "detailed_score_per_group": {
+                    "type": "array",
+                    "description": "Contains details for compatibility index for each HLA Group compatibility\nindex is calculated for.",
+                    "example": [
+                        {
+                            "hla_group": "A",
+                            "donor_matches": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A23"
+                                        },
+                                        "raw_code": "A23"
+                                    },
+                                    "match_type": "BROAD"
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A1"
+                                        },
+                                        "raw_code": "A1"
+                                    },
+                                    "match_type": "SPLIT"
+                                }
+                            ],
+                            "recipient_matches": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A9"
+                                        },
+                                        "raw_code": "A9"
+                                    },
+                                    "match_type": "BROAD"
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A1"
+                                        },
+                                        "raw_code": "A1"
+                                    },
+                                    "match_type": "SPLIT"
+                                }
+                            ],
+                            "antibody_matches": [
+                                {
+                                    "hla_antibody": {
+                                        "raw_code": "A9",
+                                        "mfi": 0,
+                                        "cutoff": 0,
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A9"
+                                        }
+                                    },
+                                    "match_type": "NONE"
+                                },
+                                {
+                                    "hla_antibody": {
+                                        "raw_code": "A1",
+                                        "mfi": 0,
+                                        "cutoff": 0,
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A1"
+                                        }
+                                    },
+                                    "match_type": "BROAD"
+                                }
+                            ],
+                            "group_compatibility_index": 2.0
+                        },
+                        {
+                            "hla_group": "B",
+                            "donor_matches": [],
+                            "recipient_matches": [],
+                            "antibody_matches": [],
+                            "group_compatibility_index": 0.0
+                        },
+                        {
+                            "hla_group": "DRB1",
+                            "donor_matches": [],
+                            "recipient_matches": [],
+                            "antibody_matches": [],
+                            "group_compatibility_index": 0.0
+                        },
+                        {
+                            "hla_group": "Other",
+                            "donor_matches": [],
+                            "recipient_matches": [],
+                            "antibody_matches": [],
+                            "group_compatibility_index": 0.0
+                        }
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/DetailedScoreForGroup"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "DetailedScoreForGroup": {
+            "required": [
+                "antibody_matches",
+                "donor_matches",
+                "group_compatibility_index",
+                "hla_group",
+                "recipient_matches"
+            ],
+            "properties": {
+                "hla_group": {
+                    "type": "string",
+                    "example": "A",
+                    "enum": [
+                        "A",
+                        "B",
+                        "DRB1",
+                        "Other"
+                    ]
+                },
+                "donor_matches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AntigenMatch"
+                    }
+                },
+                "recipient_matches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AntigenMatch"
+                    }
+                },
+                "group_compatibility_index": {
+                    "type": "number",
+                    "example": 2.0
+                },
+                "antibody_matches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AntibodyMatch"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "AntigenMatch": {
+            "required": [
+                "hla_type",
+                "match_type"
+            ],
+            "properties": {
+                "hla_type": {
+                    "$ref": "#/definitions/HlaType"
+                },
+                "match_type": {
+                    "type": "string",
+                    "example": "SPLIT",
+                    "enum": [
+                        "SPLIT",
+                        "BROAD",
+                        "HIGH_RES",
+                        "NONE"
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "HlaType": {
+            "required": [
+                "code",
+                "raw_code"
+            ],
+            "properties": {
+                "code": {
+                    "$ref": "#/definitions/HlaCode"
+                },
+                "raw_code": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "HlaCode": {
+            "required": [
+                "broad"
+            ],
+            "properties": {
+                "high_res": {
+                    "type": "string"
+                },
+                "split": {
+                    "type": "string"
+                },
+                "broad": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "AntibodyMatch": {
+            "required": [
+                "hla_antibody",
+                "match_type"
+            ],
+            "properties": {
+                "hla_antibody": {
+                    "$ref": "#/definitions/HlaAntibody"
+                },
+                "match_type": {
+                    "type": "string",
+                    "example": "SPLIT",
+                    "enum": [
+                        "SPLIT",
+                        "BROAD",
+                        "HIGH_RES",
+                        "NONE"
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "HlaAntibody": {
+            "required": [
+                "code",
+                "cutoff",
+                "mfi",
+                "raw_code"
+            ],
+            "properties": {
+                "raw_code": {
+                    "type": "string"
+                },
+                "mfi": {
+                    "type": "integer"
+                },
+                "cutoff": {
+                    "type": "integer"
+                },
+                "code": {
+                    "$ref": "#/definitions/HlaCode"
+                }
+            },
+            "type": "object"
+        },
+        "Country": {
+            "required": [
+                "country_code",
+                "donor_count",
+                "recipient_count"
+            ],
+            "properties": {
+                "country_code": {
+                    "type": "string"
+                },
+                "donor_count": {
+                    "type": "integer"
+                },
+                "recipient_count": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "Patients": {
+            "properties": {
+                "recipients": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Recipient"
+                    }
+                },
+                "donors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Donor"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "Recipient": {
+            "required": [
+                "db_id",
+                "hla_antibodies",
+                "medical_id",
+                "parameters",
+                "related_donor_db_id"
+            ],
+            "properties": {
+                "db_id": {
+                    "type": "integer",
+                    "description": "Database id of the patient"
+                },
+                "acceptable_blood_groups": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/BloodGroupEnum"
+                    }
+                },
+                "medical_id": {
+                    "type": "string",
+                    "description": "Medical id of the patient"
+                },
+                "parameters": {
+                    "$ref": "#/definitions/PatientParameters"
+                },
+                "hla_antibodies": {
+                    "$ref": "#/definitions/HlaAntibodies"
+                },
+                "related_donor_db_id": {
+                    "type": "integer",
+                    "description": "Database id of the related donor"
+                },
+                "recipient_requirements": {
+                    "$ref": "#/definitions/RecipientRequirements"
+                },
+                "waiting_since": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "previous_transplants": {
+                    "type": "integer"
+                },
+                "recipient_cutoff": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "PatientParameters": {
+            "required": [
+                "blood_group",
+                "country_code"
+            ],
+            "properties": {
+                "blood_group": {
+                    "$ref": "#/definitions/BloodGroupEnum"
+                },
+                "hla_typing": {
+                    "$ref": "#/definitions/HlaTyping"
+                },
+                "country_code": {
+                    "$ref": "#/definitions/CountryCode"
+                },
+                "sex": {
+                    "$ref": "#/definitions/SexEnum"
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "weight": {
+                    "type": "number"
+                },
+                "year_of_birth": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "HlaTyping": {
+            "required": [
+                "hla_per_groups",
+                "hla_types_list",
+                "hla_types_raw_list"
+            ],
+            "properties": {
+                "hla_types_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HlaType"
+                    }
+                },
+                "hla_types_raw_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HlaTypeRaw"
+                    }
+                },
+                "hla_per_groups": {
+                    "type": "array",
+                    "description": "hla types split to hla groups",
+                    "example": [
+                        {
+                            "hla_group": "A",
+                            "hla_types": [
+                                {
+                                    "code": {
+                                        "high_res": null,
+                                        "split": null,
+                                        "broad": "A1"
+                                    },
+                                    "raw_code": "A1"
+                                }
+                            ]
+                        },
+                        {
+                            "hla_group": "B",
+                            "hla_types": [
+                                {
+                                    "code": {
+                                        "high_res": null,
+                                        "split": null,
+                                        "broad": "B38"
+                                    },
+                                    "raw_code": "B38"
+                                }
+                            ]
+                        },
+                        {
+                            "hla_group": "DRB1",
+                            "hla_types": [
+                                {
+                                    "code": {
+                                        "high_res": null,
+                                        "split": null,
+                                        "broad": "DR7"
+                                    },
+                                    "raw_code": "DR7"
+                                }
+                            ]
+                        },
+                        {
+                            "hla_group": "Other",
+                            "hla_types": [
+                                {
+                                    "code": {
+                                        "high_res": null,
+                                        "split": null,
+                                        "broad": "CW4"
+                                    },
+                                    "raw_code": "CW4"
+                                }
+                            ]
+                        }
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/HlaCodesInGroups"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "HlaTypeRaw": {
+            "required": [
+                "raw_code"
+            ],
+            "properties": {
+                "raw_code": {
+                    "type": "string",
+                    "description": "Antigen raw code",
+                    "example": "A32"
+                }
+            },
+            "type": "object"
+        },
+        "HlaCodesInGroups": {
+            "required": [
+                "hla_group",
+                "hla_types"
+            ],
+            "properties": {
+                "hla_group": {
+                    "type": "string",
+                    "example": "A",
+                    "enum": [
+                        "A",
+                        "B",
+                        "DRB1",
+                        "Other"
+                    ]
+                },
+                "hla_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HlaType"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "HlaAntibodies": {
+            "required": [
+                "hla_antibodies_list",
+                "hla_antibodies_per_groups",
+                "hla_antibodies_raw_list"
+            ],
+            "properties": {
+                "hla_antibodies_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HlaAntibody"
+                    }
+                },
+                "hla_antibodies_raw_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HlaAntibodyRaw"
+                    }
+                },
+                "hla_antibodies_per_groups": {
+                    "type": "array",
+                    "description": "hla antibodies split to hla groups",
+                    "example": [
+                        {
+                            "hla_group": "A",
+                            "hla_antibody_list": [
+                                {
+                                    "code": {
+                                        "high_res": null,
+                                        "split": null,
+                                        "broad": "A1"
+                                    },
+                                    "raw_code": "A1",
+                                    "mfi": 0,
+                                    "cutoff": 0
+                                }
+                            ]
+                        },
+                        {
+                            "hla_group": "B",
+                            "hla_antibody_list": [
+                                {
+                                    "code": {
+                                        "high_res": null,
+                                        "split": null,
+                                        "broad": "B38"
+                                    },
+                                    "raw_code": "B38",
+                                    "mfi": 10,
+                                    "cutoff": 0
+                                }
+                            ]
+                        },
+                        {
+                            "hla_group": "DRB1",
+                            "hla_antibody_list": [
+                                {
+                                    "code": {
+                                        "high_res": null,
+                                        "split": null,
+                                        "broad": "DR7"
+                                    },
+                                    "raw_code": "DR7",
+                                    "mfi": 0,
+                                    "cutoff": 300
+                                }
+                            ]
+                        },
+                        {
+                            "hla_group": "Other",
+                            "hla_antibody_list": [
+                                {
+                                    "code": {
+                                        "high_res": null,
+                                        "split": null,
+                                        "broad": "CW4"
+                                    },
+                                    "raw_code": "CW4",
+                                    "mfi": 500,
+                                    "cutoff": 500
+                                }
+                            ]
+                        }
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/AntibodiesPerGroup"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "HlaAntibodyRaw": {
+            "required": [
+                "cutoff",
+                "mfi",
+                "raw_code"
+            ],
+            "properties": {
+                "raw_code": {
+                    "type": "string"
+                },
+                "mfi": {
+                    "type": "integer"
+                },
+                "cutoff": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "AntibodiesPerGroup": {
+            "required": [
+                "hla_antibody_list",
+                "hla_group"
+            ],
+            "properties": {
+                "hla_group": {
+                    "type": "string",
+                    "example": "A",
+                    "enum": [
+                        "A",
+                        "B",
+                        "DRB1",
+                        "Other"
+                    ]
+                },
+                "hla_antibody_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HlaAntibody"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "RecipientRequirements": {
+            "required": [
+                "require_better_match_in_compatibility_index",
+                "require_better_match_in_compatibility_index_or_blood_group",
+                "require_compatible_blood_group"
+            ],
+            "properties": {
+                "require_better_match_in_compatibility_index": {
+                    "type": "boolean"
+                },
+                "require_better_match_in_compatibility_index_or_blood_group": {
+                    "type": "boolean"
+                },
+                "require_compatible_blood_group": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "Donor": {
+            "required": [
+                "active",
+                "db_id",
+                "donor_type",
+                "medical_id",
+                "parameters"
+            ],
+            "properties": {
+                "active": {
+                    "type": "boolean",
+                    "description": "Whether the user shall be used in pairing calculation"
+                },
+                "db_id": {
+                    "type": "integer",
+                    "description": "Database id of the patient"
+                },
+                "medical_id": {
+                    "type": "string",
+                    "description": "Medical id of the patient"
+                },
+                "parameters": {
+                    "$ref": "#/definitions/PatientParameters"
+                },
+                "donor_type": {
+                    "$ref": "#/definitions/DonorType"
+                },
+                "related_recipient_db_id": {
+                    "type": "integer",
+                    "description": "Database id of the related recipient"
+                },
+                "score_with_related_recipient": {
+                    "type": "number",
+                    "description": "Score calculated with related recipient"
+                },
+                "compatible_blood_with_related_recipient": {
+                    "type": "boolean",
+                    "description": "Indicator whether Donor and related recipients have compatible blood groups"
+                },
+                "detailed_score_with_related_recipient": {
+                    "type": "array",
+                    "description": "Contains details for compatibility index for each HLA Group compatibility\nindex is calculated for.",
+                    "example": [
+                        {
+                            "hla_group": "A",
+                            "donor_matches": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A23"
+                                        },
+                                        "raw_code": "A23"
+                                    },
+                                    "match_type": "BROAD"
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A1"
+                                        },
+                                        "raw_code": "A1"
+                                    },
+                                    "match_type": "SPLIT"
+                                }
+                            ],
+                            "recipient_matches": [
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A9"
+                                        },
+                                        "raw_code": "A9"
+                                    },
+                                    "match_type": "BROAD"
+                                },
+                                {
+                                    "hla_type": {
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A1"
+                                        },
+                                        "raw_code": "A1"
+                                    },
+                                    "match_type": "SPLIT"
+                                }
+                            ],
+                            "antibody_matches": [
+                                {
+                                    "hla_antibody": {
+                                        "raw_code": "A9",
+                                        "mfi": 0,
+                                        "cutoff": 0,
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A9"
+                                        }
+                                    },
+                                    "match_type": "NONE"
+                                },
+                                {
+                                    "hla_antibody": {
+                                        "raw_code": "A1",
+                                        "mfi": 0,
+                                        "cutoff": 0,
+                                        "code": {
+                                            "high_res": null,
+                                            "split": null,
+                                            "broad": "A1"
+                                        }
+                                    },
+                                    "match_type": "BROAD"
+                                }
+                            ],
+                            "group_compatibility_index": 2.0
+                        },
+                        {
+                            "hla_group": "B",
+                            "donor_matches": [],
+                            "recipient_matches": [],
+                            "antibody_matches": [],
+                            "group_compatibility_index": 0.0
+                        },
+                        {
+                            "hla_group": "DRB1",
+                            "donor_matches": [],
+                            "recipient_matches": [],
+                            "antibody_matches": [],
+                            "group_compatibility_index": 0.0
+                        },
+                        {
+                            "hla_group": "Other",
+                            "donor_matches": [],
+                            "recipient_matches": [],
+                            "antibody_matches": [],
+                            "group_compatibility_index": 0.0
+                        }
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/DetailedScoreForGroup"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "DonorModelPairIn": {
+            "required": [
+                "country_code",
+                "donor"
+            ],
+            "properties": {
+                "country_code": {
+                    "$ref": "#/definitions/CountryCode"
+                },
+                "donor": {
+                    "$ref": "#/definitions/DonorInput"
+                },
+                "recipient": {
+                    "$ref": "#/definitions/RecipientInput"
+                }
+            },
+            "type": "object"
+        },
+        "RecipientModelToUpdate": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/PatientModelToUpdate"
+                },
+                {
+                    "properties": {
+                        "acceptable_blood_groups": {
+                            "type": "array",
+                            "description": "Provide full list of all the acceptable blood groups of the patient, not just the change set",
+                            "items": {
+                                "$ref": "#/definitions/BloodGroupEnum"
+                            }
+                        },
+                        "hla_antibodies": {
+                            "description": "Provide full list of all the HLA antibodies of the patient, not just the change set",
+                            "example": {
+                                "hla_antibodies_list": [
+                                    {
+                                        "raw_code": "A*01:02",
+                                        "mfi": 10000
+                                    }
+                                ]
+                            },
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/HlaAntibodiesToUpdate"
+                                }
+                            ]
+                        },
+                        "recipient_requirements": {
+                            "description": "Provide the whole recipients requirements object, it will be overwritten",
+                            "example": {
+                                "require_better_match_in_compatibility_index": true
+                            },
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/RecipientRequirements"
+                                }
+                            ]
+                        },
+                        "waiting_since": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Date since when the patient has been on waiting list. Use format YYYY-MM-DD.",
+                            "example": "2015-01-17"
+                        },
+                        "previous_transplants": {
+                            "type": "integer",
+                            "description": "Number of previous kidney transplants."
+                        },
+                        "cutoff": {
+                            "type": "integer"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
+        "PatientModelToUpdate": {
+            "required": [
+                "db_id"
+            ],
+            "properties": {
+                "db_id": {
+                    "type": "integer",
+                    "description": "Database id of the patient",
+                    "example": 1
+                },
+                "blood_group": {
+                    "$ref": "#/definitions/BloodGroupEnum"
+                },
+                "hla_typing": {
+                    "description": "Provide full list of all the HLA types of the patient, not just the change set",
+                    "example": {
+                        "hla_types_list": [
+                            {
+                                "raw_code": "A*01:02"
+                            },
+                            {
+                                "raw_code": "B7"
+                            },
+                            {
+                                "raw_code": "DR11"
+                            }
+                        ]
+                    },
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/HlaTypingToUpdate"
+                        }
+                    ]
+                },
+                "sex": {
+                    "$ref": "#/definitions/SexEnum"
+                },
+                "height": {
+                    "type": "integer",
+                    "example": 180
+                },
+                "weight": {
+                    "type": "number",
+                    "example": 90
+                },
+                "year_of_birth": {
+                    "type": "integer",
+                    "example": 1990
+                }
+            },
+            "type": "object"
+        },
+        "HlaTypingToUpdate": {
+            "required": [
+                "hla_types_list"
+            ],
+            "properties": {
+                "hla_types_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HlaTypeToUpdate"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "HlaTypeToUpdate": {
+            "required": [
+                "raw_code"
+            ],
+            "properties": {
+                "raw_code": {
+                    "type": "string",
+                    "example": "A*01:02"
+                }
+            },
+            "type": "object"
+        },
+        "HlaAntibodiesToUpdate": {
+            "required": [
+                "hla_antibodies_list"
+            ],
+            "properties": {
+                "hla_antibodies_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HlaAntibodyToUpdate"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "HlaAntibodyToUpdate": {
+            "required": [
+                "mfi",
+                "raw_code"
+            ],
+            "properties": {
+                "raw_code": {
+                    "type": "string",
+                    "example": "A*01:02"
+                },
+                "mfi": {
+                    "type": "integer",
+                    "example": 10000
+                }
+            },
+            "type": "object"
+        },
+        "DonorModelToUpdate": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/PatientModelToUpdate"
+                },
+                {
+                    "properties": {
+                        "active": {
+                            "type": "boolean",
+                            "description": "Information, whether or not given donor shall be considered in exchange."
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
+        "PatientsRecomputeParsingSuccess": {
+            "required": [
+                "parsing_errors",
+                "patients_changed_antibodies",
+                "patients_changed_antigens",
+                "patients_checked_antibodies",
+                "patients_checked_antigens"
+            ],
+            "properties": {
+                "patients_checked_antigens": {
+                    "type": "integer"
+                },
+                "patients_changed_antigens": {
+                    "type": "integer"
+                },
+                "patients_checked_antibodies": {
+                    "type": "integer"
+                },
+                "patients_changed_antibodies": {
+                    "type": "integer"
+                },
+                "parsing_errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "NewTxmEvent": {
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "TxmEvent": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "TxmEvents": {
+            "required": [
+                "events"
+            ],
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TxmEvent"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "DefaultTxmEvent": {
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "responses": {
+        "ParseError": {
+            "description": "When a mask can't be parsed"
+        },
+        "MaskError": {
+            "description": "When any error occurs on mask"
+        },
+        "SolverAlreadyRunningException": {
+            "description": "Solver already running"
+        },
+        "InvalidJWTException": {
+            "description": "invalid_jwt_exception"
+        },
+        "NotFoundException": {
+            "description": "not_found_exception"
+        },
+        "CredentialsMismatchException": {
+            "description": "credentials_mismatch_exception"
+        },
+        "InvalidOtpException": {
+            "description": "invalid_otp_exception"
+        },
+        "CouldNotSendOtpUsingSmsServiceException": {
+            "description": "could_not_send_otp"
+        },
+        "InvalidIpAddressAccessException": {
+            "description": "invalid_ip_exception"
+        },
+        "UserUpdateException": {
+            "description": "user_update_exception"
+        },
+        "InvalidAuthCallException": {
+            "description": "invalid_auth_call_exception"
+        },
+        "GuardException": {
+            "description": "guard_exception"
+        },
+        "WrongTokenUsedException": {
+            "description": "wrong_used_token_exception"
+        },
+        "AuthenticationException": {
+            "description": "general_authentication_exception"
+        },
+        "InvalidArgumentException": {
+            "description": "invalid_argument_exception"
+        },
+        "UnauthorizedException": {
+            "description": "unauthorized_exception"
+        },
+        "TooComplicatedDataForAllSolutionsSolver": {
+            "description": "too complicated data for solver _exception"
+        },
+        "TooComplicatedDataForIlpSolver": {
+            "description": "too complicated data for solver _exception"
+        },
+        "CachingNotReadyException": {
+            "description": "invalid_argument_exception"
+        },
+        "DaciteError": {
+            "description": "dacite_exception"
+        },
+        "KeyError": {
+            "description": "key_error"
+        },
+        "ValueError": {
+            "description": "value_error"
+        },
+        "Forbidden": {
+            "description": "access_denied"
+        },
+        "HTTPException": {
+            "description": "http_exception"
+        },
+        "Exception": {
+            "description": "default_exception_error"
+        }
+    },
+    "host": "test"
+}
