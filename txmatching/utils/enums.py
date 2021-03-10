@@ -45,8 +45,10 @@ HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS = {
 
 
 class AntibodyMatchTypes(str, Enum):
+    SPLIT = 'SPLIT'
+    BROAD = 'BROAD'
+    HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
-    MATCH = 'MATCH'
 
 
 class MatchTypes(str, Enum):
