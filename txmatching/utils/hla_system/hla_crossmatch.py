@@ -21,7 +21,7 @@ class AntibodyMatchForHLAGroup:
 def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
                                recipient_antibodies: HLAAntibodies,
                                use_high_resolution: bool,
-                               crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.BROAD_AND_HIGHER,  # TODOO: no def
+                               crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.BROAD_AND_HIGHER,
                                ) -> bool:
     """
     Do donor and recipient have positive crossmatch in HLA system?
@@ -34,6 +34,7 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
     :param donor_hla_typing: donor hla_typing to crossmatch
     :param recipient_antibodies: recipient antibodies to crossmatch
     :param use_high_resolution: setting whether to high res resolution for crossmatch determination
+    :param crossmatch_level:
     :return:
     """
     common_codes = {antibody_match.hla_antibody for antibody_match_group in

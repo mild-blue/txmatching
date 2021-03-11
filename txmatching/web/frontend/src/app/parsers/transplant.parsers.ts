@@ -13,13 +13,6 @@ export const parseTransplant = (data: TransplantGenerated, patients: PatientList
   };
   const patientPair = getPatientPair(listItem, foundDonor, foundRecipient);
   const detailed_score_per_group = data.detailed_score_per_group.map(parseDetailedScorePerGroup);
-  const hasCrossmatch = detailed_score_per_group.some(
-    detailed_score => detailed_score.antibody_matches.some(
-      antibody_match => antibody_match.match_type !== AntibodyMatchType.NONE
-    )
-  );
-  // TODOO
-  if (hasCrossmatch !== data.has_crossmatch) console.error("Hey");
 
   return {
     ...patientPair,

@@ -30,7 +30,6 @@ class MatchingsDetailed:
     matchings: List[MatchingWithScore]
     scores_tuples: Dict[Tuple[int, int], float]
     blood_compatibility_tuples: Dict[Tuple[int, int], bool]
-    has_crossmatch_tuples: Dict[Tuple[int, int], bool]  # TODOO
     detailed_score_tuples: Dict[Tuple[int, int], List[DetailedCompatibilityIndexForHLAGroup]]
     antibody_matches_tuples: Dict[Tuple[int, int], List[AntibodyMatchForHLAGroup]]
     found_matchings_count: Optional[int]
@@ -62,7 +61,6 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
                              score_dict[(donor_db_id, recipient_db_id)] >= 0
                              }
     logger.debug('Getting has crossmatch')
-    has_crossmatch_dict = {}  # TODOO
     logger.debug('Getting ci dict dict with score')
     detailed_compatibility_index_dict = {
         (donor_db_id, recipient_db_id): get_detailed_compatibility_index(donor.parameters.hla_typing,
@@ -86,7 +84,6 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
         matchings_with_score,
         score_dict,
         compatible_blood_dict,
-        has_crossmatch_dict,
         detailed_compatibility_index_dict,
         antibody_matches_dict,
         database_pairing_result.matchings.found_matchings_count,
