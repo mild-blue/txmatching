@@ -126,14 +126,13 @@ definitions:
                     type: integer
                 type: array
             scorer_constructor_name:
+                allOf:
+                -   $ref: '#/definitions/Scorer'
                 example: SplitHLAAdditiveScorer
-                type: string
             solver_constructor_name:
-                enum:
-                - AllSolutionsSolver
-                - ILPSolver
+                allOf:
+                -   $ref: '#/definitions/Solver'
                 example: AllSolutionsSolver
-                type: string
             use_binary_scoring:
                 type: boolean
             use_high_resolution:
@@ -1233,6 +1232,11 @@ definitions:
                     $ref: '#/definitions/Transplant'
                 type: array
         type: object
+    Scorer:
+        enum:
+        - SplitHLAAdditiveScorer
+        - HighResHLAAdditiveScorer
+        type: string
     ServiceStatus:
         properties:
             exception:
@@ -1253,6 +1257,11 @@ definitions:
         enum:
         - M
         - F
+        type: string
+    Solver:
+        enum:
+        - AllSolutionsSolver
+        - ILPSolver
         type: string
     StatusResponse:
         properties:

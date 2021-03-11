@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '@app/services/auth/auth.service';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { ConfigurationService } from '@app/services/configuration/configuration.service';
-import { AppConfiguration, Configuration } from '@app/model/Configuration';
+import { Configuration } from '@app/model/Configuration';
 import { MatchingService } from '@app/services/matching/matching.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { Matching } from '@app/model/Matching';
@@ -123,10 +123,6 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   public async calculate(configuration: Configuration): Promise<void> {
-    if (!this.appConfiguration) {
-      this._logger.error('Calculate failed because appConfiguration not set');
-      return;
-    }
     if (!this.patients) {
       this._logger.error('Calculate failed because patients not set');
       return;
@@ -143,19 +139,13 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.matchings = [];
     this.foundMatchingsCount = 0;
 
-    const { scorer_constructor_name } = this.appConfiguration;
-    const updatedConfig: AppConfiguration = {
-      ...configuration,
-      scorer_constructor_name
-    };
-    this._logger.log('Calculating with config', [updatedConfig]);
+    this._logger.log('Calculating with config', [configuration]);
 
-    this.appConfiguration = updatedConfig;
     this.configuration = configuration;
 
     try {
       const calculatedMatchings = await this._matchingService.calculate(
-        this.defaultTxmEvent.id, updatedConfig, this.patients
+        this.defaultTxmEvent.id, configuration, this.patients
       );
       this.matchings = calculatedMatchings.calculated_matchings;
       this.foundMatchingsCount = calculatedMatchings.found_matchings_count;
@@ -189,18 +179,6 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     await this._initMatchings();
 
     this._logger.log('End of matchings initialization');
-  }
-
-  private async _initConfiguration(): Promise<void> {
-    await this._initAppConfiguration();
-
-    if(!this.appConfiguration) {
-      this._logger.error('Configuration init failed because appConfiguration not set');
-      return;
-    }
-
-    const {scorer_constructor_name, ...rest} = this.appConfiguration;
-    this.configuration = rest;
   }
 
   private async _initMatchings(): Promise<void> {

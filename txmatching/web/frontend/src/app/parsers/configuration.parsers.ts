@@ -1,7 +1,7 @@
 import { ConfigurationGenerated } from '../generated';
-import { AppConfiguration } from '../model';
+import { Configuration } from '../model';
 
-export const parseAppConfiguration = (data: ConfigurationGenerated ): AppConfiguration => {
+export const parseConfiguration = (data: ConfigurationGenerated ): Configuration => {
   return {
     ...data
   };

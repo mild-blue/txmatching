@@ -2,7 +2,8 @@
      [class.bad-matching]="score === -1"
      [class.empty]="!showScore"
      class="indicator">
-  <div *ngIf="showScore" class="score">
+  <div *ngIf="showScore" class="score"
+       title="{{'Score: ' + (score != null ? score : '-') + '/' + (configuration ? configuration.maximum_total_score : '-')}}">
     <span>score</span>
     {{score != null ? score : "-"}}
   </div>

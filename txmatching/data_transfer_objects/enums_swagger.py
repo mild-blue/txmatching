@@ -1,4 +1,6 @@
 from txmatching.patients.patient import DonorType
+from txmatching.scorers.scorer_from_config import SUPPORTED_SCORERS
+from txmatching.solvers.solver_from_config import SUPPORTED_SOLVERS
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import Sex
@@ -24,4 +26,14 @@ DonorTypeEnumJson = enums_api.schema_model('DonorType', {
     'enum': [donor_type.value for donor_type in DonorType],
     'type': 'string',
     'description': 'Type of the donor.'
+})
+
+ScorerEnumJson = enums_api.schema_model('Scorer', {
+    'enum': [scorer.__name__ for scorer in SUPPORTED_SCORERS],
+    'type': 'string'
+})
+
+SolverEnumJson = enums_api.schema_model('Solver', {
+    'enum': [solver.__name__ for solver in SUPPORTED_SOLVERS],
+    'type': 'string'
 })
