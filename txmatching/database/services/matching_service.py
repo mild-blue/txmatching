@@ -34,13 +34,14 @@ class MatchingsDetailed:
     antibody_matches_tuples: Dict[Tuple[int, int], List[AntibodyMatchForHLAGroup]]
     found_matchings_count: Optional[int]
     show_not_all_matchings_found: bool
+    max_transplant_score: float
 
 
 def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
                                              configuration_db_id: int) -> MatchingsDetailed:
     logger.debug('Getting detailed matchings')
     configuration = get_configuration_from_db_id(configuration_db_id)
-    ci_configuration = scorer_from_configuration(configuration).ci_configuration
+    scorer = scorer_from_configuration(configuration)
 
     config_set_updated(configuration_db_id)
     database_pairing_result = get_pairing_result_for_configuration_db_id(configuration_db_id)
@@ -65,7 +66,7 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
     detailed_compatibility_index_dict = {
         (donor_db_id, recipient_db_id): get_detailed_compatibility_index(donor.parameters.hla_typing,
                                                                          recipient.parameters.hla_typing,
-                                                                         ci_configuration=ci_configuration)
+                                                                         ci_configuration=scorer.ci_configuration)
         for donor_db_id, donor in txm_event.active_donors_dict.items()
         for recipient_db_id, recipient in txm_event.active_recipients_dict.items() if
         score_dict[(donor_db_id, recipient_db_id)] >= 0
@@ -88,7 +89,8 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
         detailed_compatibility_index_dict,
         antibody_matches_dict,
         database_pairing_result.matchings.found_matchings_count,
-        database_pairing_result.matchings.show_not_all_matchings_found
+        database_pairing_result.matchings.show_not_all_matchings_found,
+        scorer.max_transplant_score
     )
 
 
@@ -128,6 +130,7 @@ def create_calculated_matchings_dto(
                     transplants=[
                         TransplantDTOOut(
                             score=latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
+                            max_score=latest_matchings_detailed.max_transplant_score,
                             compatible_blood=latest_matchings_detailed.blood_compatibility_tuples[
                                 (pair.donor.db_id, pair.recipient.db_id)],
                             donor=pair.donor.medical_id,

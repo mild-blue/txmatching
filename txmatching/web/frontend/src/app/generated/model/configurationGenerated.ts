@@ -27,7 +27,6 @@ export interface ConfigurationGenerated {
     max_number_of_dynamic_constrains_ilp_solver: number;
     max_number_of_matchings: number;
     max_sequence_length: number;
-    maximum_total_score: number;
     minimum_total_score: number;
     require_better_match_in_compatibility_index: boolean;
     require_better_match_in_compatibility_index_or_blood_group: boolean;

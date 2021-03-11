@@ -104,3 +104,7 @@ class HLAAdditiveScorer(AdditiveScorer):
     @property
     def ci_configuration(self) -> CIConfiguration:
         raise NotImplementedError('Has to be overridden')
+
+    @property
+    def max_transplant_score(self) -> float:
+        raise NotImplementedError('Has to be overridden')

@@ -33,3 +33,7 @@ class HighResHLAAdditiveScorer(HLAAdditiveScorer):
     @property
     def ci_configuration(self) -> CIConfiguration:
         return HighResHLAAdditiveScorerCIConfiguration()
+
+    @property
+    def max_transplant_score(self) -> float:
+        return 18

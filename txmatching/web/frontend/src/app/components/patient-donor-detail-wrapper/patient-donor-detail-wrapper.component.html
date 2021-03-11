@@ -12,6 +12,7 @@
       <app-matching-transplant [donor]="item"
                                [isBloodCompatible]="item.compatible_blood_with_related_recipient"
                                [score]="item.score_with_related_recipient"
+                               [maxScore]="item.max_score_with_related_recipient"
                                [detailedScorePerGroup]="item.detailed_score_with_related_recipient"
                                [configuration]="configuration"></app-matching-transplant>
     </div>

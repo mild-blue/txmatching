@@ -11,6 +11,7 @@ export const parseDonor = (data: DonorGenerated): Donor => {
     compatible_blood_with_related_recipient: data.compatible_blood_with_related_recipient,
     related_recipient_db_id: data.related_recipient_db_id,
     score_with_related_recipient: data.score_with_related_recipient,
+    max_score_with_related_recipient: data.max_score_with_related_recipient,
     detailed_score_with_related_recipient: data.detailed_score_with_related_recipient?.map(parseDetailedScorePerGroup) ?? []
   };
 };

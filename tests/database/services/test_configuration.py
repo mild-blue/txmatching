@@ -29,7 +29,6 @@ class TestConfiguration(DbTests):
         dto_dict = {'scorer_constructor_name': 'SplitHLAAdditiveScorer',
                     'solver_constructor_name': 'AllSolutionsSolver',
                     'minimum_total_score': 0.0,
-                    'maximum_total_score': 27.0,
                     'enforce_compatible_blood_group': False,
                     'forbidden_country_combinations': [{'donor_country': 'AUT', 'recipient_country': 'ISR'}],
                     'use_binary_scoring': False,

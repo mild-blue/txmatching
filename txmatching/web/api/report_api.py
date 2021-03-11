@@ -414,16 +414,18 @@ def patient_height_and_weight_filter(patient: Patient) -> Optional[str]:
         return None
 
 
-def score_color_filter(score: Optional[float], configuration: Configuration):
+def score_color_filter(score: Optional[float], max_score: Optional[float]):
     # wkhtmltopdf does not support linear-gradients css style that is used in fe and makes
     # exporting super-slow so we define percentage->color mapping in this function
+    if max_score is None or max_score < 1:
+        max_score = 1
 
     if score is None:
         percentage = 0
     elif score == -1:
         return '#ff0000'  # bad-matching
     else:
-        percentage = 100 * score / configuration.maximum_total_score
+        percentage = 100 * score / max_score
 
     if percentage < 15:
         return '#ffa400'

@@ -27,7 +27,6 @@ ConfigurationJson = matching_api.model(
         'require_compatible_blood_group': fields.Boolean(required=True,
                                                          example=_default_configuration.require_compatible_blood_group),
         'minimum_total_score': fields.Float(required=True, example=_default_configuration.minimum_total_score),
-        'maximum_total_score': fields.Float(required=True, example=_default_configuration.maximum_total_score),
         'require_better_match_in_compatibility_index': fields.Boolean(
             required=True,
             example=_default_configuration.require_better_match_in_compatibility_index

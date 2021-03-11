@@ -31,7 +31,6 @@ class Configuration:
     require_compatible_blood_group: If true, only AB0 compatible transplants are considered.
     minimum_total_score: Minimum total score (compatibility index + blood group bonus) that is required for
         a transplant to be possible.
-    maximum_total_score: Fixed constant at the moment.
     require_better_match_in_compatibility_index: If true, only transplants with better CI then the theoretical CI
         with the original donor.
     require_better_match_in_compatibility_index_or_blood_group: If true, only transplants with better CI then the
@@ -59,7 +58,6 @@ class Configuration:
     solver_constructor_name: str = 'AllSolutionsSolver'
     require_compatible_blood_group: bool = False
     minimum_total_score: float = 0.0
-    maximum_total_score: float = 26.0
     require_better_match_in_compatibility_index: bool = False
     require_better_match_in_compatibility_index_or_blood_group: bool = False
     blood_group_compatibility_bonus: float = 0.0

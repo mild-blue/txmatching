@@ -9,7 +9,6 @@ export interface Configuration {
 
   blood_group_compatibility_bonus: number;
   minimum_total_score: number;
-  maximum_total_score: number;
   max_cycle_length: number;
   max_sequence_length: number;
   max_number_of_distinct_countries_in_round: number;
