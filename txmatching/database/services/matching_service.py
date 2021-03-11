@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class MatchingsDetailed:
+    # pylint: disable=too-many-instance-attributes
     matchings: List[MatchingWithScore]
     scores_tuples: Dict[Tuple[int, int], float]
     blood_compatibility_tuples: Dict[Tuple[int, int], bool]

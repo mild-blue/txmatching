@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Optional
 
 from txmatching.configuration.configuration import Configuration
@@ -6,13 +7,12 @@ from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
 from txmatching.utils.blood_groups import blood_groups_compatible
-from txmatching.utils.hla_system.compatibility_index import (
-    CIConfiguration, compatibility_index)
+from txmatching.utils.hla_system.compatibility_index import compatibility_index
 from txmatching.utils.hla_system.hla_crossmatch import \
     is_positive_hla_crossmatch
 
 
-class HLAAdditiveScorer(AdditiveScorer):
+class HLAAdditiveScorer(AdditiveScorer, ABC):
     def __init__(self, configuration: Configuration = Configuration()):
         super().__init__(configuration.manual_donor_recipient_scores)
         self._configuration = configuration
@@ -96,15 +96,3 @@ class HLAAdditiveScorer(AdditiveScorer):
                                               setting_name):
         setting_val = getattr(recipient.recipient_requirements, setting_name)
         return setting_val if setting_val is not None else getattr(self._configuration, setting_name)
-
-    @classmethod
-    def from_config(cls, configuration: Configuration) -> 'HLAAdditiveScorer':
-        raise NotImplementedError('Has to be overridden')
-
-    @property
-    def ci_configuration(self) -> CIConfiguration:
-        raise NotImplementedError('Has to be overridden')
-
-    @property
-    def max_transplant_score(self) -> float:
-        raise NotImplementedError('Has to be overridden')
