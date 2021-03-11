@@ -38,8 +38,10 @@ HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.Other] = '|'.join(
 
 
 class AntibodyMatchTypes(str, Enum):
+    SPLIT = 'SPLIT'
+    BROAD = 'BROAD'
+    HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
-    MATCH = 'MATCH'
 
 
 class MatchTypes(str, Enum):

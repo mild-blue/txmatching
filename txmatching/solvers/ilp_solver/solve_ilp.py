@@ -89,6 +89,24 @@ def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSo
     for node in data_and_configuration.required_patients:
         ilp_model.add_constr(mapping.node_to_in_var[node] >= 0.5)
 
+    add_debt_static_constraints(ilp_model, data_and_configuration, mapping)
+
+
+def add_debt_static_constraints(ilp_model,
+                                data_and_configuration: DataAndConfigurationForILPSolver,
+                                mapping: VariableMapping):
+    countries = set(data_and_configuration.country_codes_dict.values())
+    for current_country in countries:
+        country_giving = [mapping.node_to_out_var[node] for node, country in
+                          data_and_configuration.country_codes_dict.items() if country == current_country]
+        country_receiving = [- mapping.node_to_in_var[node] for node, country in
+                             data_and_configuration.country_codes_dict.items() if country == current_country]
+
+        ilp_model.add_constr(
+            mip.xsum(country_giving + country_receiving) <= data_and_configuration.configuration.max_debt_for_country)
+        ilp_model.add_constr(
+            - mip.xsum(country_giving + country_receiving) <= data_and_configuration.configuration.max_debt_for_country)
+
 
 def _add_objective(ilp_model: mip.Model,
                    internal_parameters: InternalILPSolverParameters,

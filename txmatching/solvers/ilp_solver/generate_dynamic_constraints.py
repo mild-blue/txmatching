@@ -2,7 +2,6 @@ from typing import Dict, List, Tuple
 
 import mip
 import networkx as nx
-import numpy as np
 
 from txmatching.solvers.ilp_solver.ilp_dataclasses import (
     InternalILPSolverParameters, MaxSequenceLimitMethod)
@@ -46,32 +45,12 @@ def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSo
         ilp_model.add_constr(mip.xsum([edge_to_var[edge] for edge in seq]) <= len(seq) - 1)
         constraints_added = True
 
-    if not constraints_added:
-        if _is_debt_too_big(edges_in_solution, data_and_configuration):
-            ilp_model.add_constr(
-                mip.xsum([edge_to_var[edge] for edge in edges_in_solution]) <= len(edges_in_solution) - 1)
-            constraints_added = True
-
     return constraints_added
 
 
 def _too_many_countries(cycle, data_and_configuration: DataAndConfigurationForILPSolver) -> bool:
     return len({data_and_configuration.country_codes_dict[i] for edge in cycle for i in
                 edge}) > data_and_configuration.configuration.max_number_of_distinct_countries_in_round
-
-
-def _is_debt_too_big(edges_in_solution, data_and_configuration: DataAndConfigurationForILPSolver) -> bool:
-    countries = set(data_and_configuration.country_codes_dict.values())
-    debt_dict = dict()
-    for country in countries:
-        debt_dict[country] = 0
-    for edge_nodes in edges_in_solution:
-        debt_dict[data_and_configuration.country_codes_dict[edge_nodes[0]]] += 1
-        debt_dict[data_and_configuration.country_codes_dict[edge_nodes[1]]] -= 1
-    for country, debt in debt_dict.items():
-        if np.abs(debt) > data_and_configuration.configuration.max_debt_for_country:
-            return True
-    return False
 
 
 def _get_cycles_to_forbid(cycles, data_and_configuration: DataAndConfigurationForILPSolver) -> List[Tuple[int, int]]:

@@ -17,8 +17,10 @@ export interface AntibodyMatchGenerated {
     match_type: AntibodyMatchGeneratedMatchTypeEnum;
 }
 export enum AntibodyMatchGeneratedMatchTypeEnum {
-    None = 'NONE',
-    Match = 'MATCH'
+    Split = 'SPLIT',
+    Broad = 'BROAD',
+    HighRes = 'HIGH_RES',
+    None = 'NONE'
 };
 
 

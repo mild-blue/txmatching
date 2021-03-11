@@ -28,7 +28,7 @@ EXAMPLE_DETAILED_SCORE = [
          {'hla_antibody': {'raw_code': 'A9', 'mfi': 0, 'cutoff': 0, 'code': _CODE_A9},
           'match_type': AntibodyMatchTypes.NONE.name},
          {'hla_antibody': {'raw_code': 'A1', 'mfi': 0, 'cutoff': 0, 'code': _CODE_A1},
-          'match_type': AntibodyMatchTypes.MATCH.name}
+          'match_type': AntibodyMatchTypes.BROAD.name}
      ],
      'group_compatibility_index': 2.0
      },

@@ -129,9 +129,9 @@ export const parseAntibodiesPerGroup = ( data: AntibodiesPerGroupGenerated ): An
 };
 
 export const parseAntigenMatchType = ( data: AntigenMatchGeneratedMatchTypeEnum ): AntigenMatchType => {
-  return AntigenMatchType[data]
+  return AntigenMatchType[data];
 };
 
 export const parseAntibodyMatchType = ( data: AntibodyMatchGeneratedMatchTypeEnum ): AntibodyMatchType => {
-  return AntibodyMatchType[data]
+  return AntibodyMatchType[data];
 };

@@ -26,9 +26,11 @@ definitions:
                 $ref: '#/definitions/HlaAntibody'
             match_type:
                 enum:
+                - SPLIT
+                - BROAD
+                - HIGH_RES
                 - NONE
-                - MATCH
-                example: NONE
+                example: SPLIT
                 type: string
         required:
         - hla_antibody
@@ -503,7 +505,7 @@ definitions:
                             cutoff: 0
                             mfi: 0
                             raw_code: A1
-                        match_type: MATCH
+                        match_type: BROAD
                     donor_matches:
                     -   hla_type:
                             code:
