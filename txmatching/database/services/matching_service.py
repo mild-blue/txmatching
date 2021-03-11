@@ -127,6 +127,7 @@ def create_calculated_matchings_dto(
                             score=latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
                             compatible_blood=latest_matchings_detailed.blood_compatibility_tuples[
                                 (pair.donor.db_id, pair.recipient.db_id)],
+                            has_crossmatch=True,  # TODOO
                             donor=pair.donor.medical_id,
                             recipient=pair.recipient.medical_id,
                             detailed_score_per_group=get_detailed_score(

@@ -22,6 +22,7 @@ export class MatchingTransplantComponent {
   @Input() donor?: Donor;
   @Input() recipient?: Recipient;
   @Input() isBloodCompatible?: boolean;
+  @Input() hasCrossmatch: boolean = false;
   @Input() detailedScorePerGroup?: DetailedScorePerGroup[];
 
   public patientPairStyles = PatientPairStyle;

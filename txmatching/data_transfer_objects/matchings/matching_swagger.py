@@ -76,6 +76,7 @@ DetailedScoreForGroupJson = matching_api.model('DetailedScoreForGroup', {
 TransplantJson = matching_api.model('Transplant', {
     'score': fields.Float(required=True),
     'compatible_blood': fields.Boolean(required=True),
+    'has_crossmatch': fields.Boolean(required=True),
     'donor': fields.String(required=True),
     'recipient': fields.String(required=True),
     # Unfortunately is raw as we want to have the model general it is not clear how many different hla_groups will

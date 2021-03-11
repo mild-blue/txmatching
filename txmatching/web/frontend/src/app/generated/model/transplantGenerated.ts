@@ -19,6 +19,7 @@ export interface TransplantGenerated {
      */
     detailed_score_per_group: Array<DetailedScoreForGroupGenerated>;
     donor: string;
+    has_crossmatch: boolean;
     recipient: string;
     score: number;
 }

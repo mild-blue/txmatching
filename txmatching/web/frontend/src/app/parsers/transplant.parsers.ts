@@ -10,12 +10,13 @@ export const parseTransplant = (data: TransplantGenerated, patients: PatientList
   const listItem: ListItem = {
     ...DEFAULT_LIST_ITEM,
     index
-  }
+  };
 
   return {
     ...getPatientPair(listItem, foundDonor, foundRecipient),
     score: data.score,
     compatible_blood: data.compatible_blood,
+    hasCrossmatch: data.has_crossmatch,
     donor: data.donor,
     recipient: data.recipient,
     detailed_score_per_group: data.detailed_score_per_group.map(parseDetailedScorePerGroup)

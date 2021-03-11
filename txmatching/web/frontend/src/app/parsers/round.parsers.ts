@@ -5,14 +5,16 @@ import { parseTransplant } from './transplant.parsers';
 export const parseRound = (data: RoundGenerated, patients: PatientList, mIndex: number, rIndex: number): Round => {
   const transplants = data.transplants?.map((t, tKey) =>
     parseTransplant(t, patients, +`${mIndex}${rIndex}${tKey + 1}`)
-  ) ?? []
+  ) ?? [];
   const donorType = _getRoundDonorType(transplants);
   const index = _getRoundIndex(donorType, rIndex);
+  const hasCrossmatch = transplants.some(transplant => transplant.hasCrossmatch);
 
   return {
     index,
     donorType,
-    transplants
+    transplants,
+    hasCrossmatch
   };
 };
 

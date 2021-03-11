@@ -1279,6 +1279,8 @@ definitions:
                 type: array
             donor:
                 type: string
+            has_crossmatch:
+                type: boolean
             recipient:
                 type: string
             score:
@@ -1287,6 +1289,7 @@ definitions:
         - compatible_blood
         - detailed_score_per_group
         - donor
+        - has_crossmatch
         - recipient
         - score
         type: object
