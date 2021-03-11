@@ -44,11 +44,25 @@ HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS = {
 }
 
 
+class HLACrossmatchLevel(str, Enum):
+    BROAD_AND_HIGHER = 'BROAD_AND_HIGHER'
+    SPLIT_AND_HIGHER = 'SPLIT_AND_HIGHER'
+    HIGH_RES = 'HIGH_RES'
+    DO_NOT_CROSSMATCH = 'DO_NOT_CROSSMATCH'
+
+
 class AntibodyMatchTypes(str, Enum):
     SPLIT = 'SPLIT'
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
+
+    def is_positive_for_level(self, crossmatch_level: HLACrossmatchLevel) -> bool:
+        return (
+                crossmatch_level == HLACrossmatchLevel.BROAD_AND_HIGHER and self in [self.BROAD, self.SPLIT, self.HIGH_RES] or
+                crossmatch_level == HLACrossmatchLevel.SPLIT_AND_HIGHER and self in [self.SPLIT, self.HIGH_RES] or
+                crossmatch_level == HLACrossmatchLevel.HIGH_RES and self == self.HIGH_RES
+        )
 
 
 class MatchTypes(str, Enum):

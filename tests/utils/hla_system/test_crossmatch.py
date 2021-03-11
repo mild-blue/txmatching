@@ -5,7 +5,7 @@ from typing import List
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
                                            HLATyping)
-from txmatching.utils.enums import AntibodyMatchTypes
+from txmatching.utils.enums import AntibodyMatchTypes, HLACrossmatchLevel
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatch, get_crossmatched_antibodies, is_positive_hla_crossmatch)
 from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
@@ -279,3 +279,24 @@ class TestCrossmatch(unittest.TestCase):
                                    [HLAAntibody('A9', 2100, 2000),
                                     HLAAntibody('A9', 2200, 2000)], True,
                                    [AntibodyMatch(HLAAntibody('A9', 2150, 2000), AntibodyMatchTypes.BROAD)])
+
+    def test_crossmatch_level(self):
+        self.assertFalse(AntibodyMatchTypes.NONE.is_positive_for_level(HLACrossmatchLevel.DO_NOT_CROSSMATCH))
+        self.assertFalse(AntibodyMatchTypes.NONE.is_positive_for_level(HLACrossmatchLevel.HIGH_RES))
+        self.assertFalse(AntibodyMatchTypes.NONE.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_HIGHER))
+        self.assertFalse(AntibodyMatchTypes.NONE.is_positive_for_level(HLACrossmatchLevel.BROAD_AND_HIGHER))
+
+        self.assertFalse(AntibodyMatchTypes.HIGH_RES.is_positive_for_level(HLACrossmatchLevel.DO_NOT_CROSSMATCH))
+        self.assertTrue(AntibodyMatchTypes.HIGH_RES.is_positive_for_level(HLACrossmatchLevel.HIGH_RES))
+        self.assertTrue(AntibodyMatchTypes.HIGH_RES.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_HIGHER))
+        self.assertTrue(AntibodyMatchTypes.HIGH_RES.is_positive_for_level(HLACrossmatchLevel.BROAD_AND_HIGHER))
+
+        self.assertFalse(AntibodyMatchTypes.SPLIT.is_positive_for_level(HLACrossmatchLevel.DO_NOT_CROSSMATCH))
+        self.assertFalse(AntibodyMatchTypes.SPLIT.is_positive_for_level(HLACrossmatchLevel.HIGH_RES))
+        self.assertTrue(AntibodyMatchTypes.SPLIT.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_HIGHER))
+        self.assertTrue(AntibodyMatchTypes.SPLIT.is_positive_for_level(HLACrossmatchLevel.BROAD_AND_HIGHER))
+
+        self.assertFalse(AntibodyMatchTypes.BROAD.is_positive_for_level(HLACrossmatchLevel.DO_NOT_CROSSMATCH))
+        self.assertFalse(AntibodyMatchTypes.BROAD.is_positive_for_level(HLACrossmatchLevel.HIGH_RES))
+        self.assertFalse(AntibodyMatchTypes.BROAD.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_HIGHER))
+        self.assertTrue(AntibodyMatchTypes.BROAD.is_positive_for_level(HLACrossmatchLevel.BROAD_AND_HIGHER))
