@@ -1,7 +1,8 @@
 from flask_restx import fields
 
 from txmatching.configuration.configuration import Configuration
-from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
+from txmatching.data_transfer_objects.enums_swagger import (
+    CountryCodeJson, HlaCrossmatchLevelJson)
 from txmatching.solvers.solver_from_config import SUPPORTED_SOLVERS
 from txmatching.web.api.namespaces import matching_api
 
@@ -50,7 +51,8 @@ ConfigurationJson = matching_api.model(
         'required_patient_db_ids': fields.List(required=True, cls_or_instance=fields.Integer,
                                                example=_default_configuration.required_patient_db_ids),
         'use_high_resolution': fields.Boolean(required=True,
-                                                  example=_default_configuration.use_high_resolution),
+                                              example=_default_configuration.use_high_resolution),
+        'hla_crossmatch_level': fields.Nested(HlaCrossmatchLevelJson, required=True),
         'forbidden_country_combinations': fields.List(required=True, cls_or_instance=fields.Nested(
             ForbiddenCountryCombination)),
         'manual_donor_recipient_scores': fields.List(required=True, cls_or_instance=fields.Nested(

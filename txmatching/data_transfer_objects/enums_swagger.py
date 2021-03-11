@@ -1,7 +1,7 @@
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import Sex
+from txmatching.utils.enums import HLACrossmatchLevel, Sex
 from txmatching.web.api.namespaces import enums_api
 
 CountryCodeJson = enums_api.schema_model('CountryCode', {
@@ -24,4 +24,9 @@ DonorTypeEnumJson = enums_api.schema_model('DonorType', {
     'enum': [donor_type.value for donor_type in DonorType],
     'type': 'string',
     'description': 'Type of the donor.'
+})
+
+HlaCrossmatchLevelJson = enums_api.schema_model('HlaCrossmatchLevel', {
+    'enum': [crossmatch_level.value for crossmatch_level in HLACrossmatchLevel],
+    'type': 'string'
 })

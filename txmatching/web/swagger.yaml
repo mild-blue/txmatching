@@ -81,6 +81,8 @@ definitions:
                 items:
                     $ref: '#/definitions/ForbiddenCountryCombination'
                 type: array
+            hla_crossmatch_level:
+                $ref: '#/definitions/HlaCrossmatchLevel'
             manual_donor_recipient_scores:
                 items:
                     $ref: '#/definitions/ManualRecipientDonorScore'
@@ -147,6 +149,7 @@ definitions:
         required:
         - blood_group_compatibility_bonus
         - forbidden_country_combinations
+        - hla_crossmatch_level
         - manual_donor_recipient_scores
         - max_cycle_length
         - max_cycles_in_all_solutions_solver
@@ -830,6 +833,13 @@ definitions:
         - hla_group
         - hla_types
         type: object
+    HlaCrossmatchLevel:
+        enum:
+        - BROAD_AND_HIGHER
+        - SPLIT_AND_HIGHER
+        - HIGH_RES
+        - DO_NOT_CROSSMATCH
+        type: string
     HlaType:
         properties:
             code:
