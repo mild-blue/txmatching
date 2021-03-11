@@ -59,7 +59,8 @@ class AntibodyMatchTypes(str, Enum):
 
     def is_positive_for_level(self, crossmatch_level: HLACrossmatchLevel) -> bool:
         return (
-                crossmatch_level == HLACrossmatchLevel.BROAD_AND_HIGHER and self in [self.BROAD, self.SPLIT, self.HIGH_RES] or
+                crossmatch_level == HLACrossmatchLevel.BROAD_AND_HIGHER and
+                self in [self.BROAD, self.SPLIT, self.HIGH_RES] or
                 crossmatch_level == HLACrossmatchLevel.SPLIT_AND_HIGHER and self in [self.SPLIT, self.HIGH_RES] or
                 crossmatch_level == HLACrossmatchLevel.HIGH_RES and self == self.HIGH_RES
         )

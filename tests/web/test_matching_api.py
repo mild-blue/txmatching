@@ -9,7 +9,7 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import HLAGroup, MatchTypes
+from txmatching.utils.enums import HLACrossmatchLevel, HLAGroup, MatchTypes
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, MATCHING_NAMESPACE, TXM_EVENT_NAMESPACE
 
@@ -230,7 +230,8 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(200, res.status_code)
             self.assertEqual(9, res.json['found_matchings_count'])
 
-            conf_dto2 = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=50))
+            conf_dto2 = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=50,
+                                                         hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',

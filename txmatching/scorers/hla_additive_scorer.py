@@ -6,7 +6,6 @@ from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
 from txmatching.utils.blood_groups import blood_groups_compatible
-from txmatching.utils.enums import HLACrossmatchLevel
 from txmatching.utils.hla_system.compatibility_index import compatibility_index
 from txmatching.utils.hla_system.hla_crossmatch import \
     is_positive_hla_crossmatch
