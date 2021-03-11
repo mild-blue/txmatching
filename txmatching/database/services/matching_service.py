@@ -16,6 +16,7 @@ from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.utils.blood_groups import blood_groups_compatible
+from txmatching.utils.enums import AntibodyMatchTypes
 from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index)
 from txmatching.utils.hla_system.hla_crossmatch import (
@@ -122,25 +123,35 @@ def create_calculated_matchings_dto(
     Method that creates common DTOs for FE and reports.
     """
     logger.debug('Creating calculated matchings DTO')
+
+    def _create_transplant_dto(pair: DonorRecipientPair):
+        detailed_scores = get_detailed_score(
+            latest_matchings_detailed.detailed_score_tuples[
+                (pair.donor.db_id, pair.recipient.db_id)],
+            latest_matchings_detailed.antibody_matches_tuples[
+                (pair.donor.db_id, pair.recipient.db_id)]
+        )
+        has_crossmatch = len([antibody_match for detailed_score in detailed_scores
+                              for antibody_match in detailed_score.antibody_matches
+                              if antibody_match.match_type != AntibodyMatchTypes.NONE]) > 0
+
+        return TransplantDTOOut(
+            score=latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
+            compatible_blood=latest_matchings_detailed.blood_compatibility_tuples[
+                (pair.donor.db_id, pair.recipient.db_id)],
+            has_crossmatch=has_crossmatch,
+            donor=pair.donor.medical_id,
+            recipient=pair.recipient.medical_id,
+            detailed_score_per_group=detailed_scores
+        )
+
     return CalculatedMatchingsDTO(
         calculated_matchings=[MatchingDTO(
             rounds=[
                 RoundDTO(
                     transplants=[
-                        TransplantDTOOut(
-                            score=latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
-                            compatible_blood=latest_matchings_detailed.blood_compatibility_tuples[
-                                (pair.donor.db_id, pair.recipient.db_id)],
-                            has_crossmatch=True,  # TODOO
-                            donor=pair.donor.medical_id,
-                            recipient=pair.recipient.medical_id,
-                            detailed_score_per_group=get_detailed_score(
-                                latest_matchings_detailed.detailed_score_tuples[
-                                    (pair.donor.db_id, pair.recipient.db_id)],
-                                latest_matchings_detailed.antibody_matches_tuples[
-                                    (pair.donor.db_id, pair.recipient.db_id)]
-                            )
-                        ) for pair in matching_round.donor_recipient_pairs], )
+                        _create_transplant_dto(pair)
+                        for pair in matching_round.donor_recipient_pairs], )
                 for matching_round in matching.get_rounds()],
             countries=matching.get_country_codes_counts(),
             score=matching.score,

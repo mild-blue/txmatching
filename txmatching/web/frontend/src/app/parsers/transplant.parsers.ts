@@ -18,12 +18,14 @@ export const parseTransplant = (data: TransplantGenerated, patients: PatientList
       antibody_match => antibody_match.match_type !== AntibodyMatchType.NONE
     )
   );
+  // TODOO
+  if (hasCrossmatch !== data.has_crossmatch) console.error("Hey");
 
   return {
     ...patientPair,
     score: data.score,
     compatible_blood: data.compatible_blood,
-    hasCrossmatch, // TODOO: remove frome generated
+    hasCrossmatch: data.has_crossmatch,
     donor: data.donor,
     recipient: data.recipient,
     detailed_score_per_group
