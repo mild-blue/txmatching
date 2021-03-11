@@ -52,6 +52,9 @@
                     class="patient-pair {{ 'compatible' if transplant.compatible_blood else 'non-compatible' }}"
                     style="border-right: 10px solid {{ transplant.score|score_color_filter(configuration) }}">
                     <div class="patient-pair-content">
+                      {% if transplant.has_crossmatch %}
+                        <div class="warning-icon">!</div>
+                      {% endif %}
                       <div class="patient">
                         <div class="flag">
                           <img src="assets/countries/{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
