@@ -38,9 +38,9 @@ export class PatientService {
     return this._deletedDonorDbIdSubject.asObservable().pipe(filter(dbId => dbId !== -1));
   }
 
-  public async getPatients(txmEventId: number): Promise<PatientList> {
+  public async getPatients(txmEventId: number, includeAntibodiesRaw: boolean): Promise<PatientList> {
     return this._http.get<PatientsGenerated>(
-      `${environment.apiUrl}/txm-event/${txmEventId}/patients`
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients${includeAntibodiesRaw ? '?include-antibodies-raw' : ''}`
     ).pipe(
       first(),
       map(parsePatientList)
