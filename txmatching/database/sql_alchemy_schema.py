@@ -89,7 +89,7 @@ class RecipientModel(db.Model):
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     acceptable_blood = relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True,
-                                       lazy='joined')  # type: List[RecipientAcceptableBloodModel]
+                                       lazy='selectin')  # type: List[RecipientAcceptableBloodModel]
     hla_antibodies = Column(JSON, unique=False, nullable=False)
     hla_antibodies_raw = relationship('HLAAntibodyRawModel', backref='recipient', passive_deletes=True,
                                          lazy='selectin')  # type: List[HLAAntibodyRawModel]
