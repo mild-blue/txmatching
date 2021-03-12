@@ -65,14 +65,14 @@ export class AbstractLoggedComponent implements OnInit {
     }
   }
 
-  protected async _initPatients(): Promise<void> {
+  protected async _initPatients(includeAntibodiesRaw: boolean): Promise<void> {
     if(!this.defaultTxmEvent) {
       this._logger.error(`Init patients failed because defaultTxmEvent not set`);
       return;
     }
 
     try {
-      this.patients = await this._patientService.getPatients(this.defaultTxmEvent.id);
+      this.patients = await this._patientService.getPatients(this.defaultTxmEvent.id, includeAntibodiesRaw);
       this._logger.log('Got patients from server', [this.patients]);
     } catch (e) {
       this._alertService.error(`Error loading patients: "${e.message || e}"`);
