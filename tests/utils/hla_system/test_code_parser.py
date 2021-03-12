@@ -9,12 +9,13 @@ from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (
-    HlaCodeProcessingResultDetail, get_mfi_from_multiple_hla_codes,
-    parse_hla_raw_code, parse_hla_raw_code_with_details,
-    preprocess_hla_code_in)
+    HlaCodeProcessingResultDetail, _try_convert_ultra_high_res,
+    get_mfi_from_multiple_hla_codes, parse_hla_raw_code,
+    parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations_store import \
     parse_hla_raw_code_and_add_parsing_error_to_db_session
-from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
+from txmatching.utils.hla_system.rel_dna_ser_parsing import (
+    HIGH_RES_TO_SPLIT_OR_BROAD, parse_rel_dna_ser)
 
 codes = {
     'A1': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
@@ -23,17 +24,17 @@ codes = {
     'B51': (HLACode(None, 'B51', 'B5'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DR11': (HLACode(None, 'DR11', 'DR5'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DR15': (HLACode(None, 'DR15', 'DR2'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*23': (HLACode('A*23', 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*23': (HLACode(None, 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*23:01': (HLACode('A*23:01', 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*23:04': (HLACode('A*23:04', 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*24:02': (HLACode('A*24:02', 'A24', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*01:52:01N': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
     'A*02:03': (HLACode('A*02:03', 'A203', 'A203'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*11:01:35': (HLACode('A*11:01:35', 'A11', 'A11'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*11:01:35': (HLACode('A*11:01', 'A11', 'A11'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'C*01:02': (HLACode('C*01:02', 'CW1', 'CW1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DPA1*01:07': (HLACode('DPA1*01:07', 'DPA1', 'DPA1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DRB4*01:01': (HLACode('DRB4*01:01', 'DR53', 'DR53'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DQB1*02:01:01:01': (HLACode('DQB1*02:01:01:01', 'DQ2', 'DQ2'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DQB1*02:01:01:01': (HLACode('DQB1*02:01', 'DQ2', 'DQ2'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'NONEXISTENT': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT*11': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
     'A*68:06': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
@@ -48,7 +49,16 @@ codes = {
     'DPB13': (HLACode(None, 'DP13', 'DP13'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A9': (HLACode(None, None, 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A23': (HLACode(None, 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*24:19': (HLACode('A*24:19', None, 'A9'), HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT)
+    'A*24:19': (HLACode('A*24:19', None, 'A9'), HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT),
+    'A*01:01:01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*01:01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A*01': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'A99': (HLACode(None, 'A99', 'A99'), HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
+    # low res regexp but not in transformation table
+    'A*99': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
+    # ultra high res regexp but not in tranformation table
+    'A*68:06:01': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
 }
 
 
@@ -66,7 +76,7 @@ class TestCodeParser(DbTests):
         for code, _ in codes.items():
             parse_hla_raw_code_and_add_parsing_error_to_db_session(code)
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(7, len(errors))
+        self.assertEqual(10, len(errors))
 
     def test_parse_hla_ser(self):
         parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))
@@ -148,3 +158,22 @@ class TestCodeParser(DbTests):
                     HLAAntibody('DQA1*01:01', cutoff=2000, mfi=3000)
                 ]
             ).hla_antibodies_per_groups[3].hla_antibody_list))
+
+    def test_no_ultra_high_res_with_multiple_splits(self):
+        """
+        Test that for each high res code in HIGH_RES_TO_SPLIT_OR_BROAD has the same split code as all corresponding
+        ultra high res codes.
+        """
+        high_res_to_splits = dict()
+        for high_res_or_ultra_high_res, split_or_broad in HIGH_RES_TO_SPLIT_OR_BROAD.items():
+            if split_or_broad is None:
+                continue
+            maybe_high_res = _try_convert_ultra_high_res(high_res_or_ultra_high_res)
+            if maybe_high_res is not None:
+                if maybe_high_res not in high_res_to_splits:
+                    high_res_to_splits[maybe_high_res] = set()
+                high_res_to_splits[maybe_high_res].add(split_or_broad)
+
+        split_counts = {len(split_to_high_res) for split_to_high_res in high_res_to_splits.values()}
+
+        self.assertSetEqual({1}, split_counts)

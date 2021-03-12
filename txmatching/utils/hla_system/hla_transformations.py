@@ -25,8 +25,10 @@ RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW = 0.5
 RELATIVE_CLOSENESS_TO_CUTOFF_FROM_ABOVE = 1.25
 RELATIVE_CLOSENESS_TO_MINIMUM = 1 / 2
 
-HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*[A-Z]?$')
-HIGH_RES_REGEX_ENDING_WITH_N = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*N$')
+LOW_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}$')
+ULTRA_HIGH_RES_REGEX = re.compile(r'^([A-Z]+\d?\*\d{2,4}(:\d{2,3}))(:\d{2,3})+[A-Z]?$')  # with high res subunit
+HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})[A-Z]?$')
+HIGH_RES_REGEX_ENDING_WITH_N = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})N$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
 HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'([A-Za-z]{1,3})\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
 
@@ -53,9 +55,56 @@ class HlaCodeProcessingResult:
     result_detail: HlaCodeProcessingResultDetail
 
 
+def _try_convert_ultra_high_res(high_res_or_ultra_high_res: str) -> Optional[str]:
+    if HIGH_RES_REGEX.match(high_res_or_ultra_high_res):
+        return high_res_or_ultra_high_res
+
+    match = ULTRA_HIGH_RES_REGEX.search(high_res_or_ultra_high_res)
+    if match:
+        high_res = match.group(1)
+        assert HIGH_RES_REGEX.match(high_res)
+        return high_res
+    else:
+        return None
+
+
+def _ultra_high_res_to_high_res_with_check(ultra_high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
+    # Check that the code can be converted to split
+    expected_split_or_broad = _high_res_to_split_or_broad(ultra_high_res_code)
+    if isinstance(expected_split_or_broad, HlaCodeProcessingResultDetail):
+        return expected_split_or_broad
+
+    # Convert ultra high res -> high res
+    high_res = _try_convert_ultra_high_res(ultra_high_res_code)
+    assert high_res is not None, f'Code ${ultra_high_res_code} is not in ultra high resolution'
+
+    # Get splits corresponding to this high res substring
+    split_to_high_res = dict()
+    for high_res_or_ultra_high_res, split_or_broad in HIGH_RES_TO_SPLIT_OR_BROAD.items():
+        if split_or_broad is None:
+            continue
+        maybe_high_res = _try_convert_ultra_high_res(high_res_or_ultra_high_res)
+        if maybe_high_res is not None and high_res == maybe_high_res:
+            if split_or_broad not in split_to_high_res:
+                split_to_high_res[split_or_broad] = []
+            split_to_high_res[split_or_broad].append(high_res_or_ultra_high_res)
+
+    assert len(split_to_high_res) > 0
+
+    # If all high res variants are converted to the same split, there is no problem and return the high_res
+    if len(split_to_high_res) == 1:
+        assert expected_split_or_broad in next(iter(split_to_high_res))
+        return high_res
+    else:
+        # This should not happen. See test_no_ultra_high_res_with_multiple_splits
+        raise AssertionError(f'Ultra high res {ultra_high_res_code} converted to high res {high_res} which '
+                             f'corresponds to ultra high res codes that can be converted to multiple split '
+                             f'codes: ${split_to_high_res}')
+
+
 def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
     return {split for high_res, split in HIGH_RES_TO_SPLIT_OR_BROAD.items() if
-            high_res.startswith(f'{high_res_code}:')}
+            high_res.startswith(f'{high_res_code}:') or high_res == high_res_code}
 
 
 def _high_res_to_split_or_broad(high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
@@ -98,21 +147,37 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
     # firstly, if raw code is in hla code exceptions list, create parsing result
     maybe_exception_split_code = PARSE_HLA_CODE_EXCEPTIONS.get(hla_raw_code)
     if maybe_exception_split_code:
-        hla_code = HLACode(
-            high_res=hla_raw_code,
-            split=maybe_exception_split_code,
-            broad=split_to_broad(maybe_exception_split_code)
+        return HlaCodeProcessingResult(
+            HLACode(
+                high_res=hla_raw_code,
+                split=maybe_exception_split_code,
+                broad=split_to_broad(maybe_exception_split_code)
+            ),
+            HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED
         )
-        return HlaCodeProcessingResult(hla_code, HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED)
 
-    if re.match(HIGH_RES_REGEX, hla_raw_code):
+    if re.match(LOW_RES_REGEX, hla_raw_code):
+        high_res = None
+        split_or_broad_or_error = _high_res_to_split_or_broad(hla_raw_code)
+        logger.warning(f'Low res code {hla_raw_code} parsed as split code {split_or_broad_or_error}')
+    elif re.match(HIGH_RES_REGEX, hla_raw_code):
         high_res = hla_raw_code
         split_or_broad_or_error = _high_res_to_split_or_broad(hla_raw_code)
+    elif re.match(ULTRA_HIGH_RES_REGEX, hla_raw_code):
+        high_res_or_error = _ultra_high_res_to_high_res_with_check(hla_raw_code)
+        if not isinstance(high_res_or_error, HlaCodeProcessingResultDetail):
+            assert re.match(HIGH_RES_REGEX, high_res_or_error)
+            logger.warning(f'Ultra high resolution {hla_raw_code} parsed as high resolution {high_res_or_error}')
+            high_res = high_res_or_error
+            split_or_broad_or_error = _high_res_to_split_or_broad(hla_raw_code)
+        else:
+            return HlaCodeProcessingResult(None, high_res_or_error)
     else:
         high_res = None
         split_or_broad_or_error = hla_raw_code
 
-    if isinstance(split_or_broad_or_error, str) and re.match(SPLIT_RES_REGEX, split_or_broad_or_error):
+    if not isinstance(split_or_broad_or_error, HlaCodeProcessingResultDetail) and \
+            re.match(SPLIT_RES_REGEX, split_or_broad_or_error):
         c_match = re.match(CW_SEROLOGICAL_CODE_WITHOUT_W_REGEX, split_or_broad_or_error)
         if c_match:
             split_or_broad_or_error = f'CW{int(c_match.group(1))}'
