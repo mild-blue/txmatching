@@ -1,9 +1,10 @@
 from typing import Dict, List, Optional, Set, Tuple
+from uuid import uuid4
 
 from flask import Response
 
 from tests.test_utilities.prepare_app import DbTests
-from tests.web.txm_event_api.txm_event_upload_example_data import (
+from tests.web.public_api.test_public_patient_upload_example_data import (
     DONORS, RECIPIENTS,
     SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_EXISTING_RECIPIENT_ID,
     SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_MISSING_RECIPIENT_ID,
@@ -13,19 +14,22 @@ from tests.web.txm_event_api.txm_event_upload_example_data import (
     SPECIAL_RECIPIENTS_MULTIPLE_SAME_HLA_CODES,
     SPECIAL_RECIPIENTS_SPECIAL_HLA_CODES,
     SPECIAL_RECIPIENTS_WAITING_SINCE_DATE_INVALID)
+from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
+from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.txm_event_service import (
     get_newest_txm_event_db_id, get_txm_event_complete)
-from txmatching.database.sql_alchemy_schema import (ParsingErrorModel,
+from txmatching.database.sql_alchemy_schema import (AppUserModel,
+                                                    ParsingErrorModel,
+                                                    TxmEventModel,
                                                     UploadedDataModel)
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAType, HLATypeRaw, HLATyping
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
-from txmatching.web import (API_VERSION, EXTERNAL_PATIENT_UPLOAD_NAMESPACE,
-                            TXM_EVENT_NAMESPACE)
+from txmatching.web import API_VERSION, PUBLIC_NAMESPACE
 
 
 class TestMatchingApi(DbTests):
@@ -143,6 +147,42 @@ class TestMatchingApi(DbTests):
         expected_antibodies = {'DR9', 'CW6', 'B82', 'CW4'}
         self.assertSetEqual(expected_antibodies, _get_hla_antibodies_split_or_broad_codes(recipient))
 
+    def test_txm_event_patient_upload_fails_on_wrong_country(self):
+        banned_country = Country.CZE
+        # add user
+        user_pass = 'password'
+        usr = AppUserModel(
+            email=str(uuid4()),
+            pass_hash=encode_password(user_pass),
+            role=UserRole.SERVICE,
+            second_factor_material='1.2.3.4',
+            require_2fa=False,
+            allowed_edit_countries=[country for country in Country if country != banned_country]
+        )
+        usr = persist_user(usr)
+
+        txm_name = 'test'
+        upload_patients = {
+            'country': banned_country,
+            'txm_event_name': txm_name,
+            'donors': [],
+            'recipients': []
+        }
+
+        self.login_with(usr.email, user_pass, usr.id, usr.role)
+        with self.app.test_client() as client:
+            res = client.put(
+                f'{API_VERSION}/{PUBLIC_NAMESPACE}/patient-upload',
+                headers=self.auth_headers,
+                json=upload_patients
+            )
+
+            self.assertEqual(403, res.status_code)
+            self.assertIsNotNone(res.json)
+            self.assertEqual('Access denied.', res.json['error'])
+
+        self.assertEqual(0, len(TxmEventModel.query.filter(TxmEventModel.name == txm_name).all()))
+
     def _txm_event_upload(self,
                           donors_json: Optional[List[Dict]] = None,
                           recipients_json: Optional[List[Dict]] = None,
@@ -168,7 +208,7 @@ class TestMatchingApi(DbTests):
         self.login_with_role(UserRole.SERVICE)
         with self.app.test_client() as client:
             res = client.put(
-                f'{API_VERSION}/{EXTERNAL_PATIENT_UPLOAD_NAMESPACE}',
+                f'{API_VERSION}/{PUBLIC_NAMESPACE}/patient-upload',
                 headers=self.auth_headers,
                 json=upload_patients
             )

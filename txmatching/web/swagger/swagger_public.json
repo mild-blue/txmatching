@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "basePath": "/",
     "paths": {
-        "/v1/external-patient-upload": {
+        "/v1/public/patient-upload": {
             "put": {
                 "responses": {
                     "500": {
@@ -54,7 +54,7 @@
                     }
                 ],
                 "tags": [
-                    "external-patient-upload"
+                    "public"
                 ]
             }
         }
@@ -71,7 +71,7 @@
     ],
     "tags": [
         {
-            "name": "external-patient-upload"
+            "name": "public"
         }
     ],
     "definitions": {

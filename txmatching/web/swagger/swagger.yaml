@@ -1410,7 +1410,7 @@ info:
     title: API
     version: '1.0'
 paths:
-    /v1/external-patient-upload:
+    /v1/public/patient-upload:
         put:
             description: This endpoint allows the country editor to upload patient
                 data for given                         TXM event. TXM event name has
@@ -1448,7 +1448,7 @@ paths:
             security:
             -   bearer: []
             tags:
-            - external-patient-upload
+            - public
     /v1/service/status:
         get:
             operationId: get_status
@@ -2339,7 +2339,7 @@ swagger: '2.0'
 tags:
 -   name: user
 -   name: service
--   name: external-patient-upload
+-   name: public
 -   name: matching
 -   name: patients
 -   name: configuration

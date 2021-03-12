@@ -4,15 +4,15 @@ from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
                                                             CountryCodeJson,
                                                             DonorTypeEnumJson,
                                                             SexEnumJson)
-from txmatching.web.api.namespaces import external_patient_upload_api
+from txmatching.web.api.namespaces import public_api
 
 # TODO move to some better place as part of https://github.com/mild-blue/txmatching/issues/500
-FailJson = external_patient_upload_api.model('FailResponse', {
+FailJson = public_api.model('FailResponse', {
     'error': fields.String(required=True),
     'message': fields.String(required=False),
 })
 
-PatientUploadSuccessJson = external_patient_upload_api.model('PatientUploadSuccessResponse', {
+PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
     'recipients_uploaded': fields.Integer(required=True,
                                           description='Number of recipients successfully loaded into the application.'),
     'donors_uploaded': fields.Integer(required=True,
@@ -28,7 +28,7 @@ MEDICAL_ID_DESCRIPTION = 'Medical ID of the patient. This ID is unique thorough 
 identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.'
 HLA_TYPING_DESCRIPTION = 'HLA typing of the patient. Use high resolution if available.'
 
-HLAAntibodyJsonIn = external_patient_upload_api.model('HLAAntibodyIn', {
+HLAAntibodyJsonIn = public_api.model('HLAAntibodyIn', {
     'name': fields.String(required=True, example='A*01:01',
                           description='HLA antibody name in high (A*01:01), low (A*01), split (A1) or broad (A9) '
                                       'resolutions.In the case of DP, DQ when alpha and beta are provided the expected'
@@ -39,7 +39,7 @@ HLAAntibodyJsonIn = external_patient_upload_api.model('HLAAntibodyIn', {
                              description='Default cutoff value for the specific patient and HLA antibody.'),
 })
 
-DonorJsonIn = external_patient_upload_api.model('DonorInput', {
+DonorJsonIn = public_api.model('DonorInput', {
     'medical_id': fields.String(required=True, example='D1037', description=MEDICAL_ID_DESCRIPTION),
     'blood_group': fields.Nested(BloodGroupEnumJson, required=True),
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String,
@@ -54,7 +54,7 @@ DonorJsonIn = external_patient_upload_api.model('DonorInput', {
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
 })
 
-RecipientJsonIn = external_patient_upload_api.model('RecipientInput', {
+RecipientJsonIn = public_api.model('RecipientInput', {
     'hla_antibodies': fields.List(required=True,
                                   description='Detected HLA antibodies of the patient. Use high resolution \
                                   if available. If high resolution is provided it is assumed that all tested antibodies'
@@ -85,7 +85,7 @@ RecipientJsonIn = external_patient_upload_api.model('RecipientInput', {
                                            description='Number of previous kidney transplants.')
 })
 
-UploadPatientsJson = external_patient_upload_api.model(
+UploadPatientsJson = public_api.model(
     'UploadPatients',
     {
         'country': fields.Nested(CountryCodeJson, required=True),

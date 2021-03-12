@@ -8,7 +8,7 @@ from openapi_spec_validator import validate_v2_spec
 
 from txmatching.web import (PATH_TO_PUBLIC_SWAGGER_JSON, PATH_TO_SWAGGER_JSON,
                             PATH_TO_SWAGGER_YAML, add_all_namespaces,
-                            add_external_namespaces, register_error_handlers)
+                            add_public_namespaces, register_error_handlers)
 
 
 class SwaggerGenApp:
@@ -39,7 +39,7 @@ class PublicSwaggerGenApp:
         self.app.config['JWT_SECRET'] = 'str'
         self.app.config['JWT_EXPIRATION_DAYS'] = 10
         self.app.app_context().push()
-        add_external_namespaces(self.api)
+        add_public_namespaces(self.api)
         register_error_handlers(self.api)
 
 

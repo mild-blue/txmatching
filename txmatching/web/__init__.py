@@ -18,18 +18,16 @@ from txmatching.configuration.app_configuration.application_configuration import
 from txmatching.database.db import db
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web.api.configuration_api import configuration_api
-from txmatching.web.api.external_patient_upload_api import \
-    external_patient_upload_api
 from txmatching.web.api.matching_api import matching_api
 from txmatching.web.api.namespaces import (CONFIGURATION_NAMESPACE,
-                                           EXTERNAL_PATIENT_UPLOAD_NAMESPACE,
                                            MATCHING_NAMESPACE,
-                                           PATIENT_NAMESPACE,
+                                           PATIENT_NAMESPACE, PUBLIC_NAMESPACE,
                                            REPORTS_NAMESPACE,
                                            SERVICE_NAMESPACE,
                                            TXM_EVENT_NAMESPACE, USER_NAMESPACE,
                                            enums_api)
 from txmatching.web.api.patient_api import patient_api
+from txmatching.web.api.public_api import public_api
 from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
 from txmatching.web.api.txm_event_api import txm_event_api
@@ -162,7 +160,7 @@ def create_app() -> Flask:
         }
 
         full_swagger = application_configuration.environment != ApplicationEnvironment.PRODUCTION
-        if not full_swagger:
+        if full_swagger:
             specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER}'
         else:
             specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER_PUBLIC}'
@@ -252,15 +250,15 @@ def create_app() -> Flask:
         return app
 
 
-def add_external_namespaces(api: Api):
-    api.add_namespace(external_patient_upload_api, path=f'{API_VERSION}/{EXTERNAL_PATIENT_UPLOAD_NAMESPACE}')
+def add_public_namespaces(api: Api):
+    api.add_namespace(public_api, path=f'{API_VERSION}/{PUBLIC_NAMESPACE}')
     api.add_namespace(enums_api)
 
 
 def add_all_namespaces(api: Api):
     api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
     api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
-    add_external_namespaces(api)
+    add_public_namespaces(api)
     api.add_namespace(matching_api,
                       path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{MATCHING_NAMESPACE}')
     api.add_namespace(patient_api,

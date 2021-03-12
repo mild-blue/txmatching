@@ -20,29 +20,29 @@ from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
 from txmatching.database.services.txm_event_service import save_original_data
 from txmatching.utils.logged_user import get_current_user_id
-from txmatching.web.api.namespaces import external_patient_upload_api
+from txmatching.web.api.namespaces import public_api
 
 logger = logging.getLogger(__name__)
 
 
-@external_patient_upload_api.route('', methods=['PUT'])
+@public_api.route('/patient-upload', methods=['PUT'])
 class TxmEventUploadPatients(Resource):
 
-    @external_patient_upload_api.doc(
+    @public_api.doc(
         body=UploadPatientsJson,
         security='bearer',
         description='This endpoint allows the country editor to upload patient data for given \
                         TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients \
                         from respective country in case there were any.'
     )
-    @external_patient_upload_api.response(code=200, model=PatientUploadSuccessJson, description='Success.')
-    @external_patient_upload_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @external_patient_upload_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @external_patient_upload_api.response(code=403, model=FailJson,
-                                          description='Access denied. You do not have rights to access this endpoint.'
-                                          )
-    @external_patient_upload_api.response(code=500, model=FailJson,
-                                          description='Unexpected error, see contents for details.')
+    @public_api.response(code=200, model=PatientUploadSuccessJson, description='Success.')
+    @public_api.response(code=400, model=FailJson, description='Wrong data format.')
+    @public_api.response(code=401, model=FailJson, description='Authentication failed.')
+    @public_api.response(code=403, model=FailJson,
+                         description='Access denied. You do not have rights to access this endpoint.'
+                         )
+    @public_api.response(code=500, model=FailJson,
+                         description='Unexpected error, see contents for details.')
     @allow_service_role()
     def put(self):
         patient_upload_dto = from_dict(data_class=PatientUploadDTOIn, data=request.json, config=Config(cast=[Enum]))
