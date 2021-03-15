@@ -1736,6 +1736,9 @@ paths:
             - matching
     /v1/txm-event/{txm_event_id}/patients:
         get:
+            description: 'Get all patients for the given txm event. By default, raw
+                antibodies are notincluded. Specify include-antibodies-raw to include
+                raw antibodies as well.Example: /patients?include-antibodies-raw'
             operationId: get_all_patients
             responses:
                 '200':

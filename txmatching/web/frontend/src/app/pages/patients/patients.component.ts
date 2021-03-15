@@ -178,7 +178,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
     // try getting patients
     try {
-      await this._initPatients();
+      await this._initPatients(true);
       this._initPatientStatsAndItems();
       this._logger.log(`Got ${this.donorsCount + this.recipientCount} patients from server`, [this.patients]);
     } finally {
