@@ -12,10 +12,10 @@ from txmatching.auth.request_context import get_user_role
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigurationJson
+from txmatching.data_transfer_objects.external_patient_upload.swagger import \
+    FailJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
     CalculatedMatchingsJson
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
-    FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     configuration_from_dict, find_configuration_db_id_for_configuration)
