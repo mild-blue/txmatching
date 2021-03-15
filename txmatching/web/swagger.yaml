@@ -838,7 +838,6 @@ definitions:
         - BROAD_AND_HIGHER
         - SPLIT_AND_HIGHER
         - HIGH_RES
-        - DO_NOT_CROSSMATCH
         type: string
     HlaType:
         properties:

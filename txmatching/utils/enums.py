@@ -48,7 +48,6 @@ class HLACrossmatchLevel(str, Enum):
     BROAD_AND_HIGHER = 'BROAD_AND_HIGHER'
     SPLIT_AND_HIGHER = 'SPLIT_AND_HIGHER'
     HIGH_RES = 'HIGH_RES'
-    DO_NOT_CROSSMATCH = 'DO_NOT_CROSSMATCH'
 
 
 class AntibodyMatchTypes(str, Enum):

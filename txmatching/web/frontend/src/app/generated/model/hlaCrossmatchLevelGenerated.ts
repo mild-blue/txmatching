@@ -14,7 +14,6 @@
 export enum HlaCrossmatchLevelGenerated {
     BroadAndHigher = 'BROAD_AND_HIGHER',
     SplitAndHigher = 'SPLIT_AND_HIGHER',
-    HighRes = 'HIGH_RES',
-    DoNotCrossmatch = 'DO_NOT_CROSSMATCH'
+    HighRes = 'HIGH_RES'
 };
 
