@@ -90,6 +90,7 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(6, len(app_users))
 
         all_matchings = list(solve_from_configuration(Configuration(
+            solver_constructor_name='AllSolutionsSolver',
             max_cycle_length=100,
             max_sequence_length=100,
             max_number_of_distinct_countries_in_round=100,

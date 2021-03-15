@@ -57,7 +57,7 @@ class Configuration:
      the duration of the computation)
     """
     scorer_constructor_name: str = 'HLAAdditiveScorer'
-    solver_constructor_name: str = 'AllSolutionsSolver'
+    solver_constructor_name: str = 'ILPSolver'
     require_compatible_blood_group: bool = False
     minimum_total_score: float = 0.0
     maximum_total_score: float = 26.0

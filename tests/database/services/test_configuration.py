@@ -17,6 +17,7 @@ class TestConfiguration(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         time.sleep(1)
         configuration = Configuration(
+            solver_constructor_name='AllSolutionsSolver',
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
         save_configuration_to_db(configuration, txm_event, 1)
         self.assertEqual(Country.CZE, configuration.forbidden_country_combinations[0].donor_country)

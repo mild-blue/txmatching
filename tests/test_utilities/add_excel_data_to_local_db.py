@@ -46,7 +46,7 @@ if __name__ == '__main__':
             f'successfully parsed israeli patients '
             f'{len(patient_upload_dto.donors) + len(patient_upload_dto.recipients)}')
 
-        result = solve_from_configuration(txm_event_db_id=txm_event_db_id,
+        result = solve_from_configuration(txm_event_db_id=txm_event_db_id,  # TODOO
                                           configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
                                                                       use_high_resolution=True))
         logger.info(f'Successfully stored {len(list(result.calculated_matchings_list))} matchings into the database.')

@@ -31,7 +31,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(ILP_SCORES_NUMBER, len(solutions_ilp))
         self.assertSetEqual(BEST_SOLUTION_use_high_resolution_TRUE,
                             get_donor_recipient_pairs_from_solution(solutions_ilp[0].matching_pairs))
-        configuration = Configuration(use_high_resolution=True,
+        configuration = Configuration(solver_constructor_name='AllSolutionsSolver',
+                                      use_high_resolution=True,
                                       max_number_of_matchings=1000,
                                       max_debt_for_country=10,
                                       hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER)

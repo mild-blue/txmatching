@@ -221,7 +221,8 @@ class TestSaveAndGetConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
 
         with self.app.test_client() as client:
-            conf_dto = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=1))
+            conf_dto = dataclasses.asdict(Configuration(solver_constructor_name='AllSolutionsSolver',
+                                                        max_number_of_distinct_countries_in_round=1))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',
@@ -230,7 +231,8 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(200, res.status_code)
             self.assertEqual(9, res.json['found_matchings_count'])
 
-            conf_dto2 = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=50,
+            conf_dto2 = dataclasses.asdict(Configuration(solver_constructor_name='AllSolutionsSolver',
+                                                         max_number_of_distinct_countries_in_round=50,
                                                          hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -244,7 +246,8 @@ class TestSaveAndGetConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
 
         with self.app.test_client() as client:
-            conf_dto = dataclasses.asdict(Configuration(max_number_of_distinct_countries_in_round=1))
+            conf_dto = dataclasses.asdict(Configuration(solver_constructor_name='AllSolutionsSolver',
+                                                        max_number_of_distinct_countries_in_round=1))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',

@@ -139,7 +139,7 @@ definitions:
                 enum:
                 - AllSolutionsSolver
                 - ILPSolver
-                example: AllSolutionsSolver
+                example: ILPSolver
                 type: string
             use_binary_scoring:
                 type: boolean
