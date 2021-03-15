@@ -104,9 +104,21 @@ def get_txm_event_db_id_by_name(txm_event_name: str) -> int:
         raise InvalidArgumentException(f'No TXM event with name "{txm_event_name}" found.') from error
 
 
-def get_txm_event_complete(txm_event_db_id: int) -> TxmEvent:
-    logger.debug(f'Starting to eager load data for TXM event {txm_event_db_id}')
-    maybe_txm_event_model = TxmEventModel.query.options(joinedload(TxmEventModel.donors)).get(txm_event_db_id)
+def get_txm_event_complete(txm_event_db_id: int, load_antibodies_raw: bool = False) -> TxmEvent:
+    """
+    If load_antibodies_raw is set to False, raw antibodies are not loaded and empty
+    lists are returned instead. This is for performance optimization.
+    """
+    logger.debug(f'Starting to eager load data for TXM event {txm_event_db_id} with '
+                 f'load_antibodies_raw={load_antibodies_raw}')
+    if load_antibodies_raw:
+        loading_options = joinedload(TxmEventModel.donors)
+    else:
+        loading_options = joinedload(TxmEventModel.donors)\
+            .joinedload(DonorModel.recipient)\
+            .noload(RecipientModel.hla_antibodies_raw)
+
+    maybe_txm_event_model = TxmEventModel.query.options(loading_options).get(txm_event_db_id)
     logger.debug('Eager loaded data via sql alchemy')
 
     return _get_txm_event_from_txm_event_model(maybe_txm_event_model)

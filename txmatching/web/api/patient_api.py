@@ -53,7 +53,10 @@ logger = logging.getLogger(__name__)
 @patient_api.route('', methods=['GET'])
 class AllPatients(Resource):
 
-    @patient_api.doc(security='bearer')
+    @patient_api.doc(security='bearer',
+                     description='Get all patients for the given txm event. By default, raw antibodies are not'
+                                 'included. Specify include-antibodies-raw to include raw antibodies as well.'
+                                 'Example: /patients?include-antibodies-raw')
     @patient_api.response(code=200, model=PatientsJson, description='List of donors and list of recipients.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
@@ -64,7 +67,9 @@ class AllPatients(Resource):
     @require_user_login()
     @require_valid_txm_event_id()
     def get(self, txm_event_id: int) -> str:
-        txm_event = get_txm_event_complete(txm_event_id)
+        include_antibodies_raw = 'include-antibodies-raw' in request.args
+        logger.debug(f'include_antibodies_raw={include_antibodies_raw}')
+        txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
         logger.debug('Sending patients to FE')
         return jsonify(to_lists_for_fe(txm_event))
 
