@@ -6,6 +6,7 @@ class HlaCodeProcessingResultDetail(str, Enum):
     SUCCESSFULLY_PARSED = 'Code successfully parsed without anything unexpected.'
     UNEXPECTED_SPLIT_RES_CODE = 'Unknown HLA code, seems to be in split resolution.'
     HIGH_RES_WITHOUT_SPLIT = 'High res can be converted to broad resolution but split resolution is unknown'
+    HIGH_RES_WITH_LETTER = 'High res code has letter in the end. Such codes are not converted to split and broad.'
 
     # returning no value
     MULTIPLE_SPLITS_OR_BROADS_FOUND = 'Multiple splits or broad were found, unable to choose the right one.' \

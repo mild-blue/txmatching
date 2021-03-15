@@ -6,11 +6,7 @@ from typing import Optional
 class HLACode:
     high_res: Optional[str]
     split: Optional[str]
-    broad: str
-
-    @property
-    def split_or_broad(self) -> str:
-        return self.split if self.split is not None else self.broad
+    broad: Optional[str]
 
     @property
     def display_code(self) -> str:
@@ -18,10 +14,13 @@ class HLACode:
             return self.high_res
         elif self.split is not None:
             return self.split
-        else:
+        elif self.broad is not None:
             return self.broad
+        else:
+            raise AssertionError('This should never happen. At least one code should be specified.')
 
-    def __init__(self, high_res: Optional[str], split: Optional[str], broad: str):
+    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str]):
+        assert high_res is not None or split is not None or broad is not None
         self.high_res = high_res
         self.split = split
         self.broad = broad

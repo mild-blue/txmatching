@@ -22,8 +22,11 @@ class TestSplitToBroadResolution(unittest.TestCase):
 
     def test_hla_split_to_broad_res(self):
         for split_res_codes, expected_broad_res_codes in self._original_split_and_expected_broad_res:
-            calculated_broad_res_codes = {split_to_broad(hla.code.split_or_broad) for group_codes in split_res_codes.hla_per_groups for
-                                          hla in group_codes.hla_types}
+            calculated_broad_res_codes = {
+                split_to_broad(hla.code.split if hla.code.split is not None else hla.code.broad)
+                for group_codes in split_res_codes.hla_per_groups
+                for hla in group_codes.hla_types
+            }
             self.assertSetEqual(expected_broad_res_codes, calculated_broad_res_codes)
 
     def test_hla_broad_to_split_res(self):

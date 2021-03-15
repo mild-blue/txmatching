@@ -28,13 +28,14 @@ codes = {
     'A*23:01': (HLACode('A*23:01', 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*23:04': (HLACode('A*23:04', 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*24:02': (HLACode('A*24:02', 'A24', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*01:52:01N': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'A*01:52:01N': (HLACode('A*01:52:01N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
     'A*02:03': (HLACode('A*02:03', 'A203', 'A203'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*11:01:35': (HLACode('A*11:01', 'A11', 'A11'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'C*01:02': (HLACode('C*01:02', 'CW1', 'CW1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DPA1*01:07': (HLACode('DPA1*01:07', 'DPA1', 'DPA1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DRB4*01:01': (HLACode('DRB4*01:01', 'DR53', 'DR53'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'DQB1*02:01:01:01': (HLACode('DQB1*02:01', 'DQ2', 'DQ2'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'NONEXISTENTN': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
     'NONEXISTENT*11': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
     'A*68:06': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
@@ -59,6 +60,10 @@ codes = {
     'A*99': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
     # ultra high res regexp but not in tranformation table
     'A*68:06:01': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
+    'A*02:284N': (HLACode('A*02:284N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
+    'DRB1*04:280N': (HLACode('DRB1*04:280N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
+    'A*11:21N': (HLACode('A*11:21N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
+    'A*11:11:11:11N': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
 }
 
 
@@ -76,7 +81,7 @@ class TestCodeParser(DbTests):
         for code, _ in codes.items():
             parse_hla_raw_code_and_add_parsing_error_to_db_session(code)
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(10, len(errors))
+        self.assertEqual(15, len(errors))
 
     def test_parse_hla_ser(self):
         parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))

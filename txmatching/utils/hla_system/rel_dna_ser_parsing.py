@@ -66,3 +66,5 @@ HIGH_RES_TO_SPLIT_OR_BROAD = {high_res: split if not pd.isna(split) else None fo
 
 SEROLOGICAL_CODES_IN_REL_DNA_SER = set(HIGH_RES_TO_SPLIT_OR_BROAD.values())
 SEROLOGICAL_CODES_IN_REL_DNA_SER.remove(None)
+
+HIGH_RES_CODES = set(HIGH_RES_TO_SPLIT_OR_BROAD.keys())

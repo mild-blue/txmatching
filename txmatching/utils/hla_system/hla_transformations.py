@@ -14,8 +14,8 @@ from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import (
     PARSE_HLA_CODE_EXCEPTIONS,
     PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES)
-from txmatching.utils.hla_system.rel_dna_ser_parsing import \
-    HIGH_RES_TO_SPLIT_OR_BROAD
+from txmatching.utils.hla_system.rel_dna_ser_parsing import (
+    HIGH_RES_CODES, HIGH_RES_TO_SPLIT_OR_BROAD)
 
 logger = logging.getLogger(__name__)
 
@@ -25,12 +25,11 @@ RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW = 0.5
 RELATIVE_CLOSENESS_TO_CUTOFF_FROM_ABOVE = 1.25
 RELATIVE_CLOSENESS_TO_MINIMUM = 1 / 2
 
-LOW_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}[A-Z]?$')
-ULTRA_HIGH_RES_REGEX = re.compile(r'^([A-Z]+\d?\*\d{2,4}(:\d{2,3}))(:\d{2,3})+[A-Z]?$')  # with high res subunit
-HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})[A-Z]?$')
-HIGH_RES_REGEX_ENDING_WITH_N = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})N$')
-SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
+HIGH_RES_REGEX = re.compile(r'^([A-Z]+\d?\*\d{2,4}(:\d{2,3}))(:\d{2,3})*$')  # with high res subunit
+HIGH_RES_REGEX_ENDING_WITH_LETTER = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})+[A-Z]$')
 HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'([A-Za-z]{1,3})\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
+LOW_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}[A-Z]?$')
+SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
 
 CW_SEROLOGICAL_CODE_WITHOUT_W_REGEX = re.compile(r'C(\d+)')
 B_SEROLOGICAL_CODE_WITH_W_REGEX = re.compile(r'BW(\d+)')
@@ -56,27 +55,25 @@ class HlaCodeProcessingResult:
 
 
 def _try_convert_ultra_high_res(high_res_or_ultra_high_res: str) -> Optional[str]:
-    if HIGH_RES_REGEX.match(high_res_or_ultra_high_res):
-        return high_res_or_ultra_high_res
-
-    match = ULTRA_HIGH_RES_REGEX.search(high_res_or_ultra_high_res)
+    match = HIGH_RES_REGEX.search(high_res_or_ultra_high_res)
     if match:
         high_res = match.group(1)
-        assert HIGH_RES_REGEX.match(high_res)
         return high_res
     else:
         return None
 
 
-def _ultra_high_res_to_high_res_with_check(ultra_high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
+def _ultra_high_res_to_high_res_with_check(ultra_high_res: str) -> Union[str, HlaCodeProcessingResultDetail]:
     # Check that the code can be converted to split
-    expected_split_or_broad = _high_res_to_split_or_broad(ultra_high_res_code)
+    expected_split_or_broad = _high_res_to_split_or_broad(ultra_high_res)
     if isinstance(expected_split_or_broad, HlaCodeProcessingResultDetail):
         return expected_split_or_broad
 
     # Convert ultra high res -> high res
-    high_res = _try_convert_ultra_high_res(ultra_high_res_code)
-    assert high_res is not None, f'Code ${ultra_high_res_code} is not in ultra high resolution'
+    high_res = _try_convert_ultra_high_res(ultra_high_res)
+    assert high_res is not None, f'Code ${ultra_high_res} is not in high resolution'
+    if high_res == ultra_high_res:
+        return high_res
 
     # Get splits corresponding to this high res substring
     split_to_high_res = dict()
@@ -97,7 +94,7 @@ def _ultra_high_res_to_high_res_with_check(ultra_high_res_code: str) -> Union[st
         return high_res
     else:
         # This should not happen. See test_no_ultra_high_res_with_multiple_splits
-        raise AssertionError(f'Ultra high res {ultra_high_res_code} converted to high res {high_res} which '
+        raise AssertionError(f'Ultra high res {ultra_high_res} converted to high res {high_res} which '
                              f'corresponds to ultra high res codes that can be converted to multiple split '
                              f'codes: ${split_to_high_res}')
 
@@ -160,18 +157,29 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
         high_res = None
         split_or_broad_or_error = _high_res_to_split_or_broad(hla_raw_code)
         logger.warning(f'Low res code {hla_raw_code} parsed as split code {split_or_broad_or_error}')
+    # Raw code is high res or ultra high res
     elif re.match(HIGH_RES_REGEX, hla_raw_code):
-        high_res = hla_raw_code
-        split_or_broad_or_error = _high_res_to_split_or_broad(hla_raw_code)
-    elif re.match(ULTRA_HIGH_RES_REGEX, hla_raw_code):
         high_res_or_error = _ultra_high_res_to_high_res_with_check(hla_raw_code)
         if not isinstance(high_res_or_error, HlaCodeProcessingResultDetail):
-            assert re.match(HIGH_RES_REGEX, high_res_or_error)
-            logger.warning(f'Ultra high resolution {hla_raw_code} parsed as high resolution {high_res_or_error}')
             high_res = high_res_or_error
-            split_or_broad_or_error = _high_res_to_split_or_broad(hla_raw_code)
+            split_or_broad_or_error = _high_res_to_split_or_broad(high_res)
+            if high_res != hla_raw_code:
+                logger.warning(f'Ultra high resolution {hla_raw_code} parsed as high resolution {high_res}')
         else:
             return HlaCodeProcessingResult(None, high_res_or_error)
+    # Raw code is high res ending with a letter
+    elif re.match(HIGH_RES_REGEX_ENDING_WITH_LETTER, hla_raw_code):
+        if hla_raw_code in HIGH_RES_CODES:
+            return HlaCodeProcessingResult(
+                HLACode(
+                    high_res=hla_raw_code,
+                    split=None,
+                    broad=None
+                ),
+                HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER
+            )
+        else:
+            return HlaCodeProcessingResult(None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
     else:
         high_res = None
         split_or_broad_or_error = hla_raw_code
@@ -270,9 +278,6 @@ def preprocess_hla_code_in(hla_code_in: str) -> List[str]:
     # Handle this case better and elsewhere: https://trello.com/c/GG7zPLyj
     elif PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in):
         return PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES.get(hla_code_in)
-    elif re.match(HIGH_RES_REGEX_ENDING_WITH_N, hla_code_in):
-        # Ignore high res codes ending with N as the allels are invalid
-        return []
     else:
         return [hla_code_in]
 
