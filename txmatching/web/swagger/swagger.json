@@ -109,50 +109,6 @@
             }
         },
         "/v1/txm-event": {
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "List of allowed txmEvents.",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEvents"
-                        }
-                    }
-                },
-                "description": "Get list of allowed txm txmEvents for the logged user.",
-                "operationId": "get_txm_event_api",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "txm-event"
-                ]
-            },
             "post": {
                 "responses": {
                     "500": {
@@ -212,9 +168,7 @@
                 "tags": [
                     "txm-event"
                 ]
-            }
-        },
-        "/v1/txm-event/default": {
+            },
             "get": {
                 "responses": {
                     "500": {
@@ -242,14 +196,14 @@
                         }
                     },
                     "200": {
-                        "description": "Default event.",
+                        "description": "List of allowed txmEvents.",
                         "schema": {
-                            "$ref": "#/definitions/TxmEvent"
+                            "$ref": "#/definitions/TxmEvents"
                         }
                     }
                 },
-                "description": "Get default event",
-                "operationId": "get_txm_default_event_api",
+                "description": "Get list of allowed txm txmEvents for the logged user.",
+                "operationId": "get_txm_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -258,7 +212,9 @@
                 "tags": [
                     "txm-event"
                 ]
-            },
+            }
+        },
+        "/v1/txm-event/default": {
             "put": {
                 "responses": {
                     "500": {
@@ -310,6 +266,50 @@
                         }
                     }
                 ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Default event.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "Get default event",
+                "operationId": "get_txm_default_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -2060,7 +2060,6 @@
                 "max_number_of_dynamic_constrains_ilp_solver",
                 "max_number_of_matchings",
                 "max_sequence_length",
-                "maximum_total_score",
                 "minimum_total_score",
                 "require_better_match_in_compatibility_index",
                 "require_better_match_in_compatibility_index_or_blood_group",
@@ -2073,15 +2072,19 @@
             ],
             "properties": {
                 "scorer_constructor_name": {
-                    "type": "string",
-                    "example": "HLAAdditiveScorer"
+                    "example": "SplitHLAAdditiveScorer",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Scorer"
+                        }
+                    ]
                 },
                 "solver_constructor_name": {
-                    "type": "string",
                     "example": "AllSolutionsSolver",
-                    "enum": [
-                        "AllSolutionsSolver",
-                        "ILPSolver"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Solver"
+                        }
                     ]
                 },
                 "require_compatible_blood_group": {
@@ -2089,10 +2092,6 @@
                 },
                 "minimum_total_score": {
                     "type": "number"
-                },
-                "maximum_total_score": {
-                    "type": "number",
-                    "example": 26.0
                 },
                 "require_better_match_in_compatibility_index": {
                     "type": "boolean"
@@ -2170,6 +2169,20 @@
                 }
             },
             "type": "object"
+        },
+        "Scorer": {
+            "enum": [
+                "SplitHLAAdditiveScorer",
+                "HighResHLAAdditiveScorer"
+            ],
+            "type": "string"
+        },
+        "Solver": {
+            "enum": [
+                "AllSolutionsSolver",
+                "ILPSolver"
+            ],
+            "type": "string"
         },
         "ForbiddenCountryCombination": {
             "required": [
@@ -2278,11 +2291,15 @@
                 "compatible_blood",
                 "detailed_score_per_group",
                 "donor",
+                "max_score",
                 "recipient",
                 "score"
             ],
             "properties": {
                 "score": {
+                    "type": "number"
+                },
+                "max_score": {
                     "type": "number"
                 },
                 "compatible_blood": {
@@ -2975,6 +2992,10 @@
                     "type": "number",
                     "description": "Score calculated with related recipient"
                 },
+                "max_score_with_related_recipient": {
+                    "type": "number",
+                    "description": "Maximum transplant score"
+                },
                 "compatible_blood_with_related_recipient": {
                     "type": "boolean",
                     "description": "Indicator whether Donor and related recipients have compatible blood groups"
@@ -3335,20 +3356,6 @@
             },
             "type": "object"
         },
-        "TxmEvents": {
-            "required": [
-                "events"
-            ],
-            "properties": {
-                "events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/TxmEvent"
-                    }
-                }
-            },
-            "type": "object"
-        },
         "TxmEvent": {
             "required": [
                 "id",
@@ -3360,6 +3367,20 @@
                 },
                 "name": {
                     "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "TxmEvents": {
+            "required": [
+                "events"
+            ],
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TxmEvent"
+                    }
                 }
             },
             "type": "object"
