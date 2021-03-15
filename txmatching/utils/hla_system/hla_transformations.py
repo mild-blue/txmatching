@@ -28,7 +28,7 @@ RELATIVE_CLOSENESS_TO_MINIMUM = 1 / 2
 HIGH_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*[A-Z]?$')
 HIGH_RES_REGEX_ENDING_WITH_N = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})*N$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
-HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'([A-Za-z]{1,3})\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
+HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'(DP|DQ)\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
 
 CW_SEROLOGICAL_CODE_WITHOUT_W_REGEX = re.compile(r'C(\d+)')
 B_SEROLOGICAL_CODE_WITH_W_REGEX = re.compile(r'BW(\d+)')

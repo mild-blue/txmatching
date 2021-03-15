@@ -6,9 +6,9 @@ from flask import jsonify
 from flask_restx import Resource, fields
 from sqlalchemy.exc import OperationalError
 
-from txmatching.configuration.app_configuration.application_configuration import \
-    get_application_configuration, ApplicationEnvironment
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationEnvironment, get_application_configuration)
+from txmatching.data_transfer_objects.external_patient_upload.swagger import \
     FailJson
 from txmatching.database.db import db
 from txmatching.web.api.namespaces import service_api

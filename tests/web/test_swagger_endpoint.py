@@ -1,17 +1,16 @@
 from swagger_unittest import swagger_test
 
-from tests.test_utilities.generate_swagger import PATH_TO_SWAGGER_YAML
 from tests.test_utilities.populate_db import (ADMIN_WITH_DEFAULT_TXM_EVENT,
                                               PATIENT_DATA_OBFUSCATED)
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import (API_VERSION, MATCHING_NAMESPACE, PATIENT_NAMESPACE,
+from txmatching.web import (API_VERSION, PATH_TO_SWAGGER_YAML,
+                            PATIENT_NAMESPACE, PUBLIC_NAMESPACE,
                             SERVICE_NAMESPACE, TXM_EVENT_NAMESPACE,
                             USER_NAMESPACE)
 
 
 class TestSwaggerEndpoints(DbTests):
-
     def test_server_not_logged_in(self):
         special_status_codes_for_paths = {
             'get': {
@@ -35,8 +34,9 @@ class TestSwaggerEndpoints(DbTests):
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/change-password': [401],
-                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/patients': [403],
-                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/add-patients-file': [400],
+                f'{API_VERSION[1:]}/{PUBLIC_NAMESPACE}/patient-upload': [403],
+                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/add-patients-file': [
+                    400],
                 # TODO: Fix swagger test https://github.com/mild-blue/swagger-unittest/issues/5
                 f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/recipient': [400],
             }

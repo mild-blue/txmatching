@@ -684,8 +684,10 @@ definitions:
                 example: 2350
                 type: integer
             name:
-                description: HLA antibody name.
-                example: A32
+                description: HLA antibody name in high (A*01:01), low (A*01), split
+                    (A1) or broad (A9) resolutions.In the case of DP, DQ when alpha
+                    and beta are provided the expected format is DQ[01:01,02:02]
+                example: A*01:01
                 type: string
         required:
         - cutoff
@@ -1134,7 +1136,9 @@ definitions:
                 type: integer
             hla_antibodies:
                 description: Detected HLA antibodies of the patient. Use high resolution                                   if
-                    available.
+                    available. If high resolution is provided it is assumed that all
+                    tested antibodieswere provided. If not it is assumed that either
+                    all or just positiveones were.
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
@@ -1417,6 +1421,45 @@ info:
     title: API
     version: '1.0'
 paths:
+    /v1/public/patient-upload:
+        put:
+            description: This endpoint allows the country editor to upload patient
+                data for given                         TXM event. TXM event name has
+                to be provided by an ADMIN. The endpoint removes all patients                         from
+                respective country in case there were any.
+            operationId: put_txm_event_upload_patients
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/UploadPatients'
+            responses:
+                '200':
+                    description: Success.
+                    schema:
+                        $ref: '#/definitions/PatientUploadSuccessResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - public
     /v1/service/status:
         get:
             operationId: get_status
@@ -1578,45 +1621,6 @@ paths:
                         $ref: '#/definitions/FailResponse'
                 '409':
                     description: Non-unique patients provided.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - txm-event
-    /v1/txm-event/patients:
-        put:
-            description: This endpoint allows the country editor to upload patient
-                data for given                         TXM event. TXM event name has
-                to be provided by an ADMIN. The endpoint removes all patients                         from
-                respective country in case there were any.
-            operationId: put_txm_event_upload_patients
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/UploadPatients'
-            responses:
-                '200':
-                    description: Success.
-                    schema:
-                        $ref: '#/definitions/PatientUploadSuccessResponse'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
@@ -2346,6 +2350,7 @@ swagger: '2.0'
 tags:
 -   name: user
 -   name: service
+-   name: public
 -   name: matching
 -   name: patients
 -   name: configuration

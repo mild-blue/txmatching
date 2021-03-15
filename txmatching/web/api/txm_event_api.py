@@ -1,37 +1,27 @@
 # pylint: disable=no-self-use
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 import logging
-from enum import Enum
 
-from dacite import Config, from_dict
+from dacite import from_dict
 from flask import jsonify, make_response, request
 from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_role
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.operation_guards.country_guard import \
-    guard_user_has_access_to_country
-from txmatching.auth.service.service_auth_check import allow_service_role
 from txmatching.auth.user.user_auth_check import require_user_login
-from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
-    PatientUploadDTOOut
+from txmatching.data_transfer_objects.external_patient_upload.swagger import \
+    FailJson
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
     TxmDefaultEventDTOIn, TxmEventDTOIn)
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import (
     TxmEventDTOOut, TxmEventsDTOOut)
-from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
-    PatientUploadDTOIn
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
-    FailJson, PatientUploadSuccessJson, TxmDefaultEventJsonIn, TxmEventJsonIn,
-    TxmEventJsonOut, TxmEventsJson, UploadPatientsJson)
-from txmatching.database.services.patient_upload_service import \
-    replace_or_add_patients_from_one_country
+    TxmDefaultEventJsonIn, TxmEventJsonIn, TxmEventJsonOut, TxmEventsJson)
 from txmatching.database.services.txm_event_service import (
     create_txm_event, delete_txm_event,
     get_allowed_txm_event_ids_for_current_user, get_txm_event_base,
-    get_txm_event_id_for_current_user, save_original_data,
+    get_txm_event_id_for_current_user,
     update_default_txm_event_id_for_current_user)
-from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.api.namespaces import txm_event_api
 
 logger = logging.getLogger(__name__)
@@ -160,38 +150,3 @@ class TxmEventDeleteApi(Resource):
     @require_role(UserRole.ADMIN)
     def delete(self, name: str):
         delete_txm_event(name)
-
-
-@txm_event_api.route('/patients', methods=['PUT'])
-class TxmEventUploadPatients(Resource):
-
-    @txm_event_api.doc(
-        body=UploadPatientsJson,
-        security='bearer',
-        description='This endpoint allows the country editor to upload patient data for given \
-                        TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients \
-                        from respective country in case there were any.'
-    )
-    @txm_event_api.response(code=200, model=PatientUploadSuccessJson, description='Success.')
-    @txm_event_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @txm_event_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @txm_event_api.response(code=403, model=FailJson,
-                            description='Access denied. You do not have rights to access this endpoint.'
-                            )
-    @txm_event_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
-    @allow_service_role()
-    def put(self):
-        patient_upload_dto = from_dict(data_class=PatientUploadDTOIn, data=request.json, config=Config(cast=[Enum]))
-        country_code = patient_upload_dto.country
-
-        current_user_id = get_current_user_id()
-        # check if user is allowed to modify resources to the country
-        guard_user_has_access_to_country(current_user_id, country_code)
-        # save the original request to the database
-        save_original_data(patient_upload_dto.txm_event_name, current_user_id, request.json)
-        # perform update operation
-        replace_or_add_patients_from_one_country(patient_upload_dto)
-        return jsonify(PatientUploadDTOOut(
-            recipients_uploaded=len(patient_upload_dto.recipients),
-            donors_uploaded=len(patient_upload_dto.donors)
-        ))
