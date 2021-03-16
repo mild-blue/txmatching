@@ -19,12 +19,22 @@
                    title="Top matchings / Total number of matchings">
         </app-count>
       </h1>
-      <button (click)="toggleConfiguration()"
-              *ngIf="showConfiguration"
-              class="config">
-        Configure
-        <fa-icon [icon]="configIcon"></fa-icon>
-      </button>
+      <div class="buttons">
+
+        <app-button (click)="setConfigAsDefault()"
+                    *ngIf="showConfiguration"
+                    variant="success" size="sm">
+          set configuration as default
+        </app-button>
+
+        <button (click)="toggleConfiguration()"
+                *ngIf="showConfiguration"
+                class="config">
+          Configure
+          <fa-icon [icon]="configIcon"></fa-icon>
+        </button>
+
+      </div>
     </div>
   </app-container>
 

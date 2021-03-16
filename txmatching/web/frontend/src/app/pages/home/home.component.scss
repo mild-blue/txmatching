@@ -13,29 +13,34 @@
     justify-content: space-between;
     align-items: baseline;
 
-    .config {
-      transition: color 0.5s ease;
-
+    .buttons {
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
+      align-items: baseline;
 
-      padding: 5px 10px;
-      min-width: 200px;
+      .config {
+        transition: color 0.5s ease;
 
-      font-size: 14px;
+        display: flex;
+        justify-content: center;
 
-      color: $gray-600;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 700;
+        padding: 5px 20px;
 
-      &:hover {
-        color: $gray-800;
-      }
+        font-size: 14px;
 
-      fa-icon {
-        margin-left: 5px;
+        color: $gray-600;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+
+        &:hover {
+          color: $gray-800;
+        }
+
+        fa-icon {
+          margin-left: 5px;
+        }
       }
     }
   }

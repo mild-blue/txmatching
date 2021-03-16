@@ -1295,6 +1295,13 @@ definitions:
         required:
         - status
         type: object
+    Success:
+        properties:
+            success:
+                type: boolean
+        required:
+        - success
+        type: object
     Transplant:
         properties:
             compatible_blood:
@@ -1708,7 +1715,7 @@ paths:
                 '200':
                     description: Whether the update was successful
                     schema:
-                        $ref: '#/definitions/TxmEvent'
+                        $ref: '#/definitions/Success'
                 '400':
                     description: Wrong data format.
                     schema:

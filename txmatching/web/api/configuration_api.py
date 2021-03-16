@@ -50,7 +50,7 @@ class ConfigurationApi(Resource):
         return jsonify(configuration)
 
 
-@configuration_api.route('/default', methods=['PUT'])
+@configuration_api.route('/set-default', methods=['PUT'])
 class DefaultConfigurationApi(Resource):
 
     @configuration_api.doc(

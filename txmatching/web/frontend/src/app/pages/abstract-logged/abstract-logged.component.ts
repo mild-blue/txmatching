@@ -58,7 +58,7 @@ export class AbstractLoggedComponent implements OnInit {
 
     try {
       this.configuration = await this._configService.getConfiguration(
-        this.defaultTxmEvent.id, this._eventService.getCalculationId()
+        this.defaultTxmEvent.id, this._eventService.getConfigId()
       );
       this._logger.log('Got config from server', [this.configuration]);
     } catch (e) {
@@ -75,7 +75,7 @@ export class AbstractLoggedComponent implements OnInit {
 
     try {
       this.patients = await this._patientService.getPatients(
-        this.defaultTxmEvent.id, this._eventService.getCalculationId(), includeAntibodiesRaw
+        this.defaultTxmEvent.id, this._eventService.getConfigId(), includeAntibodiesRaw
       );
       this._logger.log('Got patients from server', [this.patients]);
     } catch (e) {
@@ -101,7 +101,7 @@ export class AbstractLoggedComponent implements OnInit {
     }
 
     this._downloadPatientsInProgress = true;
-    this._reportService.downloadPatientsXlsxReport(this.defaultTxmEvent.id, this._eventService.getCalculationId())
+    this._reportService.downloadPatientsXlsxReport(this.defaultTxmEvent.id, this._eventService.getConfigId())
     .pipe(
       first(),
       finalize(() => this._downloadPatientsInProgress = false)

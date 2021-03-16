@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Configuration } from '@app/model/Configuration';
 import { first, map } from 'rxjs/operators';
 import { parseConfiguration } from '@app/parsers/configuration.parsers';
-import { ConfigurationGenerated } from '@app/generated';
+import { ConfigurationGenerated, IdentifierGenerated, SuccessGenerated } from '@app/generated';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +21,19 @@ export class ConfigurationService {
     ).pipe(
       first(),
       map(parseConfiguration)
+    ).toPromise();
+  }
+
+  public async setConfigurationAsDefault(txmEventId: number, configId: number): Promise<boolean> {
+    const payload: IdentifierGenerated = {
+      id: configId
+    };
+    return this._http.put<SuccessGenerated>(
+      `${environment.apiUrl}/txm-event/${txmEventId}/configuration/set-default`,
+      payload
+    ).pipe(
+      first(),
+      map(_ => _.success)
     ).toPromise();
   }
 }

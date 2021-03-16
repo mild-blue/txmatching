@@ -70,11 +70,11 @@ export class EventService {
   }
 
   // TODO: move elsewhere https://github.com/mild-blue/txmatching/issues/481
-  public setCalculationId(config_id: number) {
+  public setConfigId(config_id: number) {
     this._configId = config_id;
   }
 
-  public getCalculationId(): number | undefined {
+  public getConfigId(): number | undefined {
     return this._configId;
   }
 }

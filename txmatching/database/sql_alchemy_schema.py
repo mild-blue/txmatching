@@ -58,7 +58,8 @@ class TxmEventModel(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     name = Column(TEXT, unique=True, nullable=False)
-    configs = relationship('ConfigModel', backref='txm_event', passive_deletes=True)  # type: List[ConfigModel]
+    configs = relationship('ConfigModel', backref='txm_event', passive_deletes=True,
+                           foreign_keys='ConfigModel.txm_event_id')  # type: List[ConfigModel]
     default_config_id = Column(Integer, ForeignKey('config.id'), unique=False, nullable=True)
     donors = relationship('DonorModel', backref='txm_event', passive_deletes=True)  # type: List[DonorModel]
     created_at = Column(DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())

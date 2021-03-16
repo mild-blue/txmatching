@@ -83,11 +83,31 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   get showConfiguration(): boolean {
     const configDefined = !!this.configuration;
     const patientsDefined = !!this.patients;
-    return !this.isViewer && !this.loading && configDefined && patientsDefined;
+    const configIdDefined = !!this._eventService.getConfigId();
+    return !this.isViewer && !this.loading && configDefined && patientsDefined && configIdDefined;
   }
 
   public toggleConfiguration(): void {
     this.configOpened = !this.configOpened;
+  }
+
+  public async setConfigAsDefault(): Promise<void> {
+    if (!this.defaultTxmEvent) {
+      this._logger.error('saveConfigAsDefault failed because defaultTxmEvent not set');
+      return;
+    }
+    const configId = this._eventService.getConfigId();
+    if (!configId) {
+      this._logger.error('saveConfigAsDefault failed because configId not set');
+      return;
+    }
+
+    const success = await this._configService.setConfigurationAsDefault(this.defaultTxmEvent.id, configId);
+    if (success) {
+      this._alertService.success(`Default configuration for event ${this.defaultTxmEvent.name} was updated`);
+    } else {
+      this._alertService.error('Error occured when updating default configuration');
+    }
   }
 
   public async downloadMatchingPdfReport(): Promise<void> {
@@ -104,7 +124,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this._logger.log('Downloading with active matching', [activeMatching]);
 
     this._downloadMatchingInProgress = true;
-    this._reportService.downloadMatchingPdfReport(this.defaultTxmEvent.id, this._eventService.getCalculationId(), activeMatching.order_id)
+    this._reportService.downloadMatchingPdfReport(this.defaultTxmEvent.id, this._eventService.getConfigId(), activeMatching.order_id)
     .pipe(
       first(),
       finalize(() => this._downloadMatchingInProgress = false)
@@ -148,7 +168,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
         this.defaultTxmEvent.id, configuration, this.patients
       );
       this.matchings = calculatedMatchings.calculated_matchings;
-      this._eventService.setCalculationId(calculatedMatchings.configId);
+      this._eventService.setConfigId(calculatedMatchings.configId);
       this.foundMatchingsCount = calculatedMatchings.found_matchings_count;
       this._logger.log('Calculated matchings', [calculatedMatchings]);
       if (calculatedMatchings.show_not_all_matchings_found) {

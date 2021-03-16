@@ -53,6 +53,7 @@ export * from './serviceStatusGenerated';
 export * from './sexEnumGenerated';
 export * from './solverGenerated';
 export * from './statusResponseGenerated';
+export * from './successGenerated';
 export * from './transplantGenerated';
 export * from './txmEventGenerated';
 export * from './txmEventsGenerated';

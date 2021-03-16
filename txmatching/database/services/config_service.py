@@ -77,7 +77,7 @@ def save_configuration_to_db(configuration: Configuration, txm_event: TxmEvent, 
 
 def set_config_as_default(txm_event_id: int, configuration_db_id: Optional[int]):
     TxmEventModel.query.filter(TxmEventModel.id == txm_event_id).update(
-        {'default_configuration_id': configuration_db_id}
+        {'default_config_id': configuration_db_id}
     )
     db.session.commit()
 
