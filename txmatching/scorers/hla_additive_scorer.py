@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Optional
 
 from txmatching.configuration.configuration import Configuration
@@ -11,7 +12,7 @@ from txmatching.utils.hla_system.hla_crossmatch import \
     is_positive_hla_crossmatch
 
 
-class HLAAdditiveScorer(AdditiveScorer):
+class HLAAdditiveScorer(AdditiveScorer, ABC):
     def __init__(self, configuration: Configuration = Configuration()):
         super().__init__(configuration.manual_donor_recipient_scores)
         self._configuration = configuration
@@ -19,10 +20,15 @@ class HLAAdditiveScorer(AdditiveScorer):
     # pylint: disable=too-many-return-statements
     # it seems that it is reasonable to want many return statements here as it is still well readable
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Optional[Donor]) -> float:
-        donor_recipient_ci = compatibility_index(donor.parameters.hla_typing, recipient.parameters.hla_typing)
+        donor_recipient_ci = compatibility_index(
+            donor.parameters.hla_typing,
+            recipient.parameters.hla_typing,
+            ci_configuration=self.ci_configuration
+        )
         if original_donor:
             related_donor_recipient_ci = compatibility_index(original_donor.parameters.hla_typing,
-                                                             recipient.parameters.hla_typing)
+                                                             recipient.parameters.hla_typing,
+                                                             ci_configuration=self.ci_configuration)
         else:
             related_donor_recipient_ci = 0.0
 
@@ -79,13 +85,6 @@ class HLAAdditiveScorer(AdditiveScorer):
                 return TRANSPLANT_IMPOSSIBLE_SCORE
             else:
                 return total_score
-
-    # pylint: enable=too-many-return-statements
-
-    @classmethod
-    def from_config(cls, configuration: Configuration) -> 'HLAAdditiveScorer':
-        hla_additive_scorer = HLAAdditiveScorer(configuration)
-        return hla_additive_scorer
 
     def _blood_group_compatibility_bonus(self, donor: Donor, recipient: Recipient):
         if blood_groups_compatible(donor.parameters.blood_group, recipient.parameters.blood_group):

@@ -25,14 +25,14 @@ from txmatching.configuration.app_configuration.application_configuration import
     ApplicationEnvironment, get_application_configuration)
 from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
+from txmatching.data_transfer_objects.external_patient_upload.swagger import \
+    FailJson
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, RoundDTO)
 from txmatching.data_transfer_objects.patients.out_dots.conversions import \
     to_lists_for_fe
 from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
     DonorDTOOut
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
-    FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     find_configuration_db_id_for_configuration,
@@ -414,16 +414,18 @@ def patient_height_and_weight_filter(patient: Patient) -> Optional[str]:
         return None
 
 
-def score_color_filter(score: Optional[float], configuration: Configuration):
+def score_color_filter(score: Optional[float], max_score: Optional[float]):
     # wkhtmltopdf does not support linear-gradients css style that is used in fe and makes
     # exporting super-slow so we define percentage->color mapping in this function
+    if max_score is None or max_score < 1:
+        max_score = 1
 
     if score is None:
         percentage = 0
     elif score == -1:
         return '#ff0000'  # bad-matching
     else:
-        percentage = 100 * score / configuration.maximum_total_score
+        percentage = 100 * score / max_score
 
     if percentage < 15:
         return '#ffa400'

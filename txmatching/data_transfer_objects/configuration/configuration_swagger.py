@@ -1,8 +1,9 @@
 from flask_restx import fields
 
 from txmatching.configuration.configuration import Configuration
-from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
-from txmatching.solvers.solver_from_config import SUPPORTED_SOLVERS
+from txmatching.data_transfer_objects.enums_swagger import (CountryCodeJson,
+                                                            ScorerEnumJson,
+                                                            SolverEnumJson)
 from txmatching.web.api.namespaces import matching_api
 
 ManualDonorRecipientScoreJson = matching_api.model('ManualRecipientDonorScore', {
@@ -19,15 +20,15 @@ _default_configuration = Configuration()
 ConfigurationJson = matching_api.model(
     'Configuration',
     {
-        'scorer_constructor_name': fields.String(required=True,
+        'scorer_constructor_name': fields.Nested(ScorerEnumJson,
+                                                 required=True,
                                                  example=_default_configuration.scorer_constructor_name),
-        'solver_constructor_name': fields.String(required=True,
-                                                 example=_default_configuration.solver_constructor_name,
-                                                 enum=[solver.__name__ for solver in SUPPORTED_SOLVERS]),
+        'solver_constructor_name': fields.Nested(SolverEnumJson,
+                                                 required=True,
+                                                 example=_default_configuration.solver_constructor_name),
         'require_compatible_blood_group': fields.Boolean(required=True,
                                                          example=_default_configuration.require_compatible_blood_group),
         'minimum_total_score': fields.Float(required=True, example=_default_configuration.minimum_total_score),
-        'maximum_total_score': fields.Float(required=True, example=_default_configuration.maximum_total_score),
         'require_better_match_in_compatibility_index': fields.Boolean(
             required=True,
             example=_default_configuration.require_better_match_in_compatibility_index

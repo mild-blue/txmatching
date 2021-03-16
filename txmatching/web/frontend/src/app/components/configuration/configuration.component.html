@@ -2,6 +2,34 @@
      class="configuration">
 
     <form [formGroup]="configForm" class="config-form">
+
+      <div class="configuration__box algorithm">
+
+        <div class="algorithm__header">
+          <h4>Matching algorithm</h4>
+          <div class="hint">Select solver and scorer for matching computation.</div>
+        </div>
+
+
+        <mat-form-field appearance="fill">
+          <mat-label>Solver</mat-label>
+          <mat-select formControlName="solver_constructor_name">
+            <mat-option *ngFor="let solver of allSolvers" [value]="solver">
+              {{solver}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Scorer</mat-label>
+          <mat-select formControlName="scorer_constructor_name">
+            <mat-option *ngFor="let scorer of allScorers" [value]="scorer">
+              {{scorer}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
       <div class="configuration__box toggles">
         <mat-slide-toggle *ngIf="configuration.require_compatible_blood_group !== undefined"
                           formControlName="require_compatible_blood_group"
@@ -35,15 +63,6 @@
       </div>
 
       <div class="configuration__box inputs">
-
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Solver</mat-label>
-          <mat-select formControlName="solver_constructor_name">
-            <mat-option *ngFor="let solverConstructorName of allSolverConstructorNames" [value]="solverConstructorName">
-              {{solverConstructorName}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
 
         <mat-form-field *ngIf="configuration.max_number_of_matchings !== undefined">
           <mat-label>Maximum number of matchings</mat-label>

@@ -27,7 +27,7 @@ RELATIVE_CLOSENESS_TO_MINIMUM = 1 / 2
 
 HIGH_RES_REGEX = re.compile(r'^([A-Z]+\d?\*\d{2,4}(:\d{2,3}))(:\d{2,3})*$')  # with high res subunit
 HIGH_RES_REGEX_ENDING_WITH_LETTER = re.compile(r'^[A-Z]+\d?\*\d{2,4}(:\d{2,3})+[A-Z]$')
-HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'([A-Za-z]{1,3})\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
+HIGH_RES_WITH_SUBUNITS_REGEX = re.compile(r'(DP|DQ)\d?\[(\d{2}:\d{2}),(\d{2}:\d{2})]')
 LOW_RES_REGEX = re.compile(r'^[A-Z]+\d?\*\d{2,4}[A-Z]?$')
 SPLIT_RES_REGEX = re.compile(r'^[A-Z]+\d+$')
 

@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { matchingBatchSize } from '@app/model/Matching';
-import { AppConfiguration } from '@app/model/Configuration';
+import { Configuration } from '@app/model/Configuration';
 import { ListItem, ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
 import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
@@ -22,7 +22,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
 
   @Input() items: ListItem[] = [];
   @Input() patients?: PatientList;
-  @Input() configuration?: AppConfiguration;
+  @Input() configuration?: Configuration;
   @Input() defaultTxmEvent?: TxmEvent;
 
   @Input() saveLastViewedItem: boolean = false;

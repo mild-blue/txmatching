@@ -8,8 +8,8 @@ import { Configuration } from '@app/model/Configuration';
 })
 export class ScoreIndicatorComponent implements OnInit {
 
-  @Input() configuration?: Configuration;
   @Input() score?: number;
+  @Input() maxScore?: number;
   @Input() showScore?: boolean;
 
   constructor() {
@@ -18,12 +18,11 @@ export class ScoreIndicatorComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public percentage(score: number | undefined): number {
-    if (!this.configuration || !score) {
+  public percentage(score: number | undefined, maxScore: number | undefined): number {
+    if (!score) {
       return 0;
     }
 
-    const maxScore = this.configuration.maximum_total_score;
-    return 100 * (score ?? 0) / maxScore;
+    return 100 * (score ?? 0) / (maxScore ?? 1);
   }
 }

@@ -34,13 +34,6 @@ HLA_GROUP_CODE_REGEX = {
     HLAGroup.Other: r'.*'
 }
 
-HLA_TYPING_BONUS_PER_GENE_CODE_GROUPS = {
-    HLAGroup.A: 1.0,
-    HLAGroup.B: 3.0,
-    HLAGroup.DRB1: 9.0,
-    HLAGroup.Other: 0.0
-}
-
 
 class AntibodyMatchTypes(str, Enum):
     SPLIT = 'SPLIT'
@@ -54,10 +47,3 @@ class MatchTypes(str, Enum):
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
-
-
-MATCH_TYPE_BONUS = {
-    MatchTypes.BROAD: 1,
-    MatchTypes.SPLIT: 1,
-    MatchTypes.HIGH_RES: 1
-}

@@ -6,6 +6,7 @@ from typing import List, Tuple
 
 from flask import Flask, request, send_from_directory
 from flask_restx import Api
+from flask_restx.apidoc import ui_for
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -15,16 +16,18 @@ from txmatching.configuration.app_configuration.application_configuration import
     ApplicationConfiguration, ApplicationEnvironment,
     build_db_connection_string, get_application_configuration)
 from txmatching.database.db import db
+from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
 from txmatching.web.api.namespaces import (CONFIGURATION_NAMESPACE,
                                            MATCHING_NAMESPACE,
-                                           PATIENT_NAMESPACE,
+                                           PATIENT_NAMESPACE, PUBLIC_NAMESPACE,
                                            REPORTS_NAMESPACE,
                                            SERVICE_NAMESPACE,
                                            TXM_EVENT_NAMESPACE, USER_NAMESPACE,
                                            enums_api)
 from txmatching.web.api.patient_api import patient_api
+from txmatching.web.api.public_api import public_api
 from txmatching.web.api.report_api import report_api
 from txmatching.web.api.service_api import service_api
 from txmatching.web.api.txm_event_api import txm_event_api
@@ -34,8 +37,28 @@ from txmatching.web.web_utils.logging_config import setup_logging
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'
-
+SWAGGER_URL = 'doc'
 logger = logging.getLogger(__name__)
+VERSION = '0.3'
+SWAGGER_TITLE = 'TXMatching API'
+SWAGGER_FOLDER = 'swagger'
+SWAGGER_FOLDER_PATH = 'txmatching/web/swagger/'
+SWAGGER = 'swagger.json'
+SWAGGER_YAML = 'swagger.yaml'
+SWAGGER_PUBLIC = 'swagger_public.json'
+PATH_TO_SWAGGER_JSON = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER}')
+PATH_TO_SWAGGER_YAML = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER_YAML}')
+PATH_TO_PUBLIC_SWAGGER_JSON = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER_PUBLIC}')
+
+
+class ApiWithProvidedSpecsUrl(Api):
+    def __init__(self, specs_url: str, **kwargs):
+        super().__init__(**kwargs)
+        self._specs_url = specs_url
+
+    @property
+    def specs_url(self):
+        return self._specs_url
 
 
 class RequestPerformance:
@@ -91,7 +114,11 @@ class RequestPerformance:
 def create_app() -> Flask:
     setup_logging()
 
-    app = Flask(__name__)
+    app = Flask(__name__,
+                static_folder='swagger',
+                template_folder='templates',
+                static_url_path=f'/{SWAGGER_FOLDER}'
+                )
     # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_port=1, x_for=1, x_host=1, x_prefix=1)
 
@@ -131,15 +158,27 @@ def create_app() -> Flask:
                 'name': 'Authorization'
             }
         }
-        # disable swagger when we're running in the production
-        enable_swagger = application_configuration.environment != ApplicationEnvironment.PRODUCTION
-        api = Api(
+
+        full_swagger = application_configuration.environment != ApplicationEnvironment.PRODUCTION
+        if full_swagger:
+            specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER}'
+        else:
+            specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER_PUBLIC}'
+
+        # only limited swagger when we're running in the production
+
+        api = ApiWithProvidedSpecsUrl(
             authorizations=authorizations,
-            doc='/doc/' if enable_swagger else False,
-            version='0.3',
-            title='TX Matching API'
+            version=VERSION,
+            title=SWAGGER_TITLE,
+            specs_url=specs_url
         )
-        api.init_app(app, add_specs=enable_swagger)
+
+        def generate_docs():
+            return ui_for(api)
+
+        app.add_url_rule(f'/{SWAGGER_URL}/', view_func=generate_docs)
+        api.init_app(app, add_specs=False)
         add_all_namespaces(api)
 
         register_error_handlers(api)
@@ -211,9 +250,15 @@ def create_app() -> Flask:
         return app
 
 
+def add_public_namespaces(api: Api):
+    api.add_namespace(public_api, path=f'{API_VERSION}/{PUBLIC_NAMESPACE}')
+    api.add_namespace(enums_api)
+
+
 def add_all_namespaces(api: Api):
     api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
     api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
+    add_public_namespaces(api)
     api.add_namespace(matching_api,
                       path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{MATCHING_NAMESPACE}')
     api.add_namespace(patient_api,
@@ -223,4 +268,3 @@ def add_all_namespaces(api: Api):
     api.add_namespace(report_api,
                       path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{REPORTS_NAMESPACE}')
     api.add_namespace(txm_event_api, path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}')
-    api.add_namespace(enums_api)

@@ -15,6 +15,7 @@ export const parseTransplant = (data: TransplantGenerated, patients: PatientList
   return {
     ...getPatientPair(listItem, foundDonor, foundRecipient),
     score: data.score,
+    maxScore: data.max_score,
     compatible_blood: data.compatible_blood,
     donor: data.donor,
     recipient: data.recipient,

@@ -25,7 +25,7 @@ export interface RecipientInputGenerated {
      */
     height?: number;
     /**
-     * Detected HLA antibodies of the patient. Use high resolution                                   if available.
+     * Detected HLA antibodies of the patient. Use high resolution                                   if available. If high resolution is provided it is assumed that all tested antibodieswere provided. If not it is assumed that either all or just positiveones were.
      */
     hla_antibodies: Array<HLAAntibodyInGenerated>;
     /**

@@ -1,16 +1,11 @@
-from uuid import uuid4
-
 from tests.test_utilities.prepare_app import DbTests
-from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import \
     TxmEventDTOIn
-from txmatching.database.services.app_user_management import persist_user
-from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
+from txmatching.database.sql_alchemy_schema import (ConfigModel,
                                                     PairingResultModel,
                                                     RecipientModel,
                                                     TxmEventModel)
-from txmatching.utils.country_enum import Country
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 
 
@@ -124,39 +119,3 @@ class TestMatchingApi(DbTests):
 
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
-
-    def test_txm_event_patient_upload_fails_on_wrong_country(self):
-        banned_country = Country.CZE
-        # add user
-        user_pass = 'password'
-        usr = AppUserModel(
-            email=str(uuid4()),
-            pass_hash=encode_password(user_pass),
-            role=UserRole.SERVICE,
-            second_factor_material='1.2.3.4',
-            require_2fa=False,
-            allowed_edit_countries=[country for country in Country if country != banned_country]
-        )
-        usr = persist_user(usr)
-
-        txm_name = 'test'
-        upload_patients = {
-            'country': banned_country,
-            'txm_event_name': txm_name,
-            'donors': [],
-            'recipients': []
-        }
-
-        self.login_with(usr.email, user_pass, usr.id, usr.role)
-        with self.app.test_client() as client:
-            res = client.put(
-                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/patients',
-                headers=self.auth_headers,
-                json=upload_patients
-            )
-
-            self.assertEqual(403, res.status_code)
-            self.assertIsNotNone(res.json)
-            self.assertEqual('Access denied.', res.json['error'])
-
-        self.assertEqual(0, len(TxmEventModel.query.filter(TxmEventModel.name == txm_name).all()))

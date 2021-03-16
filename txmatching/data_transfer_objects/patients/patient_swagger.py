@@ -4,13 +4,13 @@ from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
                                                             CountryCodeJson,
                                                             DonorTypeEnumJson,
                                                             SexEnumJson)
+from txmatching.data_transfer_objects.external_patient_upload.swagger import (
+    DonorJsonIn, RecipientJsonIn)
 from txmatching.data_transfer_objects.hla.hla_swagger import (
     EXAMPLE_HLA_TYPING, HLAAntibodies, HLATyping)
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
     DetailedScoreForGroupJson)
-from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
-    DonorJsonIn, RecipientJsonIn)
 from txmatching.web.api.namespaces import patient_api
 
 PatientParametersJson = patient_api.model('PatientParameters', {
@@ -37,6 +37,7 @@ DonorJson = patient_api.model('Donor', {
     'donor_type': fields.Nested(DonorTypeEnumJson, required=True),
     'related_recipient_db_id': fields.Integer(required=False, description='Database id of the related recipient'),
     'score_with_related_recipient': fields.Float(required=False, description='Score calculated with related recipient'),
+    'max_score_with_related_recipient': fields.Float(required=False, description='Maximum transplant score'),
     'compatible_blood_with_related_recipient': fields.Boolean(
         required=False,
         description='Indicator whether Donor and related recipients have compatible blood groups'
