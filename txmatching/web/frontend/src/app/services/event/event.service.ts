@@ -17,7 +17,8 @@ export class EventService {
   private _txmEvents?: Promise<TxmEvents>;
   private _defaultTxmEvent?: Promise<TxmEvent>;
   private _userSubscription: Subscription;
-  private _configId?: number;  // TODOO: maybe move to other service
+  // TODO: move elsewhere https://github.com/mild-blue/txmatching/issues/481
+  private _configId?: number;
 
   constructor(private _http: HttpClient,
               private _logger: LoggerService,
@@ -68,6 +69,7 @@ export class EventService {
     return this._defaultTxmEvent;
   }
 
+  // TODO: move elsewhere https://github.com/mild-blue/txmatching/issues/481
   public setCalculationId(config_id: number) {
     this._configId = config_id;
   }
