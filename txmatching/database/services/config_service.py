@@ -18,6 +18,7 @@ from txmatching.database.sql_alchemy_schema import (ConfigModel,
                                                     PairingResultModel)
 from txmatching.patients.patient import TxmEvent
 from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import HLACrossmatchLevel
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ def get_configuration_from_db_id(configuration_db_id: int) -> Configuration:
 def configuration_from_dict(config_model: Dict) -> Configuration:
     configuration = from_dict(data_class=Configuration,
                               data=config_model,
-                              config=Config(cast=[Country]))
+                              config=Config(cast=[Country, HLACrossmatchLevel]))
     return configuration
 
 

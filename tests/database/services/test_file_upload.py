@@ -19,6 +19,7 @@ from txmatching.database.sql_alchemy_schema import (
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import HLACrossmatchLevel
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.logged_user import get_current_user_id
@@ -89,12 +90,14 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(6, len(app_users))
 
         all_matchings = list(solve_from_configuration(Configuration(
+            solver_constructor_name='AllSolutionsSolver',
             max_cycle_length=100,
             max_sequence_length=100,
             max_number_of_distinct_countries_in_round=100,
             use_high_resolution=True,
             max_number_of_matchings=1000,
             max_debt_for_country=10,
+            hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER,
         ),
             txm_event).calculated_matchings_list)
         self.assertEqual(961, len(all_matchings))

@@ -5,6 +5,7 @@ export interface Transplant extends PatientPair {
   score: number;
   maxScore: number;
   compatible_blood: boolean;
+  hasCrossmatch: boolean;
   donor: string;
   recipient: string;
   detailed_score_per_group: DetailedScorePerGroup[];

@@ -64,6 +64,15 @@
 
       <div class="configuration__box inputs">
 
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Forbidden crossmatch level</mat-label>
+          <mat-select formControlName="hla_crossmatch_level">
+            <mat-option *ngFor="let hlaCrossmatchLevel of allHlaCrossmatchLevels" [value]="hlaCrossmatchLevel">
+              {{hlaCrossmatchLevel}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
         <mat-form-field *ngIf="configuration.max_number_of_matchings !== undefined">
           <mat-label>Maximum number of matchings</mat-label>
           <input value="{{ configuration.max_number_of_matchings }}"

@@ -12,6 +12,7 @@ class TransplantDTOOut:
     score: float
     max_score: float
     compatible_blood: bool
+    has_crossmatch: bool
     donor: MedicalId
     recipient: MedicalId
     detailed_score_per_group: List[DetailedScoreForHLAGroup]

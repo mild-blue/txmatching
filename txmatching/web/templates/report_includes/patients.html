@@ -15,6 +15,7 @@
             donor,
             (all_recipients_by_db_id[donor.related_recipient_db_id] if donor.related_recipient_db_id else None),
             donor.compatible_blood_with_related_recipient,
+            False,
             donor.detailed_score_with_related_recipient,
             configuration
           )

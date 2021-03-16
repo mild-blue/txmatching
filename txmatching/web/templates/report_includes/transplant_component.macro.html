@@ -6,6 +6,7 @@
     donor,
     recipient,
     compatible_blood,
+    has_crossmatch,
     detailed_score_per_group,
     configuration
   ) %}
@@ -17,6 +18,9 @@
         <td colspan="4">
           <h4>
             <div class="patient-pair-content">
+              {% if has_crossmatch %}
+                <div class="warning-icon">!</div>
+              {% endif %}
               <div class="patient">
                 <div class="flag">
                   <img src="assets/countries/{{ donor.parameters.country_code.value }}.png"/>

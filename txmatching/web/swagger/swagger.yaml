@@ -81,6 +81,8 @@ definitions:
                 items:
                     $ref: '#/definitions/ForbiddenCountryCombination'
                 type: array
+            hla_crossmatch_level:
+                $ref: '#/definitions/HlaCrossmatchLevel'
             manual_donor_recipient_scores:
                 items:
                     $ref: '#/definitions/ManualRecipientDonorScore'
@@ -134,7 +136,7 @@ definitions:
             solver_constructor_name:
                 allOf:
                 -   $ref: '#/definitions/Solver'
-                example: AllSolutionsSolver
+                example: ILPSolver
             use_binary_scoring:
                 type: boolean
             use_high_resolution:
@@ -143,6 +145,7 @@ definitions:
         required:
         - blood_group_compatibility_bonus
         - forbidden_country_combinations
+        - hla_crossmatch_level
         - manual_donor_recipient_scores
         - max_cycle_length
         - max_cycles_in_all_solutions_solver
@@ -830,6 +833,12 @@ definitions:
         - hla_group
         - hla_types
         type: object
+    HlaCrossmatchLevel:
+        enum:
+        - BROAD_AND_HIGHER
+        - SPLIT_AND_HIGHER
+        - HIGH_RES
+        type: string
     HlaType:
         properties:
             code:
@@ -1291,6 +1300,8 @@ definitions:
                 type: array
             donor:
                 type: string
+            has_crossmatch:
+                type: boolean
             max_score:
                 type: number
             recipient:
@@ -1301,6 +1312,7 @@ definitions:
         - compatible_blood
         - detailed_score_per_group
         - donor
+        - has_crossmatch
         - max_score
         - recipient
         - score
