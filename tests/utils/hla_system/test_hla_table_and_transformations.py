@@ -1,20 +1,20 @@
 import re
 import unittest
 
-from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
+from txmatching.utils.enums import HLA_GROUP_CODE_REGEX, HLAGroup
 from txmatching.utils.hla_system.hla_transformations import (
     HIGH_RES_REGEX, HIGH_RES_REGEX_ENDING_WITH_LETTER, LOW_RES_REGEX)
 
 
 class TestHlaTable(unittest.TestCase):
     def test_a_b_dr_hla_code_regex(self):
-        self.assertIsNotNone(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.DRB1], 'DR1'))
-        self.assertIsNotNone(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.DRB1], 'DR11'))
-        self.assertIsNotNone(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'A11'))
-        self.assertIsNone(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.DRB1], 'DR51'))
-        self.assertIsNone(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.DRB1], 'DR52'))
-        self.assertIsNone(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.DRB1], 'DR53'))
-        self.assertIsNotNone(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.DRB1], 'DR5'))
+        self.assertIsNotNone(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.DRB1], 'DR1'))
+        self.assertIsNotNone(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.DRB1], 'DR11'))
+        self.assertIsNotNone(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.A], 'A11'))
+        self.assertIsNone(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.DRB1], 'DR51'))
+        self.assertIsNone(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.DRB1], 'DR52'))
+        self.assertIsNone(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.DRB1], 'DR53'))
+        self.assertIsNotNone(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.DRB1], 'DR5'))
 
     def test_high_res_code_regex(self):
         self.assertIsNone(re.match(HIGH_RES_REGEX, 'A*11'))

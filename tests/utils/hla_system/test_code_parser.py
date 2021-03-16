@@ -6,7 +6,7 @@ from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
-from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
+from txmatching.utils.enums import HLA_GROUP_CODE_REGEX, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (
     HlaCodeProcessingResultDetail, _try_convert_ultra_high_res,
@@ -101,17 +101,17 @@ class TestCodeParser(DbTests):
                             set(parse_hla_raw_code(code) for code in preprocess_hla_code_in('DP[01:03,02:01]')))
 
     def test_group_assignment(self):
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BWA1'))
-        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B1'))
-        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B111'))
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B'))
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BW4'))
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BW6'))
+        self.assertFalse(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.B], 'BWA1'))
+        self.assertTrue(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.B], 'B1'))
+        self.assertTrue(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.B], 'B111'))
+        self.assertFalse(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.B], 'B'))
+        self.assertFalse(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.B], 'BW4'))
+        self.assertFalse(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.B], 'BW6'))
 
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'BWA1'))
-        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'A1'))
-        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'A111'))
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'B'))
+        self.assertFalse(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.A], 'BWA1'))
+        self.assertTrue(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.A], 'A1'))
+        self.assertTrue(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.A], 'A111'))
+        self.assertFalse(re.match(HLA_GROUP_CODE_REGEX[HLAGroup.A], 'B'))
 
     def test_mfi_extraction(self):
         # When one value extremely low, calculate average only from such value.
