@@ -81,6 +81,7 @@ def set_config_as_default(txm_event_id: int, configuration_db_id: Optional[int])
     )
     db.session.commit()
 
+# TODOO: here
 
 def get_latest_configuration_db_id_for_txm_event(txm_event: TxmEvent) -> Optional[int]:
     patients_hash = get_patients_persistent_hash(txm_event)
