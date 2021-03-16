@@ -20,7 +20,7 @@ class HLACode:
             raise AssertionError('This should never happen. At least one code should be specified.')
 
     def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str]):
-        assert high_res is not None or split is not None or broad is not None
+        assert high_res is not None or broad is not None
         self.high_res = high_res
         self.split = split
         self.broad = broad

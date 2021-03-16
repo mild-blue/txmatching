@@ -15,7 +15,7 @@ class TestCodeParser(DbTests):
                 self.assertCountEqual([hla_type], group.hla_types)
                 group_found = True
             else:
-                self.assertCountEqual([], group.hla_types)
+                self.assertCountEqual([], group.hla_types, f'The group should be empty: {group}')
 
         self.assertTrue(group_found)
 
@@ -44,6 +44,11 @@ class TestCodeParser(DbTests):
         # high res with letter
         self._assert_split_to_groups(HLAType('A*02:284N'), HLAGroup.A)
         self._assert_split_to_groups(HLAType('A*11:21N'), HLAGroup.A)
+        self._assert_split_to_groups(HLAType('C*01:37N'), HLAGroup.Other)
+        self._assert_split_to_groups(HLAType('DRB1*01:33N'), HLAGroup.DRB1)
         self._assert_split_to_groups(HLAType('DRB1*04:280N'), HLAGroup.DRB1)
+        self._assert_split_to_groups(HLAType('DPA1*01:29N'), HLAGroup.Other)
+        self._assert_split_to_groups(HLAType('DQA1*01:15N'), HLAGroup.Other)
+        self._assert_split_to_groups(HLAType('DRB3*01:26N'), HLAGroup.Other)
         self._assert_split_to_groups(HLAType('DPB1*120:01N'), HLAGroup.Other)
         self._assert_split_to_groups(HLAType('DOA*01:04N'), HLAGroup.Other)
