@@ -133,7 +133,8 @@ def get_txm_event_base(txm_event_db_id: int) -> TxmEventBase:
 
 
 def _get_txm_event_base_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEventBase:
-    return TxmEventBase(db_id=txm_event_model.id, name=txm_event_model.name)
+    return TxmEventBase(db_id=txm_event_model.id, name=txm_event_model.name,
+                        default_config_id=txm_event_model.default_config_id)
 
 
 def _get_txm_event_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEvent:

@@ -30,6 +30,7 @@ export * from './hlaTypeRawGenerated';
 export * from './hlaTypeToUpdateGenerated';
 export * from './hlaTypingGenerated';
 export * from './hlaTypingToUpdateGenerated';
+export * from './identifierGenerated';
 export * from './loginSuccessResponseGenerated';
 export * from './manualRecipientDonorScoreGenerated';
 export * from './matchingGenerated';

@@ -15,7 +15,8 @@ from txmatching.database.db import db
 from txmatching.database.services.patient_service import \
     get_patients_persistent_hash
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
-                                                    PairingResultModel)
+                                                    PairingResultModel,
+                                                    TxmEventModel)
 from txmatching.patients.patient import TxmEvent
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLACrossmatchLevel
@@ -72,6 +73,13 @@ def save_configuration_to_db(configuration: Configuration, txm_event: TxmEvent, 
     db.session.add(config_model)
     db.session.commit()
     return config_model.id
+
+
+def set_config_as_default(txm_event_id: int, configuration_db_id: Optional[int]):
+    TxmEventModel.query.filter(TxmEventModel.id == txm_event_id).update(
+        {'default_configuration_id': configuration_db_id}
+    )
+    db.session.commit()
 
 
 def get_latest_configuration_db_id_for_txm_event(txm_event: TxmEvent) -> Optional[int]:

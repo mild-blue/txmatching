@@ -103,6 +103,7 @@ class Recipient(Patient, PersistentlyHashable):
 class TxmEventBase:
     db_id: int
     name: str
+    default_config_id: Optional[int]
 
 
 @dataclass(init=False)

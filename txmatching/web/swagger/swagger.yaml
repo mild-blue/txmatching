@@ -927,6 +927,13 @@ definitions:
         required:
         - hla_types_list
         type: object
+    Identifier:
+        properties:
+            id:
+                type: integer
+        required:
+        - id
+        type: object
     LoginSuccessResponse:
         properties:
             auth_token:
@@ -1682,6 +1689,51 @@ paths:
             -   bearer: []
             tags:
             - txm-event
+    /v1/txm-event/{txm_event_id}/configuration/default:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        put:
+            description: Set default configuration id for the txm event.
+            operationId: put_default_configuration_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/Identifier'
+            responses:
+                '200':
+                    description: Whether the update was successful
+                    schema:
+                        $ref: '#/definitions/TxmEvent'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '409':
+                    description: Non-unique patients provided.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - configuration
     /v1/txm-event/{txm_event_id}/configuration/{config_id}:
         get:
             operationId: get_configuration_api
