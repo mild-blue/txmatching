@@ -17,6 +17,13 @@
       display: flex;
       align-items: center;
       font-size: 14px;
+
+      .warning-icon {
+        color: $danger;
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+      }
     }
 
     li + li {

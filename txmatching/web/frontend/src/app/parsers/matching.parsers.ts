@@ -26,15 +26,17 @@ export const parseMatchings = (data: MatchingGenerated[], patients: PatientList)
 };
 
 export const parseMatching = (data: MatchingGenerated, patients: PatientList, listItem: ListItem): Matching => {
+  const rounds = data.rounds.map((round, rKey) =>
+    parseRound(round, patients, listItem.index, rKey + 1)
+  );
   return {
     ...listItem,
     order_id: data.order_id,
     score: data.score,
     count_of_transplants: data.count_of_transplants,
-    rounds: data.rounds.map((round, rKey) =>
-      parseRound(round, patients, listItem.index, rKey + 1)
-    ),
-    countries: data.countries.map(parseMatchingCountry)
+    rounds,
+    countries: data.countries.map(parseMatchingCountry),
+    hasCrossmatch: rounds.some(round => round.hasCrossmatch)
   };
 };
 

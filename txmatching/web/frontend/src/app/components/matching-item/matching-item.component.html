@@ -4,6 +4,9 @@
   <h3>Matching #{{item.index}}</h3>
 
   <ul class="description">
+    <li *ngIf="item.hasCrossmatch">
+      <mat-icon class="warning-icon" title="Matching contains transplants with a crossmatch">error</mat-icon>
+    </li>
     <li>Score: <strong>{{ item.score }}</strong></li>
     <li>Rounds: <strong>{{ item.rounds.length }}</strong></li>
     <li>Transplants: <strong>{{ getTransplantsCount(item) }}</strong></li>

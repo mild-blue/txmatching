@@ -13,11 +13,13 @@ import { ScorerGenerated } from './scorerGenerated';
 import { ForbiddenCountryCombinationGenerated } from './forbiddenCountryCombinationGenerated';
 import { ManualRecipientDonorScoreGenerated } from './manualRecipientDonorScoreGenerated';
 import { SolverGenerated } from './solverGenerated';
+import { HlaCrossmatchLevelGenerated } from './hlaCrossmatchLevelGenerated';
 
 
 export interface ConfigurationGenerated { 
     blood_group_compatibility_bonus: number;
     forbidden_country_combinations: Array<ForbiddenCountryCombinationGenerated>;
+    hla_crossmatch_level: HlaCrossmatchLevelGenerated;
     manual_donor_recipient_scores: Array<ManualRecipientDonorScoreGenerated>;
     max_cycle_length: number;
     max_cycles_in_all_solutions_solver: number;

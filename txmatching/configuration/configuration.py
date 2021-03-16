@@ -7,6 +7,7 @@ from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore,
                                                  PatientDbId)
 from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import HLACrossmatchLevel
 
 DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Country.ISR),
                                   ForbiddenCountryCombination(Country.ISR, Country.AUT)]
@@ -55,7 +56,7 @@ class Configuration:
      the duration of the computation)
     """
     scorer_constructor_name: str = 'SplitHLAAdditiveScorer'
-    solver_constructor_name: str = 'AllSolutionsSolver'
+    solver_constructor_name: str = 'ILPSolver'
     require_compatible_blood_group: bool = False
     minimum_total_score: float = 0.0
     require_better_match_in_compatibility_index: bool = False
@@ -68,6 +69,7 @@ class Configuration:
     required_patient_db_ids: List[PatientDbId] = field(default_factory=list,
                                                        metadata={COMPARISON_MODE: ComparisonMode.Set})
     use_high_resolution: bool = True
+    hla_crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.SPLIT_AND_HIGHER
     forbidden_country_combinations: List[ForbiddenCountryCombination] = field(
         default_factory=lambda: DEFAULT_FORBIDDEN_COUNTRY_LIST,
         metadata={COMPARISON_MODE: ComparisonMode.Set})

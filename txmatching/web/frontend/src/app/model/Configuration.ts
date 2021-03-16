@@ -1,7 +1,8 @@
-import { CountryCodeGenerated, ScorerGenerated, SolverGenerated } from '@app/generated';
+import { CountryCodeGenerated, ScorerGenerated, SolverGenerated, HlaCrossmatchLevelGenerated } from '@app/generated';
 
 export interface Configuration {
   use_high_resolution: boolean;
+  hla_crossmatch_level: HlaCrossmatchLevelGenerated;
   require_compatible_blood_group: boolean;
   require_better_match_in_compatibility_index: boolean;
   require_better_match_in_compatibility_index_or_blood_group: boolean;

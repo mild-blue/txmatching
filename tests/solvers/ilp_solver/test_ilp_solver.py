@@ -7,6 +7,7 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
+from txmatching.utils.enums import HLACrossmatchLevel
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 
@@ -47,7 +48,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             configuration = Configuration(
                 solver_constructor_name='ILPSolver',
                 max_number_of_distinct_countries_in_round=max_country_count,
-                max_number_of_matchings=1)
+                max_number_of_matchings=1,
+                hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertLessEqual(1, len(solutions))
             for round in solutions[0].get_rounds():
@@ -71,7 +73,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                 use_high_resolution=True,
                 max_sequence_length=max_sequence_length,
                 max_cycle_length=0,
-                max_number_of_matchings=3)
+                max_number_of_matchings=3,
+                hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertLessEqual(1, len(solutions),
                                  f'Failed for {max_sequence_length}')
@@ -107,7 +110,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                 solver_constructor_name='ILPSolver',
                 use_high_resolution=True,
                 max_debt_for_country=debt,
-                max_number_of_matchings=3)
+                max_number_of_matchings=3,
+                hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
             self.assertLessEqual(1, len(solutions),
                                  f'Failed for {debt}')

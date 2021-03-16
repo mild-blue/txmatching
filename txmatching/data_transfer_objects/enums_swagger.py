@@ -3,7 +3,7 @@ from txmatching.scorers.scorer_from_config import SUPPORTED_SCORERS
 from txmatching.solvers.solver_from_config import SUPPORTED_SOLVERS
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import Sex
+from txmatching.utils.enums import HLACrossmatchLevel, Sex
 from txmatching.web.api.namespaces import enums_api
 
 CountryCodeJson = enums_api.schema_model('CountryCode', {
@@ -35,5 +35,10 @@ ScorerEnumJson = enums_api.schema_model('Scorer', {
 
 SolverEnumJson = enums_api.schema_model('Solver', {
     'enum': [solver.__name__ for solver in SUPPORTED_SOLVERS],
+    'type': 'string'
+})
+
+HlaCrossmatchLevelJson = enums_api.schema_model('HlaCrossmatchLevel', {
+    'enum': [crossmatch_level.value for crossmatch_level in HLACrossmatchLevel],
     'type': 'string'
 })

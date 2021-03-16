@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from typing import List, Set
 
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLATyping
-from txmatching.utils.enums import AntibodyMatchTypes, HLAGroup
+from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
+                                    HLAGroup)
 
 
 @dataclass(eq=True, frozen=True)
@@ -19,7 +20,9 @@ class AntibodyMatchForHLAGroup:
 
 def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
                                recipient_antibodies: HLAAntibodies,
-                               use_high_resolution: bool) -> bool:
+                               use_high_resolution: bool,
+                               crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.BROAD_AND_HIGHER,
+                               ) -> bool:
     """
     Do donor and recipient have positive crossmatch in HLA system?
     e.g. A23 -> A23 True
@@ -31,12 +34,13 @@ def is_positive_hla_crossmatch(donor_hla_typing: HLATyping,
     :param donor_hla_typing: donor hla_typing to crossmatch
     :param recipient_antibodies: recipient antibodies to crossmatch
     :param use_high_resolution: setting whether to high res resolution for crossmatch determination
+    :param crossmatch_level:
     :return:
     """
     common_codes = {antibody_match.hla_antibody for antibody_match_group in
                     get_crossmatched_antibodies(donor_hla_typing, recipient_antibodies, use_high_resolution)
                     for antibody_match in antibody_match_group.antibody_matches
-                    if antibody_match.match_type is not AntibodyMatchTypes.NONE}
+                    if antibody_match.match_type.is_positive_for_level(crossmatch_level)}
     # if there are any common codes, positive crossmatch is found
     return len(common_codes) > 0
 

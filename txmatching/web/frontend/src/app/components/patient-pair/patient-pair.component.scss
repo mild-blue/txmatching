@@ -32,4 +32,12 @@
       border-color: $transplant-color--compatible;
     }
   }
+
+  .warning-icon {
+    color: $danger;
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    margin-right: 7px;
+  }
 }

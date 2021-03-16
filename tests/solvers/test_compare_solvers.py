@@ -8,6 +8,7 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
+from txmatching.utils.enums import HLACrossmatchLevel
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 
@@ -23,15 +24,18 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         ILP_SCORES_NUMBER = 20
         configuration = Configuration(use_high_resolution=True,
                                       max_number_of_matchings=ILP_SCORES_NUMBER,
-                                      solver_constructor_name='ILPSolver')
+                                      solver_constructor_name='ILPSolver',
+                                      hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER)
         solutions_ilp = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
 
         self.assertEqual(ILP_SCORES_NUMBER, len(solutions_ilp))
         self.assertSetEqual(BEST_SOLUTION_use_high_resolution_TRUE,
                             get_donor_recipient_pairs_from_solution(solutions_ilp[0].matching_pairs))
-        configuration = Configuration(use_high_resolution=True,
+        configuration = Configuration(solver_constructor_name='AllSolutionsSolver',
+                                      use_high_resolution=True,
                                       max_number_of_matchings=1000,
-                                      max_debt_for_country=10)
+                                      max_debt_for_country=10,
+                                      hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER)
 
         solutions_all_sol_solver = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
         self.assertEqual(947, len(solutions_all_sol_solver))
