@@ -148,6 +148,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
         this.defaultTxmEvent.id, configuration, this.patients
       );
       this.matchings = calculatedMatchings.calculated_matchings;
+      this._eventService.setCalculationId(calculatedMatchings.calculationId);
       this.foundMatchingsCount = calculatedMatchings.found_matchings_count;
       this._logger.log('Calculated matchings', [calculatedMatchings]);
       if (calculatedMatchings.show_not_all_matchings_found) {
