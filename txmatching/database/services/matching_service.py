@@ -140,7 +140,8 @@ def create_calculated_matchings_dto(
 
         return TransplantDTOOut(
             score=latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
-            max_score=latest_matchings_detailed.max_transplant_score,compatible_blood=latest_matchings_detailed.blood_compatibility_tuples[
+            max_score=latest_matchings_detailed.max_transplant_score,
+            compatible_blood=latest_matchings_detailed.blood_compatibility_tuples[
                 (pair.donor.db_id, pair.recipient.db_id)],
             has_crossmatch=has_crossmatch,
             donor=pair.donor.medical_id,
