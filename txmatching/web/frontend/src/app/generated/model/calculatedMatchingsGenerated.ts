@@ -14,7 +14,7 @@ import { MatchingGenerated } from './matchingGenerated';
 
 export interface CalculatedMatchingsGenerated { 
     calculated_matchings: Array<MatchingGenerated>;
-    calculation_id: number;
+    config_id: number;
     found_matchings_count?: number;
     show_not_all_matchings_found: boolean;
 }

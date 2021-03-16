@@ -14,9 +14,10 @@ export class ConfigurationService {
   constructor(private _http: HttpClient) {
   }
 
-  public async getConfiguration(txmEventId: number): Promise<Configuration> {
+  public async getConfiguration(txmEventId: number, configId: number | undefined): Promise<Configuration> {
+    const configIdStr = configId !== undefined ? configId.toString() : 'default';
     return this._http.get<ConfigurationGenerated>(
-      `${environment.apiUrl}/txm-event/${txmEventId}/configuration`
+      `${environment.apiUrl}/txm-event/${txmEventId}/configuration/${configIdStr}`
     ).pipe(
       first(),
       map(parseConfiguration)

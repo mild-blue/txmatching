@@ -3,12 +3,14 @@
 
 import logging
 from enum import Enum
+from typing import Optional
 
 from dacite import Config, from_dict
 from flask import jsonify, request
 from flask_restx import Resource
 
-from txmatching.auth.auth_check import require_role, require_valid_txm_event_id
+from txmatching.auth.auth_check import (require_role, require_valid_config_id,
+                                        require_valid_txm_event_id)
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.auth.operation_guards.country_guard import (
@@ -33,8 +35,9 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     PatientsRecomputeParsingSuccessJson
-from txmatching.database.services.config_service import \
-    get_latest_configuration_for_txm_event
+from txmatching.database.services.config_service import (
+    get_configuration_from_db_id_or_latest,
+    get_latest_configuration_for_txm_event)
 from txmatching.database.services.patient_service import (
     delete_donor_recipient_pair, get_donor_recipient_pair,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
@@ -52,7 +55,7 @@ from txmatching.web.api.namespaces import patient_api
 logger = logging.getLogger(__name__)
 
 
-@patient_api.route('', methods=['GET'])
+@patient_api.route('/configs/<config_id>', methods=['GET'])
 class AllPatients(Resource):
 
     @patient_api.doc(security='bearer',
@@ -68,12 +71,15 @@ class AllPatients(Resource):
     @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     @require_valid_txm_event_id()
-    def get(self, txm_event_id: int) -> str:
+    @require_valid_config_id()
+    def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         include_antibodies_raw = 'include-antibodies-raw' in request.args
         logger.debug(f'include_antibodies_raw={include_antibodies_raw}')
         txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
+        configuration = get_configuration_from_db_id_or_latest(txm_event, config_id)
+        lists_for_fe = to_lists_for_fe(txm_event, configuration)
         logger.debug('Sending patients to FE')
-        return jsonify(to_lists_for_fe(txm_event))
+        return jsonify(lists_for_fe)
 
 
 @patient_api.route('/pairs', methods=['POST'])
@@ -162,7 +168,7 @@ class AlterRecipient(Resource):
         return jsonify(update_recipient(recipient_update_dto, txm_event_id))
 
 
-@patient_api.route('/donor', methods=['PUT'])
+@patient_api.route('/configs/<config_id>/donor', methods=['PUT'])
 class AlterDonor(Resource):
     @patient_api.doc(body=DonorToUpdateJson, security='bearer')
     @patient_api.response(code=200, model=DonorJson, description='Updates single donor.')
@@ -174,12 +180,14 @@ class AlterDonor(Resource):
     @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_edit_access()
     @require_valid_txm_event_id()
-    def put(self, txm_event_id: int):
+    @require_valid_config_id()
+    def put(self, txm_event_id: int, config_id: Optional[int]):
         donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json, config=Config(cast=[Enum]))
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
         txm_event = get_txm_event_complete(txm_event_id)
         all_recipients = txm_event.all_recipients
-        configuration = get_latest_configuration_for_txm_event(txm_event)
+        configuration = get_configuration_from_db_id_or_latest(txm_event=txm_event,
+                                                               configuration_db_id=config_id)
         scorer = scorer_from_configuration(configuration)
 
         return jsonify(

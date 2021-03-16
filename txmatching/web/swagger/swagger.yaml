@@ -65,7 +65,7 @@ definitions:
                 items:
                     $ref: '#/definitions/Matching'
                 type: array
-            calculation_id:
+            config_id:
                 type: integer
             found_matchings_count:
                 type: integer
@@ -73,7 +73,7 @@ definitions:
                 type: boolean
         required:
         - calculated_matchings
-        - calculation_id
+        - config_id
         - show_not_all_matchings_found
         type: object
     Configuration:
@@ -1682,7 +1682,7 @@ paths:
             -   bearer: []
             tags:
             - txm-event
-    /v1/txm-event/{txm_event_id}/configuration:
+    /v1/txm-event/{txm_event_id}/configuration/{config_id}:
         get:
             operationId: get_configuration_api
             responses:
@@ -1713,6 +1713,10 @@ paths:
             name: txm_event_id
             required: true
             type: integer
+        -   in: path
+            name: config_id
+            required: true
+            type: string
     /v1/txm-event/{txm_event_id}/matching/calculate-for-config:
         parameters:
         -   in: path
@@ -1753,43 +1757,6 @@ paths:
             -   bearer: []
             tags:
             - matching
-    /v1/txm-event/{txm_event_id}/patients:
-        get:
-            description: 'Get all patients for the given txm event. By default, raw
-                antibodies are notincluded. Specify include-antibodies-raw to include
-                raw antibodies as well.Example: /patients?include-antibodies-raw'
-            operationId: get_all_patients
-            responses:
-                '200':
-                    description: List of donors and list of recipients.
-                    schema:
-                        $ref: '#/definitions/Patients'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - patients
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
     /v1/txm-event/{txm_event_id}/patients/add-patients-file:
         parameters:
         -   in: path
@@ -1832,12 +1799,57 @@ paths:
             -   bearer: []
             tags:
             - patients
-    /v1/txm-event/{txm_event_id}/patients/donor:
+    /v1/txm-event/{txm_event_id}/patients/configs/{config_id}:
+        get:
+            description: 'Get all patients for the given txm event. By default, raw
+                antibodies are notincluded. Specify include-antibodies-raw to include
+                raw antibodies as well.Example: /patients?include-antibodies-raw'
+            operationId: get_all_patients
+            responses:
+                '200':
+                    description: List of donors and list of recipients.
+                    schema:
+                        $ref: '#/definitions/Patients'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
         parameters:
         -   in: path
             name: txm_event_id
             required: true
             type: integer
+        -   in: path
+            name: config_id
+            required: true
+            type: string
+    /v1/txm-event/{txm_event_id}/patients/configs/{config_id}/donor:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        -   in: path
+            name: config_id
+            required: true
+            type: string
         put:
             operationId: put_alter_donor
             parameters:
@@ -2033,7 +2045,7 @@ paths:
             -   bearer: []
             tags:
             - patients
-    /v1/txm-event/{txm_event_id}/reports/matchings/{matching_id}/pdf:
+    /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/matchings/{matching_id}/pdf:
         get:
             operationId: get_matching_report
             parameters:
@@ -2077,7 +2089,11 @@ paths:
             name: txm_event_id
             required: true
             type: integer
-    /v1/txm-event/{txm_event_id}/reports/patients/xlsx:
+        -   in: path
+            name: config_id
+            required: true
+            type: string
+    /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/patients/xlsx:
         get:
             operationId: get_patients_xls_report
             responses:
@@ -2109,6 +2125,10 @@ paths:
             name: txm_event_id
             required: true
             type: integer
+        -   in: path
+            name: config_id
+            required: true
+            type: string
     /v1/user/change-password:
         put:
             operationId: put_password_change_api

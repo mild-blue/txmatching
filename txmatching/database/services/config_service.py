@@ -23,10 +23,14 @@ from txmatching.utils.enums import HLACrossmatchLevel
 logger = logging.getLogger(__name__)
 
 
-def get_configuration_from_db_id(configuration_db_id: int) -> Configuration:
+def get_configuration_from_db_id(configuration_db_id: int, txm_event_id: int = None) -> Configuration:
     config = ConfigModel.query.get(configuration_db_id)
     if config is None:
         raise AssertionError(f'Configuration not found for db id {configuration_db_id}')
+    if txm_event_id is not None and txm_event_id != config.txm_event_id:
+        raise AssertionError(f'Configuration with db id {configuration_db_id} does '
+                             f'not belong to txm event {txm_event_id}')
+
     return configuration_from_dict(config.parameters)
 
 
@@ -37,7 +41,23 @@ def configuration_from_dict(config_model: Dict) -> Configuration:
     return configuration
 
 
-def get_latest_configuration_for_txm_event(txm_event: TxmEvent) -> Configuration:
+def get_configuration_db_id_or_latest(txm_event: TxmEvent, configuration_db_id: Optional[int]) -> Optional[int]:
+    if configuration_db_id is None:
+        return get_latest_configuration_db_id_for_txm_event(txm_event)
+    else:
+        return configuration_db_id
+
+
+def get_configuration_from_db_id_or_latest(txm_event: TxmEvent, configuration_db_id: Optional[int]) -> Configuration:
+    configuration_db_id = get_configuration_db_id_or_latest(txm_event, configuration_db_id)
+
+    if configuration_db_id is None:
+        return Configuration()
+    else:
+        return get_configuration_from_db_id(configuration_db_id)
+
+
+def get_latest_configuration_for_txm_event(txm_event: TxmEvent) -> Configuration:  # TODOO: remove
     configuration_db_id = get_latest_configuration_db_id_for_txm_event(txm_event)
     if configuration_db_id is None:
         return Configuration()

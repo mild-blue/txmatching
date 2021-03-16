@@ -2,18 +2,21 @@
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 
 import logging
+from typing import Optional
 
 from flask import jsonify
 from flask_restx import Resource
 
-from txmatching.auth.auth_check import require_valid_txm_event_id
+from txmatching.auth.auth_check import (require_valid_config_id,
+                                        require_valid_txm_event_id)
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigurationJson
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
     FailJson
-from txmatching.database.services.config_service import \
-    get_latest_configuration_for_txm_event
+from txmatching.database.services.config_service import (
+    get_configuration_from_db_id_or_latest,
+    get_latest_configuration_for_txm_event)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.web.api.namespaces import configuration_api
@@ -21,7 +24,7 @@ from txmatching.web.api.namespaces import configuration_api
 logger = logging.getLogger(__name__)
 
 
-@configuration_api.route('', methods=['GET'])
+@configuration_api.route('/<config_id>', methods=['GET'])
 class ConfigurationApi(Resource):
 
     @configuration_api.doc(security='bearer')
@@ -34,6 +37,9 @@ class ConfigurationApi(Resource):
     @configuration_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     @require_valid_txm_event_id()
-    def get(self, txm_event_id: int) -> str:
+    @require_valid_config_id()
+    def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
-        return jsonify(get_latest_configuration_for_txm_event(txm_event))
+        configuration = get_configuration_from_db_id_or_latest(txm_event=txm_event,
+                                                               configuration_db_id=config_id)
+        return jsonify(configuration)

@@ -17,7 +17,7 @@ export class EventService {
   private _txmEvents?: Promise<TxmEvents>;
   private _defaultTxmEvent?: Promise<TxmEvent>;
   private _userSubscription: Subscription;
-  private _calculationId?: number;  // TODOO: maybe move to other service
+  private _configId?: number;  // TODOO: maybe move to other service
 
   constructor(private _http: HttpClient,
               private _logger: LoggerService,
@@ -26,8 +26,8 @@ export class EventService {
     this._userSubscription = this._authService.currentUser.subscribe(_ => {
       this._txmEvents = undefined;
       this._defaultTxmEvent = undefined;
-      this._calculationId = undefined;
-    })
+      this._configId = undefined;
+    });
   }
 
   public async getEvents(): Promise<TxmEvents> {
@@ -68,11 +68,11 @@ export class EventService {
     return this._defaultTxmEvent;
   }
 
-  public setCalculationId(calculation_id: number) {
-    this._calculationId = calculation_id;
+  public setCalculationId(config_id: number) {
+    this._configId = config_id;
   }
 
   public getCalculationId(): number | undefined {
-    return this._calculationId;
+    return this._configId;
   }
 }

@@ -62,3 +62,33 @@ def require_valid_txm_event_id() -> Callable:
         return decorated_route
 
     return decorator
+
+
+def require_valid_config_id() -> Callable:
+    """
+    Checks that config_id is in correct format (number | 'default') and converts it to optional int.
+    Does not check if the config_id correspond to db row.
+    """
+
+    def decorator(original_route):
+        @functools.wraps(original_route)
+        def decorated_route(*args, **kwargs):
+            config_id = kwargs.get('config_id', None)
+
+            if config_id is None:
+                raise InvalidArgumentException('Argument config_id is not specified.')
+            elif config_id == 'default':
+                config_id = None
+            elif config_id.isdigit():
+                config_id = int(config_id)
+            else:
+                raise InvalidArgumentException(f'Argument config_id should be number '
+                                               f'or "default": {config_id}')
+
+            kwargs['config_id'] = config_id
+
+            return original_route(*args, **kwargs)
+
+        return decorated_route
+
+    return decorator

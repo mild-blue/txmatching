@@ -166,5 +166,5 @@ def create_calculated_matchings_dto(
         ],
         found_matchings_count=latest_matchings_detailed.found_matchings_count,
         show_not_all_matchings_found=latest_matchings_detailed.show_not_all_matchings_found,
-        calculation_id=configuration_db_id
+        config_id=configuration_db_id
     )

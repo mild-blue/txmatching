@@ -17,7 +17,8 @@ from flask import request, send_file, send_from_directory
 from flask_restx import Resource
 from jinja2 import Environment, FileSystemLoader
 
-from txmatching.auth.auth_check import require_valid_txm_event_id
+from txmatching.auth.auth_check import (require_valid_config_id,
+                                        require_valid_txm_event_id)
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         NotFoundException)
 from txmatching.auth.user.user_auth_check import require_user_login
@@ -36,6 +37,7 @@ from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     find_configuration_db_id_for_configuration,
+    get_configuration_db_id_or_latest, get_configuration_from_db_id_or_latest,
     get_latest_configuration_db_id_for_txm_event,
     get_latest_configuration_for_txm_event)
 from txmatching.database.services.matching_service import (
@@ -66,7 +68,7 @@ COLOR_MILD_BLUE = '#2D4496'
 
 # Query params:
 #   - matchingRangeLimit
-@report_api.route('/matchings/<int:matching_id>/pdf', methods=['GET'])
+@report_api.route('/configs/<config_id>/matchings/<int:matching_id>/pdf', methods=['GET'])
 class MatchingReport(Resource):
 
     @report_api.doc(
@@ -94,10 +96,11 @@ class MatchingReport(Resource):
     @report_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     @require_valid_txm_event_id()
+    @require_valid_config_id()
     # pylint: disable=too-many-locals
-    def get(self, txm_event_id: int, matching_id: int) -> str:
+    def get(self, txm_event_id: int, config_id: Optional[int], matching_id: int) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
-        maybe_configuration_db_id = get_latest_configuration_db_id_for_txm_event(txm_event)
+        maybe_configuration_db_id = get_configuration_db_id_or_latest(txm_event, configuration_db_id=config_id)
 
         if maybe_configuration_db_id is None:
             configuration = Configuration()
@@ -146,9 +149,10 @@ class MatchingReport(Resource):
         calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings,
                                                                    maybe_configuration_db_id)
 
-        patients_dto = to_lists_for_fe(txm_event)
+        configuration = get_configuration_from_db_id_or_latest(txm_event=txm_event,
+                                                               configuration_db_id=maybe_configuration_db_id)
 
-        configuration = get_latest_configuration_for_txm_event(txm_event=txm_event)
+        patients_dto = to_lists_for_fe(txm_event, configuration)
 
         _prepare_tmp_dir()
         MatchingReport.copy_assets()
@@ -238,7 +242,7 @@ class MatchingReport(Resource):
             copy_tree(old_dir, new_dir)
 
 
-@report_api.route('/patients/xlsx', methods=['GET'])
+@report_api.route('/configs/<config_id>/patients/xlsx', methods=['GET'])
 class PatientsXLSReport(Resource):
 
     @report_api.doc(
@@ -253,10 +257,14 @@ class PatientsXLSReport(Resource):
     @report_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
     @require_user_login()
     @require_valid_txm_event_id()
-    def get(self, txm_event_id: int) -> str:
+    @require_valid_config_id()
+    def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
 
-        patients_dto = to_lists_for_fe(txm_event)
+        configuration = get_configuration_from_db_id_or_latest(txm_event=txm_event,
+                                                               configuration_db_id=config_id)
+
+        patients_dto = to_lists_for_fe(txm_event, configuration)
 
         _prepare_tmp_dir()
         _prune_old_reports()

@@ -215,50 +215,6 @@
             }
         },
         "/v1/txm-event/default": {
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "Default event.",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEvent"
-                        }
-                    }
-                },
-                "description": "Get default event",
-                "operationId": "get_txm_default_event_api",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "txm-event"
-                ]
-            },
             "put": {
                 "responses": {
                     "500": {
@@ -310,6 +266,50 @@
                         }
                     }
                 ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Default event.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "Get default event",
+                "operationId": "get_txm_default_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -372,13 +372,19 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/configuration": {
+        "/v1/txm-event/{txm_event_id}/configuration/{config_id}": {
             "parameters": [
                 {
                     "name": "txm_event_id",
                     "in": "path",
                     "required": true,
                     "type": "integer"
+                },
+                {
+                    "name": "config_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
                 }
             ],
             "get": {
@@ -482,60 +488,6 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/patients": {
-            "parameters": [
-                {
-                    "name": "txm_event_id",
-                    "in": "path",
-                    "required": true,
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "List of donors and list of recipients.",
-                        "schema": {
-                            "$ref": "#/definitions/Patients"
-                        }
-                    }
-                },
-                "description": "Get all patients for the given txm event. By default, raw antibodies are notincluded. Specify include-antibodies-raw to include raw antibodies as well.Example: /patients?include-antibodies-raw",
-                "operationId": "get_all_patients",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "patients"
-                ]
-            }
-        },
         "/v1/txm-event/{txm_event_id}/patients/add-patients-file": {
             "parameters": [
                 {
@@ -601,13 +553,79 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/patients/donor": {
+        "/v1/txm-event/{txm_event_id}/patients/configs/{config_id}": {
             "parameters": [
                 {
                     "name": "txm_event_id",
                     "in": "path",
                     "required": true,
                     "type": "integer"
+                },
+                {
+                    "name": "config_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "List of donors and list of recipients.",
+                        "schema": {
+                            "$ref": "#/definitions/Patients"
+                        }
+                    }
+                },
+                "description": "Get all patients for the given txm event. By default, raw antibodies are notincluded. Specify include-antibodies-raw to include raw antibodies as well.Example: /patients?include-antibodies-raw",
+                "operationId": "get_all_patients",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/patients/configs/{config_id}/donor": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                },
+                {
+                    "name": "config_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
                 }
             ],
             "put": {
@@ -910,13 +928,19 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/reports/matchings/{matching_id}/pdf": {
+        "/v1/txm-event/{txm_event_id}/reports/configs/{config_id}/matchings/{matching_id}/pdf": {
             "parameters": [
                 {
                     "name": "txm_event_id",
                     "in": "path",
                     "required": true,
                     "type": "integer"
+                },
+                {
+                    "name": "config_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
                 }
             ],
             "get": {
@@ -976,13 +1000,19 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/reports/patients/xlsx": {
+        "/v1/txm-event/{txm_event_id}/reports/configs/{config_id}/patients/xlsx": {
             "parameters": [
                 {
                     "name": "txm_event_id",
                     "in": "path",
                     "required": true,
                     "type": "integer"
+                },
+                {
+                    "name": "config_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
                 }
             ],
             "get": {
@@ -2236,7 +2266,7 @@
         "CalculatedMatchings": {
             "required": [
                 "calculated_matchings",
-                "calculation_id",
+                "config_id",
                 "show_not_all_matchings_found"
             ],
             "properties": {
@@ -2252,7 +2282,7 @@
                 "show_not_all_matchings_found": {
                     "type": "boolean"
                 },
-                "calculation_id": {
+                "config_id": {
                     "type": "integer"
                 }
             },

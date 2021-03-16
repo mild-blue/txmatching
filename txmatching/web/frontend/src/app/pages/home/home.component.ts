@@ -104,7 +104,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this._logger.log('Downloading with active matching', [activeMatching]);
 
     this._downloadMatchingInProgress = true;
-    this._reportService.downloadMatchingPdfReport(this.defaultTxmEvent.id, activeMatching.order_id)
+    this._reportService.downloadMatchingPdfReport(this.defaultTxmEvent.id, this._eventService.getCalculationId(), activeMatching.order_id)
     .pipe(
       first(),
       finalize(() => this._downloadMatchingInProgress = false)
@@ -148,7 +148,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
         this.defaultTxmEvent.id, configuration, this.patients
       );
       this.matchings = calculatedMatchings.calculated_matchings;
-      this._eventService.setCalculationId(calculatedMatchings.calculationId);
+      this._eventService.setCalculationId(calculatedMatchings.configId);
       this.foundMatchingsCount = calculatedMatchings.found_matchings_count;
       this._logger.log('Calculated matchings', [calculatedMatchings]);
       if (calculatedMatchings.show_not_all_matchings_found) {

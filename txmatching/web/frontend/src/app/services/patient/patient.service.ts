@@ -38,9 +38,11 @@ export class PatientService {
     return this._deletedDonorDbIdSubject.asObservable().pipe(filter(dbId => dbId !== -1));
   }
 
-  public async getPatients(txmEventId: number, includeAntibodiesRaw: boolean): Promise<PatientList> {
+  public async getPatients(txmEventId: number, configId: number | undefined, includeAntibodiesRaw: boolean): Promise<PatientList> {
+    const configIdStr = configId !== undefined ? configId.toString() : 'default';
+
     return this._http.get<PatientsGenerated>(
-      `${environment.apiUrl}/txm-event/${txmEventId}/patients${includeAntibodiesRaw ? '?include-antibodies-raw' : ''}`
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}${includeAntibodiesRaw ? '?include-antibodies-raw' : ''}`
     ).pipe(
       first(),
       map(parsePatientList)
