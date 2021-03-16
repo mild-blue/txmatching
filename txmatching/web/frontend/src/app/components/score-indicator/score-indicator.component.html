@@ -1,8 +1,9 @@
-<div [style.background-position.%]="percentage(score)"
+<div [style.background-position.%]="percentage(score, maxScore)"
      [class.bad-matching]="score === -1"
      [class.empty]="!showScore"
      class="indicator">
-  <div *ngIf="showScore" class="score">
+  <div *ngIf="showScore" class="score"
+       title="Score: {{score != null ? score : '-'}}/{{maxScore ? maxScore : '-'}}">
     <span>score</span>
     {{score != null ? score : "-"}}
   </div>

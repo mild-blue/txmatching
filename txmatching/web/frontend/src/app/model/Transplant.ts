@@ -3,6 +3,7 @@ import { DetailedScorePerGroup } from '@app/model/Hla';
 
 export interface Transplant extends PatientPair {
   score: number;
+  maxScore: number;
   compatible_blood: boolean;
   donor: string;
   recipient: string;

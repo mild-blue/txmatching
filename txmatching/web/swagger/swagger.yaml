@@ -115,9 +115,6 @@ definitions:
             max_sequence_length:
                 example: 4
                 type: integer
-            maximum_total_score:
-                example: 26.0
-                type: number
             minimum_total_score:
                 type: number
             require_better_match_in_compatibility_index:
@@ -131,14 +128,13 @@ definitions:
                     type: integer
                 type: array
             scorer_constructor_name:
-                example: HLAAdditiveScorer
-                type: string
+                allOf:
+                -   $ref: '#/definitions/Scorer'
+                example: SplitHLAAdditiveScorer
             solver_constructor_name:
-                enum:
-                - AllSolutionsSolver
-                - ILPSolver
+                allOf:
+                -   $ref: '#/definitions/Solver'
                 example: AllSolutionsSolver
-                type: string
             use_binary_scoring:
                 type: boolean
             use_high_resolution:
@@ -158,7 +154,6 @@ definitions:
         - max_number_of_dynamic_constrains_ilp_solver
         - max_number_of_matchings
         - max_sequence_length
-        - maximum_total_score
         - minimum_total_score
         - require_better_match_in_compatibility_index
         - require_better_match_in_compatibility_index_or_blood_group
@@ -554,6 +549,9 @@ definitions:
                 type: array
             donor_type:
                 $ref: '#/definitions/DonorType'
+            max_score_with_related_recipient:
+                description: Maximum transplant score
+                type: number
             medical_id:
                 description: Medical id of the patient
                 type: string
@@ -1240,6 +1238,11 @@ definitions:
                     $ref: '#/definitions/Transplant'
                 type: array
         type: object
+    Scorer:
+        enum:
+        - SplitHLAAdditiveScorer
+        - HighResHLAAdditiveScorer
+        type: string
     ServiceStatus:
         properties:
             exception:
@@ -1260,6 +1263,11 @@ definitions:
         enum:
         - M
         - F
+        type: string
+    Solver:
+        enum:
+        - AllSolutionsSolver
+        - ILPSolver
         type: string
     StatusResponse:
         properties:
@@ -1283,6 +1291,8 @@ definitions:
                 type: array
             donor:
                 type: string
+            max_score:
+                type: number
             recipient:
                 type: string
             score:
@@ -1291,6 +1301,7 @@ definitions:
         - compatible_blood
         - detailed_score_per_group
         - donor
+        - max_score
         - recipient
         - score
         type: object

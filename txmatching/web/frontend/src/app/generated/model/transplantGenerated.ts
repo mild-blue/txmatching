@@ -19,6 +19,7 @@ export interface TransplantGenerated {
      */
     detailed_score_per_group: Array<DetailedScoreForGroupGenerated>;
     donor: string;
+    max_score: number;
     recipient: string;
     score: number;
 }

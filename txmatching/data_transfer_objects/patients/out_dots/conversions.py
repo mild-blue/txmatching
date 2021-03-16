@@ -47,6 +47,7 @@ def donor_to_donor_dto_out(donor: Donor,
                                  recipient.db_id == donor.related_recipient_db_id)
 
         donor_dto.score_with_related_recipient = scorer.score_transplant(donor, related_recipient, None)
+        donor_dto.max_score_with_related_recipient = scorer.max_transplant_score
         donor_dto.compatible_blood_with_related_recipient = blood_groups_compatible(
             donor.parameters.blood_group,
             related_recipient.parameters.blood_group
@@ -58,7 +59,8 @@ def donor_to_donor_dto_out(donor: Donor,
         )
         compatibility_index_detailed = get_detailed_compatibility_index(
             donor_hla_typing=donor.parameters.hla_typing,
-            recipient_hla_typing=related_recipient.parameters.hla_typing)
+            recipient_hla_typing=related_recipient.parameters.hla_typing,
+            ci_configuration=scorer.ci_configuration)
         donor_dto.detailed_score_with_related_recipient = get_detailed_score(
             compatibility_index_detailed,
             antibodies

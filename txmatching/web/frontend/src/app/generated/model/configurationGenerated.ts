@@ -9,8 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ScorerGenerated } from './scorerGenerated';
 import { ForbiddenCountryCombinationGenerated } from './forbiddenCountryCombinationGenerated';
 import { ManualRecipientDonorScoreGenerated } from './manualRecipientDonorScoreGenerated';
+import { SolverGenerated } from './solverGenerated';
 
 
 export interface ConfigurationGenerated { 
@@ -27,21 +29,14 @@ export interface ConfigurationGenerated {
     max_number_of_dynamic_constrains_ilp_solver: number;
     max_number_of_matchings: number;
     max_sequence_length: number;
-    maximum_total_score: number;
     minimum_total_score: number;
     require_better_match_in_compatibility_index: boolean;
     require_better_match_in_compatibility_index_or_blood_group: boolean;
     require_compatible_blood_group: boolean;
     required_patient_db_ids: Array<number>;
-    scorer_constructor_name: string;
-    solver_constructor_name: ConfigurationGeneratedSolverConstructorNameEnum;
+    scorer_constructor_name: ScorerGenerated;
+    solver_constructor_name: SolverGenerated;
     use_binary_scoring: boolean;
     use_high_resolution: boolean;
 }
-export enum ConfigurationGeneratedSolverConstructorNameEnum {
-    AllSolutionsSolver = 'AllSolutionsSolver',
-    IlpSolver = 'ILPSolver'
-};
-
-
 

@@ -184,8 +184,8 @@ class TestCrossmatch(unittest.TestCase):
         # mfi < cutoff:
 
         # negative high res crossmatch
-        self._assert_matches_equal(HLAType('A*23:01'), [HLAAntibody('A*23:01', 1900, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 1900, 2000), AntibodyMatchTypes.NONE)])
+        self._assert_matches_equal(HLAType('A*01:01'), [HLAAntibody('A*23:01', 2100, 2000)], True,
+                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.NONE)])
 
         # multiple antibodies
 
@@ -199,8 +199,7 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal(HLAType('A*23:01'),
                                    [HLAAntibody('A*23:01', 1900, 2000),
                                     HLAAntibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 1900, 2000), AntibodyMatchTypes.NONE),
-                                    AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.NONE)])
+                                   [AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.NONE)])
         # positive split crossmatch
         self._assert_matches_equal(HLAType('A*23:01'),
                                    [HLAAntibody('A23', 2100, 2000)], True,
@@ -209,8 +208,7 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal(HLAType('A*23:01'),
                                    [HLAAntibody('A*23:01', 1900, 2000),
                                     HLAAntibody('A23', 2100, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 1900, 2000), AntibodyMatchTypes.NONE),
-                                    AntibodyMatch(HLAAntibody('A23', 2100, 2000), AntibodyMatchTypes.NONE)])
+                                   [AntibodyMatch(HLAAntibody('A23', 2100, 2000), AntibodyMatchTypes.NONE)])
 
     def test_antibodies_with_multiple_mfis(self):
         self._assert_raw_code_equal('A*23:01', HLACode('A*23:01', 'A23', 'A9'))
@@ -223,14 +221,12 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal(HLAType('A23'),
                                    [HLAAntibody('A*23:01', 2100, 2000),
                                     HLAAntibody('A*23:04', 1900, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.SPLIT),
-                                    AntibodyMatch(HLAAntibody('A*23:04', 1900, 2000), AntibodyMatchTypes.NONE)])
+                                   [AntibodyMatch(HLAAntibody('A*23:01', 2100, 2000), AntibodyMatchTypes.SPLIT)])
         # first matching antibody with mfi < cutoff, second with mfi > cutoff
         self._assert_matches_equal(HLAType('A23'),
                                    [HLAAntibody('A*23:01', 1900, 2000),
                                     HLAAntibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 1900, 2000), AntibodyMatchTypes.NONE),
-                                    AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.SPLIT)])
+                                   [AntibodyMatch(HLAAntibody('A*23:04', 2100, 2000), AntibodyMatchTypes.SPLIT)])
         # first matching antibody with mfi1 > cutoff, second with mfi2 > mfi1
         self._assert_matches_equal(HLAType('A23'),
                                    [HLAAntibody('A*23:01', 2100, 2000),
@@ -247,8 +243,7 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal(HLAType('A23'),
                                    [HLAAntibody('A*23:01', 1900, 2000),
                                     HLAAntibody('A*23:04', 1800, 2000)], True,
-                                   [AntibodyMatch(HLAAntibody('A*23:01', 1900, 2000), AntibodyMatchTypes.NONE),
-                                    AntibodyMatch(HLAAntibody('A*23:04', 1800, 2000), AntibodyMatchTypes.NONE)])
+                                   [])
 
         # high res match
 
