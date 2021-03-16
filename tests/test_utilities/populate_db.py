@@ -1,20 +1,20 @@
 import logging
 from typing import List
 
+from tests.test_utilities.generate_patients import store_random_patients
+from tests.test_utilities.utilities_for_utils import \
+    create_or_overwrite_txm_event
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.configuration.configuration import Configuration
-from txmatching.database.db import db
 from txmatching.database.services import solver_service
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, set_allowed_txm_event_ids_for_user)
-from txmatching.database.sql_alchemy_schema import (AppUserModel, ConfigModel,
-                                                    TxmEventModel)
-from txmatching.patients.patient import TxmEvent
+from txmatching.database.sql_alchemy_schema import AppUserModel, ConfigModel
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.country_enum import Country
@@ -84,17 +84,6 @@ USERS = [
 ]
 
 
-def create_or_overwrite_txm_event(name: str) -> TxmEvent:
-    previous_txm_model = TxmEventModel.query.filter(TxmEventModel.name == name).first()
-    if previous_txm_model:
-        db.session.delete(previous_txm_model)
-        db.session.flush()
-    txm_event_model = TxmEventModel(name=name)
-    db.session.add(txm_event_model)
-    db.session.commit()
-    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, all_donors=[], all_recipients=[])
-
-
 def add_users():
     ConfigModel.query.delete()
     AppUserModel.query.delete()
@@ -124,7 +113,7 @@ def add_allowed_events_to_users(user_models: List[AppUserModel]):
     for user, user_model in zip(USERS, user_models):
         allowed_txm_events = user.get('allowed_txm_events')
         if allowed_txm_events:
-            set_allowed_txm_event_ids_for_user(user_model, allowed_txm_events )
+            set_allowed_txm_event_ids_for_user(user_model, allowed_txm_events)
 
 
 def _add_users(users: List[AppUserModel]):
@@ -143,12 +132,6 @@ def populate_db():
 
     replace_or_add_patients_from_excel(patients)
 
-    # uncomment code below if you want to have much larger number of results
-    # patients = parse_excel_data(get_absolute_path("/tests/resources/data2.xlsx"), country=None,
-    #                             txm_event_name='mock_data_CZE_CAN_IND')
-    #
-    # replace_or_add_patients_from_excel(patients)
-
     txm_event = get_txm_event_complete(txm_event.db_id)
 
     result = solve_from_configuration(txm_event=txm_event,
@@ -157,6 +140,8 @@ def populate_db():
     solver_service.save_pairing_result(result, 1)
 
     logger.info(f'Successfully stored {len(list(result.calculated_matchings_list))} matchings into the database.')
+
+    store_random_patients()
 
 
 if __name__ == '__main__':

@@ -1,10 +1,16 @@
+import dataclasses
+import json
+import os
 import random
 import re
+from enum import Enum
 from typing import List, Optional, Tuple
 
 import pandas as pd
+from dacite import Config, from_dict
 
-from tests.test_utilities.populate_db import create_or_overwrite_txm_event
+from tests.test_utilities.utilities_for_utils import \
+    create_or_overwrite_txm_event
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
@@ -19,9 +25,9 @@ from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup, Sex
+from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.rel_dna_ser_parsing import \
     HIGH_RES_TO_SPLIT_OR_BROAD
-from txmatching.web import create_app
 
 BRIDGING_PROBABILITY = 0.8
 
@@ -129,7 +135,7 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
     return donor, recipient
 
 
-def generate_patients(country: Country, txm_event_name: str, count: int) -> PatientUploadDTOIn:
+def generate_patients_for_one_country(country: Country, txm_event_name: str, count: int) -> PatientUploadDTOIn:
     pairs = [generate_patient(country, i) for i in range(0, count)]
     recipients = [recipient for _, recipient in pairs if recipient]
     donors = [donor for donor, _ in pairs]
@@ -143,13 +149,33 @@ def generate_patients(country: Country, txm_event_name: str, count: int) -> Pati
     )
 
 
+def generate_patients(txm_event_name: str = 'random_data',
+                      countries: Optional[List[Country]] = None,
+                      count_per_country=10) -> List[PatientUploadDTOIn]:
+    if countries is None:
+        countries = [Country.CZE, Country.IND, Country.CAN]
+    patient_upload_objects = []
+    for country in countries:
+        patient_upload_objects.append(
+            generate_patients_for_one_country(country, txm_event_name=txm_event_name, count=count_per_country))
+    return patient_upload_objects
+
+
+TXM_EVENT_NAME = 'random_data'
+DATA_FOLDER = get_absolute_path('tests/resources/random_data/')
+
+
+def store_random_patients():
+    create_or_overwrite_txm_event(TXM_EVENT_NAME)
+    for filename in os.listdir(DATA_FOLDER):
+        with open(f'{DATA_FOLDER}{filename}') as file_to_load:
+            patient_upload_dto = from_dict(data_class=PatientUploadDTOIn,
+                                           data=json.load(file_to_load), config=Config(cast=[Enum]))
+            replace_or_add_patients_from_one_country(patient_upload_dto)
+
+
 if __name__ == '__main__':
-    app = create_app()
-    with app.app_context():
-        txm_event = create_or_overwrite_txm_event(name='random_data')
-        replace_or_add_patients_from_one_country(
-            generate_patients(Country.CZE, txm_event_name=txm_event.name, count=10))
-        replace_or_add_patients_from_one_country(
-            generate_patients(Country.IND, txm_event_name=txm_event.name, count=10))
-        replace_or_add_patients_from_one_country(
-            generate_patients(Country.CAN, txm_event_name=txm_event.name, count=10))
+    txm_event_name = TXM_EVENT_NAME
+    for upload_object in generate_patients(txm_event_name):
+        with open(f'{DATA_FOLDER}{txm_event_name}_{upload_object.country}.json', 'w') as f:
+            json.dump(dataclasses.asdict(upload_object), f)
