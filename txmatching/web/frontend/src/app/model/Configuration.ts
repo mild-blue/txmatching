@@ -1,4 +1,4 @@
-import { ConfigurationGeneratedSolverConstructorNameEnum, CountryCodeGenerated, HlaCrossmatchLevelGenerated } from '@app/generated';
+import { CountryCodeGenerated, ScorerGenerated, SolverGenerated, HlaCrossmatchLevelGenerated } from '@app/generated';
 
 export interface Configuration {
   use_high_resolution: boolean;
@@ -10,7 +10,6 @@ export interface Configuration {
 
   blood_group_compatibility_bonus: number;
   minimum_total_score: number;
-  maximum_total_score: number;
   max_cycle_length: number;
   max_sequence_length: number;
   max_number_of_distinct_countries_in_round: number;
@@ -23,7 +22,8 @@ export interface Configuration {
   required_patient_db_ids: number[];
   forbidden_country_combinations: CountryCombination[];
 
-  solver_constructor_name: ConfigurationGeneratedSolverConstructorNameEnum;
+  scorer_constructor_name: ScorerGenerated;
+  solver_constructor_name: SolverGenerated;
 
   // Parameters that should not be modified in FE
   max_cycles_in_all_solutions_solver: number;
@@ -32,10 +32,6 @@ export interface Configuration {
   max_number_of_dynamic_constrains_ilp_solver: number;
 
   [key: string]: boolean | string | number | number[] | CountryCombination[] | DonorRecipientScore[];
-}
-
-export interface AppConfiguration extends Configuration {
-  scorer_constructor_name: string;
 }
 
 export interface DonorRecipientScore {

@@ -8,6 +8,6 @@ export interface Donor extends Patient {
   compatible_blood_with_related_recipient?: boolean;
   related_recipient_db_id?: number;
   score_with_related_recipient?: number;
+  max_score_with_related_recipient?: number;
   detailed_score_with_related_recipient: DetailedScorePerGroup[];
 }
-

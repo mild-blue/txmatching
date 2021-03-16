@@ -10,6 +10,7 @@ from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 @dataclass
 class TransplantDTOOut:
     score: float
+    max_score: float
     compatible_blood: bool
     has_crossmatch: bool
     donor: MedicalId

@@ -91,7 +91,7 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
 
         # Construct antibody matches set
         antibody_matches_set = set()
-        for antibody in antibodies:
+        for antibody in _get_antibodies_over_cutoff(antibodies):
             if AntibodyMatch(antibody, AntibodyMatchTypes.HIGH_RES) in positive_matches:
                 antibody_matches_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.HIGH_RES))
             elif AntibodyMatch(antibody, AntibodyMatchTypes.SPLIT) in positive_matches:

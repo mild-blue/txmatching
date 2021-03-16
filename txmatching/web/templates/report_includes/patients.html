@@ -11,6 +11,7 @@
         {{
           transplant_component(
             donor.score_with_related_recipient,
+            donor.max_score_with_related_recipient,
             donor,
             (all_recipients_by_db_id[donor.related_recipient_db_id] if donor.related_recipient_db_id else None),
             donor.compatible_blood_with_related_recipient,

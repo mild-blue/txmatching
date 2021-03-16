@@ -10,8 +10,8 @@
       [style]="isBloodCompatible ? patientPairStyles.Compatible : patientPairStyles.Incompatible"
     ></app-patient-pair>
 
-    <app-score-indicator [configuration]="configuration"
-                         [score]="score"
+    <app-score-indicator [score]="score"
+                         [maxScore]="maxScore"
                          [showScore]="true"></app-score-indicator>
   </div>
 

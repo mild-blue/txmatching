@@ -1,0 +1,675 @@
+{
+    "swagger": "2.0",
+    "basePath": "/",
+    "paths": {
+        "/v1/public/patient-upload": {
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Success.",
+                        "schema": {
+                            "$ref": "#/definitions/PatientUploadSuccessResponse"
+                        }
+                    }
+                },
+                "description": "This endpoint allows the country editor to upload patient data for given                         TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients                         from respective country in case there were any.",
+                "operationId": "put_txm_event_upload_patients",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/UploadPatients"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "public"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "API",
+        "version": "1.0"
+    },
+    "produces": [
+        "application/json"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "tags": [
+        {
+            "name": "public"
+        }
+    ],
+    "definitions": {
+        "UploadPatients": {
+            "required": [
+                "country",
+                "donors",
+                "recipients",
+                "txm_event_name"
+            ],
+            "properties": {
+                "country": {
+                    "$ref": "#/definitions/CountryCode"
+                },
+                "txm_event_name": {
+                    "type": "string",
+                    "description": "The TXM event name has to be provided by an ADMIN.",
+                    "example": "2020-10-CZE-ISR-AUT"
+                },
+                "donors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DonorInput"
+                    }
+                },
+                "recipients": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RecipientInput"
+                    }
+                },
+                "add_to_existing_patients": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "type": "object"
+        },
+        "CountryCode": {
+            "enum": [
+                "TGO",
+                "MNE",
+                "LAO",
+                "MRT",
+                "NIC",
+                "LVA",
+                "OMN",
+                "AFG",
+                "CYP",
+                "BEN",
+                "ATA",
+                "CHN",
+                "COL",
+                "CXR",
+                "ATG",
+                "MSR",
+                "MDA",
+                "ZMB",
+                "VNM",
+                "ATF",
+                "TCD",
+                "MYT",
+                "LBN",
+                "MAF",
+                "LUX",
+                "MTQ",
+                "CZE",
+                "ARE",
+                "CMR",
+                "BDI",
+                "ARG",
+                "ASM",
+                "BHR",
+                "CHL",
+                "AND",
+                "MNP",
+                "LTU",
+                "MDG",
+                "LCA",
+                "TUR",
+                "UKR",
+                "TUV",
+                "VIR",
+                "MLT",
+                "NOR",
+                "MCO",
+                "CHE",
+                "BLM",
+                "ABW",
+                "BLZ",
+                "BMU",
+                "CIV",
+                "MUS",
+                "USA",
+                "TWN",
+                "YEM",
+                "MWI",
+                "NLD",
+                "LSO",
+                "BOL",
+                "AUT",
+                "COK",
+                "BLR",
+                "AUS",
+                "BRN",
+                "MAR",
+                "NZL",
+                "LBR",
+                "MDV",
+                "TCA",
+                "UGA",
+                "TTO",
+                "POL",
+                "SRB",
+                "IND",
+                "GEO",
+                "GRC",
+                "SGS",
+                "GRD",
+                "IOT",
+                "HKG",
+                "PRK",
+                "KGZ",
+                "SPM",
+                "SLV",
+                "REU",
+                "SAU",
+                "SYC",
+                "STP",
+                "KEN",
+                "IMN",
+                "KOR",
+                "GUF",
+                "DJI",
+                "GNQ",
+                "GLP",
+                "DNK",
+                "GGY",
+                "ISR",
+                "PCN",
+                "SLB",
+                "PRY",
+                "RUS",
+                "KWT",
+                "DOM",
+                "GTM",
+                "GBR",
+                "GUM",
+                "JEY",
+                "HMD",
+                "SGP",
+                "PAK",
+                "SUR",
+                "SWE",
+                "JPN",
+                "GNB",
+                "ESH",
+                "DZA",
+                "GAB",
+                "FRA",
+                "DMA",
+                "HND",
+                "SDN",
+                "RWA",
+                "PHL",
+                "SSD",
+                "QAT",
+                "PER",
+                "PRI",
+                "SVN",
+                "HTI",
+                "ESP",
+                "GRL",
+                "GMB",
+                "ERI",
+                "FIN",
+                "EST",
+                "KNA",
+                "HUN",
+                "IRQ",
+                "CYM",
+                "SHN",
+                "PSE",
+                "PYF",
+                "SJM",
+                "IDN",
+                "ISL",
+                "EGY",
+                "FLK",
+                "FJI",
+                "GIN",
+                "GUY",
+                "IRN",
+                "COM",
+                "IRL",
+                "KAZ",
+                "ROU",
+                "SVK",
+                "PNG",
+                "PRT",
+                "SOM",
+                "SXM",
+                "HRV",
+                "KIR",
+                "JAM",
+                "ECU",
+                "ETH",
+                "FRO",
+                "KHM",
+                "SYR",
+                "SEN",
+                "PLW",
+                "SLE",
+                "FSM",
+                "GIB",
+                "DEU",
+                "GHA",
+                "JOR",
+                "ITA",
+                "PAN",
+                "SWZ",
+                "SMR",
+                "TUN",
+                "MLI",
+                "COG",
+                "ALA",
+                "AGO",
+                "BTN",
+                "BRB",
+                "CAF",
+                "MMR",
+                "LIE",
+                "NAM",
+                "MOZ",
+                "TON",
+                "VGB",
+                "VEN",
+                "TZA",
+                "TKM",
+                "MEX",
+                "NCL",
+                "MAC",
+                "LKA",
+                "COD",
+                "ALB",
+                "BWA",
+                "CRI",
+                "BVT",
+                "ARM",
+                "AZE",
+                "BIH",
+                "MNG",
+                "NIU",
+                "MYS",
+                "TLS",
+                "WSM",
+                "THA",
+                "XKX",
+                "NFK",
+                "LBY",
+                "AIA",
+                "BRA",
+                "CPV",
+                "BEL",
+                "CAN",
+                "BGD",
+                "CUW",
+                "BHS",
+                "NGA",
+                "MKD",
+                "NPL",
+                "VAT",
+                "UZB",
+                "UMI",
+                "TKL",
+                "VCT",
+                "ZWE",
+                "NRU",
+                "NER",
+                "CUB",
+                "BES",
+                "BFA",
+                "BGR",
+                "CCK",
+                "MHL",
+                "ZAF",
+                "URY",
+                "WLF",
+                "VUT",
+                "TJK"
+            ],
+            "type": "string"
+        },
+        "DonorInput": {
+            "required": [
+                "blood_group",
+                "donor_type",
+                "hla_typing",
+                "medical_id"
+            ],
+            "properties": {
+                "medical_id": {
+                    "type": "string",
+                    "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
+                    "example": "D1037"
+                },
+                "blood_group": {
+                    "$ref": "#/definitions/BloodGroupEnum"
+                },
+                "hla_typing": {
+                    "type": "array",
+                    "description": "HLA typing of the patient. Use high resolution if available.",
+                    "example": [
+                        "A1",
+                        "A32",
+                        "B7",
+                        "B51",
+                        "DR11",
+                        "DR15",
+                        "A*02:03",
+                        "A*11:01:35",
+                        "DPA1*01:07",
+                        "DRB4*01:01",
+                        "DQB1*02:01:01:01"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "donor_type": {
+                    "$ref": "#/definitions/DonorType"
+                },
+                "related_recipient_medical_id": {
+                    "type": "string",
+                    "description": "Medical ID of the related recipient, empty for bridging and non-directed donors.",
+                    "example": "R1037"
+                },
+                "sex": {
+                    "$ref": "#/definitions/SexEnum"
+                },
+                "height": {
+                    "type": "integer",
+                    "description": "Height of the patient in centimeters.",
+                    "example": 178
+                },
+                "weight": {
+                    "type": "number",
+                    "description": "Weight of the patient in kilograms.",
+                    "example": 78.4
+                },
+                "year_of_birth": {
+                    "type": "integer",
+                    "description": "Year of birth of the patient.",
+                    "example": 1945
+                }
+            },
+            "type": "object"
+        },
+        "BloodGroupEnum": {
+            "enum": [
+                "A",
+                "B",
+                "AB",
+                "0"
+            ],
+            "type": "string"
+        },
+        "DonorType": {
+            "enum": [
+                "DONOR",
+                "BRIDGING_DONOR",
+                "NON_DIRECTED"
+            ],
+            "type": "string",
+            "description": "Type of the donor."
+        },
+        "SexEnum": {
+            "enum": [
+                "M",
+                "F"
+            ],
+            "type": "string",
+            "description": "Sex of the patient."
+        },
+        "RecipientInput": {
+            "required": [
+                "blood_group",
+                "hla_antibodies",
+                "hla_typing",
+                "medical_id"
+            ],
+            "properties": {
+                "hla_antibodies": {
+                    "type": "array",
+                    "description": "Detected HLA antibodies of the patient. Use high resolution                                   if available. If high resolution is provided it is assumed that all tested antibodieswere provided. If not it is assumed that either all or just positiveones were.",
+                    "items": {
+                        "$ref": "#/definitions/HLAAntibodyIn"
+                    }
+                },
+                "acceptable_blood_groups": {
+                    "type": "array",
+                    "description": "Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.",
+                    "items": {
+                        "$ref": "#/definitions/BloodGroupEnum"
+                    }
+                },
+                "medical_id": {
+                    "type": "string",
+                    "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
+                    "example": "R1037"
+                },
+                "blood_group": {
+                    "$ref": "#/definitions/BloodGroupEnum"
+                },
+                "hla_typing": {
+                    "type": "array",
+                    "description": "HLA typing of the patient. Use high resolution if available.",
+                    "example": [
+                        "A1",
+                        "A32",
+                        "B7",
+                        "B51",
+                        "DR11",
+                        "DR15",
+                        "A*02:03",
+                        "A*11:01:35",
+                        "DPA1*01:07",
+                        "DRB4*01:01",
+                        "DQB1*02:01:01:01"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sex": {
+                    "$ref": "#/definitions/SexEnum"
+                },
+                "height": {
+                    "type": "integer",
+                    "description": "Height of the patient in centimeters.",
+                    "example": 178
+                },
+                "weight": {
+                    "type": "number",
+                    "description": "Weight of the patient in kilograms.",
+                    "example": 78.4
+                },
+                "year_of_birth": {
+                    "type": "integer",
+                    "description": "Year of birth of the patient.",
+                    "example": 1945
+                },
+                "waiting_since": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Date since when the patient has been on waiting list. Use format YYYY-MM-DD.",
+                    "example": "2015-01-17"
+                },
+                "previous_transplants": {
+                    "type": "integer",
+                    "description": "Number of previous kidney transplants."
+                }
+            },
+            "type": "object"
+        },
+        "HLAAntibodyIn": {
+            "required": [
+                "cutoff",
+                "mfi",
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "HLA antibody name in high (A*01:01), low (A*01), split (A1) or broad (A9) resolutions.In the case of DP, DQ when alpha and beta are provided the expected format is DQ[01:01,02:02]",
+                    "example": "A*01:01"
+                },
+                "mfi": {
+                    "type": "integer",
+                    "description": "Mean fluorescence intensity. Use exact value.",
+                    "example": 2350
+                },
+                "cutoff": {
+                    "type": "integer",
+                    "description": "Default cutoff value for the specific patient and HLA antibody.",
+                    "example": 2000
+                }
+            },
+            "type": "object"
+        },
+        "FailResponse": {
+            "required": [
+                "error"
+            ],
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "PatientUploadSuccessResponse": {
+            "required": [
+                "donors_uploaded",
+                "recipients_uploaded"
+            ],
+            "properties": {
+                "recipients_uploaded": {
+                    "type": "integer",
+                    "description": "Number of recipients successfully loaded into the application."
+                },
+                "donors_uploaded": {
+                    "type": "integer",
+                    "description": "Number of donors successfully loaded into the application."
+                }
+            },
+            "type": "object"
+        }
+    },
+    "responses": {
+        "ParseError": {
+            "description": "When a mask can't be parsed"
+        },
+        "MaskError": {
+            "description": "When any error occurs on mask"
+        },
+        "SolverAlreadyRunningException": {
+            "description": "Solver already running"
+        },
+        "InvalidJWTException": {
+            "description": "invalid_jwt_exception"
+        },
+        "NotFoundException": {
+            "description": "not_found_exception"
+        },
+        "CredentialsMismatchException": {
+            "description": "credentials_mismatch_exception"
+        },
+        "InvalidOtpException": {
+            "description": "invalid_otp_exception"
+        },
+        "CouldNotSendOtpUsingSmsServiceException": {
+            "description": "could_not_send_otp"
+        },
+        "InvalidIpAddressAccessException": {
+            "description": "invalid_ip_exception"
+        },
+        "UserUpdateException": {
+            "description": "user_update_exception"
+        },
+        "InvalidAuthCallException": {
+            "description": "invalid_auth_call_exception"
+        },
+        "GuardException": {
+            "description": "guard_exception"
+        },
+        "WrongTokenUsedException": {
+            "description": "wrong_used_token_exception"
+        },
+        "AuthenticationException": {
+            "description": "general_authentication_exception"
+        },
+        "InvalidArgumentException": {
+            "description": "invalid_argument_exception"
+        },
+        "UnauthorizedException": {
+            "description": "unauthorized_exception"
+        },
+        "TooComplicatedDataForAllSolutionsSolver": {
+            "description": "too complicated data for solver _exception"
+        },
+        "TooComplicatedDataForIlpSolver": {
+            "description": "too complicated data for solver _exception"
+        },
+        "CachingNotReadyException": {
+            "description": "invalid_argument_exception"
+        },
+        "DaciteError": {
+            "description": "dacite_exception"
+        },
+        "KeyError": {
+            "description": "key_error"
+        },
+        "ValueError": {
+            "description": "value_error"
+        },
+        "Forbidden": {
+            "description": "access_denied"
+        },
+        "HTTPException": {
+            "description": "http_exception"
+        },
+        "Exception": {
+            "description": "default_exception_error"
+        }
+    },
+    "host": "test"
+}

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Configuration } from '@app/model/Configuration';
 import { PatientList } from '@app/model/PatientList';
-import { ConfigurationGeneratedSolverConstructorNameEnum, HlaCrossmatchLevelGenerated } from '@app/generated';
+import { ScorerGenerated, SolverGenerated, HlaCrossmatchLevelGenerated } from '@app/generated';
 
 @Component({
   selector: 'app-configuration',
@@ -16,9 +16,9 @@ export class ConfigurationComponent implements OnInit {
   @Output() configSubmitted: EventEmitter<Configuration> = new EventEmitter<Configuration>();
 
   public configForm?: FormGroup;
-  public allSolverConstructorNames: string[] = Object.values(
-    ConfigurationGeneratedSolverConstructorNameEnum
-  );
+
+  public allScorers: string[] = Object.values(ScorerGenerated);
+  public allSolvers: string[] = Object.values(SolverGenerated);
 
   public allHlaCrossmatchLevels: string[] = Object.values(
     HlaCrossmatchLevelGenerated

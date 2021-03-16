@@ -19,6 +19,7 @@ export class MatchingTransplantComponent {
   @Input() configuration?: Configuration;
 
   @Input() score?: number;
+  @Input() maxScore?: number;
   @Input() donor?: Donor;
   @Input() recipient?: Recipient;
   @Input() isBloodCompatible?: boolean;

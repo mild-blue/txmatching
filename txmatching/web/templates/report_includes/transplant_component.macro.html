@@ -2,6 +2,7 @@
 
 {% macro transplant_component(
     score,
+    max_score,
     donor,
     recipient,
     compatible_blood,
@@ -51,7 +52,7 @@
             </div>
           </h4>
         </td>
-        <td class="score" style="background: {{ score|score_color_filter(configuration) }}">
+        <td class="score" style="background: {{ score|score_color_filter(max_score) }}">
           <div>
             <div>
               <span>{{ score if score else "-" }}</span>

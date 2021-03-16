@@ -50,7 +50,7 @@
                   <!-- Patient pair -->
                   <div
                     class="patient-pair {{ 'compatible' if transplant.compatible_blood else 'non-compatible' }}"
-                    style="border-right: 10px solid {{ transplant.score|score_color_filter(configuration) }}">
+                    style="border-right: 10px solid {{ transplant.score|score_color_filter(transplant.max_score) }}">
                     <div class="patient-pair-content">
                       {% if transplant.has_crossmatch %}
                         <div class="warning-icon">!</div>

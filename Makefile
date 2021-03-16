@@ -2,7 +2,7 @@ include .env.local
 
 CONDA_ENV=txmatching
 
-SWAGGER_INPUT_FILE='txmatching/web/swagger.yaml'
+SWAGGER_INPUT_FILE='txmatching/web/swagger/swagger.yaml'
 SWAGGER_OUTPUT_DIR='/tmp/swagger-generated'
 FE_GENERATED_DIR='txmatching/web/frontend/src/app/generated'
 

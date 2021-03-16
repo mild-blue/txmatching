@@ -13,8 +13,8 @@
       </div>
 
       <app-score-indicator *ngIf="configuration && !configuration.use_binary_scoring"
-                           [configuration]="configuration"
-                           [score]="transplant.score"></app-score-indicator>
+                           [score]="transplant.score"
+                           [maxScore]="transplant.maxScore"></app-score-indicator>
 
     </div>
   </div>

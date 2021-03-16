@@ -33,6 +33,10 @@ export interface DonorGenerated {
     detailed_score_with_related_recipient?: Array<DetailedScoreForGroupGenerated>;
     donor_type: DonorTypeGenerated;
     /**
+     * Maximum transplant score
+     */
+    max_score_with_related_recipient?: number;
+    /**
      * Medical id of the patient
      */
     medical_id: string;

@@ -1,7 +1,7 @@
 import { ConfigurationGenerated } from '../../generated';
-import { AppConfiguration } from '../../model';
+import { Configuration } from '../../model';
 
 /* Used for calculating matchings */
-export const fromAppConfiguration = ( configuration: AppConfiguration ): ConfigurationGenerated => {
+export const fromConfiguration = (configuration: Configuration ): ConfigurationGenerated => {
   return configuration;
 };
