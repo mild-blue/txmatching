@@ -30,6 +30,32 @@ from txmatching.utils.hla_system.rel_dna_ser_parsing import \
     HIGH_RES_TO_SPLIT_OR_BROAD
 
 BRIDGING_PROBABILITY = 0.8
+TXM_EVENT_NAME = 'high_res_example_data'
+DATA_FOLDER = get_absolute_path(f'tests/resources/{TXM_EVENT_NAME}/')
+
+
+def generate_waiting_since() -> str:
+    return f'{random.choice(range(2018, 2020))}-{random.choice(range(1, 12))}-{random.choice(range(1, 28))}'
+
+
+def generate_random_transplants() -> int:
+    return random.choice(range(0, 4))
+
+
+def generate_random_sex() -> Sex:
+    return random.choice(list(Sex))
+
+
+def generate_random_height() -> int:
+    return random.choice(range(150, 190))
+
+
+def generate_random_weight() -> int:
+    return random.choice(range(50, 110))
+
+
+def generate_random_yob() -> int:
+    return random.choice(range(1950, 2000))
 
 
 def random_true_with_prob(prob: float):
@@ -111,9 +137,9 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
         related_recipient_medical_id=recipient_id,
         hla_typing=generate_hla_typing(),
         medical_id=f'{country}_{i}',
-        height=173,
-        weight=90,
-        year_of_birth=1985,
+        height=generate_random_height(),
+        weight=generate_random_weight(),
+        year_of_birth=generate_random_yob(),
         sex=Sex.F,
     )
     if is_bridging:
@@ -126,10 +152,12 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
             hla_antibodies=generate_antibodies(),
             acceptable_blood_groups=[],
             medical_id=recipient_id,
-            height=173,
-            weight=90,
-            year_of_birth=1985,
-            sex=Sex.F,
+            height=generate_random_height(),
+            weight=generate_random_weight(),
+            year_of_birth=generate_random_yob(),
+            sex=generate_random_sex(),
+            waiting_since=generate_waiting_since(),
+            previous_transplants=generate_random_transplants()
         )
 
     return donor, recipient
@@ -149,7 +177,7 @@ def generate_patients_for_one_country(country: Country, txm_event_name: str, cou
     )
 
 
-def generate_patients(txm_event_name: str = 'random_data',
+def generate_patients(txm_event_name: str = TXM_EVENT_NAME,
                       countries: Optional[List[Country]] = None,
                       count_per_country=10) -> List[PatientUploadDTOIn]:
     if countries is None:
@@ -161,11 +189,7 @@ def generate_patients(txm_event_name: str = 'random_data',
     return patient_upload_objects
 
 
-TXM_EVENT_NAME = 'random_data'
-DATA_FOLDER = get_absolute_path('tests/resources/random_data/')
-
-
-def store_random_patients():
+def store_generated_patients():
     create_or_overwrite_txm_event(TXM_EVENT_NAME)
     for filename in os.listdir(DATA_FOLDER):
         with open(f'{DATA_FOLDER}{filename}') as file_to_load:

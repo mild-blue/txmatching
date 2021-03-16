@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from tests.test_utilities.generate_patients import store_random_patients
+from tests.test_utilities.generate_patients import store_generated_patients
 from tests.test_utilities.utilities_for_utils import \
     create_or_overwrite_txm_event
 from txmatching.auth.crypto.password_crypto import encode_password
@@ -141,7 +141,7 @@ def populate_db():
 
     logger.info(f'Successfully stored {len(list(result.calculated_matchings_list))} matchings into the database.')
 
-    store_random_patients()
+    store_generated_patients()
 
 
 if __name__ == '__main__':
