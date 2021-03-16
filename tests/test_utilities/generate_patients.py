@@ -1,133 +1,155 @@
-import logging
-import os
-import unittest
-from importlib import util as importing
-from typing import Dict
+import random
+import re
+from typing import List, Optional, Tuple
 
-from flask import Flask
-from flask_restx import Api
-from sqlalchemy import event
-from sqlalchemy.engine import Engine
+import pandas as pd
 
-from tests.test_utilities.populate_db import (ADMIN_USER, SERVICE_USER,
-                                              VIEWER_USER, add_users,
-                                              create_or_overwrite_txm_event)
-from txmatching.auth.auth_check import store_user_in_context
-from txmatching.auth.data_types import UserRole
-from txmatching.configuration.configuration import Configuration
-from txmatching.database.db import db
-from txmatching.database.services import solver_service
+from tests.test_utilities.populate_db import create_or_overwrite_txm_event
+from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
+    DonorUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
+    HLAAntibodiesUploadDTO
+from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
+    PatientUploadDTOIn
+from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
+    RecipientUploadDTO
 from txmatching.database.services.patient_upload_service import \
-    replace_or_add_patients_from_excel
-from txmatching.database.services.txm_event_service import \
-    get_txm_event_complete
-from txmatching.solve_service.solve_from_configuration import \
-    solve_from_configuration
-from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
-from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import (API_VERSION, USER_NAMESPACE, add_all_namespaces,
-                            register_error_handlers)
+    replace_or_add_patients_from_one_country
+from txmatching.patients.patient import DonorType
+from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup, Sex
+from txmatching.utils.hla_system.rel_dna_ser_parsing import \
+    HIGH_RES_TO_SPLIT_OR_BROAD
+from txmatching.web import create_app
 
-ROLE_CREDENTIALS = {
-    UserRole.ADMIN: ADMIN_USER,
-    UserRole.VIEWER: VIEWER_USER,
-    UserRole.EDITOR: None,
-    UserRole.SERVICE: SERVICE_USER
+BRIDGING_PROBABILITY = 0.8
+
+
+def random_true_with_prob(prob: float):
+    return random.uniform(0, 1) > prob
+
+
+def random_blood_group() -> BloodGroup:
+    rand = random.uniform(0, 1)
+    if rand < 0.15:
+        return BloodGroup.ZERO
+    if rand < 0.5:
+        return BloodGroup.A
+    if rand < 0.9:
+        return BloodGroup.B
+    else:
+        return BloodGroup.AB
+
+
+SAMPLE = set(range(1, 40))
+
+
+def get_codes(hla_group: HLAGroup, sample=None):
+    if sample is None:
+        sample = SAMPLE
+    all_high_res = [high_res for high_res, split_or_broad_or_nan in HIGH_RES_TO_SPLIT_OR_BROAD.items() if
+                    split_or_broad_or_nan is not None and not pd.isna(split_or_broad_or_nan) and re.match(
+                        HLA_GROUP_SPLIT_CODE_REGEX[hla_group], split_or_broad_or_nan) and high_res.count(':') == 1]
+    return [high_res for i, high_res in enumerate(all_high_res) if i in sample]
+
+
+TypizationFor = {
+    HLAGroup.A: get_codes(HLAGroup.A),
+    HLAGroup.B: get_codes(HLAGroup.B),
+    HLAGroup.DRB1: get_codes(HLAGroup.DRB1),
+    # HLAGroup.CW: get_codes(HLAGroup.CW),
+    HLAGroup.DP: get_codes(HLAGroup.DP),
+    HLAGroup.DQ: get_codes(HLAGroup.DQ)
 }
 
 
-# adds foreign key support to test database
-@event.listens_for(Engine, 'connect')
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute('PRAGMA foreign_keys=ON')
-    cursor.close()
+def get_random_hla_type(hla_group: HLAGroup):
+    return random.choice(TypizationFor[hla_group])
 
 
-class DbTests(unittest.TestCase):
-    _database_name = 'memory.sqlite'
+def generate_hla_typing() -> List[str]:
+    typization = []
+    for hla_group in TypizationFor:
+        typization.append(get_random_hla_type(hla_group))
+        typization.append(get_random_hla_type(hla_group))
 
-    def setUp(self):
-        formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    return typization
 
-        logging.basicConfig(level=logging.INFO, format=formatter)
-        """
-        Creates a new database for the unit test to use
-        """
-        # delete file from previous test run in case it was forgotten there
-        if os.path.exists(get_absolute_path(f'/tests/test_utilities/{self._database_name}')):
-            os.remove(get_absolute_path(f'/tests/test_utilities/{self._database_name}'))
 
-        self.app = Flask(__name__)
-        self.app.config['SERVER_NAME'] = 'test'
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self._database_name}'
-        self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        self.app.config['SQLALCHEMY_ECHO'] = False  # Enable if you want to see DB queries.
-        db.init_app(self.app)
+CUTOFF = 2000
 
-        self.app.app_context().push()
-        self._load_local_development_config()
 
-        db.create_all()
+def generate_antibodies() -> List[HLAAntibodiesUploadDTO]:
+    antibodies = []
+    for hla_group in TypizationFor:
+        for hla_code in TypizationFor[hla_group]:
+            above_cutoff = random_true_with_prob(0.8)
+            mfi = int(CUTOFF * 2) if above_cutoff else int(CUTOFF / 2)
+            antibodies.append(HLAAntibodiesUploadDTO(
+                cutoff=CUTOFF,
+                mfi=mfi,
+                name=hla_code
+            ))
+    return antibodies
 
-        self.app.app_context().push()
-        self.api = Api(self.app)
-        add_all_namespaces(self.api)
-        register_error_handlers(self.api)
 
-        add_users()
-
-        self._set_bearer_token()
-
-    def fill_db_with_patients_and_results(self) -> int:
-        txm_event_db_id = self.fill_db_with_patients()
-        txm_event = get_txm_event_complete(txm_event_db_id)
-        pairing_result = solve_from_configuration(Configuration(), txm_event)
-        solver_service.save_pairing_result(pairing_result, 1)
-        return txm_event_db_id
-
-    @staticmethod
-    def fill_db_with_patients(file=get_absolute_path('/tests/resources/data.xlsx'), txm_event='test') -> int:
-        patients = parse_excel_data(file, txm_event, None)
-        txm_event = create_or_overwrite_txm_event(name=txm_event)
-        replace_or_add_patients_from_excel(patients)
-        return txm_event.db_id
-
-    def _set_bearer_token(self):
-        self.login_with_role(UserRole.ADMIN)
-
-    def login_with_credentials(self, credentials: Dict):
-        self.login_with(
-            email=credentials['email'],
-            password=credentials['password'],
-            user_id=credentials['id'],
-            user_role=credentials['role']
+def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional[RecipientUploadDTO]]:
+    is_bridging = random_true_with_prob(BRIDGING_PROBABILITY)
+    blood_group_donor = random_blood_group()
+    donor_type = DonorType.BRIDGING_DONOR if is_bridging else DonorType.DONOR
+    recipient_id = f'{country}_{i}R' if not is_bridging else None
+    donor = DonorUploadDTO(
+        donor_type=donor_type,
+        blood_group=blood_group_donor,
+        related_recipient_medical_id=recipient_id,
+        hla_typing=generate_hla_typing(),
+        medical_id=f'{country}_{i}',
+        height=173,
+        weight=90,
+        year_of_birth=1985,
+        sex=Sex.F,
+    )
+    if is_bridging:
+        recipient = None
+    else:
+        blood_group_recipient = random_blood_group()
+        recipient = RecipientUploadDTO(
+            blood_group=blood_group_recipient,
+            hla_typing=generate_hla_typing(),
+            hla_antibodies=generate_antibodies(),
+            acceptable_blood_groups=[],
+            medical_id=recipient_id,
+            height=173,
+            weight=90,
+            year_of_birth=1985,
+            sex=Sex.F,
         )
 
-    def login_with_role(self, user_role: UserRole):
-        credentials = ROLE_CREDENTIALS[user_role]
-        self.login_with_credentials(credentials)
+    return donor, recipient
 
-    def login_with(self, email: str, password: str, user_id: int, user_role: UserRole):
-        with self.app.test_client() as client:
-            json = client.post(f'{API_VERSION}/{USER_NAMESPACE}/login',
-                               json={'email': email, 'password': password}).json
-            token = json['auth_token']
-            self.auth_headers = {'Authorization': f'Bearer {token}'}
-            store_user_in_context(user_id, user_role)
 
-    def _load_local_development_config(self):
-        config_file = 'txmatching.web.local_config'
-        if importing.find_spec(config_file):
-            self.app.config.from_object(config_file)
+def generate_patients(country: Country, txm_event_name: str, count: int) -> PatientUploadDTOIn:
+    pairs = [generate_patient(country, i) for i in range(0, count)]
+    recipients = [recipient for _, recipient in pairs if recipient]
+    donors = [donor for donor, _ in pairs]
 
-    def tearDown(self):
-        """
-        Ensures that the database is emptied for next unit test
-        """
-        with self.app.app_context():
-            db.session.rollback()
-            db.drop_all()
+    return PatientUploadDTOIn(
+        add_to_existing_patients=False,
+        txm_event_name=txm_event_name,
+        country=country,
+        recipients=recipients,
+        donors=donors,
+    )
 
-        if os.path.exists(get_absolute_path(f'/tests/test_utilities/{self._database_name}')):
-            os.remove(get_absolute_path(f'/tests/test_utilities/{self._database_name}'))
+
+if __name__ == '__main__':
+    app = create_app()
+    with app.app_context():
+        txm_event = create_or_overwrite_txm_event(name='random_data')
+        replace_or_add_patients_from_one_country(
+            generate_patients(Country.CZE, txm_event_name=txm_event.name, count=10))
+        replace_or_add_patients_from_one_country(
+            generate_patients(Country.IND, txm_event_name=txm_event.name, count=10))
+        replace_or_add_patients_from_one_country(
+            generate_patients(Country.CAN, txm_event_name=txm_event.name, count=10))
