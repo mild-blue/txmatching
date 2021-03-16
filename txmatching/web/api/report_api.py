@@ -143,7 +143,8 @@ class MatchingReport(Resource):
 
         matchings = requested_matching + other_matchings_to_include
 
-        calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings)
+        calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings,
+                                                                   maybe_configuration_db_id)
 
         patients_dto = to_lists_for_fe(txm_event)
 

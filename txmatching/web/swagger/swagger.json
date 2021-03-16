@@ -2236,6 +2236,7 @@
         "CalculatedMatchings": {
             "required": [
                 "calculated_matchings",
+                "calculation_id",
                 "show_not_all_matchings_found"
             ],
             "properties": {
@@ -2250,6 +2251,9 @@
                 },
                 "show_not_all_matchings_found": {
                     "type": "boolean"
+                },
+                "calculation_id": {
+                    "type": "integer"
                 }
             },
             "type": "object"

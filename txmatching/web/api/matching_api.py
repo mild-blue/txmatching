@@ -61,7 +61,8 @@ class CalculateFromConfig(Resource):
         assert maybe_configuration_db_id is not None
         matchings_detailed = get_matchings_detailed_for_configuration(txm_event, maybe_configuration_db_id)
 
-        calculated_matchings_dto = create_calculated_matchings_dto(matchings_detailed, matchings_detailed.matchings)
+        calculated_matchings_dto = create_calculated_matchings_dto(matchings_detailed, matchings_detailed.matchings,
+                                                                   maybe_configuration_db_id)
 
         if get_user_role() == UserRole.VIEWER:
             calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[

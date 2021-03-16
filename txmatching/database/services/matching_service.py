@@ -120,7 +120,8 @@ def _matchings_dto_to_matching_with_score(
 
 def create_calculated_matchings_dto(
         latest_matchings_detailed: MatchingsDetailed,
-        matchings: List[MatchingWithScore]
+        matchings: List[MatchingWithScore],
+        configuration_db_id: int,
 ) -> CalculatedMatchingsDTO:
     """
     Method that creates common DTOs for FE and reports.
@@ -164,6 +165,6 @@ def create_calculated_matchings_dto(
         ) for matching in matchings
         ],
         found_matchings_count=latest_matchings_detailed.found_matchings_count,
-        show_not_all_matchings_found=latest_matchings_detailed.show_not_all_matchings_found
-
+        show_not_all_matchings_found=latest_matchings_detailed.show_not_all_matchings_found,
+        calculation_id=configuration_db_id
     )
