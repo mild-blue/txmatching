@@ -58,7 +58,7 @@ class TestMatchingApi(DbTests):
         )
         self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_split_or_broad_codes(txm_event.active_donors_dict[1]))
         self.assertSetEqual({'A9'}, _get_hla_antibodies_split_or_broad_codes(txm_event.active_recipients_dict[1]))
-        self._check_expected_errors_in_db(2)
+        self._check_expected_errors_in_db(3)
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         txm_event_name = 'invalid_name'
