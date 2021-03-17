@@ -5,7 +5,8 @@ from dataclasses import dataclass
 from typing import Dict, List, Union
 
 from txmatching.patients.hla_code import HLACode
-from txmatching.utils.enums import (HLA_GROUP_SPLIT_CODE_REGEX,
+from txmatching.utils.enums import (HLA_GROUP_HIGH_RES_CODE_REGEX,
+                                    HLA_GROUP_SPLIT_CODE_REGEX,
                                     HLA_GROUPS_NAMES_WITH_OTHER, HLAGroup)
 from txmatching.utils.hla_system.hla_transformations import (
     get_mfi_from_multiple_hla_codes, parse_hla_raw_code)
@@ -197,7 +198,7 @@ class HLAAntibodies(PersistentlyHashable):
 
 
 def split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
-    hla_types_in_groups = _split_hla_codes_to_groups(hla_types)
+    hla_types_in_groups = _split_hla_types_to_groups(hla_types)
     return [HLAPerGroup(hla_group,
                         sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
                         ) for hla_group, hla_codes_in_group in
@@ -227,7 +228,7 @@ def _filter_antibodies_per_groups_over_cutoff(
 
 
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[AntibodiesPerGroup]:
-    hla_antibodies_in_groups = _split_hla_codes_to_groups(hla_antibodies)
+    hla_antibodies_in_groups = _split_hla_types_to_groups(hla_antibodies)
     return [AntibodiesPerGroup(hla_group,
                                sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
                                ) for hla_group, hla_codes_in_group in
@@ -279,7 +280,16 @@ def _filter_antibodies_over_cutoff(
 HLACodeAlias = Union[HLAType, HLAAntibody]
 
 
-def _split_hla_codes_to_groups(hla_types: List[HLACodeAlias]
+def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
+    if hla_type.code.broad is not None:
+        return bool(re.match(HLA_GROUP_SPLIT_CODE_REGEX[hla_group], hla_type.code.broad))
+    elif hla_type.code.high_res is not None:
+        return bool(re.match(HLA_GROUP_HIGH_RES_CODE_REGEX[hla_group], hla_type.code.high_res))
+    else:
+        raise AssertionError(f'Split or high res should be provided: {hla_type.code}')
+
+
+def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]
                                ) -> Dict[HLAGroup, List[HLACodeAlias]]:
     hla_types_in_groups = dict()
     for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
@@ -287,7 +297,7 @@ def _split_hla_codes_to_groups(hla_types: List[HLACodeAlias]
     for hla_type in hla_types:
         match_found = False
         for hla_group in HLA_GROUPS_NAMES_WITH_OTHER:
-            if re.match(HLA_GROUP_SPLIT_CODE_REGEX[hla_group], hla_type.code.broad):
+            if _is_hla_type_in_group(hla_type, hla_group):
                 hla_types_in_groups[hla_group].append(hla_type)
                 match_found = True
                 break
