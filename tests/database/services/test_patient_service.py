@@ -2,6 +2,7 @@ import dacite
 
 from tests.test_utilities.create_dataclasses import (get_test_donors,
                                                      get_test_recipients)
+from tests.test_utilities.hla_preparation_utils import get_hla_type
 from tests.test_utilities.populate_db import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.auth.exceptions import InvalidArgumentException
@@ -23,7 +24,6 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     RecipientModel)
-from txmatching.patients.hla_model import HLAType
 from txmatching.patients.patient import DonorType, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
@@ -225,9 +225,9 @@ class TestPatientService(DbTests):
         new_donors = get_test_donors()
         self.assertEqual(
             new_donors[0].parameters.hla_typing.hla_per_groups[0].hla_types[0],
-            HLAType('A1')
+            get_hla_type('A1')
         )
-        new_donors[0].parameters.hla_typing.hla_per_groups[0].hla_types[0] = HLAType('A3')
+        new_donors[0].parameters.hla_typing.hla_per_groups[0].hla_types[0] = get_hla_type('A3')
 
         txm_event_5 = TxmEvent(
             1, 'event_name_1',

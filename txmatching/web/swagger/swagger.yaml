@@ -902,17 +902,12 @@ definitions:
                 items:
                     $ref: '#/definitions/HlaCodesInGroups'
                 type: array
-            hla_types_list:
-                items:
-                    $ref: '#/definitions/HlaType'
-                type: array
             hla_types_raw_list:
                 items:
                     $ref: '#/definitions/HlaTypeRaw'
                 type: array
         required:
         - hla_per_groups
-        - hla_types_list
         - hla_types_raw_list
         type: object
     HlaTypingToUpdate:

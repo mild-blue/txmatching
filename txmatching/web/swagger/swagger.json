@@ -215,50 +215,6 @@
             }
         },
         "/v1/txm-event/default": {
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "Default event.",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEvent"
-                        }
-                    }
-                },
-                "description": "Get default event",
-                "operationId": "get_txm_default_event_api",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "txm-event"
-                ]
-            },
             "put": {
                 "responses": {
                     "500": {
@@ -310,6 +266,50 @@
                         }
                     }
                 ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Default event.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "Get default event",
+                "operationId": "get_txm_default_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -2701,16 +2701,9 @@
         "HlaTyping": {
             "required": [
                 "hla_per_groups",
-                "hla_types_list",
                 "hla_types_raw_list"
             ],
             "properties": {
-                "hla_types_list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/HlaType"
-                    }
-                },
                 "hla_types_raw_list": {
                     "type": "array",
                     "items": {

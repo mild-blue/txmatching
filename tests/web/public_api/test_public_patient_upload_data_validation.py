@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from flask import Response
 
+from tests.test_utilities.hla_preparation_utils import get_hla_typing
 from tests.test_utilities.prepare_app import DbTests
 from tests.web.public_api.test_public_patient_upload_example_data import (
     DONORS, RECIPIENTS,
@@ -25,7 +26,6 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel,
                                                     TxmEventModel,
                                                     UploadedDataModel)
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAType, HLATypeRaw, HLATyping
 from txmatching.patients.patient import Patient, Recipient, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
@@ -46,19 +46,19 @@ class TestMatchingApi(DbTests):
         self.assertEqual(1, len(UploadedDataModel.query.all()))
         self.assertSetEqual({BloodGroup.ZERO, BloodGroup.A},
                             set(blood for blood in txm_event.active_recipients_dict[1].acceptable_blood_groups))
-        self.assertEqual(
-            HLATyping(
-                hla_types_list=[HLAType('A1'), HLAType('A23')],
-                hla_types_raw_list=[
-                    HLATypeRaw('A1'), HLATypeRaw('A23'),
-                    HLATypeRaw(raw_code='B*01:01N'), HLATypeRaw(raw_code='Invalid')
+        self.assertListEqual(
+            get_hla_typing(
+                [
+                    'A1', 'A23',
+                    'B*01:01N', 'Invalid'
                 ]
-            ),
-            txm_event.active_donors_dict[1].parameters.hla_typing
+            ).hla_per_groups,
+            txm_event.active_donors_dict[1].parameters.hla_typing.hla_per_groups
         )
         self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_split_or_broad_codes(txm_event.active_donors_dict[1]))
         self.assertSetEqual({'A9'}, _get_hla_antibodies_split_or_broad_codes(txm_event.active_recipients_dict[1]))
-        self._check_expected_errors_in_db(3)
+        # three errors from the real processing and 2 from get_hla_typing above
+        self._check_expected_errors_in_db(5)
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         txm_event_name = 'invalid_name'
@@ -135,7 +135,8 @@ class TestMatchingApi(DbTests):
         expected_antibodies = {'DQA6', 'DQ8', 'DQA5', 'DQ2', 'DQ7'}
         self.assertSetEqual(expected_antibodies, _get_hla_antibodies_split_or_broad_codes(recipient))
         expected_antibodies_over_cutoff = {'DQA6', 'DQ8'}
-        self.assertSetEqual(expected_antibodies_over_cutoff, _get_hla_antibodies_over_cutoff_split_or_broad_codes(recipient))
+        self.assertSetEqual(expected_antibodies_over_cutoff,
+                            _get_hla_antibodies_over_cutoff_split_or_broad_codes(recipient))
         self._check_expected_errors_in_db(0)
 
     def test_txm_event_patient_successful_upload_exceptional_hla_types(self):

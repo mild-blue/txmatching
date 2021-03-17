@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from txmatching.patients.hla_model import HLAPerGroup, HLAType, HLATypeRaw
+from txmatching.patients.hla_model import HLAPerGroup, HLATypeRaw
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
@@ -10,8 +10,6 @@ from txmatching.utils.enums import Sex
 
 @dataclass
 class HLATypingDTO:
-    # The field does not have default value because want dacite to raise exception if data stored in db are not valid
-    hla_types_list: List[HLAType]
     hla_per_groups: List[HLAPerGroup]
 
 

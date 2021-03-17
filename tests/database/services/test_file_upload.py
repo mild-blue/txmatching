@@ -64,7 +64,8 @@ class TestUpdateDonorRecipient(DbTests):
             recipient.parameters.country_code,
             recipient.parameters.blood_group,
             [hla_code.code.display_code for hla_code in recipient.hla_antibodies.hla_antibodies_list],
-            [hla_code.code.display_code for hla_code in recipient.parameters.hla_typing.hla_types_list],
+            [hla_code.code.display_code for hla_group in recipient.parameters.hla_typing.hla_per_groups
+             for hla_code in hla_group.hla_types],
             recipient.acceptable_blood_groups
         )
             for recipient in txm_event.active_recipients_dict.values()]
@@ -73,7 +74,8 @@ class TestUpdateDonorRecipient(DbTests):
             donor.medical_id,
             donor.parameters.country_code,
             donor.parameters.blood_group,
-            [hla_code.code.display_code for hla_code in donor.parameters.hla_typing.hla_types_list],
+            [hla_code.code.display_code for hla_group in donor.parameters.hla_typing.hla_per_groups
+             for hla_code in hla_group.hla_types],
             txm_event.active_recipients_dict[
                 donor.related_recipient_db_id].medical_id if donor.related_recipient_db_id else ''
         )

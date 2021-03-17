@@ -1,5 +1,5 @@
-from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody, HLAType,
-                                           HLATyping)
+from tests.test_utilities.hla_preparation_utils import get_hla_typing
+from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
 from txmatching.patients.patient import (Donor, DonorType, Recipient,
                                          RecipientRequirements)
 from txmatching.patients.patient_parameters import PatientParameters
@@ -29,12 +29,12 @@ def get_test_donors():
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=HLATyping(
+                hla_typing=get_hla_typing(
                     hla_types_list=[
-                        HLAType(raw_code=_RAW_CODES[0]),
-                        HLAType(raw_code=_RAW_CODES[1]),
-                        HLAType(raw_code='B44'),
-                        HLAType(raw_code='DR10')
+                        _RAW_CODES[0],
+                        _RAW_CODES[1],
+                        'B44',
+                        'DR10'
                     ]
                 ),
                 sex=Sex.M,
@@ -51,11 +51,11 @@ def get_test_donors():
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=HLATyping(
+                hla_typing=get_hla_typing(
                     hla_types_list=[
-                        HLAType(raw_code=_RAW_CODES[1]),
-                        HLAType(raw_code=_RAW_CODES[2]),
-                        HLAType(raw_code='DR10')
+                        _RAW_CODES[1],
+                        _RAW_CODES[2],
+                        'DR10'
                     ]
                 ),
                 sex=Sex.M,
@@ -77,11 +77,11 @@ def get_test_recipients():
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=HLATyping(
+                hla_typing=get_hla_typing(
                     hla_types_list=[
-                        HLAType(raw_code=_RAW_CODES[1]),
-                        HLAType(raw_code=_RAW_CODES[2]),
-                        HLAType(raw_code='DR1')
+                        _RAW_CODES[1],
+                        _RAW_CODES[2],
+                        'DR1'
                     ]
                 ),
                 sex=Sex.M,
@@ -103,12 +103,12 @@ def get_test_recipients():
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=HLATyping(
+                hla_typing=get_hla_typing(
                     hla_types_list=[
-                        HLAType(raw_code='A3'),
-                        HLAType(raw_code='B38'),
-                        HLAType(raw_code=_RAW_CODES[4]),
-                        HLAType(raw_code=_RAW_CODES[5]),
+                        'A3',
+                        'B38',
+                        _RAW_CODES[4],
+                        _RAW_CODES[5],
                     ]
                 ),
                 sex=Sex.M,

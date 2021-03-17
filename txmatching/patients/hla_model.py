@@ -20,12 +20,6 @@ class HLAType(PersistentlyHashable):
     raw_code: str
     code: HLACode
 
-    def __init__(self, raw_code: str, code: HLACode = None):
-        # The only places where the init is called without code specified should be
-        # tests and data initialization
-        self.raw_code = raw_code
-        self.code = code if code is not None else parse_hla_raw_code(raw_code)
-
     def __eq__(self, other):
         """
         Needed for List[HLAType].remove()
@@ -61,29 +55,8 @@ class HLAPerGroup(PersistentlyHashable):
 
 @dataclass
 class HLATyping(PersistentlyHashable):
-    hla_types_list: List[HLAType]
     hla_types_raw_list: List[HLATypeRaw]
     hla_per_groups: List[HLAPerGroup]
-
-    def __init__(
-            self,
-            hla_types_list: List[HLAType],
-            hla_types_raw_list: List[HLATypeRaw] = None,
-            hla_per_groups: List[HLAPerGroup] = None
-    ):
-        # The only places where the init is called without all parameters should be tests
-        self.hla_types_list = hla_types_list
-
-        if hla_types_raw_list is None:
-            hla_types_raw_list = [HLATypeRaw(hla_type.raw_code) for hla_type in hla_types_list]
-        self.hla_types_raw_list = sorted(
-            hla_types_raw_list,
-            key=lambda hla_type_raw: hla_type_raw.raw_code.upper()
-        )
-
-        if hla_per_groups is None:
-            hla_per_groups = split_hla_types_to_groups(hla_types_list)
-        self.hla_per_groups = hla_per_groups
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLATyping)

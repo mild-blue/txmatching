@@ -114,11 +114,10 @@ def _get_hla_typing_from_patient_model(
         config=dacite.Config(cast=[Enum])
     )
 
-    if hla_typing_dto.hla_types_list is None or hla_typing_dto.hla_per_groups is None:
+    if hla_typing_dto.hla_per_groups is None:
         raise ValueError(f'Parsed antigens have invalid format. '
                          f'Running recompute-parsing api could help: ${hla_typing_dto}')
     return HLATyping(
-        hla_types_list=hla_typing_dto.hla_types_list,
         hla_types_raw_list=hla_typing_raw_dto.hla_types_list,
         hla_per_groups=hla_typing_dto.hla_per_groups,
     )

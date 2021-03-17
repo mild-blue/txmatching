@@ -2,7 +2,7 @@ import unittest
 
 from tests.test_utilities.create_dataclasses import (get_test_donors,
                                                      get_test_recipients)
-from txmatching.patients.hla_model import HLAType
+from tests.test_utilities.hla_preparation_utils import get_hla_type
 from txmatching.utils.persistent_hash import (initialize_persistent_hash,
                                               update_persistent_hash)
 
@@ -28,12 +28,12 @@ class TestPersistentHash(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self._assert_hash({'a': 'b'}, 'e4625008dde72175d331df31f62572e9')
         self._assert_hash(None, '6af5817033462a81dfdff478e27e824d')
-        self._assert_hash(HLAType('A9'), 'b81f11cc22faf6f2dc6259676d9c87ed')
+        self._assert_hash(get_hla_type('A9'), 'b81f11cc22faf6f2dc6259676d9c87ed')
         self._assert_hash(get_test_donors(), 'e5ccc5da231213e03d5c8a052f83ab1e')
         self._assert_hash(get_test_recipients(), 'd8ad62ecbd76d13c265f163a74c58f79')
 
     def test_functions_update_persistent_hash(self):
-        value = HLAType('A9')
+        value = get_hla_type('A9')
         hash_1 = initialize_persistent_hash()
         update_persistent_hash(hash_1, value)
         hash_2 = initialize_persistent_hash()
