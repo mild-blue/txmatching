@@ -64,10 +64,16 @@ def _configuration_to_config_model(
 def _get_configuration_from_db_id(configuration_db_id: int, txm_event_id: int) -> Configuration:
     config = ConfigModel.query.get(configuration_db_id)
     if config is None:
-        raise AssertionError(f'Configuration not found for db id {configuration_db_id}')
+        # As txm_event.default_config_id column is integer and not linked to config.id
+        # (see comment in sql_alchemy_schema), it can happen that default_config_id is set while corresponding config
+        # is deleted. Such problem happens in TestSwaggerEndpoint. For this reason, we handle it by returning default
+        # configuration instance.
+        logger.error(f'Configuration not found for db id {configuration_db_id}. Returning default configuration.')
+        return Configuration()
     if txm_event_id != config.txm_event_id:
-        raise AssertionError(f'Configuration with db id {configuration_db_id} does '
-                             f'not belong to txm event {txm_event_id}')
+        logger.error(f'Configuration with db id {configuration_db_id} does '
+                     f'not belong to txm event {txm_event_id}. Returning default configuration')
+        return Configuration()
 
     return configuration_from_dict(config.parameters)
 

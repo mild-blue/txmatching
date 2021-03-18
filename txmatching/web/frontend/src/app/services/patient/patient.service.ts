@@ -49,13 +49,15 @@ export class PatientService {
     ).toPromise();
   }
 
-  public async saveDonor(txmEventId: number, donorId: number, donorEditable: DonorEditable): Promise<Donor> {
+  public async saveDonor(txmEventId: number, donorId: number, donorEditable: DonorEditable, configId: number | undefined): Promise<Donor> {
+    const configIdStr = configId !== undefined ? configId.toString() : 'default';  // TODOO
+
     this._logger.log(`Saving donor ${donorId}`, [donorEditable]);
     const payload: DonorModelToUpdateGenerated = fromDonorEditableToUpdateGenerated(donorEditable, donorId);
     this._logger.log('Sending payload', [payload]);
 
     return this._http.put<DonorGenerated>(
-      `${environment.apiUrl}/txm-event/${txmEventId}/patients/donor`,
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}/donor`,
       payload
     ).pipe(
       first(),

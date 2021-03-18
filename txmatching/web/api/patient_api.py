@@ -57,10 +57,21 @@ logger = logging.getLogger(__name__)
 @patient_api.route('/configs/<config_id>', methods=['GET'])
 class AllPatients(Resource):
 
-    @patient_api.doc(security='bearer',
-                     description='Get all patients for the given txm event. By default, raw antibodies are not'
-                                 'included. Specify include-antibodies-raw to include raw antibodies as well.'
-                                 'Example: /patients?include-antibodies-raw')
+    @patient_api.doc(
+        params={
+            'config_id': {
+                'description': 'Configuration ID or "default".',
+                'type': str,
+                'required': True,
+                'in': 'path',
+                'default': 'default'
+            }
+        },
+        security='bearer',
+        description='Get all patients for the given txm event. By default, raw antibodies are not'
+                    'included. Specify include-antibodies-raw to include raw antibodies as well.'
+                    'Example: /patients?include-antibodies-raw'
+    )
     @patient_api.response(code=200, model=PatientsJson, description='List of donors and list of recipients.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
@@ -169,7 +180,19 @@ class AlterRecipient(Resource):
 
 @patient_api.route('/configs/<config_id>/donor', methods=['PUT'])
 class AlterDonor(Resource):
-    @patient_api.doc(body=DonorToUpdateJson, security='bearer')
+    @patient_api.doc(
+        body=DonorToUpdateJson,
+        params={
+            'config_id': {
+                'description': 'Configuration ID or "default".',
+                'type': str,
+                'required': True,
+                'in': 'path',
+                'default': 'default'
+            }
+        },
+        security='bearer'
+    )
     @patient_api.response(code=200, model=DonorJson, description='Updates single donor.')
     @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
     @patient_api.response(code=401, model=FailJson, description='Authentication failed.')

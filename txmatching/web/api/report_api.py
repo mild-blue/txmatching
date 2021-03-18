@@ -81,6 +81,13 @@ class MatchingReport(Resource):
                 'type': int,
                 'in': 'path',
                 'required': True
+            },
+            'config_id': {
+                'description': 'Configuration ID or "default".',
+                'type': str,
+                'required': True,
+                'in': 'path',
+                'default': 'default'
             }
         }
     )
@@ -245,6 +252,15 @@ class MatchingReport(Resource):
 class PatientsXLSReport(Resource):
 
     @report_api.doc(
+        params={
+            'config_id': {
+                'description': 'Configuration ID or "default".',
+                'type': str,
+                'required': True,
+                'in': 'path',
+                'default': 'default'
+            }
+        },
         security='bearer'
     )
     @report_api.response(code=200, model=None, description='Generates XLSX report.')

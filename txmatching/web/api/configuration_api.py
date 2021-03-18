@@ -32,7 +32,18 @@ logger = logging.getLogger(__name__)
 @configuration_api.route('/<config_id>', methods=['GET'])
 class ConfigurationApi(Resource):
 
-    @configuration_api.doc(security='bearer')
+    @configuration_api.doc(
+        params={
+            'config_id': {
+                'description': 'Configuration ID or "default".',
+                'type': str,
+                'required': True,
+                'in': 'path',
+                'default': 'default'
+            }
+        },
+        security='bearer'
+    )
     @configuration_api.response(code=200, model=ConfigurationJson,
                                 description='Returns the latest matching configuration for the current user.')
     @configuration_api.response(code=401, model=FailJson, description='Authentication failed.')

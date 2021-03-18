@@ -1,6 +1,6 @@
 --
 -- file: txmatching/database/db_migrations/0015.add-default-configuration-id.sql
--- depends: 0013.remove_configuration
+-- depends: 0014.add_new_error_type
 --
 
 
