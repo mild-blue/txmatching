@@ -1,6 +1,5 @@
 import dataclasses
 import logging
-from datetime import datetime
 from typing import Dict, Optional
 
 from dacite import Config, from_dict

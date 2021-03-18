@@ -86,3 +86,11 @@ ConfigurationJson = matching_api.model(
         )
     }
 )
+
+ConfigIdPathParamDefinition = {
+    'description': 'Configuration ID or "default".',
+    'type': str,
+    'required': True,
+    'in': 'path',
+    'default': 'default'
+}

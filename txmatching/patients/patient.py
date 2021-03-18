@@ -113,6 +113,8 @@ class TxmEvent(TxmEventBase):
     active_donors_dict: Dict[DonorDbId, Donor]
     active_recipients_dict: Dict[RecipientDbId, Recipient]
 
+    # pylint: disable=too-many-arguments
+    # I think it is reasonable to have multiple arguments here
     def __init__(self, db_id: int, name: str, default_config_id: Optional[int],
                  all_donors: List[Donor], all_recipients: List[Recipient]):
         self.db_id = db_id

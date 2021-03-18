@@ -77,7 +77,7 @@ def require_valid_config_id() -> Callable:
 
             if config_id is None:
                 raise InvalidArgumentException('Argument config_id is not specified.')
-            elif config_id == 'default':
+            if config_id == 'default':
                 config_id = None
             elif config_id.isdigit():
                 config_id = int(config_id)

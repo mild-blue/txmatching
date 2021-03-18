@@ -18,6 +18,8 @@ from txmatching.auth.operation_guards.country_guard import (
     guard_user_country_access_to_recipient, guard_user_has_access_to_country)
 from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
+from txmatching.data_transfer_objects.configuration.configuration_swagger import \
+    ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     FailJson, PatientUploadSuccessJson)
 from txmatching.data_transfer_objects.patients.out_dots.conversions import (
@@ -59,13 +61,7 @@ class AllPatients(Resource):
 
     @patient_api.doc(
         params={
-            'config_id': {
-                'description': 'Configuration ID or "default".',
-                'type': str,
-                'required': True,
-                'in': 'path',
-                'default': 'default'
-            }
+            'config_id': ConfigIdPathParamDefinition
         },
         security='bearer',
         description='Get all patients for the given txm event. By default, raw antibodies are not'
@@ -183,13 +179,7 @@ class AlterDonor(Resource):
     @patient_api.doc(
         body=DonorToUpdateJson,
         params={
-            'config_id': {
-                'description': 'Configuration ID or "default".',
-                'type': str,
-                'required': True,
-                'in': 'path',
-                'default': 'default'
-            }
+            'config_id': ConfigIdPathParamDefinition
         },
         security='bearer'
     )

@@ -25,6 +25,8 @@ from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
+from txmatching.data_transfer_objects.configuration.configuration_swagger import \
+    ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
     FailJson
 from txmatching.data_transfer_objects.matchings.matching_dto import (
@@ -82,13 +84,7 @@ class MatchingReport(Resource):
                 'in': 'path',
                 'required': True
             },
-            'config_id': {
-                'description': 'Configuration ID or "default".',
-                'type': str,
-                'required': True,
-                'in': 'path',
-                'default': 'default'
-            }
+            'config_id': ConfigIdPathParamDefinition
         }
     )
     @report_api.response(code=200, model=None, description='Generates PDF report.')
@@ -253,13 +249,7 @@ class PatientsXLSReport(Resource):
 
     @report_api.doc(
         params={
-            'config_id': {
-                'description': 'Configuration ID or "default".',
-                'type': str,
-                'required': True,
-                'in': 'path',
-                'default': 'default'
-            }
+            'config_id': ConfigIdPathParamDefinition
         },
         security='bearer'
     )
