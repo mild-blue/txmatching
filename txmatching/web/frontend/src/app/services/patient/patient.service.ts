@@ -50,7 +50,7 @@ export class PatientService {
   }
 
   public async saveDonor(txmEventId: number, donorId: number, donorEditable: DonorEditable, configId: number | undefined): Promise<Donor> {
-    const configIdStr = configId !== undefined ? configId.toString() : 'default';  // TODOO
+    const configIdStr = configId !== undefined ? configId.toString() : 'default';
 
     this._logger.log(`Saving donor ${donorId}`, [donorEditable]);
     const payload: DonorModelToUpdateGenerated = fromDonorEditableToUpdateGenerated(donorEditable, donorId);
