@@ -21,7 +21,7 @@ from txmatching.data_transfer_objects.shared_dto import (IdentifierDTOIn,
 from txmatching.data_transfer_objects.shared_swagger import (IdentifierJsonIn,
                                                              SuccessJsonOut)
 from txmatching.database.services.config_service import (
-    get_configuration_from_db_id_or_latest, set_config_as_default)
+    get_configuration_from_db_id_or_default, set_config_as_default)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.web.api.namespaces import configuration_api
@@ -45,8 +45,8 @@ class ConfigurationApi(Resource):
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
-        configuration = get_configuration_from_db_id_or_latest(txm_event=txm_event,
-                                                               configuration_db_id=config_id)
+        configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
+                                                                configuration_db_id=config_id)
         return jsonify(configuration)
 
 

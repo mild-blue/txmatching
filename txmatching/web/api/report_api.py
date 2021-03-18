@@ -24,7 +24,6 @@ from txmatching.auth.exceptions import (InvalidArgumentException,
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
-from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
     FailJson
@@ -36,10 +35,8 @@ from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
     DonorDTOOut
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
-    find_configuration_db_id_for_configuration,
-    get_configuration_db_id_or_latest, get_configuration_from_db_id_or_latest,
-    get_latest_configuration_db_id_for_txm_event,
-    get_latest_configuration_for_txm_event)
+    find_config_db_id_for_configuration_and_data,
+    get_configuration_from_db_id_or_default)
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
 from txmatching.database.services.txm_event_service import \
@@ -100,15 +97,17 @@ class MatchingReport(Resource):
     # pylint: disable=too-many-locals
     def get(self, txm_event_id: int, config_id: Optional[int], matching_id: int) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
-        maybe_configuration_db_id = get_configuration_db_id_or_latest(txm_event, configuration_db_id=config_id)
+
+        configuration = get_configuration_from_db_id_or_default(txm_event, configuration_db_id=config_id)
+        maybe_configuration_db_id = find_config_db_id_for_configuration_and_data(txm_event=txm_event,
+                                                                                 configuration=configuration)
 
         if maybe_configuration_db_id is None:
-            configuration = Configuration()
             pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
             user_id = get_current_user_id()
             solver_service.save_pairing_result(pairing_result, user_id)
-            maybe_configuration_db_id = find_configuration_db_id_for_configuration(txm_event=txm_event,
-                                                                                   configuration=configuration)
+            maybe_configuration_db_id = find_config_db_id_for_configuration_and_data(txm_event=txm_event,
+                                                                                     configuration=configuration)
 
         assert maybe_configuration_db_id is not None
 
@@ -149,8 +148,8 @@ class MatchingReport(Resource):
         calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings,
                                                                    maybe_configuration_db_id)
 
-        configuration = get_configuration_from_db_id_or_latest(txm_event=txm_event,
-                                                               configuration_db_id=maybe_configuration_db_id)
+        configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
+                                                                configuration_db_id=maybe_configuration_db_id)
 
         patients_dto = to_lists_for_fe(txm_event, configuration)
 
@@ -261,8 +260,8 @@ class PatientsXLSReport(Resource):
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
 
-        configuration = get_configuration_from_db_id_or_latest(txm_event=txm_event,
-                                                               configuration_db_id=config_id)
+        configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
+                                                                configuration_db_id=config_id)
 
         patients_dto = to_lists_for_fe(txm_event, configuration)
 

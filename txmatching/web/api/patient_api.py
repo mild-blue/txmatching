@@ -35,9 +35,8 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     PatientsRecomputeParsingSuccessJson
-from txmatching.database.services.config_service import (
-    get_configuration_from_db_id_or_latest,
-    get_latest_configuration_for_txm_event)
+from txmatching.database.services.config_service import \
+    get_configuration_from_db_id_or_default
 from txmatching.database.services.patient_service import (
     delete_donor_recipient_pair, get_donor_recipient_pair,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
@@ -76,7 +75,7 @@ class AllPatients(Resource):
         include_antibodies_raw = 'include-antibodies-raw' in request.args
         logger.debug(f'include_antibodies_raw={include_antibodies_raw}')
         txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
-        configuration = get_configuration_from_db_id_or_latest(txm_event, config_id)
+        configuration = get_configuration_from_db_id_or_default(txm_event, config_id)
         lists_for_fe = to_lists_for_fe(txm_event, configuration)
         logger.debug('Sending patients to FE')
         return jsonify(lists_for_fe)
@@ -186,8 +185,8 @@ class AlterDonor(Resource):
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
         txm_event = get_txm_event_complete(txm_event_id)
         all_recipients = txm_event.all_recipients
-        configuration = get_configuration_from_db_id_or_latest(txm_event=txm_event,
-                                                               configuration_db_id=config_id)
+        configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
+                                                                configuration_db_id=config_id)
         scorer = scorer_from_configuration(configuration)
 
         return jsonify(

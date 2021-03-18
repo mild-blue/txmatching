@@ -37,7 +37,8 @@ def create_txm_event(name: str) -> TxmEvent:
     txm_event_model = TxmEventModel(name=name)
     db.session.add(txm_event_model)
     db.session.commit()
-    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, all_donors=[], all_recipients=[])
+    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name,
+                    default_config_id=txm_event_model.default_config_id, all_donors=[], all_recipients=[])
 
 
 def delete_txm_event(name: str):
@@ -146,7 +147,10 @@ def _get_txm_event_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEv
                             key=lambda recipient: recipient.db_id)
     logger.debug('Prepared Recipients')
     logger.debug('Prepared TXM event')
-    return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name, all_donors=all_donors,
+    return TxmEvent(db_id=txm_event_model.id,
+                    name=txm_event_model.name,
+                    default_config_id=txm_event_model.default_config_id,
+                    all_donors=all_donors,
                     all_recipients=all_recipients)
 
 

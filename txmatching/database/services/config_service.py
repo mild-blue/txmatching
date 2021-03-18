@@ -24,46 +24,11 @@ from txmatching.utils.enums import HLACrossmatchLevel
 logger = logging.getLogger(__name__)
 
 
-def get_configuration_from_db_id(configuration_db_id: int, txm_event_id: int = None) -> Configuration:
-    config = ConfigModel.query.get(configuration_db_id)
-    if config is None:
-        raise AssertionError(f'Configuration not found for db id {configuration_db_id}')
-    if txm_event_id is not None and txm_event_id != config.txm_event_id:
-        raise AssertionError(f'Configuration with db id {configuration_db_id} does '
-                             f'not belong to txm event {txm_event_id}')
-
-    return configuration_from_dict(config.parameters)
-
-
 def configuration_from_dict(config_model: Dict) -> Configuration:
     configuration = from_dict(data_class=Configuration,
                               data=config_model,
                               config=Config(cast=[Country, HLACrossmatchLevel]))
     return configuration
-
-
-def get_configuration_db_id_or_latest(txm_event: TxmEvent, configuration_db_id: Optional[int]) -> Optional[int]:
-    if configuration_db_id is None:
-        return get_latest_configuration_db_id_for_txm_event(txm_event)
-    else:
-        return configuration_db_id
-
-
-def get_configuration_from_db_id_or_latest(txm_event: TxmEvent, configuration_db_id: Optional[int]) -> Configuration:
-    configuration_db_id = get_configuration_db_id_or_latest(txm_event, configuration_db_id)
-
-    if configuration_db_id is None:
-        return Configuration()
-    else:
-        return get_configuration_from_db_id(configuration_db_id)
-
-
-def get_latest_configuration_for_txm_event(txm_event: TxmEvent) -> Configuration:  # TODOO: remove
-    configuration_db_id = get_latest_configuration_db_id_for_txm_event(txm_event)
-    if configuration_db_id is None:
-        return Configuration()
-    else:
-        return get_configuration_from_db_id(configuration_db_id)
 
 
 def save_configuration_to_db(configuration: Configuration, txm_event: TxmEvent, user_id: int) -> int:
@@ -81,20 +46,6 @@ def set_config_as_default(txm_event_id: int, configuration_db_id: Optional[int])
     )
     db.session.commit()
 
-# TODOO: here
-
-def get_latest_configuration_db_id_for_txm_event(txm_event: TxmEvent) -> Optional[int]:
-    patients_hash = get_patients_persistent_hash(txm_event)
-    config = ConfigModel.query.filter(and_(
-        ConfigModel.txm_event_id == txm_event.db_id,
-        ConfigModel.patients_hash == patients_hash
-    )).order_by(
-        ConfigModel.updated_at.desc()
-    ).first()
-    if config:
-        return config.id
-    return None
-
 
 def _configuration_to_config_model(
         configuration: Configuration,
@@ -110,8 +61,34 @@ def _configuration_to_config_model(
     )
 
 
-def find_configuration_db_id_for_configuration(configuration: Configuration,
-                                               txm_event: TxmEvent) -> Optional[int]:
+def _get_configuration_from_db_id(configuration_db_id: int, txm_event_id: int) -> Configuration:
+    config = ConfigModel.query.get(configuration_db_id)
+    if config is None:
+        raise AssertionError(f'Configuration not found for db id {configuration_db_id}')
+    if txm_event_id != config.txm_event_id:
+        raise AssertionError(f'Configuration with db id {configuration_db_id} does '
+                             f'not belong to txm event {txm_event_id}')
+
+    return configuration_from_dict(config.parameters)
+
+
+def get_configuration_from_db_id_or_default(txm_event: TxmEvent, configuration_db_id: Optional[int]) -> Configuration:
+    """
+    Return configuration and does not check patient hash.
+    - if specified, return configuration by configuration_db_id
+    - otherwise, if specified, return default configuration of txm event
+    - otherwise, return default Configuration() object
+    """
+    if configuration_db_id is not None:
+        return _get_configuration_from_db_id(configuration_db_id, txm_event_id=txm_event.db_id)
+    elif txm_event.default_config_id is not None:
+        return _get_configuration_from_db_id(txm_event.default_config_id, txm_event_id=txm_event.db_id)
+    else:
+        return Configuration()
+
+
+def find_config_db_id_for_configuration_and_data(configuration: Configuration,
+                                                 txm_event: TxmEvent) -> Optional[int]:
     logger.debug('Searching models for configuration')
     patients_hash = get_patients_persistent_hash(txm_event)
     config_models = ConfigModel.query.filter(and_(
@@ -142,8 +119,3 @@ def get_pairing_result_for_configuration_db_id(configuration_db_id: int) -> Data
                           data=pairing_result_model.calculated_matchings)
     score_matrix = pairing_result_model.score_matrix['score_matrix_dto']
     return DatabasePairingResult(score_matrix=score_matrix, matchings=matchings)
-
-
-def config_set_updated(configuration_db_id: int):
-    ConfigModel.query.filter(ConfigModel.id == configuration_db_id).update({'updated_at': datetime.now()})
-    db.session.commit()

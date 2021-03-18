@@ -113,9 +113,11 @@ class TxmEvent(TxmEventBase):
     active_donors_dict: Dict[DonorDbId, Donor]
     active_recipients_dict: Dict[RecipientDbId, Recipient]
 
-    def __init__(self, db_id: int, name: str, all_donors: List[Donor], all_recipients: List[Recipient]):
+    def __init__(self, db_id: int, name: str, default_config_id: Optional[int],
+                 all_donors: List[Donor], all_recipients: List[Recipient]):
         self.db_id = db_id
         self.name = name
+        self.default_config_id = default_config_id
         self.all_donors = all_donors
         self.all_recipients = all_recipients
         self.active_donors_dict = {donor.db_id: donor for donor in self.all_donors if donor.active}
