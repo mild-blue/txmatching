@@ -2,10 +2,11 @@ import re
 
 import pandas as pd
 
+from tests.test_utilities.hla_preparation_utils import (create_antibodies,
+                                                        create_antibody)
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations import (
@@ -135,32 +136,34 @@ class TestCodeParser(DbTests):
 
         # Checks that we truly group by high res codes. In this case both DQA1*01:01 and DQA1*01:02 are DQA1 in split.
         # DQA1*01:01 is dropped whereas DQA1*01:02 is kept.
-        self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')}, {hla_antibody.code for hla_antibody in HLAAntibodies(
-            [
-                HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2500),
-                HLAAntibody('DQA1*01:01', cutoff=2000, mfi=10)
-            ]
-        ).hla_antibodies_per_groups_over_cutoff[3].hla_antibody_list})
+        self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')},
+                            {hla_antibody.code for hla_antibody in create_antibodies(
+                                [
+                                    create_antibody('DQA1*01:02', cutoff=2000, mfi=2500),
+                                    create_antibody('DQA1*01:01', cutoff=2000, mfi=10)
+                                ]
+                            ).hla_antibodies_per_groups_over_cutoff[3].hla_antibody_list})
         # Similar case as in the lines above. All hla_codes are the same in high res. This invokes call of
         # get_mfi_from_multiple_hla_codes, where the average is calculated (1900), which is below cutoff.
         # The antibody is not removed.
-        self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')}, {hla_antibody.code for hla_antibody in HLAAntibodies(
-                [
-                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=6000),
-                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2000),
-                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=1800)
-                ]
-            ).hla_antibodies_per_groups[3].hla_antibody_list})
+        self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')},
+                            {hla_antibody.code for hla_antibody in create_antibodies(
+                                [
+                                    create_antibody('DQA1*01:02', cutoff=2000, mfi=6000),
+                                    create_antibody('DQA1*01:02', cutoff=2000, mfi=2000),
+                                    create_antibody('DQA1*01:02', cutoff=2000, mfi=1800)
+                                ]
+                            ).hla_antibodies_per_groups[3].hla_antibody_list})
 
         self.assertSetEqual({
-            HLAAntibody(raw_code='DQA1*01:01', mfi=4500, cutoff=2000),
-            HLAAntibody(raw_code='DQA1*01:02', mfi=2000, cutoff=2000)
+            create_antibody(raw_code='DQA1*01:01', mfi=4500, cutoff=2000),
+            create_antibody(raw_code='DQA1*01:02', mfi=2000, cutoff=2000)
         }, set(
-            HLAAntibodies(
+            create_antibodies(
                 [
-                    HLAAntibody('DQA1*01:01', cutoff=2000, mfi=6000),
-                    HLAAntibody('DQA1*01:02', cutoff=2000, mfi=2000),
-                    HLAAntibody('DQA1*01:01', cutoff=2000, mfi=3000)
+                    create_antibody('DQA1*01:01', cutoff=2000, mfi=6000),
+                    create_antibody('DQA1*01:02', cutoff=2000, mfi=2000),
+                    create_antibody('DQA1*01:01', cutoff=2000, mfi=3000)
                 ]
             ).hla_antibodies_per_groups[3].hla_antibody_list))
 

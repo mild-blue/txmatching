@@ -1,4 +1,4 @@
-from tests.test_utilities.hla_preparation_utils import get_hla_typing
+from tests.test_utilities.hla_preparation_utils import create_hla_typing
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
@@ -6,7 +6,7 @@ from txmatching.utils.country_enum import Country
 donor_parameters_Joe = PatientParameters(
     blood_group=BloodGroup.A,
     country_code=Country.CZE,
-    hla_typing=get_hla_typing(
+    hla_typing=create_hla_typing(
         ['A23',
          'A26',
          'B38',
@@ -26,7 +26,7 @@ donor_parameters_Joe = PatientParameters(
 )
 
 recipient_parameters_Jack = PatientParameters(blood_group=BloodGroup.A,
-                                              hla_typing=get_hla_typing(
+                                              hla_typing=create_hla_typing(
                                                   [
                                                       'A9',
                                                       'A30',
@@ -40,7 +40,7 @@ recipient_parameters_Jack = PatientParameters(blood_group=BloodGroup.A,
                                               )
 
 recipient_parameters_Wrong = PatientParameters(blood_group=BloodGroup.A,
-                                               hla_typing=get_hla_typing(
+                                               hla_typing=create_hla_typing(
                                                    [
                                                        'A9',
                                                        'A30',

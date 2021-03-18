@@ -1,6 +1,7 @@
 import os
 
-from tests.test_utilities.hla_preparation_utils import get_hla_typing
+from tests.test_utilities.hla_preparation_utils import (create_antibodies,
+                                                        create_hla_typing)
 from tests.test_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
                                               PATIENT_DATA_OBFUSCATED,
                                               create_or_overwrite_txm_event)
@@ -10,7 +11,6 @@ from txmatching.database.services.txm_event_service import \
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
                                                     ParsingErrorModel,
                                                     UploadedFileModel)
-from txmatching.patients.hla_model import HLAAntibodies
 from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
@@ -274,7 +274,7 @@ class TestPatientService(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         donor = txm_event.active_donors_dict[donor_db_id]
         self.assertEqual(donor.parameters.blood_group, BloodGroup.A)
-        self.assertEqual(donor.parameters.hla_typing, get_hla_typing([]))
+        self.assertEqual(donor.parameters.hla_typing, create_hla_typing([]))
         self.assertEqual(donor.parameters.sex, Sex.M)
         self.assertEqual(donor.parameters.height, 200)
         self.assertEqual(donor.parameters.weight, 100)
@@ -306,7 +306,7 @@ class TestPatientService(DbTests):
         donor = next(donor for donor in txm_event.all_donors if donor.db_id == donor_db_id)
 
         self.assertEqual(donor.parameters.blood_group, BloodGroup.B)
-        self.assertEqual(donor.parameters.hla_typing, get_hla_typing([]))
+        self.assertEqual(donor.parameters.hla_typing, create_hla_typing([]))
         self.assertEqual(donor.parameters.sex, None)
         self.assertEqual(donor.parameters.height, None)
         self.assertEqual(donor.parameters.weight, None)
@@ -351,7 +351,7 @@ class TestPatientService(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         recipient = txm_event.active_recipients_dict[recipient_db_id]
         self.assertEqual(recipient.parameters.blood_group, BloodGroup.A)
-        self.assertEqual(recipient.parameters.hla_typing, get_hla_typing([]))
+        self.assertEqual(recipient.parameters.hla_typing, create_hla_typing([]))
         self.assertEqual(recipient.parameters.sex, Sex.M)
         self.assertEqual(recipient.parameters.height, 200)
         self.assertEqual(recipient.parameters.weight, 100)
@@ -359,7 +359,7 @@ class TestPatientService(DbTests):
         # HACK: This should equal to [BloodGroup.A, BloodGroup.B, BloodGroup.AB]
         # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum
         self.assertCountEqual(recipient.acceptable_blood_groups, ['A', 'B', 'AB'])
-        self.assertEqual(recipient.hla_antibodies, HLAAntibodies([]))
+        self.assertEqual(recipient.hla_antibodies, create_antibodies([]))
         self.assertEqual(recipient.recipient_requirements, RecipientRequirements(True, True, True))
         self.assertEqual(recipient.recipient_cutoff, 42)
 
@@ -397,7 +397,7 @@ class TestPatientService(DbTests):
         recipient = next(recipient for recipient in txm_event.all_recipients if recipient.db_id == recipient_db_id)
 
         self.assertEqual(recipient.parameters.blood_group, BloodGroup.B)
-        self.assertEqual(recipient.parameters.hla_typing, get_hla_typing([]))
+        self.assertEqual(recipient.parameters.hla_typing, create_hla_typing([]))
         self.assertEqual(recipient.parameters.sex, None)
         self.assertEqual(recipient.parameters.height, None)
         self.assertEqual(recipient.parameters.weight, None)
@@ -405,7 +405,7 @@ class TestPatientService(DbTests):
         # HACK: This should equal to [BloodGroup.ZERO]
         # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum
         self.assertCountEqual(recipient.acceptable_blood_groups, ['0'])
-        self.assertEqual(recipient.hla_antibodies, HLAAntibodies([]))
+        self.assertEqual(recipient.hla_antibodies, create_antibodies([]))
         self.assertEqual(recipient.recipient_requirements, RecipientRequirements(False, False, False))
         self.assertEqual(recipient.recipient_cutoff, 42)  # Cutoff is unchanged
 

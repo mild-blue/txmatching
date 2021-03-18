@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from flask import Response
 
-from tests.test_utilities.hla_preparation_utils import get_hla_typing
+from tests.test_utilities.hla_preparation_utils import create_hla_typing
 from tests.test_utilities.prepare_app import DbTests
 from tests.web.public_api.test_public_patient_upload_example_data import (
     DONORS, RECIPIENTS,
@@ -47,7 +47,7 @@ class TestMatchingApi(DbTests):
         self.assertSetEqual({BloodGroup.ZERO, BloodGroup.A},
                             set(blood for blood in txm_event.active_recipients_dict[1].acceptable_blood_groups))
         self.assertListEqual(
-            get_hla_typing(
+            create_hla_typing(
                 [
                     'A1', 'A23',
                     'B*01:01N', 'Invalid'
@@ -116,8 +116,9 @@ class TestMatchingApi(DbTests):
             HLACode('DPB1*04:02', 'DP4', 'DP4'),
             HLACode(None, 'A23', 'A9')
         }
-        self.assertSetEqual(expected_antibodies, {hla_antibody.code for hla_antibody in
-                                                  recipient.hla_antibodies.hla_antibodies_list})
+        self.assertSetEqual(expected_antibodies, {hla_antibody.code for hla_group in
+                                                  recipient.hla_antibodies.hla_antibodies_per_groups for hla_antibody in
+                                                  hla_group.hla_antibody_list})
         expected_typing = {'DQA1', 'A1', 'DQ6', 'B7'}
         self.assertSetEqual(expected_typing, _get_hla_typing_split_or_broad_codes(recipient))
         donor = txm_event.active_donors_dict[1]

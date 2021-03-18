@@ -90,7 +90,6 @@ AntibodiesPerGroup = patient_api.model('AntibodiesPerGroup', {
 })
 
 HLAAntibodies = patient_api.model('HlaAntibodies', {
-    'hla_antibodies_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAAntibody)),
     'hla_antibodies_raw_list': fields.List(required=True, cls_or_instance=fields.Nested(HLAAntibodyRaw)),
     'hla_antibodies_per_groups': fields.List(required=True,
                                              description='hla antibodies split to hla groups',

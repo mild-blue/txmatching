@@ -63,7 +63,8 @@ class TestUpdateDonorRecipient(DbTests):
             recipient.medical_id,
             recipient.parameters.country_code,
             recipient.parameters.blood_group,
-            [hla_code.code.display_code for hla_code in recipient.hla_antibodies.hla_antibodies_list],
+            [hla_code.code.display_code for hla_group in recipient.hla_antibodies.hla_antibodies_per_groups
+             for hla_code in hla_group.hla_antibody_list],
             [hla_code.code.display_code for hla_group in recipient.parameters.hla_typing.hla_per_groups
              for hla_code in hla_group.hla_types],
             recipient.acceptable_blood_groups

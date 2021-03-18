@@ -1,6 +1,7 @@
 from typing import FrozenSet, Iterable, List, Set, Tuple
 from unittest import TestCase
 
+from tests.test_utilities.hla_preparation_utils import create_antibodies
 from txmatching.patients.hla_model import HLATyping
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
@@ -19,7 +20,8 @@ def _create_recipient(recipient_id: int, donor: Donor) -> Recipient:
                          country_code=Country.CZE, blood_group=BloodGroup.A,
                          hla_typing=HLATyping(hla_per_groups=[], hla_types_raw_list=[])
                      ),
-                     acceptable_blood_groups=list()
+                     acceptable_blood_groups=list(),
+                     hla_antibodies=create_antibodies([])
                      )
 
 

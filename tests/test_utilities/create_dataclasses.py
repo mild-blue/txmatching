@@ -1,5 +1,6 @@
-from tests.test_utilities.hla_preparation_utils import get_hla_typing
-from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody
+from tests.test_utilities.hla_preparation_utils import (create_antibodies,
+                                                        create_antibody,
+                                                        create_hla_typing)
 from txmatching.patients.patient import (Donor, DonorType, Recipient,
                                          RecipientRequirements)
 from txmatching.patients.patient_parameters import PatientParameters
@@ -29,7 +30,7 @@ def get_test_donors():
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=get_hla_typing(
+                hla_typing=create_hla_typing(
                     hla_types_list=[
                         _RAW_CODES[0],
                         _RAW_CODES[1],
@@ -51,7 +52,7 @@ def get_test_donors():
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=get_hla_typing(
+                hla_typing=create_hla_typing(
                     hla_types_list=[
                         _RAW_CODES[1],
                         _RAW_CODES[2],
@@ -77,7 +78,7 @@ def get_test_recipients():
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=get_hla_typing(
+                hla_typing=create_hla_typing(
                     hla_types_list=[
                         _RAW_CODES[1],
                         _RAW_CODES[2],
@@ -92,7 +93,7 @@ def get_test_recipients():
             related_donor_db_id=1,
             acceptable_blood_groups=[],
             recipient_cutoff=None,
-            hla_antibodies=HLAAntibodies([]),
+            hla_antibodies=create_antibodies([]),
             recipient_requirements=RecipientRequirements(),
             waiting_since=None,
             previous_transplants=None
@@ -103,7 +104,7 @@ def get_test_recipients():
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=get_hla_typing(
+                hla_typing=create_hla_typing(
                     hla_types_list=[
                         'A3',
                         'B38',
@@ -119,7 +120,7 @@ def get_test_recipients():
             related_donor_db_id=1,
             acceptable_blood_groups=[],
             recipient_cutoff=None,
-            hla_antibodies=HLAAntibodies([]),
+            hla_antibodies=create_antibodies([]),
             recipient_requirements=RecipientRequirements(),
             waiting_since=None,
             previous_transplants=None
@@ -128,13 +129,13 @@ def get_test_recipients():
 
 
 def get_test_antibodies():
-    return HLAAntibodies(
+    return create_antibodies(
         hla_antibodies_list=[
-            HLAAntibody('A7', 1200, 1000),
-            HLAAntibody('B32', 1200, 1000),
-            HLAAntibody('DR40', 1200, 1000),
-            HLAAntibody('B5', 1200, 1000),
-            HLAAntibody('DR9', 1200, 1000),
-            HLAAntibody('A23', 1200, 1000)
+            create_antibody('A7', 1200, 1000),
+            create_antibody('B32', 1200, 1000),
+            create_antibody('DR40', 1200, 1000),
+            create_antibody('B5', 1200, 1000),
+            create_antibody('DR9', 1200, 1000),
+            create_antibody('A23', 1200, 1000)
         ]
     )

@@ -1,6 +1,7 @@
 import unittest
 
-from tests.test_utilities.hla_preparation_utils import get_hla_typing
+from tests.test_utilities.hla_preparation_utils import (create_antibodies,
+                                                        create_hla_typing)
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.high_res_hla_additive_scorer import \
@@ -20,7 +21,7 @@ class TestHlaScorer(unittest.TestCase):
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=get_hla_typing(
+                hla_typing=create_hla_typing(
                     ['A1',
                      'A3',
                      'B7',
@@ -43,7 +44,7 @@ class TestHlaScorer(unittest.TestCase):
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=get_hla_typing(
+                hla_typing=create_hla_typing(
                     ['A1',
                      'A2',
                      'B27',
@@ -51,7 +52,8 @@ class TestHlaScorer(unittest.TestCase):
                      'DR1',
                      'DR10']
                 )
-            )
+            ),
+            hla_antibodies=create_antibodies([])
         )
 
         original_donor = Donor(
@@ -61,7 +63,7 @@ class TestHlaScorer(unittest.TestCase):
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=get_hla_typing(
+                hla_typing=create_hla_typing(
                     ['A1',
                      'A9',
                      'B7',

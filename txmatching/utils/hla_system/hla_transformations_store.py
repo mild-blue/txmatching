@@ -75,7 +75,6 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
     )
 
     return HLAAntibodiesDTO(
-        hla_antibodies_list=hla_antibodies_parsed,
         hla_antibodies_per_groups=hla_antibodies_per_groups
     )
 
