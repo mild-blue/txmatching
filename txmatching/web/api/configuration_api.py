@@ -8,9 +8,8 @@ from dacite import from_dict
 from flask import jsonify, make_response, request
 from flask_restx import Resource
 
-from txmatching.auth.auth_check import (require_role, require_valid_config_id,
+from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
-from txmatching.auth.data_types import UserRole
 from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
 from txmatching.data_transfer_objects.configuration.configuration_swagger import (
