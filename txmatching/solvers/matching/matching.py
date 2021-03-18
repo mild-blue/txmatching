@@ -106,4 +106,4 @@ class Matching:
     def max_debt_from_matching(self) -> int:
         return max([np.abs([self.get_donors_for_country_count(country) -
                             self.get_recipients_for_country_count(country)])
-                    for country in self._countries])
+                    for country in self._countries], default=0)

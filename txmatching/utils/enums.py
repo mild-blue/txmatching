@@ -25,16 +25,26 @@ HLA_GROUPS_NAMES_WITH_OTHER = [group for group in HLA_GROUPS_GENE] + [HLAGroup.O
 HLA_GROUP_SPLIT_CODE_REGEX = {
     HLAGroup.A: r'^A\d+',
     HLAGroup.B: r'^B\d+',
-    HLAGroup.CW: r'CW\d+',
-    HLAGroup.DRB1: r'DR(?!5([123]))',
-    HLAGroup.DP: r'DPA?\d+',
-    HLAGroup.DQ: r'DQA?\d+',
-    HLAGroup.OTHER_DR: r'DR5[123]',
-    HLAGroup.BW: r'BW\d+'
+    HLAGroup.CW: r'^CW\d+',
+    HLAGroup.DRB1: r'^DR(?!5([123]))\d',
+    HLAGroup.DP: r'^DPA?\d+',
+    HLAGroup.DQ: r'^DQA?\d+',
+    HLAGroup.OTHER_DR: r'^DR5[123]',
+    HLAGroup.BW: r'^BW\d+',
+    HLAGroup.Other: r'.*'
 }
 
-HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.Other] = '|'.join(
-    HLA_GROUP_SPLIT_CODE_REGEX[hla_group] for hla_group in HLA_GROUPS_OTHER)
+HLA_GROUP_HIGH_RES_CODE_REGEX = {
+    HLAGroup.A: r'^A\*',
+    HLAGroup.B: r'^B\*',
+    HLAGroup.CW: r'C\*',
+    HLAGroup.DRB1: r'DRB1\*',
+    HLAGroup.DP: r'DPA1\*',
+    HLAGroup.DQ: r'DQA1\*',
+    HLAGroup.OTHER_DR: r'DRB[^1]\*',
+    HLAGroup.BW: r'BW\*',
+    HLAGroup.Other: r'.*'
+}
 
 
 class HLACrossmatchLevel(str, Enum):

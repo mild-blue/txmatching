@@ -58,7 +58,7 @@ class TestMatchingApi(DbTests):
         )
         self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_split_or_broad_codes(txm_event.active_donors_dict[1]))
         self.assertSetEqual({'A9'}, _get_hla_antibodies_split_or_broad_codes(txm_event.active_recipients_dict[1]))
-        self._check_expected_errors_in_db(2)
+        self._check_expected_errors_in_db(3)
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         txm_event_name = 'invalid_name'
@@ -232,19 +232,23 @@ class TestMatchingApi(DbTests):
         self.assertEqual(expected_count, len(errors))
 
 
+def _get_split_or_broad(code: HLACode) -> str:
+    return code.split if code.split is not None else code.broad
+
+
 def _get_hla_typing_split_or_broad_codes(donor_or_recipient: Patient) -> Set[str]:
-    return {hla.code.split_or_broad for codes_per_group in
+    return {_get_split_or_broad(hla.code) for codes_per_group in
             donor_or_recipient.parameters.hla_typing.hla_per_groups for hla in
             codes_per_group.hla_types}
 
 
 def _get_hla_antibodies_split_or_broad_codes(donor_or_recipient: Recipient) -> Set[str]:
-    return {hla.code.split_or_broad for codes_per_group in
+    return {_get_split_or_broad(hla.code) for codes_per_group in
             donor_or_recipient.hla_antibodies.hla_antibodies_per_groups for hla in
             codes_per_group.hla_antibody_list}
 
 
 def _get_hla_antibodies_over_cutoff_split_or_broad_codes(donor_or_recipient: Recipient) -> Set[str]:
-    return {hla.code.split_or_broad for codes_per_group in
+    return {_get_split_or_broad(hla.code) for codes_per_group in
             donor_or_recipient.hla_antibodies.hla_antibodies_per_groups_over_cutoff for hla in
             codes_per_group.hla_antibody_list}
