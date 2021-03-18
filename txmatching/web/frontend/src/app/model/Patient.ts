@@ -14,7 +14,6 @@ export interface PatientParameters {
   blood_group: BloodGroup;
   hla_typing: {
     hla_per_groups: HlaPerGroup[];
-    hla_types_list: Antigen[];
     hla_types_raw_list: AntigenRaw[];
   };
   country_code: CountryCodeGenerated;
