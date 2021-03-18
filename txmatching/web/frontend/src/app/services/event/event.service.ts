@@ -31,6 +31,11 @@ export class EventService {
     });
   }
 
+  public invalidateTxmEvents() {
+    this._txmEvents = undefined;
+    this._defaultTxmEvent = undefined;
+  }
+
   public async getEvents(): Promise<TxmEvents> {
     if(!this._txmEvents) {
       this._txmEvents = this._http.get<TxmEventsGenerated>(

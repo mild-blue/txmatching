@@ -12,7 +12,8 @@ TxmDefaultEventJsonIn = txm_event_api.model('DefaultTxmEvent', {
 
 TxmEventJsonOut = txm_event_api.model('TxmEvent', {
     'id': fields.Integer(required=True),
-    'name': fields.String(required=True)
+    'name': fields.String(required=True),
+    'default_config_id': fields.Integer(required=False),
 })
 
 PatientsRecomputeParsingSuccessJson = txm_event_api.model('PatientsRecomputeParsingSuccess', {

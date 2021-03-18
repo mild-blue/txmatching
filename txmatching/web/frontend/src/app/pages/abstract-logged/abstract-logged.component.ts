@@ -40,8 +40,11 @@ export class AbstractLoggedComponent implements OnInit {
     return this.user ? this.user.decoded.role === UserRole.VIEWER : false;
   }
 
-  protected async _initTxmEvents(): Promise<void> {
+  protected async _initTxmEvents(invalidate: boolean = false): Promise<void> {
     try {
+      if (invalidate) {
+        this._eventService.invalidateTxmEvents();
+      }
       this.txmEvents = await this._eventService.getEvents();
       this.defaultTxmEvent = await this._eventService.getDefaultEvent();
     } catch (e) {

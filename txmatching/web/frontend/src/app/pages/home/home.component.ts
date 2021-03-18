@@ -91,6 +91,18 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.configOpened = !this.configOpened;
   }
 
+  get isCurrentConfigDefault(): boolean {
+    return this._eventService.getConfigId() === this.defaultTxmEvent?.defaultConfigId;
+  }
+
+  get getTitleOfDefaultConfigButton(): string {
+    return this.isCurrentConfigDefault
+      ? `The current configuration is set as default for all users (configuration id: ${this._eventService.getConfigId()})`
+      : `Set the current configuration as default for all users ` +
+        `(current configuration id: ${this._eventService.getConfigId()}, ` +
+        `default configuration id: ${this.defaultTxmEvent?.defaultConfigId})`;
+  }
+
   public async setConfigAsDefault(): Promise<void> {
     if (!this.defaultTxmEvent) {
       this._logger.error('saveConfigAsDefault failed because defaultTxmEvent not set');
@@ -103,6 +115,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     }
 
     const success = await this._configService.setConfigurationAsDefault(this.defaultTxmEvent.id, configId);
+    await this._initTxmEvents(true);
     if (success) {
       this._alertService.success(`Default configuration for event ${this.defaultTxmEvent.name} was updated`);
     } else {

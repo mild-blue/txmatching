@@ -1336,6 +1336,8 @@ definitions:
         type: object
     TxmEvent:
         properties:
+            default_config_id:
+                type: integer
             id:
                 type: integer
             name:
