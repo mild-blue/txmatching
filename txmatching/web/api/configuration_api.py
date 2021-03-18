@@ -11,7 +11,8 @@ from flask_restx import Resource
 from txmatching.auth.auth_check import (require_role, require_valid_config_id,
                                         require_valid_txm_event_id)
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.user.user_auth_check import require_user_login
+from txmatching.auth.user.user_auth_check import (require_user_edit_access,
+                                                  require_user_login)
 from txmatching.data_transfer_objects.configuration.configuration_swagger import (
     ConfigIdPathParamDefinition, ConfigurationJson)
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
@@ -70,7 +71,7 @@ class DefaultConfigurationApi(Resource):
                                 description='Access denied. You do not have rights to access this endpoint.')
     @configuration_api.response(code=409, model=FailJson, description='Non-unique patients provided.')
     @configuration_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
-    @require_role(UserRole.ADMIN)
+    @require_user_edit_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
         identifier_dto = from_dict(data_class=IdentifierDTOIn, data=request.json)
