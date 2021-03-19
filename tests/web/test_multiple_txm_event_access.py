@@ -11,8 +11,10 @@ class TestMultipleEventAccess(DbTests):
         self.login_with_role(UserRole.ADMIN)
         with self.app.test_client() as client:
             self.assertEqual(2, len(
-                client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_1_db_id}/{PATIENT_NAMESPACE}',
+                client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_1_db_id}/'
+                           f'{PATIENT_NAMESPACE}/configs/default',
                            headers=self.auth_headers).json['donors']))
             self.assertEqual(0, len(
-                client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_2_db_id}/{PATIENT_NAMESPACE}',
+                client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_2_db_id}/'
+                           f'{PATIENT_NAMESPACE}/configs/default',
                            headers=self.auth_headers).json['donors']))

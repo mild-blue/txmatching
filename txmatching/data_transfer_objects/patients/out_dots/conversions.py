@@ -3,8 +3,6 @@ from typing import Dict, List, Union
 from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
     DonorDTOOut
-from txmatching.database.services.config_service import \
-    get_latest_configuration_for_txm_event
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
@@ -17,8 +15,8 @@ from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
 
 
-def to_lists_for_fe(txm_event: TxmEvent) -> Dict[str, Union[List[DonorDTOOut], List[Recipient]]]:
-    configuration = get_latest_configuration_for_txm_event(txm_event)
+def to_lists_for_fe(txm_event: TxmEvent, configuration: Configuration) \
+        -> Dict[str, Union[List[DonorDTOOut], List[Recipient]]]:
     scorer = scorer_from_configuration(configuration)
     return {
         'donors': sorted([donor_to_donor_dto_out(donor, txm_event.all_recipients, configuration, scorer) for donor in

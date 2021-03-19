@@ -25,7 +25,7 @@ class TestReportApi(DbTests):
 
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                             f'{REPORTS_NAMESPACE}/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}=2',
+                             f'{REPORTS_NAMESPACE}/configs/default/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}=2',
                              headers=self.auth_headers)
 
             self.assertEqual(200, res.status_code)
@@ -44,7 +44,7 @@ class TestReportApi(DbTests):
 
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                             f'{REPORTS_NAMESPACE}/patients/xlsx',
+                             f'{REPORTS_NAMESPACE}/configs/default/patients/xlsx',
                              headers=self.auth_headers)
 
             self.assertEqual(200, res.status_code)
@@ -62,7 +62,7 @@ class TestReportApi(DbTests):
 
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                             f'{REPORTS_NAMESPACE}/matchings/6666/pdf?{MATCHINGS_BELOW_CHOSEN}=2',
+                             f'{REPORTS_NAMESPACE}/configs/default/matchings/6666/pdf?{MATCHINGS_BELOW_CHOSEN}=2',
                              headers=self.auth_headers)
 
             self.assertEqual(401, res.status_code)
@@ -83,7 +83,8 @@ class TestReportApi(DbTests):
         with self.app.test_client() as client:
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                f'{REPORTS_NAMESPACE}/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
+                f'{REPORTS_NAMESPACE}/configs/default/'
+                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
                 headers=self.auth_headers
             )
 
@@ -100,7 +101,8 @@ class TestReportApi(DbTests):
         with self.app.test_client() as client:
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                f'{REPORTS_NAMESPACE}/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
+                f'{REPORTS_NAMESPACE}/configs/default/'
+                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
                 headers=self.auth_headers
             )
 
@@ -117,7 +119,8 @@ class TestReportApi(DbTests):
         with self.app.test_client() as client:
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                f'{REPORTS_NAMESPACE}/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN}',
+                f'{REPORTS_NAMESPACE}/configs/default/'
+                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN}',
                 headers=self.auth_headers
             )
 
@@ -131,7 +134,8 @@ class TestReportApi(DbTests):
         with self.app.test_client() as client:
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                f'{REPORTS_NAMESPACE}/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN}',
+                f'{REPORTS_NAMESPACE}/configs/default/'
+                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN}',
                 headers=self.auth_headers
             )
 

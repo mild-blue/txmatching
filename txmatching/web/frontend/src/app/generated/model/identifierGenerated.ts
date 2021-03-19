@@ -11,9 +11,7 @@
  */
 
 
-export interface TxmEventGenerated { 
-    default_config_id?: number;
+export interface IdentifierGenerated { 
     id: number;
-    name: string;
 }
 

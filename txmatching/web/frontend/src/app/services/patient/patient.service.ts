@@ -38,22 +38,26 @@ export class PatientService {
     return this._deletedDonorDbIdSubject.asObservable().pipe(filter(dbId => dbId !== -1));
   }
 
-  public async getPatients(txmEventId: number, includeAntibodiesRaw: boolean): Promise<PatientList> {
+  public async getPatients(txmEventId: number, configId: number | undefined, includeAntibodiesRaw: boolean): Promise<PatientList> {
+    const configIdStr = configId !== undefined ? configId.toString() : 'default';
+
     return this._http.get<PatientsGenerated>(
-      `${environment.apiUrl}/txm-event/${txmEventId}/patients${includeAntibodiesRaw ? '?include-antibodies-raw' : ''}`
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}${includeAntibodiesRaw ? '?include-antibodies-raw' : ''}`
     ).pipe(
       first(),
       map(parsePatientList)
     ).toPromise();
   }
 
-  public async saveDonor(txmEventId: number, donorId: number, donorEditable: DonorEditable): Promise<Donor> {
+  public async saveDonor(txmEventId: number, donorId: number, donorEditable: DonorEditable, configId: number | undefined): Promise<Donor> {
+    const configIdStr = configId !== undefined ? configId.toString() : 'default';
+
     this._logger.log(`Saving donor ${donorId}`, [donorEditable]);
     const payload: DonorModelToUpdateGenerated = fromDonorEditableToUpdateGenerated(donorEditable, donorId);
     this._logger.log('Sending payload', [payload]);
 
     return this._http.put<DonorGenerated>(
-      `${environment.apiUrl}/txm-event/${txmEventId}/patients/donor`,
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}/donor`,
       payload
     ).pipe(
       first(),

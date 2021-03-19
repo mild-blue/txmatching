@@ -76,6 +76,7 @@ EDITOR_WITH_ONLY_ONE_COUNTRY = {
     'password': PASSWORD,
     'role': UserRole.EDITOR,
     'require_2fa': False,
+    'allowed_txm_events': [1, 2],
     'default_txm_event_id': 1,
     ALLOWED_EDIT_COUNTRIES: [Country.CZE]
 }

@@ -372,7 +372,77 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/configuration": {
+        "/v1/txm-event/{txm_event_id}/configuration/set-default": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Non-unique patients provided.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Whether the update was successful",
+                        "schema": {
+                            "$ref": "#/definitions/Success"
+                        }
+                    }
+                },
+                "description": "Set default configuration id for the txm event.",
+                "operationId": "put_default_configuration_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Identifier"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "configuration"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/configuration/{config_id}": {
             "parameters": [
                 {
                     "name": "txm_event_id",
@@ -409,6 +479,16 @@
                     }
                 },
                 "operationId": "get_configuration_api",
+                "parameters": [
+                    {
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Configuration ID or \"default\".",
+                        "default": "default"
+                    }
+                ],
                 "security": [
                     {
                         "bearer": []
@@ -482,60 +562,6 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/patients": {
-            "parameters": [
-                {
-                    "name": "txm_event_id",
-                    "in": "path",
-                    "required": true,
-                    "type": "integer"
-                }
-            ],
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "List of donors and list of recipients.",
-                        "schema": {
-                            "$ref": "#/definitions/Patients"
-                        }
-                    }
-                },
-                "description": "Get all patients for the given txm event. By default, raw antibodies are notincluded. Specify include-antibodies-raw to include raw antibodies as well.Example: /patients?include-antibodies-raw",
-                "operationId": "get_all_patients",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "patients"
-                ]
-            }
-        },
         "/v1/txm-event/{txm_event_id}/patients/add-patients-file": {
             "parameters": [
                 {
@@ -601,7 +627,71 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/patients/donor": {
+        "/v1/txm-event/{txm_event_id}/patients/configs/{config_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "List of donors and list of recipients.",
+                        "schema": {
+                            "$ref": "#/definitions/Patients"
+                        }
+                    }
+                },
+                "description": "Get all patients for the given txm event. By default, raw antibodies are notincluded. Specify include-antibodies-raw to include raw antibodies as well.Example: /patients?include-antibodies-raw",
+                "operationId": "get_all_patients",
+                "parameters": [
+                    {
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Configuration ID or \"default\".",
+                        "default": "default"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/patients/configs/{config_id}/donor": {
             "parameters": [
                 {
                     "name": "txm_event_id",
@@ -645,6 +735,14 @@
                 },
                 "operationId": "put_alter_donor",
                 "parameters": [
+                    {
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Configuration ID or \"default\".",
+                        "default": "default"
+                    },
                     {
                         "name": "payload",
                         "required": true,
@@ -910,7 +1008,7 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/reports/matchings/{matching_id}/pdf": {
+        "/v1/txm-event/{txm_event_id}/reports/configs/{config_id}/matchings/{matching_id}/pdf": {
             "parameters": [
                 {
                     "name": "txm_event_id",
@@ -952,6 +1050,14 @@
                 "operationId": "get_matching_report",
                 "parameters": [
                     {
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Configuration ID or \"default\".",
+                        "default": "default"
+                    },
+                    {
                         "name": "matching_id",
                         "in": "path",
                         "required": true,
@@ -976,7 +1082,7 @@
                 ]
             }
         },
-        "/v1/txm-event/{txm_event_id}/reports/patients/xlsx": {
+        "/v1/txm-event/{txm_event_id}/reports/configs/{config_id}/patients/xlsx": {
             "parameters": [
                 {
                     "name": "txm_event_id",
@@ -1016,6 +1122,16 @@
                     }
                 },
                 "operationId": "get_patients_xls_report",
+                "parameters": [
+                    {
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Configuration ID or \"default\".",
+                        "default": "default"
+                    }
+                ],
                 "security": [
                     {
                         "bearer": []
@@ -1126,49 +1242,6 @@
             }
         },
         "/v1/user/otp": {
-            "put": {
-                "responses": {
-                    "503": {
-                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "New OTP was generated and sent.",
-                        "schema": {
-                            "$ref": "#/definitions/StatusResponse"
-                        }
-                    }
-                },
-                "operationId": "put_otp_login_api",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "user"
-                ]
-            },
             "post": {
                 "responses": {
                     "503": {
@@ -1219,6 +1292,49 @@
                         }
                     }
                 ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            },
+            "put": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "New OTP was generated and sent.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_otp_login_api",
                 "security": [
                     {
                         "bearer": []
@@ -2236,6 +2352,7 @@
         "CalculatedMatchings": {
             "required": [
                 "calculated_matchings",
+                "config_id",
                 "show_not_all_matchings_found"
             ],
             "properties": {
@@ -2250,6 +2367,9 @@
                 },
                 "show_not_all_matchings_found": {
                     "type": "boolean"
+                },
+                "config_id": {
+                    "type": "integer"
                 }
             },
             "type": "object"
@@ -3361,6 +3481,28 @@
             },
             "type": "object"
         },
+        "Identifier": {
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "Success": {
+            "required": [
+                "success"
+            ],
+            "properties": {
+                "success": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
         "NewTxmEvent": {
             "required": [
                 "name"
@@ -3397,6 +3539,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "default_config_id": {
+                    "type": "integer"
                 }
             },
             "type": "object"

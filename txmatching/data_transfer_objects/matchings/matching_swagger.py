@@ -110,5 +110,6 @@ MatchingJson = matching_api.model('Matching', {
 CalculatedMatchingsJson = matching_api.model('CalculatedMatchings', {
     'calculated_matchings': fields.List(required=True, cls_or_instance=fields.Nested(MatchingJson)),
     'found_matchings_count': fields.Integer(required=False),
-    'show_not_all_matchings_found': fields.Boolean(required=True)
+    'show_not_all_matchings_found': fields.Boolean(required=True),
+    'config_id': fields.Integer(required=True),
 })

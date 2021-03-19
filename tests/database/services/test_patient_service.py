@@ -187,7 +187,7 @@ class TestPatientService(DbTests):
 
     def test_get_patients_hash(self):
         txm_event_1 = TxmEvent(
-            1, 'event_name_1',
+            1, 'event_name_1', None,
             all_donors=get_test_donors(),
             all_recipients=get_test_recipients()
         )
@@ -196,7 +196,7 @@ class TestPatientService(DbTests):
 
         # changing event db id or event name does not change the hash
         txm_event_2 = TxmEvent(
-            2, 'event_name_2',
+            2, 'event_name_2', None,
             all_donors=get_test_donors(),
             all_recipients=get_test_recipients()
         )
@@ -205,7 +205,7 @@ class TestPatientService(DbTests):
 
         # Changing donors changes the hash
         txm_event_3 = TxmEvent(
-            1, 'event_name_1',
+            1, 'event_name_1', None,
             all_donors=[],
             all_recipients=get_test_recipients()
         )
@@ -214,7 +214,7 @@ class TestPatientService(DbTests):
 
         # Changing recipients changes the hash
         txm_event_4 = TxmEvent(
-            1, 'event_name_1',
+            1, 'event_name_1', None,
             all_donors=get_test_donors(),
             all_recipients=[]
         )
@@ -230,7 +230,7 @@ class TestPatientService(DbTests):
         new_donors[0].parameters.hla_typing.hla_per_groups[0].hla_types[0] = HLAType('A3')
 
         txm_event_5 = TxmEvent(
-            1, 'event_name_1',
+            1, 'event_name_1', None,
             all_donors=new_donors,
             all_recipients=get_test_recipients()
         )

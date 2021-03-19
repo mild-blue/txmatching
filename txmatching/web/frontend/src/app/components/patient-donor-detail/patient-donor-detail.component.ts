@@ -8,6 +8,7 @@ import { LoggerService } from '@app/services/logger/logger.service';
 import { DonorEditable } from '@app/model/DonorEditable';
 import { AlertService } from '@app/services/alert/alert.service';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { EventService } from '@app/services/event/event.service';
 
 @Component({
   selector: 'app-patient-detail-donor',
@@ -30,7 +31,8 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
   constructor(private _patientService: PatientService,
               private _logger: LoggerService,
-              private _alertService: AlertService) {
+              private _alertService: AlertService,
+              private _eventService: EventService) {
     super(_patientService);
   }
 
@@ -54,7 +56,10 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
     this.loading = true;
     this.success = false;
-    this._patientService.saveDonor(this.defaultTxmEvent.id, this.item.db_id, this.donorEditable)
+    this._patientService.saveDonor(
+      this.defaultTxmEvent.id, this.item.db_id,
+      this.donorEditable, this._eventService.getConfigId()
+    )
     .then((updatedDonor) => {
       this._logger.log('Updated donor received from BE', [updatedDonor]);
       Object.assign(this.item, updatedDonor);

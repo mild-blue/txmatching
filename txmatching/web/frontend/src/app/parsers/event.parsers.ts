@@ -4,7 +4,8 @@ import { TxmEvent, TxmEvents } from '../model/Event';
 export const parseTxmEvent = (data: TxmEventGenerated): TxmEvent => {
   return {
     id: data.id,
-    name: data.name
+    name: data.name,
+    defaultConfigId: data.default_config_id
   };
 };
 

@@ -1,11 +1,9 @@
-import time
-
 from tests.test_utilities.prepare_app import DbTests
 from txmatching.configuration.configuration import (
     Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore)
 from txmatching.database.services.config_service import (
-    configuration_from_dict, get_latest_configuration_for_txm_event,
-    save_configuration_to_db)
+    configuration_from_dict, get_configuration_from_db_id_or_default,
+    save_configuration_to_db, set_config_as_default)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.utils.country_enum import Country
@@ -15,14 +13,31 @@ class TestConfiguration(DbTests):
     def test_configuration(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
-        time.sleep(1)
-        configuration = Configuration(
+        configuration_expected = Configuration(
             solver_constructor_name='AllSolutionsSolver',
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
-        save_configuration_to_db(configuration, txm_event, 1)
-        self.assertEqual(Country.CZE, configuration.forbidden_country_combinations[0].donor_country)
-        configuration = get_latest_configuration_for_txm_event(txm_event)
-        self.assertEqual(Country.CZE, configuration.forbidden_country_combinations[0].donor_country)
+        config_id = save_configuration_to_db(configuration_expected, txm_event, 1)
+
+        configuration_actual = get_configuration_from_db_id_or_default(txm_event, config_id)
+        self.assertEqual(configuration_expected, configuration_actual)
+
+    def test_default_configuration(self):
+        txm_event_db_id = self.fill_db_with_patients_and_results()
+        txm_event = get_txm_event_complete(txm_event_db_id)
+        configuration_expected = Configuration(
+            solver_constructor_name='AllSolutionsSolver',
+            forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
+        self.assertNotEqual(Configuration(), configuration_expected)
+        config_id = save_configuration_to_db(configuration_expected, txm_event, 1)
+
+        actual_configuration = get_configuration_from_db_id_or_default(txm_event, None)
+        self.assertEqual(Configuration(), actual_configuration)
+
+        set_config_as_default(txm_event.db_id, config_id)
+        txm_event = get_txm_event_complete(txm_event_db_id)
+
+        actual_configuration = get_configuration_from_db_id_or_default(txm_event, None)
+        self.assertEqual(configuration_expected, actual_configuration)
 
     def test_configuration_from_dto(self):
         self.fill_db_with_patients_and_results()
