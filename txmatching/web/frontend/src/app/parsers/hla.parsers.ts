@@ -5,13 +5,16 @@ import {
   AntigenMatchGenerated,
   AntigenMatchGeneratedMatchTypeEnum,
   DetailedScoreForGroupGenerated,
+  HlaAntibodiesGenerated,
   HlaAntibodyGenerated,
   HlaAntibodyRawGenerated,
   HlaCodesInGroupsGenerated,
   HlaTypeGenerated,
-  HlaTypeRawGenerated
+  HlaTypeRawGenerated,
+  HlaTypingGenerated
 } from '../generated';
 import {
+  Antibodies,
   AntibodiesPerGroup,
   Antibody,
   AntibodyMatch,
@@ -21,6 +24,7 @@ import {
   AntigenMatch,
   AntigenMatchType,
   AntigenRaw,
+  Antigens,
   DetailedScorePerGroup,
   Hla,
   HlaMatch,
@@ -81,6 +85,22 @@ export const parseAntibodyRaw = ( data: HlaAntibodyRawGenerated ): AntibodyRaw =
     ...parseHlaRaw(data),
     mfi,
     cutoff
+  };
+};
+
+export const parseAntigens = ( hla_typing?: HlaTypingGenerated ): Antigens => {
+  return {
+    hlaPerGroups: hla_typing?.hla_per_groups.map(parseHlaPerGroup) ?? [],
+    hlaTypesList: hla_typing?.hla_types_list.map(parseAntigen) ?? [],
+    hlaTypesRawList: hla_typing?.hla_types_raw_list.map(parseAntigenRaw) ?? []
+  };
+};
+
+export const parseAntibodies = ( hla_antibodies?: HlaAntibodiesGenerated ): Antibodies => {
+  return {
+    hlaAntibodiesList: hla_antibodies?.hla_antibodies_list.map(parseAntibody) ?? [],
+    hlaAntibodiesRawList: hla_antibodies?.hla_antibodies_raw_list.map(parseAntibodyRaw) ?? [],
+    hlaAntibodiesPerGroups: hla_antibodies?.hla_antibodies_per_groups.map(parseAntibodiesPerGroup) ?? []
   };
 };
 

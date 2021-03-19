@@ -1,5 +1,5 @@
 import { Patient } from '@app/model/Patient';
-import { AntibodiesPerGroup, Antibody, AntibodyRaw } from '@app/model/Hla';
+import { Antibodies } from '@app/model/Hla';
 import { BloodGroup } from '@app/model/enums/BloodGroup';
 
 export interface Recipient extends Patient {
@@ -7,11 +7,7 @@ export interface Recipient extends Patient {
   cutoff?: number;
   waitingSince?: Date;
   previousTransplants?: number;
-  hlaAntibodies: {
-    hlaAntibodiesList: Antibody[];
-    hlaAntibodiesRawList: AntibodyRaw[];
-    hlaAntibodiesPerGroups: AntibodiesPerGroup[];
-  };
+  hlaAntibodies: Antibodies;
   recipientRequirements?: RecipientRequirements;
   relatedDonorDbId: number;
 }

@@ -33,6 +33,18 @@ export interface AntibodyRaw extends HlaRaw {
   cutoff: number;
 }
 
+export interface Antigens {
+  hlaPerGroups: HlaPerGroup[];
+  hlaTypesList: Antigen[];
+  hlaTypesRawList: AntigenRaw[];
+}
+
+export interface Antibodies {
+  hlaAntibodiesList: Antibody[];
+  hlaAntibodiesRawList: AntibodyRaw[];
+  hlaAntibodiesPerGroups: AntibodiesPerGroup[];
+}
+
 export interface DetailedScorePerGroup {
   hlaGroup: string;
   donorMatches: AntigenMatch[];
