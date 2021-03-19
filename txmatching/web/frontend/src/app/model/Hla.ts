@@ -2,7 +2,7 @@ import { AntigenMatchType } from '@app/model/enums/AntigenMatchType';
 import { AntibodyMatchType } from '@app/model/enums/AntibodyMatchType';
 
 export interface HlaRaw {
-  raw_code: string;
+  rawCode: string;
 }
 
 export interface HlaCode {
@@ -34,32 +34,32 @@ export interface AntibodyRaw extends HlaRaw {
 }
 
 export interface DetailedScorePerGroup {
-  hla_group: string;
-  donor_matches: AntigenMatch[];
-  recipient_matches: AntigenMatch[];
-  antibody_matches: AntibodyMatch[];
-  group_compatibility_index: number;
+  hlaGroup: string;
+  donorMatches: AntigenMatch[];
+  recipientMatches: AntigenMatch[];
+  antibodyMatches: AntibodyMatch[];
+  groupCompatibilityIndex: number;
 }
 
 export interface HlaMatch {
 }
 
 export interface AntigenMatch extends HlaMatch {
-  hla_type: Antigen;
-  match_type: AntigenMatchType;
+  hlaType: Antigen;
+  matchType: AntigenMatchType;
 }
 
 export interface AntibodyMatch extends HlaMatch {
-  hla_antibody: Antibody;
-  match_type: AntibodyMatchType;
+  hlaAntibody: Antibody;
+  matchType: AntibodyMatchType;
 }
 
 export interface HlaPerGroup {
-  hla_group: string;
-  hla_types: Antigen[];
+  hlaGroup: string;
+  hlaTypes: Antigen[];
 }
 
 export interface AntibodiesPerGroup {
-  hla_group: string;
-  hla_antibody_list: Antibody[];
+  hlaGroup: string;
+  hlaAntibodyList: Antibody[];
 }

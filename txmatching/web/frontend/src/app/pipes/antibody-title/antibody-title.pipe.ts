@@ -8,14 +8,14 @@ import { AntibodyMatchType } from '@app/model';
 export class AntibodyTitlePipe implements PipeTransform {
 
   transform(antibodyMatch: AntibodyMatch): string {
-    const antibody = antibodyMatch.hla_antibody;
+    const antibody = antibodyMatch.hlaAntibody;
     return `MFI: ${antibody.mfi}\n`+
       `Cutoff: ${antibody.cutoff}\n\n`+
       `High res: ${antibody.code.highRes ?? '-'}\n`+
       `Split: ${antibody.code.split ?? '-'}\n`+
       `Broad: ${antibody.code.broad}\n\n`+
-      `Raw code: ${antibody.raw_code}\n\n`+
-      `Match: ${antibodyMatch.match_type !== AntibodyMatchType.NONE ? antibodyMatch.match_type : '-'}`;
+      `Raw code: ${antibody.rawCode}\n\n`+
+      `Match: ${antibodyMatch.matchType !== AntibodyMatchType.NONE ? antibodyMatch.matchType : '-'}`;
   }
 
 }

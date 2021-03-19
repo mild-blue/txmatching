@@ -4,7 +4,7 @@ import { first, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { TxmEvent, TxmEvents } from '@app/model/Event';
-import { TxmEventsGenerated } from '@app/generated';
+import { TxmEventGenerated, TxmEventsGenerated } from '@app/generated';
 import { parseTxmEvent, parseTxmEvents } from '@app/parsers/event.parsers';
 import { AuthService } from '@app/services/auth/auth.service';
 import { Subscription } from 'rxjs';
@@ -60,11 +60,11 @@ export class EventService {
     return this._defaultTxmEvent;
   }
 
-  public setDefaultEvent(event_id: number): Promise<TxmEvent> {
-    this._defaultTxmEvent = this._http.put<TxmEvent>(
+  public setDefaultEvent(eventId: number): Promise<TxmEvent> {
+    this._defaultTxmEvent = this._http.put<TxmEventGenerated>(
       `${environment.apiUrl}/txm-event/default`,
       {
-        id: event_id
+        id: eventId
       }
     ).pipe(
       first(),
@@ -75,8 +75,8 @@ export class EventService {
   }
 
   // TODO: move elsewhere https://github.com/mild-blue/txmatching/issues/481
-  public setConfigId(config_id: number) {
-    this._configId = config_id;
+  public setConfigId(configId: number) {
+    this._configId = configId;
   }
 
   public getConfigId(): number | undefined {

@@ -7,10 +7,10 @@ import { MatchingDetailComponent } from '@app/components/matching-detail/matchin
 
 export const parseCalculatedMatchings = (data: CalculatedMatchingsGenerated, patients: PatientList): CalculatedMatchings => {
   return {
-    calculated_matchings: parseMatchings(data.calculated_matchings, patients),
+    calculatedMatchings: parseMatchings(data.calculated_matchings, patients),
     configId: data.config_id,
-    found_matchings_count: data.found_matchings_count,
-    show_not_all_matchings_found: data.show_not_all_matchings_found
+    foundMatchingsCount: data.found_matchings_count,
+    showNotAllMatchingsFound: data.show_not_all_matchings_found
   };
 };
 
@@ -32,9 +32,9 @@ export const parseMatching = (data: MatchingGenerated, patients: PatientList, li
   );
   return {
     ...listItem,
-    order_id: data.order_id,
+    orderId: data.order_id,
     score: data.score,
-    count_of_transplants: data.count_of_transplants,
+    countOfTransplants: data.count_of_transplants,
     rounds,
     countries: data.countries.map(parseMatchingCountry),
     hasCrossmatch: rounds.some(round => round.hasCrossmatch)
@@ -43,8 +43,8 @@ export const parseMatching = (data: MatchingGenerated, patients: PatientList, li
 
 export const parseMatchingCountry = (data: CountryGenerated): MatchingCountry => {
   return {
-    country_code: data.country_code,
-    donor_count: data.donor_count,
-    recipient_count: data.recipient_count
+    countryCode: data.country_code,
+    donorCount: data.donor_count,
+    recipientCount: data.recipient_count
   };
 };

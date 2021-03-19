@@ -4,7 +4,7 @@
       <mat-chip *ngFor="let antigen of patient.antigens"
                 (removed)="patient.removeAntigen(antigen)"
                 [removable]="true">
-        {{antigen.raw_code}}
+        {{antigen.rawCode}}
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
       <input #donorAntigensInput

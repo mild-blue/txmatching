@@ -40,7 +40,7 @@ export class ConfigurationScoresComponent extends AbstractFormHandlerComponent i
     this.filteredDonors = this.form.controls.donor.valueChanges.pipe(
       startWith(''),
       map((value: string | Donor | Recipient | null) => {
-        return !value || typeof value === 'string' ? value : value.medical_id;
+        return !value || typeof value === 'string' ? value : value.medicalId;
       }),
       map(name => name ? patientFullTextSearch(this.donors, name) : this.donors.slice())
     );
@@ -48,7 +48,7 @@ export class ConfigurationScoresComponent extends AbstractFormHandlerComponent i
     this.filteredRecipients = this.form.controls.recipient.valueChanges.pipe(
       startWith(''),
       map((value: string | Donor | Recipient) => {
-        return !value || typeof value === 'string' ? value : value.medical_id;
+        return !value || typeof value === 'string' ? value : value.medicalId;
       }),
       map(name => name ? patientFullTextSearch(this.recipients, name) : this.recipients.slice())
     );
@@ -79,8 +79,8 @@ export class ConfigurationScoresComponent extends AbstractFormHandlerComponent i
     const { donor, recipient, score } = this.form.value;
 
     this.configuration?.manual_donor_recipient_scores.push({
-      donor_db_id: donor.db_id,
-      recipient_db_id: recipient.db_id,
+      donor_db_id: donor.dbId,
+      recipient_db_id: recipient.dbId,
       score
     });
 
@@ -110,11 +110,11 @@ export class ConfigurationScoresComponent extends AbstractFormHandlerComponent i
   }
 
   public getDonorByDbId(id: number): Donor | undefined {
-    return this.patients?.donors.find(p => p.db_id === id);
+    return this.patients?.donors.find(p => p.dbId === id);
   }
 
   public getRecipientByDbId(id: number): Recipient | undefined {
-    return this.patients?.recipients.find(p => p.db_id === id);
+    return this.patients?.recipients.find(p => p.dbId === id);
   }
 
   get donor(): Donor | undefined {
@@ -126,6 +126,6 @@ export class ConfigurationScoresComponent extends AbstractFormHandlerComponent i
   }
 
   public displayFn(user: Donor | Recipient): string {
-    return user?.medical_id ? user.medical_id : '';
+    return user?.medicalId ? user.medicalId : '';
   }
 }

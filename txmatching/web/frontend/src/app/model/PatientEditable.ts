@@ -15,14 +15,14 @@ export class PatientEditable {
   yearOfBirth?: number;
 
   initializeFromPatient(patient: Patient) {
-    this.country = patient.parameters.country_code;
-    this.medicalId = patient.medical_id;
-    this.antigens = [...patient.parameters.hla_typing.hla_types_raw_list];
-    this.bloodGroup = patient.parameters.blood_group;
+    this.country = patient.parameters.countryCode;
+    this.medicalId = patient.medicalId;
+    this.antigens = [...patient.parameters.hlaTyping.hlaTypesRawList];
+    this.bloodGroup = patient.parameters.bloodGroup;
     this.sex = patient.parameters.sex;
     this.height = patient.parameters.height;
     this.weight = patient.parameters.weight;
-    this.yearOfBirth = patient.parameters.year_of_birth;
+    this.yearOfBirth = patient.parameters.yearOfBirth;
   }
 
   removeAntigen(a: AntigenEditable) {

@@ -57,7 +57,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     this.loading = true;
     this.success = false;
     this._patientService.saveDonor(
-      this.defaultTxmEvent.id, this.item.db_id,
+      this.defaultTxmEvent.id, this.item.dbId,
       this.donorEditable, this._eventService.getConfigId()
     )
     .then((updatedDonor) => {
@@ -94,7 +94,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
       return;
     }
 
-    const message = this.item.related_recipient_db_id != undefined
+    const message = this.item.relatedRecipientDbId != undefined
       ? 'Are you sure you want to remove donor and its recipient?'
       : 'Are you sure you want to remove donor?';
     if (!confirm(message)) {
@@ -103,7 +103,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
     this.deleteLoading = true;
     this.deleteSuccess = false;
-    this._patientService.deleteDonor(this.defaultTxmEvent.id, this.item.db_id)
+    this._patientService.deleteDonor(this.defaultTxmEvent.id, this.item.dbId)
     .then(() => {
       this.deleteSuccess = true;
     })

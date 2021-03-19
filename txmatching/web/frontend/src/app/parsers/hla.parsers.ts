@@ -30,7 +30,7 @@ import {
 
 export const parseHlaRaw = ( data: HlaTypeRawGenerated | HlaAntibodyGenerated ): HlaRaw => {
   return {
-    raw_code: data.raw_code
+    rawCode: data.raw_code
   };
 };
 
@@ -86,11 +86,11 @@ export const parseAntibodyRaw = ( data: HlaAntibodyRawGenerated ): AntibodyRaw =
 
 export const parseDetailedScorePerGroup = ( data: DetailedScoreForGroupGenerated ): DetailedScorePerGroup => {
   return {
-    hla_group: data.hla_group,
-    donor_matches: data.donor_matches.map(parseAntigenMatch),
-    recipient_matches: data.recipient_matches.map(parseAntigenMatch),
-    antibody_matches: data.antibody_matches.map(parseAntibodyMatch),
-    group_compatibility_index: data.group_compatibility_index
+    hlaGroup: data.hla_group,
+    donorMatches: data.donor_matches.map(parseAntigenMatch),
+    recipientMatches: data.recipient_matches.map(parseAntigenMatch),
+    antibodyMatches: data.antibody_matches.map(parseAntibodyMatch),
+    groupCompatibilityIndex: data.group_compatibility_index
   };
 };
 
@@ -101,30 +101,30 @@ export const parseHlaMatch = ( data: AntigenMatchGenerated | AntibodyMatchGenera
 export const parseAntigenMatch = ( data: AntigenMatchGenerated ): AntigenMatch => {
   return {
     ...parseHlaMatch(data),
-    hla_type: parseAntigen(data.hla_type),
-    match_type: parseAntigenMatchType(data.match_type)
+    hlaType: parseAntigen(data.hla_type),
+    matchType: parseAntigenMatchType(data.match_type)
   };
 };
 
 export const parseAntibodyMatch = ( data: AntibodyMatchGenerated ): AntibodyMatch => {
   return {
     ...parseHlaMatch(data),
-    hla_antibody: parseAntibody(data.hla_antibody),
-    match_type: parseAntibodyMatchType(data.match_type)
+    hlaAntibody: parseAntibody(data.hla_antibody),
+    matchType: parseAntibodyMatchType(data.match_type)
   };
 };
 
 export const parseHlaPerGroup = ( data: HlaCodesInGroupsGenerated ): HlaPerGroup => {
   return {
-    hla_group: data.hla_group,
-    hla_types: data.hla_types.map(parseAntigen)
+    hlaGroup: data.hla_group,
+    hlaTypes: data.hla_types.map(parseAntigen)
   };
 };
 
 export const parseAntibodiesPerGroup = ( data: AntibodiesPerGroupGenerated ): AntibodiesPerGroup => {
   return {
-    hla_group: data.hla_group,
-    hla_antibody_list: data.hla_antibody_list.map(parseAntibody)
+    hlaGroup: data.hla_group,
+    hlaAntibodyList: data.hla_antibody_list.map(parseAntibody)
   };
 };
 

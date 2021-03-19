@@ -8,7 +8,7 @@ export const fromPatientEditableToUpdateGenerated = (patient: PatientEditable, p
     db_id: patientId,
     blood_group: fromBloodGroup(patient.bloodGroup),
     hla_typing: {
-      hla_types_list: patient.antigens
+      hla_types_list: patient.antigens.map(antigenEditable => ({raw_code: antigenEditable.rawCode}))
     },
     sex: patient.sex ? fromSex(patient.sex) : undefined,
     // TODO: convert values to numbers in SimpleNumberComponent, not here

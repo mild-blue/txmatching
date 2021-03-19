@@ -5,21 +5,21 @@ import { CountryCodeGenerated } from '@app/generated';
 import { BloodGroup } from '@app/model/enums/BloodGroup';
 
 export interface Patient extends ListItem {
-  db_id: number;
-  medical_id: string;
+  dbId: number;
+  medicalId: string;
   parameters: PatientParameters;
 }
 
 export interface PatientParameters {
-  blood_group: BloodGroup;
-  hla_typing: {
-    hla_per_groups: HlaPerGroup[];
-    hla_types_list: Antigen[];
-    hla_types_raw_list: AntigenRaw[];
+  bloodGroup: BloodGroup;
+  hlaTyping: {
+    hlaPerGroups: HlaPerGroup[];
+    hlaTypesList: Antigen[];
+    hlaTypesRawList: AntigenRaw[];
   };
-  country_code: CountryCodeGenerated;
+  countryCode: CountryCodeGenerated;
   sex?: Sex;
   height?: number;
   weight?: number;
-  year_of_birth?: number;
+  yearOfBirth?: number;
 }

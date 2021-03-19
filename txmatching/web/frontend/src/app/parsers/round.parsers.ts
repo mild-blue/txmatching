@@ -27,7 +27,7 @@ const _getRoundDonorType = (transplants: Transplant[]): DonorType => {
   const donor = firstTransplant.d;
 
   if (donor) {
-    return donor.donor_type;
+    return donor.donorType;
   }
 
   return DonorType.DONOR;

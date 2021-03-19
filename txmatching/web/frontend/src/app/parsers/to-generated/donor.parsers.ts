@@ -17,7 +17,7 @@ export const fromDonorEditableToInputGenerated = ( donor: DonorEditable ): Donor
   return {
     medical_id: donor.medicalId,
     blood_group: fromBloodGroup(donor.bloodGroup),
-    hla_typing: donor.antigens.map(antigen => antigen.raw_code),
+    hla_typing: donor.antigens.map(antigen => antigen.rawCode),
     donor_type: fromDonorType(donor.type),
     sex: donor.sex ? fromSex(donor.sex) : undefined,
     height: donor.height ? +donor.height : undefined,

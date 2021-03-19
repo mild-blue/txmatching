@@ -61,9 +61,9 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     await this._initPatientsConfigurationMatchings();
   }
 
-  public async setDefaultTxmEvent(event_id: number): Promise<void> {
+  public async setDefaultTxmEvent(eventId: number): Promise<void> {
     this.loading = true;
-    this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
+    this.defaultTxmEvent = await this._eventService.setDefaultEvent(eventId);
     await this._initPatientsConfigurationMatchings();
     this.loading = false;
   }
@@ -137,7 +137,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this._logger.log('Downloading with active matching', [activeMatching]);
 
     this._downloadMatchingInProgress = true;
-    this._reportService.downloadMatchingPdfReport(this.defaultTxmEvent.id, this._eventService.getConfigId(), activeMatching.order_id)
+    this._reportService.downloadMatchingPdfReport(this.defaultTxmEvent.id, this._eventService.getConfigId(), activeMatching.orderId)
     .pipe(
       first(),
       finalize(() => this._downloadMatchingInProgress = false)
@@ -180,11 +180,11 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       const calculatedMatchings = await this._matchingService.calculate(
         this.defaultTxmEvent.id, configuration, this.patients
       );
-      this.matchings = calculatedMatchings.calculated_matchings;
+      this.matchings = calculatedMatchings.calculatedMatchings;
       this._eventService.setConfigId(calculatedMatchings.configId);
-      this.foundMatchingsCount = calculatedMatchings.found_matchings_count;
+      this.foundMatchingsCount = calculatedMatchings.foundMatchingsCount;
       this._logger.log('Calculated matchings', [calculatedMatchings]);
-      if (calculatedMatchings.show_not_all_matchings_found) {
+      if (calculatedMatchings.showNotAllMatchingsFound) {
         this._alertService.info(`
         There exist more than ${this.foundMatchingsCount} matchings. Shown matchings present the top matchings found so
          far, most probably including the top matching over all. Try using the ILPSolver to find possible better

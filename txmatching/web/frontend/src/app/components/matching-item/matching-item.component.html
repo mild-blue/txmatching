@@ -11,9 +11,9 @@
     <li>Rounds: <strong>{{ item.rounds.length }}</strong></li>
     <li>Transplants: <strong>{{ getTransplantsCount(item) }}</strong></li>
     <li *ngFor="let country of item.countries">
-      <flag [countryCode]="country.country_code"></flag>
+      <flag [countryCode]="country.countryCode"></flag>
       :
-      <app-code>{{country.donor_count}}/{{country.recipient_count}}</app-code>
+      <app-code>{{country.donorCount}}/{{country.recipientCount}}</app-code>
     </li>
   </ul>
 
