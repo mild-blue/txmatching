@@ -11,7 +11,8 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
-from txmatching.utils.hla_system.hla_table import PP
+from txmatching.utils.hla_system.hla_table import \
+    PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
@@ -178,7 +179,8 @@ class TestCodeParser(DbTests):
         ultra high res codes.
         """
         high_res_to_splits = dict()
-        for high_res_or_ultra_high_res, split_or_broad in PP.items():
+        all_codes = PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.split.to_dict()
+        for high_res_or_ultra_high_res, split_or_broad in all_codes.items():
             if split_or_broad is None:
                 continue
             maybe_high_res = try_convert_ultra_high_res(high_res_or_ultra_high_res)

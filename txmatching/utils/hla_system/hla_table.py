@@ -64,12 +64,11 @@ SPLIT_TO_BROAD = {'A23': 'A9',
                   'DQ8': 'DQ3',
                   'DQ9': 'DQ3'
                   }
-df = parse_rel_dna_ser(PATH_TO_REL_DNA_SER)
-PP = df.split.to_dict()
-ALL_OF_THEM = set(parse_rel_dna_ser(PATH_TO_REL_DNA_SER).split.to_dict().keys())
-PARSED = df.dropna().split.to_dict()
+PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS = parse_rel_dna_ser(PATH_TO_REL_DNA_SER)
+ALL_HIGH_RES_CODES = set(parse_rel_dna_ser(PATH_TO_REL_DNA_SER).split.to_dict().keys())
+PARSED = PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.dropna().split.to_dict()
 
-ALL_ULTRA_HIGH_RES_AND_HIGH_RES_CODES = {high_res for high_res, split in PARSED.items() if not pd.isna(split)}
+ALL_HIGH_RES_CODES_WITH_SPLIT_BROAD_CODE = {high_res for high_res, split in PARSED.items() if not pd.isna(split)}
 
 
 def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
@@ -77,7 +76,7 @@ def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
             high_res.startswith(f'{high_res_code}:')}
 
 
-def high_res_to_split_or_broad(high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
+def high_res_low_res_to_split_or_broad(high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
     maybe_split_code = PARSED.get(high_res_code)
     if maybe_split_code:
         return maybe_split_code
@@ -95,15 +94,16 @@ def high_res_to_split_or_broad(high_res_code: str) -> Union[str, HlaCodeProcessi
             return maybe_split_or_broad_code
 
 
-STANDARD_HIGH_RES_CODES = {try_convert_ultra_high_res(high_res) for high_res in ALL_ULTRA_HIGH_RES_AND_HIGH_RES_CODES}
+ALL_NON_ULTRA_HIGH_RES_CODES = {try_convert_ultra_high_res(high_res) for high_res in
+                                ALL_HIGH_RES_CODES_WITH_SPLIT_BROAD_CODE}
 
-STANDARD_HIGH_RES_TO_SPLIT_OR_BROAD = {high_res: high_res_to_split_or_broad(high_res) for high_res in
-                                       STANDARD_HIGH_RES_CODES}
+HIGH_RES_TO_SPLIT_OR_BROAD = {high_res: high_res_low_res_to_split_or_broad(high_res) for high_res in
+                              ALL_NON_ULTRA_HIGH_RES_CODES}
 
-SEROLOGICAL_CODES_IN_REL_DNA_SER = set(STANDARD_HIGH_RES_TO_SPLIT_OR_BROAD.values())
+ALL_SEROLOGICAL_CODES_IN_TABLE = set(HIGH_RES_TO_SPLIT_OR_BROAD.values())
 
-BROAD_CODES = {SPLIT_TO_BROAD.get(hla_code, hla_code) for hla_code in SEROLOGICAL_CODES_IN_REL_DNA_SER}
+BROAD_CODES = {SPLIT_TO_BROAD.get(hla_code, hla_code) for hla_code in ALL_SEROLOGICAL_CODES_IN_TABLE}
 
-SPLIT_CODES = SEROLOGICAL_CODES_IN_REL_DNA_SER - set(SPLIT_TO_BROAD.values())
+SPLIT_CODES = ALL_SEROLOGICAL_CODES_IN_TABLE - set(SPLIT_TO_BROAD.values())
 
-ALL_SPLIT_BROAD_CODES = SEROLOGICAL_CODES_IN_REL_DNA_SER.union(BROAD_CODES)
+ALL_SPLIT_BROAD_CODES = ALL_SEROLOGICAL_CODES_IN_TABLE.union(BROAD_CODES)
