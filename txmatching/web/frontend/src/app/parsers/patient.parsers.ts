@@ -5,7 +5,6 @@ import { parseAntigens } from '@app/parsers/hla.parsers';
 
 export const parsePatient = ( data: DonorGenerated | RecipientGenerated ): Patient => {
   return {
-    // TODO: https://github.com/mild-blue/txmatching/issues/401 create proper ListItem here
     ...DEFAULT_LIST_ITEM,
     dbId: data.db_id,
     medicalId: data.medical_id,
