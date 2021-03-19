@@ -3,7 +3,7 @@ from typing import List
 from tests.test_utilities.create_dataclasses import (get_test_donors,
                                                      get_test_raw_codes,
                                                      get_test_recipients)
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.patients.patient import Patient
 from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.scorers.split_hla_additive_scorer import \

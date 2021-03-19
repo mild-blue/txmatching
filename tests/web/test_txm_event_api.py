@@ -1,4 +1,4 @@
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import \
     TxmEventDTOIn

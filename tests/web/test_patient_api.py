@@ -2,10 +2,10 @@ import os
 
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_hla_typing)
-from tests.test_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
-                                              PATIENT_DATA_OBFUSCATED,
-                                              create_or_overwrite_txm_event)
-from tests.test_utilities.prepare_app import DbTests
+from local_testing_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
+                                                 PATIENT_DATA_OBFUSCATED)
+from local_testing_utilities.utils import create_or_overwrite_txm_event
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel,

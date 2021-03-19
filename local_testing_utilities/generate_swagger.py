@@ -11,6 +11,8 @@ from txmatching.web import (PATH_TO_PUBLIC_SWAGGER_JSON, PATH_TO_SWAGGER_JSON,
                             add_public_namespaces, register_error_handlers)
 
 
+# pylint: disable=too-few-public-methods
+# these classes are useful as wrappers to run the generators
 class SwaggerGenApp:
     def __init__(self):
         self.app = Flask(__name__)
@@ -44,21 +46,21 @@ class PublicSwaggerGenApp:
 
 
 def generate_private():
-    with open(PATH_TO_SWAGGER_JSON, 'w') as f:
+    with open(PATH_TO_SWAGGER_JSON, 'w') as file:
         swagger = SwaggerGenApp().api.__schema__
         swagger_without_ordered_dict = {k: dict(v) if isinstance(v, OrderedDict) else v for k, v in swagger.items()}
-        json.dump(swagger_without_ordered_dict, f, ensure_ascii=False, indent=4)
-    with open(PATH_TO_SWAGGER_YAML, 'w') as f:
-        yaml.dump(swagger_without_ordered_dict, f, indent=4)
+        json.dump(swagger_without_ordered_dict, file, ensure_ascii=False, indent=4)
+    with open(PATH_TO_SWAGGER_YAML, 'w') as file:
+        yaml.dump(swagger_without_ordered_dict, file, indent=4)
     return swagger_without_ordered_dict
 
 
 def generate_public():
-    with open(PATH_TO_PUBLIC_SWAGGER_JSON, 'w') as f:
+    with open(PATH_TO_PUBLIC_SWAGGER_JSON, 'w') as file:
         swagger = PublicSwaggerGenApp().api.__schema__
         swagger_without_ordered_dict = {k: dict(v) if isinstance(v, OrderedDict) else v for k, v in
                                         swagger.items()}
-        json.dump(swagger_without_ordered_dict, f, ensure_ascii=False, indent=4)
+        json.dump(swagger_without_ordered_dict, file, ensure_ascii=False, indent=4)
     return swagger_without_ordered_dict
 
 

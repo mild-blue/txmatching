@@ -1,4 +1,4 @@
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
     HLAAntibodiesUpdateDTO, HLAAntibodyUpdateDTO)
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \

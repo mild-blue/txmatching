@@ -4,7 +4,7 @@ from uuid import uuid4
 from flask import Response
 
 from tests.test_utilities.hla_preparation_utils import create_hla_typing
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from tests.web.public_api.test_public_patient_upload_example_data import (
     DONORS, RECIPIENTS,
     SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_EXISTING_RECIPIENT_ID,

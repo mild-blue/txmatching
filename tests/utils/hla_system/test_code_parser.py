@@ -4,7 +4,7 @@ import pandas as pd
 
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody)
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup

@@ -2,7 +2,7 @@ from typing import List
 from unittest import mock
 from uuid import uuid4
 
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import GuardException

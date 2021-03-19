@@ -1,8 +1,8 @@
+from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from tests.solvers.best_solution_use_split_resolution_true import (
     BEST_SOLUTION_use_high_resolution_TRUE,
     get_donor_recipient_pairs_from_solution)
-from tests.test_utilities.populate_db import PATIENT_DATA_OBFUSCATED
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
