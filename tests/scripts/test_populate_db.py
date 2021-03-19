@@ -1,5 +1,3 @@
-import unittest
-
 from local_testing_utilities.populate_db import (PATIENT_DATA_OBFUSCATED,
                                                  populate_large_db,
                                                  populate_small_db)
@@ -12,11 +10,9 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 
 
 class TestSolveFromDbAndItsSupportFunctionality(DbTests):
-    @unittest.skip('too slow')
     def test_populate_small_db_works(self):
         populate_small_db()
 
-    @unittest.skip('too slow')
     def test_populate_db_works_but_not_reupload_of_the_same_data(self):
         populate_large_db()
         patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), country=None,

@@ -28,7 +28,7 @@ from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibodyRaw,
 from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
-from txmatching.utils.hla_system.hla_transformations_store import (
+from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
     parse_hla_typing_raw_and_add_parsing_error_to_db_session)
 from txmatching.utils.logging_tools import PatientAdapter

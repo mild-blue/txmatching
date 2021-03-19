@@ -14,7 +14,7 @@ from txmatching.utils.country_enum import Country
 # pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
 from txmatching.utils.enums import Sex
-from txmatching.utils.hla_system.hla_code_processing_result_detail import \
+from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 
 

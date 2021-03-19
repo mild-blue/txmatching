@@ -25,8 +25,7 @@ from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup, Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.rel_dna_ser_parsing import \
-    HIGH_RES_TO_SPLIT_OR_BROAD
+from txmatching.utils.hla_system.hla_table import HIGH_RES_TO_SPLIT_OR_BROAD
 
 BRIDGING_PROBABILITY = 0.8
 TXM_EVENT_NAME = 'high_res_example_data'

@@ -14,13 +14,30 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import (
     HLAAntibody, HLAType, create_hla_antibodies_per_groups_from_hla_antibodies,
     split_hla_types_to_groups)
-from txmatching.utils.hla_system.hla_code_processing_result_detail import \
+from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
-from txmatching.utils.hla_system.hla_transformations import (
+from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.logging_tools import PatientAdapter
 
 logger = logging.getLogger(__name__)
+
+
+def parse_hla_raw_code_and_add_parsing_error_to_db_session(hla_raw_code: str) -> Optional[HLACode]:
+    """
+    Method to store information about error during parsing HLA code.
+    This method is partially redundant to parse_hla_raw_code so in case of update, update it too.
+    It must be in separated file with little redundancy caused by cyclic import:
+    txmatching.database.sql_alchemy_schema -> txmatching.patients.patient ->
+    txmatching.patients.patient_parameters -> txmatching.utils.hla_system.hla_transformations
+    :param hla_raw_code: HLA raw code
+    :return:
+    """
+    parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
+    if not parsing_result.maybe_hla_code or \
+            parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:
+        add_parsing_error_to_db_session(hla_raw_code, parsing_result.result_detail)
+    return parsing_result.maybe_hla_code
 
 
 def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
@@ -53,7 +70,7 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
         # Antibodies with the same raw code does need to have the same cutoff
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
         if len(cutoffs) > 1:
-            _add_parsing_error_to_db_session(raw_code, HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY)
+            add_parsing_error_to_db_session(raw_code, HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY)
             continue
 
         # Parse antibodies and keep only valid ones
@@ -107,25 +124,8 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(hla_typing_raw: HLA
     )
 
 
-def parse_hla_raw_code_and_add_parsing_error_to_db_session(hla_raw_code: str) -> Optional[HLACode]:
-    """
-    Method to store information about error during parsing HLA code.
-    This method is partially redundant to parse_hla_raw_code so in case of update, update it too.
-    It must be in separated file with little redundancy caused by cyclic import:
-    txmatching.database.sql_alchemy_schema -> txmatching.patients.patient ->
-    txmatching.patients.patient_parameters -> txmatching.utils.hla_system.hla_transformations
-    :param hla_raw_code: HLA raw code
-    :return:
-    """
-    parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
-    if not parsing_result.maybe_hla_code or \
-            parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:
-        _add_parsing_error_to_db_session(hla_raw_code, parsing_result.result_detail)
-    return parsing_result.maybe_hla_code
-
-
 # You need to commit the session to save the changes to the db (db.session.commit())
-def _add_parsing_error_to_db_session(
+def add_parsing_error_to_db_session(
         hla_code: str,
         hla_code_processing_result_detail: HlaCodeProcessingResultDetail
 ):

@@ -50,7 +50,7 @@ class DbTests(unittest.TestCase):
     def setUp(self):
         formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
-        logging.basicConfig(level=logging.INFO, format=formatter)
+        logging.basicConfig(level=logging.DEBUG, format=formatter)
         """
         Creates a new database for the unit test to use
         """

@@ -3,20 +3,25 @@ import re
 import pandas as pd
 
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
-                                                        create_antibody)
+                                                        create_antibody,
+                                                        create_hla_type)
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.hla_transformations import (
-    HlaCodeProcessingResultDetail, _try_convert_ultra_high_res,
-    get_mfi_from_multiple_hla_codes, parse_hla_raw_code,
+from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
+from txmatching.utils.hla_system.hla_table import \
+    PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
+from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
+    get_mfi_from_multiple_hla_codes
+from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
+    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
-from txmatching.utils.hla_system.hla_transformations_store import \
+from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_raw_code_and_add_parsing_error_to_db_session
-from txmatching.utils.hla_system.rel_dna_ser_parsing import (
-    HIGH_RES_TO_SPLIT_OR_BROAD, parse_rel_dna_ser)
+from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
 
 codes = {
     'A1': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
@@ -71,6 +76,7 @@ codes = {
 class TestCodeParser(DbTests):
     def test_parsing(self):
         for code, (expected_result, expected_result_detail) in codes.items():
+            print(code)
             result = parse_hla_raw_code_with_details(code)
             self.assertTupleEqual((expected_result_detail, expected_result),
                                   (result.result_detail, result.maybe_hla_code),
@@ -99,7 +105,7 @@ class TestCodeParser(DbTests):
         self.assertSetEqual({'DPA1*01:03', 'DPB1*04:02'}, set(preprocess_hla_code_in('DP4 [01:03, 04:02]')))
         self.assertSetEqual({'DQA1*01:03', 'DQB1*06:03'}, set(preprocess_hla_code_in('DQ[01:03,      06:03]')))
         self.assertSetEqual({HLACode('DPA1*01:03', 'DPA1', 'DPA1'), HLACode('DPB1*02:01', 'DP2', 'DP2')},
-                            set(parse_hla_raw_code(code) for code in preprocess_hla_code_in('DP[01:03,02:01]')))
+                            set(create_hla_type(code).code for code in preprocess_hla_code_in('DP[01:03,02:01]')))
 
     def test_group_assignment(self):
         self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BWA1'))
@@ -173,10 +179,11 @@ class TestCodeParser(DbTests):
         ultra high res codes.
         """
         high_res_to_splits = dict()
-        for high_res_or_ultra_high_res, split_or_broad in HIGH_RES_TO_SPLIT_OR_BROAD.items():
+        all_codes = PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.split.to_dict()
+        for high_res_or_ultra_high_res, split_or_broad in all_codes.items():
             if split_or_broad is None:
                 continue
-            maybe_high_res = _try_convert_ultra_high_res(high_res_or_ultra_high_res)
+            maybe_high_res = try_convert_ultra_high_res(high_res_or_ultra_high_res)
             if maybe_high_res is not None:
                 if maybe_high_res not in high_res_to_splits:
                     high_res_to_splits[maybe_high_res] = set()
