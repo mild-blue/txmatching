@@ -702,10 +702,6 @@ definitions:
         type: object
     HlaAntibodies:
         properties:
-            hla_antibodies_list:
-                items:
-                    $ref: '#/definitions/HlaAntibody'
-                type: array
             hla_antibodies_per_groups:
                 description: hla antibodies split to hla groups
                 example:
@@ -753,7 +749,6 @@ definitions:
                     $ref: '#/definitions/HlaAntibodyRaw'
                 type: array
         required:
-        - hla_antibodies_list
         - hla_antibodies_per_groups
         - hla_antibodies_raw_list
         type: object
@@ -905,17 +900,12 @@ definitions:
                 items:
                     $ref: '#/definitions/HlaCodesInGroups'
                 type: array
-            hla_types_list:
-                items:
-                    $ref: '#/definitions/HlaType'
-                type: array
             hla_types_raw_list:
                 items:
                     $ref: '#/definitions/HlaTypeRaw'
                 type: array
         required:
         - hla_per_groups
-        - hla_types_list
         - hla_types_raw_list
         type: object
     HlaTypingToUpdate:

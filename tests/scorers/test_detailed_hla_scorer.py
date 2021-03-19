@@ -2,7 +2,9 @@ import unittest
 
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack)
-from txmatching.patients.hla_model import HLAType, HLATyping
+from tests.test_utilities.hla_preparation_utils import (create_antibodies,
+                                                        create_hla_type,
+                                                        create_hla_typing)
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.high_res_hla_additive_scorer import \
@@ -25,34 +27,43 @@ class TestHlaScorer(unittest.TestCase):
         expected = [
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=HLAGroup.A,
-                donor_matches=[HLAMatch(HLAType('A23'), MatchTypes.BROAD),
-                               HLAMatch(HLAType('A26'), MatchTypes.NONE)],
-                recipient_matches=[HLAMatch(HLAType('A9'), MatchTypes.BROAD),
-                                   HLAMatch(HLAType('A30'), MatchTypes.NONE)],
+                donor_matches=[HLAMatch(create_hla_type('A23'), MatchTypes.BROAD),
+                               HLAMatch(create_hla_type('A26'), MatchTypes.NONE)],
+                recipient_matches=[HLAMatch(create_hla_type('A9'), MatchTypes.BROAD),
+                                   HLAMatch(create_hla_type('A30'), MatchTypes.NONE)],
                 group_compatibility_index=1.0),
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=HLAGroup.B,
-                donor_matches=[HLAMatch(HLAType('B62'), MatchTypes.BROAD),
-                               HLAMatch(HLAType('B38'), MatchTypes.NONE)],
-                recipient_matches=[HLAMatch(HLAType('B77'), MatchTypes.BROAD),
-                                   HLAMatch(HLAType('B14'), MatchTypes.NONE)],
+                donor_matches=[HLAMatch(create_hla_type('B62'), MatchTypes.BROAD),
+                               HLAMatch(create_hla_type('B38'), MatchTypes.NONE)],
+                recipient_matches=[HLAMatch(create_hla_type('B77'), MatchTypes.BROAD),
+                                   HLAMatch(create_hla_type('B14'), MatchTypes.NONE)],
                 group_compatibility_index=3.0),
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=HLAGroup.DRB1,
-                donor_matches=[HLAMatch(HLAType('DR4'), MatchTypes.SPLIT), HLAMatch(HLAType('DR11'), MatchTypes.SPLIT)],
-                recipient_matches=[HLAMatch(HLAType('DR4'), MatchTypes.SPLIT),
-                                   HLAMatch(HLAType('DR11'), MatchTypes.SPLIT)],
+                donor_matches=[HLAMatch(create_hla_type('DR4'), MatchTypes.SPLIT),
+                               HLAMatch(create_hla_type('DR11'), MatchTypes.SPLIT)],
+                recipient_matches=[HLAMatch(create_hla_type('DR4'), MatchTypes.SPLIT),
+                                   HLAMatch(create_hla_type('DR11'), MatchTypes.SPLIT)],
                 group_compatibility_index=18.0),
             DetailedCompatibilityIndexForHLAGroup(hla_group=HLAGroup.Other,
                                                   donor_matches=[
-                                                      HLAMatch(hla_type=HLAType('DR52'), match_type=MatchTypes.NONE),
-                                                      HLAMatch(hla_type=HLAType('DR53'), match_type=MatchTypes.NONE),
-                                                      HLAMatch(hla_type=HLAType('DQ7'), match_type=MatchTypes.NONE),
-                                                      HLAMatch(hla_type=HLAType('DQ8'), match_type=MatchTypes.NONE),
-                                                      HLAMatch(hla_type=HLAType('DP2'), match_type=MatchTypes.NONE),
-                                                      HLAMatch(hla_type=HLAType('DP10'), match_type=MatchTypes.NONE),
-                                                      HLAMatch(hla_type=HLAType('CW9'), match_type=MatchTypes.NONE),
-                                                      HLAMatch(hla_type=HLAType('CW12'), match_type=MatchTypes.NONE)],
+                                                      HLAMatch(hla_type=create_hla_type('DR52'),
+                                                               match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=create_hla_type('DR53'),
+                                                               match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=create_hla_type('DQ7'),
+                                                               match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=create_hla_type('DQ8'),
+                                                               match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=create_hla_type('DP2'),
+                                                               match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=create_hla_type('DP10'),
+                                                               match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=create_hla_type('CW9'),
+                                                               match_type=MatchTypes.NONE),
+                                                      HLAMatch(hla_type=create_hla_type('CW12'),
+                                                               match_type=MatchTypes.NONE)],
                                                   recipient_matches=[], group_compatibility_index=0.0)
 
         ]
@@ -74,7 +85,8 @@ class TestHlaScorer(unittest.TestCase):
             acceptable_blood_groups=[],
             related_donor_db_id=1,
             medical_id='recipient',
-            parameters=recipient_parameters_Jack
+            parameters=recipient_parameters_Jack,
+            hla_antibodies=create_antibodies([])
         )
         original_donor = Donor(
             db_id=2,
@@ -83,17 +95,17 @@ class TestHlaScorer(unittest.TestCase):
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=HLATyping(
-                    [HLAType('A1'),
-                     HLAType('A9'),
-                     HLAType('B7'),
-                     HLAType('B37'),
-                     HLAType('DR11'),
-                     HLAType('DR15'),
-                     HLAType('DR52'),
-                     HLAType('DR51'),
-                     HLAType('DQ7'),
-                     HLAType('DQ6')]
+                hla_typing=create_hla_typing(
+                    ['A1',
+                     'A9',
+                     'B7',
+                     'B37',
+                     'DR11',
+                     'DR15',
+                     'DR52',
+                     'DR51',
+                     'DQ7',
+                     'DQ6']
                 )
             )
         )
@@ -101,9 +113,11 @@ class TestHlaScorer(unittest.TestCase):
         # A9 - BROAD +1
         # B77 - BROAD +3
         # DR4, DR11 - SPLIT +9 +9
-        self.assertEqual(22, split_scorer.score_transplant(donor=donor, recipient=recipient, original_donor=original_donor))
+        self.assertEqual(22,
+                         split_scorer.score_transplant(donor=donor, recipient=recipient, original_donor=original_donor))
 
         # A9 - BROAD +1
         # B77 - BROAD +1
         # DR4, DR11 - SPLIT +2 +2
-        self.assertEqual(6, high_res_scorer.score_transplant(donor=donor, recipient=recipient, original_donor=original_donor))
+        self.assertEqual(6, high_res_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                             original_donor=original_donor))

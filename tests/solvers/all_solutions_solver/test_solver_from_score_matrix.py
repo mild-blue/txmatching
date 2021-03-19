@@ -57,9 +57,10 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         solutions = find_possible_path_combinations_from_score_matrix(score_matrix_test,
                                                                       _get_donors_for_score_matrix(score_matrix_test),
-                                                                      Configuration(solver_constructor_name='AllSolutionsSolver',
-                                                                                    max_sequence_length=100,
-                                                                                    max_cycle_length=100))
+                                                                      Configuration(
+                                                                          solver_constructor_name='AllSolutionsSolver',
+                                                                          max_sequence_length=100,
+                                                                          max_cycle_length=100))
         self.assertEqual(36, len(list(solutions)))
 
 
@@ -69,7 +70,7 @@ def _get_donors_for_score_matrix(score_matrix: np.array) -> List[Donor]:
         donors.append(Donor(
             parameters=PatientParameters(country_code=Country.CZE,
                                          blood_group=BloodGroup.ZERO,
-                                         hla_typing=HLATyping(hla_types_list=[])
+                                         hla_typing=HLATyping(hla_types_raw_list=[], hla_per_groups=[])
                                          ),
             db_id=1,
             medical_id='test'

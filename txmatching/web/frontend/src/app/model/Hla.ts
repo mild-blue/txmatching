@@ -35,12 +35,10 @@ export interface AntibodyRaw extends HlaRaw {
 
 export interface Antigens {
   hlaPerGroups: HlaPerGroup[];
-  hlaTypesList: Antigen[];
   hlaTypesRawList: AntigenRaw[];
 }
 
 export interface Antibodies {
-  hlaAntibodiesList: Antibody[];
   hlaAntibodiesRawList: AntibodyRaw[];
   hlaAntibodiesPerGroups: AntibodiesPerGroup[];
 }

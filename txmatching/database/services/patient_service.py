@@ -91,11 +91,10 @@ def get_hla_antibodies_from_recipient_model(
         ) for antibody_raw_model in antibodies_raw_models
     ]
 
-    if antibodies_dto.hla_antibodies_list is None or antibodies_dto.hla_antibodies_per_groups is None:
+    if antibodies_dto.hla_antibodies_per_groups is None:
         raise ValueError(f'Parsed antibodies have invalid format. '
                          f'Running recompute-parsing api could help: ${antibodies_dto}')
     return HLAAntibodies(
-        hla_antibodies_list=antibodies_dto.hla_antibodies_list,
         hla_antibodies_raw_list=antibodies_raw,
         hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups
     )
@@ -114,11 +113,10 @@ def _get_hla_typing_from_patient_model(
         config=dacite.Config(cast=[Enum])
     )
 
-    if hla_typing_dto.hla_types_list is None or hla_typing_dto.hla_per_groups is None:
+    if hla_typing_dto.hla_per_groups is None:
         raise ValueError(f'Parsed antigens have invalid format. '
                          f'Running recompute-parsing api could help: ${hla_typing_dto}')
     return HLATyping(
-        hla_types_list=hla_typing_dto.hla_types_list,
         hla_types_raw_list=hla_typing_raw_dto.hla_types_list,
         hla_per_groups=hla_typing_dto.hla_per_groups,
     )

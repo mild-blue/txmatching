@@ -75,7 +75,6 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
     )
 
     return HLAAntibodiesDTO(
-        hla_antibodies_list=hla_antibodies_parsed,
         hla_antibodies_per_groups=hla_antibodies_per_groups
     )
 
@@ -104,7 +103,6 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(hla_typing_raw: HLA
     hla_per_groups = split_hla_types_to_groups(hla_types_parsed)
 
     return HLATypingDTO(
-        hla_types_list=hla_types_parsed,
         hla_per_groups=hla_per_groups,
     )
 

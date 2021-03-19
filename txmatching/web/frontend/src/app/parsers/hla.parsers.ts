@@ -91,14 +91,12 @@ export const parseAntibodyRaw = ( data: HlaAntibodyRawGenerated ): AntibodyRaw =
 export const parseAntigens = ( hla_typing?: HlaTypingGenerated ): Antigens => {
   return {
     hlaPerGroups: hla_typing?.hla_per_groups.map(parseHlaPerGroup) ?? [],
-    hlaTypesList: hla_typing?.hla_types_list.map(parseAntigen) ?? [],
     hlaTypesRawList: hla_typing?.hla_types_raw_list.map(parseAntigenRaw) ?? []
   };
 };
 
 export const parseAntibodies = ( hla_antibodies?: HlaAntibodiesGenerated ): Antibodies => {
   return {
-    hlaAntibodiesList: hla_antibodies?.hla_antibodies_list.map(parseAntibody) ?? [],
     hlaAntibodiesRawList: hla_antibodies?.hla_antibodies_raw_list.map(parseAntibodyRaw) ?? [],
     hlaAntibodiesPerGroups: hla_antibodies?.hla_antibodies_per_groups.map(parseAntibodiesPerGroup) ?? []
   };

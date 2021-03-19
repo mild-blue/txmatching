@@ -2821,16 +2821,9 @@
         "HlaTyping": {
             "required": [
                 "hla_per_groups",
-                "hla_types_list",
                 "hla_types_raw_list"
             ],
             "properties": {
-                "hla_types_list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/HlaType"
-                    }
-                },
                 "hla_types_raw_list": {
                     "type": "array",
                     "items": {
@@ -2941,17 +2934,10 @@
         },
         "HlaAntibodies": {
             "required": [
-                "hla_antibodies_list",
                 "hla_antibodies_per_groups",
                 "hla_antibodies_raw_list"
             ],
             "properties": {
-                "hla_antibodies_list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/HlaAntibody"
-                    }
-                },
                 "hla_antibodies_raw_list": {
                     "type": "array",
                     "items": {
