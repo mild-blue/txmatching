@@ -1,0 +1,64 @@
+# test the api works
+
+GET https://txmatching.ikem.cz/v1/service/version
+Content-Type: application/json
+
+
+# The workflow below has endpoints that add a user, change password and call recompute endpoint
+###
+
+POST https://txmatching.ikem.cz/v1/user/login
+Content-Type: application/json
+
+{
+  "email": "",
+  "password": ""
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+###
+
+POST https://txmatching.ikem.cz/v1/user/otp
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "otp": ""
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+###
+
+
+POST https://txmatching.ikem.cz/v1/user/register
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "email": "",
+  "password": "",
+  "role": "ADMIN",
+  "second_factor": "",
+  "allowed_countries": [
+    "AUT",
+    "CZE",
+    "ISR"
+  ]
+}
+
+
+###
+
+PUT https://txmatching.ikem.cz/v1/user/change-password
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "current_password": "",
+  "new_password": ""
+}
+
+
+###
+POST https://txmatching.ikem.cz/v1/txm-event/1/patients/recompute-parsing
+Authorization: Bearer {{auth_token}}

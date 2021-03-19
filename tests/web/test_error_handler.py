@@ -3,7 +3,7 @@ from unittest import mock
 from dacite import DaciteError
 from werkzeug.exceptions import HTTPException
 
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.exceptions import (CredentialsMismatchException,
                                         GuardException,
                                         InvalidArgumentException,

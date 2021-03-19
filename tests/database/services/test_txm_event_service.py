@@ -1,7 +1,7 @@
-from tests.test_utilities.populate_db import (ADMIN_USER, SERVICE_USER,
-                                              VIEWER_USER,
-                                              create_or_overwrite_txm_event)
-from tests.test_utilities.prepare_app import DbTests
+from local_testing_utilities.populate_db import (ADMIN_USER, SERVICE_USER,
+                                                 VIEWER_USER)
+from local_testing_utilities.utils import create_or_overwrite_txm_event
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.exceptions import UnauthorizedException
 from txmatching.database.services.app_user_management import get_app_user_by_id
 from txmatching.database.services.txm_event_service import (

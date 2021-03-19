@@ -1,10 +1,10 @@
 import dacite
 
+from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.create_dataclasses import (get_test_donors,
                                                      get_test_recipients)
 from tests.test_utilities.hla_preparation_utils import create_hla_type
-from tests.test_utilities.populate_db import create_or_overwrite_txm_event
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO

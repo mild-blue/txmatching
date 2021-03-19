@@ -30,7 +30,7 @@ from txmatching.database.sql_alchemy_schema import (
 from txmatching.patients.hla_model import HLATypeRaw
 from txmatching.patients.patient import DonorType, calculate_cutoff
 from txmatching.utils.country_enum import Country
-from txmatching.utils.hla_system.hla_transformations_store import (
+from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
     parse_hla_typing_raw_and_add_parsing_error_to_db_session)
 from txmatching.utils.logging_tools import PatientAdapter

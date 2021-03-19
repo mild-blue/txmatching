@@ -9,9 +9,9 @@ from flask_restx import Api
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
-from tests.test_utilities.populate_db import (ADMIN_USER, SERVICE_USER,
-                                              VIEWER_USER, add_users,
-                                              create_or_overwrite_txm_event)
+from local_testing_utilities.populate_db import (ADMIN_USER, SERVICE_USER,
+                                                 VIEWER_USER, add_users)
+from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.auth.auth_check import store_user_in_context
 from txmatching.auth.data_types import UserRole
 from txmatching.configuration.configuration import Configuration
@@ -50,7 +50,7 @@ class DbTests(unittest.TestCase):
     def setUp(self):
         formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
-        logging.basicConfig(level=logging.INFO, format=formatter)
+        logging.basicConfig(level=logging.DEBUG, format=formatter)
         """
         Creates a new database for the unit test to use
         """

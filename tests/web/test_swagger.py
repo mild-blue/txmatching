@@ -1,8 +1,8 @@
 import json
 import unittest
 
-from tests.test_utilities.generate_swagger import (PublicSwaggerGenApp,
-                                                   SwaggerGenApp)
+from local_testing_utilities.generate_swagger import (PublicSwaggerGenApp,
+                                                      SwaggerGenApp)
 from txmatching.web import PATH_TO_PUBLIC_SWAGGER_JSON, PATH_TO_SWAGGER_JSON
 
 

@@ -2,7 +2,7 @@ from typing import Tuple
 from unittest import mock
 from uuid import uuid4
 
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.crypto.jwt_crypto import decode_auth_token
 from txmatching.auth.data_types import DecodedBearerToken, TokenType, UserRole
 from txmatching.auth.exceptions import (CredentialsMismatchException,

@@ -3,8 +3,8 @@ import unittest
 
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack)
-from txmatching.utils.hla_system.hla_transformations import (broad_to_split,
-                                                             split_to_broad)
+from txmatching.utils.hla_system.hla_transformations.utils import (
+    broad_to_split, split_to_broad)
 
 logger = logging.getLogger(__name__)
 

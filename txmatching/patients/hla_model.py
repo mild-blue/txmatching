@@ -8,7 +8,7 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import (HLA_GROUP_HIGH_RES_CODE_REGEX,
                                     HLA_GROUP_SPLIT_CODE_REGEX,
                                     HLA_GROUPS_NAMES_WITH_OTHER, HLAGroup)
-from txmatching.utils.hla_system.hla_transformations import \
+from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
 from txmatching.utils.logging_tools import PatientAdapter
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
