@@ -44,3 +44,4 @@ class CalculatedMatchingsDTO:
     calculated_matchings: List[MatchingDTO]
     found_matchings_count: Optional[int]
     show_not_all_matchings_found: bool
+    config_id: int

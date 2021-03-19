@@ -47,7 +47,8 @@ class TxmEventApi(Resource):
     def post(self):
         tmx_event = from_dict(data_class=TxmEventDTOIn, data=request.json)
         created_event = create_txm_event(tmx_event.name)
-        return make_response(jsonify(TxmEventDTOOut(id=created_event.db_id, name=created_event.name)), 201)
+        return make_response(jsonify(TxmEventDTOOut(id=created_event.db_id, name=created_event.name,
+                                                    default_config_id=created_event.default_config_id)), 201)
 
     @txm_event_api.doc(
         security='bearer',
@@ -67,7 +68,7 @@ class TxmEventApi(Resource):
             get_allowed_txm_event_ids_for_current_user()
         ]
         txm_events_dto = [
-            TxmEventDTOOut(id=e.db_id, name=e.name) for e in
+            TxmEventDTOOut(id=e.db_id, name=e.name, default_config_id=e.default_config_id) for e in
             txm_events
         ]
         return jsonify(TxmEventsDTOOut(
@@ -97,7 +98,8 @@ class TxmDefaultEventApi(Resource):
         update_default_txm_event_id_for_current_user(default_event_in.id)
         event = get_txm_event_base(default_event_in.id)
 
-        return make_response(jsonify(TxmEventDTOOut(id=event.db_id, name=event.name)))
+        return make_response(jsonify(TxmEventDTOOut(id=event.db_id, name=event.name,
+                                                    default_config_id=event.default_config_id)))
 
     @txm_event_api.doc(
         security='bearer',
@@ -116,6 +118,7 @@ class TxmDefaultEventApi(Resource):
         return jsonify(TxmEventDTOOut(
             id=txm_event.db_id,
             name=txm_event.name,
+            default_config_id=txm_event.default_config_id
         ))
 
 

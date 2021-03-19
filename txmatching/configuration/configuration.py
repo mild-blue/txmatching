@@ -117,3 +117,6 @@ class Configuration:
                         return False
 
         return True
+
+    def __eq__(self, other):
+        return self.comparable(other) and other.comparable(self)

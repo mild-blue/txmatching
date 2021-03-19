@@ -8,6 +8,7 @@ import { MatchingDetailComponent } from '@app/components/matching-detail/matchin
 export const parseCalculatedMatchings = (data: CalculatedMatchingsGenerated, patients: PatientList): CalculatedMatchings => {
   return {
     calculated_matchings: parseMatchings(data.calculated_matchings, patients),
+    configId: data.config_id,
     found_matchings_count: data.found_matchings_count,
     show_not_all_matchings_found: data.show_not_all_matchings_found
   };

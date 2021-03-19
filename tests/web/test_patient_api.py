@@ -26,7 +26,8 @@ class TestPatientService(DbTests):
         txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         with self.app.test_client() as client:
-            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}',
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/configs/default',
                              headers=self.auth_headers)
         self.assertEqual(200, res.status_code)
         self.assertEqual(38, len(res.json['donors']))
@@ -265,7 +266,7 @@ class TestPatientService(DbTests):
                 'active': True
             }
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                             f'{PATIENT_NAMESPACE}/donor',
+                             f'{PATIENT_NAMESPACE}/configs/default/donor',
                              headers=self.auth_headers, json=json_data)
         self.assertEqual(200, res.status_code)
         self.assertEqual('application/json', res.content_type)
@@ -296,7 +297,7 @@ class TestPatientService(DbTests):
                 'active': False
             }
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                             f'{PATIENT_NAMESPACE}/donor',
+                             f'{PATIENT_NAMESPACE}/configs/default/donor',
                              headers=self.auth_headers, json=json_data)
         self.assertEqual(200, res.status_code)
         self.assertEqual('application/json', res.content_type)
@@ -421,7 +422,8 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers,
                              json=recipient_update_dict).json
             self.assertEqual(['A', 'AB'], res['acceptable_blood_groups'])
-            recipients = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}',
+            recipients = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                                    f'{PATIENT_NAMESPACE}/configs/default',
                                     headers=self.auth_headers).json['recipients']
             self.assertEqual(recipient_update_dict['acceptable_blood_groups'], recipients[0]['acceptable_blood_groups'])
 

@@ -17,6 +17,8 @@ export class EventService {
   private _txmEvents?: Promise<TxmEvents>;
   private _defaultTxmEvent?: Promise<TxmEvent>;
   private _userSubscription: Subscription;
+  // TODO: move elsewhere https://github.com/mild-blue/txmatching/issues/481
+  private _configId?: number;
 
   constructor(private _http: HttpClient,
               private _logger: LoggerService,
@@ -25,7 +27,13 @@ export class EventService {
     this._userSubscription = this._authService.currentUser.subscribe(_ => {
       this._txmEvents = undefined;
       this._defaultTxmEvent = undefined;
-    })
+      this._configId = undefined;
+    });
+  }
+
+  public invalidateTxmEvents() {
+    this._txmEvents = undefined;
+    this._defaultTxmEvent = undefined;
   }
 
   public async getEvents(): Promise<TxmEvents> {
@@ -64,5 +72,14 @@ export class EventService {
     ).toPromise();
 
     return this._defaultTxmEvent;
+  }
+
+  // TODO: move elsewhere https://github.com/mild-blue/txmatching/issues/481
+  public setConfigId(config_id: number) {
+    this._configId = config_id;
+  }
+
+  public getConfigId(): number | undefined {
+    return this._configId;
   }
 }
