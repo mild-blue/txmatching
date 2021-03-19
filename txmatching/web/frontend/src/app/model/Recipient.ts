@@ -8,7 +8,6 @@ export interface Recipient extends Patient {
   waitingSince?: Date;
   previousTransplants?: number;
   hla_antibodies: {
-    hla_antibodies_list: Antibody[];
     hla_antibodies_raw_list: AntibodyRaw[];
     hla_antibodies_per_groups: AntibodiesPerGroup[];
   };

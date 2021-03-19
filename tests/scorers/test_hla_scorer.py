@@ -1,6 +1,7 @@
 import unittest
 
-from txmatching.patients.hla_model import HLAType, HLATyping
+from tests.test_utilities.hla_preparation_utils import (create_antibodies,
+                                                        create_hla_typing)
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.high_res_hla_additive_scorer import \
@@ -20,17 +21,17 @@ class TestHlaScorer(unittest.TestCase):
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=HLATyping(
-                    [HLAType('A1'),
-                     HLAType('A3'),
-                     HLAType('B7'),
-                     HLAType('B37'),
-                     HLAType('DR11'),
-                     HLAType('DR15'),
-                     HLAType('DR52'),
-                     HLAType('DR51'),
-                     HLAType('DQ7'),
-                     HLAType('DQ6')]
+                hla_typing=create_hla_typing(
+                    ['A1',
+                     'A3',
+                     'B7',
+                     'B37',
+                     'DR11',
+                     'DR15',
+                     'DR52',
+                     'DR51',
+                     'DQ7',
+                     'DQ6']
                 )
 
             )
@@ -43,15 +44,16 @@ class TestHlaScorer(unittest.TestCase):
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=HLATyping(
-                    [HLAType('A1'),
-                     HLAType('A2'),
-                     HLAType('B27'),
-                     HLAType('B37'),
-                     HLAType('DR1'),
-                     HLAType('DR10')]
+                hla_typing=create_hla_typing(
+                    ['A1',
+                     'A2',
+                     'B27',
+                     'B37',
+                     'DR1',
+                     'DR10']
                 )
-            )
+            ),
+            hla_antibodies=create_antibodies([])
         )
 
         original_donor = Donor(
@@ -61,17 +63,17 @@ class TestHlaScorer(unittest.TestCase):
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
-                hla_typing=HLATyping(
-                    [HLAType('A1'),
-                     HLAType('A9'),
-                     HLAType('B7'),
-                     HLAType('B37'),
-                     HLAType('DR11'),
-                     HLAType('DR15'),
-                     HLAType('DR52'),
-                     HLAType('DR51'),
-                     HLAType('DQ7'),
-                     HLAType('DQ6')]
+                hla_typing=create_hla_typing(
+                    ['A1',
+                     'A9',
+                     'B7',
+                     'B37',
+                     'DR11',
+                     'DR15',
+                     'DR52',
+                     'DR51',
+                     'DQ7',
+                     'DQ6']
                 )
             )
         )

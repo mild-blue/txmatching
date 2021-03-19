@@ -20,7 +20,6 @@ export const parsePatientParameters = ( data: PatientParametersGenerated ): Pati
     // TODO: https://github.com/mild-blue/txmatching/issues/401 create hla typing model
     hla_typing: {
       hla_per_groups: data.hla_typing?.hla_per_groups.map(parseHlaPerGroup) ?? [],
-      hla_types_list: data.hla_typing?.hla_types_list.map(parseAntigen) ?? [],
       hla_types_raw_list: data.hla_typing?.hla_types_raw_list.map(parseAntigenRaw) ?? []
     },
     country_code: data.country_code,

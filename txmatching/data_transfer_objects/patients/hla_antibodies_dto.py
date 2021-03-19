@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import List
 
-from txmatching.patients.hla_model import AntibodiesPerGroup, HLAAntibody
+from txmatching.patients.hla_model import AntibodiesPerGroup
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,4 @@ class HLAAntibodiesUpdateDTO:
 
 @dataclass
 class HLAAntibodiesDTO:
-    # The field does not have default value because want dacite to raise exception if data stored in db are not valid
-    hla_antibodies_list: List[HLAAntibody]
     hla_antibodies_per_groups: List[AntibodiesPerGroup]

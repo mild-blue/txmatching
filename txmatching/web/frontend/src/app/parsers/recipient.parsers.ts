@@ -9,7 +9,6 @@ export const parseRecipient = (data: RecipientGenerated): Recipient => {
     acceptable_blood_groups: data.acceptable_blood_groups?.map(parseBloodGroup) ?? [],
     // TODO: https://github.com/mild-blue/txmatching/issues/401 create hla_antibodies model
     hla_antibodies: {
-      hla_antibodies_list: data.hla_antibodies?.hla_antibodies_list.map(parseAntibody) ?? [],
       hla_antibodies_raw_list: data.hla_antibodies?.hla_antibodies_raw_list.map(parseAntibodyRaw) ?? [],
       hla_antibodies_per_groups: data.hla_antibodies?.hla_antibodies_per_groups.map(parseAntibodiesPerGroup) ?? []
     },

@@ -9,13 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { HlaAntibodyGenerated } from './hlaAntibodyGenerated';
 import { HlaAntibodyRawGenerated } from './hlaAntibodyRawGenerated';
 import { AntibodiesPerGroupGenerated } from './antibodiesPerGroupGenerated';
 
 
 export interface HlaAntibodiesGenerated { 
-    hla_antibodies_list: Array<HlaAntibodyGenerated>;
     /**
      * hla antibodies split to hla groups
      */

@@ -8,8 +8,8 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import (HLA_GROUP_HIGH_RES_CODE_REGEX,
                                     HLA_GROUP_SPLIT_CODE_REGEX,
                                     HLA_GROUPS_NAMES_WITH_OTHER, HLAGroup)
-from txmatching.utils.hla_system.hla_transformations import (
-    get_mfi_from_multiple_hla_codes, parse_hla_raw_code)
+from txmatching.utils.hla_system.hla_transformations import \
+    get_mfi_from_multiple_hla_codes
 from txmatching.utils.logging_tools import PatientAdapter
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
@@ -19,12 +19,6 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
 class HLAType(PersistentlyHashable):
     raw_code: str
     code: HLACode
-
-    def __init__(self, raw_code: str, code: HLACode = None):
-        # The only places where the init is called without code specified should be
-        # tests and data initialization
-        self.raw_code = raw_code
-        self.code = code if code is not None else parse_hla_raw_code(raw_code)
 
     def __eq__(self, other):
         """
@@ -61,29 +55,8 @@ class HLAPerGroup(PersistentlyHashable):
 
 @dataclass
 class HLATyping(PersistentlyHashable):
-    hla_types_list: List[HLAType]
     hla_types_raw_list: List[HLATypeRaw]
     hla_per_groups: List[HLAPerGroup]
-
-    def __init__(
-            self,
-            hla_types_list: List[HLAType],
-            hla_types_raw_list: List[HLATypeRaw] = None,
-            hla_per_groups: List[HLAPerGroup] = None
-    ):
-        # The only places where the init is called without all parameters should be tests
-        self.hla_types_list = hla_types_list
-
-        if hla_types_raw_list is None:
-            hla_types_raw_list = [HLATypeRaw(hla_type.raw_code) for hla_type in hla_types_list]
-        self.hla_types_raw_list = sorted(
-            hla_types_raw_list,
-            key=lambda hla_type_raw: hla_type_raw.raw_code.upper()
-        )
-
-        if hla_per_groups is None:
-            hla_per_groups = split_hla_types_to_groups(hla_types_list)
-        self.hla_per_groups = hla_per_groups
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, HLATyping)
@@ -93,19 +66,9 @@ class HLATyping(PersistentlyHashable):
 @dataclass
 class HLAAntibody(PersistentlyHashable):
     raw_code: str
+    code: HLACode
     mfi: int
     cutoff: int
-    code: HLACode
-
-    def __init__(self, raw_code: str, mfi: int, cutoff: int, code: HLACode = None):
-        # The only places where the init is called without code specified should be
-        # tests and data initialization
-        assert code is None or isinstance(code, HLACode)
-
-        self.raw_code = raw_code
-        self.mfi = mfi
-        self.cutoff = cutoff
-        self.code = code if code is not None else parse_hla_raw_code(raw_code)
 
     def __eq__(self, other):
         return (isinstance(other, HLAAntibody) and
@@ -153,40 +116,8 @@ class AntibodiesPerGroup(PersistentlyHashable):
 
 @dataclass
 class HLAAntibodies(PersistentlyHashable):
-    hla_antibodies_list: List[HLAAntibody]
     hla_antibodies_raw_list: List[HLAAntibodyRaw]
     hla_antibodies_per_groups: List[AntibodiesPerGroup]
-
-    def __init__(
-            self,
-            hla_antibodies_list: List[HLAAntibody],
-            hla_antibodies_raw_list: List[HLAAntibodyRaw] = None,
-            hla_antibodies_per_groups: List[AntibodiesPerGroup] = None
-    ):
-        if hla_antibodies_list is None:
-            hla_antibodies_list = []
-        self.hla_antibodies_list = hla_antibodies_list
-
-        # The only places where the init is called without all parameters should be tests
-        if hla_antibodies_raw_list is None:
-            hla_antibodies_raw_list = [
-                HLAAntibodyRaw(
-                    raw_code=hla_antibody.raw_code,
-                    mfi=hla_antibody.mfi,
-                    cutoff=hla_antibody.cutoff
-                )
-                for hla_antibody in hla_antibodies_list
-            ]
-        self.hla_antibodies_raw_list = sorted(
-            hla_antibodies_raw_list,
-            key=lambda hla_antibody_raw: (hla_antibody_raw.raw_code.upper(), hla_antibody_raw.mfi)
-        )
-
-        if hla_antibodies_per_groups is None:
-            # We do not set logger because computing hla_antibodies_per_groups is done here only in tests
-            hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(hla_antibodies_list)
-
-        self.hla_antibodies_per_groups = hla_antibodies_per_groups
 
     @property
     def hla_antibodies_per_groups_over_cutoff(self) -> List[AntibodiesPerGroup]:
