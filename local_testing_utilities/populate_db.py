@@ -1,9 +1,10 @@
 import logging
 from typing import List
 
-from tests.test_utilities.generate_patients import store_generated_patients
-from tests.test_utilities.utilities_for_utils import \
-    create_or_overwrite_txm_event
+from local_testing_utilities.generate_patients import (
+    generate_patients, store_generated_patients,
+    store_generated_patients_from_folder)
+from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.user.totp import generate_totp_seed
@@ -20,7 +21,6 @@ from txmatching.solve_service.solve_from_configuration import \
 from txmatching.utils.country_enum import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import create_app
 
 ALLOWED_EDIT_COUNTRIES = 'allowed_edit_countries'
 PATIENT_DATA_OBFUSCATED = 'tests/resources/patient_data_2020_07_obfuscated_multi_country.xlsx'
@@ -118,12 +118,12 @@ def add_allowed_events_to_users(user_models: List[AppUserModel]):
 
 
 def _add_users(users: List[AppUserModel]):
-    for u in users:
-        persist_user(u)
+    for user in users:
+        persist_user(user)
     assert len(AppUserModel.query.all()) == len(users)
 
 
-def populate_db():
+def populate_db_with_split_data():
     create_or_overwrite_txm_event(name='test')
     txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
     user_models = add_users()
@@ -142,10 +142,11 @@ def populate_db():
 
     logger.info(f'Successfully stored {len(list(result.calculated_matchings_list))} matchings into the database.')
 
-    store_generated_patients()
+
+def populate_small_db():
+    store_generated_patients(generate_patients(count_per_country=3))
 
 
-if __name__ == '__main__':
-    app = create_app()
-    with app.app_context():
-        populate_db()
+def populate_large_db():
+    populate_db_with_split_data()
+    store_generated_patients_from_folder()

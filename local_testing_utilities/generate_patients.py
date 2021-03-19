@@ -9,8 +9,7 @@ from typing import List, Optional, Tuple
 import pandas as pd
 from dacite import Config, from_dict
 
-from tests.test_utilities.utilities_for_utils import \
-    create_or_overwrite_txm_event
+from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
@@ -189,17 +188,23 @@ def generate_patients(txm_event_name: str = TXM_EVENT_NAME,
     return patient_upload_objects
 
 
-def store_generated_patients():
-    create_or_overwrite_txm_event(TXM_EVENT_NAME)
+def store_generated_patients_from_folder():
+    patient_upload_objects = []
     for filename in os.listdir(DATA_FOLDER):
         with open(f'{DATA_FOLDER}{filename}') as file_to_load:
             patient_upload_dto = from_dict(data_class=PatientUploadDTOIn,
                                            data=json.load(file_to_load), config=Config(cast=[Enum]))
-            replace_or_add_patients_from_one_country(patient_upload_dto)
+            patient_upload_objects.append(patient_upload_dto)
+    store_generated_patients(patient_upload_objects)
+
+
+def store_generated_patients(generated_patients: List[PatientUploadDTOIn]):
+    create_or_overwrite_txm_event(TXM_EVENT_NAME)
+    for patient_upload_dto in generated_patients:
+        replace_or_add_patients_from_one_country(patient_upload_dto)
 
 
 if __name__ == '__main__':
-    txm_event_name = TXM_EVENT_NAME
-    for upload_object in generate_patients(txm_event_name):
-        with open(f'{DATA_FOLDER}{txm_event_name}_{upload_object.country}.json', 'w') as f:
+    for upload_object in generate_patients(TXM_EVENT_NAME):
+        with open(f'{DATA_FOLDER}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w') as f:
             json.dump(dataclasses.asdict(upload_object), f)

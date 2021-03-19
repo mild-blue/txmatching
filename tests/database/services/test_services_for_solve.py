@@ -1,4 +1,4 @@
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.services.config_service import \
     find_config_db_id_for_configuration_and_data

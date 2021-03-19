@@ -1,7 +1,5 @@
-from tests.test_utilities.populate_db import (PATIENT_DATA_OBFUSCATED,
-                                              create_or_overwrite_txm_event)
-from tests.test_utilities.prepare_app import DbTests
-from txmatching.configuration.configuration import Configuration
+from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
+from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
@@ -13,8 +11,6 @@ from txmatching.database.services.patient_upload_service import (
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.patients.patient import DonorType
-from txmatching.solve_service.solve_from_configuration import \
-    solve_from_configuration
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data

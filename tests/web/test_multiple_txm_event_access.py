@@ -1,4 +1,4 @@
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.data_types import UserRole
 from txmatching.database.services import txm_event_service
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
