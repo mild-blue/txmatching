@@ -1,5 +1,12 @@
-from txmatching.utils.hla_system.rel_dna_ser_parsing import \
-    SEROLOGICAL_CODES_IN_REL_DNA_SER
+from typing import Set, Union
+
+import pandas as pd
+
+from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
+from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
+    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.rel_dna_ser_parsing import (
+    PATH_TO_REL_DNA_SER, parse_rel_dna_ser)
 
 # the dict below is based on http://hla.alleles.org/antigens/recognised_serology.html
 
@@ -57,6 +64,43 @@ SPLIT_TO_BROAD = {'A23': 'A9',
                   'DQ8': 'DQ3',
                   'DQ9': 'DQ3'
                   }
+df = parse_rel_dna_ser(PATH_TO_REL_DNA_SER)
+PP = df.split.to_dict()
+ALL_OF_THEM = set(parse_rel_dna_ser(PATH_TO_REL_DNA_SER).split.to_dict().keys())
+PARSED = df.dropna().split.to_dict()
+
+ALL_ULTRA_HIGH_RES_AND_HIGH_RES_CODES = {high_res for high_res, split in PARSED.items() if not pd.isna(split)}
+
+
+def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
+    return {split for high_res, split in PARSED.items() if
+            high_res.startswith(f'{high_res_code}:')}
+
+
+def high_res_to_split_or_broad(high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
+    maybe_split_code = PARSED.get(high_res_code)
+    if maybe_split_code:
+        return maybe_split_code
+    else:
+        possible_split_or_broad_codes = _get_possible_splits_for_high_res_code(high_res_code)
+        if len(possible_split_or_broad_codes) == 0:
+            return HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE
+
+        maybe_split_or_broad_code = possible_split_or_broad_codes.pop()
+        if len(possible_split_or_broad_codes) > 0:
+            return HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND
+        if maybe_split_or_broad_code is None:
+            return HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES
+        else:
+            return maybe_split_or_broad_code
+
+
+STANDARD_HIGH_RES_CODES = {try_convert_ultra_high_res(high_res) for high_res in ALL_ULTRA_HIGH_RES_AND_HIGH_RES_CODES}
+
+STANDARD_HIGH_RES_TO_SPLIT_OR_BROAD = {high_res: high_res_to_split_or_broad(high_res) for high_res in
+                                       STANDARD_HIGH_RES_CODES}
+
+SEROLOGICAL_CODES_IN_REL_DNA_SER = set(STANDARD_HIGH_RES_TO_SPLIT_OR_BROAD.values())
 
 BROAD_CODES = {SPLIT_TO_BROAD.get(hla_code, hla_code) for hla_code in SEROLOGICAL_CODES_IN_REL_DNA_SER}
 

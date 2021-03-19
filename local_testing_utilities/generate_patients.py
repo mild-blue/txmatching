@@ -25,8 +25,8 @@ from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup, Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.rel_dna_ser_parsing import \
-    HIGH_RES_TO_SPLIT_OR_BROAD
+from txmatching.utils.hla_system.hla_table import \
+    STANDARD_HIGH_RES_TO_SPLIT_OR_BROAD
 
 BRIDGING_PROBABILITY = 0.8
 TXM_EVENT_NAME = 'high_res_example_data'
@@ -79,7 +79,7 @@ SAMPLE = set(range(1, 40))
 def get_codes(hla_group: HLAGroup, sample=None):
     if sample is None:
         sample = SAMPLE
-    all_high_res = [high_res for high_res, split_or_broad_or_nan in HIGH_RES_TO_SPLIT_OR_BROAD.items() if
+    all_high_res = [high_res for high_res, split_or_broad_or_nan in STANDARD_HIGH_RES_TO_SPLIT_OR_BROAD.items() if
                     split_or_broad_or_nan is not None and not pd.isna(split_or_broad_or_nan) and re.match(
                         HLA_GROUP_SPLIT_CODE_REGEX[hla_group], split_or_broad_or_nan) and high_res.count(':') == 1]
     return [high_res for i, high_res in enumerate(all_high_res) if i in sample]
