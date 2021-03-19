@@ -344,7 +344,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
         )
         if recipient is not None:
             antibodies: List[HLAAntibody] = []
-            for antibodies_per_group in recipient.hla_antibodies.hla_antibodies_per_groups:
+            for antibodies_per_group in recipient.hla_antibodies.hla_antibodies_per_groups_over_cutoff:
                 antibodies.extend(antibodies_per_group.hla_antibody_list)
 
             patient_pair = replace(
@@ -360,7 +360,8 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
                     ', '.join([blood_group for blood_group in recipient.acceptable_blood_groups])
                 ),
                 recipient_antigens=' '.join(
-                    [hla.raw_code for hla in recipient.parameters.hla_typing.hla_types_raw_list]),
+                    [hla.code.display_code for hla_group in recipient.parameters.hla_typing.hla_per_groups
+                     for hla in hla_group.hla_types]),
                 recipient_antibodies=' '.join([antibody.raw_code for antibody in antibodies]),
             )
         patient_pairs.append(patient_pair)
