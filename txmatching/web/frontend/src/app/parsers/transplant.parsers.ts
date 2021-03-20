@@ -5,8 +5,8 @@ import { getPatientPair } from './patientPair.parsers';
 import { DEFAULT_LIST_ITEM, ListItem } from '@app/components/list-item/list-item.interface';
 
 export const parseTransplant = (data: TransplantGenerated, patients: PatientList, index: number): Transplant => {
-  const foundDonor = patients.donors.find(p => p.medical_id === data.donor);
-  const foundRecipient = patients.recipients.find(p => p.medical_id === data.recipient);
+  const foundDonor = patients.donors.find(p => p.medicalId === data.donor);
+  const foundRecipient = patients.recipients.find(p => p.medicalId === data.recipient);
   const listItem: ListItem = {
     ...DEFAULT_LIST_ITEM,
     index
@@ -18,10 +18,10 @@ export const parseTransplant = (data: TransplantGenerated, patients: PatientList
     ...patientPair,
     score: data.score,
     maxScore: data.max_score,
-    compatible_blood: data.compatible_blood,
+    compatibleBlood: data.compatible_blood,
     hasCrossmatch: data.has_crossmatch,
     donor: data.donor,
     recipient: data.recipient,
-    detailed_score_per_group
+    detailedScorePerGroup: detailed_score_per_group
   };
 };

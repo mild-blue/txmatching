@@ -26,7 +26,7 @@ export class ConfigurationPatientsComponent {
     this.filteredPatients = this.formControl.valueChanges.pipe(
       startWith(''),
       map((value: string | Patient) => {
-        return typeof value === 'string' ? value : value.medical_id;
+        return typeof value === 'string' ? value : value.medicalId;
       }),
       map(name => name ? patientFullTextSearch(this.availablePatients, name) : this.availablePatients.slice())
     );
@@ -45,16 +45,16 @@ export class ConfigurationPatientsComponent {
       return [];
     }
     const requiredPatientsIds = this.configuration.required_patient_db_ids;
-    return this.allPatients.filter(p => requiredPatientsIds.includes(p.db_id));
+    return this.allPatients.filter(p => requiredPatientsIds.includes(p.dbId));
   }
 
   public displayFn(user: Patient): string {
-    return user?.medical_id ?? '';
+    return user?.medicalId ?? '';
   }
 
   public add(event: MatAutocompleteSelectedEvent): void {
     const patient: Patient = event.option.value;
-    this.configuration?.required_patient_db_ids.push(patient.db_id);
+    this.configuration?.required_patient_db_ids.push(patient.dbId);
 
     // Reset input
     this.formControl.setValue('');
@@ -68,7 +68,7 @@ export class ConfigurationPatientsComponent {
       return;
     }
 
-    const index = this.configuration.required_patient_db_ids.indexOf(patient.db_id);
+    const index = this.configuration.required_patient_db_ids.indexOf(patient.dbId);
 
     if (index >= 0) {
       this.configuration.required_patient_db_ids.splice(index, 1);

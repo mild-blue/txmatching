@@ -54,7 +54,7 @@ export class ConfigurationCountriesComponent extends AbstractFormHandlerComponen
     }
 
     if (!this._donorCountries.length) {
-      const countries = this.patients.donors.map(p => p.parameters.country_code);
+      const countries = this.patients.donors.map(p => p.parameters.countryCode);
       this._donorCountries = [...new Set(countries)]; // only unique
     }
 
@@ -67,7 +67,7 @@ export class ConfigurationCountriesComponent extends AbstractFormHandlerComponen
     }
 
     if (!this._recipientCountries.length) {
-      const countries = this.patients.recipients.map(p => p.parameters.country_code);
+      const countries = this.patients.recipients.map(p => p.parameters.countryCode);
       this._recipientCountries = [...new Set(countries)]; // only unique
     }
 

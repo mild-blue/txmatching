@@ -7,12 +7,12 @@ export const parseDonor = (data: DonorGenerated): Donor => {
   return {
     ...parsePatient(data),
     active: data.active,
-    donor_type: parseDonorType(data.donor_type),
-    compatible_blood_with_related_recipient: data.compatible_blood_with_related_recipient,
-    related_recipient_db_id: data.related_recipient_db_id,
-    score_with_related_recipient: data.score_with_related_recipient,
-    max_score_with_related_recipient: data.max_score_with_related_recipient,
-    detailed_score_with_related_recipient: data.detailed_score_with_related_recipient?.map(parseDetailedScorePerGroup) ?? []
+    donorType: parseDonorType(data.donor_type),
+    compatibleBloodWithRelatedRecipient: data.compatible_blood_with_related_recipient,
+    relatedRecipientDbId: data.related_recipient_db_id,
+    scoreWithRelatedRecipient: data.score_with_related_recipient,
+    maxScoreWithRelatedRecipient: data.max_score_with_related_recipient,
+    detailedScoreWithRelatedRecipient: data.detailed_score_with_related_recipient?.map(parseDetailedScorePerGroup) ?? []
   };
 };
 

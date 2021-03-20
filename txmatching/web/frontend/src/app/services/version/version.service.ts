@@ -5,6 +5,8 @@ import { map } from 'rxjs/operators';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { Version } from '@app/model/Version';
 import { Observable } from 'rxjs';
+import { VersionGenerated } from '@app/generated';
+import { parseVersion } from '@app/parsers/version.parsers';
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +20,11 @@ export class VersionService {
   }
 
   public initEnvironment(): Observable<string> {
-    // TODO: https://github.com/mild-blue/txmatching/issues/401 Create parser and use generated model
-    return this._http.get<Version>(
+    return this._http.get<VersionGenerated>(
       `${environment.apiUrl}/service/version`
     ).pipe(
-      map((r: Object) => {
-        const version = r as Version;
+      map(parseVersion),
+      map((version: Version) => {
         this._version = version;
         return version.environment;
       })

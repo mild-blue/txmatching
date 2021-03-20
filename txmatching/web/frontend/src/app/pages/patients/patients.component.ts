@@ -80,9 +80,9 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     await this._initConfiguration();
   }
 
-  public async setDefaultTxmEvent(event_id: number): Promise<void> {
+  public async setDefaultTxmEvent(eventId: number): Promise<void> {
     this.loading = true;
-    this.defaultTxmEvent = await this._eventService.setDefaultEvent(event_id);
+    this.defaultTxmEvent = await this._eventService.setDefaultEvent(eventId);
     await this._initPatientsAndConfiguration();
     this.loading = false;
   }
@@ -102,8 +102,8 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
       // Make added pair active
       const addedDonorMedicalId = pair.donor.medicalId;
       this.activeItem = this.items.find(item => {
-        if (('donor_type' in item && item.medical_id === addedDonorMedicalId) ||
-          ('d' in item && item.d?.medical_id === addedDonorMedicalId)) {
+        if (('donorType' in item && item.medicalId === addedDonorMedicalId) ||
+          ('d' in item && item.d?.medicalId === addedDonorMedicalId)) {
           return item;
         }
         return undefined;
@@ -129,8 +129,8 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
       // try to find recipient
       let recipient;
-      if (donor.donor_type === DonorType.DONOR) {
-        recipient = this.patients.recipients.find(r => r.db_id === donor.related_recipient_db_id);
+      if (donor.donorType === DonorType.DONOR) {
+        recipient = this.patients.recipients.find(r => r.dbId === donor.relatedRecipientDbId);
       }
 
       if (recipient) {

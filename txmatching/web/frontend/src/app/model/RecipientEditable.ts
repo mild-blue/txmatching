@@ -10,20 +10,20 @@ export class RecipientEditable extends PatientEditable {
   waitingSince?: Date = new Date();
   previousTransplants?: number = 0;
   recipientRequirements: RecipientRequirements = {
-    require_better_match_in_compatibility_index: false,
-    require_better_match_in_compatibility_index_or_blood_group: false,
-    require_compatible_blood_group: false
+    requireBetterMatchInCompatibilityIndex: false,
+    requireBetterMatchInCompatibilityIndexOrBloodGroup: false,
+    requireCompatibleBloodGroup: false
   };
 
   initializeFromPatient(recipient: Recipient) {
     super.initializeFromPatient(recipient);
-    this.acceptableBloodGroups = [...recipient.acceptable_blood_groups];
-    this.antibodies = [...recipient.hla_antibodies.hla_antibodies_raw_list];
+    this.acceptableBloodGroups = [...recipient.acceptableBloodGroups];
+    this.antibodies = [...recipient.hlaAntibodies.hlaAntibodiesRawList];
     this.antibodiesCutoff = recipient.cutoff;
     this.waitingSince = recipient.waitingSince;
     this.previousTransplants = recipient.previousTransplants;
-    if (recipient.recipient_requirements) {
-      this.recipientRequirements = recipient.recipient_requirements;
+    if (recipient.recipientRequirements) {
+      this.recipientRequirements = recipient.recipientRequirements;
     }
   }
 

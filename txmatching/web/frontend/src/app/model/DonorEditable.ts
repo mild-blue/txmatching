@@ -8,7 +8,7 @@ export class DonorEditable extends PatientEditable {
 
   initializeFromPatient(donor: Donor) {
     super.initializeFromPatient(donor);
-    this.type = donor.donor_type;
+    this.type = donor.donorType;
     this.active = donor.active;
   }
 }

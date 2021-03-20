@@ -27,7 +27,7 @@
           </div>
           <div class="patient-info">
             <span title="Sex" *ngIf="donor.parameters.sex">{{donor.parameters.sex}}</span>
-            <span title="Year of Birth" *ngIf="donor.parameters.year_of_birth">{{donor.parameters.year_of_birth}}</span>
+            <span title="Year of Birth" *ngIf="donor.parameters.yearOfBirth">{{donor.parameters.yearOfBirth}}</span>
             <span title="Height/Weight" *ngIf="getPatientHeightAndWeight(donor)">{{getPatientHeightAndWeight(donor)}}</span>
           </div>
         </td>
@@ -39,7 +39,7 @@
             </div>
             <div class="patient-info">
               <span title="Sex" *ngIf="recipient.parameters.sex">{{recipient.parameters.sex}}</span>
-              <span title="Year of Birth" *ngIf="recipient.parameters.year_of_birth">{{recipient.parameters.year_of_birth}}</span>
+              <span title="Year of Birth" *ngIf="recipient.parameters.yearOfBirth">{{recipient.parameters.yearOfBirth}}</span>
               <span title="Height/Weight" *ngIf="getPatientHeightAndWeight(recipient)">{{getPatientHeightAndWeight(recipient)}}</span>
             </div>
           </ng-container>
@@ -49,14 +49,14 @@
       <tr>
         <td>Blood type</td>
         <td>
-          <app-code [class.matching]="isBloodCompatible">{{ donor.parameters.blood_group }}</app-code>
+          <app-code [class.matching]="isBloodCompatible">{{ donor.parameters.bloodGroup }}</app-code>
         </td>
         <td colspan="2">
           <ng-container *ngIf="recipient">
-            <app-code [class.matching]="isBloodCompatible">{{ recipient.parameters.blood_group }}</app-code>
+            <app-code [class.matching]="isBloodCompatible">{{ recipient.parameters.bloodGroup }}</app-code>
             <div class="small">
               Acceptable:
-              <app-code *ngFor="let bloodGroup of recipient.acceptable_blood_groups">{{ bloodGroup }}</app-code>
+              <app-code *ngFor="let bloodGroup of recipient.acceptableBloodGroups">{{ bloodGroup }}</app-code>
             </div>
           </ng-container>
         </td>
@@ -70,24 +70,24 @@
         <td></td>
       </tr>
       <tr *ngFor="let compatibilityIndex of detailedScorePerGroup">
-        <td>{{ compatibilityIndex.hla_group }}</td>
+        <td>{{ compatibilityIndex.hlaGroup }}</td>
         <td>
-          <app-code *ngFor="let match of compatibilityIndex.donor_matches"
-                    [class]="getAntigenMatchClass(match.match_type)"
-                    [title]="match | antigenTitle">{{ match.hla_type.code.displayCode }}</app-code>
+          <app-code *ngFor="let match of compatibilityIndex.donorMatches"
+                    [class]="getAntigenMatchClass(match.matchType)"
+                    [title]="match | antigenTitle">{{ match.hlaType.code.displayCode }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let match of compatibilityIndex.recipient_matches"
-                    [class]="getAntigenMatchClass(match.match_type)"
-                    [title]="match | antigenTitle">{{ match.hla_type.code.displayCode }}</app-code>
+          <app-code *ngFor="let match of compatibilityIndex.recipientMatches"
+                    [class]="getAntigenMatchClass(match.matchType)"
+                    [title]="match | antigenTitle">{{ match.hlaType.code.displayCode }}</app-code>
         </td>
         <td>
-          <app-code *ngFor="let match of compatibilityIndex.antibody_matches"
-                    [class]="getAntibodyMatchClass(match.match_type)"
-                    [title]="match | antibodyTitle">{{ match.hla_antibody.code.displayCode }}</app-code>
+          <app-code *ngFor="let match of compatibilityIndex.antibodyMatches"
+                    [class]="getAntibodyMatchClass(match.matchType)"
+                    [title]="match | antibodyTitle">{{ match.hlaAntibody.code.displayCode }}</app-code>
         </td>
         <td>
-          {{ recipient ? compatibilityIndex.group_compatibility_index : "-"}}
+          {{ recipient ? compatibilityIndex.groupCompatibilityIndex : "-"}}
         </td>
       </tr>
       </tbody>

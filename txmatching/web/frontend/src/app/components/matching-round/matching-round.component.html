@@ -2,7 +2,7 @@
   <div class="index">{{ round.index }}</div>
   <div class="content">
     <div *ngFor="let transplant of round.transplants"
-         [class.compatible]="transplant.compatible_blood"
+         [class.compatible]="transplant.compatibleBlood"
          [class.w-indicator]="configuration && !configuration.use_binary_scoring"
          (click)="setActiveTransplant(transplant.index)"
          class="matching-round__transplant">
