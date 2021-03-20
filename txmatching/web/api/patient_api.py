@@ -52,7 +52,7 @@ from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
-from txmatching.web.api.namespaces import patient_api
+from txmatching.web.api.namespaces import patient_api, response_ok
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +92,7 @@ class AllPatients(Resource):
 @patient_api.route('/pairs', methods=['POST'])
 class DonorRecipientPairs(Resource):
     @patient_api.request_body(DonorModelPairInJson)
-    @patient_api.response_success(PatientUploadSuccessJson, 'Added new donor (possibly with recipient)')
+    @patient_api.response_ok(PatientUploadSuccessJson, 'Added new donor (possibly with recipient)')
     @patient_api.response_errors(FailJson)
     @require_user_edit_access()
     @require_valid_txm_event_id()
@@ -104,7 +104,7 @@ class DonorRecipientPairs(Resource):
                                          country=donor_recipient_pair_dto_in.country_code)
 
         add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
-        return jsonify(PatientUploadDTOOut(
+        return response_ok(PatientUploadDTOOut(
             donors_uploaded=1,
             recipients_uploaded=1 if donor_recipient_pair_dto_in.recipient else 0
         ))

@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 @matching_api.route('/calculate-for-config', methods=['POST'])
 class CalculateFromConfig(Resource):
     @matching_api.request_body(ConfigurationJson)
-    @matching_api.response_success(CalculatedMatchingsJson, 'List of all matchings for given configuration.')
+    @matching_api.response_ok(CalculatedMatchingsJson, 'List of all matchings for given configuration.')
     @matching_api.response_errors(FailJson)
     @require_user_login()
     @require_valid_txm_event_id()

@@ -20,7 +20,7 @@ class Namespace(flask_restx.Namespace):
             self.expect(model, validate=True)
         ])
 
-    def response_success(self, model, description=None, code=200):
+    def response_ok(self, model, description=None, code=200):
         return self.response(code, model=model, description=description)
         # TODOO: marshall instead (problem with enums, probably implement custom field.output) for enum fields
         # return self.marshal_with(model, code=code, description=description, mask=False, skip_none=True)
