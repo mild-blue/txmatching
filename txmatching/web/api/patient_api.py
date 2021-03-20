@@ -53,7 +53,7 @@ from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import patient_api
-from txmatching.web.web_utils.route_utils import response_ok
+from txmatching.web.web_utils.route_utils import request_body, response_ok
 
 logger = logging.getLogger(__name__)
 
@@ -98,8 +98,7 @@ class DonorRecipientPairs(Resource):
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):
-        donor_recipient_pair_dto_in = from_dict(data_class=DonorRecipientPairDTO, data=request.json,
-                                                config=Config(cast=[Enum]))
+        donor_recipient_pair_dto_in = request_body(DonorRecipientPairDTO)
 
         guard_user_has_access_to_country(user_id=get_current_user_id(),
                                          country=donor_recipient_pair_dto_in.country_code)
