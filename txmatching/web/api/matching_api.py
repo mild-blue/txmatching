@@ -1,6 +1,6 @@
 # pylint: disable=no-self-use
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
-
+import dataclasses
 import logging
 
 from flask import jsonify, request
@@ -25,14 +25,14 @@ from txmatching.database.services.txm_event_service import \
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
-from txmatching.web.api.namespaces import matching_api
+from txmatching.web.api.namespaces import matching_api, response_ok
 
 logger = logging.getLogger(__name__)
 
 
 @matching_api.route('/calculate-for-config', methods=['POST'])
 class CalculateFromConfig(Resource):
-    @matching_api.doc(body=ConfigurationJson, security='bearer')
+    @matching_api.request_body(ConfigurationJson)
     @matching_api.response_success(CalculatedMatchingsJson, 'List of all matchings for given configuration.')
     @matching_api.response_errors(FailJson)
     @require_user_login()
@@ -60,4 +60,5 @@ class CalculateFromConfig(Resource):
                                                             :configuration.max_matchings_to_show_to_viewer]
             calculated_matchings_dto.show_not_all_matchings_found = False
         logging.debug('Collected matchings and sending them')
-        return jsonify(calculated_matchings_dto)
+        dataclasses.asdict(calculated_matchings_dto)
+        return response_ok(calculated_matchings_dto)

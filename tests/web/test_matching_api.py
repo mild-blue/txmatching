@@ -42,6 +42,9 @@ class TestSaveAndGetConfiguration(DbTests):
                 json=conf_dto,
                 headers=self.auth_headers
             )
+
+            self.assertEqual(200, res.status_code)
+
             expected_antibodies = [{'antibody_matches': [],
                                     'hla_group': 'A'},
                                    {'antibody_matches': [{'hla_antibody': {'raw_code': 'B7', 'mfi': 8000, 'cutoff': 200, 'code': self._get_split('B7')},
