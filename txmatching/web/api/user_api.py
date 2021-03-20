@@ -36,7 +36,7 @@ class LoginApi(Resource):
         'password': fields.String(required=True, description='User\'s password.')
     })
 
-    @user_api.request_body_non_login(login_input_model)
+    @user_api.request_body(login_input_model)
     @user_api.response_ok(LoginSuccessResponse,
                           description='Login successful. JWT generated. User must attach the token to every request '
                                       'in the "Authorization" header with the prefix "Bearer". Example: '
@@ -55,6 +55,7 @@ class OtpLoginApi(Resource):
         'otp': fields.String(required=True, description='OTP for this login.'),
     })
 
+    @user_api.doc(security='bearer')
     @user_api.request_body(otp_input_model)
     @user_api.response_ok(LoginSuccessResponse, 'OTP validation was successful. JWT generated.')
     @user_api.response_errors(FailJson)
@@ -99,10 +100,10 @@ class PasswordChangeApi(Resource):
         'new_password': fields.String(required=True, description='New password.')
     })
 
+    @user_api.require_user_login()
     @user_api.request_body(input)
     @user_api.response_ok(StatusResponse, description='Password changed successfully.')
     @user_api.response_errors(FailJson)
-    @require_user_login()
     def put(self):
         data = request.get_json()
         change_password(current_password=data['current_password'], new_password=data['new_password'])
@@ -125,6 +126,7 @@ class RegistrationApi(Resource):
                                       example=['AUT', 'CZE']),
     ))
 
+    @user_api.require_user_login()
     @user_api.request_body(registration_model)
     @user_api.response_ok(StatusResponse, description='User registered successfully.')
     @user_api.response_errors(FailJson)

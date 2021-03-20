@@ -2,8 +2,6 @@
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 import logging
 
-from dacite import from_dict
-from flask import jsonify, make_response, request
 from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_role
@@ -30,6 +28,7 @@ logger = logging.getLogger(__name__)
 @txm_event_api.route('', methods=['POST', 'GET'])
 class TxmEventApi(Resource):
 
+    @txm_event_api.require_user_login()
     @txm_event_api.request_body(
         TxmEventJsonIn,
         description='Endpoint that lets an ADMIN create a new TXM event. The ADMIN should specify TXM event name.'
@@ -69,12 +68,11 @@ class TxmEventApi(Resource):
 
 @txm_event_api.route('/default', methods=['PUT', 'GET'])
 class TxmDefaultEventApi(Resource):
-
+    @txm_event_api.require_user_login()
     @txm_event_api.request_body(TxmDefaultEventJsonIn, 'Set default txm event for the logged user.')
     @txm_event_api.response_ok(TxmEventJsonOut, description='Returns the default event.')
     @txm_event_api.response_errors(FailJson)
     @txm_event_api.response_error_non_unique_patients_provided(FailJson)
-    @require_user_login()
     def put(self):
         default_event_in = request_body(TxmDefaultEventDTOIn)
         update_default_txm_event_id_for_current_user(default_event_in.id)

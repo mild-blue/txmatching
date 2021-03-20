@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 @public_api.route('/patient-upload', methods=['PUT'])
 class TxmEventUploadPatients(Resource):
 
+    @public_api.doc(security='bearer')
     @public_api.request_body(
         UploadPatientsJson,
         description='This endpoint allows the country editor to upload patient data for given \

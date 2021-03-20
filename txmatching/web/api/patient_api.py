@@ -83,6 +83,7 @@ class AllPatients(Resource):
 
 @patient_api.route('/pairs', methods=['POST'])
 class DonorRecipientPairs(Resource):
+    @patient_api.require_user_login()
     @patient_api.request_body(DonorModelPairInJson)
     @patient_api.response_ok(PatientUploadSuccessJson, 'Added new donor (possibly with recipient)')
     @patient_api.response_errors(FailJson)
@@ -136,7 +137,7 @@ class DonorRecipientPair(Resource):
 
 @patient_api.route('/recipient', methods=['PUT'])
 class AlterRecipient(Resource):
-
+    @patient_api.require_user_login()
     @patient_api.request_body(RecipientToUpdateJson)
     @patient_api.response_ok(RecipientJson, description='Updated recipient.')
     @patient_api.response_errors(FailJson)
@@ -151,6 +152,7 @@ class AlterRecipient(Resource):
 @patient_api.route('/configs/<config_id>/donor', methods=['PUT'])
 class AlterDonor(Resource):
     @patient_api.doc(params={'config_id': ConfigIdPathParamDefinition})
+    @patient_api.require_user_login()
     @patient_api.request_body(DonorToUpdateJson)
     @patient_api.response_ok(DonorJson, description='Updates single donor.')
     @patient_api.response_errors(FailJson)

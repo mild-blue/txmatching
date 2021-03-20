@@ -2,6 +2,8 @@ from typing import Optional
 
 import flask_restx
 
+from txmatching.auth.user.user_auth_check import require_user_login
+
 
 class Namespace(flask_restx.Namespace):
 
@@ -14,15 +16,15 @@ class Namespace(flask_restx.Namespace):
 
         return resulting_decorator
 
-    def request_body_non_login(self, model, description: str = ''):
+    def require_user_login(self):
         return self._combine_decorators([
-            self.doc(description=description),
-            self.expect(model, validate=True)
+            self.doc(security='bearer'),
+            require_user_login()
         ])
 
     def request_body(self, model, description: str = ''):
         return self._combine_decorators([
-            self.doc(security='bearer', description=description),
+            self.doc(description=description),
             self.expect(model, validate=True)
         ])
 

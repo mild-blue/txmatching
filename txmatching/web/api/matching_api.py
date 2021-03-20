@@ -9,7 +9,6 @@ from flask_restx import Resource
 from txmatching.auth.auth_check import require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.request_context import get_user_role
-from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigurationJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
@@ -33,10 +32,10 @@ logger = logging.getLogger(__name__)
 
 @matching_api.route('/calculate-for-config', methods=['POST'])
 class CalculateFromConfig(Resource):
+    @matching_api.require_user_login()
     @matching_api.request_body(ConfigurationJson)
     @matching_api.response_ok(CalculatedMatchingsJson, 'List of all matchings for given configuration.')
     @matching_api.response_errors(FailJson)
-    @require_user_login()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int) -> str:
         txm_event = get_txm_event_complete(txm_event_id)

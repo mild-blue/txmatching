@@ -49,6 +49,7 @@ class ConfigurationApi(Resource):
 @configuration_api.route('/set-default', methods=['PUT'])
 class DefaultConfigurationApi(Resource):
     @configuration_api.doc(description='Set default configuration id for the txm event.')
+    @configuration_api.require_user_login()
     @configuration_api.request_body(IdentifierJsonIn)
     @configuration_api.response_ok(SuccessJsonOut, description='Whether the update was successful')
     @configuration_api.response_errors(FailJson)
