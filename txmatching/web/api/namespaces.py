@@ -2,7 +2,10 @@ import flask_restx
 
 
 class Namespace(flask_restx.Namespace):
-    def expect_errors(self, model):
+    def response_success(self, model, description, code=200):
+        return self.response(code, model=model, description=description)
+
+    def response_errors(self, model):
         def resulting_decorator(func):
             decorators = [
                 self.response(code=400, model=model, description='Wrong data format.'),
