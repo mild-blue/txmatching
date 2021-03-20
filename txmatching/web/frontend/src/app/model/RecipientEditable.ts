@@ -7,8 +7,8 @@ export class RecipientEditable extends PatientEditable {
   acceptableBloodGroups: BloodGroup[] = [];
   antibodies: AntibodyEditable[] = [];
   antibodiesCutoff?: number = 2000;
-  waitingSince?: Date = new Date();
-  previousTransplants?: number = 0;
+  waitingSince?: Date;
+  previousTransplants?: number;
   recipientRequirements: RecipientRequirements = {
     requireBetterMatchInCompatibilityIndex: false,
     requireBetterMatchInCompatibilityIndexOrBloodGroup: false,
