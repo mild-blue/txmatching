@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 import flask_restx
+from flask import jsonify
 
 
 class Namespace(flask_restx.Namespace):
@@ -14,11 +15,14 @@ class Namespace(flask_restx.Namespace):
         return resulting_decorator
 
     def request_body(self, model, security='bearer'):
-        return self.doc(body=model, security=security)
+        return self._combine_decorators([
+            self.doc(security=security),
+            self.expect(model, validate=True)
+        ])
 
     def response_success(self, model, description=None, code=200):
         return self.response(code, model=model, description=description)
-        # TODOO: marshall instead
+        # TODOO: marshall instead (problem with enums, probably implement custom field.output) for enum fields
         # return self.marshal_with(model, code=code, description=description, mask=False, skip_none=True)
 
     def response_errors(self, model):
@@ -35,7 +39,7 @@ class Namespace(flask_restx.Namespace):
 
 
 def response_ok(data):
-    return data
+    return jsonify(data)
 
 
 PATIENT_NAMESPACE = 'patients'

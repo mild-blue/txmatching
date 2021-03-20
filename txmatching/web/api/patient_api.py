@@ -91,15 +91,9 @@ class AllPatients(Resource):
 
 @patient_api.route('/pairs', methods=['POST'])
 class DonorRecipientPairs(Resource):
-    @patient_api.doc(body=DonorModelPairInJson, security='bearer')
-    @patient_api.response(code=200, model=PatientUploadSuccessJson,
-                          description='Added new donor (possibly with recipient)')
-    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @patient_api.response(code=403, model=FailJson,
-                          description='Access denied. You do not have rights to access this endpoint.'
-                          )
-    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @patient_api.request_body(DonorModelPairInJson)
+    @patient_api.response_success(PatientUploadSuccessJson, 'Added new donor (possibly with recipient)')
+    @patient_api.response_errors(FailJson)
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):
