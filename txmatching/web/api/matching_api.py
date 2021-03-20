@@ -3,7 +3,7 @@
 import dataclasses
 import logging
 
-from flask import jsonify, request
+from flask import request
 from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_valid_txm_event_id
@@ -25,7 +25,8 @@ from txmatching.database.services.txm_event_service import \
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
-from txmatching.web.api.namespaces import matching_api, response_ok
+from txmatching.web.web_utils.namespaces import matching_api
+from txmatching.web.web_utils.route_utils import response_ok
 
 logger = logging.getLogger(__name__)
 

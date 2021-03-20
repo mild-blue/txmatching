@@ -47,7 +47,7 @@ from txmatching.patients.patient import Donor, DonorType, Patient, Recipient
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
-from txmatching.web.api.namespaces import report_api
+from txmatching.web.web_utils.namespaces import report_api
 
 logger = logging.getLogger(__name__)
 

@@ -21,7 +21,7 @@ from txmatching.database.services.txm_event_service import (
     get_allowed_txm_event_ids_for_current_user, get_txm_event_base,
     get_txm_event_id_for_current_user,
     update_default_txm_event_id_for_current_user)
-from txmatching.web.api.namespaces import txm_event_api
+from txmatching.web.web_utils.namespaces import txm_event_api
 
 logger = logging.getLogger(__name__)
 

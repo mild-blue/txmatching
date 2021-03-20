@@ -21,7 +21,7 @@ from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
 from txmatching.database.services.txm_event_service import save_original_data
 from txmatching.utils.logged_user import get_current_user_id
-from txmatching.web.api.namespaces import public_api
+from txmatching.web.web_utils.namespaces import public_api
 
 logger = logging.getLogger(__name__)
 

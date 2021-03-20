@@ -23,7 +23,7 @@ from txmatching.database.services.config_service import (
     get_configuration_from_db_id_or_default, set_config_as_default)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.web.api.namespaces import configuration_api
+from txmatching.web.web_utils.namespaces import configuration_api
 
 logger = logging.getLogger(__name__)
 

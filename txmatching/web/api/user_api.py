@@ -16,7 +16,7 @@ from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
 from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.utils.country_enum import Country
-from txmatching.web.api.namespaces import user_api
+from txmatching.web.web_utils.namespaces import user_api
 
 logger = logging.getLogger(__name__)
 

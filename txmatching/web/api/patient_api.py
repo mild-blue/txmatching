@@ -52,7 +52,8 @@ from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
-from txmatching.web.api.namespaces import patient_api, response_ok
+from txmatching.web.web_utils.namespaces import patient_api
+from txmatching.web.web_utils.route_utils import response_ok
 
 logger = logging.getLogger(__name__)
 

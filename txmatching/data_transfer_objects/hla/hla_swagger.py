@@ -1,7 +1,7 @@
 from flask_restx import fields
 
 from txmatching.utils.enums import HLA_GROUPS_NAMES_WITH_OTHER, HLAGroup
-from txmatching.web.api.namespaces import patient_api
+from txmatching.web.web_utils.namespaces import patient_api
 
 HLA_TYPES_PER_GROUPS_EXAMPLE = [
     {'hla_group': HLAGroup.A.name,

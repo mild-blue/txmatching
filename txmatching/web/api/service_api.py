@@ -10,7 +10,7 @@ from txmatching.configuration.app_configuration.application_configuration import
     ApplicationEnvironment, get_application_configuration)
 from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.database.db import db
-from txmatching.web.api.namespaces import service_api
+from txmatching.web.web_utils.namespaces import service_api
 
 logger = logging.getLogger(__name__)
 

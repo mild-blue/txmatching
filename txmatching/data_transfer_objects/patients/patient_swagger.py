@@ -11,7 +11,7 @@ from txmatching.data_transfer_objects.hla.hla_swagger import (
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
     DetailedScoreForGroupJson)
-from txmatching.web.api.namespaces import patient_api
+from txmatching.web.web_utils.namespaces import patient_api
 
 PatientParametersJson = patient_api.model('PatientParameters', {
     'blood_group': fields.Nested(BloodGroupEnumJson, required=True),
