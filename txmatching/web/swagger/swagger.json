@@ -30,7 +30,7 @@
                         }
                     },
                     "200": {
-                        "description": "Success.",
+                        "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/PatientUploadSuccessResponse"
                         }
@@ -111,14 +111,14 @@
         "/v1/txm-event": {
             "post": {
                 "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
+                    "409": {
+                        "description": "Non-unique patients provided.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
-                    "409": {
-                        "description": "Non-unique patients provided.",
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -261,14 +261,14 @@
             },
             "put": {
                 "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
+                    "409": {
+                        "description": "Non-unique patients provided.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
-                    "409": {
-                        "description": "Non-unique patients provided.",
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -389,12 +389,6 @@
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
-                    "409": {
-                        "description": "Non-unique patients provided.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
                     "403": {
                         "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
@@ -467,6 +461,12 @@
                     },
                     "401": {
                         "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -965,12 +965,6 @@
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
-                    "409": {
-                        "description": "Non-unique patients provided.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
                     "403": {
                         "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
@@ -998,11 +992,6 @@
                 },
                 "description": "Endpoint that lets an ADMIN recompute parsed antigens and antibodies for all patients in the given txm event.",
                 "operationId": "post_recompute_parsing",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
                 "tags": [
                     "patients"
                 ]
@@ -1033,6 +1022,12 @@
                     },
                     "401": {
                         "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1107,6 +1102,12 @@
                     },
                     "401": {
                         "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1202,6 +1203,12 @@
                 "responses": {
                     "500": {
                         "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1323,6 +1330,12 @@
                     },
                     "401": {
                         "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }

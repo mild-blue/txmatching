@@ -86,13 +86,9 @@ class MatchingReport(Resource):
             'config_id': ConfigIdPathParamDefinition
         }
     )
-    @report_api.response(code=200, model=None, description='Generates PDF report.')
-    @report_api.response(code=404, model=FailJson, description='Matching for provided id was not found.')
-    @report_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @report_api.response(code=403, model=FailJson,
-                         description='Access denied. You do not have rights to access this endpoint.'
-                         )
-    @report_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @report_api.response_ok(description='Generates PDF report.')
+    @report_api.response_error_matching_not_found(FailJson)
+    @report_api.response_errors(FailJson)
     @require_user_login()
     @require_valid_txm_event_id()
     @require_valid_config_id()
@@ -247,18 +243,12 @@ class MatchingReport(Resource):
 class PatientsXLSReport(Resource):
 
     @report_api.doc(
-        params={
-            'config_id': ConfigIdPathParamDefinition
-        },
+        params={'config_id': ConfigIdPathParamDefinition},
         security='bearer'
     )
-    @report_api.response(code=200, model=None, description='Generates XLSX report.')
-    @report_api.response(code=404, model=FailJson, description='Matching for provided id was not found.')
-    @report_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @report_api.response(code=403, model=FailJson,
-                         description='Access denied. You do not have rights to access this endpoint.'
-                         )
-    @report_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @report_api.response_ok(description='Generates XLSX report.')
+    @report_api.response_error_matching_not_found(FailJson)
+    @report_api.response_errors(FailJson)
     @require_user_login()
     @require_valid_txm_event_id()
     @require_valid_config_id()

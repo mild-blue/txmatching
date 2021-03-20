@@ -11,6 +11,7 @@ from txmatching.configuration.app_configuration.application_configuration import
 from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.database.db import db
 from txmatching.web.web_utils.namespaces import service_api
+from txmatching.web.web_utils.route_utils import response_ok
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +23,13 @@ class Status(Resource):
         'exception': fields.String(required=False, description='Additional indication what is wrong.')
     })
 
-    @service_api.response(code=200, model=status, description='Returns ok if the service is healthy.')
-    @service_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
-    @service_api.response(code=503, model=FailJson, description='Some services are failing.')
+    @service_api.response_ok(status, description='Returns ok if the service is healthy.')
+    @service_api.response_error_unexpected(FailJson)
+    @service_api.response_error_services_failing(FailJson)
     def get(self):
         try:
             db.session.execute('SELECT 1')
-            return {'status': 'ok'}
+            return response_ok({'status': 'ok'})
         except OperationalError as ex:
             logger.exception('Connection to database is not working.')
             return {'status': 'error', 'detail': ex.args[0]}, 503
@@ -43,8 +44,8 @@ class Version(Resource):
                                      description='Environment the code was build for.')
     })
 
-    @service_api.response(code=200, model=version_model, description='Returns version of the code')
-    @service_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @service_api.response_ok(version_model, description='Returns version of the code')
+    @service_api.response_error_unexpected(FailJson)
     def get(self):
         conf = get_application_configuration()
         logger.debug(f'Application version: {conf.code_version} in environment {conf.environment}.')
