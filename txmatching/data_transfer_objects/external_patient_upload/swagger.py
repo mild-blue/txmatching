@@ -59,7 +59,8 @@ RecipientJsonIn = public_api.model('RecipientInput', {
                                   )),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.Nested(BloodGroupEnumJson),
                                            description='Acceptable blood groups for the patient. Leave empty to use \
-                                            compatible blood groups.'),
+                                            compatible blood groups.',
+                                           example=['A', '0']),
     'medical_id': fields.String(required=True, example='R1037', description=MEDICAL_ID_DESCRIPTION),
     'blood_group': fields.Nested(BloodGroupEnumJson, required=True),
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String,

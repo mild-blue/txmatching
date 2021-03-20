@@ -1,5 +1,3 @@
-from typing import Optional
-
 import flask_restx
 
 from txmatching.auth.user.user_auth_check import require_user_login

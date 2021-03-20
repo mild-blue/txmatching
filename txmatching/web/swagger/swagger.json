@@ -109,6 +109,50 @@
             }
         },
         "/v1/txm-event": {
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "List of allowed txmEvents.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvents"
+                        }
+                    }
+                },
+                "description": "Get list of allowed txm txmEvents for the logged user.",
+                "operationId": "get_txm_event_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
             "post": {
                 "responses": {
                     "409": {
@@ -160,50 +204,6 @@
                         }
                     }
                 ],
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "txm-event"
-                ]
-            },
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "List of allowed txmEvents.",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEvents"
-                        }
-                    }
-                },
-                "description": "Get list of allowed txm txmEvents for the logged user.",
-                "operationId": "get_txm_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -2069,6 +2069,10 @@
                 "acceptable_blood_groups": {
                     "type": "array",
                     "description": "Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.",
+                    "example": [
+                        "A",
+                        "0"
+                    ],
                     "items": {
                         "$ref": "#/definitions/BloodGroupEnum"
                     }
@@ -2767,6 +2771,10 @@
                 },
                 "acceptable_blood_groups": {
                     "type": "array",
+                    "example": [
+                        "A",
+                        "0"
+                    ],
                     "items": {
                         "$ref": "#/definitions/BloodGroupEnum"
                     }
@@ -3276,8 +3284,17 @@
                         "acceptable_blood_groups": {
                             "type": "array",
                             "description": "Provide full list of all the acceptable blood groups of the patient, not just the change set",
+                            "example": [
+                                "A",
+                                "0"
+                            ],
                             "items": {
-                                "$ref": "#/definitions/BloodGroupEnum"
+                                "example": "B",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/BloodGroupEnum"
+                                    }
+                                ]
                             }
                         },
                         "hla_antibodies": {
@@ -3513,6 +3530,20 @@
             },
             "type": "object"
         },
+        "TxmEvents": {
+            "required": [
+                "events"
+            ],
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TxmEvent"
+                    }
+                }
+            },
+            "type": "object"
+        },
         "TxmEvent": {
             "required": [
                 "id",
@@ -3527,20 +3558,6 @@
                 },
                 "default_config_id": {
                     "type": "integer"
-                }
-            },
-            "type": "object"
-        },
-        "TxmEvents": {
-            "required": [
-                "events"
-            ],
-            "properties": {
-                "events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/TxmEvent"
-                    }
                 }
             },
             "type": "object"

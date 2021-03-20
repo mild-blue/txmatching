@@ -1096,6 +1096,9 @@ definitions:
     Recipient:
         properties:
             acceptable_blood_groups:
+                example:
+                - A
+                - '0'
                 items:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
@@ -1134,6 +1137,9 @@ definitions:
                 description: Acceptable blood groups for the patient. Leave empty
                     to use                                             compatible
                     blood groups.
+                example:
+                - A
+                - '0'
                 items:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
@@ -1196,8 +1202,13 @@ definitions:
                 acceptable_blood_groups:
                     description: Provide full list of all the acceptable blood groups
                         of the patient, not just the change set
+                    example:
+                    - A
+                    - '0'
                     items:
-                        $ref: '#/definitions/BloodGroupEnum'
+                        allOf:
+                        -   $ref: '#/definitions/BloodGroupEnum'
+                        example: B
                     type: array
                 cutoff:
                     type: integer
