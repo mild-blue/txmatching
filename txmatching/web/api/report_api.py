@@ -27,14 +27,13 @@ from txmatching.configuration.app_configuration.application_configuration import
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
-from txmatching.data_transfer_objects.external_patient_upload.swagger import \
-    FailJson
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, RoundDTO)
 from txmatching.data_transfer_objects.patients.out_dots.conversions import \
     to_lists_for_fe
 from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
     DonorDTOOut
+from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     find_config_db_id_for_configuration_and_data,

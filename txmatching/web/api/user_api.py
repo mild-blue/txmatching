@@ -14,8 +14,7 @@ from txmatching.auth.login_flow import (credentials_login, otp_login,
 from txmatching.auth.user.topt_auth_check import allow_otp_request
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
-from txmatching.data_transfer_objects.external_patient_upload.swagger import \
-    FailJson
+from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.utils.country_enum import Country
 from txmatching.web.api.namespaces import user_api
 

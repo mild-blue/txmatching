@@ -9,3 +9,8 @@ SuccessJsonOut = enums_api.model('Success', {
 IdentifierJsonIn = enums_api.model('Identifier', {
     'id': fields.Integer(required=True)
 })
+
+FailJson = enums_api.model('FailResponse', {
+    'error': fields.String(required=True),
+    'message': fields.String(required=False),
+})

@@ -8,8 +8,7 @@ from sqlalchemy.exc import OperationalError
 
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
-from txmatching.data_transfer_objects.external_patient_upload.swagger import \
-    FailJson
+from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.database.db import db
 from txmatching.web.api.namespaces import service_api
 

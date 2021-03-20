@@ -6,12 +6,6 @@ from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
                                                             SexEnumJson)
 from txmatching.web.api.namespaces import public_api
 
-# TODO move to some better place as part of https://github.com/mild-blue/txmatching/issues/500
-FailJson = public_api.model('FailResponse', {
-    'error': fields.String(required=True),
-    'message': fields.String(required=False),
-})
-
 PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
     'recipients_uploaded': fields.Integer(required=True,
                                           description='Number of recipients successfully loaded into the application.'),

@@ -20,8 +20,8 @@ from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
-from txmatching.data_transfer_objects.external_patient_upload.swagger import (
-    FailJson, PatientUploadSuccessJson)
+from txmatching.data_transfer_objects.external_patient_upload.swagger import \
+    PatientUploadSuccessJson
 from txmatching.data_transfer_objects.patients.out_dots.conversions import (
     donor_to_donor_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
@@ -35,6 +35,7 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
     RecipientUpdateDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
+from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     PatientsRecomputeParsingSuccessJson
 from txmatching.database.services.config_service import \

@@ -116,7 +116,7 @@ generate-swagger-all: \
 	generate-and-copy-ts-from-swagger
 
 generate-swagger-file:
-	PYTHONPATH=$${PYTHONPATH:-.} python txmatching/scripts/generate_swagger.py
+	PYTHONPATH=$${PYTHONPATH:-.} python local_testing_utilities/generate_swagger.py
 
 validate-swagger:
 	openapi-generator-cli validate -i $(SWAGGER_INPUT_FILE)

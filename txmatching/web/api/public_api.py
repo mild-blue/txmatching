@@ -11,11 +11,12 @@ from txmatching.auth.operation_guards.country_guard import \
     guard_user_has_access_to_country
 from txmatching.auth.service.service_auth_check import allow_service_role
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
-    FailJson, PatientUploadSuccessJson, UploadPatientsJson)
+    PatientUploadSuccessJson, UploadPatientsJson)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadDTOOut
 from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
+from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
 from txmatching.database.services.txm_event_service import save_original_data

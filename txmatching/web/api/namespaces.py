@@ -1,4 +1,26 @@
-from flask_restx import Namespace
+import flask_restx
+
+
+class Namespace(flask_restx.Namespace):
+    def expect_errors(self, model):
+        def resulting_decorator(func):
+            decorators = [
+                self.response(code=400, model=model, description='Wrong data format.'),
+                self.response(code=401, model=model, description='Authentication failed.'),
+                self.response(
+                    code=403,
+                    model=model,
+                    description='Access denied. You do not have rights to access this endpoint.'
+                ),
+                self.response(code=500, model=model, description='Unexpected error, see contents for details.')
+            ]
+            for decorator in reversed(decorators):
+                func = decorator(func)
+
+            return func
+
+        return resulting_decorator
+
 
 PATIENT_NAMESPACE = 'patients'
 patient_api = Namespace(PATIENT_NAMESPACE)

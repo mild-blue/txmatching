@@ -14,11 +14,10 @@ from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
 from txmatching.data_transfer_objects.configuration.configuration_swagger import (
     ConfigIdPathParamDefinition, ConfigurationJson)
-from txmatching.data_transfer_objects.external_patient_upload.swagger import \
-    FailJson
 from txmatching.data_transfer_objects.shared_dto import (IdentifierDTOIn,
                                                          SuccessDTOOut)
-from txmatching.data_transfer_objects.shared_swagger import (IdentifierJsonIn,
+from txmatching.data_transfer_objects.shared_swagger import (FailJson,
+                                                             IdentifierJsonIn,
                                                              SuccessJsonOut)
 from txmatching.database.services.config_service import (
     get_configuration_from_db_id_or_default, set_config_as_default)

@@ -12,10 +12,9 @@ from txmatching.auth.request_context import get_user_role
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigurationJson
-from txmatching.data_transfer_objects.external_patient_upload.swagger import \
-    FailJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
     CalculatedMatchingsJson
+from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     configuration_from_dict, find_config_db_id_for_configuration_and_data)
@@ -36,14 +35,7 @@ class CalculateFromConfig(Resource):
     @matching_api.doc(body=ConfigurationJson, security='bearer')
     @matching_api.response(200, model=CalculatedMatchingsJson,
                            description='List of all matchings for given configuration.')
-    @matching_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @matching_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @matching_api.response(
-        code=403,
-        model=FailJson,
-        description='Access denied. You do not have rights to access this endpoint.'
-    )
-    @matching_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @matching_api.expect_errors(FailJson)
     @require_user_login()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int) -> str:
