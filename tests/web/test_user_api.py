@@ -2,8 +2,8 @@ import datetime
 from unittest import mock
 from uuid import uuid4
 
-from tests.test_utilities.populate_db import ADMIN_USER, USERS
-from tests.test_utilities.prepare_app import DbTests
+from local_testing_utilities.populate_db import ADMIN_USER, USERS
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.crypto.jwt_crypto import (encode_auth_token,
                                                parse_request_token)
 from txmatching.auth.crypto.password_crypto import encode_password

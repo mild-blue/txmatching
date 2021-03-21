@@ -4,13 +4,13 @@ from typing import List
 
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
+                                                        create_hla_type,
                                                         create_hla_typing)
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAAntibody
 from txmatching.utils.enums import AntibodyMatchTypes, HLACrossmatchLevel
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatch, get_crossmatched_antibodies, is_positive_hla_crossmatch)
-from txmatching.utils.hla_system.hla_transformations import parse_hla_raw_code
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class TestCrossmatch(unittest.TestCase):
         )
 
     def _assert_raw_code_equal(self, raw_code: str, expected_hla_code: HLACode):
-        actual_hla_code = parse_hla_raw_code(raw_code)
+        actual_hla_code = create_hla_type(raw_code).code
         self.assertEqual(expected_hla_code, actual_hla_code)
 
     def test_crossmatch_split(self):

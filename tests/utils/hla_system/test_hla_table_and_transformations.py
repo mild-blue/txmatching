@@ -2,7 +2,7 @@ import re
 import unittest
 
 from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
-from txmatching.utils.hla_system.hla_transformations import (
+from txmatching.utils.hla_system.hla_regexes import (
     HIGH_RES_REGEX, HIGH_RES_REGEX_ENDING_WITH_LETTER, LOW_RES_REGEX)
 
 

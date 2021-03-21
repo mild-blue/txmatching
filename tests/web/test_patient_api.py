@@ -1,11 +1,11 @@
 import os
 
+from local_testing_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
+                                                 PATIENT_DATA_OBFUSCATED)
+from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_hla_typing)
-from tests.test_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
-                                              PATIENT_DATA_OBFUSCATED,
-                                              create_or_overwrite_txm_event)
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
@@ -15,7 +15,7 @@ from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.hla_code_processing_result_detail import \
+from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
 

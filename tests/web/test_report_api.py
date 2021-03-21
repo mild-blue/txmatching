@@ -1,5 +1,5 @@
-from tests.test_utilities.populate_db import PATIENT_DATA_OBFUSCATED
-from tests.test_utilities.prepare_app import DbTests
+from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.database.services import solver_service
 from txmatching.database.services.txm_event_service import \

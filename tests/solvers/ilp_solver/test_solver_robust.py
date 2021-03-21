@@ -1,6 +1,6 @@
 from tests.solvers.prepare_txm_event_with_many_solutions import \
     prepare_txm_event_with_many_solutions
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.configuration import Configuration
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration

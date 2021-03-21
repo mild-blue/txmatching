@@ -1,8 +1,8 @@
 from swagger_unittest import swagger_test
 
-from tests.test_utilities.populate_db import (ADMIN_WITH_DEFAULT_TXM_EVENT,
-                                              PATIENT_DATA_OBFUSCATED)
-from tests.test_utilities.prepare_app import DbTests
+from local_testing_utilities.populate_db import (ADMIN_WITH_DEFAULT_TXM_EVENT,
+                                                 PATIENT_DATA_OBFUSCATED)
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import (API_VERSION, PATH_TO_SWAGGER_YAML,
                             PATIENT_NAMESPACE, PUBLIC_NAMESPACE,

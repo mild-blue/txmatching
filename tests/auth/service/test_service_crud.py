@@ -1,7 +1,7 @@
 from typing import Tuple
 from uuid import uuid4
 
-from tests.test_utilities.prepare_app import DbTests
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.exceptions import UserUpdateException
 from txmatching.auth.service.service_auth_management import (
