@@ -2,7 +2,6 @@ import { Component, Input } from '@angular/core';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { Configuration } from '@app/model/Configuration';
 import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
-import { PatientList } from '@app/model/PatientList';
 import { Round } from '@app/model/Round';
 
 @Component({
@@ -13,7 +12,6 @@ import { Round } from '@app/model/Round';
 export class MatchingRoundComponent {
 
   @Input() round?: Round;
-  @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
   public arrowRight = faAngleRight;

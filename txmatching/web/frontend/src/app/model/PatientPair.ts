@@ -1,8 +1,8 @@
-import { ListItem } from '@app/components/list-item/list-item.interface';
 import { Donor } from '@app/model/Donor';
 import { Recipient } from '@app/model/Recipient';
+import { NewListItem } from '@app/pages/abstract-list/abstract-list.component';
 
-export interface PatientPair extends ListItem {
+export interface PatientPair extends NewListItem {
   d?: Donor;
   r?: Recipient;
 }

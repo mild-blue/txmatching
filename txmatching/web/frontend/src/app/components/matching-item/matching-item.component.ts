@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Configuration } from '@app/model/Configuration';
 import { Matching } from '@app/model/Matching';
-import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-matching-item',
@@ -10,10 +9,8 @@ import { PatientList } from '@app/model/PatientList';
 })
 export class MatchingItemComponent {
 
-  @Input() item?: Matching;
-  @Input() isActive: boolean = false;
+  @Input() matching?: Matching;
   @Input() configuration?: Configuration;
-  @Input() patients?: PatientList;
 
   constructor() {
   }

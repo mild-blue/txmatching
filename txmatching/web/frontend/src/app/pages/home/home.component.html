@@ -59,17 +59,16 @@
 
   <app-content>
     <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>
+
     <div *ngIf="!loading && matchings.length" class="item-list">
       <div class="list">
-        <div #list infinite-scroll class="list-inner" (scrolled)="onScrollDown()" [scrollWindow]="false">
+        <div #list infinite-scroll class="list-inner smooth-scroll" (scrolled)="onScrollDown()" [scrollWindow]="false">
           <app-new-item *ngFor="let item of displayedItems; trackBy: trackListItem"
                         [item]="item"
                         (click)="handleItemClick(item)"
                         [isActive]="item === activeItem">
-            <app-matching-item [item]="item"
-                               [isActive]="item === activeItem"
-                               [configuration]="configuration"
-                               [patients]="patients"></app-matching-item>
+            <app-matching-item [matching]="item"
+                               [configuration]="configuration"></app-matching-item>
           </app-new-item>
         </div>
       </div>
@@ -85,6 +84,7 @@
         </div>
       </div>
     </div>
+
   </app-content>
 
 </section>
