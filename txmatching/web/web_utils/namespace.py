@@ -17,7 +17,7 @@ class Namespace(flask_restx.Namespace):
 
     def _create_fail_response_model(self):
         return self.model('FailResponse', {
-            'error': fields.String(required=True),
+            'error': fields.String(required=False),
             'message': fields.String(required=False),
         })
 
@@ -30,7 +30,8 @@ class Namespace(flask_restx.Namespace):
     def request_body(self, model, description: str = ''):
         return self._combine_decorators([
             self.doc(description=description),
-            self.expect(model, validate=True)
+            # TODOO: validate
+            self.expect(model, validate=False)
         ])
 
     def response_ok(self, model=None, description=None, code=200):

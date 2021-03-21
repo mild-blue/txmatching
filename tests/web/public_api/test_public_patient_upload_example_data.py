@@ -234,7 +234,7 @@ SPECIAL_RECIPIENTS_SPECIAL_HLA_CODES = [
             'DQ[01:03,      06:03]', 'B7', 'A1'
         ],
         'medical_id': 'R1',
-        'blood_group': '0',
+        'blood_group': 0,
         'hla_antibodies': [
             {
                 'mfi': 2350,
@@ -256,7 +256,7 @@ SPECIAL_RECIPIENTS_MULTIPLE_SAME_HLA_CODES = [
             'DQ[01:03,      06:03]', 'B7', 'A1'
         ],
         'medical_id': 'R1',
-        'blood_group': '0',
+        'blood_group': 0,
         'hla_antibodies': [
             {
                 'mfi': 222,
@@ -298,7 +298,7 @@ SPECIAL_RECIPIENTS_EXCEPTIONAL_HLA_CODES = [
             'A1'
         ],
         'medical_id': 'R1',
-        'blood_group': '0',
+        'blood_group': 0,
         'year_of_birth': 1945,
         'hla_antibodies': [
             {
@@ -318,7 +318,7 @@ SPECIAL_RECIPIENTS_EXCEPTIONAL_HLA_CODES = [
             }
         ],
         'acceptable_blood_groups': [
-            'A', '0'
+            'A', 0
         ]
     }
 ]
