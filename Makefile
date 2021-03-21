@@ -81,11 +81,11 @@ setup-empty-db:
 
 setup-non-empty-db:
 	make setup-empty-db
-	cd scripts; PYTHONPATH=$${PYTHONPATH:-..} python populate_large_db.py
+	cd local_testing_utilities; PYTHONPATH=$${PYTHONPATH:-..} python populate_large_db.py
 
 setup-small-non-empty-db:
 	make setup-empty-db
-	cd scripts; PYTHONPATH=$${PYTHONPATH:-..} python populate_small_db.py
+	cd local_testing_utilities; PYTHONPATH=$${PYTHONPATH:-..} python populate_small_db.py
 
 lint:
 	pylint txmatching
