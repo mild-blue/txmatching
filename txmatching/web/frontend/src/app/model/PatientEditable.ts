@@ -9,7 +9,7 @@ export class PatientEditable {
   medicalId: string = '';
   antigens: AntigenEditable[] = [];
   bloodGroup: BloodGroup = BloodGroup.A;
-  sex?: Sex = Sex.M;
+  sex?: Sex;
   height?: number;
   weight?: number;
   yearOfBirth?: number;
