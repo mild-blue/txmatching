@@ -48,7 +48,7 @@ import { PatientPairItemComponent } from './components/patient-pair-item/patient
 import { PatientPairDetailComponent } from './components/patient-pair-detail/patient-pair-detail.component';
 import { ListItemDirective } from './directives/list-item/list-item.directive';
 import { ListItemDetailDirective } from './directives/list-item-detail/list-item-detail.directive';
-import { ItemComponent } from './components/list-item/item/item.component';
+// import { ItemComponent } from './components/list-item/item/item.component';
 import { PatientPairComponent } from './components/patient-pair/patient-pair.component';
 import { TabSwitchComponent } from './components/tab-switch/tab-switch.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -83,6 +83,8 @@ import { CountryComponent } from '@app/components/country/country.component';
 import { RecipientSettingsComponent } from './components/recipient-settings/recipient-settings.component';
 import { FormDirective } from './directives/form/form.directive';
 import { AntigenTitlePipe } from './pipes/antigen-title/antigen-title.pipe';
+import { AbstractListComponent } from './pages/abstract-list/abstract-list.component';
+import { ItemComponent } from '@app/components/list/item/item.component';
 
 @NgModule({
   declarations: [
@@ -149,7 +151,9 @@ import { AntigenTitlePipe } from './pipes/antigen-title/antigen-title.pipe';
     RecipientSettingsComponent,
     SimpleNumberComponent,
     FormDirective,
-    AntigenTitlePipe
+    AntigenTitlePipe,
+    AbstractListComponent,
+    ItemComponent
   ],
   imports: [
     BrowserModule,

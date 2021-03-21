@@ -59,14 +59,59 @@
 
   <app-content>
     <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>
-    <app-item-list *ngIf="!loading && matchings.length"
-                   [items]="matchings"
-                   [configuration]="configuration"
-                   [patients]="patients"
-                   [defaultTxmEvent]="defaultTxmEvent"></app-item-list>
+    <!--    <app-item-list *ngIf="!loading && matchings.length"-->
+    <!--                   [items]="matchings"-->
+    <!--                   [configuration]="configuration"-->
+    <!--                   [patients]="patients"-->
+    <!--                   [defaultTxmEvent]="defaultTxmEvent"></app-item-list>-->
+
+    <div *ngIf="!loading && matchings.length" class="item-list">
+      <div class="list">
+        <ng-container *ngIf="useInfiniteScroll then listInfinite; else listDefault"></ng-container>
+      </div>
+      <div class="detail">
+        <div [class.aligned-bottom]="activeAlignedBottom"
+             [class.aligned-top]="activeAlignedTop"
+             [class]="scrollableDetailClass"
+             #detail
+             cdk-scrollable>
+          <app-matching-detail [item]="activeItem"
+                               [configuration]="configuration"
+                               [patients]="patients"></app-matching-detail>
+        </div>
+      </div>
+    </div>
   </app-content>
 
 </section>
 
 <app-alert></app-alert>
 <app-loading [show]="loading"></app-loading>
+
+<ng-template #listInfinite>
+  <div #list
+       infinite-scroll
+       class="list-inner"
+       (scrolled)="onScrollDown()"
+       [scrollWindow]="false">
+    <ng-container [ngTemplateOutlet]="itemList"></ng-container>
+  </div>
+</ng-template>
+
+<ng-template #listDefault>
+  <div #list class="list-inner" [class.smooth-scroll]="enableSmoothScroll">
+    <ng-container [ngTemplateOutlet]="itemList"></ng-container>
+  </div>
+</ng-template>
+
+<ng-template #itemList>
+  <app-new-item *ngFor="let item of displayedItems; trackBy: trackListItem"
+                [item]="item"
+                (click)="handleItemClick(item)"
+                [isActive]="item === activeItem">
+    <app-matching-item [item]="item"
+                       [isActive]="item === activeItem"
+                       [configuration]="configuration"
+                       [patients]="patients"></app-matching-item>
+  </app-new-item>
+</ng-template>

@@ -9,11 +9,13 @@ import { ConfigurationService } from '@app/services/configuration/configuration.
 import { PatientService } from '@app/services/patient/patient.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
-import { first, finalize } from 'rxjs/operators';
+import { finalize, first } from 'rxjs/operators';
 import { ReportService } from '@app/services/report/report.service';
+import { AbstractListComponent } from '@app/pages/abstract-list/abstract-list.component';
+import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 
 @Component({ template: '' })
-export class AbstractLoggedComponent implements OnInit {
+export class AbstractLoggedComponent extends AbstractListComponent implements OnInit {
 
   private _downloadPatientsInProgress: boolean = false;
 
@@ -30,9 +32,13 @@ export class AbstractLoggedComponent implements OnInit {
               protected _configService: ConfigurationService,
               protected _eventService: EventService,
               protected _patientService: PatientService,
-              protected _logger: LoggerService) { }
+              protected _logger: LoggerService,
+              protected _uiInteractionsService: UiInteractionsService) {
+    super(_uiInteractionsService);
+  }
 
   ngOnInit(): void {
+    super.ngOnInit();
     this.user = this._authService.currentUserValue;
   }
 
@@ -55,7 +61,7 @@ export class AbstractLoggedComponent implements OnInit {
 
   protected async _initConfiguration(): Promise<void> {
     if(!this.defaultTxmEvent) {
-      this._logger.error(`Configuration init failed because defaultTxmEvent not set`);
+      this._logger.error('Configuration init failed because defaultTxmEvent not set');
       return;
     }
 
@@ -72,7 +78,7 @@ export class AbstractLoggedComponent implements OnInit {
 
   protected async _initPatients(includeAntibodiesRaw: boolean): Promise<void> {
     if(!this.defaultTxmEvent) {
-      this._logger.error(`Init patients failed because defaultTxmEvent not set`);
+      this._logger.error('Init patients failed because defaultTxmEvent not set');
       return;
     }
 

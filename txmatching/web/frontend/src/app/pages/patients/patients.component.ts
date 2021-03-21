@@ -19,6 +19,7 @@ import { PatientUploadSuccessResponseGenerated } from '@app/generated';
 import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
 import { DonorType } from '@app/model/enums/DonorType';
 import { ReportService } from '@app/services/report/report.service';
+import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 
 @Component({
   selector: 'app-patients',
@@ -46,8 +47,9 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
               _configService: ConfigurationService,
               _eventService: EventService,
               _patientService: PatientService,
-              _logger: LoggerService) {
-    super(_reportService, _authService, _alertService, _configService, _eventService, _patientService, _logger);
+              _logger: LoggerService,
+              _uiInteractionsService: UiInteractionsService) {
+    super(_reportService, _authService, _alertService, _configService, _eventService, _patientService, _logger, _uiInteractionsService);
   }
 
   ngOnInit(): void {

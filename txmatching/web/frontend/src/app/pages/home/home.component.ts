@@ -14,6 +14,7 @@ import { Report } from '@app/services/report/report.interface';
 import { finalize, first } from 'rxjs/operators';
 import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
+import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 
 @Component({
   selector: 'app-home',
@@ -25,6 +26,9 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   private _downloadMatchingInProgress: boolean = false;
 
   public matchings: Matching[] = [];
+
+  public displayedItems: Matching[] = [];
+  public activeItem?: Matching;
 
   /* All possible matchings that the solver found. This can be much higher then number of returned
    * top matchings. This is set only for AllSolution solver. */
@@ -42,8 +46,9 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
               _configService: ConfigurationService,
               _eventService: EventService,
               _patientService: PatientService,
-              _logger: LoggerService) {
-    super(_reportService, _authService, _alertService, _configService, _eventService, _patientService, _logger);
+              _logger: LoggerService,
+              _uiInteractionsService: UiInteractionsService) {
+    super(_reportService, _authService, _alertService, _configService, _eventService, _patientService, _logger, _uiInteractionsService);
   }
 
   ngOnInit(): void {
@@ -181,6 +186,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
         this.defaultTxmEvent.id, configuration, this.patients
       );
       this.matchings = calculatedMatchings.calculatedMatchings;
+      this.reloadItems(this.matchings);
       this._eventService.setConfigId(calculatedMatchings.configId);
       this.foundMatchingsCount = calculatedMatchings.foundMatchingsCount;
       this._logger.log('Calculated matchings', [calculatedMatchings]);

@@ -1,5 +1,5 @@
-import { ListItem } from '@app/components/list-item/list-item.interface';
 import { Round } from '@app/model/Round';
+import { NewListItem } from '@app/pages/abstract-list/abstract-list.component';
 
 export interface CalculatedMatchings {
   calculatedMatchings: Matching[];
@@ -8,7 +8,7 @@ export interface CalculatedMatchings {
   showNotAllMatchingsFound: boolean;
 }
 
-export interface Matching extends ListItem {
+export interface Matching extends NewListItem {
   orderId: number;
   score: number;
   countOfTransplants: number;
