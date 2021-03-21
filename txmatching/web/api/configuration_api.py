@@ -14,8 +14,7 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
     ConfigIdPathParamDefinition, ConfigurationJson)
 from txmatching.data_transfer_objects.shared_dto import (IdentifierDTOIn,
                                                          SuccessDTOOut)
-from txmatching.data_transfer_objects.shared_swagger import (FailJson,
-                                                             IdentifierJsonIn,
+from txmatching.data_transfer_objects.shared_swagger import (IdentifierJsonIn,
                                                              SuccessJsonOut)
 from txmatching.database.services.config_service import (
     get_configuration_from_db_id_or_default, set_config_as_default)
@@ -35,7 +34,7 @@ class ConfigurationApi(Resource):
     )
     @configuration_api.response_ok(model=ConfigurationJson,
                                    description='Returns the latest matching configuration for the current user.')
-    @configuration_api.response_errors(FailJson)
+    @configuration_api.response_errors()
     @require_user_login()
     @require_valid_txm_event_id()
     @require_valid_config_id()
@@ -52,7 +51,7 @@ class DefaultConfigurationApi(Resource):
     @configuration_api.require_user_login()
     @configuration_api.request_body(IdentifierJsonIn)
     @configuration_api.response_ok(SuccessJsonOut, description='Whether the update was successful')
-    @configuration_api.response_errors(FailJson)
+    @configuration_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):

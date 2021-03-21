@@ -33,7 +33,6 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
     RecipientUpdateDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
-from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     PatientsRecomputeParsingSuccessJson
 from txmatching.database.services.config_service import \
@@ -67,7 +66,7 @@ class AllPatients(Resource):
                     'Example: /patients?include-antibodies-raw'
     )
     @patient_api.response_ok(PatientsJson, description='List of donors and list of recipients.')
-    @patient_api.response_errors(FailJson)
+    @patient_api.response_errors()
     @require_user_login()
     @require_valid_txm_event_id()
     @require_valid_config_id()
@@ -86,7 +85,7 @@ class DonorRecipientPairs(Resource):
     @patient_api.require_user_login()
     @patient_api.request_body(DonorModelPairInJson)
     @patient_api.response_ok(PatientUploadSuccessJson, 'Added new donor (possibly with recipient)')
-    @patient_api.response_errors(FailJson)
+    @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):
@@ -119,7 +118,7 @@ class DonorRecipientPair(Resource):
     @patient_api.response_ok(
         description='Returns status code representing result of donor recipient pair object deletion.'
     )
-    @patient_api.response_errors(FailJson)
+    @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def delete(self, txm_event_id: int, donor_db_id: int):
@@ -140,7 +139,7 @@ class AlterRecipient(Resource):
     @patient_api.require_user_login()
     @patient_api.request_body(RecipientToUpdateJson)
     @patient_api.response_ok(RecipientJson, description='Updated recipient.')
-    @patient_api.response_errors(FailJson)
+    @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
@@ -155,7 +154,7 @@ class AlterDonor(Resource):
     @patient_api.require_user_login()
     @patient_api.request_body(DonorToUpdateJson)
     @patient_api.response_ok(DonorJson, description='Updates single donor.')
-    @patient_api.response_errors(FailJson)
+    @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     @require_valid_config_id()
@@ -192,7 +191,7 @@ class AddPatientsFile(Resource):
                      }
                      )
     @patient_api.response_ok(PatientUploadSuccessJson, description='Success.')
-    @patient_api.response_errors(FailJson)
+    @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
@@ -231,7 +230,7 @@ class RecomputeParsing(Resource):
     )
     @patient_api.response_ok(PatientsRecomputeParsingSuccessJson,
                              description='Returns the recomputation statistics.')
-    @patient_api.response_errors(FailJson)
+    @patient_api.response_errors()
     @require_role(UserRole.ADMIN)
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):

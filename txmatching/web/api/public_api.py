@@ -14,7 +14,6 @@ from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadDTOOut
 from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
-from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
 from txmatching.database.services.txm_event_service import save_original_data
@@ -36,7 +35,7 @@ class TxmEventUploadPatients(Resource):
                         from respective country in case there were any.'
     )
     @public_api.response_ok(PatientUploadSuccessJson)
-    @public_api.response_errors(FailJson)
+    @public_api.response_errors()
     @allow_service_role()
     def put(self):
         patient_upload_dto = request_body(PatientUploadDTOIn)

@@ -1206,9 +1206,7 @@ definitions:
                     - A
                     - '0'
                     items:
-                        allOf:
-                        -   $ref: '#/definitions/BloodGroupEnum'
-                        example: B
+                        $ref: '#/definitions/BloodGroupEnum'
                     type: array
                 cutoff:
                     type: integer

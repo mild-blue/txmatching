@@ -33,7 +33,6 @@ from txmatching.data_transfer_objects.patients.out_dots.conversions import \
     to_lists_for_fe
 from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
     DonorDTOOut
-from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     find_config_db_id_for_configuration_and_data,
@@ -87,8 +86,8 @@ class MatchingReport(Resource):
         }
     )
     @report_api.response_ok(description='Generates PDF report.')
-    @report_api.response_error_matching_not_found(FailJson)
-    @report_api.response_errors(FailJson)
+    @report_api.response_error_matching_not_found()
+    @report_api.response_errors()
     @require_user_login()
     @require_valid_txm_event_id()
     @require_valid_config_id()
@@ -247,8 +246,8 @@ class PatientsXLSReport(Resource):
         security='bearer'
     )
     @report_api.response_ok(description='Generates XLSX report.')
-    @report_api.response_error_matching_not_found(FailJson)
-    @report_api.response_errors(FailJson)
+    @report_api.response_error_matching_not_found()
+    @report_api.response_errors()
     @require_user_login()
     @require_valid_txm_event_id()
     @require_valid_config_id()

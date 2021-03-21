@@ -13,7 +13,6 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
     ConfigurationJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
     CalculatedMatchingsJson
-from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
     configuration_from_dict, find_config_db_id_for_configuration_and_data)
@@ -35,7 +34,7 @@ class CalculateFromConfig(Resource):
     @matching_api.require_user_login()
     @matching_api.request_body(ConfigurationJson)
     @matching_api.response_ok(CalculatedMatchingsJson, 'List of all matchings for given configuration.')
-    @matching_api.response_errors(FailJson)
+    @matching_api.response_errors()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int) -> str:
         txm_event = get_txm_event_complete(txm_event_id)

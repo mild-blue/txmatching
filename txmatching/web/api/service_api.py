@@ -8,7 +8,6 @@ from sqlalchemy.exc import OperationalError
 
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
-from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.database.db import db
 from txmatching.web.web_utils.namespaces import service_api
 from txmatching.web.web_utils.route_utils import response_ok
@@ -24,8 +23,8 @@ class Status(Resource):
     })
 
     @service_api.response_ok(status, description='Returns ok if the service is healthy.')
-    @service_api.response_error_unexpected(FailJson)
-    @service_api.response_error_services_failing(FailJson)
+    @service_api.response_error_unexpected()
+    @service_api.response_error_services_failing()
     def get(self):
         try:
             db.session.execute('SELECT 1')
@@ -45,7 +44,7 @@ class Version(Resource):
     })
 
     @service_api.response_ok(version_model, description='Returns version of the code')
-    @service_api.response_error_unexpected(FailJson)
+    @service_api.response_error_unexpected()
     def get(self):
         conf = get_application_configuration()
         logger.debug(f'Application version: {conf.code_version} in environment {conf.environment}.')

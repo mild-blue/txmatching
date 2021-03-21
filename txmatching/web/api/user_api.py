@@ -13,7 +13,6 @@ from txmatching.auth.login_flow import (credentials_login, otp_login,
 from txmatching.auth.user.topt_auth_check import allow_otp_request
 from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
-from txmatching.data_transfer_objects.shared_swagger import FailJson
 from txmatching.utils.country_enum import Country
 from txmatching.web.web_utils.namespaces import user_api
 from txmatching.web.web_utils.route_utils import response_ok
@@ -42,7 +41,7 @@ class LoginApi(Resource):
                                       'in the "Authorization" header with the prefix "Bearer". Example: '
                                       '"Authorization: Bearer some_token", where some_token is the token received '
                                       'in the response.')
-    @user_api.response_errors(FailJson)
+    @user_api.response_errors()
     def post(self):
         post_data = request.get_json()
         auth_response = credentials_login(email=post_data['email'], password=post_data['password'])
@@ -58,10 +57,8 @@ class OtpLoginApi(Resource):
     @user_api.doc(security='bearer')
     @user_api.request_body(otp_input_model)
     @user_api.response_ok(LoginSuccessResponse, 'OTP validation was successful. JWT generated.')
-    @user_api.response_errors(FailJson)
-    @user_api.response(code=503, model=FailJson,
-                       description='It was not possible to reach the SMS gate, '
-                                   'thus the one time password could not be send.')
+    @user_api.response_errors()
+    @user_api.response_error_sms_gate()
     @allow_otp_request()
     def post(self):
         post_data = request.get_json()
@@ -70,12 +67,8 @@ class OtpLoginApi(Resource):
 
     @user_api.doc(security='bearer')
     @user_api.response_ok(StatusResponse, description='New OTP was generated and sent.')
-    @user_api.response_errors(FailJson)
-    @user_api.response(
-        code=503,
-        model=FailJson,
-        description='It was not possible to reach the SMS gate, thus the one time password could not be send.'
-    )
+    @user_api.response_errors()
+    @user_api.response_error_sms_gate()
     @allow_otp_request()
     def put(self):
         resend_otp()
@@ -87,7 +80,7 @@ class RefreshTokenApi(Resource):
 
     @user_api.doc(security='bearer')
     @user_api.response_ok(LoginSuccessResponse, description='Token successfully refreshed.')
-    @user_api.response_errors(FailJson)
+    @user_api.response_errors()
     @require_user_login()
     def get(self):
         return response_ok(_respond_token(refresh_token()))
@@ -103,7 +96,7 @@ class PasswordChangeApi(Resource):
     @user_api.require_user_login()
     @user_api.request_body(input)
     @user_api.response_ok(StatusResponse, description='Password changed successfully.')
-    @user_api.response_errors(FailJson)
+    @user_api.response_errors()
     def put(self):
         data = request.get_json()
         change_password(current_password=data['current_password'], new_password=data['new_password'])
@@ -129,7 +122,7 @@ class RegistrationApi(Resource):
     @user_api.require_user_login()
     @user_api.request_body(registration_model)
     @user_api.response_ok(StatusResponse, description='User registered successfully.')
-    @user_api.response_errors(FailJson)
+    @user_api.response_errors()
     @require_role(UserRole.ADMIN)
     def post(self):
         post_data = request.get_json()
