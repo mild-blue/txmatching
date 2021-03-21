@@ -160,7 +160,7 @@ export class AbstractListComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   public reloadItems(items: NewListItem[]): void {
-    this.items = items;
+    this.items = [...items];
     console.log('Reloading', this.items);
     if (this.useInfiniteScroll) {
       this.displayedItems = [];
