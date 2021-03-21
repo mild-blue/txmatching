@@ -69,7 +69,6 @@ COLOR_MILD_BLUE = '#2D4496'
 class MatchingReport(Resource):
 
     @report_api.doc(
-        security='bearer',
         params={
             MATCHINGS_BELOW_CHOSEN: {
                 'description': 'Number of matchings with lower score than chosen to include in report.',
@@ -85,10 +84,10 @@ class MatchingReport(Resource):
             'config_id': ConfigIdPathParamDefinition
         }
     )
+    @report_api.require_user_login()
     @report_api.response_ok(description='Generates PDF report.')
     @report_api.response_error_matching_not_found()
     @report_api.response_errors()
-    @require_user_login()
     @require_valid_txm_event_id()
     @require_valid_config_id()
     # pylint: disable=too-many-locals
@@ -243,12 +242,11 @@ class PatientsXLSReport(Resource):
 
     @report_api.doc(
         params={'config_id': ConfigIdPathParamDefinition},
-        security='bearer'
     )
+    @report_api.require_user_login()
     @report_api.response_ok(description='Generates XLSX report.')
     @report_api.response_error_matching_not_found()
     @report_api.response_errors()
-    @require_user_login()
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:

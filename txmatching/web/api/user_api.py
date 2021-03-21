@@ -78,10 +78,9 @@ class OtpLoginApi(Resource):
 @user_api.route('/refresh-token', methods=['GET'])
 class RefreshTokenApi(Resource):
 
-    @user_api.doc(security='bearer')
+    @user_api.require_user_login()
     @user_api.response_ok(LoginSuccessResponse, description='Token successfully refreshed.')
     @user_api.response_errors()
-    @require_user_login()
     def get(self):
         return response_ok(_respond_token(refresh_token()))
 

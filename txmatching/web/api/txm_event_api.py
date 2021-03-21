@@ -46,12 +46,11 @@ class TxmEventApi(Resource):
             code=201)
 
     @txm_event_api.doc(
-        security='bearer',
         description='Get list of allowed txm txmEvents for the logged user.'
     )
+    @txm_event_api.require_user_login()
     @txm_event_api.response_ok(TxmEventsJson, description='List of allowed txmEvents.')
     @txm_event_api.response_errors()
-    @require_user_login()
     def get(self) -> str:
         txm_events = [
             get_txm_event_base(e) for e in
@@ -81,13 +80,10 @@ class TxmDefaultEventApi(Resource):
         return response_ok(TxmEventDTOOut(id=event.db_id, name=event.name,
                                           default_config_id=event.default_config_id))
 
-    @txm_event_api.doc(
-        security='bearer',
-        description='Get default event'
-    )
+    @txm_event_api.doc(description='Get default event')
+    @txm_event_api.require_user_login()
     @txm_event_api.response_ok(TxmEventJsonOut, description='Default event.')
     @txm_event_api.response_errors()
-    @require_user_login()
     def get(self) -> str:
         txm_event = get_txm_event_base(get_txm_event_id_for_current_user())
         return response_ok(TxmEventDTOOut(

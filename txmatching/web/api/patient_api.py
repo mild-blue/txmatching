@@ -60,14 +60,13 @@ class AllPatients(Resource):
 
     @patient_api.doc(
         params={'config_id': ConfigIdPathParamDefinition},
-        security='bearer',
         description='Get all patients for the given txm event. By default, raw antibodies are not'
                     'included. Specify include-antibodies-raw to include raw antibodies as well.'
                     'Example: /patients?include-antibodies-raw'
     )
+    @patient_api.require_user_login()
     @patient_api.response_ok(PatientsJson, description='List of donors and list of recipients.')
     @patient_api.response_errors()
-    @require_user_login()
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:

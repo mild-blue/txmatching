@@ -30,12 +30,11 @@ logger = logging.getLogger(__name__)
 class ConfigurationApi(Resource):
     @configuration_api.doc(
         params={'config_id': ConfigIdPathParamDefinition},
-        security='bearer'
     )
+    @configuration_api.require_user_login()
     @configuration_api.response_ok(model=ConfigurationJson,
                                    description='Returns the latest matching configuration for the current user.')
     @configuration_api.response_errors()
-    @require_user_login()
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
