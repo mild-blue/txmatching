@@ -8,6 +8,7 @@ T = TypeVar('T')
 
 
 def response_ok(data, code=200):
+    # TODO: marshall instead jsonify https://github.com/mild-blue/txmatching/issues/562
     return make_response(jsonify(data), code)
 
 

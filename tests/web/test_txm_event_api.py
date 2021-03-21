@@ -85,11 +85,8 @@ class TestMatchingApi(DbTests):
             self.assertEqual(400, res.status_code)
             self.assertEqual('application/json', res.content_type)
             self.assertIsNotNone(res.json)
-            # TODOO: comment
-            #self.assertEqual('Invalid request data.', res.json['error'])
-            #self.assertEqual('missing value for field "name"', res.json['message'])
-            self.assertEqual('\'name\' is a required property', res.json['errors']['name'])
-            self.assertEqual('Input payload validation failed', res.json['message'])
+            self.assertEqual('Invalid request data.', res.json['error'])
+            self.assertEqual('missing value for field "name"', res.json['message'])
 
     def test_txm_event_deletion(self):
         self.fill_db_with_patients_and_results()

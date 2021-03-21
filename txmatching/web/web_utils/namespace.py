@@ -17,7 +17,7 @@ class Namespace(flask_restx.Namespace):
 
     def _create_fail_response_model(self):
         return self.model('FailResponse', {
-            'error': fields.String(required=False),
+            'error': fields.String(required=True),
             'message': fields.String(required=False),
         })
 
@@ -30,13 +30,13 @@ class Namespace(flask_restx.Namespace):
     def request_body(self, model, description: str = ''):
         return self._combine_decorators([
             self.doc(description=description),
-            # TODOO: validate
+            # TODO: validate https://github.com/mild-blue/txmatching/issues/562
             self.expect(model, validate=False)
         ])
 
     def response_ok(self, model=None, description=None, code=200):
         return self.response(code, model=model, description=description)
-        # TODOO: marshall instead (problem with enums, probably implement custom field.output) for enum fields
+        # TODO: marshall instead https://github.com/mild-blue/txmatching/issues/562
         # return self.marshal_with(model, code=code, description=description, mask=False, skip_none=True)
 
     def response_error_matching_not_found(self):

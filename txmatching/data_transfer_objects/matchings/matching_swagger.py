@@ -66,7 +66,7 @@ AntibodyMatchJson = matching_api.model('AntibodyMatch', {
 })
 
 DetailedScoreForGroupJson = matching_api.model('DetailedScoreForGroup', {
-    'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),  # TODOO: marshall fix this
+    'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),
     'donor_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntigenMatchJson)),
     'recipient_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntigenMatchJson)),
     'group_compatibility_index': fields.Float(required=True, example=2.0),
