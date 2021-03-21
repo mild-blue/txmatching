@@ -4,6 +4,8 @@ from typing import TypeVar
 from dacite import Config, Type, from_dict
 from flask import jsonify, make_response, request
 
+# because this is not constant
+# pylint: disable=invalid-name
 T = TypeVar('T')
 
 

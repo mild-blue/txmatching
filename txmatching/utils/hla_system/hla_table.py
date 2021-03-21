@@ -1,7 +1,5 @@
 from typing import Set, Union
 
-import pandas as pd
-
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail

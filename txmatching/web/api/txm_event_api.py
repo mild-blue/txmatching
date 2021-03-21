@@ -32,7 +32,8 @@ class TxmEventApi(Resource):
         TxmEventJsonIn,
         description='Endpoint that lets an ADMIN create a new TXM event. The ADMIN should specify TXM event name.'
     )
-    @txm_event_api.response_ok(model=TxmEventJsonOut, code=201, description='Returns the newly created TXM event object.')
+    @txm_event_api.response_ok(model=TxmEventJsonOut, code=201,
+                               description='Returns the newly created TXM event object.')
     @txm_event_api.response_errors()
     @txm_event_api.response_error_non_unique_patients_provided()
     @require_role(UserRole.ADMIN)
