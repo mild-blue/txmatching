@@ -30,8 +30,8 @@ HLA_TYPING_DESCRIPTION = 'HLA typing of the patient. Use high resolution if avai
 
 HLAAntibodyJsonIn = public_api.model('HLAAntibodyIn', {
     'name': fields.String(required=True, example='A*01:01',
-                          description='HLA antibody name in high (A*01:01), low (A*01), split (A1) or broad (A9) '
-                                      'resolutions.In the case of DP, DQ when alpha and beta are provided the expected'
+                          description='HLA antibody name in high (A\\*01:01), low (A\\*01), split (A1) or broad (A9) '
+                                      'resolutions. In case of DP or DQ, when alpha and beta are provided, the expected'
                                       ' format is DQ[01:01,02:02]'),
     'mfi': fields.Integer(required=True, example=2350, description='Mean fluorescence intensity. Use exact value.'),
     'cutoff': fields.Integer(required=True,
@@ -58,8 +58,8 @@ RecipientJsonIn = public_api.model('RecipientInput', {
     'hla_antibodies': fields.List(required=True,
                                   description='Detected HLA antibodies of the patient. Use high resolution \
                                   if available. If high resolution is provided it is assumed that all tested antibodies'
-                                              'were provided. If not it is assumed that either all or just positive'
-                                              'ones were.',
+                                              ' were provided. If not it is assumed that either all or just positive'
+                                              ' ones were.',
                                   cls_or_instance=fields.Nested(
                                       HLAAntibodyJsonIn
                                   )),
@@ -90,7 +90,7 @@ UploadPatientsJson = public_api.model(
     {
         'country': fields.Nested(CountryCodeJson, required=True),
         'txm_event_name': fields.String(required=True,
-                                        example='2020-10-CZE-ISR-AUT',
+                                        example='2020-10-example_event',
                                         description='The TXM event name has to be provided by an ADMIN.'),
         'donors': fields.List(required=True, cls_or_instance=fields.Nested(
             DonorJsonIn
@@ -98,6 +98,10 @@ UploadPatientsJson = public_api.model(
         'recipients': fields.List(required=True, cls_or_instance=fields.Nested(
             RecipientJsonIn
         )),
-        'add_to_existing_patients': fields.Boolean(required=False, default=False)
+        'add_to_existing_patients': fields.Boolean(required=False, default=False,
+                                                   description='If *true* the currently uploaded patients will be added'
+                                                               ' to the patients already in the system. If *false* the'
+                                                               ' data in the system will be overwritten by the'
+                                                               ' currently uploaded data.')
     }
 )

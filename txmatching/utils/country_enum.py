@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class Country(str, Enum):
+    CZE = 'CZE' # odkud to je? Slo by to treba alespon podle abecedy?
     TGO = 'TGO'
     MNE = 'MNE'
     LAO = 'LAO'
@@ -28,7 +29,6 @@ class Country(str, Enum):
     MAF = 'MAF'
     LUX = 'LUX'
     MTQ = 'MTQ'
-    CZE = 'CZE'
     ARE = 'ARE'
     CMR = 'CMR'
     BDI = 'BDI'
