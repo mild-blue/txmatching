@@ -17,6 +17,10 @@
         <div class="value"><strong>{{ configuration.scorer_constructor_name }}</strong></div>
       </li>
       <li>
+        <div class="label">Forbidden crossmatch level</div>
+        <div class="value"><strong>{{ configuration.hla_crossmatch_level.value }}</strong></div>
+      </li>
+      <li>
         <div class="label">Require compatible blood group</div>
         <div class="value">{{ yes_no(configuration.require_compatible_blood_group) }}</div>
       </li>
@@ -47,6 +51,10 @@
     </ul>
     <ul>
       <li>
+        <div class="label">Maximum number of matchings</div>
+        <div class="value"><strong>{{ configuration.max_number_of_matchings }}</strong></div>
+      </li>
+      <li>
         <div class="label">Minimum transplant score</div>
         <div class="value"><strong>{{ configuration.minimum_total_score }}</strong></div>
       </li>
@@ -65,6 +73,10 @@
       <li>
         <div class="label">Compatible blood group bonus</div>
         <div class="value"><strong>{{ configuration.blood_group_compatibility_bonus }}</strong></div>
+      </li>
+      <li>
+        <div class="label">Max kidney debt for one country</div>
+        <div class="value"><strong>{{ configuration.max_debt_for_country }}</strong></div>
       </li>
       <li>
         <div class="label">Forbidden country combinations</div>
