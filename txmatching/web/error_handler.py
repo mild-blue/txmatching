@@ -125,15 +125,15 @@ def _user_auth_handlers(api: Api):
     def handle_too_complicated_data_for_solver_exception(error: TooComplicatedDataForAllSolutionsSolver):
         """too complicated data for solver _exception"""
         _log_warning(error)
-        return {'error': 'The solution for this combination of patients and configurations '
+        return {'error': 'The solution for this combination of patients and configuration '
                          'is too complicated for AllSolutionsSolver, please use ILPSolver.', 'message': str(error)}, 400
 
     @api.errorhandler(TooComplicatedDataForIlpSolver)
     def handle_too_complicated_data_for_ilp_solver_exception(error: TooComplicatedDataForAllSolutionsSolver):
         """too complicated data for solver _exception"""
         _log_warning(error)
-        return {'error': 'The solution for this combination of patients and configurations '
-                         'was not found by ILPSolver. Probably no solution exits. '
+        return {'error': 'The solution for this combination of patients and configuration '
+                         'was not found by ILPSolver. '
                          'Please change configuration or contact administrators on info@mild.blue'
                          ' or +420 723 927 536.', 'message': str(error)}, 400
 
