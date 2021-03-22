@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Configuration } from '@app/model/Configuration';
 import { PatientList } from '@app/model/PatientList';
-import { ScorerGenerated, SolverGenerated, HlaCrossmatchLevelGenerated } from '@app/generated';
+import { HlaCrossmatchLevelGenerated, ScorerGenerated, SolverGenerated } from '@app/generated';
 
 @Component({
   selector: 'app-configuration',
@@ -31,8 +31,15 @@ export class ConfigurationComponent implements OnInit {
     this._buildFormFromConfig();
   }
 
+  public canSubmit(): boolean {
+    return this.configForm !== undefined && this.configForm.valid;
+  }
+
   public submitAction(): void {
     if (this.configForm && this.configuration) {
+      if (!this.canSubmit()) {
+        return;
+      }
       const { manual_donor_recipient_scores, forbidden_country_combinations, required_patient_db_ids } = this.configuration;
 
       this.configSubmitted.emit({
@@ -56,7 +63,19 @@ export class ConfigurationComponent implements OnInit {
       const value = this.configuration[name];
       // check if value is primitive
       if (value !== Object(value)) {
-        group[name] = new FormControl(value);
+        let validator;
+        switch(name) {
+          case 'blood_group_compatibility_bonus': validator = Validators.min(0); break;
+          case 'minimum_total_score': validator = Validators.min(0); break;
+          case 'max_cycle_length': validator = Validators.min(0); break;
+          case 'max_sequence_length': validator = Validators.min(0); break;
+          case 'max_number_of_distinct_countries_in_round': validator = Validators.min(0); break;
+          case 'max_matchings_to_show_to_viewer': validator = Validators.min(0); break;
+          case 'max_number_of_matchings': validator = Validators.min(0); break;
+          case 'max_debt_for_country': validator = Validators.min(0); break;
+          default: validator = undefined;
+        }
+        group[name] = new FormControl(value, validator);
       }
     }
 
