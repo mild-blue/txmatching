@@ -15,6 +15,9 @@ import { DonorInputGenerated } from './donorInputGenerated';
 
 
 export interface UploadPatientsGenerated { 
+    /**
+     * If *true* the currently uploaded patients will be added to the patients already in the system. If *false* the data in the system will be overwritten by the currently uploaded data.
+     */
     add_to_existing_patients?: boolean;
     country: CountryCodeGenerated;
     donors: Array<DonorInputGenerated>;

@@ -36,7 +36,7 @@
                         }
                     }
                 },
-                "description": "This endpoint allows the country editor to upload patient data for given                         TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients                         from respective country in case there were any.",
+                "description": "This endpoint allows the country editor to upload patient data for given                         TXM event. TXM event name has to be provided by an ADMIN. You can either add patients to the                         current dataset or remove all patients from respective country in case there were any.",
                 "operationId": "put_txm_event_upload_patients",
                 "parameters": [
                     {
@@ -109,50 +109,6 @@
             }
         },
         "/v1/txm-event": {
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "List of allowed txmEvents.",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEvents"
-                        }
-                    }
-                },
-                "description": "Get list of allowed txm txmEvents for the logged user.",
-                "operationId": "get_txm_event_api",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "txm-event"
-                ]
-            },
             "post": {
                 "responses": {
                     "500": {
@@ -212,9 +168,7 @@
                 "tags": [
                     "txm-event"
                 ]
-            }
-        },
-        "/v1/txm-event/default": {
+            },
             "get": {
                 "responses": {
                     "500": {
@@ -242,14 +196,14 @@
                         }
                     },
                     "200": {
-                        "description": "Default event.",
+                        "description": "List of allowed txmEvents.",
                         "schema": {
-                            "$ref": "#/definitions/TxmEvent"
+                            "$ref": "#/definitions/TxmEvents"
                         }
                     }
                 },
-                "description": "Get default event",
-                "operationId": "get_txm_default_event_api",
+                "description": "Get list of allowed txm txmEvents for the logged user.",
+                "operationId": "get_txm_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -258,7 +212,9 @@
                 "tags": [
                     "txm-event"
                 ]
-            },
+            }
+        },
+        "/v1/txm-event/default": {
             "put": {
                 "responses": {
                     "500": {
@@ -310,6 +266,50 @@
                         }
                     }
                 ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Default event.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "Get default event",
+                "operationId": "get_txm_default_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -1242,6 +1242,49 @@
             }
         },
         "/v1/user/otp": {
+            "put": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "New OTP was generated and sent.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_otp_login_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            },
             "post": {
                 "responses": {
                     "503": {
@@ -1292,49 +1335,6 @@
                         }
                     }
                 ],
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "user"
-                ]
-            },
-            "put": {
-                "responses": {
-                    "503": {
-                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "New OTP was generated and sent.",
-                        "schema": {
-                            "$ref": "#/definitions/StatusResponse"
-                        }
-                    }
-                },
-                "operationId": "put_otp_login_api",
                 "security": [
                     {
                         "bearer": []
@@ -1614,256 +1614,256 @@
         },
         "CountryCode": {
             "enum": [
-                "TGO",
-                "MNE",
-                "LAO",
-                "MRT",
-                "NIC",
-                "LVA",
-                "OMN",
-                "AFG",
-                "CYP",
-                "BEN",
-                "ATA",
-                "CHN",
-                "COL",
-                "CXR",
-                "ATG",
-                "MSR",
-                "MDA",
-                "ZMB",
-                "VNM",
-                "ATF",
-                "TCD",
-                "MYT",
-                "LBN",
-                "MAF",
-                "LUX",
-                "MTQ",
                 "CZE",
-                "ARE",
-                "CMR",
-                "BDI",
-                "ARG",
-                "ASM",
-                "BHR",
-                "CHL",
-                "AND",
-                "MNP",
-                "LTU",
-                "MDG",
-                "LCA",
-                "TUR",
-                "UKR",
-                "TUV",
-                "VIR",
-                "MLT",
-                "NOR",
-                "MCO",
-                "CHE",
-                "BLM",
-                "ABW",
-                "BLZ",
-                "BMU",
-                "CIV",
-                "MUS",
-                "USA",
-                "TWN",
-                "YEM",
-                "MWI",
-                "NLD",
-                "LSO",
-                "BOL",
                 "AUT",
-                "COK",
-                "BLR",
-                "AUS",
-                "BRN",
-                "MAR",
-                "NZL",
-                "LBR",
-                "MDV",
-                "TCA",
-                "UGA",
-                "TTO",
-                "POL",
-                "SRB",
-                "IND",
-                "GEO",
-                "GRC",
-                "SGS",
-                "GRD",
-                "IOT",
-                "HKG",
-                "PRK",
-                "KGZ",
-                "SPM",
-                "SLV",
-                "REU",
-                "SAU",
-                "SYC",
-                "STP",
-                "KEN",
-                "IMN",
-                "KOR",
-                "GUF",
-                "DJI",
-                "GNQ",
-                "GLP",
-                "DNK",
-                "GGY",
                 "ISR",
-                "PCN",
-                "SLB",
-                "PRY",
-                "RUS",
-                "KWT",
-                "DOM",
-                "GTM",
-                "GBR",
-                "GUM",
-                "JEY",
-                "HMD",
-                "SGP",
-                "PAK",
-                "SUR",
-                "SWE",
-                "JPN",
-                "GNB",
-                "ESH",
-                "DZA",
-                "GAB",
-                "FRA",
-                "DMA",
-                "HND",
-                "SDN",
-                "RWA",
-                "PHL",
-                "SSD",
-                "QAT",
-                "PER",
-                "PRI",
-                "SVN",
-                "HTI",
-                "ESP",
-                "GRL",
-                "GMB",
-                "ERI",
-                "FIN",
-                "EST",
-                "KNA",
-                "HUN",
-                "IRQ",
-                "CYM",
-                "SHN",
-                "PSE",
-                "PYF",
-                "SJM",
-                "IDN",
-                "ISL",
-                "EGY",
-                "FLK",
-                "FJI",
-                "GIN",
-                "GUY",
-                "IRN",
-                "COM",
-                "IRL",
-                "KAZ",
-                "ROU",
-                "SVK",
-                "PNG",
-                "PRT",
-                "SOM",
-                "SXM",
-                "HRV",
-                "KIR",
-                "JAM",
-                "ECU",
-                "ETH",
-                "FRO",
-                "KHM",
-                "SYR",
-                "SEN",
-                "PLW",
-                "SLE",
-                "FSM",
-                "GIB",
-                "DEU",
-                "GHA",
-                "JOR",
-                "ITA",
-                "PAN",
-                "SWZ",
-                "SMR",
-                "TUN",
-                "MLI",
-                "COG",
-                "ALA",
+                "ABW",
+                "AFG",
                 "AGO",
-                "BTN",
-                "BRB",
-                "CAF",
-                "MMR",
-                "LIE",
-                "NAM",
-                "MOZ",
-                "TON",
-                "VGB",
-                "VEN",
-                "TZA",
-                "TKM",
-                "MEX",
-                "NCL",
-                "MAC",
-                "LKA",
-                "COD",
-                "ALB",
-                "BWA",
-                "CRI",
-                "BVT",
-                "ARM",
-                "AZE",
-                "BIH",
-                "MNG",
-                "NIU",
-                "MYS",
-                "TLS",
-                "WSM",
-                "THA",
-                "XKX",
-                "NFK",
-                "LBY",
                 "AIA",
-                "BRA",
-                "CPV",
+                "ALA",
+                "ALB",
+                "AND",
+                "ARE",
+                "ARG",
+                "ARM",
+                "ASM",
+                "ATA",
+                "ATF",
+                "ATG",
+                "AUS",
+                "AZE",
+                "BDI",
                 "BEL",
-                "CAN",
-                "BGD",
-                "CUW",
-                "BHS",
-                "NGA",
-                "MKD",
-                "NPL",
-                "VAT",
-                "UZB",
-                "UMI",
-                "TKL",
-                "VCT",
-                "ZWE",
-                "NRU",
-                "NER",
-                "CUB",
+                "BEN",
                 "BES",
                 "BFA",
+                "BGD",
                 "BGR",
+                "BHR",
+                "BHS",
+                "BIH",
+                "BLM",
+                "BLR",
+                "BLZ",
+                "BMU",
+                "BOL",
+                "BRA",
+                "BRB",
+                "BRN",
+                "BTN",
+                "BVT",
+                "BWA",
+                "CAF",
+                "CAN",
                 "CCK",
+                "CIV",
+                "CMR",
+                "COD",
+                "COG",
+                "COK",
+                "COL",
+                "COM",
+                "CPV",
+                "CRI",
+                "CUB",
+                "CUW",
+                "CXR",
+                "CYM",
+                "CYP",
+                "DEU",
+                "DJI",
+                "DMA",
+                "DNK",
+                "DOM",
+                "DZA",
+                "ECU",
+                "EGY",
+                "ERI",
+                "ESH",
+                "ESP",
+                "EST",
+                "ETH",
+                "FIN",
+                "FJI",
+                "FLK",
+                "FRA",
+                "FRO",
+                "FSM",
+                "GAB",
+                "GBR",
+                "GEO",
+                "GGY",
+                "GHA",
+                "GIB",
+                "GIN",
+                "GLP",
+                "GMB",
+                "GNB",
+                "GNQ",
+                "GRC",
+                "GRD",
+                "GRL",
+                "GTM",
+                "GUF",
+                "GUM",
+                "GUY",
+                "HKG",
+                "HMD",
+                "HND",
+                "HRV",
+                "HTI",
+                "HUN",
+                "CHE",
+                "CHL",
+                "CHN",
+                "IDN",
+                "IMN",
+                "IND",
+                "IOT",
+                "IRL",
+                "IRN",
+                "IRQ",
+                "ISL",
+                "ITA",
+                "JAM",
+                "JEY",
+                "JOR",
+                "JPN",
+                "KAZ",
+                "KEN",
+                "KGZ",
+                "KHM",
+                "KIR",
+                "KNA",
+                "KOR",
+                "KWT",
+                "LAO",
+                "LBN",
+                "LBR",
+                "LBY",
+                "LCA",
+                "LIE",
+                "LKA",
+                "LSO",
+                "LTU",
+                "LUX",
+                "LVA",
+                "MAC",
+                "MAF",
+                "MAR",
+                "MCO",
+                "MDA",
+                "MDG",
+                "MDV",
+                "MEX",
                 "MHL",
-                "ZAF",
+                "MKD",
+                "MLI",
+                "MLT",
+                "MMR",
+                "MNE",
+                "MNG",
+                "MNP",
+                "MOZ",
+                "MRT",
+                "MSR",
+                "MTQ",
+                "MUS",
+                "MWI",
+                "MYS",
+                "MYT",
+                "NAM",
+                "NCL",
+                "NER",
+                "NFK",
+                "NGA",
+                "NIC",
+                "NIU",
+                "NLD",
+                "NOR",
+                "NPL",
+                "NRU",
+                "NZL",
+                "OMN",
+                "PAK",
+                "PAN",
+                "PCN",
+                "PER",
+                "PHL",
+                "PLW",
+                "PNG",
+                "POL",
+                "PRI",
+                "PRK",
+                "PRT",
+                "PRY",
+                "PSE",
+                "PYF",
+                "QAT",
+                "REU",
+                "ROU",
+                "RUS",
+                "RWA",
+                "SAU",
+                "SDN",
+                "SEN",
+                "SGP",
+                "SGS",
+                "SHN",
+                "SJM",
+                "SLB",
+                "SLE",
+                "SLV",
+                "SMR",
+                "SOM",
+                "SPM",
+                "SRB",
+                "SSD",
+                "STP",
+                "SUR",
+                "SVK",
+                "SVN",
+                "SWE",
+                "SWZ",
+                "SXM",
+                "SYC",
+                "SYR",
+                "TCA",
+                "TCD",
+                "TGO",
+                "THA",
+                "TJK",
+                "TKL",
+                "TKM",
+                "TLS",
+                "TON",
+                "TTO",
+                "TUN",
+                "TUR",
+                "TUV",
+                "TWN",
+                "TZA",
+                "UGA",
+                "UKR",
+                "UMI",
                 "URY",
-                "WLF",
+                "USA",
+                "UZB",
+                "VAT",
+                "VCT",
+                "VEN",
+                "VGB",
+                "VIR",
+                "VNM",
                 "VUT",
-                "TJK"
+                "WLF",
+                "WSM",
+                "XKX",
+                "YEM",
+                "ZAF",
+                "ZMB",
+                "ZWE"
             ],
             "type": "string"
         },
@@ -1926,7 +1926,7 @@
                 "txm_event_name": {
                     "type": "string",
                     "description": "The TXM event name has to be provided by an ADMIN.",
-                    "example": "2020-10-CZE-ISR-AUT"
+                    "example": "2020-10-example_event"
                 },
                 "donors": {
                     "type": "array",
@@ -1942,6 +1942,7 @@
                 },
                 "add_to_existing_patients": {
                     "type": "boolean",
+                    "description": "If *true* the currently uploaded patients will be added to the patients already in the system. If *false* the data in the system will be overwritten by the currently uploaded data.",
                     "default": false
                 }
             },
@@ -2048,7 +2049,7 @@
             "properties": {
                 "hla_antibodies": {
                     "type": "array",
-                    "description": "Detected HLA antibodies of the patient. Use high resolution                                   if available. If high resolution is provided it is assumed that all tested antibodieswere provided. If not it is assumed that either all or just positiveones were.",
+                    "description": "Detected HLA antibodies of the patient. Use high resolution                                   if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.",
                     "items": {
                         "$ref": "#/definitions/HLAAntibodyIn"
                     }
@@ -2128,7 +2129,7 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "HLA antibody name in high (A*01:01), low (A*01), split (A1) or broad (A9) resolutions.In the case of DP, DQ when alpha and beta are provided the expected format is DQ[01:01,02:02]",
+                    "description": "HLA antibody name in high (A\\*01:01), low (A\\*01), split (A1) or broad (A9) resolutions. In case of DP or DQ, when alpha and beta are provided, the expected format is DQ[01:01,02:02]",
                     "example": "A*01:01"
                 },
                 "mfi": {
@@ -3500,20 +3501,6 @@
             },
             "type": "object"
         },
-        "TxmEvents": {
-            "required": [
-                "events"
-            ],
-            "properties": {
-                "events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/TxmEvent"
-                    }
-                }
-            },
-            "type": "object"
-        },
         "TxmEvent": {
             "required": [
                 "id",
@@ -3528,6 +3515,20 @@
                 },
                 "default_config_id": {
                     "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "TxmEvents": {
+            "required": [
+                "events"
+            ],
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TxmEvent"
+                    }
                 }
             },
             "type": "object"

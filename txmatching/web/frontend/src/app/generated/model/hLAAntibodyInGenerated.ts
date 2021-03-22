@@ -21,7 +21,7 @@ export interface HLAAntibodyInGenerated {
      */
     mfi: number;
     /**
-     * HLA antibody name in high (A*01:01), low (A*01), split (A1) or broad (A9) resolutions.In the case of DP, DQ when alpha and beta are provided the expected format is DQ[01:01,02:02]
+     * HLA antibody name in high (A\\*01:01), low (A\\*01), split (A1) or broad (A9) resolutions. In case of DP or DQ, when alpha and beta are provided, the expected format is DQ[01:01,02:02]
      */
     name: string;
 }
