@@ -104,11 +104,21 @@ def find_config_db_id_for_configuration_and_data(configuration: Configuration,
     for config_model in config_models:
         config_from_model = configuration_from_dict(config_model.parameters)
         if configuration.comparable(config_from_model):
-            logger.debug('Found config for configuration')
+            logger.debug(f'Found config for configuration with id {config_model.id}')
+
             return config_model.id
 
     logger.info(f'Configuration for event {txm_event.db_id} and patients hash {patients_hash} not found')
     return None
+
+
+def update_max_matchings_to_show_to_viewer(configuration_id: int, configuration: Configuration):
+    config_model = ConfigModel.get(configuration_id)
+    config_model.parameters['max_matchings_to_show_to_viewer'] = configuration.max_matchings_to_show_to_viewer
+    ConfigModel.query.filter(ConfigModel.id == config_model.id).update(
+        {'parameters': config_model.parameters}
+    )
+    db.session.commit()
 
 
 def get_pairing_result_for_configuration_db_id(configuration_db_id: int) -> DatabasePairingResult:

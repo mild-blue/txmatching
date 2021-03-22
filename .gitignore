@@ -315,3 +315,6 @@ devops/compose/docker-compose.yml
 
 # Ignore temoporary excel fileset
 **/*.xlsx#
+
+# Ignore private http env
+**/*.private.env.json
