@@ -32,8 +32,8 @@ class TxmEventUploadPatients(Resource):
         body=UploadPatientsJson,
         security='bearer',
         description='This endpoint allows the country editor to upload patient data for given \
-                        TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients \
-                        from respective country in case there were any.'  # je to jeste pravda?
+                        TXM event. TXM event name has to be provided by an ADMIN. You can either add patients to the \
+                        current dataset or remove all patients from respective country in case there were any.'
     )
     @public_api.response(code=200, model=PatientUploadSuccessJson, description='Success.')
     @public_api.response(code=400, model=FailJson, description='Wrong data format.')
