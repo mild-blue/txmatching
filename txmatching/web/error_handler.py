@@ -7,13 +7,13 @@ from flask_restx import Api
 from werkzeug.exceptions import Forbidden, HTTPException
 
 from txmatching.auth.exceptions import (
-    AuthenticationException, CachingNotReadyException,
+    AuthenticationException, CannotFindShortEnoughRoundsOrPathsInILPSolver,
     CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
     GuardException, InvalidArgumentException, InvalidAuthCallException,
     InvalidIpAddressAccessException, InvalidJWTException, InvalidOtpException,
     NotFoundException, SolverAlreadyRunningException,
-    TooComplicatedDataForAllSolutionsSolver, TooComplicatedDataForIlpSolver,
-    UnauthorizedException, UserUpdateException, WrongTokenUsedException)
+    TooComplicatedDataForAllSolutionsSolver, UnauthorizedException,
+    UserUpdateException, WrongTokenUsedException)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 
@@ -128,21 +128,16 @@ def _user_auth_handlers(api: Api):
         return {'error': 'The solution for this combination of patients and configuration '
                          'is too complicated for AllSolutionsSolver, please use ILPSolver.', 'message': str(error)}, 400
 
-    @api.errorhandler(TooComplicatedDataForIlpSolver)
+    @api.errorhandler(CannotFindShortEnoughRoundsOrPathsInILPSolver)
     def handle_too_complicated_data_for_ilp_solver_exception(error: TooComplicatedDataForAllSolutionsSolver):
         """too complicated data for solver _exception"""
         _log_warning(error)
-        return {'error': 'The solution for this combination of patients and configuration '
-                         'was not found by ILPSolver. '
+        return {'error': 'There are too many possible solutions for the provided set of patients and the '
+                         'algorithm cannot find the optimal solution with the provided threshold for cycle and '
+                         'sequence length. This often happens when crossmatch level is set to High res but'
+                         'all data is in split resolution.'
                          'Please change configuration or contact administrators on info@mild.blue'
                          ' or +420 723 927 536.', 'message': str(error)}, 400
-
-    @api.errorhandler(CachingNotReadyException)
-    def handle_caching_not_ready_exception(error: CachingNotReadyException):
-        """invalid_argument_exception"""
-        _log_warning(error)
-        return {'error': 'The configuration provided was not computed yet. To compute it, please contact '
-                         'administrators, using info@mild.blue or +420 723 927 536.', 'message': str(error)}, 400
 
     @api.errorhandler(DaciteError)
     def handle_dacite_exception(error: DaciteError):
