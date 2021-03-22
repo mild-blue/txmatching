@@ -59,5 +59,4 @@ class CalculateFromConfig(Resource):
                                                             :configuration.max_matchings_to_show_to_viewer]
             calculated_matchings_dto.show_not_all_matchings_found = False
         logging.debug('Collected matchings and sending them')
-        dataclasses.asdict(calculated_matchings_dto)
         return response_ok(calculated_matchings_dto)

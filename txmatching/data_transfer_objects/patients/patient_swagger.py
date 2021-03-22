@@ -11,6 +11,7 @@ from txmatching.data_transfer_objects.hla.hla_swagger import (
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
     DetailedScoreForGroupJson)
+from txmatching.utils.blood_groups import BloodGroup
 from txmatching.web.web_utils.namespaces import patient_api
 
 PatientParametersJson = patient_api.model('PatientParameters', {
@@ -52,7 +53,7 @@ DonorJson = patient_api.model('Donor', {
 RecipientJson = patient_api.model('Recipient', {
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.Nested(BloodGroupEnumJson),
-                                           example=['A', '0']),
+                                           example=[BloodGroup.A.value, BloodGroup.ZERO.value]),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
     'parameters': fields.Nested(required=True, model=PatientParametersJson),
     'hla_antibodies': fields.Nested(required=True, model=HLAAntibodies),
@@ -107,7 +108,7 @@ RecipientToUpdateJson = patient_api.inherit('RecipientModelToUpdate', PatientToU
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.Nested(BloodGroupEnumJson),
                                            description='Provide full list of all the acceptable blood groups of the '
                                                        'patient, not just the change set',
-                                           example=['A', '0']),
+                                           example=[BloodGroup.A.value, BloodGroup.ZERO.value]),
     'hla_antibodies': fields.Nested(HLAAntibodiesToUpdateJson, required=False,
                                     description='Provide full list of all the HLA antibodies of the patient, not just '
                                                 'the change set',
