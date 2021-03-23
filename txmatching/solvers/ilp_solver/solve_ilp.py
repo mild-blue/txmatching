@@ -5,7 +5,8 @@ from typing import Iterable, Tuple
 
 import mip
 
-from txmatching.auth.exceptions import TooComplicatedDataForIlpSolver
+from txmatching.auth.exceptions import \
+    CannotFindShortEnoughRoundsOrPathsInILPSolver
 from txmatching.solvers.ilp_solver.generate_dynamic_constraints import \
     add_dynamic_constraints
 from txmatching.solvers.ilp_solver.ilp_dataclasses import (
@@ -49,8 +50,10 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
             if number_of_times_dynamic_constraint_added > \
                     data_and_configuration.configuration.max_number_of_dynamic_constrains_ilp_solver:
                 if not some_solution_yielded:
-                    raise TooComplicatedDataForIlpSolver(
-                        'No solution found and dynamic constranints added too many times')
+                    raise CannotFindShortEnoughRoundsOrPathsInILPSolver(
+                        'Unable to find solution complying with required length of cycles and sequences.'
+                        f'Number of added dynamic constraints reached a threshold of'
+                        f' {data_and_configuration.configuration.max_number_of_dynamic_constrains_ilp_solver}')
 
         if status == Status.Optimal:
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
