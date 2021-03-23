@@ -121,4 +121,8 @@ export class AbstractLoggedComponent implements OnInit {
         this._alertService.error(`<strong>Error downloading XLSX:</strong> ${error.message}`);
       });
   }
+
+  get getConfigId(): number | undefined {
+    return this._eventService.getConfigId();
+  }
 }
