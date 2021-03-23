@@ -2401,8 +2401,8 @@ produces:
 responses:
     AuthenticationException:
         description: general_authentication_exception
-    CachingNotReadyException:
-        description: invalid_argument_exception
+    CannotFindShortEnoughRoundsOrPathsInILPSolver:
+        description: too complicated data for solver _exception
     CouldNotSendOtpUsingSmsServiceException:
         description: could_not_send_otp
     CredentialsMismatchException:
@@ -2438,8 +2438,6 @@ responses:
     SolverAlreadyRunningException:
         description: Solver already running
     TooComplicatedDataForAllSolutionsSolver:
-        description: too complicated data for solver _exception
-    TooComplicatedDataForIlpSolver:
         description: too complicated data for solver _exception
     UnauthorizedException:
         description: unauthorized_exception

@@ -86,16 +86,10 @@ class TooComplicatedDataForAllSolutionsSolver(BaseTxmException):
     """
 
 
-class TooComplicatedDataForIlpSolver(BaseTxmException):
+class CannotFindShortEnoughRoundsOrPathsInILPSolver(BaseTxmException):
     """
-    Raised if invalid argument received.
-    """
-
-
-# TODO remove in https://github.com/mild-blue/txmatching/issues/372
-class CachingNotReadyException(BaseTxmException):
-    """
-    Raised if caching is missing.
+    Raised if there are too many possible paths and rounds longer than the threshold. And by adding dynamic constraints
+    we are not able to narrow the length of the paths down enough.
     """
 
 
