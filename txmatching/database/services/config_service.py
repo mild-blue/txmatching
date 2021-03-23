@@ -113,7 +113,7 @@ def find_config_db_id_for_configuration_and_data(configuration: Configuration,
 
 
 def update_max_matchings_to_show_to_viewer(configuration_id: int, configuration: Configuration):
-    config_model = ConfigModel.get(configuration_id)
+    config_model = ConfigModel.query.get(configuration_id)
     config_model.parameters['max_matchings_to_show_to_viewer'] = configuration.max_matchings_to_show_to_viewer
     ConfigModel.query.filter(ConfigModel.id == config_model.id).update(
         {'parameters': config_model.parameters}
