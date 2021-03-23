@@ -647,11 +647,8 @@
         "TooComplicatedDataForAllSolutionsSolver": {
             "description": "too complicated data for solver _exception"
         },
-        "TooComplicatedDataForIlpSolver": {
+        "CannotFindShortEnoughRoundsOrPathsInILPSolver": {
             "description": "too complicated data for solver _exception"
-        },
-        "CachingNotReadyException": {
-            "description": "invalid_argument_exception"
         },
         "DaciteError": {
             "description": "dacite_exception"

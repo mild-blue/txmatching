@@ -134,8 +134,9 @@ def _user_auth_handlers(api: Api):
         _log_warning(error)
         return {'error': 'There are too many possible solutions for the provided set of patients and the '
                          'algorithm cannot find the optimal solution with the provided threshold for cycle and '
-                         'sequence length. This often happens when crossmatch level is set to High res but'
-                         'all data is in split resolution.'
+                         'sequence length. This often happens when there are too many patients without antibodies. '
+                         'This is often the case when crossmatch level is set to high resolution but all data is in '
+                         'split resolution. '
                          'Please change configuration or contact administrators on info@mild.blue'
                          ' or +420 723 927 536.', 'message': str(error)}, 400
 
