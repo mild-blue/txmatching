@@ -31,7 +31,6 @@ class TestCodeParser(DbTests):
         self._assert_split_to_groups(create_hla_type('A23'), HLAGroup.A)
         self._assert_split_to_groups(create_hla_type('B23'), HLAGroup.B)
         self._assert_split_to_groups(create_hla_type('DR23'), HLAGroup.DRB1)
-        self._assert_split_to_groups(create_hla_type('BW23'), HLAGroup.Other)
 
     def test_high_res_codes(self):
         self._assert_split_to_groups(create_hla_type('A*01:01:01:01'), HLAGroup.A)
@@ -52,4 +51,3 @@ class TestCodeParser(DbTests):
         self._assert_split_to_groups(create_hla_type('DQA1*01:15N'), HLAGroup.Other)
         self._assert_split_to_groups(create_hla_type('DRB3*01:26N'), HLAGroup.Other)
         self._assert_split_to_groups(create_hla_type('DPB1*120:01N'), HLAGroup.Other)
-        self._assert_split_to_groups(create_hla_type('DOA*01:04N'), HLAGroup.Other)

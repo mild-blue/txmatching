@@ -134,7 +134,7 @@ definitions:
             scorer_constructor_name:
                 allOf:
                 -   $ref: '#/definitions/Scorer'
-                example: SplitHLAAdditiveScorer
+                example: SplitScorer
             solver_constructor_name:
                 allOf:
                 -   $ref: '#/definitions/Solver'
@@ -1257,8 +1257,9 @@ definitions:
         type: object
     Scorer:
         enum:
-        - SplitHLAAdditiveScorer
-        - HighResHLAAdditiveScorer
+        - SplitScorer
+        - HighResScorer
+        - HighResWithDQDPScorer
         type: string
     ServiceStatus:
         properties:

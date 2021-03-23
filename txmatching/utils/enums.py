@@ -1,9 +1,19 @@
+from dataclasses import dataclass
 from enum import Enum
+from typing import List
 
 
 class Sex(str, Enum):
     M = 'M'
     F = 'F'
+
+
+@dataclass
+class HLAGroupProperties:
+    name: str
+    split_code_regex: str
+    high_res_code_regex: str
+    max_count_per_patient: int
 
 
 class HLAGroup(str, Enum):
@@ -13,38 +23,77 @@ class HLAGroup(str, Enum):
     CW = 'CW'
     DP = 'DP'
     DQ = 'DQ'
-    BW = 'BW'
     OTHER_DR = 'OTHER_DR'
     Other = 'Other'
+    ALL = 'ALL'
 
 
-HLA_GROUPS_GENE = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
-HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR, HLAGroup.BW]
-HLA_GROUPS_NAMES_WITH_OTHER = [group for group in HLA_GROUPS_GENE] + [HLAGroup.Other]
-
-HLA_GROUP_SPLIT_CODE_REGEX = {
-    HLAGroup.A: r'^A\d+',
-    HLAGroup.B: r'^B\d+',
-    HLAGroup.CW: r'^CW\d+',
-    HLAGroup.DRB1: r'^DR(?!5([123]))\d',
-    HLAGroup.DP: r'^DPA?\d+',
-    HLAGroup.DQ: r'^DQA?\d+',
-    HLAGroup.OTHER_DR: r'^DR5[123]',
-    HLAGroup.BW: r'^BW\d+',
-    HLAGroup.Other: r'.*'
+HLA_GROUPS_PROPERTIES = {
+    HLAGroup.A: HLAGroupProperties(
+        'A',
+        r'^A\d+',
+        r'^A\*',
+        2
+    ),
+    HLAGroup.B: HLAGroupProperties(
+        'A',
+        r'^B\d+',
+        r'^B\*',
+        2
+    ),
+    HLAGroup.DRB1: HLAGroupProperties(
+        'A',
+        r'^DR(?!5([123]))\d',
+        r'DRB1\*',
+        2
+    ),
+    HLAGroup.CW: HLAGroupProperties(
+        'A',
+        r'^CW\d+',
+        r'^C\*',
+        2
+    ),
+    HLAGroup.DP: HLAGroupProperties(
+        'A',
+        r'^DPA?\d+',
+        r'DP[AB]1\*',
+        4
+    ),
+    HLAGroup.DQ: HLAGroupProperties(
+        'A',
+        r'^DQA?\d+',
+        r'DQ[AB]1\*',
+        4
+    ),
+    HLAGroup.OTHER_DR: HLAGroupProperties(
+        'OTHER_DR',
+        r'^DR5[123]',
+        r'DRB[^1]\*',
+        2  # TODO check if this is correct https://github.com/mild-blue/txmatching/issues/592
+    )
 }
 
-HLA_GROUP_HIGH_RES_CODE_REGEX = {
-    HLAGroup.A: r'^A\*',
-    HLAGroup.B: r'^B\*',
-    HLAGroup.CW: r'C\*',
-    HLAGroup.DRB1: r'DRB1\*',
-    HLAGroup.DP: r'DPA1\*',
-    HLAGroup.DQ: r'DQA1\*',
-    HLAGroup.OTHER_DR: r'DRB[^1]\*',
-    HLAGroup.BW: r'BW\*',
-    HLAGroup.Other: r'.*'
-}
+HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR]
+GENE_HLA_GROUPS = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
+GENE_HLA_GROUPS_WITH_OTHER = [group for group in GENE_HLA_GROUPS] + [HLAGroup.Other]
+assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + [HLAGroup.Other, HLAGroup.ALL]) == set(HLAGroup)
+
+
+def _combine_properties_of_groups(group_list: List[HLAGroup]) -> HLAGroupProperties:
+    return HLAGroupProperties(
+        HLAGroup.Other.name,
+        '(' + ')|('.join([HLA_GROUPS_PROPERTIES[hla_group].split_code_regex for hla_group in group_list]) + ')',
+        '(' + ')|('.join([HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex for hla_group in group_list]) + ')',
+        sum([HLA_GROUPS_PROPERTIES[hla_group].max_count_per_patient for hla_group in group_list])
+    )
+
+
+HLA_GROUPS_PROPERTIES[HLAGroup.Other] = _combine_properties_of_groups(HLA_GROUPS_OTHER)
+HLA_GROUPS_PROPERTIES[HLAGroup.ALL] = _combine_properties_of_groups(GENE_HLA_GROUPS_WITH_OTHER)
+
+
+# BW group is not here can be ignored as the information is redundant see http://hla.alleles.org/antigens/bw46.html
+# It is based on our discussions with immunologists, therefore it is not even in this list
 
 
 class HLACrossmatchLevel(str, Enum):
@@ -68,7 +117,7 @@ class AntibodyMatchTypes(str, Enum):
         )
 
 
-class MatchTypes(str, Enum):
+class MatchType(str, Enum):
     SPLIT = 'SPLIT'
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'

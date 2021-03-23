@@ -42,7 +42,7 @@ class TestConfiguration(DbTests):
     def test_configuration_from_dto(self):
         self.fill_db_with_patients_and_results()
 
-        dto_dict = {'scorer_constructor_name': 'SplitHLAAdditiveScorer',
+        dto_dict = {'scorer_constructor_name': 'SplitScorer',
                     'solver_constructor_name': 'AllSolutionsSolver',
                     'minimum_total_score': 0.0,
                     'enforce_compatible_blood_group': False,

@@ -2207,7 +2207,7 @@
             ],
             "properties": {
                 "scorer_constructor_name": {
-                    "example": "SplitHLAAdditiveScorer",
+                    "example": "SplitScorer",
                     "allOf": [
                         {
                             "$ref": "#/definitions/Scorer"
@@ -2309,8 +2309,9 @@
         },
         "Scorer": {
             "enum": [
-                "SplitHLAAdditiveScorer",
-                "HighResHLAAdditiveScorer"
+                "SplitScorer",
+                "HighResScorer",
+                "HighResWithDQDPScorer"
             ],
             "type": "string"
         },

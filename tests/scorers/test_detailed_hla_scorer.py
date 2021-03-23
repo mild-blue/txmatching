@@ -7,12 +7,11 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_hla_typing)
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_parameters import PatientParameters
-from txmatching.scorers.high_res_hla_additive_scorer import \
-    HighResHLAAdditiveScorer
-from txmatching.scorers.split_hla_additive_scorer import SplitHLAAdditiveScorer
+from txmatching.scorers.high_res_hla_additive_scorer import HighResScorer
+from txmatching.scorers.split_hla_additive_scorer import SplitScorer
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import HLAGroup, MatchTypes
+from txmatching.utils.enums import HLAGroup, MatchType
 from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, HLAMatch,
     get_detailed_compatibility_index)
@@ -27,43 +26,43 @@ class TestHlaScorer(unittest.TestCase):
         expected = [
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=HLAGroup.A,
-                donor_matches=[HLAMatch(create_hla_type('A23'), MatchTypes.BROAD),
-                               HLAMatch(create_hla_type('A26'), MatchTypes.NONE)],
-                recipient_matches=[HLAMatch(create_hla_type('A9'), MatchTypes.BROAD),
-                                   HLAMatch(create_hla_type('A30'), MatchTypes.NONE)],
+                donor_matches=[HLAMatch(create_hla_type('A23'), MatchType.BROAD),
+                               HLAMatch(create_hla_type('A26'), MatchType.NONE)],
+                recipient_matches=[HLAMatch(create_hla_type('A9'), MatchType.BROAD),
+                                   HLAMatch(create_hla_type('A30'), MatchType.NONE)],
                 group_compatibility_index=1.0),
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=HLAGroup.B,
-                donor_matches=[HLAMatch(create_hla_type('B62'), MatchTypes.BROAD),
-                               HLAMatch(create_hla_type('B38'), MatchTypes.NONE)],
-                recipient_matches=[HLAMatch(create_hla_type('B77'), MatchTypes.BROAD),
-                                   HLAMatch(create_hla_type('B14'), MatchTypes.NONE)],
+                donor_matches=[HLAMatch(create_hla_type('B62'), MatchType.BROAD),
+                               HLAMatch(create_hla_type('B38'), MatchType.NONE)],
+                recipient_matches=[HLAMatch(create_hla_type('B77'), MatchType.BROAD),
+                                   HLAMatch(create_hla_type('B14'), MatchType.NONE)],
                 group_compatibility_index=3.0),
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=HLAGroup.DRB1,
-                donor_matches=[HLAMatch(create_hla_type('DR4'), MatchTypes.SPLIT),
-                               HLAMatch(create_hla_type('DR11'), MatchTypes.SPLIT)],
-                recipient_matches=[HLAMatch(create_hla_type('DR4'), MatchTypes.SPLIT),
-                                   HLAMatch(create_hla_type('DR11'), MatchTypes.SPLIT)],
+                donor_matches=[HLAMatch(create_hla_type('DR4'), MatchType.SPLIT),
+                               HLAMatch(create_hla_type('DR11'), MatchType.SPLIT)],
+                recipient_matches=[HLAMatch(create_hla_type('DR4'), MatchType.SPLIT),
+                                   HLAMatch(create_hla_type('DR11'), MatchType.SPLIT)],
                 group_compatibility_index=18.0),
             DetailedCompatibilityIndexForHLAGroup(hla_group=HLAGroup.Other,
                                                   donor_matches=[
                                                       HLAMatch(hla_type=create_hla_type('DR52'),
-                                                               match_type=MatchTypes.NONE),
+                                                               match_type=MatchType.NONE),
                                                       HLAMatch(hla_type=create_hla_type('DR53'),
-                                                               match_type=MatchTypes.NONE),
+                                                               match_type=MatchType.NONE),
                                                       HLAMatch(hla_type=create_hla_type('DQ7'),
-                                                               match_type=MatchTypes.NONE),
+                                                               match_type=MatchType.NONE),
                                                       HLAMatch(hla_type=create_hla_type('DQ8'),
-                                                               match_type=MatchTypes.NONE),
+                                                               match_type=MatchType.NONE),
                                                       HLAMatch(hla_type=create_hla_type('DP2'),
-                                                               match_type=MatchTypes.NONE),
+                                                               match_type=MatchType.NONE),
                                                       HLAMatch(hla_type=create_hla_type('DP10'),
-                                                               match_type=MatchTypes.NONE),
+                                                               match_type=MatchType.NONE),
                                                       HLAMatch(hla_type=create_hla_type('CW9'),
-                                                               match_type=MatchTypes.NONE),
+                                                               match_type=MatchType.NONE),
                                                       HLAMatch(hla_type=create_hla_type('CW12'),
-                                                               match_type=MatchTypes.NONE)],
+                                                               match_type=MatchType.NONE)],
                                                   recipient_matches=[], group_compatibility_index=0.0)
 
         ]
@@ -73,8 +72,8 @@ class TestHlaScorer(unittest.TestCase):
             self.assertSetEqual(set(expected_result.recipient_matches), set(actual_result.recipient_matches))
 
     def test_scorers_on_some_patients(self):
-        split_scorer = SplitHLAAdditiveScorer()
-        high_res_scorer = HighResHLAAdditiveScorer()
+        split_scorer = SplitScorer()
+        high_res_scorer = HighResScorer()
         donor = Donor(
             db_id=1,
             medical_id='donor',

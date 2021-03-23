@@ -9,7 +9,7 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import HLACrossmatchLevel, HLAGroup, MatchTypes
+from txmatching.utils.enums import HLACrossmatchLevel, HLAGroup, MatchType
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, MATCHING_NAMESPACE, TXM_EVENT_NAMESPACE
 
@@ -62,39 +62,39 @@ class TestSaveAndGetConfiguration(DbTests):
             {
                 'hla_group': HLAGroup.A.name,
                 'donor_matches': [{'hla_type': {'code': self._get_split('A11'), 'raw_code': 'A11'},
-                                   'match_type': MatchTypes.NONE.name},
+                                   'match_type': MatchType.NONE.name},
                                   {'hla_type': {'code': self._get_split('A11'), 'raw_code': 'A11'},
-                                   'match_type': MatchTypes.NONE.name}],
+                                   'match_type': MatchType.NONE.name}],
                 'recipient_matches': [{'hla_type': {'code': self._get_split('A3'), 'raw_code': 'A3'},
-                                       'match_type': MatchTypes.NONE.name},
+                                       'match_type': MatchType.NONE.name},
                                       {'hla_type': {'code': self._get_split('A3'), 'raw_code': 'A3'},
-                                       'match_type': MatchTypes.NONE.name}],
+                                       'match_type': MatchType.NONE.name}],
                 'antibody_matches': expected_antibodies[0],
                 'group_compatibility_index': 0.0
             },
             {
                 'hla_group': HLAGroup.B.name,
                 'donor_matches': [{'hla_type': {'code': self._get_split('B8'), 'raw_code': 'B8'},
-                                   'match_type': MatchTypes.NONE.name},
+                                   'match_type': MatchType.NONE.name},
                                   {'hla_type': {'code': self._get_split('B8'), 'raw_code': 'B8'},
-                                   'match_type': MatchTypes.NONE.name}],
+                                   'match_type': MatchType.NONE.name}],
                 'recipient_matches': [{'hla_type': {'code': self._get_split('B7'), 'raw_code': 'B7'},
-                                       'match_type': MatchTypes.NONE.name},
+                                       'match_type': MatchType.NONE.name},
                                       {'hla_type': {'code': self._get_split('B7'), 'raw_code': 'B7'},
-                                       'match_type': MatchTypes.NONE.name}],
+                                       'match_type': MatchType.NONE.name}],
                 'antibody_matches': expected_antibodies[1],
                 'group_compatibility_index': 0.0
             },
             {
                 'hla_group': HLAGroup.DRB1.name,
                 'donor_matches': [{'hla_type': {'code': self._get_split('DR11'), 'raw_code': 'DR11'},
-                                   'match_type': MatchTypes.SPLIT.name},
+                                   'match_type': MatchType.SPLIT.name},
                                   {'hla_type': {'code': self._get_split('DR11'), 'raw_code': 'DR11'},
-                                   'match_type': MatchTypes.SPLIT.name}],
+                                   'match_type': MatchType.SPLIT.name}],
                 'recipient_matches': [{'hla_type': {'code': self._get_split('DR11'), 'raw_code': 'DR11'},
-                                       'match_type': MatchTypes.SPLIT.name},
+                                       'match_type': MatchType.SPLIT.name},
                                       {'hla_type': {'code': self._get_split('DR11'), 'raw_code': 'DR11'},
-                                       'match_type': MatchTypes.SPLIT.name}],
+                                       'match_type': MatchType.SPLIT.name}],
                 'antibody_matches': expected_antibodies[2],
                 'group_compatibility_index': 18.0
             },
@@ -110,39 +110,39 @@ class TestSaveAndGetConfiguration(DbTests):
             {
                 'hla_group': HLAGroup.A.name,
                 'donor_matches': [{'hla_type': {'code': self._get_split('A2'), 'raw_code': 'A2'},
-                                   'match_type': MatchTypes.NONE.name},
+                                   'match_type': MatchType.NONE.name},
                                   {'hla_type': {'code': self._get_split('A2'), 'raw_code': 'A2'},
-                                   'match_type': MatchTypes.NONE.name}],
+                                   'match_type': MatchType.NONE.name}],
                 'recipient_matches': [{'hla_type': {'code': self._get_split('A3'), 'raw_code': 'A3'},
-                                       'match_type': MatchTypes.NONE.name},
+                                       'match_type': MatchType.NONE.name},
                                       {'hla_type': {'code': self._get_split('A3'), 'raw_code': 'A3'},
-                                       'match_type': MatchTypes.NONE.name}],
+                                       'match_type': MatchType.NONE.name}],
                 'antibody_matches': expected_antibodies[0],
                 'group_compatibility_index': 0.0
             },
             {
                 'hla_group': HLAGroup.B.name,
                 'donor_matches': [{'hla_type': {'code': self._get_split('B8'), 'raw_code': 'B8'},
-                                   'match_type': MatchTypes.NONE.name},
+                                   'match_type': MatchType.NONE.name},
                                   {'hla_type': {'code': self._get_split('B8'), 'raw_code': 'B8'},
-                                   'match_type': MatchTypes.NONE.name}],
+                                   'match_type': MatchType.NONE.name}],
                 'recipient_matches': [{'hla_type': {'code': self._get_split('B7'), 'raw_code': 'B7'},
-                                       'match_type': MatchTypes.NONE.name},
+                                       'match_type': MatchType.NONE.name},
                                       {'hla_type': {'code': self._get_split('B7'), 'raw_code': 'B7'},
-                                       'match_type': MatchTypes.NONE.name}],
+                                       'match_type': MatchType.NONE.name}],
                 'antibody_matches': expected_antibodies[1],
                 'group_compatibility_index': 0.0
             },
             {
                 'hla_group': HLAGroup.DRB1.name,
                 'donor_matches': [{'hla_type': {'code': self._get_split('DR11'), 'raw_code': 'DR11'},
-                                   'match_type': MatchTypes.SPLIT.name},
+                                   'match_type': MatchType.SPLIT.name},
                                   {'hla_type': {'code': self._get_split('DR11'), 'raw_code': 'DR11'},
-                                   'match_type': MatchTypes.SPLIT.name}],
+                                   'match_type': MatchType.SPLIT.name}],
                 'recipient_matches': [{'hla_type': {'code': self._get_split('DR11'), 'raw_code': 'DR11'},
-                                       'match_type': MatchTypes.SPLIT.name},
+                                       'match_type': MatchType.SPLIT.name},
                                       {'hla_type': {'code': self._get_split('DR11'), 'raw_code': 'DR11'},
-                                       'match_type': MatchTypes.SPLIT.name}],
+                                       'match_type': MatchType.SPLIT.name}],
                 'antibody_matches': expected_antibodies[2],
                 'group_compatibility_index': 18.0
             },

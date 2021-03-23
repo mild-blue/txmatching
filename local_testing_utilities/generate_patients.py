@@ -23,7 +23,7 @@ from txmatching.database.services.patient_upload_service import \
 from txmatching.patients.patient import DonorType
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup, Sex
+from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup, Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_table import HIGH_RES_TO_SPLIT_OR_BROAD
 
@@ -80,7 +80,8 @@ def get_codes(hla_group: HLAGroup, sample=None):
         sample = SAMPLE
     all_high_res = [high_res for high_res, split_or_broad_or_nan in HIGH_RES_TO_SPLIT_OR_BROAD.items() if
                     split_or_broad_or_nan is not None and not pd.isna(split_or_broad_or_nan) and re.match(
-                        HLA_GROUP_SPLIT_CODE_REGEX[hla_group], split_or_broad_or_nan) and high_res.count(':') == 1]
+                        HLA_GROUPS_PROPERTIES[hla_group].split_code_regex, split_or_broad_or_nan) and high_res.count(
+                        ':') == 1]
     return [high_res for i, high_res in enumerate(all_high_res) if i in sample]
 
 

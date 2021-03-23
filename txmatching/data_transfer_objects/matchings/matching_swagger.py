@@ -2,8 +2,8 @@ from flask_restx import fields
 
 from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
                                                               HLAType)
-from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER,
-                                    AntibodyMatchTypes, HLAGroup, MatchTypes)
+from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
+                                    AntibodyMatchTypes, HLAGroup, MatchType)
 from txmatching.web.web_utils.namespaces import matching_api
 
 _CODE_A1 = {'high_res': None, 'split': None, 'broad': 'A1'}
@@ -14,15 +14,15 @@ EXAMPLE_DETAILED_SCORE = [
     {'hla_group': HLAGroup.A.name,
      'donor_matches': [
          {'hla_type': {'code': _CODE_A23, 'raw_code': 'A23'},
-          'match_type': MatchTypes.BROAD.name},
+          'match_type': MatchType.BROAD.name},
          {'hla_type': {'code': _CODE_A1, 'raw_code': 'A1'},
-          'match_type': MatchTypes.SPLIT.name}
+          'match_type': MatchType.SPLIT.name}
      ],
      'recipient_matches': [
          {'hla_type': {'code': _CODE_A9, 'raw_code': 'A9'},
-          'match_type': MatchTypes.BROAD.name},
+          'match_type': MatchType.BROAD.name},
          {'hla_type': {'code': _CODE_A1, 'raw_code': 'A1'},
-          'match_type': MatchTypes.SPLIT.name}
+          'match_type': MatchType.SPLIT.name}
      ],
      'antibody_matches': [
          {'hla_antibody': {'raw_code': 'A9', 'mfi': 0, 'cutoff': 0, 'code': _CODE_A9},
@@ -57,7 +57,7 @@ index is calculated for."""
 
 AntigenMatchJson = matching_api.model('AntigenMatch', {
     'hla_type': fields.Nested(required=True, model=HLAType),
-    'match_type': fields.String(required=True, enum=[match_type.name for match_type in MatchTypes])
+    'match_type': fields.String(required=True, enum=[match_type.name for match_type in MatchType])
 })
 
 AntibodyMatchJson = matching_api.model('AntibodyMatch', {
@@ -66,7 +66,7 @@ AntibodyMatchJson = matching_api.model('AntibodyMatch', {
 })
 
 DetailedScoreForGroupJson = matching_api.model('DetailedScoreForGroup', {
-    'hla_group': fields.String(required=True, enum=[group.name for group in HLA_GROUPS_NAMES_WITH_OTHER]),
+    'hla_group': fields.String(required=True, enum=[group.name for group in GENE_HLA_GROUPS_WITH_OTHER]),
     'donor_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntigenMatchJson)),
     'recipient_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntigenMatchJson)),
     'group_compatibility_index': fields.Float(required=True, example=2.0),
