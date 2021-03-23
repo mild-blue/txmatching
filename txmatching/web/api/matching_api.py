@@ -53,7 +53,8 @@ class CalculateFromConfig(Resource):
 
         calculated_matchings_dto = create_calculated_matchings_dto(matchings_detailed, matchings_detailed.matchings,
                                                                    maybe_configuration_db_id)
-
+        calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[
+                                                        :configuration.max_number_of_matchings]
         if get_user_role() == UserRole.VIEWER:
             calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[
                                                             :configuration.max_matchings_to_show_to_viewer]

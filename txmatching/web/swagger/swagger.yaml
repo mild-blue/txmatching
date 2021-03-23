@@ -185,256 +185,256 @@ definitions:
         type: object
     CountryCode:
         enum:
-        - TGO
-        - MNE
-        - LAO
-        - MRT
-        - NIC
-        - LVA
-        - OMN
-        - AFG
-        - CYP
-        - BEN
-        - ATA
-        - CHN
-        - COL
-        - CXR
-        - ATG
-        - MSR
-        - MDA
-        - ZMB
-        - VNM
-        - ATF
-        - TCD
-        - MYT
-        - LBN
-        - MAF
-        - LUX
-        - MTQ
         - CZE
-        - ARE
-        - CMR
-        - BDI
-        - ARG
-        - ASM
-        - BHR
-        - CHL
-        - AND
-        - MNP
-        - LTU
-        - MDG
-        - LCA
-        - TUR
-        - UKR
-        - TUV
-        - VIR
-        - MLT
-        - NOR
-        - MCO
-        - CHE
-        - BLM
-        - ABW
-        - BLZ
-        - BMU
-        - CIV
-        - MUS
-        - USA
-        - TWN
-        - YEM
-        - MWI
-        - NLD
-        - LSO
-        - BOL
         - AUT
-        - COK
-        - BLR
-        - AUS
-        - BRN
-        - MAR
-        - NZL
-        - LBR
-        - MDV
-        - TCA
-        - UGA
-        - TTO
-        - POL
-        - SRB
-        - IND
-        - GEO
-        - GRC
-        - SGS
-        - GRD
-        - IOT
-        - HKG
-        - PRK
-        - KGZ
-        - SPM
-        - SLV
-        - REU
-        - SAU
-        - SYC
-        - STP
-        - KEN
-        - IMN
-        - KOR
-        - GUF
-        - DJI
-        - GNQ
-        - GLP
-        - DNK
-        - GGY
         - ISR
-        - PCN
-        - SLB
-        - PRY
-        - RUS
-        - KWT
-        - DOM
-        - GTM
-        - GBR
-        - GUM
-        - JEY
-        - HMD
-        - SGP
-        - PAK
-        - SUR
-        - SWE
-        - JPN
-        - GNB
-        - ESH
-        - DZA
-        - GAB
-        - FRA
-        - DMA
-        - HND
-        - SDN
-        - RWA
-        - PHL
-        - SSD
-        - QAT
-        - PER
-        - PRI
-        - SVN
-        - HTI
-        - ESP
-        - GRL
-        - GMB
-        - ERI
-        - FIN
-        - EST
-        - KNA
-        - HUN
-        - IRQ
-        - CYM
-        - SHN
-        - PSE
-        - PYF
-        - SJM
-        - IDN
-        - ISL
-        - EGY
-        - FLK
-        - FJI
-        - GIN
-        - GUY
-        - IRN
-        - COM
-        - IRL
-        - KAZ
-        - ROU
-        - SVK
-        - PNG
-        - PRT
-        - SOM
-        - SXM
-        - HRV
-        - KIR
-        - JAM
-        - ECU
-        - ETH
-        - FRO
-        - KHM
-        - SYR
-        - SEN
-        - PLW
-        - SLE
-        - FSM
-        - GIB
-        - DEU
-        - GHA
-        - JOR
-        - ITA
-        - PAN
-        - SWZ
-        - SMR
-        - TUN
-        - MLI
-        - COG
-        - ALA
+        - ABW
+        - AFG
         - AGO
-        - BTN
-        - BRB
-        - CAF
-        - MMR
-        - LIE
-        - NAM
-        - MOZ
-        - TON
-        - VGB
-        - VEN
-        - TZA
-        - TKM
-        - MEX
-        - NCL
-        - MAC
-        - LKA
-        - COD
-        - ALB
-        - BWA
-        - CRI
-        - BVT
-        - ARM
-        - AZE
-        - BIH
-        - MNG
-        - NIU
-        - MYS
-        - TLS
-        - WSM
-        - THA
-        - XKX
-        - NFK
-        - LBY
         - AIA
-        - BRA
-        - CPV
+        - ALA
+        - ALB
+        - AND
+        - ARE
+        - ARG
+        - ARM
+        - ASM
+        - ATA
+        - ATF
+        - ATG
+        - AUS
+        - AZE
+        - BDI
         - BEL
-        - CAN
-        - BGD
-        - CUW
-        - BHS
-        - NGA
-        - MKD
-        - NPL
-        - VAT
-        - UZB
-        - UMI
-        - TKL
-        - VCT
-        - ZWE
-        - NRU
-        - NER
-        - CUB
+        - BEN
         - BES
         - BFA
+        - BGD
         - BGR
+        - BHR
+        - BHS
+        - BIH
+        - BLM
+        - BLR
+        - BLZ
+        - BMU
+        - BOL
+        - BRA
+        - BRB
+        - BRN
+        - BTN
+        - BVT
+        - BWA
+        - CAF
+        - CAN
         - CCK
+        - CIV
+        - CMR
+        - COD
+        - COG
+        - COK
+        - COL
+        - COM
+        - CPV
+        - CRI
+        - CUB
+        - CUW
+        - CXR
+        - CYM
+        - CYP
+        - DEU
+        - DJI
+        - DMA
+        - DNK
+        - DOM
+        - DZA
+        - ECU
+        - EGY
+        - ERI
+        - ESH
+        - ESP
+        - EST
+        - ETH
+        - FIN
+        - FJI
+        - FLK
+        - FRA
+        - FRO
+        - FSM
+        - GAB
+        - GBR
+        - GEO
+        - GGY
+        - GHA
+        - GIB
+        - GIN
+        - GLP
+        - GMB
+        - GNB
+        - GNQ
+        - GRC
+        - GRD
+        - GRL
+        - GTM
+        - GUF
+        - GUM
+        - GUY
+        - HKG
+        - HMD
+        - HND
+        - HRV
+        - HTI
+        - HUN
+        - CHE
+        - CHL
+        - CHN
+        - IDN
+        - IMN
+        - IND
+        - IOT
+        - IRL
+        - IRN
+        - IRQ
+        - ISL
+        - ITA
+        - JAM
+        - JEY
+        - JOR
+        - JPN
+        - KAZ
+        - KEN
+        - KGZ
+        - KHM
+        - KIR
+        - KNA
+        - KOR
+        - KWT
+        - LAO
+        - LBN
+        - LBR
+        - LBY
+        - LCA
+        - LIE
+        - LKA
+        - LSO
+        - LTU
+        - LUX
+        - LVA
+        - MAC
+        - MAF
+        - MAR
+        - MCO
+        - MDA
+        - MDG
+        - MDV
+        - MEX
         - MHL
-        - ZAF
-        - URY
-        - WLF
-        - VUT
+        - MKD
+        - MLI
+        - MLT
+        - MMR
+        - MNE
+        - MNG
+        - MNP
+        - MOZ
+        - MRT
+        - MSR
+        - MTQ
+        - MUS
+        - MWI
+        - MYS
+        - MYT
+        - NAM
+        - NCL
+        - NER
+        - NFK
+        - NGA
+        - NIC
+        - NIU
+        - NLD
+        - NOR
+        - NPL
+        - NRU
+        - NZL
+        - OMN
+        - PAK
+        - PAN
+        - PCN
+        - PER
+        - PHL
+        - PLW
+        - PNG
+        - POL
+        - PRI
+        - PRK
+        - PRT
+        - PRY
+        - PSE
+        - PYF
+        - QAT
+        - REU
+        - ROU
+        - RUS
+        - RWA
+        - SAU
+        - SDN
+        - SEN
+        - SGP
+        - SGS
+        - SHN
+        - SJM
+        - SLB
+        - SLE
+        - SLV
+        - SMR
+        - SOM
+        - SPM
+        - SRB
+        - SSD
+        - STP
+        - SUR
+        - SVK
+        - SVN
+        - SWE
+        - SWZ
+        - SXM
+        - SYC
+        - SYR
+        - TCA
+        - TCD
+        - TGO
+        - THA
         - TJK
+        - TKL
+        - TKM
+        - TLS
+        - TON
+        - TTO
+        - TUN
+        - TUR
+        - TUV
+        - TWN
+        - TZA
+        - UGA
+        - UKR
+        - UMI
+        - URY
+        - USA
+        - UZB
+        - VAT
+        - VCT
+        - VEN
+        - VGB
+        - VIR
+        - VNM
+        - VUT
+        - WLF
+        - WSM
+        - XKX
+        - YEM
+        - ZAF
+        - ZMB
+        - ZWE
         type: string
     DefaultTxmEvent:
         properties:
@@ -690,9 +690,9 @@ definitions:
                 example: 2350
                 type: integer
             name:
-                description: HLA antibody name in high (A*01:01), low (A*01), split
-                    (A1) or broad (A9) resolutions.In the case of DP, DQ when alpha
-                    and beta are provided the expected format is DQ[01:01,02:02]
+                description: HLA antibody name in high (A\*01:01), low (A\*01), split
+                    (A1) or broad (A9) resolutions. In case of DP or DQ, when alpha
+                    and beta are provided, the expected format is DQ[01:01,02:02]
                 example: A*01:01
                 type: string
         required:
@@ -1152,8 +1152,8 @@ definitions:
             hla_antibodies:
                 description: Detected HLA antibodies of the patient. Use high resolution                                   if
                     available. If high resolution is provided it is assumed that all
-                    tested antibodieswere provided. If not it is assumed that either
-                    all or just positiveones were.
+                    tested antibodies were provided. If not it is assumed that either
+                    all or just positive ones were.
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
@@ -1358,6 +1358,9 @@ definitions:
         properties:
             add_to_existing_patients:
                 default: false
+                description: If *true* the currently uploaded patients will be added
+                    to the patients already in the system. If *false* the data in
+                    the system will be overwritten by the currently uploaded data.
                 type: boolean
             country:
                 $ref: '#/definitions/CountryCode'
@@ -1371,7 +1374,7 @@ definitions:
                 type: array
             txm_event_name:
                 description: The TXM event name has to be provided by an ADMIN.
-                example: 2020-10-CZE-ISR-AUT
+                example: 2020-10-example_event
                 type: string
         required:
         - country
@@ -1455,8 +1458,9 @@ paths:
         put:
             description: This endpoint allows the country editor to upload patient
                 data for given                         TXM event. TXM event name has
-                to be provided by an ADMIN. The endpoint removes all patients                         from
-                respective country in case there were any.
+                to be provided by an ADMIN. You can either add patients to the                         current
+                dataset or remove all patients from respective country in case there
+                were any.
             operationId: put_txm_event_upload_patients
             parameters:
             -   in: body
@@ -2417,8 +2421,8 @@ produces:
 responses:
     AuthenticationException:
         description: general_authentication_exception
-    CachingNotReadyException:
-        description: invalid_argument_exception
+    CannotFindShortEnoughRoundsOrPathsInILPSolver:
+        description: too complicated data for solver _exception
     CouldNotSendOtpUsingSmsServiceException:
         description: could_not_send_otp
     CredentialsMismatchException:
@@ -2454,8 +2458,6 @@ responses:
     SolverAlreadyRunningException:
         description: Solver already running
     TooComplicatedDataForAllSolutionsSolver:
-        description: too complicated data for solver _exception
-    TooComplicatedDataForIlpSolver:
         description: too complicated data for solver _exception
     UnauthorizedException:
         description: unauthorized_exception

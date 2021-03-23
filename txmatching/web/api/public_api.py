@@ -31,8 +31,8 @@ class TxmEventUploadPatients(Resource):
     @public_api.request_body(
         UploadPatientsJson,
         description='This endpoint allows the country editor to upload patient data for given \
-                        TXM event. TXM event name has to be provided by an ADMIN. The endpoint removes all patients \
-                        from respective country in case there were any.'
+                        TXM event. TXM event name has to be provided by an ADMIN. You can either add patients to the \
+                        current dataset or remove all patients from respective country in case there were any.'
     )
     @public_api.response_ok(PatientUploadSuccessJson)
     @public_api.response_errors()
