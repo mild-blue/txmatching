@@ -21,7 +21,13 @@ export class RecipientSettingsComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public allowPositiveOnly(inputValue: NgModel, minValue: number = 1): void {
+  // HACK: code duplicity with donor-settings.component.ts
+  public formatYearOfBirth(inputValue: NgModel) {
+    return this.formatNumber(inputValue, 1, new Date().getFullYear());
+  }
+
+  // HACK: code duplicity with donor-settings.component.ts
+  public formatNumber(inputValue: NgModel, minValue: number = 1, maxValue?: number): void {
     if (!this.recipient) {
       return;
     }
@@ -31,7 +37,11 @@ export class RecipientSettingsComponent implements OnInit {
       newValue = undefined;
     } else {
       newValue = +inputValue.value;
-      newValue = newValue >= minValue ? newValue : undefined;
+      if (newValue < minValue) {
+        newValue = undefined;
+      } else if (maxValue !== undefined && newValue > maxValue) {
+        newValue = undefined;
+      }
     }
 
     switch(inputValue.name) {

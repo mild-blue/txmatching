@@ -49,7 +49,7 @@
   <app-recipient-antibodies [recipient]="recipient"></app-recipient-antibodies>
 
   <!-- Recipient antibodies cutoff -->
-  <app-simple-number #antibodiesCutoff="ngModel" (input)="allowPositiveOnly(antibodiesCutoff)"
+  <app-simple-number #antibodiesCutoff="ngModel" (input)="formatNumber(antibodiesCutoff)"
                      label="Antibodies cutoff"
                      [value]="recipient.antibodiesCutoff" [(ngModel)]="recipient.antibodiesCutoff"
                      name="antibodiesCutoff" ngDefaultControl></app-simple-number>
@@ -58,19 +58,19 @@
   <app-sex [patient]="recipient"></app-sex>
 
   <!-- Recipient height -->
-  <app-simple-number #height="ngModel" (input)="allowPositiveOnly(height)"
+  <app-simple-number #height="ngModel" (input)="formatNumber(height)"
                      label="Height [cm]"
                      [value]="recipient.height" [(ngModel)]="recipient.height"
                      name="height" ngDefaultControl></app-simple-number>
 
   <!-- Recipient weight -->
-  <app-simple-number #weight="ngModel" (input)="allowPositiveOnly(weight)"
+  <app-simple-number #weight="ngModel" (input)="formatNumber(weight)"
                      label="Weight [kg]"
                      [value]="recipient.weight" [(ngModel)]="recipient.weight"
                      name="weight" ngDefaultControl></app-simple-number>
 
   <!-- Recipient year of birth -->
-  <app-simple-number #yearOfBirth="ngModel" (input)="allowPositiveOnly(yearOfBirth)"
+  <app-simple-number #yearOfBirth="ngModel" (input)="formatYearOfBirth(yearOfBirth)"
                      label="Year of birth"
                      [value]="recipient.yearOfBirth" [(ngModel)]="recipient.yearOfBirth"
                      name="yearOfBirth" ngDefaultControl></app-simple-number>
@@ -85,7 +85,7 @@
   </app-setting-item>
 
   <!-- Recipient previous transplants -->
-  <app-simple-number #previousTransplants="ngModel" (input)="allowPositiveOnly(previousTransplants, 0)"
+  <app-simple-number #previousTransplants="ngModel" (input)="formatNumber(previousTransplants, 0)"
                      label="Previous transplants count"
                      [value]="recipient.previousTransplants" [(ngModel)]="recipient.previousTransplants"
                      name="previousTransplants" ngDefaultControl></app-simple-number>

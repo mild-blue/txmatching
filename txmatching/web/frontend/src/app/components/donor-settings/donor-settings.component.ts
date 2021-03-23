@@ -21,18 +21,27 @@ export class DonorSettingsComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public allowPositiveOnly(inputValue: NgModel): void {
+  // HACK: code duplicity with recipient-settings.component.ts
+  public formatYearOfBirth(inputValue: NgModel) {
+    return this.formatNumber(inputValue, 1, new Date().getFullYear());
+  }
+
+  // HACK: code duplicity with recipient-settings.component.ts
+  public formatNumber(inputValue: NgModel, minValue: number = 1, maxValue?: number): void {
     if (!this.donor) {
       return;
     }
 
     let newValue: number | undefined;
-
-    if(!inputValue.value) {
+    if (!inputValue.value) {
       newValue = undefined;
     } else {
       newValue = +inputValue.value;
-      newValue = newValue >= 1 ? newValue : undefined;
+      if (newValue < minValue) {
+        newValue = undefined;
+      } else if (maxValue !== undefined && newValue > maxValue) {
+        newValue = undefined;
+      }
     }
 
     switch(inputValue.name) {

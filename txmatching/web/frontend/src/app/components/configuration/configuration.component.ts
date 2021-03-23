@@ -71,7 +71,7 @@ export class ConfigurationComponent implements OnInit {
           case 'max_sequence_length': validator = Validators.min(0); break;
           case 'max_number_of_distinct_countries_in_round': validator = Validators.min(0); break;
           case 'max_matchings_to_show_to_viewer': validator = Validators.min(0); break;
-          case 'max_number_of_matchings': validator = Validators.min(0); break;
+          case 'max_number_of_matchings': validator = [Validators.min(0), Validators.max(20)]; break;
           case 'max_debt_for_country': validator = Validators.min(0); break;
           default: validator = undefined;
         }
