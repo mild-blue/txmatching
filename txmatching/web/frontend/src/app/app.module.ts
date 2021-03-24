@@ -70,6 +70,7 @@ import { FormControlErrorsComponent } from './components/form-control-errors/for
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RecipientAntibodiesComponent } from '@app/components/recipient-settings/recipient-antibodies/antibodies.component';
 import { DonorSettingsComponent } from './components/donor-settings/donor-settings.component';
 import { SexComponent } from './components/patient-settings/sex/sex.component';
@@ -173,7 +174,8 @@ import { AntigenTitlePipe } from './pipes/antigen-title/antigen-title.pipe';
     MatListModule,
     MatButtonToggleModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatTooltipModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
