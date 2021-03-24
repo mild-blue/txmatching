@@ -6,7 +6,6 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_role
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
     TxmDefaultEventDTOIn, TxmEventDTOIn)
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import (

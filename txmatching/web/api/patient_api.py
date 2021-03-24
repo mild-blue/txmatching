@@ -14,8 +14,7 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.auth.operation_guards.country_guard import (
     get_user_default_country, guard_user_country_access_to_donor,
     guard_user_country_access_to_recipient, guard_user_has_access_to_country)
-from txmatching.auth.user.user_auth_check import (require_user_edit_access,
-                                                  require_user_login)
+from txmatching.auth.user.user_auth_check import require_user_edit_access
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \

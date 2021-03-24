@@ -1,6 +1,5 @@
 # pylint: disable=no-self-use
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
-import dataclasses
 import logging
 
 from flask import request

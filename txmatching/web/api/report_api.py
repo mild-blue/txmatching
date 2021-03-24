@@ -21,7 +21,6 @@ from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         NotFoundException)
-from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
