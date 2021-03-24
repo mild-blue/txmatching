@@ -79,7 +79,7 @@ class Configuration:
     )
     max_debt_for_country: int = field(default=3,
                                       compare=True)
-    max_matchings_to_show_to_viewer: int = field(default=5, compare=False)
+    max_matchings_to_show_to_viewer: int = field(default=0, compare=False)
     max_number_of_matchings: int = field(default=5,
                                          compare=True,
                                          metadata={COMPARISON_MODE: ComparisonMode.Smaller})
