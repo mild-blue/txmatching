@@ -94,7 +94,7 @@ export class ConfigurationComponent implements OnInit {
           'to groups A, B and DRB1 increase the score. If the antigens match through HIGH RES representation, the score is ' +
           'increased by 3, if the antigens do not match through HIGH RES representation but they match through SPLIT representation, ' +
           'the score is increased by 2, if the antigens match only through BROAD representation, the score is increased by 1. The maximum ' +
-          'score for this scorer is therefore 2*3 + 2*2 + 2*1 = 12.';
+          'score for this scorer is therefore 2*3 + 2*3 + 2*3 = 18.';
       default: return 'Please select scorer.';
     }
   }
