@@ -19,13 +19,6 @@ from txmatching.database.db import db
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web.api.configuration_api import configuration_api
 from txmatching.web.api.matching_api import matching_api
-from txmatching.web.api.namespaces import (CONFIGURATION_NAMESPACE,
-                                           MATCHING_NAMESPACE,
-                                           PATIENT_NAMESPACE, PUBLIC_NAMESPACE,
-                                           REPORTS_NAMESPACE,
-                                           SERVICE_NAMESPACE,
-                                           TXM_EVENT_NAMESPACE, USER_NAMESPACE,
-                                           enums_api)
 from txmatching.web.api.patient_api import patient_api
 from txmatching.web.api.public_api import public_api
 from txmatching.web.api.report_api import report_api
@@ -34,6 +27,14 @@ from txmatching.web.api.txm_event_api import txm_event_api
 from txmatching.web.api.user_api import user_api
 from txmatching.web.error_handler import register_error_handlers
 from txmatching.web.web_utils.logging_config import setup_logging
+from txmatching.web.web_utils.namespaces import (CONFIGURATION_NAMESPACE,
+                                                 MATCHING_NAMESPACE,
+                                                 PATIENT_NAMESPACE,
+                                                 PUBLIC_NAMESPACE,
+                                                 REPORTS_NAMESPACE,
+                                                 SERVICE_NAMESPACE,
+                                                 TXM_EVENT_NAMESPACE,
+                                                 USER_NAMESPACE, enums_api)
 
 LOGIN_MANAGER = None
 API_VERSION = '/v1'

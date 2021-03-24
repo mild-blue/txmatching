@@ -2,11 +2,9 @@
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 
 import logging
-from enum import Enum
 from typing import Optional
 
-from dacite import Config, from_dict
-from flask import jsonify, request
+from flask import request
 from flask_restx import Resource
 
 from txmatching.auth.auth_check import (require_role, require_valid_config_id,
@@ -20,8 +18,8 @@ from txmatching.auth.user.user_auth_check import (require_user_edit_access,
                                                   require_user_login)
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
-from txmatching.data_transfer_objects.external_patient_upload.swagger import (
-    FailJson, PatientUploadSuccessJson)
+from txmatching.data_transfer_objects.external_patient_upload.swagger import \
+    PatientUploadSuccessJson
 from txmatching.data_transfer_objects.patients.out_dots.conversions import (
     donor_to_donor_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
@@ -51,7 +49,8 @@ from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.logged_user import get_current_user_id
-from txmatching.web.api.namespaces import patient_api
+from txmatching.web.web_utils.namespaces import patient_api
+from txmatching.web.web_utils.route_utils import request_body, response_ok
 
 logger = logging.getLogger(__name__)
 
@@ -60,22 +59,14 @@ logger = logging.getLogger(__name__)
 class AllPatients(Resource):
 
     @patient_api.doc(
-        params={
-            'config_id': ConfigIdPathParamDefinition
-        },
-        security='bearer',
+        params={'config_id': ConfigIdPathParamDefinition},
         description='Get all patients for the given txm event. By default, raw antibodies are not'
                     'included. Specify include-antibodies-raw to include raw antibodies as well.'
                     'Example: /patients?include-antibodies-raw'
     )
-    @patient_api.response(code=200, model=PatientsJson, description='List of donors and list of recipients.')
-    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @patient_api.response(code=403, model=FailJson,
-                          description='Access denied. You do not have rights to access this endpoint.'
-                          )
-    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
-    @require_user_login()
+    @patient_api.require_user_login()
+    @patient_api.response_ok(PatientsJson, description='List of donors and list of recipients.')
+    @patient_api.response_errors()
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
@@ -85,31 +76,25 @@ class AllPatients(Resource):
         configuration = get_configuration_from_db_id_or_default(txm_event, config_id)
         lists_for_fe = to_lists_for_fe(txm_event, configuration)
         logger.debug('Sending patients to FE')
-        return jsonify(lists_for_fe)
+        return response_ok(lists_for_fe)
 
 
 @patient_api.route('/pairs', methods=['POST'])
 class DonorRecipientPairs(Resource):
-    @patient_api.doc(body=DonorModelPairInJson, security='bearer')
-    @patient_api.response(code=200, model=PatientUploadSuccessJson,
-                          description='Added new donor (possibly with recipient)')
-    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @patient_api.response(code=403, model=FailJson,
-                          description='Access denied. You do not have rights to access this endpoint.'
-                          )
-    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @patient_api.require_user_login()
+    @patient_api.request_body(DonorModelPairInJson)
+    @patient_api.response_ok(PatientUploadSuccessJson, 'Added new donor (possibly with recipient)')
+    @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):
-        donor_recipient_pair_dto_in = from_dict(data_class=DonorRecipientPairDTO, data=request.json,
-                                                config=Config(cast=[Enum]))
+        donor_recipient_pair_dto_in = request_body(DonorRecipientPairDTO)
 
         guard_user_has_access_to_country(user_id=get_current_user_id(),
                                          country=donor_recipient_pair_dto_in.country_code)
 
         add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
-        return jsonify(PatientUploadDTOOut(
+        return response_ok(PatientUploadDTOOut(
             donors_uploaded=1,
             recipients_uploaded=1 if donor_recipient_pair_dto_in.recipient else 0
         ))
@@ -129,17 +114,10 @@ class DonorRecipientPair(Resource):
         security='bearer',
         description='Delete existing donor recipient pair.'
     )
-    @patient_api.response(
-        code=200,
-        model=None,
+    @patient_api.response_ok(
         description='Returns status code representing result of donor recipient pair object deletion.'
     )
-    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @patient_api.response(code=403, model=FailJson,
-                          description='Access denied. You do not have rights to access this endpoint.'
-                          )
-    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def delete(self, txm_event_id: int, donor_db_id: int):
@@ -157,44 +135,30 @@ class DonorRecipientPair(Resource):
 
 @patient_api.route('/recipient', methods=['PUT'])
 class AlterRecipient(Resource):
-
-    @patient_api.doc(body=RecipientToUpdateJson, security='bearer')
-    @patient_api.response(code=200, model=RecipientJson, description='Updated recipient.')
-    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @patient_api.response(code=403, model=FailJson,
-                          description='Access denied. You do not have rights to access this endpoint.'
-                          )
-    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @patient_api.require_user_login()
+    @patient_api.request_body(RecipientToUpdateJson)
+    @patient_api.response_ok(RecipientJson, description='Updated recipient.')
+    @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
-        recipient_update_dto = from_dict(data_class=RecipientUpdateDTO, data=request.json, config=Config(cast=[Enum]))
+        recipient_update_dto = request_body(RecipientUpdateDTO)
         guard_user_country_access_to_recipient(user_id=get_current_user_id(), recipient_id=recipient_update_dto.db_id)
-        return jsonify(update_recipient(recipient_update_dto, txm_event_id))
+        return response_ok(update_recipient(recipient_update_dto, txm_event_id))
 
 
 @patient_api.route('/configs/<config_id>/donor', methods=['PUT'])
 class AlterDonor(Resource):
-    @patient_api.doc(
-        body=DonorToUpdateJson,
-        params={
-            'config_id': ConfigIdPathParamDefinition
-        },
-        security='bearer'
-    )
-    @patient_api.response(code=200, model=DonorJson, description='Updates single donor.')
-    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @patient_api.response(code=403, model=FailJson,
-                          description='Access denied. You do not have rights to access this endpoint.'
-                          )
-    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @patient_api.doc(params={'config_id': ConfigIdPathParamDefinition})
+    @patient_api.require_user_login()
+    @patient_api.request_body(DonorToUpdateJson)
+    @patient_api.response_ok(DonorJson, description='Updates single donor.')
+    @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def put(self, txm_event_id: int, config_id: Optional[int]):
-        donor_update_dto = from_dict(data_class=DonorUpdateDTO, data=request.json, config=Config(cast=[Enum]))
+        donor_update_dto = request_body(DonorUpdateDTO)
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
         txm_event = get_txm_event_complete(txm_event_id)
         all_recipients = txm_event.all_recipients
@@ -202,7 +166,7 @@ class AlterDonor(Resource):
                                                                 configuration_db_id=config_id)
         scorer = scorer_from_configuration(configuration)
 
-        return jsonify(
+        return response_ok(
             donor_to_donor_dto_out(
                 update_donor(donor_update_dto, txm_event_id),
                 all_recipients,
@@ -225,13 +189,8 @@ class AddPatientsFile(Resource):
                      }
                      }
                      )
-    @patient_api.response(code=200, model=PatientUploadSuccessJson, description='Success.')
-    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @patient_api.response(code=403, model=FailJson,
-                          description='Access denied. You do not have rights to access this endpoint.'
-                          )
-    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @patient_api.response_ok(PatientUploadSuccessJson, description='Success.')
+    @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
@@ -256,7 +215,7 @@ class AddPatientsFile(Resource):
             guard_user_has_access_to_country(user_id=user_id, country=parsed_country_data.country)
 
         replace_or_add_patients_from_excel(parsed_data)
-        return jsonify(PatientUploadDTOOut(
+        return response_ok(PatientUploadDTOOut(
             recipients_uploaded=sum(len(parsed_data_country.recipients) for parsed_data_country in parsed_data),
             donors_uploaded=sum(len(parsed_data_country.donors) for parsed_data_country in parsed_data))
         )
@@ -265,21 +224,14 @@ class AddPatientsFile(Resource):
 @patient_api.route('/recompute-parsing', methods=['POST'])
 class RecomputeParsing(Resource):
     @patient_api.doc(
-        body=None,
-        security='bearer',
         description='Endpoint that lets an ADMIN recompute parsed antigens and antibodies for '
                     'all patients in the given txm event.'
     )
-    @patient_api.response(code=200, model=PatientsRecomputeParsingSuccessJson,
-                          description='Returns the recomputation statistics.')
-    @patient_api.response(code=400, model=FailJson, description='Wrong data format.')
-    @patient_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @patient_api.response(code=403, model=FailJson,
-                          description='Access denied. You do not have rights to access this endpoint.')
-    @patient_api.response(code=409, model=FailJson, description='Non-unique patients provided.')
-    @patient_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
+    @patient_api.response_ok(PatientsRecomputeParsingSuccessJson,
+                             description='Returns the recomputation statistics.')
+    @patient_api.response_errors()
     @require_role(UserRole.ADMIN)
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):
         result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id)
-        return jsonify(result)
+        return response_ok(result)

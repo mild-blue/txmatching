@@ -290,10 +290,6 @@ class TestPatientService(DbTests):
                 'hla_typing': {
                     'hla_types_list': []
                 },
-                'sex': None,
-                'height': None,
-                'weight': None,
-                'year_of_birth': None,
                 'active': False
             }
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -372,10 +368,6 @@ class TestPatientService(DbTests):
                 'hla_typing': {
                     'hla_types_list': []
                 },
-                'sex': None,
-                'height': None,
-                'weight': None,
-                'year_of_birth': None,
                 'acceptable_blood_groups': ['0'],
                 'hla_antibodies': {
                     'hla_antibodies_list': []
@@ -384,8 +376,7 @@ class TestPatientService(DbTests):
                     'require_better_match_in_compatibility_index': False,
                     'require_better_match_in_compatibility_index_or_blood_group': False,
                     'require_compatible_blood_group': False
-                },
-                'cutoff': None
+                }
             }
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/recipient',
