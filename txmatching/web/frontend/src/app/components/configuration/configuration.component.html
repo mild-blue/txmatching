@@ -167,6 +167,6 @@
   </form>
 
   <div class="button-wrapper">
-    <app-button (click)="submitAction()">Set values</app-button>
+    <app-button (click)="submitAction()" [disabled]="!canSubmit()">Set values</app-button>
   </div>
 </div>
