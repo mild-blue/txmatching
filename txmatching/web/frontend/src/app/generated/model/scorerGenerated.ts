@@ -12,7 +12,8 @@
 
 
 export enum ScorerGenerated {
-    SplitHlaAdditiveScorer = 'SplitHLAAdditiveScorer',
-    HighResHlaAdditiveScorer = 'HighResHLAAdditiveScorer'
+    SplitScorer = 'SplitScorer',
+    HighResScorer = 'HighResScorer',
+    HighResWithDqdpScorer = 'HighResWithDQDPScorer'
 };
 

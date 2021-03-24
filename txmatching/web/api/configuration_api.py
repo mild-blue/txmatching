@@ -8,8 +8,7 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
-from txmatching.auth.user.user_auth_check import (require_user_edit_access,
-                                                  require_user_login)
+from txmatching.auth.user.user_auth_check import require_user_edit_access
 from txmatching.data_transfer_objects.configuration.configuration_swagger import (
     ConfigIdPathParamDefinition, ConfigurationJson)
 from txmatching.data_transfer_objects.shared_dto import (IdentifierDTOIn,

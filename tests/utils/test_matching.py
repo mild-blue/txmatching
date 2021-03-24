@@ -7,12 +7,12 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.patients.patient import Patient
 from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.scorers.split_hla_additive_scorer import \
-    SplitHLAAdditiveScorerCIConfiguration
+    SplitScorerCIConfiguration
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_sequence import TransplantSequence
-from txmatching.utils.enums import HLAGroup, MatchTypes
+from txmatching.utils.enums import HLAGroup, MatchType
 from txmatching.utils.hla_system.compatibility_index import \
     get_detailed_compatibility_index
 
@@ -28,7 +28,7 @@ def calculate_compatibility_index_for_group(donor: Patient, recipient: Patient, 
 
     scores = get_detailed_compatibility_index(donor.parameters.hla_typing,
                                               recipient.parameters.hla_typing,
-                                              ci_configuration=SplitHLAAdditiveScorerCIConfiguration())
+                                              ci_configuration=SplitScorerCIConfiguration())
     return next(group_ci_detailed.group_compatibility_index for group_ci_detailed in scores if
                 group_ci_detailed.hla_group == hla_group)
 
@@ -46,7 +46,7 @@ class TestMatching(DbTests):
                                                   recipient.parameters.hla_typing)
         return list({match.hla_type.code.display_code for ci_detail_group in scores
                      for match in ci_detail_group.recipient_matches
-                     if match.match_type != MatchTypes.NONE})
+                     if match.match_type != MatchType.NONE})
 
     def test_get_matching_hla_typing(self):
         raw_codes = get_test_raw_codes()
