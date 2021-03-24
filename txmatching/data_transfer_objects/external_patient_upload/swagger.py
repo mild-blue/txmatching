@@ -47,6 +47,10 @@ DonorJsonIn = public_api.model('DonorInput', {
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
+    'internal_medical_id': fields.String(required=False,
+                                         example='123456',
+                                         description='Custom medical ID that will not be shown in UI, but will be'
+                                                     ' stored and can be seen in patient xlsx export.'),
 })
 
 RecipientJsonIn = public_api.model('RecipientInput', {
@@ -78,7 +82,11 @@ RecipientJsonIn = public_api.model('RecipientInput', {
                                              'Use format YYYY-MM-DD.'),
     'previous_transplants': fields.Integer(required=False,
                                            example=0,
-                                           description='Number of previous kidney transplants.')
+                                           description='Number of previous kidney transplants.'),
+    'internal_medical_id': fields.String(required=False,
+                                         example='123456',
+                                         description='Custom medical ID that will not be shown in UI, but will be'
+                                                     ' stored and can be seen in patient xlsx export.'),
 })
 
 UploadPatientsJson = public_api.model(

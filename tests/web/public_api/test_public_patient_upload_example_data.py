@@ -4,6 +4,7 @@ from txmatching.utils.enums import Sex
 DONORS = [
     {
         'medical_id': 'D1',
+        'internal_medical_id': 'TEST_INTERNAL_MEDICAL_ID',
         'blood_group': 'A',
         'hla_typing': [
             'A1', 'A23', 'Invalid', 'B*01:01N'
