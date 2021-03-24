@@ -17,7 +17,8 @@
           <app-count *ngIf="!loading"
                      [count]="matchings.length"
                      [maxCount]="foundMatchingsCount"
-                     title="Top matchings / Total number of matchings">
+                     matTooltip="Top matchings / Total number of matchings"
+                     matTooltipPosition="right">
           </app-count>
         </h1>
         <div class="header-description" *ngIf="!loading">
@@ -30,7 +31,7 @@
                     *ngIf="showConfiguration"
                     variant="success" size="sm"
                     [disabled]="isCurrentConfigDefault"
-                    [title]="getTitleOfDefaultConfigButton"
+                    [matTooltip]="getTitleOfDefaultConfigButton"
         >
           <ng-container *ngIf="isCurrentConfigDefault">
             default configuration
