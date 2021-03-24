@@ -33,6 +33,10 @@ export interface RecipientInputGenerated {
      */
     hla_typing: Array<string>;
     /**
+     * Custom medical ID that will not be shown in UI, but will be stored and can be seen in patient xlsx export.
+     */
+    internal_medical_id?: string;
+    /**
      * Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.
      */
     medical_id: string;
