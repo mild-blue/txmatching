@@ -8,7 +8,7 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.patients.hla_code import HLACode
-from txmatching.utils.enums import HLA_GROUP_SPLIT_CODE_REGEX, HLAGroup
+from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
 from txmatching.utils.hla_system.hla_table import \
@@ -69,7 +69,8 @@ codes = {
     'A*02:284N': (HLACode('A*02:284N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
     'DRB1*04:280N': (HLACode('DRB1*04:280N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
     'A*11:21N': (HLACode('A*11:21N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
-    'A*11:11:11:11N': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
+    'A*11:11:11:11N': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
+    'DOA*01:04N': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
 }
 
 
@@ -88,7 +89,7 @@ class TestCodeParser(DbTests):
         for code, _ in codes.items():
             parse_hla_raw_code_and_add_parsing_error_to_db_session(code)
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(15, len(errors))
+        self.assertEqual(16, len(errors))
 
     def test_parse_hla_ser(self):
         parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))
@@ -108,17 +109,17 @@ class TestCodeParser(DbTests):
                             set(create_hla_type(code).code for code in preprocess_hla_code_in('DP[01:03,02:01]')))
 
     def test_group_assignment(self):
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BWA1'))
-        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B1'))
-        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B111'))
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'B'))
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BW4'))
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.B], 'BW6'))
+        self.assertFalse(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.B].split_code_regex, 'BWA1'))
+        self.assertTrue(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.B].split_code_regex, 'B1'))
+        self.assertTrue(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.B].split_code_regex, 'B111'))
+        self.assertFalse(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.B].split_code_regex, 'B'))
+        self.assertFalse(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.B].split_code_regex, 'BW4'))
+        self.assertFalse(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.B].split_code_regex, 'BW6'))
 
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'BWA1'))
-        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'A1'))
-        self.assertTrue(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'A111'))
-        self.assertFalse(re.match(HLA_GROUP_SPLIT_CODE_REGEX[HLAGroup.A], 'B'))
+        self.assertFalse(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.A].split_code_regex, 'BWA1'))
+        self.assertTrue(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.A].split_code_regex, 'A1'))
+        self.assertTrue(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.A].split_code_regex, 'A111'))
+        self.assertFalse(re.match(HLA_GROUPS_PROPERTIES[HLAGroup.A].split_code_regex, 'B'))
 
     def test_mfi_extraction(self):
         # When one value extremely low, calculate average only from such value.

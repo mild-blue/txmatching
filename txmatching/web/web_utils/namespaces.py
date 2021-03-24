@@ -1,4 +1,4 @@
-from flask_restx import Namespace
+from txmatching.web.web_utils.namespace import Namespace
 
 PATIENT_NAMESPACE = 'patients'
 patient_api = Namespace(PATIENT_NAMESPACE)

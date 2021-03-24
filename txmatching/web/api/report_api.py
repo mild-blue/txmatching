@@ -21,14 +21,11 @@ from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         NotFoundException)
-from txmatching.auth.user.user_auth_check import require_user_login
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
-from txmatching.data_transfer_objects.external_patient_upload.swagger import \
-    FailJson
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, RoundDTO)
 from txmatching.data_transfer_objects.patients.out_dots.conversions import \
@@ -48,7 +45,7 @@ from txmatching.patients.patient import Donor, DonorType, Patient, Recipient
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
-from txmatching.web.api.namespaces import report_api
+from txmatching.web.web_utils.namespaces import report_api
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +68,6 @@ COLOR_MILD_BLUE = '#2D4496'
 class MatchingReport(Resource):
 
     @report_api.doc(
-        security='bearer',
         params={
             MATCHINGS_BELOW_CHOSEN: {
                 'description': 'Number of matchings with lower score than chosen to include in report.',
@@ -87,14 +83,10 @@ class MatchingReport(Resource):
             'config_id': ConfigIdPathParamDefinition
         }
     )
-    @report_api.response(code=200, model=None, description='Generates PDF report.')
-    @report_api.response(code=404, model=FailJson, description='Matching for provided id was not found.')
-    @report_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @report_api.response(code=403, model=FailJson,
-                         description='Access denied. You do not have rights to access this endpoint.'
-                         )
-    @report_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
-    @require_user_login()
+    @report_api.require_user_login()
+    @report_api.response_ok(description='Generates PDF report.')
+    @report_api.response_error_matching_not_found()
+    @report_api.response_errors()
     @require_valid_txm_event_id()
     @require_valid_config_id()
     # pylint: disable=too-many-locals
@@ -248,19 +240,12 @@ class MatchingReport(Resource):
 class PatientsXLSReport(Resource):
 
     @report_api.doc(
-        params={
-            'config_id': ConfigIdPathParamDefinition
-        },
-        security='bearer'
+        params={'config_id': ConfigIdPathParamDefinition},
     )
-    @report_api.response(code=200, model=None, description='Generates XLSX report.')
-    @report_api.response(code=404, model=FailJson, description='Matching for provided id was not found.')
-    @report_api.response(code=401, model=FailJson, description='Authentication failed.')
-    @report_api.response(code=403, model=FailJson,
-                         description='Access denied. You do not have rights to access this endpoint.'
-                         )
-    @report_api.response(code=500, model=FailJson, description='Unexpected error, see contents for details.')
-    @require_user_login()
+    @report_api.require_user_login()
+    @report_api.response_ok(description='Generates XLSX report.')
+    @report_api.response_error_matching_not_found()
+    @report_api.response_errors()
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:

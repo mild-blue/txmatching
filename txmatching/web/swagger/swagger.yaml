@@ -106,7 +106,6 @@ definitions:
                 example: 20
                 type: integer
             max_matchings_to_show_to_viewer:
-                example: 5
                 type: integer
             max_number_of_distinct_countries_in_round:
                 example: 3
@@ -135,7 +134,7 @@ definitions:
             scorer_constructor_name:
                 allOf:
                 -   $ref: '#/definitions/Scorer'
-                example: SplitHLAAdditiveScorer
+                example: SplitScorer
             solver_constructor_name:
                 allOf:
                 -   $ref: '#/definitions/Solver'
@@ -1096,6 +1095,9 @@ definitions:
     Recipient:
         properties:
             acceptable_blood_groups:
+                example:
+                - A
+                - '0'
                 items:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
@@ -1134,6 +1136,9 @@ definitions:
                 description: Acceptable blood groups for the patient. Leave empty
                     to use                                             compatible
                     blood groups.
+                example:
+                - A
+                - '0'
                 items:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
@@ -1196,6 +1201,9 @@ definitions:
                 acceptable_blood_groups:
                     description: Provide full list of all the acceptable blood groups
                         of the patient, not just the change set
+                    example:
+                    - A
+                    - '0'
                     items:
                         $ref: '#/definitions/BloodGroupEnum'
                     type: array
@@ -1249,8 +1257,9 @@ definitions:
         type: object
     Scorer:
         enum:
-        - SplitHLAAdditiveScorer
-        - HighResHLAAdditiveScorer
+        - SplitScorer
+        - HighResScorer
+        - HighResWithDQDPScorer
         type: string
     ServiceStatus:
         properties:
@@ -1461,7 +1470,7 @@ paths:
                     $ref: '#/definitions/UploadPatients'
             responses:
                 '200':
-                    description: Success.
+                    description: Success
                     schema:
                         $ref: '#/definitions/PatientUploadSuccessResponse'
                 '400':
@@ -1725,10 +1734,6 @@ paths:
                         endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
-                '409':
-                    description: Non-unique patients provided.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
                 '500':
                     description: Unexpected error, see contents for details.
                     schema:
@@ -1753,6 +1758,10 @@ paths:
                         current user.
                     schema:
                         $ref: '#/definitions/Configuration'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
                 '401':
                     description: Authentication failed.
                     schema:
@@ -2096,16 +2105,10 @@ paths:
                         endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
-                '409':
-                    description: Non-unique patients provided.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
                 '500':
                     description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
             tags:
             - patients
     /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/matchings/{matching_id}/pdf:
@@ -2132,6 +2135,10 @@ paths:
             responses:
                 '200':
                     description: Generates PDF report.
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
                 '401':
                     description: Authentication failed.
                     schema:
@@ -2171,6 +2178,10 @@ paths:
             responses:
                 '200':
                     description: Generates XLSX report.
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
                 '401':
                     description: Authentication failed.
                     schema:
@@ -2257,6 +2268,11 @@ paths:
                     description: Authentication failed.
                     schema:
                         $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
                 '500':
                     description: Unexpected error, see contents for details.
                     schema:
@@ -2310,6 +2326,10 @@ paths:
                     description: New OTP was generated and sent.
                     schema:
                         $ref: '#/definitions/StatusResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
                 '401':
                     description: Authentication failed.
                     schema:

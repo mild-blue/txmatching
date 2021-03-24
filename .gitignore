@@ -312,6 +312,11 @@ txmatching/web/csv_uploads
 devops/compose/project-configuration
 devops/compose/docker-compose.yml
 .DS_Store
+logs/*
+!logs/.gitkeep
 
 # Ignore temoporary excel fileset
 **/*.xlsx#
+
+# Ignore private http env
+**/*.private.env.json

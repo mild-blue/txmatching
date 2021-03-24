@@ -4,13 +4,8 @@ from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
                                                             CountryCodeJson,
                                                             DonorTypeEnumJson,
                                                             SexEnumJson)
-from txmatching.web.api.namespaces import public_api
-
-# TODO move to some better place as part of https://github.com/mild-blue/txmatching/issues/500
-FailJson = public_api.model('FailResponse', {
-    'error': fields.String(required=True),
-    'message': fields.String(required=False),
-})
+from txmatching.utils.blood_groups import BloodGroup
+from txmatching.web.web_utils.namespaces import public_api
 
 PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
     'recipients_uploaded': fields.Integer(required=True,
@@ -65,7 +60,8 @@ RecipientJsonIn = public_api.model('RecipientInput', {
                                   )),
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.Nested(BloodGroupEnumJson),
                                            description='Acceptable blood groups for the patient. Leave empty to use \
-                                            compatible blood groups.'),
+                                            compatible blood groups.',
+                                           example=[BloodGroup.A.value, BloodGroup.ZERO.value]),
     'medical_id': fields.String(required=True, example='R1037', description=MEDICAL_ID_DESCRIPTION),
     'blood_group': fields.Nested(BloodGroupEnumJson, required=True),
     'hla_typing': fields.List(required=True, cls_or_instance=fields.String,

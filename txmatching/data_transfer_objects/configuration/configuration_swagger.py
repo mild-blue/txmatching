@@ -3,7 +3,7 @@ from flask_restx import fields
 from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.enums_swagger import (
     CountryCodeJson, HlaCrossmatchLevelJson, ScorerEnumJson, SolverEnumJson)
-from txmatching.web.api.namespaces import matching_api
+from txmatching.web.web_utils.namespaces import matching_api
 
 ManualDonorRecipientScoreJson = matching_api.model('ManualRecipientDonorScore', {
     'donor_db_id': fields.Integer(required=True, example=2),

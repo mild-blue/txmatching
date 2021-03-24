@@ -1,6 +1,6 @@
 from flask_restx import fields
 
-from txmatching.web.api.namespaces import txm_event_api
+from txmatching.web.web_utils.namespaces import txm_event_api
 
 TxmEventJsonIn = txm_event_api.model('NewTxmEvent', {
     'name': fields.String(required=True)

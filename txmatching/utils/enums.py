@@ -1,9 +1,19 @@
+from dataclasses import dataclass
 from enum import Enum
+from typing import List
 
 
 class Sex(str, Enum):
     M = 'M'
     F = 'F'
+
+
+@dataclass
+class HLAGroupProperties:
+    name: str
+    split_code_regex: str
+    high_res_code_regex: str
+    max_count_per_patient: int
 
 
 class HLAGroup(str, Enum):
@@ -13,38 +23,77 @@ class HLAGroup(str, Enum):
     CW = 'CW'
     DP = 'DP'
     DQ = 'DQ'
-    BW = 'BW'
     OTHER_DR = 'OTHER_DR'
     Other = 'Other'
+    ALL = 'ALL'
 
 
-HLA_GROUPS_GENE = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
-HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR, HLAGroup.BW]
-HLA_GROUPS_NAMES_WITH_OTHER = [group for group in HLA_GROUPS_GENE] + [HLAGroup.Other]
-
-HLA_GROUP_SPLIT_CODE_REGEX = {
-    HLAGroup.A: r'^A\d+',
-    HLAGroup.B: r'^B\d+',
-    HLAGroup.CW: r'^CW\d+',
-    HLAGroup.DRB1: r'^DR(?!5([123]))\d',
-    HLAGroup.DP: r'^DPA?\d+',
-    HLAGroup.DQ: r'^DQA?\d+',
-    HLAGroup.OTHER_DR: r'^DR5[123]',
-    HLAGroup.BW: r'^BW\d+',
-    HLAGroup.Other: r'.*'
+HLA_GROUPS_PROPERTIES = {
+    HLAGroup.A: HLAGroupProperties(
+        name='A',
+        split_code_regex=r'^A\d+',
+        high_res_code_regex=r'^A\*',
+        max_count_per_patient=2
+    ),
+    HLAGroup.B: HLAGroupProperties(
+        name='A',
+        split_code_regex=r'^B\d+',
+        high_res_code_regex=r'^B\*',
+        max_count_per_patient=2
+    ),
+    HLAGroup.DRB1: HLAGroupProperties(
+        name='A',
+        split_code_regex=r'^DR(?!5([123]))\d',
+        high_res_code_regex=r'DRB1\*',
+        max_count_per_patient=2
+    ),
+    HLAGroup.CW: HLAGroupProperties(
+        name='A',
+        split_code_regex=r'^CW\d+',
+        high_res_code_regex=r'^C\*',
+        max_count_per_patient=2
+    ),
+    HLAGroup.DP: HLAGroupProperties(
+        name='A',
+        split_code_regex=r'^DPA?\d+',
+        high_res_code_regex=r'DP[AB]1\*',
+        max_count_per_patient=4
+    ),
+    HLAGroup.DQ: HLAGroupProperties(
+        name='A',
+        split_code_regex=r'^DQA?\d+',
+        high_res_code_regex=r'DQ[AB]1\*',
+        max_count_per_patient=4
+    ),
+    HLAGroup.OTHER_DR: HLAGroupProperties(
+        name='OTHER_DR',
+        split_code_regex=r'^DR5[123]',
+        high_res_code_regex=r'DRB[^1]\*',
+        max_count_per_patient=2  # TODO check if this is correct https://github.com/mild-blue/txmatching/issues/592
+    )
 }
 
-HLA_GROUP_HIGH_RES_CODE_REGEX = {
-    HLAGroup.A: r'^A\*',
-    HLAGroup.B: r'^B\*',
-    HLAGroup.CW: r'C\*',
-    HLAGroup.DRB1: r'DRB1\*',
-    HLAGroup.DP: r'DPA1\*',
-    HLAGroup.DQ: r'DQA1\*',
-    HLAGroup.OTHER_DR: r'DRB[^1]\*',
-    HLAGroup.BW: r'BW\*',
-    HLAGroup.Other: r'.*'
-}
+HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR]
+GENE_HLA_GROUPS = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
+GENE_HLA_GROUPS_WITH_OTHER = [group for group in GENE_HLA_GROUPS] + [HLAGroup.Other]
+assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + [HLAGroup.Other, HLAGroup.ALL]) == set(HLAGroup)
+
+
+def _combine_properties_of_groups(group_list: List[HLAGroup]) -> HLAGroupProperties:
+    return HLAGroupProperties(
+        HLAGroup.Other.name,
+        '(' + ')|('.join([HLA_GROUPS_PROPERTIES[hla_group].split_code_regex for hla_group in group_list]) + ')',
+        '(' + ')|('.join([HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex for hla_group in group_list]) + ')',
+        sum([HLA_GROUPS_PROPERTIES[hla_group].max_count_per_patient for hla_group in group_list])
+    )
+
+
+HLA_GROUPS_PROPERTIES[HLAGroup.Other] = _combine_properties_of_groups(HLA_GROUPS_OTHER)
+HLA_GROUPS_PROPERTIES[HLAGroup.ALL] = _combine_properties_of_groups(GENE_HLA_GROUPS_WITH_OTHER)
+
+
+# BW group is not here can be ignored as the information is redundant see http://hla.alleles.org/antigens/bw46.html
+# It is based on our discussions with immunologists, therefore it is not even in this list
 
 
 class HLACrossmatchLevel(str, Enum):
@@ -68,7 +117,7 @@ class AntibodyMatchTypes(str, Enum):
         )
 
 
-class MatchTypes(str, Enum):
+class MatchType(str, Enum):
     SPLIT = 'SPLIT'
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'

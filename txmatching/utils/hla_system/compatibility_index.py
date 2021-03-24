@@ -1,9 +1,11 @@
 import logging
 from dataclasses import dataclass
-from typing import Callable, List
+from typing import Callable, Dict, List
 
 from txmatching.patients.hla_model import HLAType, HLATyping
-from txmatching.utils.enums import HLA_GROUPS_GENE, HLAGroup, MatchTypes
+from txmatching.utils.enums import (GENE_HLA_GROUPS,
+                                    GENE_HLA_GROUPS_WITH_OTHER, HLAGroup,
+                                    MatchType)
 
 # Traditionally one can calculate index of incompatibility (IK) - the higher IK the higher incompatibility.
 # You calculate it by calculating the number of differences in A, B, DR alleles and look up the corresponding
@@ -22,7 +24,7 @@ class InvalidNumberOfAllelesError(Exception):
 @dataclass(unsafe_hash=True)
 class HLAMatch:
     hla_type: HLAType
-    match_type: MatchTypes
+    match_type: MatchType
 
 
 @dataclass
@@ -35,13 +37,36 @@ class DetailedCompatibilityIndexForHLAGroup:
 
 # pylint: disable=too-few-public-methods
 class CIConfiguration:
-    def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup) -> float:
+    @property
+    def match_type_bonus(self) -> Dict[MatchType, int]:
         raise NotImplementedError('Has to be overridden')
+
+    @property
+    def hla_typing_bonus_per_groups(self) -> Dict[HLAGroup, int]:
+        raise NotImplementedError('Has to be overridden')
+
+    def compute_match_compatibility_index(self, match_type: MatchType, hla_group: HLAGroup):
+        return self.match_type_bonus[match_type] * self.hla_typing_bonus_per_groups[hla_group]
 
 
 class DefaultCIConfiguration(CIConfiguration):
-    def compute_match_compatibility_index(self, match_type: MatchTypes, hla_group: HLAGroup) -> float:
-        return 0
+    @property
+    def match_type_bonus(self):
+        return {
+            MatchType.BROAD: 0,
+            MatchType.SPLIT: 0,
+            MatchType.HIGH_RES: 0,
+            MatchType.NONE: 0,
+        }
+
+    @property
+    def hla_typing_bonus_per_groups(self):
+        return {
+            HLAGroup.A: 0,
+            HLAGroup.B: 0,
+            HLAGroup.DRB1: 0,
+            HLAGroup.Other: 0
+        }
 
 
 def compatibility_index(donor_hla_typing: HLATyping,
@@ -69,9 +94,13 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
         ci_configuration = DefaultCIConfiguration()
 
     hla_compatibility_index_detailed = []
-    for hla_group in HLA_GROUPS_GENE:
-        donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
-        recipient_hla_types = _hla_types_for_gene_hla_group(recipient_hla_typing, hla_group)
+    for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
+        if hla_group in GENE_HLA_GROUPS:
+            donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
+            recipient_hla_types = _hla_types_for_gene_hla_group(recipient_hla_typing, hla_group)
+        else:
+            donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
+            recipient_hla_types = _hla_types_for_hla_group(recipient_hla_typing, hla_group)
 
         hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_split_codes(
             donor_hla_types=donor_hla_types,
@@ -80,15 +109,6 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
             ci_configuration=ci_configuration
         )
         )
-    hla_group = HLAGroup.Other
-    donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
-    recipient_hla_types = _hla_types_for_hla_group(recipient_hla_typing, hla_group)
-    hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_split_codes(
-        donor_hla_types=donor_hla_types,
-        recipient_hla_types=recipient_hla_types,
-        hla_group=hla_group,
-        ci_configuration=ci_configuration
-    ))
 
     return hla_compatibility_index_detailed
 
@@ -96,9 +116,9 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
 def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATyping,
                                                        ) -> List[DetailedCompatibilityIndexForHLAGroup]:
     hla_compatibility_index_detailed = []
-    for hla_group in HLA_GROUPS_GENE:  # why not HLA_GROUPS_GENE + [HLAGroup.Other]?
+    for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
         donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
-        donor_matches = [HLAMatch(donor_hla, MatchTypes.NONE) for donor_hla in donor_hla_types]
+        donor_matches = [HLAMatch(donor_hla, MatchType.NONE) for donor_hla in donor_hla_types]
         hla_compatibility_index_detailed.append(
             DetailedCompatibilityIndexForHLAGroup(
                 hla_group=hla_group,
@@ -107,18 +127,6 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
                 group_compatibility_index=0
             )
         )
-
-    hla_group = HLAGroup.Other
-    donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
-    donor_matches = [HLAMatch(donor_hla, MatchTypes.NONE) for donor_hla in donor_hla_types]
-    hla_compatibility_index_detailed.append(
-        DetailedCompatibilityIndexForHLAGroup(
-            hla_group=hla_group,
-            donor_matches=donor_matches,
-            recipient_matches=[],
-            group_compatibility_index=0
-        )
-    )
 
     return hla_compatibility_index_detailed
 
@@ -132,7 +140,7 @@ def _match_through_lambda(current_compatibility_index: float,
                           recipient_hla_types: List[HLAType],
                           hla_group: HLAGroup,
                           matching_hla_types_func: Callable[[HLAType, HLAType], bool],
-                          result_match_type: MatchTypes,
+                          result_match_type: MatchType,
                           ci_configuration: CIConfiguration):
     for donor_hla_type in donor_hla_types.copy():
         matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
@@ -165,7 +173,7 @@ def _match_through_high_res_codes(current_compatibility_index: float,
         hla_group,
         lambda recipient_hla_type, donor_hla_type:
         recipient_hla_type.code.high_res == donor_hla_type.code.high_res and donor_hla_type.code.high_res is not None,
-        MatchTypes.HIGH_RES,
+        MatchType.HIGH_RES,
         ci_configuration
     )
 
@@ -186,7 +194,7 @@ def _match_through_split_codes(current_compatibility_index: float,
         hla_group,
         lambda recipient_hla_type, donor_hla_type:
         recipient_hla_type.code.split == donor_hla_type.code.split and donor_hla_type.code.split is not None,
-        MatchTypes.SPLIT,
+        MatchType.SPLIT,
         ci_configuration
     )
 
@@ -198,7 +206,6 @@ def _match_through_broad_codes(current_compatibility_index: float,
                                recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup,
                                ci_configuration: CIConfiguration):
-
     return _match_through_lambda(
         current_compatibility_index,
         donor_matches,
@@ -208,7 +215,7 @@ def _match_through_broad_codes(current_compatibility_index: float,
         hla_group,
         lambda recipient_hla_type, donor_hla_type:
         recipient_hla_type.code.broad == donor_hla_type.code.broad,
-        MatchTypes.BROAD,
+        MatchType.BROAD,
         ci_configuration
     )
 
@@ -247,9 +254,9 @@ def _get_ci_for_recipient_donor_split_codes(
                                                            ci_configuration)
 
     for recipient_hla_type in recipient_hla_types:
-        recipient_matches.append(HLAMatch(recipient_hla_type, MatchTypes.NONE))
+        recipient_matches.append(HLAMatch(recipient_hla_type, MatchType.NONE))
     for donor_hla_type in donor_hla_types:
-        donor_matches.append(HLAMatch(donor_hla_type, MatchTypes.NONE))
+        donor_matches.append(HLAMatch(donor_hla_type, MatchType.NONE))
 
     return DetailedCompatibilityIndexForHLAGroup(
         hla_group=hla_group,

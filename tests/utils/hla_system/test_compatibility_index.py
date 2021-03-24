@@ -7,10 +7,10 @@ from tests.patients.test_patient_parameters import (donor_parameters_Joe,
 from tests.test_utilities.hla_preparation_utils import (create_hla_type,
                                                         create_hla_typing)
 from txmatching.scorers.high_res_hla_additive_scorer import \
-    HighResHLAAdditiveScorerCIConfiguration
+    HighResScorerCIConfiguration
 from txmatching.scorers.split_hla_additive_scorer import \
-    SplitHLAAdditiveScorerCIConfiguration
-from txmatching.utils.enums import MatchTypes
+    SplitScorerCIConfiguration
+from txmatching.utils.enums import MatchType
 from txmatching.utils.hla_system.compatibility_index import (
     HLAMatch, compatibility_index, get_detailed_compatibility_index)
 
@@ -31,10 +31,10 @@ class TestCompatibilityIndex(unittest.TestCase):
         for donor_params, recipient_params, expected_ci_split, expected_ci_high_res in self._donor_recipient_index:
             calculated_ci_split = compatibility_index(donor_params.hla_typing,
                                                       recipient_params.hla_typing,
-                                                      ci_configuration=SplitHLAAdditiveScorerCIConfiguration())
+                                                      ci_configuration=SplitScorerCIConfiguration())
             calculated_ci_high_res = compatibility_index(donor_params.hla_typing,
                                                          recipient_params.hla_typing,
-                                                         ci_configuration=HighResHLAAdditiveScorerCIConfiguration())
+                                                         ci_configuration=HighResScorerCIConfiguration())
             self.assertEqual(expected_ci_split, calculated_ci_split)
             self.assertEqual(expected_ci_high_res, calculated_ci_high_res)
 
@@ -48,8 +48,8 @@ class TestCompatibilityIndex(unittest.TestCase):
             )
         )
 
-        expected = {HLAMatch(hla_type=create_hla_type(raw_code='DRB1*04:02'), match_type=MatchTypes.SPLIT),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DRB1*07:01'), match_type=MatchTypes.HIGH_RES)}
+        expected = {HLAMatch(hla_type=create_hla_type(raw_code='DRB1*04:02'), match_type=MatchType.SPLIT),
+                    HLAMatch(hla_type=create_hla_type(raw_code='DRB1*07:01'), match_type=MatchType.HIGH_RES)}
 
         self.assertSetEqual(expected, set(ci[DR_INDEX].recipient_matches))
 
@@ -66,12 +66,12 @@ class TestCompatibilityIndex(unittest.TestCase):
             )
         )
 
-        expected = {HLAMatch(hla_type=create_hla_type(raw_code='C*04:01'), match_type=MatchTypes.NONE),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DQA1*02:01'), match_type=MatchTypes.NONE),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DPB1*09:01'), match_type=MatchTypes.NONE),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*03:03'), match_type=MatchTypes.BROAD),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*05:01'), match_type=MatchTypes.BROAD),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DPB1*04:01'), match_type=MatchTypes.NONE)
+        expected = {HLAMatch(hla_type=create_hla_type(raw_code='C*04:01'), match_type=MatchType.NONE),
+                    HLAMatch(hla_type=create_hla_type(raw_code='DQA1*02:01'), match_type=MatchType.NONE),
+                    HLAMatch(hla_type=create_hla_type(raw_code='DPB1*09:01'), match_type=MatchType.NONE),
+                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*03:03'), match_type=MatchType.BROAD),
+                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*05:01'), match_type=MatchType.BROAD),
+                    HLAMatch(hla_type=create_hla_type(raw_code='DPB1*04:01'), match_type=MatchType.NONE)
                     }
 
         self.assertSetEqual(expected, set(ci[OTHER_INDEX].recipient_matches))
@@ -85,7 +85,7 @@ class TestCompatibilityIndex(unittest.TestCase):
             )
         )
 
-        expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*23:01'), match_type=MatchTypes.SPLIT)}
+        expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*23:01'), match_type=MatchType.SPLIT)}
 
         self.assertSetEqual(expected, set(ci[A_INDEX].recipient_matches))
 
@@ -100,10 +100,10 @@ class TestCompatibilityIndex(unittest.TestCase):
             ),
         )
 
-        expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*24:02'), match_type=MatchTypes.BROAD)}
+        expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*24:02'), match_type=MatchType.BROAD)}
 
         self.assertSetEqual(expected, set(ci[A_INDEX].recipient_matches))
 
-        expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*23:04'), match_type=MatchTypes.BROAD)}
+        expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*23:04'), match_type=MatchType.BROAD)}
 
         self.assertSetEqual(expected, set(ci[A_INDEX].donor_matches))

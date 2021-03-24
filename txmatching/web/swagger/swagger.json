@@ -30,7 +30,7 @@
                         }
                     },
                     "200": {
-                        "description": "Success.",
+                        "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/PatientUploadSuccessResponse"
                         }
@@ -111,6 +111,12 @@
         "/v1/txm-event": {
             "post": {
                 "responses": {
+                    "409": {
+                        "description": "Non-unique patients provided.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
                     "500": {
                         "description": "Unexpected error, see contents for details.",
                         "schema": {
@@ -261,6 +267,12 @@
             },
             "put": {
                 "responses": {
+                    "409": {
+                        "description": "Non-unique patients provided.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
                     "500": {
                         "description": "Unexpected error, see contents for details.",
                         "schema": {
@@ -389,12 +401,6 @@
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
-                    "409": {
-                        "description": "Non-unique patients provided.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
                     "403": {
                         "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
@@ -467,6 +473,12 @@
                     },
                     "401": {
                         "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -965,12 +977,6 @@
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
-                    "409": {
-                        "description": "Non-unique patients provided.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
                     "403": {
                         "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
@@ -998,11 +1004,6 @@
                 },
                 "description": "Endpoint that lets an ADMIN recompute parsed antigens and antibodies for all patients in the given txm event.",
                 "operationId": "post_recompute_parsing",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
                 "tags": [
                     "patients"
                 ]
@@ -1033,6 +1034,12 @@
                     },
                     "401": {
                         "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1107,6 +1114,12 @@
                     },
                     "401": {
                         "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1202,6 +1215,12 @@
                 "responses": {
                     "500": {
                         "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -2057,6 +2076,10 @@
                 "acceptable_blood_groups": {
                     "type": "array",
                     "description": "Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.",
+                    "example": [
+                        "A",
+                        "0"
+                    ],
                     "items": {
                         "$ref": "#/definitions/BloodGroupEnum"
                     }
@@ -2190,7 +2213,7 @@
             ],
             "properties": {
                 "scorer_constructor_name": {
-                    "example": "SplitHLAAdditiveScorer",
+                    "example": "SplitScorer",
                     "allOf": [
                         {
                             "$ref": "#/definitions/Scorer"
@@ -2261,8 +2284,7 @@
                     }
                 },
                 "max_matchings_to_show_to_viewer": {
-                    "type": "integer",
-                    "example": 5
+                    "type": "integer"
                 },
                 "max_number_of_matchings": {
                     "type": "integer",
@@ -2293,8 +2315,9 @@
         },
         "Scorer": {
             "enum": [
-                "SplitHLAAdditiveScorer",
-                "HighResHLAAdditiveScorer"
+                "SplitScorer",
+                "HighResScorer",
+                "HighResWithDQDPScorer"
             ],
             "type": "string"
         },
@@ -2755,6 +2778,10 @@
                 },
                 "acceptable_blood_groups": {
                     "type": "array",
+                    "example": [
+                        "A",
+                        "0"
+                    ],
                     "items": {
                         "$ref": "#/definitions/BloodGroupEnum"
                     }
@@ -3264,6 +3291,10 @@
                         "acceptable_blood_groups": {
                             "type": "array",
                             "description": "Provide full list of all the acceptable blood groups of the patient, not just the change set",
+                            "example": [
+                                "A",
+                                "0"
+                            ],
                             "items": {
                                 "$ref": "#/definitions/BloodGroupEnum"
                             }

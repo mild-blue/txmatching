@@ -11,7 +11,8 @@
   &-header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
+    margin: calc(#{$padding-y} / 2) 0 0;
 
     .buttons {
       display: flex;
@@ -42,6 +43,15 @@
           margin-left: 5px;
         }
       }
+    }
+
+    h1 {
+      margin-bottom: 0;
+    }
+
+    .header-description {
+      font-size: 14px;
+      color: $gray-600;
     }
   }
 

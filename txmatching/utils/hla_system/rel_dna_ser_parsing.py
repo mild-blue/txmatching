@@ -1,5 +1,8 @@
+import re
+
 import pandas as pd
 
+from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 PATH_TO_REL_DNA_SER = get_absolute_path('./txmatching/utils/hla_system/rel_dna_ser.txt')
@@ -10,6 +13,8 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
         pd.read_csv(path_to_rel_dna_ser, comment='#', delimiter=';', header=None)
 
     )
+
+    rel_dna_ser_df = rel_dna_ser_df.loc[lambda df: df[0].apply(_matches_any_hla_group)]
 
     rel_dna_ser_df['high_res'] = rel_dna_ser_df[0] + rel_dna_ser_df[1]
 
@@ -59,3 +64,7 @@ def parse_rel_dna_ser(path_to_rel_dna_ser: str) -> pd.DataFrame:
     rel_dna_ser_df = rel_dna_ser_df[['high_res', 'split', 'split_number', 'source']]
     rel_dna_ser_df = rel_dna_ser_df.set_index('high_res')
     return rel_dna_ser_df
+
+
+def _matches_any_hla_group(high_res: str) -> bool:
+    return re.match(HLA_GROUPS_PROPERTIES[HLAGroup.ALL].high_res_code_regex, high_res) is not None
