@@ -11,6 +11,11 @@
     h1 {
       margin-bottom: 0;
     }
+
+    .header-description {
+      font-size: 14px;
+      color: $gray-600;
+    }
   }
 
   ::ng-deep .list-item {
