@@ -19,7 +19,8 @@
         </h1>
 
         <div class="header-description" *ngIf="!loading">
-          Showing patients for {{getConfigId === undefined ? 'default configuration' : 'configuration ' + getConfigId}}.
+          Showing patients for {{getConfigId === undefined ? 'default configuration' : 'configuration ' + getConfigId}}
+          (with scorer {{configuration.scorer_constructor_name}}).
         </div>
       </div>
       <app-button (click)="togglePatientPopup()" variant="success" size="sm">
