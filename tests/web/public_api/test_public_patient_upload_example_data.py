@@ -53,7 +53,7 @@ DONORS = [
 RECIPIENTS = [
     {
         'acceptable_blood_groups': [
-            'A', 0
+            'A', '0'
         ],
         'medical_id': 'R1',
         'blood_group': 'A',

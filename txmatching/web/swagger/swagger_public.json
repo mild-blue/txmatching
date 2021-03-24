@@ -30,7 +30,7 @@
                         }
                     },
                     "200": {
-                        "description": "Success.",
+                        "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/PatientUploadSuccessResponse"
                         }
@@ -475,6 +475,10 @@
                 "acceptable_blood_groups": {
                     "type": "array",
                     "description": "Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.",
+                    "example": [
+                        "A",
+                        "0"
+                    ],
                     "items": {
                         "$ref": "#/definitions/BloodGroupEnum"
                     }

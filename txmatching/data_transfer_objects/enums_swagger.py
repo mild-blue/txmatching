@@ -4,7 +4,7 @@ from txmatching.solvers.solver_from_config import SUPPORTED_SOLVERS
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLACrossmatchLevel, Sex
-from txmatching.web.api.namespaces import enums_api
+from txmatching.web.web_utils.namespaces import enums_api
 
 CountryCodeJson = enums_api.schema_model('CountryCode', {
     'enum': [country.value for country in Country],

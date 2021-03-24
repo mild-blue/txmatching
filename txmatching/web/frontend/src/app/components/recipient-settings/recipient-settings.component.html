@@ -49,19 +49,31 @@
   <app-recipient-antibodies [recipient]="recipient"></app-recipient-antibodies>
 
   <!-- Recipient antibodies cutoff -->
-  <app-simple-number label="Antibodies cutoff" [value]="recipient.antibodiesCutoff" [(ngModel)]="recipient.antibodiesCutoff" name="antibodiesCutoff" ngDefaultControl></app-simple-number>
+  <app-simple-number #antibodiesCutoff="ngModel" (input)="formatNumber(antibodiesCutoff)"
+                     label="Antibodies cutoff"
+                     [value]="recipient.antibodiesCutoff" [(ngModel)]="recipient.antibodiesCutoff"
+                     name="antibodiesCutoff" ngDefaultControl></app-simple-number>
 
   <!-- Recipient Sex -->
   <app-sex [patient]="recipient"></app-sex>
 
   <!-- Recipient height -->
-  <app-simple-number label="Height [cm]" [value]="recipient.height" [(ngModel)]="recipient.height" name="height" ngDefaultControl></app-simple-number>
+  <app-simple-number #height="ngModel" (input)="formatNumber(height)"
+                     label="Height [cm]"
+                     [value]="recipient.height" [(ngModel)]="recipient.height"
+                     name="height" ngDefaultControl></app-simple-number>
 
   <!-- Recipient weight -->
-  <app-simple-number label="Weight [kg]" [value]="recipient.weight" [(ngModel)]="recipient.weight" name="weight" ngDefaultControl></app-simple-number>
+  <app-simple-number #weight="ngModel" (input)="formatNumber(weight)"
+                     label="Weight [kg]"
+                     [value]="recipient.weight" [(ngModel)]="recipient.weight"
+                     name="weight" ngDefaultControl></app-simple-number>
 
   <!-- Recipient year of birth -->
-  <app-simple-number label="Year of birth" [value]="recipient.yearOfBirth" [(ngModel)]="recipient.yearOfBirth" name="yearOfBirth" ngDefaultControl></app-simple-number>
+  <app-simple-number #yearOfBirth="ngModel" (input)="formatYearOfBirth(yearOfBirth)"
+                     label="Year of birth"
+                     [value]="recipient.yearOfBirth" [(ngModel)]="recipient.yearOfBirth"
+                     name="yearOfBirth" ngDefaultControl></app-simple-number>
 
   <!-- Recipient waiting since date -->
   <app-setting-item label="Waiting since">
@@ -73,7 +85,10 @@
   </app-setting-item>
 
   <!-- Recipient previous transplants -->
-  <app-simple-number label="Previous transplants count" [value]="recipient.previousTransplants" [(ngModel)]="recipient.previousTransplants" name="previousTransplants" ngDefaultControl></app-simple-number>
+  <app-simple-number #previousTransplants="ngModel" (input)="formatNumber(previousTransplants, 0)"
+                     label="Previous transplants count"
+                     [value]="recipient.previousTransplants" [(ngModel)]="recipient.previousTransplants"
+                     name="previousTransplants" ngDefaultControl></app-simple-number>
 
   <!-- Matching conditions -->
   <ng-container *ngIf="showMatchingConditions">

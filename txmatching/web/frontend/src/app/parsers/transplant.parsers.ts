@@ -1,15 +1,19 @@
 import { TransplantGenerated } from '../generated';
-import { AntibodyMatchType, PatientList, Transplant } from '../model';
+import { PatientList, Transplant } from '../model';
 import { parseDetailedScorePerGroup } from './hla.parsers';
 import { getPatientPair } from './patientPair.parsers';
-import { DEFAULT_LIST_ITEM, ListItem } from '@app/components/list-item/list-item.interface';
+import { ListItem } from '@app/components/list-item/list-item.interface';
+import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
+import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
 
 export const parseTransplant = (data: TransplantGenerated, patients: PatientList, index: number): Transplant => {
   const foundDonor = patients.donors.find(p => p.medicalId === data.donor);
   const foundRecipient = patients.recipients.find(p => p.medicalId === data.recipient);
   const listItem: ListItem = {
-    ...DEFAULT_LIST_ITEM,
-    index
+    index,
+    isActive: false,
+    itemComponent: PatientPairItemComponent,
+    detailComponent: PatientPairDetailComponent
   };
   const patientPair = getPatientPair(listItem, foundDonor, foundRecipient);
   const detailed_score_per_group = data.detailed_score_per_group.map(parseDetailedScorePerGroup);

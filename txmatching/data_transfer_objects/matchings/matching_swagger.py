@@ -4,7 +4,7 @@ from txmatching.data_transfer_objects.hla.hla_swagger import (HLAAntibody,
                                                               HLAType)
 from txmatching.utils.enums import (HLA_GROUPS_NAMES_WITH_OTHER,
                                     AntibodyMatchTypes, HLAGroup, MatchTypes)
-from txmatching.web.api.namespaces import matching_api
+from txmatching.web.web_utils.namespaces import matching_api
 
 _CODE_A1 = {'high_res': None, 'split': None, 'broad': 'A1'}
 _CODE_A23 = {'high_res': None, 'split': None, 'broad': 'A23'}

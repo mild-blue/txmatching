@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DonorEditable } from '@app/model/DonorEditable';
 import { DonorType } from '@app/model';
+import { NgModel } from '@angular/forms';
+import { formatNumberForPatient, formatYearOfBirthForPatient } from '@app/directives/validators/form.directive';
 
 @Component({
   selector: 'app-donor-settings',
@@ -20,4 +22,17 @@ export class DonorSettingsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  public formatYearOfBirth(inputValue: NgModel) {
+    if (this.donor) {
+      formatYearOfBirthForPatient(inputValue, this.donor);
+    }
+  }
+
+  public formatNumber(inputValue: NgModel, minValue: number = 1, maxValue?: number): void {
+    if (!this.donor) {
+      return;
+    }
+
+    formatNumberForPatient(inputValue, this.donor, minValue, maxValue);
+  }
 }
