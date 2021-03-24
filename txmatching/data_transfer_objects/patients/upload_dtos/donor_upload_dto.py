@@ -18,3 +18,4 @@ class DonorUploadDTO:
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None
     year_of_birth: Optional[int] = None
+    internal_medical_id: Optional[str] = None

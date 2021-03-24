@@ -42,6 +42,7 @@ class Donor(Patient, PersistentlyHashable):
     related_recipient_db_id: Optional[RecipientDbId] = None
     donor_type: DonorType = DonorType.DONOR
     active: bool = True
+    internal_medical_id: Optional[str] = None
 
     def update_persistent_hash(self, hash_: HashType):
         super().update_persistent_hash(hash_)
@@ -82,6 +83,7 @@ class Recipient(Patient, PersistentlyHashable):
     recipient_requirements: RecipientRequirements = RecipientRequirements()
     waiting_since: Optional[datetime] = None
     previous_transplants: Optional[int] = None
+    internal_medical_id: Optional[str] = None
 
     def __post_init__(self):
         if self.recipient_cutoff is None:

@@ -6,7 +6,7 @@ from txmatching.data_transfer_objects.matchings.matching_dto import (
     CalculatedMatchingsDTO, MatchingDTO, RoundDTO, TransplantDTOOut)
 from txmatching.data_transfer_objects.matchings.matchings_model import \
     MatchingsModel
-from txmatching.data_transfer_objects.patients.out_dots.conversions import \
+from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
     get_detailed_score
 from txmatching.database.services.config_service import (
     get_configuration_from_db_id_or_default,

@@ -47,7 +47,8 @@ def get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
                  parameters=base_patient.parameters,
                  donor_type=donor_model.donor_type,
                  related_recipient_db_id=donor_model.recipient_id,
-                 active=donor_model.active
+                 active=donor_model.active,
+                 internal_medical_id=donor_model.internal_medical_id
                  )
 
 
@@ -69,7 +70,8 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
                           recipient_cutoff=recipient_model.recipient_cutoff,
                           recipient_requirements=RecipientRequirements(**recipient_model.recipient_requirements),
                           waiting_since=recipient_model.waiting_since,
-                          previous_transplants=recipient_model.previous_transplants
+                          previous_transplants=recipient_model.previous_transplants,
+                          internal_medical_id=recipient_model.internal_medical_id
                           )
     return recipient
 

@@ -29,9 +29,9 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, RoundDTO)
-from txmatching.data_transfer_objects.patients.out_dots.conversions import \
+from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
     to_lists_for_fe
-from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
+from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
@@ -304,6 +304,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
     class PatientPair:
         # pylint: disable=too-many-instance-attributes
         donor_medical_id: str
+        donor_internal_medical_id: str
         donor_country: str
         donor_height: int
         donor_weight: float
@@ -313,6 +314,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
         donor_type: str
         donor_antigens: str
         recipient_medical_id: str = ''
+        recipient_internal_medical_id: str = ''
         recipient_country: str = ''
         recipient_height: int = None
         recipient_weight: float = None
@@ -333,6 +335,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
 
         patient_pair = PatientPair(
             donor_medical_id=donor.medical_id,
+            donor_internal_medical_id=donor.internal_medical_id,
             donor_country=donor.parameters.country_code.value,
             donor_height=donor.parameters.height,
             donor_weight=donor.parameters.weight,
@@ -350,6 +353,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
             patient_pair = replace(
                 patient_pair,
                 recipient_medical_id=recipient.medical_id,
+                recipient_internal_medical_id=recipient.internal_medical_id,
                 recipient_country=recipient.parameters.country_code.value,
                 recipient_height=recipient.parameters.height,
                 recipient_weight=recipient.parameters.weight,
