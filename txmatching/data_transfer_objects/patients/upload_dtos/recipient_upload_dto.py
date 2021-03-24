@@ -22,3 +22,4 @@ class RecipientUploadDTO:
     year_of_birth: Optional[int] = None
     waiting_since: Optional[str] = None
     previous_transplants: Optional[int] = None
+    internal_medical_id: Optional[str] = None

@@ -19,7 +19,7 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
     PatientUploadSuccessJson
-from txmatching.data_transfer_objects.patients.out_dots.conversions import (
+from txmatching.data_transfer_objects.patients.out_dtos.conversions import (
     donor_to_donor_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.patient_swagger import (
     DonorJson, DonorModelPairInJson, DonorToUpdateJson, PatientsJson,

@@ -102,6 +102,7 @@ def _recipient_upload_dto_to_recipient_model(
         sex=recipient.sex,
         yob=recipient.year_of_birth,
         previous_transplants=recipient.previous_transplants,
+        internal_medical_id=recipient.internal_medical_id
     )
 
     _parse_and_update_hla_typing_in_model(recipient_model)
@@ -178,7 +179,8 @@ def _donor_upload_dto_to_donor_model(
         height=donor.height,
         sex=donor.sex,
         yob=donor.year_of_birth,
-        txm_event_id=txm_event_db_id
+        txm_event_id=txm_event_db_id,
+        internal_medical_id=donor.internal_medical_id
     )
 
     _parse_and_update_hla_typing_in_model(donor_model)

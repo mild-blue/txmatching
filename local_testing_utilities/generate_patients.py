@@ -140,6 +140,7 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
         weight=generate_random_weight(),
         year_of_birth=generate_random_yob(),
         sex=Sex.F,
+        internal_medical_id='internal_medical_id'
     )
     if is_bridging:
         recipient = None
@@ -156,7 +157,8 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
             year_of_birth=generate_random_yob(),
             sex=generate_random_sex(),
             waiting_since=generate_waiting_since(),
-            previous_transplants=generate_random_transplants()
+            previous_transplants=generate_random_transplants(),
+            internal_medical_id='internal_medical_id'
         )
 
     return donor, recipient
