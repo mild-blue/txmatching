@@ -15,7 +15,8 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import \
     CalculatedMatchingsJson
 from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
-    configuration_from_dict, find_config_db_id_for_configuration_and_data)
+    configuration_from_dict, find_config_db_id_for_configuration_and_data,
+    update_max_matchings_to_show_to_viewer)
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
 from txmatching.database.services.txm_event_service import \
@@ -42,7 +43,12 @@ class CalculateFromConfig(Resource):
         user_id = get_current_user_id()
         maybe_configuration_db_id = find_config_db_id_for_configuration_and_data(txm_event=txm_event,
                                                                                  configuration=configuration)
-        if not maybe_configuration_db_id:
+        if maybe_configuration_db_id:
+            # In case max_matchings_to_show_to_viewer was updated, ensure that the value is stored in the
+            # configuration.
+            # TODO handle better in https://github.com/mild-blue/txmatching/issues/587
+            update_max_matchings_to_show_to_viewer(maybe_configuration_db_id, configuration)
+        else:
             pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
             solver_service.save_pairing_result(pairing_result, user_id)
             maybe_configuration_db_id = find_config_db_id_for_configuration_and_data(txm_event=txm_event,

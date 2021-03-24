@@ -2278,8 +2278,7 @@
                     }
                 },
                 "max_matchings_to_show_to_viewer": {
-                    "type": "integer",
-                    "example": 5
+                    "type": "integer"
                 },
                 "max_number_of_matchings": {
                     "type": "integer",
