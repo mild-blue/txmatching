@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { RecipientEditable } from '@app/model/RecipientEditable';
 import { BloodGroup } from '@app/model';
+import { NgModel } from '@angular/forms';
+import { formatNumberForPatient, formatYearOfBirthForPatient } from '@app/directives/validators/form.directive';
 
 @Component({
   selector: 'app-recipient-settings',
@@ -20,4 +22,22 @@ export class RecipientSettingsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  public formatYearOfBirth(inputValue: NgModel) {
+    if (this.recipient) {
+      formatYearOfBirthForPatient(inputValue, this.recipient);
+    }
+  }
+
+  public formatNumber(inputValue: NgModel, minValue: number = 1, maxValue?: number): void {
+    if (!this.recipient) {
+      return;
+    }
+
+    const newValue = formatNumberForPatient(inputValue, this.recipient, minValue, maxValue);
+
+    switch(inputValue.name) {
+      case 'antibodiesCutoff': this.recipient.antibodiesCutoff = newValue; break;
+      case 'previousTransplants': this.recipient.previousTransplants = newValue; break;
+    }
+  }
 }
