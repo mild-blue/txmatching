@@ -32,7 +32,7 @@ export class ConfigurationComponent implements OnInit {
   }
 
   public canSubmit(): boolean {
-    return this.configForm !== undefined && this.configForm.valid;
+    return !!this.configForm?.valid;
   }
 
   public submitAction(): void {

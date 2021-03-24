@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { DonorEditable } from '@app/model/DonorEditable';
 import { DonorType } from '@app/model';
 import { NgModel } from '@angular/forms';
+import { formatNumberForPatient, formatYearOfBirthForPatient } from '@app/directives/validators/form.directive';
 
 @Component({
   selector: 'app-donor-settings',
@@ -21,36 +22,17 @@ export class DonorSettingsComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  // HACK: code duplicity with recipient-settings.component.ts
   public formatYearOfBirth(inputValue: NgModel) {
-    return this.formatNumber(inputValue, 1, new Date().getFullYear());
+    if (this.donor) {
+      formatYearOfBirthForPatient(inputValue, this.donor);
+    }
   }
 
-  // HACK: code duplicity with recipient-settings.component.ts
   public formatNumber(inputValue: NgModel, minValue: number = 1, maxValue?: number): void {
     if (!this.donor) {
       return;
     }
 
-    let newValue: number | undefined;
-    if (!inputValue.value) {
-      newValue = undefined;
-    } else {
-      newValue = +inputValue.value;
-      if (newValue < minValue) {
-        newValue = undefined;
-      } else if (maxValue !== undefined && newValue > maxValue) {
-        newValue = undefined;
-      }
-    }
-
-    switch(inputValue.name) {
-      case 'height': this.donor.height = newValue; break;
-      case 'weight': this.donor.weight = newValue; break;
-      case 'yearOfBirth': this.donor.yearOfBirth = newValue; break;
-      default: throw new Error(`Input with name ${inputValue.name} not implemented.`);
-    }
-
-    inputValue.update.emit(newValue);
+    formatNumberForPatient(inputValue, this.donor, minValue, maxValue);
   }
 }
