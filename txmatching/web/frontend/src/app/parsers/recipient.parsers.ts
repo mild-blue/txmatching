@@ -2,10 +2,20 @@ import { RecipientGenerated, RecipientRequirementsGenerated } from '../generated
 import { Recipient, RecipientRequirements } from '../model';
 import { parseBloodGroup, parsePatient } from './patient.parsers';
 import { parseAntibodies } from './hla.parsers';
+import { ListItem } from '@app/components/list-item/list-item.interface';
+import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
+import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
 
 export const parseRecipient = (data: RecipientGenerated): Recipient => {
+  const recipientListItem: ListItem = {
+    index: 0,
+    isActive: false,
+    itemComponent: PatientPairItemComponent,
+    detailComponent: PatientPairDetailComponent
+  };
+
   return {
-    ...parsePatient(data),
+    ...parsePatient(data, recipientListItem),
     acceptableBloodGroups: data.acceptable_blood_groups?.map(parseBloodGroup) ?? [],
     hlaAntibodies: parseAntibodies(data.hla_antibodies),
     cutoff: data.recipient_cutoff,
