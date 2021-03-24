@@ -39,6 +39,31 @@
                    [saveLastViewedItem]="true"
                    [useInfiniteScroll]="false"
                    [defaultTxmEvent]="defaultTxmEvent"></app-item-list>
+
+    <div *ngIf="!loading && items.length" class="item-list">
+      <div class="list">
+        <div #list class="list-inner" [class.smooth-scroll]="enableSmoothScroll">
+          <app-new-item *ngFor="let item of displayedItems; trackBy: trackListItem"
+                        [item]="item"
+                        (click)="handleItemClick(item)"
+                        [isActive]="item === activeItem">
+            <!-- TODO: create separate lists of donors and pairs -->
+            <!--            <app-patient-pair-item *ngIf=""></app-patient-pair-item>-->
+          </app-new-item>
+        </div>
+      </div>
+      <div class="detail">
+        <div [class.aligned-bottom]="activeAlignedBottom"
+             [class.aligned-top]="activeAlignedTop"
+             [class]="scrollableDetailClass"
+             #detail
+             cdk-scrollable>
+          <!--          <app-matching-detail [item]="activeItem"-->
+          <!--                               [configuration]="configuration"-->
+          <!--                               [patients]="patients"></app-matching-detail>-->
+        </div>
+      </div>
+    </div>
   </app-content>
 </section>
 

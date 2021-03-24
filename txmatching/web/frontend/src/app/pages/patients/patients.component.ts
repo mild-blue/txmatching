@@ -8,10 +8,6 @@ import { ConfigurationService } from '@app/services/configuration/configuration.
 import { PatientList } from '@app/model/PatientList';
 import { PatientPair } from '@app/model/PatientPair';
 import { Donor } from '@app/model/Donor';
-import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
-import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
-import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
-import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
 import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 import { Subscription } from 'rxjs';
@@ -19,6 +15,7 @@ import { PatientUploadSuccessResponseGenerated } from '@app/generated';
 import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
 import { DonorType } from '@app/model/enums/DonorType';
 import { ReportService } from '@app/services/report/report.service';
+import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 
 @Component({
   selector: 'app-patients',
@@ -30,7 +27,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
   private _deleteDonorSubscription?: Subscription;
 
   public patients?: PatientList;
-  public pairs: PatientPair[] = [];
+
   public items: (Donor | PatientPair)[] = [];
   public activeItem?: Donor | PatientPair;
 
@@ -40,14 +37,18 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
   public recipientCount: number = 0;
   public patientPopupOpened: boolean = false;
 
+  public pairs: PatientPair[] = [];
+  public donors: Donor[] = [];
+
   constructor(_reportService: ReportService,
               _authService: AuthService,
               _alertService: AlertService,
               _configService: ConfigurationService,
               _eventService: EventService,
               _patientService: PatientService,
-              _logger: LoggerService) {
-    super(_reportService, _authService, _alertService, _configService, _eventService, _patientService, _logger);
+              _logger: LoggerService,
+              _uiInteractionsService: UiInteractionsService) {
+    super(_reportService, _authService, _alertService, _configService, _eventService, _patientService, _logger, _uiInteractionsService);
   }
 
   ngOnInit(): void {
@@ -125,6 +126,8 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     }
 
     const items: (Donor | PatientPair)[] = [];
+    const pairs: PatientPair[] = [];
+    const donors: Donor[] = [];
     for (const donor of this.patients.donors) {
 
       // try to find recipient
@@ -135,25 +138,25 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
       if (recipient) {
         // donor with valid recipient
-        items.push({
+
+        pairs.push({
           index: items.length + 1,
           d: donor,
-          r: recipient,
-          itemComponent: PatientPairItemComponent,
-          detailComponent: PatientPairDetailComponent
+          r: recipient
         });
       } else {
         // donor without recipient
-        items.push({
+
+        donors.push({
           ...donor,
-          index: items.length + 1,
-          itemComponent: PatientDonorItemComponent,
-          detailComponent: PatientDonorDetailWrapperComponent
+          index: items.length + 1
         });
       }
     }
 
     this.items = [...items]; // make a copy, not a reference
+    this.pairs = [...pairs];
+    this.donors = [...donors];
   }
 
   private _initPatientStatsAndItems(): void {

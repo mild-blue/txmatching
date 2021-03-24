@@ -1,23 +1,18 @@
 import { Component, Input } from '@angular/core';
 import { Configuration } from '@app/model/Configuration';
-import { ListItemAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { Matching } from '@app/model/Matching';
-import { PatientList } from '@app/model/PatientList';
 
 @Component({
   selector: 'app-matching-item',
   templateUrl: './matching-item.component.html',
   styleUrls: ['./matching-item.component.scss']
 })
-export class MatchingItemComponent extends ListItemAbstractComponent {
+export class MatchingItemComponent {
 
-  @Input() item?: Matching;
-  @Input() isActive: boolean = false;
+  @Input() matching?: Matching;
   @Input() configuration?: Configuration;
-  @Input() patients?: PatientList;
 
   constructor() {
-    super();
   }
 
   public getTransplantsCount(matching: Matching): number {

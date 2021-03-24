@@ -1,5 +1,4 @@
 import { Component, Input, OnDestroy } from '@angular/core';
-import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { Matching } from '@app/model/Matching';
 import { Subscription } from 'rxjs';
 import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
@@ -14,7 +13,7 @@ import { DonorType } from '@app/model/enums/DonorType';
   templateUrl: './matching-detail.component.html',
   styleUrls: ['./matching-detail.component.scss']
 })
-export class MatchingDetailComponent extends ListItemDetailAbstractComponent implements OnDestroy {
+export class MatchingDetailComponent implements OnDestroy {
 
   private _activeTransplantSubscription: Subscription = new Subscription();
 
@@ -26,8 +25,6 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
 
   constructor(private _patientsService: PatientService,
               private _uiInteractionsService: UiInteractionsService) {
-    super();
-
     this._activeTransplantSubscription = this._uiInteractionsService.focusedTransplantId.subscribe(id => {
       if (id) {
         this._scrollToTransplant(id);

@@ -279,7 +279,7 @@ module.exports = {
         'selector': 'memberLike',
         'modifiers': ['protected'],
         'format': ['camelCase'],
-        'leadingUnderscore': 'forbid'
+        'leadingUnderscore': 'allow'
       },
       {
         'selector': 'memberLike',

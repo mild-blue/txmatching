@@ -1,25 +1,23 @@
-<div *ngIf="item"
-     class="matching-item">
+<div *ngIf="matching" class="matching-item">
 
-  <h3>Matching #{{item.index}}</h3>
+  <h3>Matching #{{matching.index}}</h3>
 
   <ul class="description">
-    <li *ngIf="item.hasCrossmatch">
-      <mat-icon class="warning-icon" title="Matching contains transplants with a possible crossmatch.">error</mat-icon>
+    <li *ngIf="matching.hasCrossmatch">
+      <mat-icon class="warning-icon" title="Matching contains transplants with a possible crossmatch">error</mat-icon>
     </li>
-    <li>Score: <strong>{{ item.score }}</strong></li>
-    <li>Rounds: <strong>{{ item.rounds.length }}</strong></li>
-    <li>Transplants: <strong>{{ getTransplantsCount(item) }}</strong></li>
-    <li *ngFor="let country of item.countries">
+    <li>Score: <strong>{{ matching.score }}</strong></li>
+    <li>Rounds: <strong>{{ matching.rounds.length }}</strong></li>
+    <li>Transplants: <strong>{{ getTransplantsCount(matching) }}</strong></li>
+    <li *ngFor="let country of matching.countries">
       <flag [countryCode]="country.countryCode"></flag>
       :
       <app-code>{{country.donorCount}}/{{country.recipientCount}}</app-code>
     </li>
   </ul>
 
-  <app-matching-round *ngFor="let round of item.rounds"
+  <app-matching-round *ngFor="let round of matching.rounds"
                       [configuration]="configuration"
-                      [patients]="patients"
                       [round]="round"></app-matching-round>
 
 </div>
