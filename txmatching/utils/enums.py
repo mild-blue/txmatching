@@ -30,46 +30,46 @@ class HLAGroup(str, Enum):
 
 HLA_GROUPS_PROPERTIES = {
     HLAGroup.A: HLAGroupProperties(
-        'A',
-        r'^A\d+',
-        r'^A\*',
-        2
+        name='A',
+        split_code_regex=r'^A\d+',
+        high_res_code_regex=r'^A\*',
+        max_count_per_patient=2
     ),
     HLAGroup.B: HLAGroupProperties(
-        'A',
-        r'^B\d+',
-        r'^B\*',
-        2
+        name='A',
+        split_code_regex=r'^B\d+',
+        high_res_code_regex=r'^B\*',
+        max_count_per_patient=2
     ),
     HLAGroup.DRB1: HLAGroupProperties(
-        'A',
-        r'^DR(?!5([123]))\d',
-        r'DRB1\*',
-        2
+        name='A',
+        split_code_regex=r'^DR(?!5([123]))\d',
+        high_res_code_regex=r'DRB1\*',
+        max_count_per_patient=2
     ),
     HLAGroup.CW: HLAGroupProperties(
-        'A',
-        r'^CW\d+',
-        r'^C\*',
-        2
+        name='A',
+        split_code_regex=r'^CW\d+',
+        high_res_code_regex=r'^C\*',
+        max_count_per_patient=2
     ),
     HLAGroup.DP: HLAGroupProperties(
-        'A',
-        r'^DPA?\d+',
-        r'DP[AB]1\*',
-        4
+        name='A',
+        split_code_regex=r'^DPA?\d+',
+        high_res_code_regex=r'DP[AB]1\*',
+        max_count_per_patient=4
     ),
     HLAGroup.DQ: HLAGroupProperties(
-        'A',
-        r'^DQA?\d+',
-        r'DQ[AB]1\*',
-        4
+        name='A',
+        split_code_regex=r'^DQA?\d+',
+        high_res_code_regex=r'DQ[AB]1\*',
+        max_count_per_patient=4
     ),
     HLAGroup.OTHER_DR: HLAGroupProperties(
-        'OTHER_DR',
-        r'^DR5[123]',
-        r'DRB[^1]\*',
-        2  # TODO check if this is correct https://github.com/mild-blue/txmatching/issues/592
+        name='OTHER_DR',
+        split_code_regex=r'^DR5[123]',
+        high_res_code_regex=r'DRB[^1]\*',
+        max_count_per_patient=2  # TODO check if this is correct https://github.com/mild-blue/txmatching/issues/592
     )
 }
 

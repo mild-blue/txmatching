@@ -116,7 +116,7 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
 def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATyping,
                                                        ) -> List[DetailedCompatibilityIndexForHLAGroup]:
     hla_compatibility_index_detailed = []
-    for hla_group in GENE_HLA_GROUPS_WITH_OTHER:  # why not HLA_GROUPS_GENE + [HLAGroup.Other]?
+    for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
         donor_hla_types = _hla_types_for_gene_hla_group(donor_hla_typing, hla_group)
         donor_matches = [HLAMatch(donor_hla, MatchType.NONE) for donor_hla in donor_hla_types]
         hla_compatibility_index_detailed.append(

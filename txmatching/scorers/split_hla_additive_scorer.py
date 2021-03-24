@@ -36,7 +36,3 @@ class SplitScorer(HLAAdditiveScorer):
     @property
     def ci_configuration(self) -> CIConfiguration:
         return SplitScorerCIConfiguration()
-
-    @property
-    def max_transplant_score(self) -> float:
-        return 26
