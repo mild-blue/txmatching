@@ -62,10 +62,14 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     )
     .then((updatedDonor) => {
       this._logger.log('Updated donor received from BE', [updatedDonor]);
-      this.item = {
-        ...updatedDonor,
-        index: this.item?.index ?? updatedDonor.index
-      };
+
+      const originalIndex = this.item?.index;
+      Object.assign(this.item, updatedDonor);
+
+      if (this.item) {
+        this.item.index = originalIndex ?? updatedDonor.index;
+      }
+
       this._initDonorEditable();
       this.success = true;
     })
