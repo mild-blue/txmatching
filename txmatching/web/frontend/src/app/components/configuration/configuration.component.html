@@ -96,12 +96,12 @@
         </mat-form-field>
 
         <mat-form-field *ngIf="configuration.max_debt_for_country !== undefined">
-          <mat-label>Max kidney debt for one country</mat-label>
+          <mat-label>Max country debt</mat-label>
           <input value="{{ configuration.max_debt_for_country }}"
                  formControlName="max_debt_for_country"
                  matInput type="number">
           <mat-hint>
-            TODOO
+            Max kidney debt for one country
           </mat-hint>
         </mat-form-field>
 
