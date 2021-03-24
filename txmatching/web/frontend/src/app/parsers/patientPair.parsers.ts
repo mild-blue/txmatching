@@ -1,5 +1,5 @@
 import { Donor, PatientPair, Recipient } from '../model';
-import { DEFAULT_LIST_ITEM, ListItem } from '../components/list-item/list-item.interface';
+import { ListItem } from '../components/list-item/list-item.interface';
 
 export const getPatientPair = (listItem: ListItem, donor?: Donor, recipient?: Recipient): PatientPair => {
   return {

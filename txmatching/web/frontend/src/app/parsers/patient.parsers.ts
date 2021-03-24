@@ -1,11 +1,11 @@
 import { BloodGroupEnumGenerated, DonorGenerated, PatientParametersGenerated, RecipientGenerated, SexEnumGenerated } from '../generated';
 import { BloodGroup, Patient, PatientParameters, Sex } from '../model';
-import { DEFAULT_LIST_ITEM } from '../components/list-item/list-item.interface';
+import { ListItem } from '../components/list-item/list-item.interface';
 import { parseAntigens } from '@app/parsers/hla.parsers';
 
-export const parsePatient = ( data: DonorGenerated | RecipientGenerated ): Patient => {
+export const parsePatient = (data: DonorGenerated | RecipientGenerated, listItem: ListItem): Patient => {
   return {
-    ...DEFAULT_LIST_ITEM,
+    ...listItem,
     dbId: data.db_id,
     medicalId: data.medical_id,
     parameters: parsePatientParameters(data.parameters)
