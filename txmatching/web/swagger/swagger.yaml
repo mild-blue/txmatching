@@ -833,9 +833,9 @@ definitions:
         type: object
     HlaCrossmatchLevel:
         enum:
-        - BROAD_AND_HIGHER
-        - SPLIT_AND_HIGHER
-        - HIGH_RES
+        - NONE
+        - BROAD
+        - SPLIT_AND_BROAD
         type: string
     HlaType:
         properties:

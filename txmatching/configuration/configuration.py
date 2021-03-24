@@ -69,7 +69,7 @@ class Configuration:
     required_patient_db_ids: List[PatientDbId] = field(default_factory=list,
                                                        metadata={COMPARISON_MODE: ComparisonMode.Set})
     use_high_resolution: bool = True
-    hla_crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.SPLIT_AND_HIGHER
+    hla_crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.BROAD
     forbidden_country_combinations: List[ForbiddenCountryCombination] = field(
         default_factory=lambda: DEFAULT_FORBIDDEN_COUNTRY_LIST,
         metadata={COMPARISON_MODE: ComparisonMode.Set})

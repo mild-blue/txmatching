@@ -233,7 +233,7 @@ class TestSaveAndGetConfiguration(DbTests):
 
             conf_dto2 = dataclasses.asdict(Configuration(solver_constructor_name='AllSolutionsSolver',
                                                          max_number_of_distinct_countries_in_round=50,
-                                                         hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER))
+                                                         hla_crossmatch_level=HLACrossmatchLevel.NONE))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',

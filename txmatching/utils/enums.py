@@ -48,9 +48,9 @@ HLA_GROUP_HIGH_RES_CODE_REGEX = {
 
 
 class HLACrossmatchLevel(str, Enum):
-    BROAD_AND_HIGHER = 'BROAD_AND_HIGHER'
-    SPLIT_AND_HIGHER = 'SPLIT_AND_HIGHER'
-    HIGH_RES = 'HIGH_RES'
+    NONE = 'NONE'  # nothing is allowed
+    BROAD = 'BROAD'
+    SPLIT_AND_BROAD = 'SPLIT_AND_BROAD'
 
 
 class AntibodyMatchTypes(str, Enum):
@@ -61,10 +61,10 @@ class AntibodyMatchTypes(str, Enum):
 
     def is_positive_for_level(self, crossmatch_level: HLACrossmatchLevel) -> bool:
         return (
-                crossmatch_level == HLACrossmatchLevel.BROAD_AND_HIGHER and
+                crossmatch_level == HLACrossmatchLevel.NONE and
                 self in [self.BROAD, self.SPLIT, self.HIGH_RES] or
-                crossmatch_level == HLACrossmatchLevel.SPLIT_AND_HIGHER and self in [self.SPLIT, self.HIGH_RES] or
-                crossmatch_level == HLACrossmatchLevel.HIGH_RES and self == self.HIGH_RES
+                crossmatch_level == HLACrossmatchLevel.BROAD and self in [self.SPLIT, self.HIGH_RES] or
+                crossmatch_level == HLACrossmatchLevel.SPLIT_AND_BROAD and self == self.HIGH_RES
         )
 
 

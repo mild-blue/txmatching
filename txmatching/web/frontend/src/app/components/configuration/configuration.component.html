@@ -25,14 +25,15 @@
         </mat-form-field>
 
         <mat-form-field appearance="fill">
-          <mat-label>Forbidden crossmatch level</mat-label>
+          <mat-label>Allowed crossmatch types</mat-label>
           <mat-select formControlName="hla_crossmatch_level">
             <mat-option *ngFor="let hlaCrossmatchLevel of allHlaCrossmatchLevels" [value]="hlaCrossmatchLevel">
               {{hlaCrossmatchLevel}}
             </mat-option>
           </mat-select>
           <mat-hint>
-            TODOO
+            Virtual crossmatch level that is allowed to be present in the computed matchings. The resulting matchings and
+            transplants that contain allowed virtual crossmatch are indicated by red warning icon.
           </mat-hint>
         </mat-form-field>
       </div>
