@@ -76,6 +76,7 @@ class RecipientModel(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     txm_event_id = Column(Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=False)
     medical_id = Column(TEXT, unique=False, nullable=False)
+    internal_medical_id = Column(TEXT, unique=False, nullable=True)
     country = Column(Enum(Country), unique=False, nullable=False)
     blood = Column(TEXT, unique=False, nullable=False)
     hla_typing_raw = Column(JSON, unique=False, nullable=False)
@@ -93,10 +94,10 @@ class RecipientModel(db.Model):
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     acceptable_blood = relationship('RecipientAcceptableBloodModel', backref='recipient', passive_deletes=True,
-                                       lazy='selectin')  # type: List[RecipientAcceptableBloodModel]
+                                    lazy='selectin')  # type: List[RecipientAcceptableBloodModel]
     hla_antibodies = Column(JSON, unique=False, nullable=False)
     hla_antibodies_raw = relationship('HLAAntibodyRawModel', backref='recipient', passive_deletes=True,
-                                         lazy='selectin')  # type: List[HLAAntibodyRawModel]
+                                      lazy='selectin')  # type: List[HLAAntibodyRawModel]
     UniqueConstraint('medical_id', 'txm_event_id')
 
     def __repr__(self):
@@ -110,6 +111,7 @@ class DonorModel(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     txm_event_id = Column(Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=False)
     medical_id = Column(TEXT, unique=False, nullable=False)
+    internal_medical_id = Column(TEXT, unique=False, nullable=True)
     country = Column(Enum(Country), unique=False, nullable=False)
     blood = Column(TEXT, unique=False, nullable=False)
     hla_typing_raw = Column(JSON, unique=False, nullable=False)
@@ -125,8 +127,8 @@ class DonorModel(db.Model):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     recipient_id = Column(Integer, ForeignKey('recipient.id'), unique=False, nullable=True)
     recipient = relationship('RecipientModel', backref=backref('donor', uselist=False),
-                                passive_deletes=True,
-                                lazy='joined')
+                             passive_deletes=True,
+                             lazy='joined')
     UniqueConstraint('medical_id', 'txm_event_id')
 
     def __repr__(self):

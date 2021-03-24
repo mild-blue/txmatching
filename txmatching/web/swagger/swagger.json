@@ -2022,6 +2022,11 @@
                     "type": "integer",
                     "description": "Year of birth of the patient.",
                     "example": 1945
+                },
+                "internal_medical_id": {
+                    "type": "string",
+                    "description": "Custom medical ID that will not be shown in UI, but will be stored and can be seen in patient xlsx export.",
+                    "example": "123456"
                 }
             },
             "type": "object"
@@ -2133,6 +2138,11 @@
                 "previous_transplants": {
                     "type": "integer",
                     "description": "Number of previous kidney transplants."
+                },
+                "internal_medical_id": {
+                    "type": "string",
+                    "description": "Custom medical ID that will not be shown in UI, but will be stored and can be seen in patient xlsx export.",
+                    "example": "123456"
                 }
             },
             "type": "object"
@@ -2784,6 +2794,10 @@
                     "type": "string",
                     "description": "Medical id of the patient"
                 },
+                "internal_medical_id": {
+                    "type": "string",
+                    "description": "Internal medical id of the patient"
+                },
                 "parameters": {
                     "$ref": "#/definitions/PatientParameters"
                 },
@@ -3121,6 +3135,10 @@
                 "medical_id": {
                     "type": "string",
                     "description": "Medical id of the patient"
+                },
+                "internal_medical_id": {
+                    "type": "string",
+                    "description": "Internal medical id of the patient"
                 },
                 "parameters": {
                     "$ref": "#/definitions/PatientParameters"

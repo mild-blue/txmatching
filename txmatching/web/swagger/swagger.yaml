@@ -554,6 +554,9 @@ definitions:
                 type: array
             donor_type:
                 $ref: '#/definitions/DonorType'
+            internal_medical_id:
+                description: Internal medical id of the patient
+                type: string
             max_score_with_related_recipient:
                 description: Maximum transplant score
                 type: number
@@ -602,6 +605,11 @@ definitions:
                 items:
                     type: string
                 type: array
+            internal_medical_id:
+                description: Custom medical ID that will not be shown in UI, but will
+                    be stored and can be seen in patient xlsx export.
+                example: '123456'
+                type: string
             medical_id:
                 description: Medical ID of the patient. This ID is unique thorough
                     the system and can be used for the identification of a specific
@@ -1106,6 +1114,9 @@ definitions:
                 type: integer
             hla_antibodies:
                 $ref: '#/definitions/HlaAntibodies'
+            internal_medical_id:
+                description: Internal medical id of the patient
+                type: string
             medical_id:
                 description: Medical id of the patient
                 type: string
@@ -1162,6 +1173,11 @@ definitions:
                 items:
                     type: string
                 type: array
+            internal_medical_id:
+                description: Custom medical ID that will not be shown in UI, but will
+                    be stored and can be seen in patient xlsx export.
+                example: '123456'
+                type: string
             medical_id:
                 description: Medical ID of the patient. This ID is unique thorough
                     the system and can be used for the identification of a specific

@@ -1,8 +1,10 @@
 from typing import Dict, List, Union
 
 from txmatching.configuration.configuration import Configuration
-from txmatching.data_transfer_objects.patients.out_dots.donor_dto_out import \
+from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
+from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
+    RecipientDTOOut
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
@@ -38,7 +40,8 @@ def donor_to_donor_dto_out(donor: Donor,
                             parameters=donor.parameters,
                             donor_type=donor.donor_type,
                             related_recipient_db_id=donor.related_recipient_db_id,
-                            active=donor.active
+                            active=donor.active,
+                            internal_medical_id=donor.internal_medical_id
                             )
     if donor.related_recipient_db_id:
         related_recipient = next(recipient for recipient in all_recipients if
