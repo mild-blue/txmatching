@@ -34,6 +34,29 @@
           <mat-hint>
             Virtual crossmatch level that is allowed to be present in the computed matchings. The resulting matchings and
             transplants that contain allowed virtual crossmatch are indicated by red warning icon.
+            <br>
+            To explain the meaning of differernt crossmatch levels, the algorithm has to be explained first. Virtual crossmatch on certain level is reported if crossmatch if found for at least on one
+            donor HLA type. The crossmatch algorithm for donor HLA types proceeds as follows:
+            <ol>
+              <li>If HLA type is in high resolution: Matching antibody is searched in recipient antibodies. In case such antibody is found:
+                <ul>
+                  <li>
+                    HIGH_RES crossmatch is reported if MFI >= cutoff
+                  </li>
+                  <li>
+                    the algorithm continues to next HLA_TYPE if MFI < cutoff
+                  </li>
+                </ul>
+                If it is not found, or HLA type is not in high resolution we proceed to 2)
+              </li>
+              <li>
+                If the split resolution of the HLA type is known, matching HLA type is searched antibodies. In case some antibody with mfi>cutoff matches HLA type, virtual crossmach on level SPLIT
+                is reported, otherwise we proceed to 3)
+              </li>
+              <li>
+                We search for matching antibody in broad resolution. In case such match with mfi>cutoff is found crossmatch on level BROAD is reported.
+              </li>
+            </ol>
           </mat-hint>
         </mat-form-field>
       </div>
