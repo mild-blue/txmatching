@@ -11,14 +11,19 @@
 <section class="home">
   <app-container>
     <div class="home-header">
-      <h1>
-        Top Matchings
-        <app-count *ngIf="!loading"
-                   [count]="matchings.length"
-                   [maxCount]="foundMatchingsCount"
-                   title="Top matchings / Total number of matchings">
-        </app-count>
-      </h1>
+      <div>
+        <h1>
+          Top Matchings
+          <app-count *ngIf="!loading"
+                     [count]="matchings.length"
+                     [maxCount]="foundMatchingsCount"
+                     title="Top matchings / Total number of matchings">
+          </app-count>
+        </h1>
+        <div class="header-description" *ngIf="!loading">
+          Showing top {{matchings.length}} matchings for {{getConfigId === undefined ? 'default configuration' : 'configuration ' + getConfigId}}.
+        </div>
+      </div>
       <div class="buttons">
 
         <app-button (click)="setConfigAsDefault()"
