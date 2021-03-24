@@ -25,11 +25,14 @@ class HLAAdditiveScorer(AdditiveScorer, ABC):
 
     @property
     def max_transplant_score(self) -> float:
-        return max(self.ci_configuration.match_type_bonus.values()) * sum(
+        max_value = max(self.ci_configuration.match_type_bonus.values()) * sum(
             [bonus * HLA_GROUPS_PROPERTIES[group].max_count_per_patient for group, bonus in
-             self.ci_configuration.hla_typing_bonus_per_groups]) + self._configuration.blood_group_compatibility_bonus
+             self.ci_configuration.hla_typing_bonus_per_groups.items()]) \
+                    + self._configuration.blood_group_compatibility_bonus
+        return max_value
 
-    # pylint: disable=too-many-return-statements
+        # pylint: disable=too-many-return-statements
+
     # it seems that it is reasonable to want many return statements here as it is still well readable
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Optional[Donor]) -> float:
         donor_recipient_ci = compatibility_index(

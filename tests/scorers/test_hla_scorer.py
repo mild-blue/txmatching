@@ -19,6 +19,10 @@ class TestHlaScorer(DbTests):
         high_res_scorer = HighResScorer()
         high_res_other_hla_types_scorer = HighResWithDQDPScorer()
 
+        self.assertEqual(26, split_scorer.max_transplant_score)
+        self.assertEqual(18, high_res_scorer.max_transplant_score)
+        self.assertEqual(54, high_res_other_hla_types_scorer.max_transplant_score)
+
         donor = _create_donor(['A*01:01', 'A3', 'B7', 'B37', 'DR11', 'DR15', 'DR52', 'DR51', 'DQ7', 'DQ6'])
         recipient = _create_recipient(['A*01:01', 'A2', 'B27', 'B37', 'DR1', 'DR10', 'DQ6'])
         original_donor = _create_donor([])
@@ -32,7 +36,7 @@ class TestHlaScorer(DbTests):
                                                                              original_donor=original_donor))
 
     def test_scorers_on_some_other_patients(self):
-        with self.app.test_client() as client:
+        with self.app.test_client():
             split_scorer = SplitScorer()
             high_res_scorer = HighResScorer()
             high_res_other_hla_types_scorer = HighResWithDQDPScorer()
@@ -48,7 +52,7 @@ class TestHlaScorer(DbTests):
                                                                  original_donor=original_donor))
 
             self.assertEqual(10, high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                                 original_donor=original_donor))
+                                                                                  original_donor=original_donor))
 
 
 def _create_donor(hla_typing: List[str]):
