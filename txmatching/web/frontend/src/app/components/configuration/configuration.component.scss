@@ -60,6 +60,7 @@
   .algorithm {
     flex-basis: 100%;
     width: 100%;
+    padding-bottom: 350px;  /* room for hints */
 
     .algorithm__header {
       text-align: center;
@@ -88,5 +89,15 @@
       flex-basis: calc(50% - 2 * #{$item-gap});
       width: calc(50% - 2 * #{$item-gap});
     }
+  }
+
+  .section-title {
+    text-align: center;
+  }
+
+  .button-wrapper {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
   }
 }

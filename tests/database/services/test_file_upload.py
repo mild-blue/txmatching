@@ -100,7 +100,7 @@ class TestUpdateDonorRecipient(DbTests):
             use_high_resolution=True,
             max_number_of_matchings=1000,
             max_debt_for_country=10,
-            hla_crossmatch_level=HLACrossmatchLevel.BROAD_AND_HIGHER,
+            hla_crossmatch_level=HLACrossmatchLevel.NONE,
         ),
             txm_event).calculated_matchings_list)
         self.assertEqual(961, len(all_matchings))
