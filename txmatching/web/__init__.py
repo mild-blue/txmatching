@@ -253,12 +253,13 @@ def create_app() -> Flask:
 
 def add_public_namespaces(api: Api):
     api.add_namespace(public_api, path=f'{API_VERSION}/{PUBLIC_NAMESPACE}')
+    api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
+    api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
     api.add_namespace(enums_api)
 
 
 def add_all_namespaces(api: Api):
-    api.add_namespace(user_api, path=f'{API_VERSION}/{USER_NAMESPACE}')
-    api.add_namespace(service_api, path=f'{API_VERSION}/{SERVICE_NAMESPACE}')
+
     add_public_namespaces(api)
     api.add_namespace(matching_api,
                       path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{MATCHING_NAMESPACE}')
