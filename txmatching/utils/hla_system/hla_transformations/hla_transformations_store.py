@@ -131,7 +131,7 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
             )
 
     # 3. split hla_types_parsed to the groups
-    hla_per_groups = split_hla_types_to_groups(hla_types_parsed)
+    hla_per_groups = split_hla_types_to_groups(hla_types_parsed, parsing_info)
 
     return HLATypingDTO(
         hla_per_groups=hla_per_groups,

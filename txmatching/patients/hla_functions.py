@@ -9,14 +9,16 @@ from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
                                     HLA_GROUPS_PROPERTIES, HLAGroup)
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
-from txmatching.utils.hla_system.hla_transformations.parsing_error import \
-    ParsingInfo
+from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
+    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.parsing_error import (
+    ParsingInfo, add_parsing_error_to_db_session)
 
 logger = logging.getLogger(__name__)
 
 
-def split_hla_types_to_groups(hla_types: List[HLAType]) -> List[HLAPerGroup]:
-    hla_types_in_groups = _split_hla_types_to_groups(hla_types)
+def split_hla_types_to_groups(hla_types: List[HLAType], parsing_info: ParsingInfo = None) -> List[HLAPerGroup]:
+    hla_types_in_groups = _split_hla_types_to_groups(hla_types, parsing_info)
     return [HLAPerGroup(hla_group,
                         sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
                         ) for hla_group, hla_codes_in_group in
@@ -28,12 +30,12 @@ def create_hla_antibodies_per_groups_from_hla_antibodies(
         parsing_info: ParsingInfo = None
 ) -> List[AntibodiesPerGroup]:
     hla_antibodies_joined = _join_duplicate_antibodies(hla_antibodies, parsing_info)
-    hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_joined)
+    hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_joined, parsing_info)
     return hla_antibodies_per_groups
 
 
-def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> List[AntibodiesPerGroup]:
-    hla_antibodies_in_groups = _split_hla_types_to_groups(hla_antibodies)
+def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody], parsing_info: ParsingInfo = None) -> List[AntibodiesPerGroup]:
+    hla_antibodies_in_groups = _split_hla_types_to_groups(hla_antibodies, parsing_info)
     return [AntibodiesPerGroup(hla_group,
                                sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
                                ) for hla_group, hla_codes_in_group in
@@ -85,7 +87,8 @@ def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
         raise AssertionError(f'Split or high res should be provided: {hla_type.code}')
 
 
-def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]
+def _split_hla_types_to_groups(hla_types: List[HLACodeAlias],
+                               parsing_info: ParsingInfo
                                ) -> Dict[HLAGroup, List[HLACodeAlias]]:
     hla_types_in_groups = dict()
     for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
@@ -98,5 +101,10 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]
                 match_found = True
                 break
         if not match_found:
-            logger.error(f'Unexpected code {hla_type} will be ignored')
+            add_parsing_error_to_db_session(
+                hla_type.raw_code, HlaCodeProcessingResultDetail.OTHER_PROBLEM,
+                f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any group. '
+                f'This should never happen. This unexpected HLA will be ignored.',
+                parsing_info
+            )
     return hla_types_in_groups
