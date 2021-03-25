@@ -13,7 +13,9 @@ class TestMatchingApi(unittest.TestCase):
             self.maxDiff = None
             old_swagger = json.load(f)
         new_swagger = SwaggerGenApp().api.__schema__
-        # Can be used if one wants to compare what is the issue.
+        del new_swagger['host']
+
+    # Can be used if one wants to compare what is the issue.
         # with open(get_absolute_path("tests/resources/test_swagger_new.json"), "w") as f:
         #     swagger_without_ordered_dict = {k: dict(v) if isinstance(v, OrderedDict) else v for k, v in
         #                                     new_swagger.items()}
@@ -27,6 +29,8 @@ class TestMatchingApi(unittest.TestCase):
             self.maxDiff = None
             old_swagger = json.load(f)
         new_swagger = PublicSwaggerGenApp().api.__schema__
+        del new_swagger['host']
+
         # Can be used if one wants to compare what is the issue.
         # with open(get_absolute_path("tests/resources/test_swagger_new.json"), "w") as f:
         #     swagger_without_ordered_dict = {k: dict(v) if isinstance(v, OrderedDict) else v for k, v in
