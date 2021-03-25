@@ -36,31 +36,31 @@ HLA_GROUPS_PROPERTIES = {
         max_count_per_patient=2
     ),
     HLAGroup.B: HLAGroupProperties(
-        name='A',
+        name='B',
         split_code_regex=r'^B\d+',
         high_res_code_regex=r'^B\*',
         max_count_per_patient=2
     ),
     HLAGroup.DRB1: HLAGroupProperties(
-        name='A',
+        name='DRB1',
         split_code_regex=r'^DR(?!5([123]))\d',
         high_res_code_regex=r'DRB1\*',
         max_count_per_patient=2
     ),
     HLAGroup.CW: HLAGroupProperties(
-        name='A',
+        name='CW',
         split_code_regex=r'^CW\d+',
         high_res_code_regex=r'^C\*',
         max_count_per_patient=2
     ),
     HLAGroup.DP: HLAGroupProperties(
-        name='A',
+        name='DP',
         split_code_regex=r'^DPA?\d+',
         high_res_code_regex=r'DP[AB]1\*',
         max_count_per_patient=4
     ),
     HLAGroup.DQ: HLAGroupProperties(
-        name='A',
+        name='DQ',
         split_code_regex=r'^DQA?\d+',
         high_res_code_regex=r'DQ[AB]1\*',
         max_count_per_patient=4
