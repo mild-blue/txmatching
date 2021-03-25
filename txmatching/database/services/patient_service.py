@@ -287,7 +287,9 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     result.parsing_errors = [
         {
             'hla_code': parsing_error_model.hla_code,
-            'hla_code_processing_result_detail': parsing_error_model.hla_code_processing_result_detail
+            'hla_code_processing_result_detail': parsing_error_model.hla_code_processing_result_detail.name,
+            'message': parsing_error_model.message,
+            'medical_id': parsing_error_model.medical_id
         } for parsing_error_model in parsing_error_models
     ]
 
