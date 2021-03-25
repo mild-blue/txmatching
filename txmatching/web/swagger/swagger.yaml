@@ -1465,7 +1465,6 @@ definitions:
         - environment
         - version
         type: object
-host: test
 info:
     title: API
     version: '1.0'

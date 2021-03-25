@@ -682,6 +682,5 @@
         "Exception": {
             "description": "default_exception_error"
         }
-    },
-    "host": "test"
+    }
 }
