@@ -41,6 +41,9 @@ class InvalidIpAddressAccessException(AuthenticationException):
     """
     IP address of the service account was not whitelisted.
     """
+    def __init__(self, ip_address: str, message: str):
+        self.ip_address = ip_address
+        super().__init__(message)
 
 
 class UserUpdateException(AuthenticationException):

@@ -77,7 +77,7 @@ def _user_auth_handlers(api: Api):
     def handle_invalid_ip_exception(error: InvalidIpAddressAccessException):
         """invalid_ip_exception"""
         _log_warning(error)
-        return {'error': 'Authentication failed.', 'message': 'Used IP is not whitelisted.'}, 401
+        return {'error': 'Authentication failed.', 'message': f'Used IP {error.ip_address} is not whitelisted.'}, 401
 
     @api.errorhandler(UserUpdateException)
     def handle_user_update_exception(error: UserUpdateException):
