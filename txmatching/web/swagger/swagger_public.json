@@ -36,7 +36,7 @@
                         }
                     }
                 },
-                "description": "This endpoint allows the country editor to upload patient data for given                         TXM event. TXM event name has to be provided by an ADMIN. You can either add patients to the                         current dataset or remove all patients from respective country in case there were any.",
+                "description": "This endpoint allows the country editor to upload patient data for given TXM event. TXM event name has to be provided by an ADMIN. You can either add patients to the current dataset or remove all patients from respective country in case there were any. To access this endpoint one has to have credentials to service account and obtain jwt token via the login endpoint.",
                 "operationId": "put_txm_event_upload_patients",
                 "parameters": [
                     {
@@ -57,6 +57,372 @@
                     "public"
                 ]
             }
+        },
+        "/v1/service/status": {
+            "get": {
+                "responses": {
+                    "503": {
+                        "description": "Some services are failing.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns ok if the service is healthy.",
+                        "schema": {
+                            "$ref": "#/definitions/ServiceStatus"
+                        }
+                    }
+                },
+                "operationId": "get_status",
+                "tags": [
+                    "service"
+                ]
+            }
+        },
+        "/v1/service/version": {
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns version of the code",
+                        "schema": {
+                            "$ref": "#/definitions/Version"
+                        }
+                    }
+                },
+                "operationId": "get_version",
+                "tags": [
+                    "service"
+                ]
+            }
+        },
+        "/v1/user/change-password": {
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Password changed successfully.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_password_change_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/PasswordChange"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/login": {
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Login successful. JWT generated. User must attach the token to every request in the \"Authorization\" header with the prefix \"Bearer\". Example: \"Authorization: Bearer some_token\", where some_token is the token received in the response.",
+                        "schema": {
+                            "$ref": "#/definitions/LoginSuccessResponse"
+                        }
+                    }
+                },
+                "description": "Endpoint to be used for login of users. Returns JWT. This JWT serves two purposes: in the case of normal accounts it can be used to obtain OTP at the /otp endpoint; in the case of service accounts it can be directly used to access /public/patient-upload endpoint",
+                "operationId": "post_login_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/UserLogin"
+                        }
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/otp": {
+            "post": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "OTP validation was successful. JWT generated.",
+                        "schema": {
+                            "$ref": "#/definitions/LoginSuccessResponse"
+                        }
+                    }
+                },
+                "operationId": "post_otp_login_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/OtpLogin"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            },
+            "put": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "New OTP was generated and sent.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_otp_login_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/refresh-token": {
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Token successfully refreshed.",
+                        "schema": {
+                            "$ref": "#/definitions/LoginSuccessResponse"
+                        }
+                    }
+                },
+                "operationId": "get_refresh_token_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/register": {
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "User registered successfully.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "post_registration_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/UserRegistration"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
         }
     },
     "info": {
@@ -72,6 +438,12 @@
     "tags": [
         {
             "name": "public"
+        },
+        {
+            "name": "user"
+        },
+        {
+            "name": "service"
         }
     ],
     "definitions": {
@@ -604,6 +976,166 @@
                 "donors_uploaded": {
                     "type": "integer",
                     "description": "Number of donors successfully loaded into the application."
+                }
+            },
+            "type": "object"
+        },
+        "UserLogin": {
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "description": "Email of the user to login."
+                },
+                "password": {
+                    "type": "string",
+                    "description": "User's password."
+                }
+            },
+            "type": "object"
+        },
+        "LoginSuccessResponse": {
+            "required": [
+                "auth_token"
+            ],
+            "properties": {
+                "auth_token": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "OtpLogin": {
+            "required": [
+                "otp"
+            ],
+            "properties": {
+                "otp": {
+                    "type": "string",
+                    "description": "OTP for this login."
+                }
+            },
+            "type": "object"
+        },
+        "StatusResponse": {
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "PasswordChange": {
+            "required": [
+                "current_password",
+                "new_password"
+            ],
+            "properties": {
+                "current_password": {
+                    "type": "string",
+                    "description": "Current password."
+                },
+                "new_password": {
+                    "type": "string",
+                    "description": "New password."
+                }
+            },
+            "type": "object"
+        },
+        "UserRegistration": {
+            "required": [
+                "allowed_countries",
+                "email",
+                "password",
+                "role",
+                "second_factor"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "description": "Email/username used for authentication."
+                },
+                "password": {
+                    "type": "string",
+                    "description": "User's password."
+                },
+                "role": {
+                    "type": "string",
+                    "description": "User's role.",
+                    "example": "ADMIN",
+                    "enum": [
+                        "ADMIN",
+                        "VIEWER",
+                        "EDITOR",
+                        "SERVICE"
+                    ]
+                },
+                "second_factor": {
+                    "type": "string",
+                    "description": "2FA: Phone number for user account in standard format (see example), IP address for SERVICE account.",
+                    "example": "+420657123987"
+                },
+                "allowed_countries": {
+                    "type": "array",
+                    "description": "Countries that the user has access to.",
+                    "example": [
+                        "AUT",
+                        "CZE"
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/CountryCode"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "ServiceStatus": {
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "Indication of service's health.",
+                    "example": "OK",
+                    "enum": [
+                        "OK",
+                        "Failing"
+                    ]
+                },
+                "exception": {
+                    "type": "string",
+                    "description": "Additional indication what is wrong."
+                }
+            },
+            "type": "object"
+        },
+        "Version": {
+            "required": [
+                "environment",
+                "version"
+            ],
+            "properties": {
+                "version": {
+                    "type": "string",
+                    "description": "Version of the running code."
+                },
+                "environment": {
+                    "type": "string",
+                    "description": "Environment the code was build for.",
+                    "example": "PRODUCTION",
+                    "enum": [
+                        "PRODUCTION",
+                        "STAGING",
+                        "DEVELOPMENT",
+                        "UNKNOWN"
+                    ]
                 }
             },
             "type": "object"

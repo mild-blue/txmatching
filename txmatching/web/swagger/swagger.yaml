@@ -1472,10 +1472,11 @@ paths:
     /v1/public/patient-upload:
         put:
             description: This endpoint allows the country editor to upload patient
-                data for given                         TXM event. TXM event name has
-                to be provided by an ADMIN. You can either add patients to the                         current
-                dataset or remove all patients from respective country in case there
-                were any.
+                data for given TXM event. TXM event name has to be provided by an
+                ADMIN. You can either add patients to the current dataset or remove
+                all patients from respective country in case there were any. To access
+                this endpoint one has to have credentials to service account and obtain
+                jwt token via the login endpoint.
             operationId: put_txm_event_upload_patients
             parameters:
             -   in: body
@@ -2260,6 +2261,10 @@ paths:
             - user
     /v1/user/login:
         post:
+            description: 'Endpoint to be used for login of users. Returns JWT. This
+                JWT serves two purposes: in the case of normal accounts it can be
+                used to obtain OTP at the /otp endpoint; in the case of service accounts
+                it can be directly used to access /public/patient-upload endpoint'
             operationId: post_login_api
             parameters:
             -   in: body
@@ -2484,9 +2489,9 @@ responses:
         description: wrong_used_token_exception
 swagger: '2.0'
 tags:
+-   name: public
 -   name: user
 -   name: service
--   name: public
 -   name: matching
 -   name: patients
 -   name: configuration

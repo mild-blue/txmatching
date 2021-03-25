@@ -30,9 +30,11 @@ class TxmEventUploadPatients(Resource):
     @public_api.doc(security='bearer')
     @public_api.request_body(
         UploadPatientsJson,
-        description='This endpoint allows the country editor to upload patient data for given \
-                        TXM event. TXM event name has to be provided by an ADMIN. You can either add patients to the \
-                        current dataset or remove all patients from respective country in case there were any.'
+        description='This endpoint allows the country editor to upload patient data for given '
+                    'TXM event. TXM event name has to be provided by an ADMIN. You can either add patients to the '
+                    'current dataset or remove all patients from respective country in case there were any. To '
+                    'access this endpoint one has to have credentials to service account and obtain jwt token via the'
+                    ' login endpoint.'
     )
     @public_api.response_ok(PatientUploadSuccessJson)
     @public_api.response_errors()
