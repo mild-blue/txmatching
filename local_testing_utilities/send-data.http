@@ -1,11 +1,11 @@
-GET https://txmatching.ikem.cz/v1/service/status
+GET {{url}}/v1/service/version
 Content-Type: application/json
 
 ###
 
 ###
 
-POST https://txmatching.ikem.cz/v1/user/login
+POST {{url}}/v1/user/login
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
 ###
 
 
-PUT https://txmatching.ikem.cz/v1/public/patient-upload
+PUT {{url}}/v1/public/patient-upload
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 

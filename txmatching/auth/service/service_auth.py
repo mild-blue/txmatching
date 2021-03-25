@@ -1,7 +1,8 @@
 import datetime
 
-from txmatching.auth.data_types import UserRole, TokenType, BearerTokenRequest
-from txmatching.auth.exceptions import InvalidIpAddressAccessException, require_auth_condition
+from txmatching.auth.data_types import BearerTokenRequest, TokenType, UserRole
+from txmatching.auth.exceptions import (InvalidIpAddressAccessException,
+                                        require_auth_condition)
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 SERVICE_JWT_EXPIRATION_MINUTES = 2
@@ -31,6 +32,7 @@ def _assert_second_factor_material(user: AppUserModel, request_ip: str):
     """
     if user.second_factor_material != request_ip:
         raise InvalidIpAddressAccessException(
+            request_ip,
             f'IP mismatch for account {user.email}. Registered IP: {user.second_factor_material}, '
             f'used IP: {request_ip}.'
         )

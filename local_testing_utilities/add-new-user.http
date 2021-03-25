@@ -23,7 +23,7 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "otp": "167333"
+  "otp": ""
 }
 
 > {% client.global.set("auth_token", response.body["auth_token"]); %}
@@ -60,7 +60,7 @@ Authorization: Bearer {{auth_token}}
 
 
 ###
-POST {{url}}/v1/txm-event/4/patients/recompute-parsing
+POST {{url}}/v1/txm-event/7/patients/recompute-parsing
 Authorization: Bearer {{auth_token}}
 
 
