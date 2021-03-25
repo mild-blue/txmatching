@@ -33,7 +33,8 @@ from txmatching.utils.country_enum import Country
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
     parse_hla_typing_raw_and_add_parsing_error_to_db_session)
-from txmatching.utils.logging_tools import ParsingInfo
+from txmatching.utils.hla_system.hla_transformations.parsing_error import \
+    ParsingInfo
 
 logger = logging.getLogger(__name__)
 

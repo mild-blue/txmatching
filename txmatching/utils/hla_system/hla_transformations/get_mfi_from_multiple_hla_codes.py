@@ -4,9 +4,8 @@ import numpy as np
 
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
-from txmatching.utils.hla_system.hla_transformations.parsing_error import \
-    add_parsing_error_to_db_session
-from txmatching.utils.logging_tools import ParsingInfo
+from txmatching.utils.hla_system.hla_transformations.parsing_error import (
+    ParsingInfo, add_parsing_error_to_db_session)
 
 RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI = 1
 

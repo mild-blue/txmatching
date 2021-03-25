@@ -31,7 +31,8 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
     parse_hla_typing_raw_and_add_parsing_error_to_db_session)
-from txmatching.utils.logging_tools import ParsingInfo
+from txmatching.utils.hla_system.hla_transformations.parsing_error import \
+    ParsingInfo
 from txmatching.utils.persistent_hash import (get_hash_digest,
                                               initialize_persistent_hash,
                                               update_persistent_hash)

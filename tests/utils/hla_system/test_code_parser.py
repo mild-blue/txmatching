@@ -21,8 +21,9 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations import 
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_raw_code_and_add_parsing_error_to_db_session
+from txmatching.utils.hla_system.hla_transformations.parsing_error import \
+    ParsingInfo
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
-from txmatching.utils.logging_tools import ParsingInfo
 
 codes = {
     'A1': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
@@ -126,8 +127,11 @@ class TestCodeParser(DbTests):
 
     def test_mfi_extraction(self):
         # When one value extremely low, calculate average only from such value.
+        self.assertEqual(0, len(ParsingErrorModel.query.all()))
         self.assertEqual(1, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test'))
+        self.assertEqual(1, len(ParsingErrorModel.query.all()))
         self.assertEqual(1000, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test'))
+        self.assertEqual(2, len(ParsingErrorModel.query.all()))
         self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test'))
 
         # When multiple values low, calculate the average only from those values.
@@ -142,9 +146,14 @@ class TestCodeParser(DbTests):
         # value, average of values lower then overall average is calculated. This might not be optimal in some cases,
         # as the one below (one might maybe drop the hla code. But the algorithm is better safe than sorry.)
         # This case is reported in logger and will be investigated on per instance basis.
+        self.assertEqual(2, len(ParsingErrorModel.query.all()))
         self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test'))
+        self.assertEqual(3, len(ParsingErrorModel.query.all()))
 
-        # TODOO: test after commit
+        self.assertEqual(
+            {HlaCodeProcessingResultDetail.MFI_PROBLEM},
+            {error.hla_code_processing_result_detail for error in ParsingErrorModel.query.all()}
+        )
         # Checks that we truly group by high res codes. In this case both DQA1*01:01 and DQA1*01:02 are DQA1 in split.
         # DQA1*01:01 is dropped whereas DQA1*01:02 is kept.
         self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')},

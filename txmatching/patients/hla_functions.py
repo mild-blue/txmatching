@@ -9,7 +9,8 @@ from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
                                     HLA_GROUPS_PROPERTIES, HLAGroup)
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
-from txmatching.utils.logging_tools import ParsingInfo
+from txmatching.utils.hla_system.hla_transformations.parsing_error import \
+    ParsingInfo
 
 logger = logging.getLogger(__name__)
 

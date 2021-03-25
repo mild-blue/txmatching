@@ -1,8 +1,14 @@
+from dataclasses import dataclass
+
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
-from txmatching.utils.logging_tools import ParsingInfo
+
+
+@dataclass
+class ParsingInfo:
+    medical_id: str
 
 
 # You need to commit the session to save the changes to the db (db.session.commit())

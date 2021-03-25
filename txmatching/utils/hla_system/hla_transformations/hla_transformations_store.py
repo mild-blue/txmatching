@@ -17,9 +17,8 @@ from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_
     HlaCodeProcessingResultDetail
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
-from txmatching.utils.hla_system.hla_transformations.parsing_error import \
-    add_parsing_error_to_db_session
-from txmatching.utils.logging_tools import ParsingInfo
+from txmatching.utils.hla_system.hla_transformations.parsing_error import (
+    ParsingInfo, add_parsing_error_to_db_session)
 
 logger = logging.getLogger(__name__)
 
