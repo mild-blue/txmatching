@@ -18,3 +18,5 @@ class HlaCodeProcessingResultDetail(str, Enum):
     # not in a result of parse_hla_raw_code_with_details method
     MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \
                                     'This means inconsistency that is not allowed.'
+
+    MFI_PROBLEM = 'There is a problem with MFI'

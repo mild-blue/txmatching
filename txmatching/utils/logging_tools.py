@@ -1,9 +1,7 @@
-import logging
+from dataclasses import dataclass
 
 
-class PatientAdapter(logging.LoggerAdapter):
-    """
-    To be used when we need to provide context of a patient to a logging message.
-    """
-    def process(self, msg, kwargs):
-        return '[%s] %s' % (self.extra['patient_medical_id'], msg), kwargs
+# TODOO: move
+@dataclass
+class ParsingInfo:
+    medical_id: str

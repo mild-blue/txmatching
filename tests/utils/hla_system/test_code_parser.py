@@ -22,6 +22,7 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations import 
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
     parse_hla_raw_code_and_add_parsing_error_to_db_session
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
+from txmatching.utils.logging_tools import ParsingInfo
 
 codes = {
     'A1': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
@@ -86,10 +87,12 @@ class TestCodeParser(DbTests):
                                   f'{expected_result} with result {expected_result_detail}')
 
     def test_parsing_with_db_storing(self):
+        parsing_info = ParsingInfo(medical_id='TEST_MEDICAL_ID')
         for code, _ in codes.items():
-            parse_hla_raw_code_and_add_parsing_error_to_db_session(code)
+            parse_hla_raw_code_and_add_parsing_error_to_db_session(code, parsing_info)
         errors = ParsingErrorModel.query.all()
         self.assertEqual(16, len(errors))
+        self.assertSetEqual({'TEST_MEDICAL_ID'}, {error.medical_id for error in errors})
 
     def test_parse_hla_ser(self):
         parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))
@@ -141,6 +144,7 @@ class TestCodeParser(DbTests):
         # This case is reported in logger and will be investigated on per instance basis.
         self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test'))
 
+        # TODOO: test after commit
         # Checks that we truly group by high res codes. In this case both DQA1*01:01 and DQA1*01:02 are DQA1 in split.
         # DQA1*01:01 is dropped whereas DQA1*01:02 is kept.
         self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')},
