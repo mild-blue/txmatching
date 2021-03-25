@@ -3,8 +3,6 @@ from typing import Dict, List, Union
 from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
-from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
-    RecipientDTOOut
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_from_config import scorer_from_configuration

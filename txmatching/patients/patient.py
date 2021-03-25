@@ -73,7 +73,7 @@ class RecipientRequirements(PersistentlyHashable):
         update_persistent_hash(hash_, bool(self.require_better_match_in_compatibility_index))
         update_persistent_hash(hash_, bool(self.require_compatible_blood_group))
 
-
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class Recipient(Patient, PersistentlyHashable):
     related_donor_db_id: DonorDbId

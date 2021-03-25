@@ -1,13 +1,13 @@
 # test the api works
 
-GET https://txmatching.ikem.cz/v1/service/version
+GET {{url}}/v1/service/version
 Content-Type: application/json
 
 
 # The workflow below has endpoints that add a user, change password and call recompute endpoint
 ###
 
-POST https://txmatching.ikem.cz/v1/user/login
+POST {{url}}/v1/user/login
 Content-Type: application/json
 
 {
@@ -18,19 +18,19 @@ Content-Type: application/json
 > {% client.global.set("auth_token", response.body["auth_token"]); %}
 ###
 
-POST https://txmatching.ikem.cz/v1/user/otp
+POST {{url}}/v1/user/otp
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "otp": ""
+  "otp": "167333"
 }
 
 > {% client.global.set("auth_token", response.body["auth_token"]); %}
 ###
 
 
-POST https://txmatching.ikem.cz/v1/user/register
+POST {{url}}/v1/user/register
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
@@ -49,7 +49,7 @@ Authorization: Bearer {{auth_token}}
 
 ###
 
-PUT https://txmatching.ikem.cz/v1/user/change-password
+PUT {{url}}/v1/user/change-password
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
@@ -60,12 +60,12 @@ Authorization: Bearer {{auth_token}}
 
 
 ###
-POST https://txmatching.ikem.cz/v1/txm-event/1/patients/recompute-parsing
+POST {{url}}/v1/txm-event/4/patients/recompute-parsing
 Authorization: Bearer {{auth_token}}
 
 
 ###
-POST https://txmatching.ikem.cz/v1/txm-event
+POST {{url}}/v1/txm-event
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 

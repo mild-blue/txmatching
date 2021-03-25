@@ -7,7 +7,7 @@ DONORS = [
         'internal_medical_id': 'TEST_INTERNAL_MEDICAL_ID',
         'blood_group': 'A',
         'hla_typing': [
-            'A1', 'A23', 'Invalid', 'B*01:01N'
+            'A1', 'A23', 'Invalid', 'B*01:01N', 'BW4'
         ],
         'donor_type': DonorType.DONOR.value,
         'related_recipient_medical_id': 'R1',

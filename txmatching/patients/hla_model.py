@@ -13,6 +13,8 @@ from txmatching.utils.logging_tools import PatientAdapter
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class HLAType(PersistentlyHashable):
@@ -232,5 +234,5 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]
                 match_found = True
                 break
         if not match_found:
-            raise AssertionError(f'Unexpected hla_code: {hla_type.code}')
+            logger.error(f'Unexpected code {hla_type} will be ignored')
     return hla_types_in_groups

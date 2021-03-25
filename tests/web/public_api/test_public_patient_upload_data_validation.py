@@ -60,7 +60,7 @@ class TestMatchingApi(DbTests):
         self.assertEqual('D1', txm_event.active_donors_dict[1].medical_id)
         self.assertEqual('TEST_INTERNAL_MEDICAL_ID', txm_event.active_donors_dict[1].internal_medical_id)
         # three errors from the real processing and 2 from get_hla_typing above
-        self._check_expected_errors_in_db(5)
+        self._check_expected_errors_in_db(6)
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         txm_event_name = 'invalid_name'
