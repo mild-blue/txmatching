@@ -35,31 +35,30 @@
             Virtual crossmatch level that is allowed to be present in the computed matchings. The resulting matchings and
             transplants that contain allowed virtual crossmatch are indicated by red warning icon.
             <br>
-            To explain the meaning of different crossmatch levels, the algorithm has to be explained first. Virtual crossmatch
-            on certain level is reported if crossmatch is found for at least one
-            donor HLA type. The crossmatch algorithm for donor HLA types proceeds as follows:
+            Virtual crossmatch on a certain level is reported if match is found for at least one
+            donor HLA type and recipient antibody. The matching antibodies for HLA type are found using a three step algorithm:
             <ol>
               <li>
-                If HLA type is in high resolution: Matching antibody is searched in recipient antibodies. In case such antibody is found:
+                If high resolution of the HLA type is known: Matching antibody is searched in recipient antibodies. In the case such antibody is found:
                 <ul>
                   <li>
-                    HIGH_RES crossmatch is reported if MFI >= cutoff
+                    HIGH_RES virtual crossmatch is reported if MFI >= cutoff
                   </li>
                   <li>
                     the algorithm continues to next HLA_TYPE if MFI < cutoff
                   </li>
                 </ul>
-                If it is not found or HLA type is not in high resolution we proceed to 2)
+                in the case matching antibody is not found or HLA type is not in high resolution proceed to 2).
               </li>
               <li>
-                If the split resolution of the HLA type is known, matching HLA type is searched in antibodies. In case
-                some antibody with MFI > cutoff matches HLA type, virtual crossmatch on level SPLIT
-                is reported, otherwise we proceed to 3)
+                If the split resolution of the HLA type is known: Matching HLA type is searched in recipient antibodies (transformed to split resolution). In case
+                some antibody with MFI > cutoff is found, virtual crossmatch on level SPLIT
+                is reported, otherwise we proceed to 3).
               </li>
               <li>
-                We search for matching antibody in broad resolution. In case such match with MFI > cutoff is found,
-                crossmatch on level BROAD is reported.
-              </li>
+                Matching HLA type is searched in recipient antibodies (transformed to split broad resolution). In case
+                some antibody with MFI > cutoff is found, virtual crossmatch on level BROAD
+                is reported.
             </ol>
           </mat-hint>
         </mat-form-field>
