@@ -34,7 +34,8 @@ def create_hla_antibodies_per_groups_from_hla_antibodies(
     return hla_antibodies_per_groups
 
 
-def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody], parsing_info: ParsingInfo = None) -> List[AntibodiesPerGroup]:
+def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody],
+                                parsing_info: ParsingInfo = None) -> List[AntibodiesPerGroup]:
     hla_antibodies_in_groups = _split_hla_types_to_groups(hla_antibodies, parsing_info)
     return [AntibodiesPerGroup(hla_group,
                                sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
