@@ -2261,10 +2261,10 @@ paths:
             - user
     /v1/user/login:
         post:
-            description: Endpoint to be used for login of users. Returns JWT that
-                in the case of normal accounts get be used to obtain OTP at /otp endpoint,
-                in the caseof service accounts it provides directly the JWT token
-                to access /public/patient-upload endpoint
+            description: 'Endpoint to be used for login of users. Returns JWT. This
+                JWT serves two purposes: in the case of normal accounts it can be
+                used to obtain OTP at the /otp endpoint; in the case of service accounts
+                it can be directly used to access /public/patient-upload endpoint'
             operationId: post_login_api
             parameters:
             -   in: body

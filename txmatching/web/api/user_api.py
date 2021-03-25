@@ -35,9 +35,10 @@ class LoginApi(Resource):
     })
 
     @user_api.request_body(login_input_model,
-                           description='Endpoint to be used for login of users. Returns JWT that in the case of '
-                                       'normal accounts get be used to obtain OTP at /otp endpoint, in the case'
-                                       'of service accounts it provides directly the JWT token to access '
+                           description='Endpoint to be used for login of users. Returns JWT. This JWT serves two'
+                                       ' purposes: in the case of '
+                                       'normal accounts it can be used to obtain OTP at the /otp endpoint; in the case '
+                                       'of service accounts it can be directly used to access '
                                        '/public/patient-upload endpoint')
     @user_api.response_ok(LoginSuccessResponse,
                           description='Login successful. JWT generated. User must attach the token to every request '
