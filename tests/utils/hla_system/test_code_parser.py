@@ -61,7 +61,7 @@ codes = {
     'A*01:01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*01': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A99': (HLACode(None, 'A99', 'A99'), HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
+    'A99': (None, HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
     # low res regexp but not in transformation table
     'A*99': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
     # ultra high res regexp but not in tranformation table

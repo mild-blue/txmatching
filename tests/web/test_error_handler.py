@@ -47,7 +47,7 @@ class TestErrorHandler(DbTests):
             side_effect=InvalidIpAddressAccessException,
             status_code=401,
             error='Authentication failed.',
-            message='Used IP is not whitelisted.'
+            message='Used IP Unknown is not whitelisted.'
         )
 
     def test_handle_user_update_exception(self):

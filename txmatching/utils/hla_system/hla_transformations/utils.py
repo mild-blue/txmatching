@@ -81,8 +81,4 @@ def process_high_res_result(high_res: Optional[str],
             ),
             detail if detail is not None else HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED
         )
-    return HlaCodeProcessingResult(HLACode(
-        high_res=None,
-        split=split_or_broad_raw,
-        broad=split_or_broad_raw
-    ), detail if detail else HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)
+    return HlaCodeProcessingResult(None, detail if detail else HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)
