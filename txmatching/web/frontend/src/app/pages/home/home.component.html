@@ -17,7 +17,7 @@
           <app-count *ngIf="!loading"
                      [count]="matchings.length"
                      [maxCount]="foundMatchingsCount"
-                     matTooltip="Top matchings / Total number of matchings"
+                     matTooltip="Number of top matchings{{foundMatchingsCount ? ' / Total number of matchings' : ''}}"
                      matTooltipPosition="right">
           </app-count>
         </h1>
