@@ -21,7 +21,7 @@ class InvalidNumberOfAllelesError(Exception):
     pass
 
 
-@dataclass(unsafe_hash=True)
+@dataclass(frozen=True)
 class HLAMatch:
     hla_type: HLAType
     match_type: MatchType
@@ -136,18 +136,20 @@ def get_detailed_compatibility_index_without_recipient(donor_hla_typing: HLATypi
 def _match_through_lambda(current_compatibility_index: float,
                           donor_matches: List[HLAMatch],
                           recipient_matches: List[HLAMatch],
-                          donor_hla_types: List[HLAType],
-                          recipient_hla_types: List[HLAType],
+                          remaining_donor_hla_types: List[HLAType],
+                          remaining_recipient_hla_types: List[HLAType],
                           hla_group: HLAGroup,
                           matching_hla_types_func: Callable[[HLAType, HLAType], bool],
                           result_match_type: MatchType,
-                          ci_configuration: CIConfiguration):
-    for donor_hla_type in donor_hla_types.copy():
+                          ci_configuration: CIConfiguration,
+                          recipient_hla_types: List[HLAType]):
+    for donor_hla_type in remaining_donor_hla_types.copy():
         matching_hla_types = [recipient_hla_type for recipient_hla_type in recipient_hla_types if
                               matching_hla_types_func(recipient_hla_type, donor_hla_type)]
         if len(matching_hla_types) > 0:
-            donor_hla_types.remove(donor_hla_type)
-            recipient_hla_types.remove(matching_hla_types[0])
+            remaining_donor_hla_types.remove(donor_hla_type)
+            if matching_hla_types[0] in remaining_recipient_hla_types:
+                remaining_recipient_hla_types.remove(matching_hla_types[0])
 
             donor_matches.append(HLAMatch(donor_hla_type, result_match_type))
             recipient_matches.append(HLAMatch(matching_hla_types[0], result_match_type))
@@ -160,63 +162,69 @@ def _match_through_lambda(current_compatibility_index: float,
 def _match_through_high_res_codes(current_compatibility_index: float,
                                   donor_matches: List[HLAMatch],
                                   recipient_matches: List[HLAMatch],
-                                  donor_hla_types: List[HLAType],
-                                  recipient_hla_types: List[HLAType],
+                                  remaining_donor_hla_types: List[HLAType],
+                                  remaining_recipient_hla_types: List[HLAType],
                                   hla_group: HLAGroup,
-                                  ci_configuration: CIConfiguration):
+                                  ci_configuration: CIConfiguration,
+                                  recipient_hla_types: List[HLAType]):
     return _match_through_lambda(
         current_compatibility_index,
         donor_matches,
         recipient_matches,
-        donor_hla_types,
-        recipient_hla_types,
+        remaining_donor_hla_types,
+        remaining_recipient_hla_types,
         hla_group,
         lambda recipient_hla_type, donor_hla_type:
         recipient_hla_type.code.high_res == donor_hla_type.code.high_res and donor_hla_type.code.high_res is not None,
         MatchType.HIGH_RES,
-        ci_configuration
+        ci_configuration,
+        recipient_hla_types
     )
 
 
 def _match_through_split_codes(current_compatibility_index: float,
                                donor_matches: List[HLAMatch],
                                recipient_matches: List[HLAMatch],
-                               donor_hla_types: List[HLAType],
-                               recipient_hla_types: List[HLAType],
+                               remaining_donor_hla_types: List[HLAType],
+                               remaining_recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup,
-                               ci_configuration: CIConfiguration):
+                               ci_configuration: CIConfiguration,
+                               recipient_hla_types: List[HLAType]):
     return _match_through_lambda(
         current_compatibility_index,
         donor_matches,
         recipient_matches,
-        donor_hla_types,
-        recipient_hla_types,
+        remaining_donor_hla_types,
+        remaining_recipient_hla_types,
         hla_group,
         lambda recipient_hla_type, donor_hla_type:
         recipient_hla_type.code.split == donor_hla_type.code.split and donor_hla_type.code.split is not None,
         MatchType.SPLIT,
-        ci_configuration
+        ci_configuration,
+        recipient_hla_types
     )
 
 
 def _match_through_broad_codes(current_compatibility_index: float,
                                donor_matches: List[HLAMatch],
                                recipient_matches: List[HLAMatch],
-                               donor_hla_types: List[HLAType],
-                               recipient_hla_types: List[HLAType],
+                               remaining_donor_hla_types: List[HLAType],
+                               remaining_recipient_hla_types: List[HLAType],
                                hla_group: HLAGroup,
-                               ci_configuration: CIConfiguration):
+                               ci_configuration: CIConfiguration,
+                               recipient_hla_types: List[HLAType]):
     return _match_through_lambda(
         current_compatibility_index,
         donor_matches,
         recipient_matches,
-        donor_hla_types,
-        recipient_hla_types,
+        remaining_donor_hla_types,
+        remaining_recipient_hla_types,
         hla_group,
         lambda recipient_hla_type, donor_hla_type:
         recipient_hla_type.code.broad == donor_hla_type.code.broad,
         MatchType.BROAD,
-        ci_configuration
+        ci_configuration,
+        recipient_hla_types
     )
 
 
@@ -231,31 +239,37 @@ def _get_ci_for_recipient_donor_split_codes(
     donor_matches = []
     recipient_matches = []
 
+    remaining_donor_hla_types = donor_hla_types.copy()
+    remaining_recipient_hla_types = recipient_hla_types.copy()
+
     group_compatibility_index = _match_through_high_res_codes(0.0,
                                                               donor_matches,
                                                               recipient_matches,
-                                                              donor_hla_types,
-                                                              recipient_hla_types,
+                                                              remaining_donor_hla_types,
+                                                              remaining_recipient_hla_types,
                                                               hla_group,
-                                                              ci_configuration)
+                                                              ci_configuration,
+                                                              recipient_hla_types)
     group_compatibility_index = _match_through_split_codes(group_compatibility_index,
                                                            donor_matches,
                                                            recipient_matches,
-                                                           donor_hla_types,
-                                                           recipient_hla_types,
+                                                           remaining_donor_hla_types,
+                                                           remaining_recipient_hla_types,
                                                            hla_group,
-                                                           ci_configuration)
+                                                           ci_configuration,
+                                                           recipient_hla_types)
     group_compatibility_index = _match_through_broad_codes(group_compatibility_index,
                                                            donor_matches,
                                                            recipient_matches,
-                                                           donor_hla_types,
-                                                           recipient_hla_types,
+                                                           remaining_donor_hla_types,
+                                                           remaining_recipient_hla_types,
                                                            hla_group,
-                                                           ci_configuration)
+                                                           ci_configuration,
+                                                           recipient_hla_types)
 
-    for recipient_hla_type in recipient_hla_types:
+    for recipient_hla_type in remaining_recipient_hla_types:
         recipient_matches.append(HLAMatch(recipient_hla_type, MatchType.NONE))
-    for donor_hla_type in donor_hla_types:
+    for donor_hla_type in remaining_donor_hla_types:
         donor_matches.append(HLAMatch(donor_hla_type, MatchType.NONE))
 
     return DetailedCompatibilityIndexForHLAGroup(
