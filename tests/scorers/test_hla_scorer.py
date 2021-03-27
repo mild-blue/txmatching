@@ -65,6 +65,31 @@ class TestHlaScorer(DbTests):
             self.assertEqual(6, self.high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
                                                                                       original_donor=original_donor))
 
+    def test_another_duplicate(self):
+        with self.app.test_client():
+            donor = _create_donor(['A2', 'B62', 'B61', 'DR4', 'DR13', 'DR52', 'DR53', 'DQ6', 'DQ8'])
+            recipient = _create_recipient(['A1', 'A2', 'B27', 'B37', 'DR1', 'DR10'])
+            original_donor = _create_donor([])
+
+            self.assertEqual(2, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                                   original_donor=original_donor))
+
+    def test_match_in_broad(self):
+        # 22 vs 25
+        with self.app.test_client():
+            donor = _create_donor(['B51', 'B52'])
+            recipient = _create_recipient(['B7', 'B51'])
+            original_donor = _create_donor([])
+
+            self.assertEqual(6, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                                   original_donor=original_donor))
+            donor = _create_donor(['A25', 'A26'])
+            recipient = _create_recipient(['A1', 'A26'])
+            original_donor = _create_donor([])
+
+            self.assertEqual(2, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                                   original_donor=original_donor))
+
 
 def _create_donor(hla_typing: List[str]):
     return Donor(
