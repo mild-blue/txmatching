@@ -58,8 +58,14 @@ def _join_duplicate_antibodies(
         assert len(antibody_group_list) > 0
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group_list}
         if len(cutoffs) != 1:
-            raise AssertionError(f'There were multiple cutoff values s for antibody {hla_code_raw} '
-                                 'This means inconsistency that is not allowed.')
+            add_parsing_error_to_db_session(
+                hla_code_raw,
+                HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
+                message=HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.value,
+                parsing_info=parsing_info
+            )
+            continue
+
         cutoff = cutoffs.pop()
         mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in antibody_group_list],
                                               cutoff,
@@ -85,7 +91,7 @@ def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
     elif hla_type.code.high_res is not None:
         return bool(re.match(HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex, hla_type.code.high_res))
     else:
-        raise AssertionError(f'Split or high res should be provided: {hla_type.code}')
+        raise AssertionError(f'Broad or high res should be provided: {hla_type.code}')
 
 
 def _split_hla_types_to_groups(hla_types: List[HLACodeAlias],

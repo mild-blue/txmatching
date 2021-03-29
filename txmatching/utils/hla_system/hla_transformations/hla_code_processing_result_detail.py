@@ -19,5 +19,5 @@ class HlaCodeProcessingResultDetail(str, Enum):
     MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \
                                     'This means inconsistency that is not allowed.'
 
-    MFI_PROBLEM = 'There is a problem with MFI.'
+    MFI_PROBLEM = 'There is a problem with MFI.'  # This string value is not used but we have it here as a fallback
     OTHER_PROBLEM = 'Some problem occurred when processing this code.'
