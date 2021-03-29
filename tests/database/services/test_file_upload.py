@@ -147,10 +147,10 @@ class TestUpdateDonorRecipient(DbTests):
             for recipient, expected_score, calculated_score in zip(txm_event.active_recipients_dict.values(),
                                                                    expected_score_row,
                                                                    calculated_score_row):
-                if expected_score != calculated_score:
-                    print(f'Not true for expected {expected_score} vs real {calculated_score} '
-                          f'{[code.raw_code for code in donor.parameters.hla_typing.hla_types_raw_list]} and '
-                          f'{[code.raw_code for code in recipient.parameters.hla_typing.hla_types_raw_list]}')
+                self.assertEqual(expected_score, calculated_score,
+                                 f'Not true for expected {expected_score} vs real {calculated_score} '
+                                 f'{[code.raw_code for code in donor.parameters.hla_typing.hla_types_raw_list]} and '
+                                 f'{[code.raw_code for code in recipient.parameters.hla_typing.hla_types_raw_list]}')
 
     def test_loading_patients_wrong(self):
         txm_event = create_or_overwrite_txm_event('test')
@@ -174,5 +174,5 @@ class TestUpdateDonorRecipient(DbTests):
         country_donors = [donor for donor in txm_event.active_donors_dict.values() if
                           donor.parameters.country_code == Country.IND]
         self.assertEqual(0, len(country_donors))
-        self.assertEqual(26, len(txm_event.active_donors_dict));
+        self.assertEqual(26, len(txm_event.active_donors_dict))
         self.assertEqual(25, len(txm_event.active_recipients_dict))

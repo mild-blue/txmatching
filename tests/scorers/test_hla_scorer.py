@@ -65,6 +65,20 @@ class TestHlaScorer(DbTests):
             self.assertEqual(6, self.high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
                                                                                       original_donor=original_donor))
 
+    def test_scorers_duplicate_gene_of_recipient(self):
+        with self.app.test_client():
+            donor = _create_donor(['A*01:01', 'A9'])
+            recipient = _create_recipient(['A*01:01'])
+            original_donor = _create_donor([])
+
+            self.assertEqual(1, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                                   original_donor=original_donor))
+            self.assertEqual(3, self.high_res_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                                      original_donor=original_donor))
+
+            self.assertEqual(3, self.high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                                                      original_donor=original_donor))
+
     def test_another_duplicate(self):
         with self.app.test_client():
             donor = _create_donor(['A2', 'B62', 'B61', 'DR4', 'DR13', 'DR52', 'DR53', 'DQ6', 'DQ8'])
