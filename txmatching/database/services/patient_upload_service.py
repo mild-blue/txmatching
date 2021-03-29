@@ -117,7 +117,7 @@ def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
     patient_model.hla_typing = dataclasses.asdict(
         parse_hla_typing_raw_and_add_parsing_error_to_db_session(
             hla_typing_raw,
-            ParsingInfo(medical_id=patient_model.medical_id)
+            ParsingInfo(medical_id=patient_model.medical_id, txm_event_id=patient_model.txm_event_id)
         )
     )
 
@@ -126,7 +126,7 @@ def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
     hla_antibodies_raw = recipient_model.hla_antibodies_raw
     hla_antibodies_parsed = parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
         hla_antibodies_raw,
-        ParsingInfo(medical_id=recipient_model.medical_id)
+        ParsingInfo(medical_id=recipient_model.medical_id, txm_event_id=recipient_model.txm_event_id)
     )
     recipient_model.hla_antibodies = dataclasses.asdict(hla_antibodies_parsed)
 

@@ -225,6 +225,7 @@ class ParsingErrorModel(db.Model):
     hla_code_processing_result_detail = Column(Enum(HlaCodeProcessingResultDetail), unique=False, nullable=False)
     message = Column(TEXT, unique=False, nullable=False, default='')
     medical_id = Column(TEXT, unique=False, nullable=True)
+    txm_event_id = Column(Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=True)
     created_at = Column(DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(
         DateTime(timezone=True),

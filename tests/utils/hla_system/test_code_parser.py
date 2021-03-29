@@ -6,6 +6,7 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_type)
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.database.services.txm_event_service import create_txm_event
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
@@ -88,12 +89,16 @@ class TestCodeParser(DbTests):
                                   f'{expected_result} with result {expected_result_detail}')
 
     def test_parsing_with_db_storing(self):
-        parsing_info = ParsingInfo(medical_id='TEST_MEDICAL_ID')
+        txm_event_db_id = create_txm_event('test_event').db_id
+        parsing_info = ParsingInfo(medical_id='TEST_MEDICAL_ID', txm_event_id=txm_event_db_id)
         for code, _ in codes.items():
             parse_hla_raw_code_and_add_parsing_error_to_db_session(code, parsing_info)
         errors = ParsingErrorModel.query.all()
         self.assertEqual(16, len(errors))
-        self.assertSetEqual({'TEST_MEDICAL_ID'}, {error.medical_id for error in errors})
+        self.assertSetEqual(
+            {('TEST_MEDICAL_ID', txm_event_db_id)},
+            {(error.medical_id, error.txm_event_id) for error in errors}
+        )
 
     def test_parse_hla_ser(self):
         parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))
