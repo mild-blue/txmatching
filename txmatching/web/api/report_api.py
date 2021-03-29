@@ -41,7 +41,8 @@ from txmatching.database.services.matching_service import (
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.patients.hla_model import HLAAntibody, HLAType
-from txmatching.patients.patient import Donor, DonorType, Patient, Recipient
+from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
+                                         RecipientRequirements)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
@@ -179,7 +180,7 @@ class MatchingReport(Resource):
         logo, color = _get_theme()
         html = (j2_env.get_template('report.html').render(
             title='Matching Report',
-            date=datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
+            date=datetime.datetime.now().strftime('%b %d, %Y %H:%M:%S'),
             txm_event_name=txm_event.name,
             configuration=configuration,
             matchings=calculated_matchings_dto,
@@ -419,6 +420,25 @@ def patient_height_and_weight_filter(patient: Patient) -> Optional[str]:
         return None
 
 
+def show_recipient_requirements_info_filter(requirements: Optional[RecipientRequirements]) -> bool:
+    return requirements is not None and (
+            requirements.require_compatible_blood_group or
+            requirements.require_better_match_in_compatibility_index or
+            requirements.require_better_match_in_compatibility_index_or_blood_group
+    )
+
+
+def recipient_requirements_info_filter(requirements: Optional[RecipientRequirements]) -> str:
+    if requirements is None:
+        return 'NO/NO/NO'
+
+    return '/'.join([
+        'YES' if requirements.require_compatible_blood_group else 'NO',
+        'YES' if requirements.require_better_match_in_compatibility_index else 'NO',
+        'YES' if requirements.require_better_match_in_compatibility_index_or_blood_group else 'NO'
+    ])
+
+
 def score_color_filter(score: Optional[float], max_score: Optional[float]):
     # wkhtmltopdf does not support linear-gradients css style that is used in fe and makes
     # exporting super-slow so we define percentage->color mapping in this function
@@ -490,6 +510,8 @@ jinja2.filters.FILTERS.update({
     'country_code_from_country_filter': country_code_from_country_filter,
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
     'patient_height_and_weight_filter': patient_height_and_weight_filter,
+    'show_recipient_requirements_info_filter': show_recipient_requirements_info_filter,
+    'recipient_requirements_info_filter': recipient_requirements_info_filter,
     'score_color_filter': score_color_filter,
     'donor_type_label_filter': donor_type_label_filter,
     'donor_type_label_from_round_filter': donor_type_label_from_round_filter,

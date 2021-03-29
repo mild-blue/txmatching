@@ -41,6 +41,12 @@
               <span matTooltip="Sex" *ngIf="recipient.parameters.sex">{{recipient.parameters.sex}}</span>
               <span matTooltip="Year of Birth" *ngIf="recipient.parameters.yearOfBirth">{{recipient.parameters.yearOfBirth}}</span>
               <span matTooltip="Height/Weight" *ngIf="getPatientHeightAndWeight(recipient)">{{getPatientHeightAndWeight(recipient)}}</span>
+
+              <span matTooltip="Waiting Since" *ngIf="recipient.waitingSince">{{recipient.waitingSince | date:'mediumDate'}}</span>
+              <span matTooltip="Previous Transplants" *ngIf="recipient.previousTransplants !== undefined">{{recipient.previousTransplants}}</span>
+              <span [matTooltip]="getRecipientRequirementsInfoTooltip(recipient.recipientRequirements)"
+                    *ngIf="showRecipientRequirementsInfo(recipient.recipientRequirements)"
+              >{{getRecipientRequirementsInfo(recipient.recipientRequirements)}}</span>
             </div>
           </ng-container>
         </td>
