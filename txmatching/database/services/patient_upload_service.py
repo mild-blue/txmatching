@@ -101,6 +101,7 @@ def _recipient_upload_dto_to_recipient_model(
         height=recipient.height,
         sex=recipient.sex,
         yob=recipient.year_of_birth,
+        note=recipient.note,
         previous_transplants=recipient.previous_transplants,
         internal_medical_id=recipient.internal_medical_id
     )
@@ -179,6 +180,7 @@ def _donor_upload_dto_to_donor_model(
         height=donor.height,
         sex=donor.sex,
         yob=donor.year_of_birth,
+        note=donor.note,
         txm_event_id=txm_event_db_id,
         internal_medical_id=donor.internal_medical_id
     )

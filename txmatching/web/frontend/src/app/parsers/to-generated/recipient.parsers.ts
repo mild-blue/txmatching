@@ -45,6 +45,7 @@ export const fromRecipientEditableToInputGenerated = ( recipient: RecipientEdita
     medical_id: recipient.medicalId,
     previous_transplants: recipient.previousTransplants ? +recipient.previousTransplants : undefined,
     sex: recipient.sex ? fromSex(recipient.sex) : undefined,
+    note: recipient.note,
     waiting_since: recipient.waitingSince ? fromDateToString(recipient.waitingSince) : undefined,
     weight: recipient.weight ? +recipient.weight : undefined,
     year_of_birth: recipient.yearOfBirth ? +recipient.yearOfBirth : undefined

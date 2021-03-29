@@ -18,4 +18,5 @@ export interface PatientParameters {
   height?: number;
   weight?: number;
   yearOfBirth?: number;
+  note: string;
 }

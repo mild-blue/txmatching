@@ -35,7 +35,7 @@
     margin-left: 10px;
   }
 
-  .patient-info {
+  .patient-info, .patient-note {
     margin-top: 2px;
     font-size: 12px;
     font-weight: $font-weight;
@@ -46,6 +46,11 @@
         margin: 0 5px;
       }
     }
+  }
+
+  .patient-note {
+    white-space: pre-line;
+    font-style: italic;
   }
 
   table {

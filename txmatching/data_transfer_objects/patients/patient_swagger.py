@@ -22,6 +22,7 @@ PatientParametersJson = patient_api.model('PatientParameters', {
     'height': fields.Integer(required=False),
     'weight': fields.Float(required=False),
     'year_of_birth': fields.Integer(required=False),
+    'note': fields.String(required=True, example='patient note'),
 })
 
 RecipientRequirements = patient_api.model('RecipientRequirements', {
@@ -99,6 +100,7 @@ PatientToUpdateJson = patient_api.model('PatientModelToUpdate', {
     'height': fields.Integer(required=False, example=180),
     'weight': fields.Float(required=False, example=90),
     'year_of_birth': fields.Integer(required=False, example=1990),
+    'note': fields.String(required=False, example='patient note'),
 })
 
 DonorToUpdateJson = patient_api.inherit('DonorModelToUpdate', PatientToUpdateJson, {
