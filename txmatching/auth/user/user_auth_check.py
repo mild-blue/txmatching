@@ -11,8 +11,15 @@ def require_user_login() -> Callable:
     return require_role(UserRole.ADMIN, UserRole.VIEWER, UserRole.EDITOR)
 
 
-def require_user_edit_access() -> Callable:
+def require_user_edit_config_access() -> Callable:
     """
-    Requires user with edit rights - ADMIN or EDITOR.
+    Requires user with edit configuration rights - ADMIN or EDITOR.
     """
     return require_role(UserRole.ADMIN, UserRole.EDITOR)
+
+
+def require_user_edit_patients_access() -> Callable:
+    """
+    Requires user with edit patients rights - ADMIN, VIEWER or EDITOR.
+    """
+    return require_role(UserRole.ADMIN, UserRole.VIEWER, UserRole.EDITOR)
