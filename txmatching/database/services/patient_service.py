@@ -31,8 +31,9 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
     parse_hla_typing_raw_and_add_parsing_error_to_db_session)
-from txmatching.utils.hla_system.hla_transformations.parsing_error import \
-    ParsingInfo
+from txmatching.utils.hla_system.hla_transformations.parsing_error import (
+    ParsingInfo, delete_all_parsing_errors,
+    delete_parsing_errors_for_medical_id)
 from txmatching.utils.persistent_hash import (get_hash_digest,
                                               initialize_persistent_hash,
                                               update_persistent_hash)
@@ -156,6 +157,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
     if txm_event_db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to.')
 
+    delete_parsing_errors_for_medical_id(old_recipient_model.medical_id)
     parsing_info = ParsingInfo(medical_id=old_recipient_model.medical_id)
     recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto, parsing_info)
     if recipient_update_dto.acceptable_blood_groups:
@@ -220,6 +222,7 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     if txm_event_db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to')
 
+    delete_parsing_errors_for_medical_id(old_donor_model.medical_id)
     parsing_info = ParsingInfo(medical_id=old_donor_model.medical_id)
     donor_update_dict = _create_patient_update_dict_base(donor_update_dto, parsing_info)
     if donor_update_dto.active is not None:
@@ -241,7 +244,7 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     )
 
     # Clear parsing errors table
-    ParsingErrorModel.query.delete()
+    delete_all_parsing_errors()
 
     # Get donors and recipients
     donor_models = DonorModel.query.filter(DonorModel.txm_event_id == txm_event_id).all()
@@ -344,8 +347,10 @@ def get_donor_recipient_pair(donor_id: int, txm_event_id: int) -> Tuple[Donor, O
 def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
     donor, maybe_recipient = get_donor_recipient_pair(donor_id, txm_event_id)
 
+    delete_parsing_errors_for_medical_id(donor.medical_id)
     DonorModel.query.filter(DonorModel.id == donor.db_id).delete()
     if maybe_recipient is not None:
+        delete_parsing_errors_for_medical_id(maybe_recipient.medical_id)
         RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
 
     db.session.commit()

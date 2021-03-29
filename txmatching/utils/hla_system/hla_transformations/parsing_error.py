@@ -25,3 +25,13 @@ def add_parsing_error_to_db_session(
         medical_id=parsing_info.medical_id if parsing_info is not None else None
     )
     db.session.add(parsing_error)
+
+
+def delete_parsing_errors_for_medical_id(
+        medical_id: str
+):
+    ParsingErrorModel.query.filter(ParsingErrorModel.medical_id == medical_id).delete()
+
+
+def delete_all_parsing_errors():
+    ParsingErrorModel.query.delete()
