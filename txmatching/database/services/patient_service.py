@@ -21,8 +21,8 @@ from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto 
 from txmatching.database.db import db
 from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, HLAAntibodyRawModel, ParsingErrorModel,
-    RecipientAcceptableBloodModel, RecipientModel)
+    DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
+    RecipientModel)
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibodyRaw,
                                            HLATypeRaw, HLATyping)
 from txmatching.patients.patient import (Donor, Patient, Recipient,

@@ -171,6 +171,3 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(0, len(country_donors))
         self.assertEqual(26, len(txm_event.active_donors_dict))
         self.assertEqual(25, len(txm_event.active_recipients_dict))
-
-        # get_parsing_errors_for_txm_event_id(txm_event_db_id)
-        # TODOO: maybe test err
