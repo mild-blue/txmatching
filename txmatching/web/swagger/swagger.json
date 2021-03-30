@@ -1852,6 +1852,7 @@
                 },
                 "note": {
                     "type": "string",
+                    "default": "",
                     "example": "donor note"
                 },
                 "internal_medical_id": {
@@ -1962,6 +1963,7 @@
                 },
                 "note": {
                     "type": "string",
+                    "default": "",
                     "example": "recipient note"
                 },
                 "waiting_since": {

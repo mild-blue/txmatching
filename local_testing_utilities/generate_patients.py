@@ -58,7 +58,7 @@ def generate_random_yob() -> int:
 
 def generate_random_note() -> str:
     return random.choice(
-        ['Patient note foo', 'Patient note bar', 'Patient note baz', '']
+        ['Patient note foo', 'Patient note bar', 'Patient\nnote\nmultiline', '']
     )
 
 

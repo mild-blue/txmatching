@@ -618,6 +618,7 @@ definitions:
                 example: D1037
                 type: string
             note:
+                default: ''
                 example: donor note
                 type: string
             related_recipient_medical_id:
@@ -1196,6 +1197,7 @@ definitions:
                 example: R1037
                 type: string
             note:
+                default: ''
                 example: recipient note
                 type: string
             previous_transplants:
