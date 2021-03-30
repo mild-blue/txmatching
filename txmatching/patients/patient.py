@@ -83,7 +83,7 @@ class Recipient(Patient, PersistentlyHashable):
     recipient_requirements: RecipientRequirements = RecipientRequirements()
     waiting_since: Optional[datetime] = None
     previous_transplants: Optional[int] = None
-    internal_medical_id: Optional[str] = None  # TODOO: fix
+    internal_medical_id: Optional[str] = None
 
     def __post_init__(self):
         if self.recipient_cutoff is None:
