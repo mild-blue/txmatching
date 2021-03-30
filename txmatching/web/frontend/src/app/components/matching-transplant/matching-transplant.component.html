@@ -30,7 +30,7 @@
             <span matTooltip="Year of Birth" *ngIf="donor.parameters.yearOfBirth">{{donor.parameters.yearOfBirth}}</span>
             <span matTooltip="Height/Weight" *ngIf="getPatientHeightAndWeight(donor)">{{getPatientHeightAndWeight(donor)}}</span>
           </div>
-          <div class="patient-note" matTooltip='Note' *ngIf="donor.parameters.note != ''">
+          <div class="patient-note" matTooltip='Note' *ngIf="donor.parameters.note.trim() != ''">
             {{donor.parameters.note.trim()}}
           </div>
         </td>
@@ -51,7 +51,7 @@
                     *ngIf="showRecipientRequirementsInfo(recipient.recipientRequirements)"
               >{{getRecipientRequirementsInfo(recipient.recipientRequirements)}}</span>
             </div>
-            <div class="patient-note" matTooltip='Note' *ngIf="recipient.parameters.note != ''">
+            <div class="patient-note" matTooltip='Note' *ngIf="recipient.parameters.note.trim() != ''">
               {{recipient.parameters.note.trim()}}
             </div>
           </ng-container>

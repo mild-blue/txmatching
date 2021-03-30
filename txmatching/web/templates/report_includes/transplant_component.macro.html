@@ -82,6 +82,11 @@
               <span>{{ donor|patient_height_and_weight_filter }}</span>
             {% endif %}
           </div>
+          {% if donor.parameters.note.strip() != '' %}
+            <div class="patient-note">
+              {{ donor.parameters.note.strip() }}
+            </div>
+          {% endif %}
         </td>
         <td colspan="2">
           {% if recipient %}
@@ -114,6 +119,11 @@
                 <span>{{ recipient.recipient_requirements|recipient_requirements_info_filter }}</span>
               {% endif %}
             </div>
+            {% if recipient.parameters.note.strip() != '' %}
+              <div class="patient-note">
+                {{ recipient.parameters.note.strip() }}
+              </div>
+            {% endif %}
           {% endif %}
         </td>
         <td>Score</td>
