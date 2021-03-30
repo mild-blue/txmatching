@@ -966,6 +966,7 @@
         "PatientUploadSuccessResponse": {
             "required": [
                 "donors_uploaded",
+                "parsing_errors",
                 "recipients_uploaded"
             ],
             "properties": {
@@ -976,6 +977,38 @@
                 "donors_uploaded": {
                     "type": "integer",
                     "description": "Number of donors successfully loaded into the application."
+                },
+                "parsing_errors": {
+                    "type": "array",
+                    "description": "Errors and warnings that occurred in HLA codes parsing",
+                    "items": {
+                        "$ref": "#/definitions/ParsingError"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "ParsingError": {
+            "required": [
+                "hla_code",
+                "hla_code_processing_result_detail",
+                "message"
+            ],
+            "properties": {
+                "hla_code": {
+                    "type": "string"
+                },
+                "hla_code_processing_result_detail": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "medical_id": {
+                    "type": "string"
+                },
+                "txm_event_id": {
+                    "type": "integer"
                 }
             },
             "type": "object"

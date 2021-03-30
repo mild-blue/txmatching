@@ -1,5 +1,7 @@
 from flask_restx import fields
 
+from txmatching.data_transfer_objects.hla.parsing_error_swagger import \
+    ParsingErrorJson
 from txmatching.web.web_utils.namespaces import txm_event_api
 
 TxmEventJsonIn = txm_event_api.model('NewTxmEvent', {
@@ -21,7 +23,7 @@ PatientsRecomputeParsingSuccessJson = txm_event_api.model('PatientsRecomputePars
     'patients_changed_antigens': fields.Integer(required=True),
     'patients_checked_antibodies': fields.Integer(required=True),
     'patients_changed_antibodies': fields.Integer(required=True),
-    'parsing_errors': fields.List(required=True, cls_or_instance=fields.Raw()),
+    'parsing_errors': fields.List(required=True, cls_or_instance=fields.Nested(ParsingErrorJson)),
 })
 
 TxmEventsJson = txm_event_api.model('TxmEvents', {

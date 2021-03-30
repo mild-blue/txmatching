@@ -32,7 +32,9 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
     parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
     parse_hla_typing_raw_and_add_parsing_error_to_db_session)
 from txmatching.utils.hla_system.hla_transformations.parsing_error import (
-    ParsingInfo, delete_all_parsing_errors, delete_parsing_errors_for_patient)
+    ParsingInfo, delete_parsing_errors_for_patient,
+    delete_parsing_errors_for_txm_event_id,
+    get_parsing_errors_for_txm_event_id)
 from txmatching.utils.persistent_hash import (get_hash_digest,
                                               initialize_persistent_hash,
                                               update_persistent_hash)
@@ -245,7 +247,7 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     )
 
     # Clear parsing errors table
-    delete_all_parsing_errors()
+    delete_parsing_errors_for_txm_event_id(txm_event_id)
 
     # Get donors and recipients
     donor_models = DonorModel.query.filter(DonorModel.txm_event_id == txm_event_id).all()
@@ -287,15 +289,7 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     db.session.commit()
 
     # Get parsing errors
-    parsing_error_models = ParsingErrorModel.query.all()
-    result.parsing_errors = [
-        {
-            'hla_code': parsing_error_model.hla_code,
-            'hla_code_processing_result_detail': parsing_error_model.hla_code_processing_result_detail.name,
-            'message': parsing_error_model.message,
-            'medical_id': parsing_error_model.medical_id
-        } for parsing_error_model in parsing_error_models
-    ]
+    result.parsing_errors = get_parsing_errors_for_txm_event_id(txm_event_id)
 
     return result
 

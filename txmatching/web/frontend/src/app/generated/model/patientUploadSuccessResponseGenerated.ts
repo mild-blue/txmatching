@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ParsingErrorGenerated } from './parsingErrorGenerated';
 
 
 export interface PatientUploadSuccessResponseGenerated { 
@@ -16,6 +17,10 @@ export interface PatientUploadSuccessResponseGenerated {
      * Number of donors successfully loaded into the application.
      */
     donors_uploaded: number;
+    /**
+     * Errors and warnings that occurred in HLA codes parsing
+     */
+    parsing_errors: Array<ParsingErrorGenerated>;
     /**
      * Number of recipients successfully loaded into the application.
      */

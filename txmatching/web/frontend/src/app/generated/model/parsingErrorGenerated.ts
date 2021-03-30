@@ -9,14 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ParsingErrorGenerated } from './parsingErrorGenerated';
 
 
-export interface PatientsRecomputeParsingSuccessGenerated { 
-    parsing_errors: Array<ParsingErrorGenerated>;
-    patients_changed_antibodies: number;
-    patients_changed_antigens: number;
-    patients_checked_antibodies: number;
-    patients_checked_antigens: number;
+export interface ParsingErrorGenerated { 
+    hla_code: string;
+    hla_code_processing_result_detail: string;
+    medical_id?: string;
+    message: string;
+    txm_event_id?: number;
 }
 

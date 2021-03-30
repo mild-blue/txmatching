@@ -18,6 +18,8 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
                                                     UserToAllowedEvent)
 from txmatching.patients.patient import TxmEvent, TxmEventBase
 from txmatching.utils.country_enum import Country
+from txmatching.utils.hla_system.hla_transformations.parsing_error import \
+    delete_parsing_errors_for_patient
 from txmatching.utils.logged_user import get_current_user, get_current_user_id
 
 logger = logging.getLogger(__name__)
@@ -48,6 +50,16 @@ def delete_txm_event(name: str):
 
 
 def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int, country_code: Country):
+    # Remove parsing errors for patients that will be deleted
+    medical_ids = [patient_model.medical_id for patient_model in (
+            DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
+                                         DonorModel.country == country_code)).all() +
+            RecipientModel.query.filter(and_(RecipientModel.txm_event_id == txm_event_db_id,
+                                             RecipientModel.country == country_code)).all()
+    )]
+    for medical_id in medical_ids:
+        delete_parsing_errors_for_patient(medical_id, txm_event_id=txm_event_db_id)
+
     DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
                                  DonorModel.country == country_code)).delete()
     # Very likely is not needed as all recipients should be cascade deleted in the previous step.
@@ -115,8 +127,8 @@ def get_txm_event_complete(txm_event_db_id: int, load_antibodies_raw: bool = Fal
     if load_antibodies_raw:
         loading_options = joinedload(TxmEventModel.donors)
     else:
-        loading_options = joinedload(TxmEventModel.donors)\
-            .joinedload(DonorModel.recipient)\
+        loading_options = joinedload(TxmEventModel.donors) \
+            .joinedload(DonorModel.recipient) \
             .noload(RecipientModel.hla_antibodies_raw)
 
     maybe_txm_event_model = TxmEventModel.query.options(loading_options).get(txm_event_db_id)

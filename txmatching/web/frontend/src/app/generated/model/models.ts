@@ -36,6 +36,7 @@ export * from './manualRecipientDonorScoreGenerated';
 export * from './matchingGenerated';
 export * from './newTxmEventGenerated';
 export * from './otpLoginGenerated';
+export * from './parsingErrorGenerated';
 export * from './passwordChangeGenerated';
 export * from './patientModelToUpdateGenerated';
 export * from './patientParametersGenerated';
