@@ -14,7 +14,8 @@ export const fromPatientEditableToUpdateGenerated = (patient: PatientEditable, p
     // TODO: convert values to numbers in SimpleNumberComponent, not here
     height: patient.height ? +patient.height : undefined,
     weight: patient.weight ? +patient.weight : undefined,
-    year_of_birth: patient.yearOfBirth ? +patient.yearOfBirth : undefined
+    year_of_birth: patient.yearOfBirth ? +patient.yearOfBirth : undefined,
+    note: patient.note
   };
 };
 

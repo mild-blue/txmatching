@@ -56,6 +56,12 @@ def generate_random_yob() -> int:
     return random.choice(range(1950, 2000))
 
 
+def generate_random_note() -> str:
+    return random.choice(
+        ['Patient note foo', 'Patient note bar', 'Patient\nnote\nmultiline', '']
+    )
+
+
 def random_true_with_prob(prob: float):
     return random.uniform(0, 1) > prob
 
@@ -140,6 +146,7 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
         weight=generate_random_weight(),
         year_of_birth=generate_random_yob(),
         sex=Sex.F,
+        note=generate_random_note(),
         internal_medical_id='internal_medical_id'
     )
     if is_bridging:
@@ -156,6 +163,7 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
             weight=generate_random_weight(),
             year_of_birth=generate_random_yob(),
             sex=generate_random_sex(),
+            note=generate_random_note(),
             waiting_since=generate_waiting_since(),
             previous_transplants=generate_random_transplants(),
             internal_medical_id='internal_medical_id'

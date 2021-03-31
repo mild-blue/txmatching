@@ -800,6 +800,11 @@
                     "description": "Year of birth of the patient.",
                     "example": 1945
                 },
+                "note": {
+                    "type": "string",
+                    "default": "",
+                    "example": "donor note"
+                },
                 "internal_medical_id": {
                     "type": "string",
                     "description": "Custom medical ID that will not be shown in UI, but will be stored and can be seen in patient xlsx export.",
@@ -905,6 +910,11 @@
                     "type": "integer",
                     "description": "Year of birth of the patient.",
                     "example": 1945
+                },
+                "note": {
+                    "type": "string",
+                    "default": "",
+                    "example": "recipient note"
                 },
                 "waiting_since": {
                     "type": "string",

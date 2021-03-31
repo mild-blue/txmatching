@@ -311,6 +311,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
         donor_sex: str
         donor_year_of_birth: int
         donor_blood_group: str
+        donor_note: str
         donor_type: str
         donor_antigens: str
         recipient_medical_id: str = ''
@@ -320,6 +321,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
         recipient_weight: float = None
         recipient_sex: str = ''
         recipient_year_of_birth: int = None
+        recipient_note: str = ''
         recipient_blood_group: str = ''
         recipient_acceptable_blood_groups: str = ''
         recipient_antigens: str = ''
@@ -341,6 +343,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
             donor_weight=donor.parameters.weight,
             donor_sex=donor.parameters.sex.value if donor.parameters.sex is not None else '',
             donor_year_of_birth=donor.parameters.year_of_birth,
+            donor_note=donor.parameters.note,
             donor_blood_group=donor.parameters.blood_group,
             donor_type=donor_type_label_filter(donor.donor_type),
             donor_antigens=' '.join([hla.raw_code for hla in donor.parameters.hla_typing.hla_types_raw_list]),
@@ -359,6 +362,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
                 recipient_weight=recipient.parameters.weight,
                 recipient_sex=recipient.parameters.sex.value if recipient.parameters.sex is not None else '',
                 recipient_year_of_birth=recipient.parameters.year_of_birth,
+                recipient_note=recipient.parameters.note,
                 recipient_blood_group=recipient.parameters.blood_group,
                 recipient_acceptable_blood_groups=(
                     ', '.join([blood_group for blood_group in recipient.acceptable_blood_groups])

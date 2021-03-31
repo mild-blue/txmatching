@@ -41,7 +41,8 @@ def get_test_donors():
                 sex=Sex.M,
                 height=180,
                 weight=70,
-                year_of_birth=1985
+                year_of_birth=1985,
+                note='donor note 1'
             ),
             related_recipient_db_id=None,
             donor_type=DonorType.DONOR
@@ -62,7 +63,8 @@ def get_test_donors():
                 sex=Sex.M,
                 height=180,
                 weight=70,
-                year_of_birth=1985
+                year_of_birth=1985,
+                note='donor note 2'
             ),
             related_recipient_db_id=None,
             donor_type=DonorType.DONOR
@@ -88,7 +90,8 @@ def get_test_recipients():
                 sex=Sex.M,
                 height=180,
                 weight=70,
-                year_of_birth=1985
+                year_of_birth=1985,
+                note='recipient note 1'
             ),
             related_donor_db_id=1,
             acceptable_blood_groups=[],
@@ -115,7 +118,8 @@ def get_test_recipients():
                 sex=Sex.M,
                 height=180,
                 weight=70,
-                year_of_birth=1985
+                year_of_birth=1985,
+                note='recipient note 2'
             ),
             related_donor_db_id=1,
             acceptable_blood_groups=[],

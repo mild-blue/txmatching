@@ -14,7 +14,8 @@ DONORS = [
         'sex': Sex.M,
         'height': 180,
         'weight': 90,
-        'year_of_birth': 1965
+        'year_of_birth': 1965,
+        'note': 'donor note 1'
     },
     {
         'medical_id': 'D2',
@@ -27,7 +28,8 @@ DONORS = [
         'sex': Sex.M,
         'height': 178,
         'weight': 69,
-        'year_of_birth': 1967
+        'year_of_birth': 1967,
+        'note': 'donor note 2'
     },
     {
         # Missing related_recipient_medical_id and also all non required fields
@@ -78,7 +80,8 @@ RECIPIENTS = [
         'weight': 65,
         'year_of_birth': 2001,
         'waiting_since': '2020-01-06',
-        'previous_transplants': 0
+        'previous_transplants': 0,
+        'note': 'recipient note 1'
     },
     {
         'acceptable_blood_groups': [
@@ -102,7 +105,8 @@ RECIPIENTS = [
         'weight': 70,
         'year_of_birth': 1996,
         'waiting_since': '2020-02-07',
-        'previous_transplants': 0
+        'previous_transplants': 0,
+        'note': 'recipient note 2'
     },
     # missing non required fields
     {

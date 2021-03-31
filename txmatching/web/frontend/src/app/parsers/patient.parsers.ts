@@ -21,7 +21,8 @@ export const parsePatientParameters = ( data: PatientParametersGenerated ): Pati
     sex: parsePatientSexType(data.sex),
     height: data.height,
     weight: data.weight,
-    yearOfBirth: data.year_of_birth
+    yearOfBirth: data.year_of_birth,
+    note: data.note
   };
 };
 

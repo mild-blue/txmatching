@@ -20,6 +20,7 @@ export interface PatientParametersGenerated {
     country_code: CountryCodeGenerated;
     height?: number;
     hla_typing?: HlaTypingGenerated;
+    note: string;
     sex?: SexEnumGenerated;
     weight?: number;
     year_of_birth?: number;

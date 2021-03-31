@@ -33,6 +33,7 @@ export interface DonorInputGenerated {
      * Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.
      */
     medical_id: string;
+    note?: string;
     /**
      * Medical ID of the related recipient, empty for bridging and non-directed donors.
      */

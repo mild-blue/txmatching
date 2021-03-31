@@ -150,6 +150,9 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO, parsi
     patient_update_dict['weight'] = patient_update_dto.weight
     patient_update_dict['yob'] = patient_update_dto.year_of_birth
 
+    if patient_update_dto.note is not None:
+        patient_update_dict['note'] = patient_update_dto.note
+
     return patient_update_dict
 
 
@@ -319,7 +322,8 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
             height=patient_model.height,
             weight=patient_model.weight,
             year_of_birth=patient_model.yob,
-            sex=patient_model.sex
+            sex=patient_model.sex,
+            note=patient_model.note
         ))
 
 

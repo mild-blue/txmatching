@@ -617,6 +617,10 @@ definitions:
                     in your internal system.
                 example: D1037
                 type: string
+            note:
+                default: ''
+                example: donor note
+                type: string
             related_recipient_medical_id:
                 description: Medical ID of the related recipient, empty for bridging
                     and non-directed donors.
@@ -1042,6 +1046,9 @@ definitions:
                     -   raw_code: A*01:02
                     -   raw_code: B7
                     -   raw_code: DR11
+            note:
+                example: patient note
+                type: string
             sex:
                 $ref: '#/definitions/SexEnum'
             weight:
@@ -1063,6 +1070,9 @@ definitions:
                 type: integer
             hla_typing:
                 $ref: '#/definitions/HlaTyping'
+            note:
+                example: patient note
+                type: string
             sex:
                 $ref: '#/definitions/SexEnum'
             weight:
@@ -1072,6 +1082,7 @@ definitions:
         required:
         - blood_group
         - country_code
+        - note
         type: object
     PatientUploadSuccessResponse:
         properties:
@@ -1207,6 +1218,10 @@ definitions:
                     patient in your system. Typically, this is the patient ID used
                     in your internal system.
                 example: R1037
+                type: string
+            note:
+                default: ''
+                example: recipient note
                 type: string
             previous_transplants:
                 description: Number of previous kidney transplants.
