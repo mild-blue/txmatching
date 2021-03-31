@@ -412,7 +412,8 @@ class TestPatientService(DbTests):
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}/recipient',
                              headers=self.auth_headers,
                              json=recipient_update_dict).json
-            self.assertEqual(['A', 'AB'], res['acceptable_blood_groups'])
+            self.assertEqual(['A', 'AB'], res['recipient']['acceptable_blood_groups'])
+            self.assertEqual([], res['parsing_errors'])
             recipients = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                                     f'{PATIENT_NAMESPACE}/configs/default',
                                     headers=self.auth_headers).json['recipients']
