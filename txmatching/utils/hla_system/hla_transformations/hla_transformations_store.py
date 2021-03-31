@@ -1,50 +1,56 @@
 import itertools
 import logging
 from dataclasses import dataclass
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypingDTO, HLATypingRawDTO)
-from txmatching.database.db import db
-from txmatching.database.sql_alchemy_schema import (HLAAntibodyRawModel,
-                                                    ParsingErrorModel)
+from txmatching.database.sql_alchemy_schema import HLAAntibodyRawModel
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import (
-    HLAAntibody, HLAType, create_hla_antibodies_per_groups_from_hla_antibodies,
+from txmatching.patients.hla_functions import (
+    create_hla_antibodies_per_groups_from_hla_antibodies,
     split_hla_types_to_groups)
+from txmatching.patients.hla_model import HLAAntibody, HLAType
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
-from txmatching.utils.logging_tools import PatientAdapter
+from txmatching.utils.hla_system.hla_transformations.parsing_error import (
+    ParsingInfo, add_parsing_error_to_db_session)
 
 logger = logging.getLogger(__name__)
 
 
-def parse_hla_raw_code_and_add_parsing_error_to_db_session(hla_raw_code: str) -> Optional[HLACode]:
+def parse_hla_raw_code_and_add_parsing_error_to_db_session(
+        hla_raw_code: str, parsing_info: ParsingInfo = None
+) -> Optional[HLACode]:
     """
     Method to store information about error during parsing HLA code.
     This method is partially redundant to parse_hla_raw_code so in case of update, update it too.
     It must be in separated file with little redundancy caused by cyclic import:
     txmatching.database.sql_alchemy_schema -> txmatching.patients.patient ->
     txmatching.patients.patient_parameters -> txmatching.utils.hla_system.hla_transformations
+    :type parsing_info: object
     :param hla_raw_code: HLA raw code
     :return:
     """
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
     if not parsing_result.maybe_hla_code or \
             parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:
-        add_parsing_error_to_db_session(hla_raw_code, parsing_result.result_detail)
+        add_parsing_error_to_db_session(
+            hla_raw_code,
+            parsing_result.result_detail,
+            message=parsing_result.result_detail.value,
+            parsing_info=parsing_info
+        )
     return parsing_result.maybe_hla_code
 
 
 def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
         hla_antibodies_raw: List[HLAAntibodyRawModel],
-        # TODO: https://github.com/mild-blue/txmatching/issues/496 replace logging with storing in db along
-        #  with patient medical id. Change it also in other places.
-        logger_with_patient: Union[logging.Logger, PatientAdapter] = logging.getLogger(__name__)
+        parsing_info: ParsingInfo = None
 ) -> HLAAntibodiesDTO:
     # 1. preprocess raw codes (their count can increase)
     @dataclass
@@ -70,12 +76,17 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
         # Antibodies with the same raw code does need to have the same cutoff
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
         if len(cutoffs) > 1:
-            add_parsing_error_to_db_session(raw_code, HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY)
+            add_parsing_error_to_db_session(
+                raw_code,
+                HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
+                message=HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.value,
+                parsing_info=parsing_info
+            )
             continue
 
         # Parse antibodies and keep only valid ones
         for hla_antibody in antibody_group:
-            code = parse_hla_raw_code_and_add_parsing_error_to_db_session(hla_antibody.raw_code)
+            code = parse_hla_raw_code_and_add_parsing_error_to_db_session(hla_antibody.raw_code, parsing_info)
             if code is not None:
                 hla_antibodies_parsed.append(
                     HLAAntibody(
@@ -88,7 +99,7 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
 
     # 3. split antibodies to groups (and join duplicates)
     hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(
-        hla_antibodies_parsed, logger_with_patient
+        hla_antibodies_parsed, parsing_info
     )
 
     return HLAAntibodiesDTO(
@@ -96,7 +107,10 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
     )
 
 
-def parse_hla_typing_raw_and_add_parsing_error_to_db_session(hla_typing_raw: HLATypingRawDTO) -> HLATypingDTO:
+def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
+        hla_typing_raw: HLATypingRawDTO,
+        parsing_info: ParsingInfo = None
+) -> HLATypingDTO:
     # 1. preprocess raw codes (their count can increase)
     raw_codes_preprocessed = [
         raw_code_preprocessed
@@ -107,7 +121,7 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(hla_typing_raw: HLA
     # 2. parse preprocessed codes and keep only valid ones
     hla_types_parsed = []
     for raw_code in raw_codes_preprocessed:
-        code = parse_hla_raw_code_and_add_parsing_error_to_db_session(raw_code)
+        code = parse_hla_raw_code_and_add_parsing_error_to_db_session(raw_code, parsing_info)
         if code is not None:
             hla_types_parsed.append(
                 HLAType(
@@ -117,20 +131,8 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(hla_typing_raw: HLA
             )
 
     # 3. split hla_types_parsed to the groups
-    hla_per_groups = split_hla_types_to_groups(hla_types_parsed)
+    hla_per_groups = split_hla_types_to_groups(hla_types_parsed, parsing_info)
 
     return HLATypingDTO(
         hla_per_groups=hla_per_groups,
     )
-
-
-# You need to commit the session to save the changes to the db (db.session.commit())
-def add_parsing_error_to_db_session(
-        hla_code: str,
-        hla_code_processing_result_detail: HlaCodeProcessingResultDetail
-):
-    parsing_error = ParsingErrorModel(
-        hla_code=hla_code,
-        hla_code_processing_result_detail=hla_code_processing_result_detail
-    )
-    db.session.add(parsing_error)

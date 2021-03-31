@@ -42,7 +42,8 @@ from txmatching.database.services.patient_service import (
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
     update_donor, update_recipient)
 from txmatching.database.services.patient_upload_service import (
-    add_donor_recipient_pair, replace_or_add_patients_from_excel)
+    add_donor_recipient_pair, get_patients_errors_from_pair_dto,
+    replace_or_add_patients_from_excel)
 from txmatching.database.services.txm_event_service import (
     get_txm_event_base, get_txm_event_complete)
 from txmatching.database.services.upload_service import save_uploaded_file
@@ -94,9 +95,13 @@ class DonorRecipientPairs(Resource):
                                          country=donor_recipient_pair_dto_in.country_code)
 
         add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
+
+        parsing_errors = get_patients_errors_from_pair_dto(donor_recipient_pair_dto_in, txm_event_id)
+
         return response_ok(PatientUploadDTOOut(
             donors_uploaded=1,
-            recipients_uploaded=1 if donor_recipient_pair_dto_in.recipient else 0
+            recipients_uploaded=1 if donor_recipient_pair_dto_in.recipient else 0,
+            parsing_errors=parsing_errors
         ))
 
 
@@ -217,8 +222,9 @@ class AddPatientsFile(Resource):
         replace_or_add_patients_from_excel(parsed_data)
         return response_ok(PatientUploadDTOOut(
             recipients_uploaded=sum(len(parsed_data_country.recipients) for parsed_data_country in parsed_data),
-            donors_uploaded=sum(len(parsed_data_country.donors) for parsed_data_country in parsed_data))
-        )
+            donors_uploaded=sum(len(parsed_data_country.donors) for parsed_data_country in parsed_data),
+            parsing_errors=[]  # TODO: https://github.com/mild-blue/txmatching/issues/619
+        ))
 
 
 @patient_api.route('/recompute-parsing', methods=['POST'])

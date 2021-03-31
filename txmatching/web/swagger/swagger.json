@@ -1250,6 +1250,55 @@
             }
         },
         "/v1/user/otp": {
+            "put": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "New OTP was generated and sent.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_otp_login_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            },
             "post": {
                 "responses": {
                     "503": {
@@ -1300,55 +1349,6 @@
                         }
                     }
                 ],
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "user"
-                ]
-            },
-            "put": {
-                "responses": {
-                    "503": {
-                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "New OTP was generated and sent.",
-                        "schema": {
-                            "$ref": "#/definitions/StatusResponse"
-                        }
-                    }
-                },
-                "operationId": "put_otp_login_api",
                 "security": [
                     {
                         "bearer": []
@@ -2016,6 +2016,7 @@
         "PatientUploadSuccessResponse": {
             "required": [
                 "donors_uploaded",
+                "parsing_errors",
                 "recipients_uploaded"
             ],
             "properties": {
@@ -2026,6 +2027,38 @@
                 "donors_uploaded": {
                     "type": "integer",
                     "description": "Number of donors successfully loaded into the application."
+                },
+                "parsing_errors": {
+                    "type": "array",
+                    "description": "Errors and warnings that occurred in HLA codes parsing",
+                    "items": {
+                        "$ref": "#/definitions/ParsingError"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "ParsingError": {
+            "required": [
+                "hla_code",
+                "hla_code_processing_result_detail",
+                "message"
+            ],
+            "properties": {
+                "hla_code": {
+                    "type": "string"
+                },
+                "hla_code_processing_result_detail": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "medical_id": {
+                    "type": "string"
+                },
+                "txm_event_id": {
+                    "type": "integer"
                 }
             },
             "type": "object"
@@ -3506,7 +3539,7 @@
                 "parsing_errors": {
                     "type": "array",
                     "items": {
-                        "type": "object"
+                        "$ref": "#/definitions/ParsingError"
                     }
                 }
             },

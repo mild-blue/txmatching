@@ -14,8 +14,9 @@ from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadDTOOut
 from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
-from txmatching.database.services.patient_upload_service import \
-    replace_or_add_patients_from_one_country
+from txmatching.database.services.patient_upload_service import (
+    get_patients_errors_from_upload_dto,
+    replace_or_add_patients_from_one_country)
 from txmatching.database.services.txm_event_service import save_original_data
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import public_api
@@ -50,7 +51,10 @@ class TxmEventUploadPatients(Resource):
         save_original_data(patient_upload_dto.txm_event_name, current_user_id, request.json)
         # perform update operation
         replace_or_add_patients_from_one_country(patient_upload_dto)
+        # Get parsing errors for uploaded patients
+        parsing_errors = get_patients_errors_from_upload_dto(patient_upload_dto)
         return response_ok(PatientUploadDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),
-            donors_uploaded=len(patient_upload_dto.donors)
+            donors_uploaded=len(patient_upload_dto.donors),
+            parsing_errors=parsing_errors
         ))

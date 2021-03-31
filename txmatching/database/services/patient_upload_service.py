@@ -6,6 +6,7 @@ from typing import Dict, List
 import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
     HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
@@ -33,7 +34,8 @@ from txmatching.utils.country_enum import Country
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
     parse_hla_typing_raw_and_add_parsing_error_to_db_session)
-from txmatching.utils.logging_tools import PatientAdapter
+from txmatching.utils.hla_system.hla_transformations.parsing_error import (
+    ParsingInfo, get_parsing_errors_for_patients)
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +51,20 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO, tx
         txm_event_db_id=txm_event_db_id
     )
     db.session.commit()
+
+
+def get_patients_errors_from_upload_dto(patient_upload_dto: PatientUploadDTOIn) -> List[ParsingError]:
+    txm_event_db_id = get_txm_event_db_id_by_name(patient_upload_dto.txm_event_name)
+    medical_ids = [patient.medical_id for patient in patient_upload_dto.donors] + \
+                  [patient.medical_id for patient in patient_upload_dto.recipients]
+    return get_parsing_errors_for_patients(medical_ids, txm_event_db_id)
+
+
+def get_patients_errors_from_pair_dto(pair_dto: DonorRecipientPairDTO, txm_event_id: int) -> List[ParsingError]:
+    medical_ids = [pair_dto.donor.medical_id]
+    if pair_dto.recipient is not None:
+        medical_ids.append(pair_dto.recipient.medical_id)
+    return get_parsing_errors_for_patients(medical_ids, txm_event_id)
 
 
 def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn):
@@ -115,17 +131,17 @@ def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
     hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
     patient_model.hla_typing = dataclasses.asdict(
         parse_hla_typing_raw_and_add_parsing_error_to_db_session(
-            hla_typing_raw
+            hla_typing_raw,
+            ParsingInfo(medical_id=patient_model.medical_id, txm_event_id=patient_model.txm_event_id)
         )
     )
 
 
 def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
     hla_antibodies_raw = recipient_model.hla_antibodies_raw
-    logger_with_patient = PatientAdapter(logger, {'patient_medical_id': recipient_model.medical_id})
     hla_antibodies_parsed = parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
         hla_antibodies_raw,
-        logger_with_patient
+        ParsingInfo(medical_id=recipient_model.medical_id, txm_event_id=recipient_model.txm_event_id)
     )
     recipient_model.hla_antibodies = dataclasses.asdict(hla_antibodies_parsed)
 

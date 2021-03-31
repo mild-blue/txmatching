@@ -96,6 +96,9 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     try {
       const response: PatientUploadSuccessResponseGenerated = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
       this._alertService.success(`Successfully uploaded ${response.donors_uploaded} donor and ${response.recipients_uploaded} recipient${response.recipients_uploaded === 0 ? 's' : ''}`);
+      if (response.parsing_errors.length > 0) {
+        this._logger.error('Following parsing errors occured', response.parsing_errors);
+      }
       this.togglePatientPopup();
       await this._initPatientsWithStats();
 
