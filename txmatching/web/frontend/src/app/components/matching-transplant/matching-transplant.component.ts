@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { PatientService } from '@app/services/patient/patient.service';
 import { Configuration } from '@app/model/Configuration';
 import { DetailedScorePerGroup } from '@app/model/Hla';
-import { Recipient } from '@app/model/Recipient';
+import { Recipient, RecipientRequirements } from '@app/model/Recipient';
 import { Donor } from '@app/model/Donor';
 import { Patient } from '@app/model/Patient';
 import { PatientPairStyle } from '@app/components/patient-pair/patient-pair.interface';
@@ -62,5 +62,26 @@ export class MatchingTransplantComponent {
     } else {
       return null;
     }
+  }
+
+  public showRecipientRequirementsInfo(requirements?: RecipientRequirements): boolean {
+    return requirements !== undefined && (
+      requirements.requireCompatibleBloodGroup ||
+      requirements.requireBetterMatchInCompatibilityIndex ||
+      requirements.requireBetterMatchInCompatibilityIndexOrBloodGroup
+    );
+  }
+
+  public getRecipientRequirementsInfo(requirements?: RecipientRequirements): string {
+    return `${requirements?.requireCompatibleBloodGroup ? 'YES' : 'NO'}/`+
+      `${requirements?.requireBetterMatchInCompatibilityIndex ? 'YES' : 'NO'}/`+
+      `${requirements?.requireBetterMatchInCompatibilityIndexOrBloodGroup ? 'YES' : 'NO'}`;
+  }
+
+  public getRecipientRequirementsInfoTooltip(requirements?: RecipientRequirements): string {
+    return 'Matching conditions\n\n'+
+      `Require compatible blood group: ${requirements?.requireCompatibleBloodGroup ? 'YES' : 'NO (default)'}\n\n`+
+      `Require new donor having better CI match than original donor: ${requirements?.requireBetterMatchInCompatibilityIndex ? 'YES' : 'NO (default)'}\n\n`+
+      `Require new donor having better CI match than original donor or blood group match: ${requirements?.requireBetterMatchInCompatibilityIndexOrBloodGroup ? 'YES' : 'NO (default)'}`;
   }
 }

@@ -44,21 +44,8 @@
       &::before {
         content: '●';
         margin: 0 5px;
-        color: var(--primary-color);
       }
     }
-  }
-
-  .patient-info {
-    margin-top: 2px;
-    font-size: 12px;
-    font-weight: 300;
-  }
-
-  .patient-info span + span::before {
-    content: '●';
-    margin: 0 5px;
-    color: var(--primary-color);
   }
 
   table {
