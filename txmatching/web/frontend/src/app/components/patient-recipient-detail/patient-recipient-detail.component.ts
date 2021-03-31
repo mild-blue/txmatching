@@ -50,7 +50,16 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
     this._patientService.saveRecipient(this.defaultTxmEvent.id, this.item.dbId, this.recipientEditable)
     .then((updatedRecipient) => {
       this._logger.log('Updated recipient received from BE', [updatedRecipient]);
-      Object.assign(this.item, updatedRecipient);
+      Object.assign(this.item, updatedRecipient.recipient);
+
+      if (updatedRecipient.parsingErrors.length > 0) {
+        this._alertService.warnWithParsingErrors(
+          'Recipient was updated but some parsing errors and warnings occurred',
+          updatedRecipient.parsingErrors
+        );
+        this._logger.log('Parsing errors', updatedRecipient.parsingErrors);
+      }
+
       this._initRecipientEditable();
       this.success = true;
     })

@@ -1,10 +1,11 @@
-import { RecipientGenerated, RecipientRequirementsGenerated } from '../generated';
-import { Recipient, RecipientRequirements } from '../model';
+import { RecipientGenerated, RecipientRequirementsGenerated, UpdatedRecipientGenerated } from '../generated';
+import { Recipient, RecipientRequirements, UpdatedRecipient } from '../model';
 import { parseBloodGroup, parsePatient } from './patient.parsers';
 import { parseAntibodies } from './hla.parsers';
 import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
 import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
+import { parseParsingError } from '@app/parsers/parsingError.parsers';
 
 export const parseRecipient = (data: RecipientGenerated): Recipient => {
   const recipientListItem: ListItem = {
@@ -42,4 +43,11 @@ export const parseRecipientRequirements = (data: RecipientRequirementsGenerated)
 
 export const parseDate = (data: string): Date => {
   return new Date(data);
+};
+
+export const parseUpdatedRecipient = (data: UpdatedRecipientGenerated): UpdatedRecipient => {
+  return {
+    recipient: parseRecipient(data.recipient),
+    parsingErrors: data.parsing_errors.map(parseParsingError)
+  };
 };

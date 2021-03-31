@@ -64,8 +64,16 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
       this._logger.log('Updated donor received from BE', [updatedDonor]);
 
       if (this.item) {
-        updatedDonor.index = this.item.index;
-        Object.assign(this.item, updatedDonor);
+        updatedDonor.donor.index = this.item.index;
+        Object.assign(this.item, updatedDonor.donor);
+      }
+
+      if (updatedDonor.parsingErrors.length > 0) {
+        this._alertService.warnWithParsingErrors(
+          'Donor was updated but some parsing errors and warnings occurred',
+          updatedDonor.parsingErrors
+        );
+        this._logger.log('Parsing errors', updatedDonor.parsingErrors);
       }
 
       this._initDonorEditable();

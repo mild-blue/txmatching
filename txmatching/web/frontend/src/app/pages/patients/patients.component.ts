@@ -15,10 +15,10 @@ import { PatientDonorDetailWrapperComponent } from '@app/components/patient-dono
 import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 import { Subscription } from 'rxjs';
-import { PatientUploadSuccessResponseGenerated } from '@app/generated';
 import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
 import { DonorType } from '@app/model/enums/DonorType';
 import { ReportService } from '@app/services/report/report.service';
+import { ParsingError } from '@app/model/ParsingError';
 
 @Component({
   selector: 'app-patients',
@@ -94,11 +94,18 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     }
 
     try {
-      const response: PatientUploadSuccessResponseGenerated = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
-      this._alertService.success(`Successfully uploaded ${response.donors_uploaded} donor and ${response.recipients_uploaded} recipient${response.recipients_uploaded === 0 ? 's' : ''}`);
-      if (response.parsing_errors.length > 0) {
-        this._logger.error('Following parsing errors occured', response.parsing_errors);
+      const parsingErrors: ParsingError[] = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
+
+      if (parsingErrors.length === 0) {
+        this._alertService.success('Patients were successfully added');
+      } else {
+        this._alertService.warnWithParsingErrors(
+          'Patients were added but some parsing errors or warnings occurred',
+          parsingErrors
+        );
+        this._logger.log('Parsing errors', parsingErrors);
       }
+
       this.togglePatientPopup();
       await this._initPatientsWithStats();
 

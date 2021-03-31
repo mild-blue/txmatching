@@ -20,10 +20,14 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
     PatientUploadSuccessJson
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import (
-    donor_to_donor_dto_out, to_lists_for_fe)
+    donor_to_donor_dto_out, recipient_to_recipient_dto_out, to_lists_for_fe)
+from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
+    UpdatedDonorDTOOut
+from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
+    UpdatedRecipientDTOOut
 from txmatching.data_transfer_objects.patients.patient_swagger import (
-    DonorJson, DonorModelPairInJson, DonorToUpdateJson, PatientsJson,
-    RecipientJson, RecipientToUpdateJson)
+    DonorModelPairInJson, DonorToUpdateJson, PatientsJson,
+    RecipientToUpdateJson, UpdatedDonorJsonOut, UpdatedRecipientJsonOut)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
     PatientUploadDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
@@ -48,6 +52,8 @@ from txmatching.database.services.txm_event_service import (
 from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
+from txmatching.utils.hla_system.hla_transformations.parsing_error import \
+    get_parsing_errors_for_patients
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import patient_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
@@ -141,14 +147,21 @@ class DonorRecipientPair(Resource):
 class AlterRecipient(Resource):
     @patient_api.require_user_login()
     @patient_api.request_body(RecipientToUpdateJson)
-    @patient_api.response_ok(RecipientJson, description='Updated recipient.')
+    @patient_api.response_ok(UpdatedRecipientJsonOut, description='Updated recipient.')
     @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
         recipient_update_dto = request_body(RecipientUpdateDTO)
         guard_user_country_access_to_recipient(user_id=get_current_user_id(), recipient_id=recipient_update_dto.db_id)
-        return response_ok(update_recipient(recipient_update_dto, txm_event_id))
+        updated_recipient = update_recipient(recipient_update_dto, txm_event_id)
+
+        return response_ok(
+            UpdatedRecipientDTOOut(
+                recipient=recipient_to_recipient_dto_out(updated_recipient),
+                parsing_errors=get_parsing_errors_for_patients([updated_recipient.medical_id], txm_event_id)
+            )
+        )
 
 
 @patient_api.route('/configs/<config_id>/donor', methods=['PUT'])
@@ -156,7 +169,7 @@ class AlterDonor(Resource):
     @patient_api.doc(params={'config_id': ConfigIdPathParamDefinition})
     @patient_api.require_user_login()
     @patient_api.request_body(DonorToUpdateJson)
-    @patient_api.response_ok(DonorJson, description='Updates single donor.')
+    @patient_api.response_ok(UpdatedDonorJsonOut, description='Updated donor.')
     @patient_api.response_errors()
     @require_user_edit_access()
     @require_valid_txm_event_id()
@@ -169,13 +182,17 @@ class AlterDonor(Resource):
         configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
                                                                 configuration_db_id=config_id)
         scorer = scorer_from_configuration(configuration)
+        updated_donor = update_donor(donor_update_dto, txm_event_id)
 
         return response_ok(
-            donor_to_donor_dto_out(
-                update_donor(donor_update_dto, txm_event_id),
-                all_recipients,
-                configuration,
-                scorer
+            UpdatedDonorDTOOut(
+                donor=donor_to_donor_dto_out(
+                    updated_donor,
+                    all_recipients,
+                    configuration,
+                    scorer
+                ),
+                parsing_errors=get_parsing_errors_for_patients([updated_donor.medical_id], txm_event_id)
             )
         )
 
