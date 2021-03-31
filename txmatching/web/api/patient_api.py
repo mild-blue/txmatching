@@ -14,7 +14,8 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.auth.operation_guards.country_guard import (
     get_user_default_country, guard_user_country_access_to_donor,
     guard_user_country_access_to_recipient, guard_user_has_access_to_country)
-from txmatching.auth.user.user_auth_check import require_user_edit_access
+from txmatching.auth.user.user_auth_check import \
+    require_user_edit_patients_access
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
@@ -91,7 +92,7 @@ class DonorRecipientPairs(Resource):
     @patient_api.request_body(DonorModelPairInJson)
     @patient_api.response_ok(PatientUploadSuccessJson, 'Added new donor (possibly with recipient)')
     @patient_api.response_errors()
-    @require_user_edit_access()
+    @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):
         donor_recipient_pair_dto_in = request_body(DonorRecipientPairDTO)
@@ -128,7 +129,7 @@ class DonorRecipientPair(Resource):
         description='Returns status code representing result of donor recipient pair object deletion.'
     )
     @patient_api.response_errors()
-    @require_user_edit_access()
+    @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     def delete(self, txm_event_id: int, donor_db_id: int):
         donor, maybe_recipient = get_donor_recipient_pair(donor_id=donor_db_id, txm_event_id=txm_event_id)
@@ -149,7 +150,7 @@ class AlterRecipient(Resource):
     @patient_api.request_body(RecipientToUpdateJson)
     @patient_api.response_ok(UpdatedRecipientJsonOut, description='Updated recipient.')
     @patient_api.response_errors()
-    @require_user_edit_access()
+    @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
         recipient_update_dto = request_body(RecipientUpdateDTO)
@@ -171,7 +172,7 @@ class AlterDonor(Resource):
     @patient_api.request_body(DonorToUpdateJson)
     @patient_api.response_ok(UpdatedDonorJsonOut, description='Updated donor.')
     @patient_api.response_errors()
-    @require_user_edit_access()
+    @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def put(self, txm_event_id: int, config_id: Optional[int]):
@@ -212,7 +213,7 @@ class AddPatientsFile(Resource):
                      )
     @patient_api.response_ok(PatientUploadSuccessJson, description='Success.')
     @patient_api.response_errors()
-    @require_user_edit_access()
+    @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
         file = request.files['file']

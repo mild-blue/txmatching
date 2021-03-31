@@ -41,7 +41,8 @@ from txmatching.database.services.matching_service import (
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.patients.hla_model import HLAAntibody, HLAType
-from txmatching.patients.patient import Donor, DonorType, Patient, Recipient
+from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
+                                         RecipientRequirements)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
@@ -179,7 +180,7 @@ class MatchingReport(Resource):
         logo, color = _get_theme()
         html = (j2_env.get_template('report.html').render(
             title='Matching Report',
-            date=datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
+            date=datetime.datetime.now().strftime('%b %d, %Y %H:%M:%S'),
             txm_event_name=txm_event.name,
             configuration=configuration,
             matchings=calculated_matchings_dto,
@@ -310,6 +311,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
         donor_sex: str
         donor_year_of_birth: int
         donor_blood_group: str
+        donor_note: str
         donor_type: str
         donor_antigens: str
         recipient_medical_id: str = ''
@@ -319,6 +321,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
         recipient_weight: float = None
         recipient_sex: str = ''
         recipient_year_of_birth: int = None
+        recipient_note: str = ''
         recipient_blood_group: str = ''
         recipient_acceptable_blood_groups: str = ''
         recipient_antigens: str = ''
@@ -340,6 +343,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
             donor_weight=donor.parameters.weight,
             donor_sex=donor.parameters.sex.value if donor.parameters.sex is not None else '',
             donor_year_of_birth=donor.parameters.year_of_birth,
+            donor_note=donor.parameters.note,
             donor_blood_group=donor.parameters.blood_group,
             donor_type=donor_type_label_filter(donor.donor_type),
             donor_antigens=' '.join([hla.raw_code for hla in donor.parameters.hla_typing.hla_types_raw_list]),
@@ -358,6 +362,7 @@ def _export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut
                 recipient_weight=recipient.parameters.weight,
                 recipient_sex=recipient.parameters.sex.value if recipient.parameters.sex is not None else '',
                 recipient_year_of_birth=recipient.parameters.year_of_birth,
+                recipient_note=recipient.parameters.note,
                 recipient_blood_group=recipient.parameters.blood_group,
                 recipient_acceptable_blood_groups=(
                     ', '.join([blood_group for blood_group in recipient.acceptable_blood_groups])
@@ -417,6 +422,25 @@ def patient_height_and_weight_filter(patient: Patient) -> Optional[str]:
         return f'-/{weight:.0f}'
     else:
         return None
+
+
+def show_recipient_requirements_info_filter(requirements: Optional[RecipientRequirements]) -> bool:
+    return requirements is not None and (
+            requirements.require_compatible_blood_group or
+            requirements.require_better_match_in_compatibility_index or
+            requirements.require_better_match_in_compatibility_index_or_blood_group
+    )
+
+
+def recipient_requirements_info_filter(requirements: Optional[RecipientRequirements]) -> str:
+    if requirements is None:
+        return 'NO/NO/NO'
+
+    return '/'.join([
+        'YES' if requirements.require_compatible_blood_group else 'NO',
+        'YES' if requirements.require_better_match_in_compatibility_index else 'NO',
+        'YES' if requirements.require_better_match_in_compatibility_index_or_blood_group else 'NO'
+    ])
 
 
 def score_color_filter(score: Optional[float], max_score: Optional[float]):
@@ -490,6 +514,8 @@ jinja2.filters.FILTERS.update({
     'country_code_from_country_filter': country_code_from_country_filter,
     'patient_by_medical_id_filter': patient_by_medical_id_filter,
     'patient_height_and_weight_filter': patient_height_and_weight_filter,
+    'show_recipient_requirements_info_filter': show_recipient_requirements_info_filter,
+    'recipient_requirements_info_filter': recipient_requirements_info_filter,
     'score_color_filter': score_color_filter,
     'donor_type_label_filter': donor_type_label_filter,
     'donor_type_label_from_round_filter': donor_type_label_from_round_filter,

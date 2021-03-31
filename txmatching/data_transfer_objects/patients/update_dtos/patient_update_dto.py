@@ -19,3 +19,4 @@ class PatientUpdateDTO:
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None
     year_of_birth: Optional[int] = None
+    note: Optional[str] = None

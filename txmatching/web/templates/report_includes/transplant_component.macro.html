@@ -82,6 +82,11 @@
               <span>{{ donor|patient_height_and_weight_filter }}</span>
             {% endif %}
           </div>
+          {% if donor.parameters.note.strip() != '' %}
+            <div class="patient-note">
+              {{ donor.parameters.note.strip() }}
+            </div>
+          {% endif %}
         </td>
         <td colspan="2">
           {% if recipient %}
@@ -103,7 +108,22 @@
               {% if recipient|patient_height_and_weight_filter is not none %}
                 <span>{{ recipient|patient_height_and_weight_filter }}</span>
               {% endif %}
+
+              {% if recipient.waiting_since is not none %}
+                <span>{{ recipient.waiting_since.strftime('%b %d, %Y') }}</span>
+              {% endif %}
+              {% if recipient.previous_transplants is not none %}
+                <span>{{ recipient.previous_transplants }}</span>
+              {% endif %}
+              {% if recipient.recipient_requirements|show_recipient_requirements_info_filter %}
+                <span>{{ recipient.recipient_requirements|recipient_requirements_info_filter }}</span>
+              {% endif %}
             </div>
+            {% if recipient.parameters.note.strip() != '' %}
+              <div class="patient-note">
+                {{ recipient.parameters.note.strip() }}
+              </div>
+            {% endif %}
           {% endif %}
         </td>
         <td>Score</td>

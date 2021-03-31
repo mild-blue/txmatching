@@ -75,6 +75,13 @@
                      [value]="recipient.yearOfBirth" [(ngModel)]="recipient.yearOfBirth"
                      name="yearOfBirth" ngDefaultControl></app-simple-number>
 
+  <!-- Recipient note -->
+  <app-setting-item label="Note">
+    <mat-form-field>
+      <textarea matInput [(ngModel)]="recipient.note"></textarea>
+    </mat-form-field>
+  </app-setting-item>
+
   <!-- Recipient waiting since date -->
   <app-setting-item label="Waiting since">
     <mat-form-field>

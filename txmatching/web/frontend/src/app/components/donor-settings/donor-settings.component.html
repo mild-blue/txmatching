@@ -51,4 +51,11 @@
                      [value]="donor.yearOfBirth" [(ngModel)]="donor.yearOfBirth"
                      name="yearOfBirth" ngDefaultControl></app-simple-number>
 
+  <!-- Donor note -->
+  <app-setting-item label="Note">
+    <mat-form-field>
+      <textarea matInput [(ngModel)]="donor.note"></textarea>
+    </mat-form-field>
+  </app-setting-item>
+
 </ng-container>

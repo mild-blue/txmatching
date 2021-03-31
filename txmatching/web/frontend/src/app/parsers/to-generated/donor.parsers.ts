@@ -22,7 +22,8 @@ export const fromDonorEditableToInputGenerated = ( donor: DonorEditable ): Donor
     sex: donor.sex ? fromSex(donor.sex) : undefined,
     height: donor.height ? +donor.height : undefined,
     weight: donor.weight ? +donor.weight : undefined,
-    year_of_birth: donor.yearOfBirth ? +donor.yearOfBirth : undefined
+    year_of_birth: donor.yearOfBirth ? +donor.yearOfBirth : undefined,
+    note: donor.note
   };
 };
 

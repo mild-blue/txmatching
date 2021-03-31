@@ -52,6 +52,7 @@ DonorJsonIn = public_api.model('DonorInput', {
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
+    'note': fields.String(required=False, example='donor note', default=''),
     'internal_medical_id': fields.String(required=False,
                                          example='123456',
                                          description='Custom medical ID that will not be shown in UI, but will be'
@@ -81,6 +82,7 @@ RecipientJsonIn = public_api.model('RecipientInput', {
     'height': fields.Integer(required=False, example=178, description='Height of the patient in centimeters.'),
     'weight': fields.Float(required=False, example=78.4, description='Weight of the patient in kilograms.'),
     'year_of_birth': fields.Integer(required=False, example=1945, description='Year of birth of the patient.'),
+    'note': fields.String(required=False, example='recipient note', default=''),
     'waiting_since': fields.Date(required=False,
                                  example='2015-01-17',
                                  description='Date since when the patient has been on waiting list. '

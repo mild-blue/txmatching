@@ -35,7 +35,7 @@
     margin-left: 10px;
   }
 
-  .patient-info {
+  .patient-info, .patient-note {
     margin-top: 2px;
     font-size: 12px;
     font-weight: $font-weight;
@@ -44,21 +44,13 @@
       &::before {
         content: '●';
         margin: 0 5px;
-        color: var(--primary-color);
       }
     }
   }
 
-  .patient-info {
-    margin-top: 2px;
-    font-size: 12px;
-    font-weight: 300;
-  }
-
-  .patient-info span + span::before {
-    content: '●';
-    margin: 0 5px;
-    color: var(--primary-color);
+  .patient-note {
+    white-space: pre-line;
+    font-style: italic;
   }
 
   table {

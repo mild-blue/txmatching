@@ -13,6 +13,8 @@ export class PatientEditable {
   height?: number;
   weight?: number;
   yearOfBirth?: number;
+  note: string = '';
+
 
   initializeFromPatient(patient: Patient) {
     this.country = patient.parameters.countryCode;
@@ -23,6 +25,7 @@ export class PatientEditable {
     this.height = patient.parameters.height;
     this.weight = patient.parameters.weight;
     this.yearOfBirth = patient.parameters.yearOfBirth;
+    this.note = patient.parameters.note;
   }
 
   removeAntigen(a: AntigenEditable) {

@@ -69,7 +69,7 @@
         -webkit-box-align: center;
     }
 
-    .patient-info {
+    .patient-info, .patient-note {
         margin-top: 2px;
         font-size: 12px;
         font-weight: 300;
@@ -78,8 +78,12 @@
     .patient-info span + span::before {
         content: '-';
         margin: 0 5px;
-        color: {{ color }};
         font-weight: bold;
+    }
+
+    .patient-note {
+        white-space: pre-line;
+        font-style: italic;
     }
 
     .transplant-content table {

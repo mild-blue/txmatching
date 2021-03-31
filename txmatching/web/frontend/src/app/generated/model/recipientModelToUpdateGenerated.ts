@@ -29,6 +29,7 @@ export interface RecipientModelToUpdateGenerated {
      * Provide full list of all the HLA types of the patient, not just the change set
      */
     hla_typing?: HlaTypingToUpdateGenerated;
+    note?: string;
     sex?: SexEnumGenerated;
     weight?: number;
     year_of_birth?: number;
