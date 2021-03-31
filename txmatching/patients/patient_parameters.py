@@ -12,6 +12,8 @@ Kilograms = float
 Centimeters = int
 
 
+# It make sense to have a lot of patient parameters
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class PatientParameters(PersistentlyHashable):
     blood_group: BloodGroup
