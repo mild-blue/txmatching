@@ -23,7 +23,7 @@ class PatientParameters(PersistentlyHashable):
     height: Optional[Centimeters] = None
     weight: Optional[Kilograms] = None
     year_of_birth: Optional[int] = None
-    note: str = ''
+    note: str = ''  # This is field is not optional because '' is treated as None
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, PatientParameters)
