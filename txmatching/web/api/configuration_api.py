@@ -8,6 +8,8 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
+from txmatching.auth.operation_guards.txm_event_guard import \
+    guard_open_txm_event
 from txmatching.auth.user.user_auth_check import \
     require_user_edit_config_access
 from txmatching.data_transfer_objects.configuration.configuration_swagger import (
@@ -55,5 +57,6 @@ class DefaultConfigurationApi(Resource):
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
         identifier_dto = request_body(IdentifierDTOIn)
+        guard_open_txm_event(txm_event_id)
         set_config_as_default(txm_event_id=txm_event_id, configuration_db_id=identifier_dto.id)
         return response_ok(SuccessDTOOut(success=True))

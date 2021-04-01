@@ -114,12 +114,17 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       return;
     }
 
-    const success = await this._configService.setConfigurationAsDefault(this.defaultTxmEvent.id, configId);
-    await this._initTxmEvents(true);
-    if (success) {
-      this._alertService.success(`Default configuration for event ${this.defaultTxmEvent.name} was updated`);
-    } else {
-      this._alertService.error('Error occured when updating default configuration');
+    try {
+      const success = await this._configService.setConfigurationAsDefault(this.defaultTxmEvent.id, configId);
+      await this._initTxmEvents(true);
+      if (success) {
+        this._alertService.success(`Default configuration for event ${this.defaultTxmEvent.name} was updated`);
+      } else {
+        this._alertService.error('Error occured when updating default configuration');
+      }
+    } catch(e) {
+      this._alertService.error(`Error setting default configuration: "${e.message || e}"`);
+      this._logger.error(`Error setting default configuration: "${e.message || e}"`);
     }
   }
 
