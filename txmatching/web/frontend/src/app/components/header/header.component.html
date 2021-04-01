@@ -9,6 +9,11 @@
           <div class="caption">TXM Event</div>
           <div class="name">
             {{defaultTxmEvent.name}}
+            <div *ngIf="defaultTxmEvent.state == txmEventState.Closed"
+                 class="label-closed"
+                 matTooltip="This TXM event is closed and patients and default configuration cannot be modified">
+              closed
+            </div>
             <fa-icon [icon]="caretDownIcon"></fa-icon>
           </div>
         </button>
@@ -25,6 +30,9 @@
                              [value]="txmEvent.id"
                              [selected]="defaultTxmEvent.id == txmEvent.id">
               {{txmEvent.name}}
+              <strong *ngIf="txmEvent.state == txmEventState.Closed">
+                (closed)
+              </strong>
             </mat-list-option>
           </mat-selection-list>
 
