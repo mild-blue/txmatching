@@ -33,12 +33,12 @@ export class AlertService {
     this.alert(new Alert({ type: AlertType.Warning, message, actionLabel, action, fadeAutomatically }));
   }
 
-  public warnWithParsingErrors(message: string, parsingErrors: ParsingError[]): void {
+  public infoWithParsingErrors(message: string, parsingErrors: ParsingError[]): void {
     const parsingErrorsStr = parsingErrors.map(parsingError => `
       <strong>${parsingError.hlaCode}</strong>:
       ${parsingError.message}
     `).join('<br>');
-    this.warn(`${message}<br><br>${parsingErrorsStr}`);
+    this.info(`${message}<br><br>${parsingErrorsStr}`);
   }
 
   public alert(alert: Alert): void {
