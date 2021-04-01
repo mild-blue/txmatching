@@ -13,7 +13,7 @@ from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.country_enum import Country
 # pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
-from txmatching.utils.enums import Sex
+from txmatching.utils.enums import Sex, TxmEventState
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 
@@ -63,6 +63,7 @@ class TxmEventModel(db.Model):
     # We do not set ForeignKey('config.id') in the following line because db.drop_all() does not
     # work otherwise (no such table: main.txm_event)
     default_config_id = Column(Integer, unique=False, nullable=True)
+    state = Column(Enum(TxmEventState), unique=False, nullable=False, default=TxmEventState.OPEN)
     donors = relationship('DonorModel', backref='txm_event', passive_deletes=True)  # type: List[DonorModel]
     created_at = Column(DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())

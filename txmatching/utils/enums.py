@@ -122,3 +122,8 @@ class MatchType(str, Enum):
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
+
+
+class TxmEventState(str, Enum):
+    OPEN = 'OPEN'
+    CLOSED = 'CLOSED'

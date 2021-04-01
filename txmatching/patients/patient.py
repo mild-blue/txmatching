@@ -7,6 +7,7 @@ from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.enums import TxmEventState
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
@@ -106,6 +107,7 @@ class TxmEventBase:
     db_id: int
     name: str
     default_config_id: Optional[int]
+    state: TxmEventState
 
 
 @dataclass(init=False)
@@ -117,11 +119,12 @@ class TxmEvent(TxmEventBase):
 
     # pylint: disable=too-many-arguments
     # I think it is reasonable to have multiple arguments here
-    def __init__(self, db_id: int, name: str, default_config_id: Optional[int],
+    def __init__(self, db_id: int, name: str, default_config_id: Optional[int], state: TxmEventState,
                  all_donors: List[Donor], all_recipients: List[Recipient]):
         self.db_id = db_id
         self.name = name
         self.default_config_id = default_config_id
+        self.state = state
         self.all_donors = all_donors
         self.all_recipients = all_recipients
         self.active_donors_dict = {donor.db_id: donor for donor in self.all_donors if donor.active}

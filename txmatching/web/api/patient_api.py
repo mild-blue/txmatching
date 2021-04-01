@@ -14,6 +14,8 @@ from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.auth.operation_guards.country_guard import (
     get_user_default_country, guard_user_country_access_to_donor,
     guard_user_country_access_to_recipient, guard_user_has_access_to_country)
+from txmatching.auth.operation_guards.txm_event_guard import \
+    guard_open_txm_event
 from txmatching.auth.user.user_auth_check import \
     require_user_edit_patients_access
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
@@ -93,6 +95,7 @@ class DonorRecipientPairs(Resource):
 
         guard_user_has_access_to_country(user_id=get_current_user_id(),
                                          country=donor_recipient_pair_dto_in.country_code)
+        guard_open_txm_event(txm_event_id)
 
         add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
 
@@ -130,6 +133,7 @@ class DonorRecipientPair(Resource):
 
         guard_user_has_access_to_country(user_id=get_current_user_id(),
                                          country=donor.parameters.country_code)
+        guard_open_txm_event(txm_event_id)
 
         if maybe_recipient is not None:
             guard_user_has_access_to_country(user_id=get_current_user_id(),
@@ -149,6 +153,7 @@ class AlterRecipient(Resource):
     def put(self, txm_event_id: int):
         recipient_update_dto = request_body(RecipientUpdateDTO)
         guard_user_country_access_to_recipient(user_id=get_current_user_id(), recipient_id=recipient_update_dto.db_id)
+        guard_open_txm_event(txm_event_id)
         return response_ok(update_recipient(recipient_update_dto, txm_event_id))
 
 
@@ -165,6 +170,7 @@ class AlterDonor(Resource):
     def put(self, txm_event_id: int, config_id: Optional[int]):
         donor_update_dto = request_body(DonorUpdateDTO)
         guard_user_country_access_to_donor(user_id=get_current_user_id(), donor_id=donor_update_dto.db_id)
+        guard_open_txm_event(txm_event_id)
         txm_event = get_txm_event_complete(txm_event_id)
         all_recipients = txm_event.all_recipients
         configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
@@ -199,6 +205,8 @@ class AddPatientsFile(Resource):
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
+        guard_open_txm_event(txm_event_id)
+
         file = request.files['file']
         file_bytes = file.read()
         txm_event_name = get_txm_event_base(txm_event_id).name
