@@ -24,10 +24,6 @@ from txmatching.web.web_utils.route_utils import request_body, response_ok
 logger = logging.getLogger(__name__)
 
 
-def convert_txm_event_base_to_dtoTxmEventDTOOut(id, name, default_config_id):
-    pass
-
-
 @txm_event_api.route('', methods=['POST', 'GET'])
 class TxmEventApi(Resource):
 
