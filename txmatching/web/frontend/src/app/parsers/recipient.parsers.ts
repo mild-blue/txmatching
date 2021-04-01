@@ -20,7 +20,9 @@ export const parseRecipient = (data: RecipientGenerated): Recipient => {
     hlaAntibodies: parseAntibodies(data.hla_antibodies),
     cutoff: data.recipient_cutoff,
     waitingSince: data.waiting_since ? parseDate(data.waiting_since) : undefined,
-    previousTransplants: data.previous_transplants,
+    // TODO: https://github.com/mild-blue/txmatching/issues/628
+    //  we expect undefined from BE but we sometimes get null instead
+    previousTransplants: data.previous_transplants !== null ? data.previous_transplants : undefined,
     recipientRequirements: data.recipient_requirements && parseRecipientRequirements(data.recipient_requirements),
     relatedDonorDbId: data.related_donor_db_id
   };
