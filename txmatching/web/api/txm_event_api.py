@@ -4,23 +4,28 @@ import logging
 
 from flask_restx import Resource
 
-from txmatching.auth.auth_check import require_role
+from txmatching.auth.auth_check import require_role, require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
-    TxmDefaultEventDTOIn, TxmEventDTOIn)
-from txmatching.data_transfer_objects.patients.txm_event_dto_out import (
-    TxmEventDTOOut, TxmEventsDTOOut)
+    TxmDefaultEventDTOIn, TxmEventDTOIn, TxmEventUpdateDTOIn)
+from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
+    TxmEventsDTOOut
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
-    TxmDefaultEventJsonIn, TxmEventJsonIn, TxmEventJsonOut, TxmEventsJson)
+    TxmDefaultEventJsonIn, TxmEventJsonIn, TxmEventJsonOut, TxmEventsJson,
+    TxmEventUpdateJsonIn)
 from txmatching.database.services.txm_event_service import (
-    create_txm_event, delete_txm_event,
+    convert_txm_event_base_to_dto, create_txm_event, delete_txm_event,
     get_allowed_txm_event_ids_for_current_user, get_txm_event_base,
-    get_txm_event_id_for_current_user,
+    get_txm_event_id_for_current_user, set_txm_event_state,
     update_default_txm_event_id_for_current_user)
 from txmatching.web.web_utils.namespaces import txm_event_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
 logger = logging.getLogger(__name__)
+
+
+def convert_txm_event_base_to_dtoTxmEventDTOOut(id, name, default_config_id):
+    pass
 
 
 @txm_event_api.route('', methods=['POST', 'GET'])
@@ -40,8 +45,7 @@ class TxmEventApi(Resource):
         tmx_event = request_body(TxmEventDTOIn)
         created_event = create_txm_event(tmx_event.name)
         return response_ok(
-            TxmEventDTOOut(id=created_event.db_id, name=created_event.name,
-                           default_config_id=created_event.default_config_id),
+            convert_txm_event_base_to_dto(created_event),
             code=201)
 
     @txm_event_api.doc(
@@ -56,7 +60,7 @@ class TxmEventApi(Resource):
             get_allowed_txm_event_ids_for_current_user()
         ]
         txm_events_dto = [
-            TxmEventDTOOut(id=e.db_id, name=e.name, default_config_id=e.default_config_id) for e in
+            convert_txm_event_base_to_dto(e) for e in
             txm_events
         ]
         return response_ok(TxmEventsDTOOut(
@@ -76,8 +80,7 @@ class TxmDefaultEventApi(Resource):
         update_default_txm_event_id_for_current_user(default_event_in.id)
         event = get_txm_event_base(default_event_in.id)
 
-        return response_ok(TxmEventDTOOut(id=event.db_id, name=event.name,
-                                          default_config_id=event.default_config_id))
+        return response_ok(convert_txm_event_base_to_dto(event))
 
     @txm_event_api.doc(description='Get default event')
     @txm_event_api.require_user_login()
@@ -85,11 +88,26 @@ class TxmDefaultEventApi(Resource):
     @txm_event_api.response_errors()
     def get(self) -> str:
         txm_event = get_txm_event_base(get_txm_event_id_for_current_user())
-        return response_ok(TxmEventDTOOut(
-            id=txm_event.db_id,
-            name=txm_event.name,
-            default_config_id=txm_event.default_config_id
-        ))
+        return response_ok(convert_txm_event_base_to_dto(txm_event))
+
+
+@txm_event_api.route('/<int:txm_event_id>', methods=['PUT'])
+class TxmEventUpdateApi(Resource):
+
+    @txm_event_api.request_body(TxmEventUpdateJsonIn, 'TXM event parameters that should be updated.')
+    @txm_event_api.response_ok(TxmEventJsonOut, description='Returns the updated TXM event.')
+    @txm_event_api.response_errors()
+    @require_role(UserRole.ADMIN)
+    @require_valid_txm_event_id()
+    def put(self, txm_event_id: int):
+        update = request_body(TxmEventUpdateDTOIn)
+
+        if update.state is not None:
+            set_txm_event_state(txm_event_id, update.state)
+
+        event = get_txm_event_base(txm_event_id)
+
+        return response_ok(convert_txm_event_base_to_dto(event))
 
 
 # noinspection PyUnresolvedReferences

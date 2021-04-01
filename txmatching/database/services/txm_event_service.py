@@ -8,6 +8,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         UnauthorizedException)
+from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
+    TxmEventDTOOut
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import (
     get_donor_from_donor_model, get_recipient_from_recipient_model)
@@ -213,3 +215,12 @@ def set_txm_event_state(txm_event_id: int, state: TxmEventState):
         {'state': state}
     )
     db.session.commit()
+
+
+def convert_txm_event_base_to_dto(txm_event_base: TxmEventBase) -> TxmEventDTOOut:
+    return TxmEventDTOOut(
+        id=txm_event_base.db_id,
+        name=txm_event_base.name,
+        default_config_id=txm_event_base.default_config_id,
+        state=txm_event_base.state
+    )

@@ -372,6 +372,65 @@
                 ]
             }
         },
+        "/v1/txm-event/{txm_event_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns the updated TXM event.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "TXM event parameters that should be updated.",
+                "operationId": "put_txm_event_update_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEventUpdate"
+                        }
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            }
+        },
         "/v1/txm-event/{txm_event_id}/configuration/set-default": {
             "parameters": [
                 {
@@ -3614,7 +3673,8 @@
         "TxmEvent": {
             "required": [
                 "id",
-                "name"
+                "name",
+                "state"
             ],
             "properties": {
                 "id": {
@@ -3625,9 +3685,19 @@
                 },
                 "default_config_id": {
                     "type": "integer"
+                },
+                "state": {
+                    "$ref": "#/definitions/TxmEventState"
                 }
             },
             "type": "object"
+        },
+        "TxmEventState": {
+            "enum": [
+                "OPEN",
+                "CLOSED"
+            ],
+            "type": "string"
         },
         "DefaultTxmEvent": {
             "required": [
@@ -3636,6 +3706,14 @@
             "properties": {
                 "id": {
                     "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "TxmEventUpdate": {
+            "properties": {
+                "state": {
+                    "$ref": "#/definitions/TxmEventState"
                 }
             },
             "type": "object"
