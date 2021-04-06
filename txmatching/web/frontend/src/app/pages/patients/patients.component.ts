@@ -15,7 +15,7 @@ import { PatientDonorDetailWrapperComponent } from '@app/components/patient-dono
 import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 import { Subscription } from 'rxjs';
-import { PatientUploadSuccessResponseGenerated } from '@app/generated';
+import { PatientUploadSuccessResponseGenerated, TxmEventStateGenerated } from '@app/generated';
 import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
 import { DonorType } from '@app/model/enums/DonorType';
 import { ReportService } from '@app/services/report/report.service';
@@ -189,5 +189,9 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
         this.loading = false;
       }
     }
+  }
+
+  get canModifyPatients(): boolean {
+    return this.defaultTxmEvent?.state === TxmEventStateGenerated.Open;
   }
 }

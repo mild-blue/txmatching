@@ -14,6 +14,7 @@ import { Report } from '@app/services/report/report.interface';
 import { finalize, first } from 'rxjs/operators';
 import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
+import { TxmEventStateGenerated } from '@app/generated';
 
 @Component({
   selector: 'app-home',
@@ -91,11 +92,19 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.configOpened = !this.configOpened;
   }
 
+  get canSetDefaultConfig(): boolean {
+    return this.defaultTxmEvent?.state === TxmEventStateGenerated.Open;
+  }
+
   get isCurrentConfigDefault(): boolean {
     return this._eventService.getConfigId() === this.defaultTxmEvent?.defaultConfigId;
   }
 
   get getTitleOfDefaultConfigButton(): string {
+    if (!this.canSetDefaultConfig) {
+      return 'The current configuration cannot be set as default because the TXM event is closed';
+    }
+
     return this.isCurrentConfigDefault
       ? `The current configuration is set as default for all users (configuration id: ${this._eventService.getConfigId()})`
       : `Set the current configuration as default for all users ` +

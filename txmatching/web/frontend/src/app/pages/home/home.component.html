@@ -30,7 +30,7 @@
         <app-button (click)="setConfigAsDefault()"
                     *ngIf="showConfiguration"
                     variant="success" size="sm"
-                    [disabled]="isCurrentConfigDefault"
+                    [disabled]="isCurrentConfigDefault || !canSetDefaultConfig"
                     [matTooltip]="getTitleOfDefaultConfigButton"
         >
           <ng-container *ngIf="isCurrentConfigDefault">
