@@ -41,7 +41,9 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
     standartized_high_res_letter_match = _get_standartized_high_res(hla_raw_code, HIGH_RES_REGEX_ENDING_WITH_LETTER)
     if standartized_high_res_letter_match:
-        if standartized_high_res_letter_match in ALL_HIGH_RES_CODES or hla_raw_code in ALL_HIGH_RES_CODES:
+        if (standartized_high_res_letter_match in ALL_HIGH_RES_CODES
+                or hla_raw_code in ALL_HIGH_RES_CODES
+                or standartized_high_res_letter_match in HIGH_RES_TO_SPLIT_OR_BROAD):
             return process_parsing_result(hla_raw_code, None, HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER)
         else:
             return HlaCodeProcessingResult(None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)

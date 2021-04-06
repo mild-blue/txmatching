@@ -73,7 +73,9 @@ codes = {
     'DRB1*04:280N': (HLACode('DRB1*04:280N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
     'A*11:21N': (HLACode('A*11:21N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
     'A*11:11:11:11N': (HLACode('A*11:11:11:11N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
-    'DOA*01:04N': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
+    # 'DOA*01:04N': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
+    'DRB4*01:03': (HLACode('DRB4*01:03', 'DR53', 'DR53'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DRB4*01:03N': (HLACode('DRB4*01:03N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
 }
 
 
