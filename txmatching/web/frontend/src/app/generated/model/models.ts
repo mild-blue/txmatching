@@ -57,6 +57,8 @@ export * from './statusResponseGenerated';
 export * from './successGenerated';
 export * from './transplantGenerated';
 export * from './txmEventGenerated';
+export * from './txmEventStateGenerated';
+export * from './txmEventUpdateGenerated';
 export * from './txmEventsGenerated';
 export * from './updatedDonorGenerated';
 export * from './updatedRecipientGenerated';

@@ -163,6 +163,26 @@ header {
           font-weight: bold;
           color: $body-color;
           font-size: 16px;
+
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          &>* {
+            margin: 0 5px;
+          }
+
+          .label-closed {
+            padding: 2px 5px;
+            color: $danger;
+            border: 1px solid $danger;
+            background-color: $danger-lighter;
+            border-radius: 3px;
+
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 10px;
+          }
         }
       }
     }

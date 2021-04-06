@@ -12,10 +12,7 @@
 import { TxmEventStateGenerated } from './txmEventStateGenerated';
 
 
-export interface TxmEventGenerated { 
-    default_config_id?: number;
-    id: number;
-    name: string;
-    state: TxmEventStateGenerated;
+export interface TxmEventUpdateGenerated { 
+    state?: TxmEventStateGenerated;
 }
 

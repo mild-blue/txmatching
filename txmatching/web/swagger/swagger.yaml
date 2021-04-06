@@ -1395,9 +1395,22 @@ definitions:
                 type: integer
             name:
                 type: string
+            state:
+                $ref: '#/definitions/TxmEventState'
         required:
         - id
         - name
+        - state
+        type: object
+    TxmEventState:
+        enum:
+        - OPEN
+        - CLOSED
+        type: string
+    TxmEventUpdate:
+        properties:
+            state:
+                $ref: '#/definitions/TxmEventState'
         type: object
     TxmEvents:
         properties:
@@ -1777,6 +1790,45 @@ paths:
                         $ref: '#/definitions/FailResponse'
             security:
             -   bearer: []
+            tags:
+            - txm-event
+    /v1/txm-event/{txm_event_id}:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        put:
+            description: TXM event parameters that should be updated.
+            operationId: put_txm_event_update_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/TxmEventUpdate'
+            responses:
+                '200':
+                    description: Returns the updated TXM event.
+                    schema:
+                        $ref: '#/definitions/TxmEvent'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
             tags:
             - txm-event
     /v1/txm-event/{txm_event_id}/configuration/set-default:
