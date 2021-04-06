@@ -1,4 +1,5 @@
 import logging
+import re
 from dataclasses import dataclass
 from typing import Callable, Dict, List
 
@@ -159,6 +160,8 @@ def _match_through_lambda(current_compatibility_index: float,
     return current_compatibility_index
 
 
+# TODO check better for the fact that a code has letters at the end maybe add as code property to the object
+# https://github.com/mild-blue/txmatching/issues/637
 def _match_through_high_res_codes(current_compatibility_index: float,
                                   donor_matches: List[HLAMatch],
                                   recipient_matches: List[HLAMatch],
@@ -175,7 +178,8 @@ def _match_through_high_res_codes(current_compatibility_index: float,
         remaining_recipient_hla_types,
         hla_group,
         lambda recipient_hla_type, donor_hla_type:
-        recipient_hla_type.code.high_res == donor_hla_type.code.high_res and donor_hla_type.code.high_res is not None,
+        recipient_hla_type.code.high_res == donor_hla_type.code.high_res and donor_hla_type.code.high_res is not None
+        and _high_res_code_without_letter(donor_hla_type),
         MatchType.HIGH_RES,
         ci_configuration,
         recipient_hla_types
@@ -198,7 +202,8 @@ def _match_through_split_codes(current_compatibility_index: float,
         remaining_recipient_hla_types,
         hla_group,
         lambda recipient_hla_type, donor_hla_type:
-        recipient_hla_type.code.split == donor_hla_type.code.split and donor_hla_type.code.split is not None,
+        recipient_hla_type.code.split == donor_hla_type.code.split and donor_hla_type.code.split is not None
+        and _high_res_code_without_letter(donor_hla_type),
         MatchType.SPLIT,
         ci_configuration,
         recipient_hla_types
@@ -221,7 +226,8 @@ def _match_through_broad_codes(current_compatibility_index: float,
         remaining_recipient_hla_types,
         hla_group,
         lambda recipient_hla_type, donor_hla_type:
-        recipient_hla_type.code.broad == donor_hla_type.code.broad,
+        recipient_hla_type.code.broad == donor_hla_type.code.broad
+        and _high_res_code_without_letter(donor_hla_type),
         MatchType.BROAD,
         ci_configuration,
         recipient_hla_types
@@ -296,3 +302,9 @@ def _hla_types_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGro
 def _hla_types_for_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
     return next(hla_per_group.hla_types for hla_per_group in donor_hla_typing.hla_per_groups if
                 hla_per_group.hla_group == hla_group).copy()
+
+
+def _high_res_code_without_letter(hla_type: HLAType) -> bool:
+    if hla_type.code.high_res is not None:
+        return not re.match(r'.*[A-Z]$', hla_type.code.high_res)
+    return True
