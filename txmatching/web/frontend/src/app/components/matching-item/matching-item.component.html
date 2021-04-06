@@ -13,7 +13,7 @@
     <li *ngFor="let country of item.countries">
       <flag [countryCode]="country.countryCode"></flag>
       :
-      <app-code>{{country.donorCount}}/{{country.recipientCount}}</app-code>
+      <app-code matTooltip="Number of donors / Number of recipients">{{country.donorCount}}/{{country.recipientCount}}</app-code>
     </li>
   </ul>
 
