@@ -13,8 +13,8 @@ from txmatching.patients.hla_functions import (
     create_hla_antibodies_per_groups_from_hla_antibodies,
     split_hla_types_to_groups)
 from txmatching.patients.hla_model import HLAAntibody, HLAType
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
-    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import (
+    OK_PROCESSING_RESULTS, HlaCodeProcessingResultDetail)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.parsing_error import (
@@ -37,8 +37,7 @@ def parse_hla_raw_code_and_add_parsing_error_to_db_session(
     :return:
     """
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
-    if not parsing_result.maybe_hla_code or \
-            parsing_result.result_detail != HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED:
+    if not parsing_result.maybe_hla_code or parsing_result.result_detail not in OK_PROCESSING_RESULTS:
         add_parsing_error_to_db_session(
             hla_raw_code,
             parsing_result.result_detail,

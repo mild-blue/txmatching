@@ -21,3 +21,10 @@ class HlaCodeProcessingResultDetail(str, Enum):
 
     MFI_PROBLEM = 'There is a problem with MFI.'  # This string value is not used but we have it here as a fallback
     OTHER_PROBLEM = 'Some problem occurred when processing this code.'
+
+
+OK_PROCESSING_RESULTS = {
+    HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED,
+    HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT,
+    HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER
+}

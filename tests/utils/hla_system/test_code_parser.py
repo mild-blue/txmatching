@@ -72,8 +72,10 @@ codes = {
     'A*02:284N': (HLACode('A*02:284N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
     'DRB1*04:280N': (HLACode('DRB1*04:280N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
     'A*11:21N': (HLACode('A*11:21N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
-    'A*11:11:11:11N': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
-    'DOA*01:04N': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
+    'A*11:11:11:11N': (HLACode('A*11:11:11:11N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
+    'DOA*01:04N': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
+    'DRB4*01:03': (HLACode('DRB4*01:03', 'DR53', 'DR53'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'DRB4*01:03N': (HLACode('DRB4*01:03N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
 }
 
 
@@ -94,7 +96,7 @@ class TestCodeParser(DbTests):
         for code, _ in codes.items():
             parse_hla_raw_code_and_add_parsing_error_to_db_session(code, parsing_info)
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(16, len(errors))
+        self.assertEqual(10, len(errors))
         self.assertSetEqual(
             {('TEST_MEDICAL_ID', txm_event_db_id)},
             {(error.medical_id, error.txm_event_id) for error in errors}

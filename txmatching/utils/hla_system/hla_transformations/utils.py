@@ -46,9 +46,9 @@ def _cleanup_split_or_broad_code(serological_hla_code: str) -> str:
     return serological_hla_code
 
 
-def process_high_res_result(high_res: Optional[str],
-                            split_or_broad_raw: Optional[str],
-                            detail: Optional[HlaCodeProcessingResultDetail] = None) -> HlaCodeProcessingResult:
+def process_parsing_result(high_res: Optional[str],
+                           split_or_broad_raw: Optional[str],
+                           detail: Optional[HlaCodeProcessingResultDetail] = None) -> HlaCodeProcessingResult:
     if split_or_broad_raw is None:
         assert detail is not None
         return HlaCodeProcessingResult(
