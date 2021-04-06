@@ -8,6 +8,8 @@ from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     DonorJsonIn, RecipientJsonIn)
 from txmatching.data_transfer_objects.hla.hla_swagger import (
     EXAMPLE_HLA_TYPING, HLAAntibodies, HLATyping)
+from txmatching.data_transfer_objects.hla.parsing_error_swagger import \
+    ParsingErrorJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
     DetailedScoreForGroupJson)
@@ -71,6 +73,19 @@ PatientsJson = patient_api.model('Patients', {
     'recipients': fields.List(required=False, cls_or_instance=fields.Nested(RecipientJson)),
     'donors': fields.List(required=False, cls_or_instance=fields.Nested(DonorJson))
 })
+
+
+UpdatedDonorJsonOut = patient_api.model('UpdatedDonor', {
+    'donor': fields.Nested(required=True, model=DonorJson),
+    'parsing_errors': fields.List(required=True, cls_or_instance=fields.Nested(ParsingErrorJson)),
+})
+
+
+UpdatedRecipientJsonOut = patient_api.model('UpdatedRecipient', {
+    'recipient': fields.Nested(required=True, model=RecipientJson),
+    'parsing_errors': fields.List(required=True, cls_or_instance=fields.Nested(ParsingErrorJson)),
+})
+
 
 HLAAntibodyToUpdateJson = patient_api.model('HlaAntibodyToUpdate', {
     'raw_code': fields.String(required=True, example='A*01:02'),

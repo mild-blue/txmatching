@@ -3,6 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { Alert } from '@app/model/Alert';
 import { filter } from 'rxjs/operators';
 import { AlertType } from '@app/model/enums/AlertType';
+import { ParsingError } from '@app/model/ParsingError';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,14 @@ export class AlertService {
 
   public warn(message: string, actionLabel?: string, action?: Function, fadeAutomatically?: boolean): void {
     this.alert(new Alert({ type: AlertType.Warning, message, actionLabel, action, fadeAutomatically }));
+  }
+
+  public infoWithParsingErrors(message: string, parsingErrors: ParsingError[]): void {
+    const parsingErrorsStr = parsingErrors.map(parsingError => `
+      <strong>${parsingError.hlaCode}</strong>:
+      ${parsingError.message}
+    `).join('<br>');
+    this.info(`${message}<br><br>${parsingErrorsStr}`);
   }
 
   public alert(alert: Alert): void {

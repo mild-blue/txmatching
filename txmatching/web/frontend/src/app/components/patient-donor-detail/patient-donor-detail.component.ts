@@ -64,8 +64,17 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
       this._logger.log('Updated donor received from BE', [updatedDonor]);
 
       if (this.item) {
-        updatedDonor.index = this.item.index;
-        Object.assign(this.item, updatedDonor);
+        updatedDonor.donor.index = this.item.index;
+        Object.assign(this.item, updatedDonor.donor);
+      }
+
+      if (updatedDonor.parsingErrors.length > 0) {
+        this._alertService.infoWithParsingErrors(
+          'Donor was updated but some parsing errors and warnings occurred. ' +
+          'You can modify the patient to fix the issues or contact us if the issues are not clear on info@mild.blue or +420 723 927 536.',
+          updatedDonor.parsingErrors
+        );
+        this._logger.log('Parsing errors', updatedDonor.parsingErrors);
       }
 
       this._initDonorEditable();

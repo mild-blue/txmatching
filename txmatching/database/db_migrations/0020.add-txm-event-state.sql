@@ -1,6 +1,6 @@
 --
--- file: txmatching/database/db_migrations/0018.add-txm-event-state.sql
--- depends: 0017.add-patient-note
+-- file: txmatching/database/db_migrations/0020.add-txm-event-state.sql
+-- depends: 0019.add-and-remove-missing-hla-code-processing-result
 --
 
 CREATE TYPE TXM_EVENT_STATE AS ENUM (

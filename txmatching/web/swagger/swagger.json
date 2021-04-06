@@ -786,9 +786,9 @@
                         }
                     },
                     "200": {
-                        "description": "Updates single donor.",
+                        "description": "Updated donor.",
                         "schema": {
-                            "$ref": "#/definitions/Donor"
+                            "$ref": "#/definitions/UpdatedDonor"
                         }
                     }
                 },
@@ -982,7 +982,7 @@
                     "200": {
                         "description": "Updated recipient.",
                         "schema": {
-                            "$ref": "#/definitions/Recipient"
+                            "$ref": "#/definitions/UpdatedRecipient"
                         }
                     }
                 },
@@ -3577,6 +3577,24 @@
             },
             "type": "object"
         },
+        "UpdatedRecipient": {
+            "required": [
+                "parsing_errors",
+                "recipient"
+            ],
+            "properties": {
+                "recipient": {
+                    "$ref": "#/definitions/Recipient"
+                },
+                "parsing_errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ParsingError"
+                    }
+                }
+            },
+            "type": "object"
+        },
         "DonorModelToUpdate": {
             "allOf": [
                 {
@@ -3592,6 +3610,24 @@
                     "type": "object"
                 }
             ]
+        },
+        "UpdatedDonor": {
+            "required": [
+                "donor",
+                "parsing_errors"
+            ],
+            "properties": {
+                "donor": {
+                    "$ref": "#/definitions/Donor"
+                },
+                "parsing_errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ParsingError"
+                    }
+                }
+            },
+            "type": "object"
         },
         "PatientsRecomputeParsingSuccess": {
             "required": [

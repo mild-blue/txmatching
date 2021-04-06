@@ -4,24 +4,26 @@ import { environment } from '@environments/environment';
 import { filter, first, map } from 'rxjs/operators';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { PatientList } from '@app/model/PatientList';
-import { Donor } from '@app/model/Donor';
-import { Recipient } from '@app/model/Recipient';
+import { UpdatedDonor } from '@app/model/Donor';
+import { UpdatedRecipient } from '@app/model/Recipient';
 import {
-  DonorGenerated,
   DonorModelPairInGenerated,
   DonorModelToUpdateGenerated,
   PatientsGenerated,
   PatientUploadSuccessResponseGenerated,
-  RecipientGenerated,
-  RecipientModelToUpdateGenerated
+  RecipientModelToUpdateGenerated,
+  UpdatedDonorGenerated,
+  UpdatedRecipientGenerated
 } from '@app/generated';
-import { parseDonor, parsePatientList, parseRecipient } from '@app/parsers';
+import { parsePatientList, parseUpdatedDonor, parseUpdatedRecipient } from '@app/parsers';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { DonorEditable } from '@app/model/DonorEditable';
 import { RecipientEditable } from '@app/model/RecipientEditable';
 import { fromDonorEditableToUpdateGenerated } from '@app/parsers/to-generated/donor.parsers';
 import { fromRecipientEditableToUpdateGenerated } from '@app/parsers/to-generated/recipient.parsers';
 import { fromPatientsEditableToInGenerated } from '@app/parsers/to-generated/patientPair.parsers';
+import { ParsingError } from '@app/model/ParsingError';
+import { parseParsingError } from '@app/parsers/parsingError.parsers';
 
 @Injectable({
   providedIn: 'root'
@@ -49,37 +51,37 @@ export class PatientService {
     ).toPromise();
   }
 
-  public async saveDonor(txmEventId: number, donorId: number, donorEditable: DonorEditable, configId: number | undefined): Promise<Donor> {
+  public async saveDonor(txmEventId: number, donorId: number, donorEditable: DonorEditable, configId: number | undefined): Promise<UpdatedDonor> {
     const configIdStr = configId !== undefined ? configId.toString() : 'default';
 
     this._logger.log(`Saving donor ${donorId}`, [donorEditable]);
     const payload: DonorModelToUpdateGenerated = fromDonorEditableToUpdateGenerated(donorEditable, donorId);
     this._logger.log('Sending payload', [payload]);
 
-    return this._http.put<DonorGenerated>(
+    return this._http.put<UpdatedDonorGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}/donor`,
       payload
     ).pipe(
       first(),
-      map(parseDonor)
+      map(parseUpdatedDonor)
     ).toPromise();
   }
 
-  public async saveRecipient(txmEventId: number, recipientId: number, recipientEditable: RecipientEditable): Promise<Recipient> {
+  public async saveRecipient(txmEventId: number, recipientId: number, recipientEditable: RecipientEditable): Promise<UpdatedRecipient> {
     this._logger.log(`Saving recipient ${recipientId}`, [recipientEditable]);
     const payload: RecipientModelToUpdateGenerated = fromRecipientEditableToUpdateGenerated(recipientEditable, recipientId);
     this._logger.log('Sending payload', [payload]);
 
-    return this._http.put<RecipientGenerated>(
+    return this._http.put<UpdatedRecipientGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/recipient`,
       payload
     ).pipe(
       first(),
-      map(parseRecipient)
+      map(parseUpdatedRecipient)
     ).toPromise();
   }
 
-  public async addNewPair(txmEventId: number, donor: DonorEditable, recipient: RecipientEditable): Promise<PatientUploadSuccessResponseGenerated> {
+  public async addNewPair(txmEventId: number, donor: DonorEditable, recipient: RecipientEditable): Promise<ParsingError[]> {
     this._logger.log('Adding new pair', [donor, recipient]);
 
     const payload: DonorModelPairInGenerated = fromPatientsEditableToInGenerated(
@@ -89,7 +91,10 @@ export class PatientService {
     return this._http.post<PatientUploadSuccessResponseGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs`,
       payload
-    ).pipe(first()).toPromise();
+    ).pipe(
+      first(),
+      map(_ => _.parsing_errors.map(parseParsingError))
+    ).toPromise();
   }
 
   public async deleteDonor(txmEventId: number, donorDbId: number): Promise<void> {

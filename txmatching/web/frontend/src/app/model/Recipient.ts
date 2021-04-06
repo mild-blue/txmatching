@@ -1,6 +1,7 @@
 import { Patient } from '@app/model/Patient';
 import { Antibodies } from '@app/model/Hla';
 import { BloodGroup } from '@app/model/enums/BloodGroup';
+import { ParsingError } from '@app/model/ParsingError';
 
 export interface Recipient extends Patient {
   acceptableBloodGroups: BloodGroup[];
@@ -18,4 +19,9 @@ export interface RecipientRequirements {
   requireCompatibleBloodGroup: boolean;
 
   [key: string]: boolean;
+}
+
+export interface UpdatedRecipient {
+  recipient: Recipient;
+  parsingErrors: ParsingError[];
 }

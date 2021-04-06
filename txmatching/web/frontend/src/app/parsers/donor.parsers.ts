@@ -1,10 +1,11 @@
-import { DonorGenerated, DonorTypeGenerated } from '../generated';
-import { Donor, DonorType } from '../model';
+import { DonorGenerated, DonorTypeGenerated, UpdatedDonorGenerated } from '../generated';
+import { Donor, DonorType, UpdatedDonor } from '../model';
 import { parsePatient } from './patient.parsers';
 import { parseDetailedScorePerGroup } from './hla.parsers';
 import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
 import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
+import { parseParsingError } from '@app/parsers/parsingError.parsers';
 
 export const parseDonor = (data: DonorGenerated): Donor => {
   const donorListItem: ListItem = {
@@ -28,4 +29,11 @@ export const parseDonor = (data: DonorGenerated): Donor => {
 
 export const parseDonorType = (data: DonorTypeGenerated): DonorType => {
   return DonorType[data];
+};
+
+export const parseUpdatedDonor = (data: UpdatedDonorGenerated): UpdatedDonor => {
+  return {
+    donor: parseDonor(data.donor),
+    parsingErrors: data.parsing_errors.map(parseParsingError)
+  };
 };

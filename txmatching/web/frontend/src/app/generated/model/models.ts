@@ -60,6 +60,8 @@ export * from './txmEventGenerated';
 export * from './txmEventStateGenerated';
 export * from './txmEventUpdateGenerated';
 export * from './txmEventsGenerated';
+export * from './updatedDonorGenerated';
+export * from './updatedRecipientGenerated';
 export * from './uploadPatientsGenerated';
 export * from './userLoginGenerated';
 export * from './userRegistrationGenerated';
