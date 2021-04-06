@@ -41,7 +41,7 @@ def _convert_parsing_error_models_to_dataclasses(parsing_error_models: List[Pars
         medical_id=parsing_error_model.medical_id,
         txm_event_id=parsing_error_model.txm_event_id
     ) for parsing_error_model in parsing_error_models
-        # HACK: https://github.com/mild-blue/txmatching/issues/629
+        # TODO: https://github.com/mild-blue/txmatching/issues/629
         if parsing_error_model.hla_code_processing_result_detail != HlaCodeProcessingResultDetail.MFI_PROBLEM]
 
 
