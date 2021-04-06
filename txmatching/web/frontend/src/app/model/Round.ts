@@ -2,7 +2,7 @@ import { Transplant } from '@app/model/Transplant';
 import { DonorType } from '@app/model/enums/DonorType';
 
 export interface Round {
-  index?: string;
+  index: string;
   donorType: DonorType;
   transplants: Transplant[];
   hasCrossmatch: boolean;

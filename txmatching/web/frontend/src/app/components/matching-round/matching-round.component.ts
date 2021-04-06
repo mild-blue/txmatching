@@ -4,6 +4,7 @@ import { Configuration } from '@app/model/Configuration';
 import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
 import { PatientList } from '@app/model/PatientList';
 import { Round } from '@app/model/Round';
+import { DonorType } from '@app/model';
 
 @Component({
   selector: 'app-matching-round',
@@ -23,5 +24,14 @@ export class MatchingRoundComponent {
 
   public setActiveTransplant(id: number): void {
     this._uiInteractionsService.setFocusedTransplantId(id);
+  }
+
+  get getRoundTooltip(): string {
+    switch(this.round?.donorType) {
+      case DonorType.DONOR: return 'Round';
+      case DonorType.NON_DIRECTED: return 'Round with non-directed donor';
+      case DonorType.BRIDGING_DONOR: return 'Round with bridging donor';
+      case undefined: return '';
+    }
   }
 }
