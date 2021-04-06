@@ -26,30 +26,15 @@ class TestHlaScorer(DbTests):
     def test_scorers_on_some_patients(self):
         donor = _create_donor(['A*01:01', 'A3', 'B7', 'B37', 'DR11', 'DR15', 'DR52', 'DR51', 'DQ7', 'DQ6'])
         recipient = _create_recipient(['A*01:01', 'A2', 'B27', 'B37', 'DR1', 'DR10', 'DQ6'])
-        original_donor = _create_donor([])
 
-        self.assertEqual(4, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                               original_donor=original_donor))
-        self.assertEqual(5, self.high_res_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                  original_donor=original_donor))
-
-        self.assertEqual(7, self.high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                                  original_donor=original_donor))
+        self._test_all_scorers(donor, recipient, (4, 5, 7))
 
     def test_scorers_on_some_other_patients(self):
         with self.app.test_client():
             donor = _create_donor(
                 ['A*01:01', 'A23', 'B7', 'B37', 'DR11', 'DR15', 'DR52', 'DR51', 'DQ7', 'DQ6', 'DPA1*01:03'])
             recipient = _create_recipient(['A*01:01', 'A9', 'B27', 'B37', 'DR1', 'DR10', 'DQ6', 'DPA1*01:04'])
-            original_donor = _create_donor([])
-
-            self.assertEqual(5, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                   original_donor=original_donor))
-            self.assertEqual(6, self.high_res_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                      original_donor=original_donor))
-
-            self.assertEqual(10, self.high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                                       original_donor=original_donor))
+        self._test_all_scorers(donor, recipient, (5, 6, 10))
 
     def test_scorers_duplicate_gene_of_donor(self):
         with self.app.test_client():
@@ -57,13 +42,7 @@ class TestHlaScorer(DbTests):
             recipient = _create_recipient(['A*01:01', 'A9'])
             original_donor = _create_donor([])
 
-            self.assertEqual(2, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                   original_donor=original_donor))
-            self.assertEqual(6, self.high_res_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                      original_donor=original_donor))
-
-            self.assertEqual(6, self.high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                                      original_donor=original_donor))
+        self._test_all_scorers(donor, recipient, (2, 6, 6))
 
     def test_scorers_duplicate_gene_of_recipient(self):
         with self.app.test_client():
@@ -71,13 +50,7 @@ class TestHlaScorer(DbTests):
             recipient = _create_recipient(['A*01:01'])
             original_donor = _create_donor([])
 
-            self.assertEqual(1, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                   original_donor=original_donor))
-            self.assertEqual(3, self.high_res_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                      original_donor=original_donor))
-
-            self.assertEqual(3, self.high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                                      original_donor=original_donor))
+        self._test_all_scorers(donor, recipient, (1, 3, 3))
 
     def test_another_duplicate(self):
         with self.app.test_client():
@@ -108,15 +81,28 @@ class TestHlaScorer(DbTests):
         with self.app.test_client():
             donor = _create_donor(['A*23:01N'])
             recipient = _create_recipient(['A*23:01N'])
-            original_donor = _create_donor([])
+        self._test_all_scorers(donor, recipient, (0, 0, 0))
 
-            self.assertEqual(0, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                   original_donor=original_donor))
-            self.assertEqual(0, self.high_res_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                      original_donor=original_donor))
+    def test_codes_with_letters_and_duplicity(self):
+        donor = _create_donor(['A*23:01', 'A*23:01N'])
+        recipient = _create_recipient(['A*23:01'])
+        self._test_all_scorers(donor, recipient, (1, 3, 3))
 
-            self.assertEqual(0, self.high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                                      original_donor=original_donor))
+        donor = _create_donor(['A*23:01'])
+        recipient = _create_recipient(['A*23:01'])
+
+        self._test_all_scorers(donor, recipient, (2, 6, 6))
+
+    def _test_all_scorers(self, donor, recipient, scores):
+        original_donor = _create_donor([])
+        self.assertEqual(scores[0], self.split_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                                       original_donor=original_donor))
+        self.assertEqual(scores[1], self.high_res_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                                          original_donor=original_donor))
+
+        self.assertEqual(scores[2],
+                         self.high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
+                                                                               original_donor=original_donor))
 
 
 def _create_donor(hla_typing: List[str]):

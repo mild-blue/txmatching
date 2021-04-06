@@ -26,5 +26,5 @@ class HlaCodeProcessingResultDetail(str, Enum):
 OK_PROCESSING_RESULTS = {
     HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED,
     HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT,
-    HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT
+    HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER
 }
