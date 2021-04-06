@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 
 # pylint: disable=too-many-return-statements
-# pylint: disable=too-many-branches
 def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResult:
     if hla_raw_code in PARSE_HLA_CODE_EXCEPTIONS:
         return process_parsing_result(hla_raw_code, PARSE_HLA_CODE_EXCEPTIONS[hla_raw_code])
