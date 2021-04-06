@@ -7,6 +7,8 @@ from flask_restx import Resource
 
 from txmatching.auth.operation_guards.country_guard import \
     guard_user_has_access_to_country
+from txmatching.auth.operation_guards.txm_event_guard import \
+    guard_open_txm_event
 from txmatching.auth.service.service_auth_check import allow_service_role
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     PatientUploadSuccessJson, UploadPatientsJson)
@@ -17,7 +19,8 @@ from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in
 from txmatching.database.services.patient_upload_service import (
     get_patients_errors_from_upload_dto,
     replace_or_add_patients_from_one_country)
-from txmatching.database.services.txm_event_service import save_original_data
+from txmatching.database.services.txm_event_service import (
+    get_txm_event_db_id_by_name, save_original_data)
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import public_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
@@ -47,6 +50,9 @@ class TxmEventUploadPatients(Resource):
         current_user_id = get_current_user_id()
         # check if user is allowed to modify resources to the country
         guard_user_has_access_to_country(current_user_id, country_code)
+        # check that txm event is opened
+        txm_event_db_id = get_txm_event_db_id_by_name(patient_upload_dto.txm_event_name)
+        guard_open_txm_event(txm_event_db_id)
         # save the original request to the database
         save_original_data(patient_upload_dto.txm_event_name, current_user_id, request.json)
         # perform update operation

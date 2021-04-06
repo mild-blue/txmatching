@@ -9,13 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { TxmEventStateGenerated } from './txmEventStateGenerated';
 
 
-export interface TxmEventGenerated { 
-    default_config_id?: number;
-    id: number;
-    name: string;
-    state: TxmEventStateGenerated;
-}
+export enum TxmEventStateGenerated {
+    Open = 'OPEN',
+    Closed = 'CLOSED'
+};
 

@@ -13,4 +13,5 @@ def create_or_overwrite_txm_event(name: str) -> TxmEvent:
     db.session.commit()
     return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name,
                     default_config_id=txm_event_model.default_config_id,
+                    state=txm_event_model.state,
                     all_donors=[], all_recipients=[])

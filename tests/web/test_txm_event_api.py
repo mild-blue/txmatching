@@ -1,11 +1,13 @@
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.data_types import UserRole
-from txmatching.data_transfer_objects.patients.txm_event_dto_in import \
-    TxmEventDTOIn
+from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
+    TxmEventDTOIn, TxmEventUpdateDTOIn)
+from txmatching.database.services.txm_event_service import get_txm_event_base
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
                                                     PairingResultModel,
                                                     RecipientModel,
                                                     TxmEventModel)
+from txmatching.utils.enums import TxmEventState
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 
 
@@ -118,4 +120,69 @@ class TestMatchingApi(DbTests):
             )
 
             self.assertEqual(400, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+
+    def test_txm_event_update(self):
+        txm_event_db_id = self.fill_db_with_patients_and_results()
+
+        self.assertEqual(TxmEventState.OPEN, get_txm_event_base(txm_event_db_id).state)
+
+        self.login_with_role(UserRole.ADMIN)
+
+        # test changing state to CLOSED
+        with self.app.test_client() as client:
+            res = client.put(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}',
+                headers=self.auth_headers,
+                json=TxmEventUpdateDTOIn(state=TxmEventState.CLOSED).__dict__
+            )
+
+            self.assertEqual(200, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+            self.assertIsNotNone(res.json)
+            self.assertEqual('CLOSED', res.json['state'])
+
+        self.assertEqual(TxmEventState.CLOSED, get_txm_event_base(txm_event_db_id).state)
+
+        # call api without changing anything
+        with self.app.test_client() as client:
+            res = client.put(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}',
+                headers=self.auth_headers,
+                json=TxmEventUpdateDTOIn(state=None).__dict__
+            )
+
+            self.assertEqual(200, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+            self.assertIsNotNone(res.json)
+            self.assertEqual('CLOSED', res.json['state'])
+
+        self.assertEqual(TxmEventState.CLOSED, get_txm_event_base(txm_event_db_id).state)
+
+        # test changing state to OPEN
+        with self.app.test_client() as client:
+            res = client.put(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}',
+                headers=self.auth_headers,
+                json=TxmEventUpdateDTOIn(state=TxmEventState.OPEN).__dict__
+            )
+
+            self.assertEqual(200, res.status_code)
+            self.assertEqual('application/json', res.content_type)
+            self.assertIsNotNone(res.json)
+            self.assertEqual('OPEN', res.json['state'])
+
+        self.assertEqual(TxmEventState.OPEN, get_txm_event_base(txm_event_db_id).state)
+
+        # test non admin user
+        self.login_with_role(UserRole.VIEWER)
+
+        with self.app.test_client() as client:
+            res = client.put(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}',
+                headers=self.auth_headers,
+                json=TxmEventUpdateDTOIn(state=TxmEventState.CLOSED).__dict__
+            )
+
+            self.assertEqual(403, res.status_code)
             self.assertEqual('application/json', res.content_type)

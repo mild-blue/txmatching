@@ -109,6 +109,50 @@
             }
         },
         "/v1/txm-event": {
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "List of allowed txmEvents.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvents"
+                        }
+                    }
+                },
+                "description": "Get list of allowed txm txmEvents for the logged user.",
+                "operationId": "get_txm_event_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
             "post": {
                 "responses": {
                     "409": {
@@ -168,7 +212,9 @@
                 "tags": [
                     "txm-event"
                 ]
-            },
+            }
+        },
+        "/v1/txm-event/default": {
             "get": {
                 "responses": {
                     "500": {
@@ -196,14 +242,14 @@
                         }
                     },
                     "200": {
-                        "description": "List of allowed txmEvents.",
+                        "description": "Default event.",
                         "schema": {
-                            "$ref": "#/definitions/TxmEvents"
+                            "$ref": "#/definitions/TxmEvent"
                         }
                     }
                 },
-                "description": "Get list of allowed txm txmEvents for the logged user.",
-                "operationId": "get_txm_event_api",
+                "description": "Get default event",
+                "operationId": "get_txm_default_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -212,9 +258,7 @@
                 "tags": [
                     "txm-event"
                 ]
-            }
-        },
-        "/v1/txm-event/default": {
+            },
             "put": {
                 "responses": {
                     "409": {
@@ -274,50 +318,6 @@
                 "tags": [
                     "txm-event"
                 ]
-            },
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "Default event.",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEvent"
-                        }
-                    }
-                },
-                "description": "Get default event",
-                "operationId": "get_txm_default_event_api",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "txm-event"
-                ]
             }
         },
         "/v1/txm-event/{name}": {
@@ -365,6 +365,65 @@
                 "security": [
                     {
                         "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns the updated TXM event.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "TXM event parameters that should be updated.",
+                "operationId": "put_txm_event_update_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEventUpdate"
+                        }
                     }
                 ],
                 "tags": [
@@ -1250,6 +1309,55 @@
             }
         },
         "/v1/user/otp": {
+            "put": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "New OTP was generated and sent.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_otp_login_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            },
             "post": {
                 "responses": {
                     "503": {
@@ -1300,55 +1408,6 @@
                         }
                     }
                 ],
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "user"
-                ]
-            },
-            "put": {
-                "responses": {
-                    "503": {
-                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "New OTP was generated and sent.",
-                        "schema": {
-                            "$ref": "#/definitions/StatusResponse"
-                        }
-                    }
-                },
-                "operationId": "put_otp_login_api",
                 "security": [
                     {
                         "bearer": []
@@ -3633,24 +3692,6 @@
             },
             "type": "object"
         },
-        "TxmEvent": {
-            "required": [
-                "id",
-                "name"
-            ],
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "default_config_id": {
-                    "type": "integer"
-                }
-            },
-            "type": "object"
-        },
         "TxmEvents": {
             "required": [
                 "events"
@@ -3665,6 +3706,35 @@
             },
             "type": "object"
         },
+        "TxmEvent": {
+            "required": [
+                "id",
+                "name",
+                "state"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "default_config_id": {
+                    "type": "integer"
+                },
+                "state": {
+                    "$ref": "#/definitions/TxmEventState"
+                }
+            },
+            "type": "object"
+        },
+        "TxmEventState": {
+            "enum": [
+                "OPEN",
+                "CLOSED"
+            ],
+            "type": "string"
+        },
         "DefaultTxmEvent": {
             "required": [
                 "id"
@@ -3672,6 +3742,14 @@
             "properties": {
                 "id": {
                     "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "TxmEventUpdate": {
+            "properties": {
+                "state": {
+                    "$ref": "#/definitions/TxmEventState"
                 }
             },
             "type": "object"

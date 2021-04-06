@@ -5,7 +5,8 @@ export const parseTxmEvent = (data: TxmEventGenerated): TxmEvent => {
   return {
     id: data.id,
     name: data.name,
-    defaultConfigId: data.default_config_id
+    defaultConfigId: data.default_config_id,
+    state: data.state
   };
 };
 

@@ -8,6 +8,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         UnauthorizedException)
+from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
+    TxmEventDTOOut
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import (
     get_donor_from_donor_model, get_recipient_from_recipient_model)
@@ -18,6 +20,7 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
                                                     UserToAllowedEvent)
 from txmatching.patients.patient import TxmEvent, TxmEventBase
 from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import TxmEventState
 from txmatching.utils.hla_system.hla_transformations.parsing_error import \
     delete_parsing_errors_for_patient
 from txmatching.utils.logged_user import get_current_user, get_current_user_id
@@ -40,7 +43,8 @@ def create_txm_event(name: str) -> TxmEvent:
     db.session.add(txm_event_model)
     db.session.commit()
     return TxmEvent(db_id=txm_event_model.id, name=txm_event_model.name,
-                    default_config_id=txm_event_model.default_config_id, all_donors=[], all_recipients=[])
+                    default_config_id=txm_event_model.default_config_id,
+                    state=TxmEventState.OPEN, all_donors=[], all_recipients=[])
 
 
 def delete_txm_event(name: str):
@@ -147,7 +151,8 @@ def get_txm_event_base(txm_event_db_id: int) -> TxmEventBase:
 
 def _get_txm_event_base_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEventBase:
     return TxmEventBase(db_id=txm_event_model.id, name=txm_event_model.name,
-                        default_config_id=txm_event_model.default_config_id)
+                        default_config_id=txm_event_model.default_config_id,
+                        state=txm_event_model.state)
 
 
 def _get_txm_event_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEvent:
@@ -162,6 +167,7 @@ def _get_txm_event_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEv
     return TxmEvent(db_id=txm_event_model.id,
                     name=txm_event_model.name,
                     default_config_id=txm_event_model.default_config_id,
+                    state=TxmEventState.OPEN,
                     all_donors=all_donors,
                     all_recipients=all_recipients)
 
@@ -202,3 +208,19 @@ def set_allowed_txm_event_ids_for_user(user: AppUserModel, txm_event_ids: List[i
             db.session.add(user_to_event)
 
         db.session.commit()
+
+
+def set_txm_event_state(txm_event_id: int, state: TxmEventState):
+    TxmEventModel.query.filter(TxmEventModel.id == txm_event_id).update(
+        {'state': state}
+    )
+    db.session.commit()
+
+
+def convert_txm_event_base_to_dto(txm_event_base: TxmEventBase) -> TxmEventDTOOut:
+    return TxmEventDTOOut(
+        id=txm_event_base.db_id,
+        name=txm_event_base.name,
+        default_config_id=txm_event_base.default_config_id,
+        state=txm_event_base.state
+    )
