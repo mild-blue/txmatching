@@ -58,6 +58,8 @@ export * from './successGenerated';
 export * from './transplantGenerated';
 export * from './txmEventGenerated';
 export * from './txmEventsGenerated';
+export * from './updatedDonorGenerated';
+export * from './updatedRecipientGenerated';
 export * from './uploadPatientsGenerated';
 export * from './userLoginGenerated';
 export * from './userRegistrationGenerated';

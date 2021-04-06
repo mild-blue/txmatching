@@ -1,6 +1,7 @@
 import { Patient } from '@app/model/Patient';
 import { DetailedScorePerGroup } from '@app/model/Hla';
 import { DonorType } from '@app/model/enums/DonorType';
+import { ParsingError } from '@app/model/ParsingError';
 
 export interface Donor extends Patient {
   active: boolean;
@@ -10,4 +11,9 @@ export interface Donor extends Patient {
   scoreWithRelatedRecipient?: number;
   maxScoreWithRelatedRecipient?: number;
   detailedScoreWithRelatedRecipient: DetailedScorePerGroup[];
+}
+
+export interface UpdatedDonor {
+  donor: Donor;
+  parsingErrors: ParsingError[];
 }

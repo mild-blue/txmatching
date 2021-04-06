@@ -1408,6 +1408,30 @@ definitions:
         required:
         - events
         type: object
+    UpdatedDonor:
+        properties:
+            donor:
+                $ref: '#/definitions/Donor'
+            parsing_errors:
+                items:
+                    $ref: '#/definitions/ParsingError'
+                type: array
+        required:
+        - donor
+        - parsing_errors
+        type: object
+    UpdatedRecipient:
+        properties:
+            parsing_errors:
+                items:
+                    $ref: '#/definitions/ParsingError'
+                type: array
+            recipient:
+                $ref: '#/definitions/Recipient'
+        required:
+        - parsing_errors
+        - recipient
+        type: object
     UploadPatients:
         properties:
             add_to_existing_patients:
@@ -1986,9 +2010,9 @@ paths:
                     $ref: '#/definitions/DonorModelToUpdate'
             responses:
                 '200':
-                    description: Updates single donor.
+                    description: Updated donor.
                     schema:
-                        $ref: '#/definitions/Donor'
+                        $ref: '#/definitions/UpdatedDonor'
                 '400':
                     description: Wrong data format.
                     schema:
@@ -2109,7 +2133,7 @@ paths:
                 '200':
                     description: Updated recipient.
                     schema:
-                        $ref: '#/definitions/Recipient'
+                        $ref: '#/definitions/UpdatedRecipient'
                 '400':
                     description: Wrong data format.
                     schema:
