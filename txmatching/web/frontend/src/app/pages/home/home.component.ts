@@ -84,8 +84,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   get showConfiguration(): boolean {
     const configDefined = !!this.configuration;
     const patientsDefined = !!this.patients;
-    const configIdDefined = !!this._eventService.getConfigId();
-    return !this.isViewer && !this.loading && configDefined && patientsDefined && configIdDefined;
+    return !this.isViewer && !this.loading && configDefined && patientsDefined;
   }
 
   public toggleConfiguration(): void {
@@ -93,7 +92,9 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   get canSetDefaultConfig(): boolean {
-    return this.defaultTxmEvent?.state === TxmEventStateGenerated.Open;
+    const txmEventOpen = this.defaultTxmEvent?.state === TxmEventStateGenerated.Open;
+    const configIdDefined = !!this._eventService.getConfigId();
+    return txmEventOpen && configIdDefined;
   }
 
   get isCurrentConfigDefault(): boolean {
@@ -102,7 +103,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
   get getTitleOfDefaultConfigButton(): string {
     if (!this.canSetDefaultConfig) {
-      return 'The current configuration cannot be set as default because the TXM event is closed';
+      return 'The current configuration cannot be set as default';
     }
 
     return this.isCurrentConfigDefault
