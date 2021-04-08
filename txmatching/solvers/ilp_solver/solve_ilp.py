@@ -16,6 +16,7 @@ from txmatching.solvers.ilp_solver.mip_utils import (mip_get_result_status,
 from txmatching.solvers.ilp_solver.solution import Solution, Status
 from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
     DataAndConfigurationForILPSolver
+from txmatching.utils.blood_groups import BloodGroup
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +95,8 @@ def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSo
 
     add_debt_static_constraints(ilp_model, data_and_configuration, mapping)
 
+    add_blood_group_zero_debt_static_constraints(ilp_model, data_and_configuration, mapping)
+
 
 def add_debt_static_constraints(ilp_model,
                                 data_and_configuration: DataAndConfigurationForILPSolver,
@@ -109,6 +112,33 @@ def add_debt_static_constraints(ilp_model,
             mip.xsum(country_giving + country_receiving) <= data_and_configuration.configuration.max_debt_for_country)
         ilp_model.add_constr(
             - mip.xsum(country_giving + country_receiving) <= data_and_configuration.configuration.max_debt_for_country)
+
+
+def add_blood_group_zero_debt_static_constraints(ilp_model,
+                                                 data_and_configuration: DataAndConfigurationForILPSolver,
+                                                 mapping: VariableMapping):
+    countries = set(data_and_configuration.country_codes_dict.values())
+
+    for current_country in countries:
+
+        country_giving = [mapping.node_to_out_var[node] for node, country in
+                          data_and_configuration.country_codes_dict.items() if country == current_country and
+                          data_and_configuration.blood_groups_dict[node] == BloodGroup.ZERO]
+        country_receiving = []
+        nodes_of_current_country = [node for node, country in data_and_configuration.country_codes_dict.items() if
+                                    country == current_country]
+        nodes_of_other_countries_with_blood_group_zero = [node for node, country in
+                                                          data_and_configuration.country_codes_dict.items() if
+                                                          data_and_configuration.blood_groups_dict[
+                                                              node] == BloodGroup.ZERO]
+        for current_country_node in nodes_of_current_country:
+            for other_country_node in nodes_of_other_countries_with_blood_group_zero:
+                maybe_edge_to_var = mapping.edge_to_var.get((other_country_node, current_country_node))
+                if maybe_edge_to_var is not None:
+                    country_receiving.append(- maybe_edge_to_var)
+        constraint = data_and_configuration.configuration.max_debt_for_country_for_blood_group_zero
+        ilp_model.add_constr(mip.xsum(country_giving + country_receiving) <= constraint)
+        ilp_model.add_constr(- mip.xsum(country_giving + country_receiving) <= constraint)
 
 
 def _add_objective(ilp_model: mip.Model,

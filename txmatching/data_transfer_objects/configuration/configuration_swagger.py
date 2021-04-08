@@ -76,6 +76,10 @@ ConfigurationJson = matching_api.model(
             required=True,
             example=_default_configuration.max_debt_for_country
         ),
+        'max_debt_for_country_for_blood_group_zero': fields.Integer(
+            required=True,
+            example=_default_configuration.max_debt_for_country_for_blood_group_zero
+        ),
         'max_number_of_dynamic_constrains_ilp_solver': fields.Integer(
             required=True,
             example=_default_configuration.max_number_of_dynamic_constrains_ilp_solver

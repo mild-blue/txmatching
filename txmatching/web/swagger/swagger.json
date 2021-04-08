@@ -1309,55 +1309,6 @@
             }
         },
         "/v1/user/otp": {
-            "put": {
-                "responses": {
-                    "503": {
-                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "New OTP was generated and sent.",
-                        "schema": {
-                            "$ref": "#/definitions/StatusResponse"
-                        }
-                    }
-                },
-                "operationId": "put_otp_login_api",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "user"
-                ]
-            },
             "post": {
                 "responses": {
                     "503": {
@@ -1408,6 +1359,55 @@
                         }
                     }
                 ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            },
+            "put": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "New OTP was generated and sent.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_otp_login_api",
                 "security": [
                     {
                         "bearer": []
@@ -2301,6 +2301,7 @@
                 "max_cycle_length",
                 "max_cycles_in_all_solutions_solver",
                 "max_debt_for_country",
+                "max_debt_for_country_for_blood_group_zero",
                 "max_matchings_in_all_solutions_solver",
                 "max_matchings_in_ilp_solver",
                 "max_matchings_to_show_to_viewer",
@@ -2406,6 +2407,10 @@
                     "example": 1000000
                 },
                 "max_debt_for_country": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "max_debt_for_country_for_blood_group_zero": {
                     "type": "integer",
                     "example": 3
                 },

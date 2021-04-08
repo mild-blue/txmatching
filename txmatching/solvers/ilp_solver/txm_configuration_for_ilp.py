@@ -12,7 +12,6 @@ from txmatching.utils.country_enum import Country
 
 @dataclass(init=False)
 class DataAndConfigurationForILPSolver:
-    num_donors: int
     non_directed_donors: Iterable[int]
     regular_donors: Iterable[int]
     configuration: Configuration
@@ -25,7 +24,6 @@ class DataAndConfigurationForILPSolver:
                  configuration: Configuration):
 
         self.configuration = configuration
-        self.num_donors = len(active_donors_dict)
         self.non_directed_donors = [i for i, donor in enumerate(active_donors_dict.values()) if
                                     donor.donor_type != DonorType.DONOR]
         self.graph = self._create_graph(configuration, active_donors_dict, active_recipients_dict)
@@ -41,6 +39,8 @@ class DataAndConfigurationForILPSolver:
 
         self.country_codes_dict = {i: donor.parameters.country_code for i, donor in
                                    enumerate(active_donors_dict.values())}
+        self.blood_groups_dict = {i: donor.parameters.blood_group for i, donor in
+                                  enumerate(active_donors_dict.values())}
 
     def _create_graph(self,
                       configuration: Configuration,
@@ -59,7 +59,7 @@ class DataAndConfigurationForILPSolver:
 
         graph.add_nodes_from([
             (node, {'ndd': node in self.non_directed_donors})
-            for node in range(0, self.num_donors)
+            for node in range(0, len(active_donors_dict))
         ])
 
         graph.add_edges_from([

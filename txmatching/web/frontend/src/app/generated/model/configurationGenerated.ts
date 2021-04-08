@@ -24,6 +24,7 @@ export interface ConfigurationGenerated {
     max_cycle_length: number;
     max_cycles_in_all_solutions_solver: number;
     max_debt_for_country: number;
+    max_debt_for_country_for_blood_group_zero: number;
     max_matchings_in_all_solutions_solver: number;
     max_matchings_in_ilp_solver: number;
     max_matchings_to_show_to_viewer: number;
