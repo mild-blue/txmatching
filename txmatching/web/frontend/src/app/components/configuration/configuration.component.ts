@@ -100,7 +100,7 @@ export class ConfigurationComponent implements OnInit {
           'to groups A, B and DR, DP, DQ and C increase the score. If the antigens match in HIGH RES representation, the score is ' +
           'increased by 3, if the antigens do not match in HIGH RES representation but they match in SPLIT representation, ' +
           'the score is increased by 2, if the antigens match only in BROAD representation, the score is increased by 1. The maximum ' +
-          'score for this scorer is therefore 18 (for A, B, DRB1) + 12 (for C, DRB3, DRB4, DRB5) + 24 (for DP, DQ) = 54.'; // Je to tak? A na tech Other DR muzou byt max 2? Muzou tam vubec byt 2? Vidim https://en.wikipedia.org/wiki/HLA-DR.
+          'score for this scorer is therefore 18 (for A, B, DRB1) + 12 (for C, DRB3, DRB4, DRB5) + 24 (for DP, DQ) = 54.';
       default: return 'Please select scorer.';
     }
   }
