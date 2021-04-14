@@ -85,22 +85,22 @@ export class ConfigurationComponent implements OnInit {
   public scorerNameToHint(scorerName: string): string {
     switch(scorerName) {
       case ScorerGenerated.SplitScorer:
-        return 'The selected scorer SplitScorer computes transplant scores by HLA matches according to their HLA groups. One match in ' +
+        return 'The selected scorer SplitScorer computes transplant scores by HLA matches according to their HLA groups using compatibility index. One match in ' +
           'HLA group A increases score by 1, HLA match in group B increases score by 3 and HLA match in group DRB1 increases the ' +
-          'score by 9. HLA matches in other groups does not affect the score. Therefore, maximum score for each transplant is ' +
+          'score by 9. HLA matches in other groups do not affect the score. Therefore, maximum score for each transplant is ' +
           '1*2 + 3*2 + 9*2 = 26.';
       case ScorerGenerated.HighResScorer:
         return 'The selected scorer HighResScorer computes transplant scores by HLA matches according to their match types. Only matches corresponding ' +
-          'to groups A, B and DRB1 increase the score. If the antigens match through HIGH RES representation, the score is ' +
-          'increased by 3, if the antigens do not match through HIGH RES representation but they match through SPLIT representation, ' +
-          'the score is increased by 2, if the antigens match only through BROAD representation, the score is increased by 1. The maximum ' +
+          'to groups A, B and DRB1 increase the score. If the antigens match in HIGH RES representation, the score is ' +
+          'increased by 3, if the antigens do not match in HIGH RES representation but they match in SPLIT representation, ' +
+          'the score is increased by 2, if the antigens match only in BROAD representation, the score is increased by 1. The maximum ' +
           'score for this scorer is therefore 2*3 + 2*3 + 2*3 = 18.';
       case ScorerGenerated.HighResWithDqdpScorer:
-        return 'The selected scorer HighResWithDqdpScorer computes transplant scores by HLA matches according to their match types. Only matches corresponding ' +
-          'to groups A, B and DR, DP, DQ and C increase the score. If the antigens match through HIGH RES representation, the score is ' +
-          'increased by 3, if the antigens do not match through HIGH RES representation but they match through SPLIT representation, ' +
-          'the score is increased by 2, if the antigens match only through BROAD representation, the score is increased by 1. The maximum ' +
-          'score for this scorer is therefore 18 (for A, B, DRB1) + 12 (for C, Other DR) + 24 (for DP, DQ) = 54.';
+        return 'The selected scorer HighResWithDQDPScorer computes transplant scores by HLA matches according to their match types. Only matches corresponding ' +
+          'to groups A, B and DR, DP, DQ and C increase the score. If the antigens match in HIGH RES representation, the score is ' +
+          'increased by 3, if the antigens do not match in HIGH RES representation but they match in SPLIT representation, ' +
+          'the score is increased by 2, if the antigens match only in BROAD representation, the score is increased by 1. The maximum ' +
+          'score for this scorer is therefore 18 (for A, B, DRB1) + 12 (for C, DRB3, DRB4, DRB5) + 24 (for DP, DQ) = 54.';
       default: return 'Please select scorer.';
     }
   }
