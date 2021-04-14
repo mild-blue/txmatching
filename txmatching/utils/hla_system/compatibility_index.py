@@ -103,7 +103,7 @@ def get_detailed_compatibility_index(donor_hla_typing: HLATyping,
             donor_hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
             recipient_hla_types = _hla_types_for_hla_group(recipient_hla_typing, hla_group)
 
-        hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_split_codes(
+        hla_compatibility_index_detailed.append(_get_ci_for_recipient_donor_types_in_group(
             donor_hla_types=donor_hla_types,
             recipient_hla_types=recipient_hla_types,
             hla_group=hla_group,
@@ -149,11 +149,12 @@ def _match_through_lambda(current_compatibility_index: float,
                               matching_hla_types_func(recipient_hla_type, donor_hla_type)]
         if len(matching_hla_types) > 0:
             remaining_donor_hla_types.remove(donor_hla_type)
-            if matching_hla_types[0] in remaining_recipient_hla_types:
+            recipient_match = HLAMatch(matching_hla_types[0], result_match_type)
+            if recipient_match not in recipient_matches and matching_hla_types[0] in remaining_recipient_hla_types:
                 remaining_recipient_hla_types.remove(matching_hla_types[0])
-
+                recipient_matches.append(recipient_match)
             donor_matches.append(HLAMatch(donor_hla_type, result_match_type))
-            recipient_matches.append(HLAMatch(matching_hla_types[0], result_match_type))
+
             current_compatibility_index += ci_configuration.compute_match_compatibility_index(
                 result_match_type, hla_group
             )
@@ -237,7 +238,7 @@ def _match_through_broad_codes(current_compatibility_index: float,
 # pylint: enable=too-many-arguments
 
 
-def _get_ci_for_recipient_donor_split_codes(
+def _get_ci_for_recipient_donor_types_in_group(
         donor_hla_types: List[HLAType],
         recipient_hla_types: List[HLAType],
         hla_group: HLAGroup,
@@ -280,8 +281,8 @@ def _get_ci_for_recipient_donor_split_codes(
 
     return DetailedCompatibilityIndexForHLAGroup(
         hla_group=hla_group,
-        donor_matches=donor_matches,
-        recipient_matches=recipient_matches,
+        donor_matches=sorted(donor_matches, key=lambda donor_match: donor_match.hla_type.code.display_code),
+        recipient_matches=sorted(recipient_matches, key=lambda donor_match: donor_match.hla_type.code.display_code),
         group_compatibility_index=group_compatibility_index
     )
 

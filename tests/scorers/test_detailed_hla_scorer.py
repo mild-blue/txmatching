@@ -2,15 +2,10 @@ import unittest
 
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack)
-from tests.test_utilities.hla_preparation_utils import (create_antibodies,
-                                                        create_hla_type,
-                                                        create_hla_typing)
-from txmatching.patients.patient import Donor, Recipient
-from txmatching.patients.patient_parameters import PatientParameters
-from txmatching.scorers.high_res_hla_additive_scorer import HighResScorer
-from txmatching.scorers.split_hla_additive_scorer import SplitScorer
-from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.country_enum import Country
+from tests.scorers.test_hla_scorer import _create_donor, _create_recipient
+from tests.test_utilities.hla_preparation_utils import create_hla_type
+from txmatching.patients.hla_code import HLACode
+from txmatching.patients.hla_model import HLAType
 from txmatching.utils.enums import HLAGroup, MatchType
 from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, HLAMatch,
@@ -71,52 +66,31 @@ class TestHlaScorer(unittest.TestCase):
             self.assertSetEqual(set(expected_result.donor_matches), set(actual_result.donor_matches))
             self.assertSetEqual(set(expected_result.recipient_matches), set(actual_result.recipient_matches))
 
-    def test_scorers_on_some_patients(self):
-        split_scorer = SplitScorer()
-        high_res_scorer = HighResScorer()
-        donor = Donor(
-            db_id=1,
-            medical_id='donor',
-            parameters=donor_parameters_Joe
-        )
-        recipient = Recipient(
-            db_id=1,
-            acceptable_blood_groups=[],
-            related_donor_db_id=1,
-            medical_id='recipient',
-            parameters=recipient_parameters_Jack,
-            hla_antibodies=create_antibodies([])
-        )
-        original_donor = Donor(
-            db_id=2,
-            medical_id='original_donor',
-            related_recipient_db_id=1,
-            parameters=PatientParameters(
-                blood_group=BloodGroup.A,
-                country_code=Country.CZE,
-                hla_typing=create_hla_typing(
-                    ['A1',
-                     'A9',
-                     'B7',
-                     'B37',
-                     'DR11',
-                     'DR15',
-                     'DR52',
-                     'DR51',
-                     'DQ7',
-                     'DQ6']
-                )
-            )
-        )
+    def test_duplicit_hla_codes_shown_and_sorted_correctly(self):
+        donor = _create_donor(['A2'])
+        recipient = _create_recipient(['A1', 'A2'])
 
-        # A9 - BROAD +1
-        # B77 - BROAD +3
-        # DR4, DR11 - SPLIT +9 +9
-        self.assertEqual(22,
-                         split_scorer.score_transplant(donor=donor, recipient=recipient, original_donor=original_donor))
+        calculated_detailed_score = get_detailed_compatibility_index(donor.parameters.hla_typing,
+                                                                     recipient.parameters.hla_typing)
+        self.assertEqual(2, len(calculated_detailed_score[0].recipient_matches))
+        expected_matches = [
+            HLAMatch(hla_type=HLAType(raw_code='A1', code=HLACode(None, 'A1', 'A1')), match_type=MatchType.NONE),
+            HLAMatch(hla_type=HLAType(raw_code='A2', code=HLACode(None, 'A2', 'A2')), match_type=MatchType.SPLIT)
+        ]
 
-        # A9 - BROAD +1
-        # B77 - BROAD +1
-        # DR4, DR11 - SPLIT +2 +2
-        self.assertEqual(6, high_res_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                             original_donor=original_donor))
+        self.assertListEqual(expected_matches, calculated_detailed_score[0].recipient_matches)
+
+    def test_duplicit_hla_codes_shown_correctly_vol2(self):
+        donor = _create_donor(['A1'])
+        recipient = _create_recipient(['A1'])
+
+        calculated_detailed_score = get_detailed_compatibility_index(donor.parameters.hla_typing,
+                                                                     recipient.parameters.hla_typing)
+        self.assertEqual(2, len(calculated_detailed_score[0].recipient_matches))
+
+        expected_matches = [
+            HLAMatch(hla_type=HLAType(raw_code='A1', code=HLACode(None, 'A1', 'A1')), match_type=MatchType.SPLIT),
+            HLAMatch(hla_type=HLAType(raw_code='A1', code=HLACode(None, 'A1', 'A1')), match_type=MatchType.NONE)
+        ]
+
+        self.assertListEqual(expected_matches, calculated_detailed_score[0].recipient_matches)

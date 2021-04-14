@@ -1,5 +1,7 @@
 from typing import List
 
+from tests.patients.test_patient_parameters import (jack_hla_typing,
+                                                    joe_hla_typing)
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_hla_typing)
 from tests.test_utilities.prepare_app_for_tests import DbTests
@@ -92,6 +94,20 @@ class TestHlaScorer(DbTests):
         recipient = _create_recipient(['A*23:01'])
 
         self._test_all_scorers(donor, recipient, (2, 6, 6))
+
+    def test_another_patients(self):
+        donor = _create_donor(joe_hla_typing)
+        recipient = _create_recipient(jack_hla_typing)
+        # Split scorer explanation
+        # A9 - BROAD +1
+        # B77 - BROAD +3
+        # DR4, DR11 - SPLIT +9 +9
+
+        # High res scorer explanation
+        # A9 - BROAD +1
+        # B77 - BROAD +1
+        # DR4, DR11 - SPLIT +2 +2
+        self._test_all_scorers(donor, recipient, (22, 6, 6))
 
     def _test_all_scorers(self, donor, recipient, scores):
         original_donor = _create_donor([])
