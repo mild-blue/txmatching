@@ -7,6 +7,7 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
+from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
 from txmatching.auth.request_context import get_user_role
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigurationJson
@@ -42,6 +43,8 @@ class CalculateFromConfig(Resource):
         user_id = get_current_user_id()
         maybe_configuration_db_id = find_config_db_id_for_configuration_and_data(txm_event=txm_event,
                                                                                  configuration=configuration)
+
+        raise TooComplicatedDataForAllSolutionsSolver()
         if maybe_configuration_db_id:
             # In case max_matchings_to_show_to_viewer was updated, ensure that the value is stored in the
             # configuration.
@@ -65,4 +68,7 @@ class CalculateFromConfig(Resource):
                                                             :configuration.max_matchings_to_show_to_viewer]
             calculated_matchings_dto.show_not_all_matchings_found = False
         logging.debug('Collected matchings and sending them')
+
+
+
         return response_ok(calculated_matchings_dto)

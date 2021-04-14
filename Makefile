@@ -144,3 +144,12 @@ copy-generated-ts-to-fe:
 	cp -r $(SWAGGER_OUTPUT_DIR)/model $(FE_GENERATED_DIR)
 	echo "export * from './model/models';" > $(FE_GENERATED_DIR)/index.ts
 	git add $(FE_GENERATED_DIR)
+
+run-jupyter-lab:
+	jupyter lab --ip 0.0.0.0 --port 8888
+
+jupyter-notebooks-list:
+	jupyter notebook list
+
+jupyter-notebook-stop:
+	jupyter notebook stop 8888
