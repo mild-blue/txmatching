@@ -196,6 +196,13 @@
                  matInput type="number">
         </mat-form-field>
 
+        <mat-form-field *ngIf="configuration.max_number_of_dynamic_constrains_ilp_solver !== undefined">
+          <mat-label>Max number of dynamic constraints in ILP solver</mat-label>
+          <input value="{{ configuration.max_number_of_dynamic_constrains_ilp_solver }}"
+                 formControlName="max_number_of_dynamic_constrains_ilp_solver"
+                 matInput type="number">
+        </mat-form-field>
+
       </div>
     </div>
   </form>
