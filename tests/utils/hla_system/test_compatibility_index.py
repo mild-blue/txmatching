@@ -85,7 +85,8 @@ class TestCompatibilityIndex(unittest.TestCase):
             )
         )
 
-        expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*23:01'), match_type=MatchType.SPLIT)}
+        expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*23:01'), match_type=MatchType.SPLIT),
+                    HLAMatch(hla_type=create_hla_type(raw_code='A*23:01'), match_type=MatchType.NONE)}
 
         self.assertSetEqual(expected, set(ci[A_INDEX].recipient_matches))
 
@@ -100,7 +101,8 @@ class TestCompatibilityIndex(unittest.TestCase):
             ),
         )
 
-        expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*24:02'), match_type=MatchType.BROAD)}
+        expected = {HLAMatch(hla_type=create_hla_type(raw_code='A*24:02'), match_type=MatchType.BROAD),
+                    HLAMatch(hla_type=create_hla_type(raw_code='A*24:02'), match_type=MatchType.NONE)}
 
         self.assertSetEqual(expected, set(ci[A_INDEX].recipient_matches))
 
