@@ -66,7 +66,7 @@ class TestHlaScorer(unittest.TestCase):
             self.assertSetEqual(set(expected_result.donor_matches), set(actual_result.donor_matches))
             self.assertSetEqual(set(expected_result.recipient_matches), set(actual_result.recipient_matches))
 
-    def test_duplicit_hla_codes_shown_and_sorted_correctly(self):
+    def test_duplicate_hla_codes_shown_and_sorted_correctly(self):
         donor = _create_donor(['A2'])
         recipient = _create_recipient(['A1', 'A2'])
 
@@ -80,7 +80,7 @@ class TestHlaScorer(unittest.TestCase):
 
         self.assertListEqual(expected_matches, calculated_detailed_score[0].recipient_matches)
 
-    def test_duplicit_hla_codes_shown_correctly_vol2(self):
+    def test_duplicate_hla_codes_shown_correctly_vol2(self):
         donor = _create_donor(['A1'])
         recipient = _create_recipient(['A1'])
 
