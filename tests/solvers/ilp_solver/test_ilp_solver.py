@@ -141,7 +141,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             max_debt = max(matching.max_blood_group_zero_debt_from_matching for matching in solutions)
             self.assertEqual(debt, max_debt, f'Fail: max_debt: {max_debt} but configuration said {debt}')
 
-        self.assertEqual(- 1, solutions[0].get_blood_group_zero_debt_for_country(Country.CZE))
+        self.assertEqual(-1, solutions[0].get_blood_group_zero_debt_for_country(Country.CZE))
         self.assertEqual(2, solutions[0].get_blood_group_zero_debt_for_country(Country.IND))
         self.assertEqual(-1, solutions[0].get_blood_group_zero_debt_for_country(Country.CAN))
 
