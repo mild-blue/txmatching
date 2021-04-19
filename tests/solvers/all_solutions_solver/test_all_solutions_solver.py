@@ -1,5 +1,6 @@
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
+from tests.solvers.ilp_solver.test_ilp_solver import _set_donor_blood_group
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.configuration import (Configuration,
                                                     ManualDonorRecipientScore)
@@ -70,6 +71,25 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             self.assertEqual(max_cycle_length,
                              max([max([cycle.length() for cycle in solution.get_cycles()], default=0) for solution in
                                   solutions]))
+
+    def test_max_blood_group_zero_debt_between_countries(self):
+        txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        txm_event = get_txm_event_complete(txm_event_db_id)
+        txm_event.active_donors_dict = {i: _set_donor_blood_group(donor) for i, donor in
+                                        txm_event.active_donors_dict.items()}
+        for debt in range(0, 4):
+            configuration = Configuration(
+                solver_constructor_name='AllSolutionsSolver',
+                use_high_resolution=True,
+                max_debt_for_country_for_blood_group_zero=debt,
+                max_number_of_matchings=7,
+                hla_crossmatch_level=HLACrossmatchLevel.NONE)
+            solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
+            self.assertLessEqual(1, len(solutions),
+                                 f'Failed for {debt}')
+
+            max_debt = max(matching.max_blood_group_zero_debt_from_matching for matching in solutions)
+            self.assertEqual(debt, max_debt, f'Fail: max_debt: {max_debt} but configuration said {debt}')
 
     def test_max_debt_between_countries(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))

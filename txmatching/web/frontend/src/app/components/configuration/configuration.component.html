@@ -49,6 +49,13 @@
                  matInput type="number">
         </mat-form-field>
 
+        <mat-form-field *ngIf="configuration.max_debt_for_country_for_blood_group_zero !== undefined">
+          <mat-label>Max country debt for blood group zero</mat-label>
+          <input value="{{ configuration.max_debt_for_country_for_blood_group_zero }}"
+                 formControlName="max_debt_for_country_for_blood_group_zero"
+                 matInput type="number">
+        </mat-form-field>
+
       </div>
     </div>
 

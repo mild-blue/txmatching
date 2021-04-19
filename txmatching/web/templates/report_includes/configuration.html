@@ -79,6 +79,10 @@
         <div class="value"><strong>{{ configuration.max_debt_for_country }}</strong></div>
       </li>
       <li>
+        <div class="label">Max donor with blood group 0 debt for one country</div>
+        <div class="value"><strong>{{ configuration.max_debt_for_country_for_blood_group_zero }}</strong></div>
+      </li>
+      <li>
         <div class="label">Forbidden country combinations</div>
         <div class="value">
           <strong>{{ configuration.forbidden_country_combinations|map('country_combination_filter')|join('<br>') }}</strong>

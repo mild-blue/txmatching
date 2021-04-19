@@ -16,6 +16,7 @@ export interface Configuration {
   max_matchings_to_show_to_viewer: number;
   max_number_of_matchings: number;
   max_debt_for_country: number;
+  max_debt_for_country_for_blood_group_zero: number;
 
   // complex FE
   manual_donor_recipient_scores: DonorRecipientScore[];

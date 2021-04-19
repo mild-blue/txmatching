@@ -5,8 +5,11 @@ from txmatching.configuration.configuration import (Configuration,
                                                     ManualDonorRecipientScore)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
+from txmatching.patients.patient import Donor
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
+from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLACrossmatchLevel
 from txmatching.utils.get_absolute_path import get_absolute_path
 
@@ -119,6 +122,29 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             max_debt = max(matching.max_debt_from_matching for matching in solutions)
             self.assertEqual(debt, max_debt, f'Fail: max_debt: {max_debt} but configuration said {debt}')
 
+    def test_max_blood_group_zero_debt_between_countries(self):
+        txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        txm_event = get_txm_event_complete(txm_event_db_id)
+        txm_event.active_donors_dict = {i: _set_donor_blood_group(donor) for i, donor in
+                                        txm_event.active_donors_dict.items()}
+        for debt in range(0, 4):
+            configuration = Configuration(
+                solver_constructor_name='ILPSolver',
+                use_high_resolution=True,
+                max_debt_for_country_for_blood_group_zero=debt,
+                max_number_of_matchings=7,
+                hla_crossmatch_level=HLACrossmatchLevel.NONE)
+            solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
+            self.assertLessEqual(1, len(solutions),
+                                 f'Failed for {debt}')
+
+            max_debt = max(matching.max_blood_group_zero_debt_from_matching for matching in solutions)
+            self.assertEqual(debt, max_debt, f'Fail: max_debt: {max_debt} but configuration said {debt}')
+
+        self.assertEqual(-1, solutions[0].get_blood_group_zero_debt_for_country(Country.CZE))
+        self.assertEqual(2, solutions[0].get_blood_group_zero_debt_for_country(Country.IND))
+        self.assertEqual(-1, solutions[0].get_blood_group_zero_debt_for_country(Country.CAN))
+
     def test_required_patients(self):
         txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path('/tests/resources/data_for_required_patients_test.xlsx'))
@@ -146,3 +172,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_solver_no_patients(self):
         txm_event = create_or_overwrite_txm_event(name='test')
         solve_from_configuration(Configuration(solver_constructor_name='ILPSolver'), txm_event)
+
+
+def _set_donor_blood_group(donor: Donor) -> Donor:
+    if donor.db_id % 2 == 0:
+        donor.parameters.blood_group = BloodGroup.ZERO
+    return donor

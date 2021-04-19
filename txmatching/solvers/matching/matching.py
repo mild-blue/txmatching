@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import FrozenSet, List, Set
+from typing import FrozenSet, List, Optional, Set
 
 import numpy as np
 
@@ -9,6 +9,7 @@ from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.transplant_cycle import TransplantCycle
 from txmatching.solvers.matching.transplant_round import TransplantRound
 from txmatching.solvers.matching.transplant_sequence import TransplantSequence
+from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 
 
@@ -72,16 +73,26 @@ class Matching:
         return len(
             [donor for donor, _ in self.matching_pairs if donor.donor_type == DonorType.BRIDGING_DONOR])
 
-    def get_donors_for_country_count(self, country_code: str):
+    def get_donors_for_country_count(self, country_code: str, blood_group: Optional[BloodGroup] = None):
         return len([pair.donor.parameters.country_code for pair in self.matching_pairs if
-                    pair.donor.parameters.country_code == country_code])
+                    pair.donor.parameters.country_code == country_code and (
+                            blood_group is None or pair.donor.parameters.blood_group == blood_group
+                    )])
 
-    def get_recipients_for_country_count(self, country_code: str):
+    def get_recipients_for_country_count(self, country_code: str, blood_group: Optional[BloodGroup] = None):
         return len([pair.recipient.parameters.country_code for pair in self.matching_pairs if
-                    pair.recipient.parameters.country_code == country_code])
+                    pair.recipient.parameters.country_code == country_code and (
+                            blood_group is None or pair.donor.parameters.blood_group == blood_group
+                    )])
+
+    def get_count_of_donors_with_blood_group_for_recipients_from_country(self, country_code: str,
+                                                                         blood_group: BloodGroup):
+        return len([pair.donor.parameters.country_code for pair in self.matching_pairs if
+                    pair.recipient.parameters.country_code == country_code and
+                    pair.donor.parameters.blood_group == blood_group
+                    ])
 
     def get_country_codes_counts(self) -> List[CountryDTO]:
-
         return [CountryDTO(country,
                            self.get_donors_for_country_count(country),
                            self.get_recipients_for_country_count(country)) for country in self._countries]
@@ -107,3 +118,13 @@ class Matching:
         return max([np.abs([self.get_donors_for_country_count(country) -
                             self.get_recipients_for_country_count(country)])
                     for country in self._countries], default=0)
+
+    def get_blood_group_zero_debt_for_country(self, country):
+        return self.get_donors_for_country_count(country, BloodGroup.ZERO) - \
+               self.get_count_of_donors_with_blood_group_for_recipients_from_country(country,
+                                                                                     BloodGroup.ZERO)
+
+    @property
+    def max_blood_group_zero_debt_from_matching(self) -> int:
+        return max([np.abs(self.get_blood_group_zero_debt_for_country(country)) for country in self._countries],
+                   default=0)
