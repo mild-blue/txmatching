@@ -14,32 +14,12 @@ def get_absolute_path(project_relative_path: str) -> str:
     if not project_relative_path.startswith('/'):
         project_relative_path = f'/{project_relative_path}'
 
-    python_path = os.environ.get('PYTHONPATH')
-    # this is for vs code that does not set up PYTHONPATH
-    if not python_path:
-        python_path = os.getcwd()
-    python_path = python_path.split(':')
-    # case when running from Pycharm
-    explicit_paths = [path for path in python_path if path.endswith('txmatching')]
-    # use the top level path
-    explicit_paths = sorted(explicit_paths, key=len)
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    project_root = os.path.abspath(os.path.join(dir_path, '../..'))
 
-    # case path set by Pycharm, repo cloned as "txmatching"
-    if len(explicit_paths) == 1:
-        project_root = explicit_paths[0]
-    # case running from command line
-    elif len(python_path) == 1:
-        project_root = python_path[0]
-    # case when we are not sure about the path, so we're guessing,
-    # probably running in Pycharm and cloned with different name than "txmatching"
-    # then the real directory is usually the first record in the path
-    else:
-        logger.warning(f'Could not determine correct path! PYTHONPATH={python_path}, using the first.')
-        project_root = python_path[0]
-
-    # make the path absolute
-    project_root = os.path.abspath(project_root)
     if project_root.endswith('/'):
         project_root = project_root[:-1]
 
-    return project_root + project_relative_path
+    full_path = os.path.abspath(project_root + project_relative_path)
+
+    return full_path
