@@ -20,6 +20,4 @@ def get_absolute_path(project_relative_path: str) -> str:
     if project_root.endswith('/'):
         project_root = project_root[:-1]
 
-    full_path = os.path.abspath(project_root + project_relative_path)
-
-    return full_path
+    return project_root + project_relative_path
