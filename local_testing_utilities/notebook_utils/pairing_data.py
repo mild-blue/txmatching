@@ -1,6 +1,6 @@
 import os
 from dataclasses import asdict, dataclass
-from typing import Tuple
+from typing import Optional, Tuple
 
 import pandas as pd
 
@@ -101,7 +101,7 @@ PARSING_CONFIGS = [
 ]
 
 
-def _row_to_patient_pair(row: pd.Series, config: Tuple):
+def _row_to_patient_pair(row: pd.Series, config: Tuple) -> Optional[PatientPair]:
     txm_event, header, sheet_name, nrows, col_map, filename = config
 
     col_map_dict = dict()
