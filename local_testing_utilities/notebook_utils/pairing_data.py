@@ -110,7 +110,8 @@ def _row_to_patient_pair(row: pd.Series, config: Tuple) -> Optional[PatientPair]
         for col_name in col_names:
             col_name = col_name.lower()
             if col_name in set(row.keys()):
-                col_map_dict[key] = str(row[col_name]).strip().replace('    ', ' ')
+                val = str(row[col_name]).strip().replace('    ', ' ')
+                col_map_dict[key] = val if val not in ['nan', 'NAN', 'Null', 'X'] else ''
                 continue
 
     missing_columns = {k: asdict(col_map)[k] for k, v in col_map_dict.items()
