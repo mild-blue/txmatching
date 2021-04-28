@@ -139,7 +139,7 @@ def _row_to_patient_pair(row: pd.Series, config: Tuple) -> Optional[PatientPair]
     )
 
 
-def parse_pairing_data(dir_path: str) -> pd.DataFrame:
+def parse_pairing_data(dir_path: str, recipient_id_csv_path: str, remove_single_donors: bool = True) -> pd.DataFrame:
     patient_pairs = []
 
     for config in PARSING_CONFIGS[:]:
@@ -168,4 +168,12 @@ def parse_pairing_data(dir_path: str) -> pd.DataFrame:
 
     patient_pairs = [asdict(pp) for pp in patient_pairs]
 
-    return pd.DataFrame(patient_pairs)
+    df_patient_pairs = pd.DataFrame(patient_pairs)
+
+    if remove_single_donors:
+        df_patient_pairs = df_patient_pairs.loc[df_patient_pairs.recipient_name != '']
+
+    df_patients_to_recipient_id = pd.read_csv(recipient_id_csv_path).set_index('recipient_name')
+    df_patient_pairs_with_recipient_id = df_patient_pairs.join(df_patients_to_recipient_id, on='recipient_name', rsuffix='_r')
+
+    return df_patient_pairs_with_recipient_id
