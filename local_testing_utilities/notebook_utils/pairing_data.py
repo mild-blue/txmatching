@@ -4,7 +4,8 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
-from local_testing_utilities.notebook_utils.utils import parse_hla
+from local_testing_utilities.notebook_utils.utils import (
+    parse_acceptable_blood, parse_hla)
 
 
 @dataclass
@@ -116,7 +117,12 @@ def _row_to_patient_pair(row: pd.Series, config: Tuple) -> Optional[PatientPair]
 
     missing_columns = {k: asdict(col_map)[k] for k, v in col_map_dict.items()
                        if v is None and k in {  # required columns
-                           'donor_blood_group', 'donor_typization', 'recipient_blood_group', 'recipient_typization', 'recipient_luminex_2', 'recipient_acceptable_blood'
+                           'donor_blood_group',
+                           'donor_typization',
+                           'recipient_blood_group',
+                           'recipient_typization',
+                           'recipient_luminex_2',
+                           'recipient_acceptable_blood'
                        }}
     if len(missing_columns) > 0:
         print(f'Missing columns in {filename}: {missing_columns}.\n -- {set(row.keys())}')
@@ -132,6 +138,8 @@ def _row_to_patient_pair(row: pd.Series, config: Tuple) -> Optional[PatientPair]
     if col_map_dict['recipient_luminex_1'] is not None:
         col_map_dict['recipient_luminex_1'] = parse_hla(col_map_dict['recipient_luminex_1'])
     col_map_dict['recipient_luminex_2'] = parse_hla(col_map_dict['recipient_luminex_2'])
+
+    col_map_dict['recipient_acceptable_blood'] = parse_acceptable_blood(col_map_dict['recipient_acceptable_blood'])
 
     return PatientPair(
         txm_event,
