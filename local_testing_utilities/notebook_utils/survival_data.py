@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from local_testing_utilities.notebook_utils.utils import parse_hla
@@ -50,5 +51,12 @@ def parse_survival_data(file_path: str) -> pd.DataFrame:
     df_survival['EndDate'] = pd.to_datetime(df_survival['EndDate'])
 
     df_survival['delay'] = (df_survival['LastVisitDate'] - df_survival['StartDate']).dt.days
+
+    df_survival = df_survival[[
+        'RecipientID', 'StartDate', 'LastVisitDate', 'EndDate', 'delay', 'EndReason', 'NoVisits',
+        'donor_typization', 'recipient_typization',
+        'Donor_Sex', 'Donor_AgeAtTx', 'Donor_Weight', 'Donor_Height', 'Donor_EGFR', 'Donor_Info']]
+
+    df_survival[['Donor_Weight', 'Donor_Height']] = df_survival[['Donor_Weight', 'Donor_Height']].replace({0: np.nan})
 
     return df_survival
