@@ -43,6 +43,8 @@ export class PatientService {
   public async getPatients(txmEventId: number, configId: number | undefined, includeAntibodiesRaw: boolean): Promise<PatientList> {
     const configIdStr = configId !== undefined ? configId.toString() : 'default';
 
+    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
+    // @ts-ignore
     return this._http.get<PatientsGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}${includeAntibodiesRaw ? '?include-antibodies-raw' : ''}`
     ).pipe(
@@ -58,6 +60,8 @@ export class PatientService {
     const payload: DonorModelToUpdateGenerated = fromDonorEditableToUpdateGenerated(donorEditable, donorId);
     this._logger.log('Sending payload', [payload]);
 
+    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
+    // @ts-ignore
     return this._http.put<UpdatedDonorGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}/donor`,
       payload
@@ -72,6 +76,8 @@ export class PatientService {
     const payload: RecipientModelToUpdateGenerated = fromRecipientEditableToUpdateGenerated(recipientEditable, recipientId);
     this._logger.log('Sending payload', [payload]);
 
+    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
+    // @ts-ignore
     return this._http.put<UpdatedRecipientGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/recipient`,
       payload
@@ -88,6 +94,8 @@ export class PatientService {
       donor, recipient
     );
 
+    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
+    // @ts-ignore
     return this._http.post<PatientUploadSuccessResponseGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs`,
       payload

@@ -28,12 +28,6 @@ export class AlertComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._alertSubscription = this._alertService.onAlert(this.id)
     .subscribe(alert => this._showAlert(alert));
-
-    this._routeSubscription = this._router.events.subscribe(event => {
-      if (event instanceof NavigationStart) {
-        this._alertService.clear();
-      }
-    });
   }
 
   ngOnDestroy(): void {
