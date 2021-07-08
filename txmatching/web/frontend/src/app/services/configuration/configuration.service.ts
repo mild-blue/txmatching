@@ -16,6 +16,8 @@ export class ConfigurationService {
 
   public async getConfiguration(txmEventId: number, configId: number | undefined): Promise<Configuration> {
     const configIdStr = configId !== undefined ? configId.toString() : 'default';
+    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
+    // @ts-ignore
     return this._http.get<ConfigurationGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/configuration/${configIdStr}`
     ).pipe(
@@ -28,6 +30,8 @@ export class ConfigurationService {
     const payload: IdentifierGenerated = {
       id: configId
     };
+    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
+    // @ts-ignore
     return this._http.put<SuccessGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/configuration/set-default`,
       payload

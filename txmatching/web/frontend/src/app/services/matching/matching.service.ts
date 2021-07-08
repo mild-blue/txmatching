@@ -19,6 +19,8 @@ export class MatchingService {
 
   public async calculate(txmEventId: number, config: Configuration, patients: PatientList): Promise<CalculatedMatchings> {
     const payload: ConfigurationGenerated = fromConfiguration(config);
+    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
+    // @ts-ignore
     return this._http.post<CalculatedMatchingsGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/matching/calculate-for-config`,
       payload
