@@ -4,7 +4,9 @@ PARSE_HLA_CODE_EXCEPTIONS = {
     'DRB1*09:02': 'DR9',
     # Based on email communication with Matej Roder from 31.12.2020
     'DQB1*03:19': 'DQ7',
-    'DRB1*07:07': 'DR7'
+    'DRB1*07:07': 'DR7',
+    # Based on email communication with Mater Roder from 12.7.2021
+    'C*07:18': 'CW7'
 }
 
 PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES = {
