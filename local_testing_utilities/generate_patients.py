@@ -25,7 +25,9 @@ from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup, Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.hla_table import HIGH_RES_TO_SPLIT_OR_BROAD
+from txmatching.utils.hla_system.hla_regexes import try_convert_high_res_with_letter
+from txmatching.utils.hla_system.hla_table import HIGH_RES_TO_SPLIT_OR_BROAD, \
+    PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
 
 BRIDGING_PROBABILITY = 0.8
 TXM_EVENT_NAME = 'high_res_example_data'
@@ -91,13 +93,34 @@ def get_codes(hla_group: HLAGroup, sample=None):
     return [high_res for i, high_res in enumerate(all_high_res) if i in sample]
 
 
+def get_codes_with_letter(hla_group: HLAGroup, sample=None):
+    if sample is None:
+        sample = set(range(1, 15))
+
+    all_high_res_with_letter = [try_convert_high_res_with_letter(high_res) for high_res in
+                                PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.index.tolist()]
+
+    all_high_res_with_letter_grouped = [code for code in all_high_res_with_letter if
+                                        re.match(HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex, code)]
+
+    def get_code_with_letter(letter: str):
+        return [code for code in all_high_res_with_letter_grouped if code[-1] == letter]
+
+    result = []
+    for letter in ['N', 'Q', 'L', 'S']:
+        codes = get_code_with_letter(letter)
+        result += codes if len(codes) < 10 else random.sample(codes, 10)
+
+    return random.sample(result, len(sample))
+
+
 TypizationFor = {
-    HLAGroup.A: get_codes(HLAGroup.A),
-    HLAGroup.B: get_codes(HLAGroup.B),
-    HLAGroup.DRB1: get_codes(HLAGroup.DRB1),
+    HLAGroup.A: get_codes(HLAGroup.A) + get_codes_with_letter(HLAGroup.A),
+    HLAGroup.B: get_codes(HLAGroup.B) + get_codes_with_letter(HLAGroup.B),
+    HLAGroup.DRB1: get_codes(HLAGroup.DRB1) + get_codes_with_letter(HLAGroup.DRB1),
     # HLAGroup.CW: get_codes(HLAGroup.CW),
-    HLAGroup.DP: get_codes(HLAGroup.DP),
-    HLAGroup.DQ: get_codes(HLAGroup.DQ)
+    HLAGroup.DP: get_codes(HLAGroup.DP) + get_codes_with_letter(HLAGroup.DP),
+    HLAGroup.DQ: get_codes(HLAGroup.DQ) + get_codes_with_letter(HLAGroup.DQ),
 }
 
 
