@@ -20,12 +20,3 @@ def try_convert_ultra_high_res(high_res_or_ultra_high_res: str) -> Optional[str]
         return high_res
     else:
         return None
-
-
-def try_convert_high_res_with_letter(high_res_or_ultra_high_res: str) -> Optional[str]:
-    match = HIGH_RES_REGEX_ENDING_WITH_LETTER.search(high_res_or_ultra_high_res)
-    if match:
-        high_res = match.group()
-        return high_res
-    else:
-        return ''
