@@ -114,9 +114,9 @@ def get_codes(hla_group: HLAGroup, sample=None):
     return [high_res for i, high_res in enumerate(all_high_res) if i in sample]
 
 
-def get_codes_with_letter(hla_group: HLAGroup, sample=None):
-    if sample is None:
-        sample = set(range(1, 15))
+def get_sample_of_codes_with_letter(hla_group: HLAGroup, amount=None):
+    if amount is None:
+        amount = 15
 
     all_high_res_with_letter = [try_convert_high_res_with_letter(high_res) for high_res in
                                 PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.index.tolist()]
@@ -127,12 +127,13 @@ def get_codes_with_letter(hla_group: HLAGroup, sample=None):
     def get_code_with_letter(letter: str):
         return [code for code in all_high_res_with_letter_grouped if code[-1] == letter]
 
-    result = []
+    selected_codes_with_letter = []
     for letter in ['N', 'Q', 'L', 'S']:
-        codes = get_code_with_letter(letter)
-        result += codes if len(codes) < 10 else random.sample(codes, 10)
+        codes_for_one_letter = get_code_with_letter(letter)
+        selected_codes_with_letter += codes_for_one_letter if len(codes_for_one_letter) < 10 else \
+            random.sample(codes_for_one_letter, 10)
 
-    return random.sample(result, len(sample))
+    return random.sample(selected_codes_with_letter, amount)
 
 
 TypizationFor = {
@@ -146,7 +147,9 @@ TypizationFor = {
 
 
 def get_random_hla_type(hla_group: HLAGroup):
-    return random.choice(TypizationFor[hla_group] + get_codes_with_letter(hla_group))
+    rand = random.uniform(0, 1)
+    return random.choice(TypizationFor[hla_group]) if rand > 0.2 else random.choice(
+        get_sample_of_codes_with_letter(hla_group))
 
 
 def generate_hla_typing() -> List[str]:
