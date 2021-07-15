@@ -30,6 +30,7 @@ from txmatching.utils.hla_system.hla_table import HIGH_RES_TO_SPLIT_OR_BROAD, \
     PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
 
 BRIDGING_PROBABILITY = 0.8
+NON_DIRECTED_PROBABILITY = 0.9
 TXM_EVENT_NAME = 'high_res_example_data'
 DATA_FOLDER = get_absolute_path(f'tests/resources/{TXM_EVENT_NAME}/')
 
@@ -80,7 +81,27 @@ def random_blood_group() -> BloodGroup:
         return BloodGroup.AB
 
 
+def random_acceptable() -> List[BloodGroup]:
+    rand = random.uniform(0, 1)
+    if rand > 0.3:
+        return []
+    num_of_acceptable = random.randint(1, 4)
+    blood_groups = {BloodGroup.ZERO, BloodGroup.A, BloodGroup.B, BloodGroup.AB}
+    acceptable = random.sample(blood_groups, num_of_acceptable)
+    return acceptable
+
+
 SAMPLE = set(range(1, 40))
+
+
+def get_donor_type() -> DonorType:
+    is_bridging = random_true_with_prob(BRIDGING_PROBABILITY)
+    is_non_directed = random_true_with_prob(NON_DIRECTED_PROBABILITY)
+    if is_non_directed:
+        return DonorType.NON_DIRECTED
+    elif is_bridging:
+        return DonorType.BRIDGING_DONOR
+    return DonorType.DONOR
 
 
 def get_codes(hla_group: HLAGroup, sample=None):
@@ -155,10 +176,9 @@ def generate_antibodies() -> List[HLAAntibodiesUploadDTO]:
 
 
 def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional[RecipientUploadDTO]]:
-    is_bridging = random_true_with_prob(BRIDGING_PROBABILITY)
     blood_group_donor = random_blood_group()
-    donor_type = DonorType.BRIDGING_DONOR if is_bridging else DonorType.DONOR
-    recipient_id = f'{country}_{i}R' if not is_bridging else None
+    donor_type = get_donor_type()
+    recipient_id = f'{country}_{i}R' if donor_type == DonorType.DONOR else None
     donor = DonorUploadDTO(
         donor_type=donor_type,
         blood_group=blood_group_donor,
@@ -172,7 +192,7 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
         note=generate_random_note(),
         internal_medical_id='internal_medical_id'
     )
-    if is_bridging:
+    if recipient_id is None:
         recipient = None
     else:
         blood_group_recipient = random_blood_group()
@@ -180,7 +200,7 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
             blood_group=blood_group_recipient,
             hla_typing=generate_hla_typing(),
             hla_antibodies=generate_antibodies(),
-            acceptable_blood_groups=[],
+            acceptable_blood_groups=random_acceptable(),
             medical_id=recipient_id,
             height=generate_random_height(),
             weight=generate_random_weight(),
