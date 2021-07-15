@@ -115,17 +115,17 @@ def get_codes_with_letter(hla_group: HLAGroup, sample=None):
 
 
 TypizationFor = {
-    HLAGroup.A: get_codes(HLAGroup.A) + get_codes_with_letter(HLAGroup.A),
-    HLAGroup.B: get_codes(HLAGroup.B) + get_codes_with_letter(HLAGroup.B),
-    HLAGroup.DRB1: get_codes(HLAGroup.DRB1) + get_codes_with_letter(HLAGroup.DRB1),
+    HLAGroup.A: get_codes(HLAGroup.A),
+    HLAGroup.B: get_codes(HLAGroup.B),
+    HLAGroup.DRB1: get_codes(HLAGroup.DRB1),
     # HLAGroup.CW: get_codes(HLAGroup.CW),
-    HLAGroup.DP: get_codes(HLAGroup.DP) + get_codes_with_letter(HLAGroup.DP),
-    HLAGroup.DQ: get_codes(HLAGroup.DQ) + get_codes_with_letter(HLAGroup.DQ),
+    HLAGroup.DP: get_codes(HLAGroup.DP),
+    HLAGroup.DQ: get_codes(HLAGroup.DQ),
 }
 
 
 def get_random_hla_type(hla_group: HLAGroup):
-    return random.choice(TypizationFor[hla_group])
+    return random.choice(TypizationFor[hla_group] + get_codes_with_letter(hla_group))
 
 
 def generate_hla_typing() -> List[str]:
