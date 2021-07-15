@@ -56,7 +56,7 @@ PATIENT_DATA_PATH=/home/user/path/to/your/patient_data.xlsx
 ```
 
 ## Swagger
-We'have a swagger UI running on `/doc/` route (so for example, `localhost:8080/doc/`).
+We have a swagger UI running on `/doc/` route (so for example, `localhost:8080/doc/`).
 How to use it and some useful info [here on doc](https://flask-restx.readthedocs.io/en/latest/swagger.html).
 
 The swagger is also in the project. It is generated in `txmatching/web/swagger.yaml`. We always test that it is up to date
@@ -65,7 +65,7 @@ and in case any changes are made, one needs to regenerated it using `tests/test_
 We also automatically generate TypeScript files that are used by FE. These files are generated from the swagger file
 using `openapi-generator-cli` tool. To install this tool, please refer to [README.md](txmatching/web/frontend/README.md).
 
-You can automatically generate both swaggger file and TS files by running `make generate-swagger-all`.
+You can automatically generate both swagger file and TS files by running `make generate-swagger-all`.
 
 ## Dependencies Management
 We are using `conda` for managing dependencies as [graph-tool](https://graph-tool.skewed.de/)
@@ -115,7 +115,7 @@ For pdf generation, a [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) is r
 
 
 ## Git Hooks
-there are some githooks in this project. It is advised to use them. After installing dependecies in conda it should be enough to run
+there are some githooks in this project. It is advised to use them. After installing dependencies in conda it should be enough to run
 ```
 pre-commit install
 ```
@@ -136,10 +136,10 @@ easily be installed via pip and you have to use for example conda to install it.
 This is the reason we're using Conda. There's also no package for Windows, thus we support only
 mac and linux.
 
-### Testing
+## Testing
 To run tests simply run them.
 
-### Experimenting
+## Experimenting
 It is useful to have non-empty db, for that run
 
 ```
@@ -148,12 +148,24 @@ make setup-non-empty-db
 
 run tests
 
+## Run BE Locally
+To run BE locally just run [app.py](txmatching/web/app.py) file in your IDE.
+
 ### Frontend
 
 For detailed FE related stuff see [README.md](txmatching/web/frontend/README.md).
 
 #### Build FE for BE
 In order to build FE for the app one must run `make build-fe`.
-One must do that ever time when something was changed in the FE code in order to have up to date FE.
+One must do that every time when something was changed in the FE code in order to have up to date FE.
 What this does is that it builds FE code to `txmatching/web/frontend/dist/frontend` directory,
 where it is picked up by the Flask.
+
+In case npm can't find some of packages and you get this error: 
+```
+ENOENT: no such file or directory, chmod '.../node_modules/...`
+```
+try to remove `node_modules` folder from `txmatching/web/frontend/`, run `npm cache clean -f` and then run the command again.
+
+
+To run FE locally use command `make run-fe`. 
