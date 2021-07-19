@@ -25,9 +25,12 @@ from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup, Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.hla_table import HIGH_RES_TO_SPLIT_OR_BROAD
+from txmatching.utils.hla_system.hla_regexes import HIGH_RES_REGEX_ENDING_WITH_LETTER
+from txmatching.utils.hla_system.hla_table import HIGH_RES_TO_SPLIT_OR_BROAD, \
+    PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
 
 BRIDGING_PROBABILITY = 0.8
+NON_DIRECTED_PROBABILITY = 0.9
 TXM_EVENT_NAME = 'high_res_example_data'
 DATA_FOLDER = get_absolute_path(f'tests/resources/{TXM_EVENT_NAME}/')
 
@@ -78,7 +81,27 @@ def random_blood_group() -> BloodGroup:
         return BloodGroup.AB
 
 
+def random_acceptable() -> List[BloodGroup]:
+    rand = random.uniform(0, 1)
+    if rand > 0.3:
+        return []
+    num_of_acceptable = random.randint(1, 4)
+    blood_groups = {BloodGroup.ZERO, BloodGroup.A, BloodGroup.B, BloodGroup.AB}
+    acceptable = random.sample(blood_groups, num_of_acceptable)
+    return acceptable
+
+
 SAMPLE = set(range(1, 40))
+
+
+def get_donor_type() -> DonorType:
+    is_bridging = random_true_with_prob(BRIDGING_PROBABILITY)
+    is_non_directed = random_true_with_prob(NON_DIRECTED_PROBABILITY)
+    if is_non_directed:
+        return DonorType.NON_DIRECTED
+    elif is_bridging:
+        return DonorType.BRIDGING_DONOR
+    return DonorType.DONOR
 
 
 def get_codes(hla_group: HLAGroup, sample=None):
@@ -91,25 +114,58 @@ def get_codes(hla_group: HLAGroup, sample=None):
     return [high_res for i, high_res in enumerate(all_high_res) if i in sample]
 
 
+def try_convert_high_res_with_letter(high_res_or_ultra_high_res: str) -> Optional[str]:
+    match = HIGH_RES_REGEX_ENDING_WITH_LETTER.search(high_res_or_ultra_high_res)
+    if match:
+        high_res = match.group()
+        return high_res
+    else:
+        return ''
+
+
+def get_sample_of_codes_with_letter(hla_group: HLAGroup):
+    all_high_res_with_letter = [try_convert_high_res_with_letter(high_res) for high_res in
+                                PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.index.tolist()]
+
+    all_high_res_with_letter_grouped = [code for code in all_high_res_with_letter if
+                                        re.match(HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex, code)]
+
+    def get_code_with_letter(letter: str):
+        return [code for code in all_high_res_with_letter_grouped if code[-1] == letter]
+
+    selected_codes_with_letter = []
+    for letter in ['N', 'Q', 'L', 'S']:
+        codes_for_one_letter = get_code_with_letter(letter)
+        selected_codes_with_letter += codes_for_one_letter if len(codes_for_one_letter) < 10 else \
+            random.sample(codes_for_one_letter, 10)
+
+    return selected_codes_with_letter
+
+
 TypizationFor = {
     HLAGroup.A: get_codes(HLAGroup.A),
     HLAGroup.B: get_codes(HLAGroup.B),
     HLAGroup.DRB1: get_codes(HLAGroup.DRB1),
     # HLAGroup.CW: get_codes(HLAGroup.CW),
     HLAGroup.DP: get_codes(HLAGroup.DP),
-    HLAGroup.DQ: get_codes(HLAGroup.DQ)
+    HLAGroup.DQ: get_codes(HLAGroup.DQ),
 }
 
 
-def get_random_hla_type(hla_group: HLAGroup):
-    return random.choice(TypizationFor[hla_group])
+def get_random_hla_type(hla_group: HLAGroup, has_letter_at_the_end: bool = False):
+    return random.choice(get_sample_of_codes_with_letter(hla_group)) if has_letter_at_the_end \
+        else random.choice(TypizationFor[hla_group])
 
 
-def generate_hla_typing() -> List[str]:
+def generate_hla_typing(has_letter_at_the_end: bool) -> List[str]:
     typization = []
+    hla_with_letter = random.choice(list(TypizationFor.keys())) if has_letter_at_the_end else None
+
     for hla_group in TypizationFor:
-        typization.append(get_random_hla_type(hla_group))
-        typization.append(get_random_hla_type(hla_group))
+        typization.append(get_random_hla_type(hla_group, has_letter_at_the_end=(hla_with_letter == hla_group)))
+        rand = random.uniform(0, 1)
+        if rand > 0.3:
+            typization.append(get_random_hla_type(hla_group))
 
     return typization
 
@@ -131,16 +187,16 @@ def generate_antibodies() -> List[HLAAntibodiesUploadDTO]:
     return antibodies
 
 
-def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional[RecipientUploadDTO]]:
-    is_bridging = random_true_with_prob(BRIDGING_PROBABILITY)
+def generate_patient(country: Country, i: int, has_hla_with_letter_at_the_end: bool) -> \
+        Tuple[DonorUploadDTO, Optional[RecipientUploadDTO]]:
     blood_group_donor = random_blood_group()
-    donor_type = DonorType.BRIDGING_DONOR if is_bridging else DonorType.DONOR
-    recipient_id = f'{country}_{i}R' if not is_bridging else None
+    donor_type = get_donor_type()
+    recipient_id = f'{country}_{i}R' if donor_type == DonorType.DONOR else None
     donor = DonorUploadDTO(
         donor_type=donor_type,
         blood_group=blood_group_donor,
         related_recipient_medical_id=recipient_id,
-        hla_typing=generate_hla_typing(),
+        hla_typing=generate_hla_typing(has_letter_at_the_end=has_hla_with_letter_at_the_end),
         medical_id=f'{country}_{i}',
         height=generate_random_height(),
         weight=generate_random_weight(),
@@ -149,15 +205,15 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
         note=generate_random_note(),
         internal_medical_id='internal_medical_id'
     )
-    if is_bridging:
+    if recipient_id is None:
         recipient = None
     else:
         blood_group_recipient = random_blood_group()
         recipient = RecipientUploadDTO(
             blood_group=blood_group_recipient,
-            hla_typing=generate_hla_typing(),
+            hla_typing=generate_hla_typing(has_letter_at_the_end=has_hla_with_letter_at_the_end),
             hla_antibodies=generate_antibodies(),
-            acceptable_blood_groups=[],
+            acceptable_blood_groups=random_acceptable(),
             medical_id=recipient_id,
             height=generate_random_height(),
             weight=generate_random_weight(),
@@ -173,7 +229,9 @@ def generate_patient(country: Country, i: int) -> Tuple[DonorUploadDTO, Optional
 
 
 def generate_patients_for_one_country(country: Country, txm_event_name: str, count: int) -> PatientUploadDTOIn:
-    pairs = [generate_patient(country, i) for i in range(0, count)]
+    count_hla_with_letter_at_the_end = 2
+    pairs = [generate_patient(country, i, False) for i in range(0, count - count_hla_with_letter_at_the_end)] + \
+            [generate_patient(country, i, True) for i in range(count - count_hla_with_letter_at_the_end, count)]
     recipients = [recipient for _, recipient in pairs if recipient]
     donors = [donor for donor, _ in pairs]
 

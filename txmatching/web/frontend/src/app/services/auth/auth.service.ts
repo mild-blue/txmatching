@@ -5,7 +5,7 @@ import { DecodedToken, User } from '@app/model/User';
 import { environment } from '@environments/environment';
 import { map } from 'rxjs/operators';
 import { AuthResponse } from '@app/services/auth/auth.interface';
-import * as jwt_decode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 import { Router } from '@angular/router';
 import { UserTokenType } from '@app/model/enums/UserTokenType';
 
