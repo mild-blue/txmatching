@@ -163,7 +163,9 @@ def generate_hla_typing(has_letter_at_the_end: bool) -> List[str]:
 
     for hla_group in TypizationFor:
         typization.append(get_random_hla_type(hla_group, has_letter_at_the_end=(hla_with_letter == hla_group)))
-        typization.append(get_random_hla_type(hla_group))
+        rand = random.uniform(0, 1)
+        if rand > 0.3:
+            typization.append(get_random_hla_type(hla_group))
 
     return typization
 
