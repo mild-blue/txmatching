@@ -130,7 +130,9 @@ def generate_hla_typing() -> List[str]:
     typization = []
     for hla_group in TypizationFor:
         typization.append(get_random_hla_type(hla_group))
-        typization.append(get_random_hla_type(hla_group))
+        rand = random.uniform(0, 1)
+        if rand > 0.3:
+            typization.append(get_random_hla_type(hla_group))
 
     return typization
 
