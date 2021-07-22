@@ -36,18 +36,3 @@ recipient_parameters_Jack = PatientParameters(blood_group=BloodGroup.A,
                                               hla_typing=create_hla_typing(jack_hla_typing),
                                               country_code=Country.CZE
                                               )
-
-recipient_parameters_Wrong = PatientParameters(blood_group=BloodGroup.A,
-                                               hla_typing=create_hla_typing(
-                                                   [
-                                                       'A9',
-                                                       'A30',
-                                                       'A31',
-                                                       'B14',
-                                                       'B77',
-                                                       'DR4',
-                                                       'DR11'
-                                                   ]
-                                               ),
-                                               country_code=Country.CZE
-                                               )
