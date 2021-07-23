@@ -32,6 +32,7 @@ class Scorer(str, Enum):
     SplitScorer = 'SplitScorer'
     HighResScorer = 'HighResScorer'
     HighResWithDQDPScorer = 'HighResWithDQDPScorer'
+    HLAAdditiveScorer = 'HLAAdditiveScorer'
 
 
 class Solver(str, Enum):
