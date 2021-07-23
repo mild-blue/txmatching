@@ -12,7 +12,8 @@ SUPPORTED_SCORERS = [SplitScorer, HighResScorer, HighResWithDQDPScorer]
 
 
 def scorer_from_configuration(configuration: Configuration) -> AdditiveScorer:
-    # We renamed HLAAdditiveScorer to SplitScorer
+    # We renamed HLAAdditiveScorer to SplitScorer,
+    # If-statement is there for backward compatibility
     if configuration.scorer_constructor_name == 'HLAAdditiveScorer':
         configuration.scorer_constructor_name = Scorer.SplitScorer
 
