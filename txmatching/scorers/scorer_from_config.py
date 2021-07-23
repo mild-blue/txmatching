@@ -13,7 +13,7 @@ SUPPORTED_SCORERS = [SplitScorer, HighResScorer, HighResWithDQDPScorer]
 
 def scorer_from_configuration(configuration: Configuration) -> AdditiveScorer:
     # We renamed HLAAdditiveScorer to SplitScorer
-    if configuration.scorer_constructor_name == Scorer.HLAAdditiveScorer:
+    if configuration.scorer_constructor_name == 'HLAAdditiveScorer':
         configuration.scorer_constructor_name = Scorer.SplitScorer
 
     return construct_configurable_object(configuration.scorer_constructor_name, SUPPORTED_SCORERS, configuration)
