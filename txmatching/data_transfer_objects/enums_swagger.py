@@ -28,7 +28,7 @@ DonorTypeEnumJson = enums_api.schema_model('DonorType', {
 })
 
 ScorerEnumJson = enums_api.schema_model('Scorer', {
-    'enum': [scorer.value for scorer in Scorer if scorer != Scorer.HLAAdditiveScorer],
+    'enum': [scorer.value for scorer in Scorer],
     'type': 'string'
 })
 
