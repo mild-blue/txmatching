@@ -1,11 +1,11 @@
 import logging
-import unittest
 
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack,
-                                                    recipient_parameters_Wrong)
+                                                    create_recipient_parameters_wrong)
 from tests.test_utilities.hla_preparation_utils import (create_hla_type,
                                                         create_hla_typing)
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.scorers.high_res_hla_additive_scorer import \
     HighResScorerCIConfiguration
 from txmatching.scorers.split_hla_additive_scorer import \
@@ -20,11 +20,11 @@ OTHER_INDEX = 3
 A_INDEX = 0
 
 
-class TestCompatibilityIndex(unittest.TestCase):
+class TestCompatibilityIndex(DbTests):
     def setUp(self):
         self._donor_recipient_index = [
             (donor_parameters_Joe, recipient_parameters_Jack, 22.0, 6.0),
-            (donor_parameters_Joe, recipient_parameters_Wrong, 22.0, 6.0)
+            (donor_parameters_Joe, create_recipient_parameters_wrong(), 22.0, 6.0)
         ]
 
     def test_compatibility_index(self):
