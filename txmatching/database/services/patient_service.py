@@ -100,7 +100,11 @@ def get_hla_antibodies_from_recipient_model(
         raise ValueError(f'Parsed antibodies have invalid format. '
                          f'Running recompute-parsing api could help: ${antibodies_dto}')
     return HLAAntibodies(
-        hla_antibodies_raw_list=antibodies_raw,
+        hla_antibodies_raw_list=sorted(
+            antibodies_raw,
+            key=lambda hla_type: (
+                hla_type.raw_code,
+            )),
         hla_antibodies_per_groups=antibodies_dto.hla_antibodies_per_groups
     )
 

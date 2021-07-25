@@ -106,4 +106,12 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
             list(antibody_matches_set)
         ))
 
+    # Sort antibodies
+    for antibodies_per_hla_group in antibody_matches_for_groups:
+        antibodies_per_hla_group.antibody_matches = sorted(
+            antibodies_per_hla_group.antibody_matches,
+            key=lambda hla_group: (
+                hla_group.hla_antibody.raw_code,
+            ))
+
     return antibody_matches_for_groups
