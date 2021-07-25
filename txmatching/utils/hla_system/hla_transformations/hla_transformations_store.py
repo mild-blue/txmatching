@@ -11,8 +11,8 @@ from txmatching.database.sql_alchemy_schema import HLAAntibodyRawModel
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     create_hla_antibodies_per_groups_from_hla_antibodies,
-    split_hla_types_to_groups, _is_hla_type_in_group)
-from txmatching.patients.hla_model import HLAAntibody, HLAType
+    split_hla_types_to_groups, split_hla_types_to_groups_other)
+from txmatching.patients.hla_model import HLAAntibody, HLAType, HLAPerGroup
 from txmatching.utils.enums import HLAGroup, HLA_GROUPS_OTHER
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import (
     OK_PROCESSING_RESULTS, HlaCodeProcessingResultDetail)
@@ -136,38 +136,32 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
     hla_per_groups = split_hla_types_to_groups(hla_types_parsed, parsing_info)
 
     # 4. check if there are max 2 hla_types per group
-    for hla in hla_per_groups:
-        if hla.hla_group != HLAGroup.Other and len(hla.hla_types) > MAX_ANTIGENS_PER_GROUP:
-            for hla_type in hla.hla_types:
-                add_parsing_error_to_db_session(hla_type.raw_code,
-                                                HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
-                                                HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value,
-                                                parsing_info)
-
-        if hla.hla_group == HLAGroup.Other:
-            hla_codes_per_group_other = _hla_codes_per_group_other(hla.hla_types)
-            for hla_group in HLA_GROUPS_OTHER:
-                if len(hla_codes_per_group_other[hla_group]) > 2:
-                    for hla_type in hla_codes_per_group_other[hla_group]:
-                        add_parsing_error_to_db_session(
-                            hla_type.raw_code,
-                            HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
-                            HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value,
-                            parsing_info
-                        )
-    # db.session.commit()
+    wrong_number_per_group = check_number_of_hla_types_per_group(hla_per_groups)
+    for wrong_code in wrong_number_per_group:
+        add_parsing_error_to_db_session(
+            wrong_code.raw_code,
+            HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
+            message=HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value,
+            parsing_info=parsing_info
+        )
 
     return HLATypingDTO(
         hla_per_groups=hla_per_groups,
     )
 
 
-def _hla_codes_per_group_other(hla_types: List[HLAType]):
-    hla_codes_per_group_other = dict()
-    for hla_group in HLA_GROUPS_OTHER:
-        hla_codes_per_group_other[hla_group] = []
-    for hla_type in hla_types:
-        for hla_group in HLA_GROUPS_OTHER:
-            if _is_hla_type_in_group(hla_type, hla_group):
-                hla_codes_per_group_other[hla_group] += [hla_type]
-    return hla_codes_per_group_other
+def check_number_of_hla_types_per_group(hla_per_groups: List[HLAPerGroup]) -> List[HLAType]:
+    hla_codes_with_parsing_error = []
+    for group in hla_per_groups:
+        if group.hla_group != HLAGroup.Other and len(group.hla_types) > MAX_ANTIGENS_PER_GROUP:
+            for hla_type in group.hla_types:
+                hla_codes_with_parsing_error += [hla_type]
+
+        if group.hla_group == HLAGroup.Other:
+            hla_codes_per_group_other = split_hla_types_to_groups_other(group.hla_types)
+            for hla_group in HLA_GROUPS_OTHER:
+                if len(hla_codes_per_group_other[hla_group]) > 2:
+                    for hla_type in hla_codes_per_group_other[hla_group]:
+                        hla_codes_with_parsing_error += [hla_type]
+
+    return hla_codes_with_parsing_error

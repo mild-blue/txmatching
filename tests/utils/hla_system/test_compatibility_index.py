@@ -2,7 +2,8 @@ import logging
 import unittest
 
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
-                                                    recipient_parameters_Jack)
+                                                    recipient_parameters_Jack,
+                                                    recipient_parameters_Wrong)
 from tests.test_utilities.hla_preparation_utils import (create_hla_type,
                                                         create_hla_typing)
 from txmatching.scorers.high_res_hla_additive_scorer import \
@@ -23,6 +24,7 @@ class TestCompatibilityIndex(unittest.TestCase):
     def setUp(self):
         self._donor_recipient_index = [
             (donor_parameters_Joe, recipient_parameters_Jack, 22.0, 6.0),
+            (donor_parameters_Joe, recipient_parameters_Wrong, 22.0, 6.0)
         ]
 
     def test_compatibility_index(self):
@@ -54,11 +56,13 @@ class TestCompatibilityIndex(unittest.TestCase):
         ci = get_detailed_compatibility_index(
             create_hla_typing(
                 ['C*12:03', 'DRB3*01:01',
-                 'DQA1*03:01', 'DQB1*03:02', 'DPB1*02:01']
+                 'DQA1*03:01', 'DQB1*06:03',
+                 'DQB1*03:02', 'DPB1*02:01']
             ),
             create_hla_typing(
                 ['C*04:01', 'DQA1*02:01',
-                 'DQB1*03:03', 'DPB1*04:01', 'DPB1*09:01']
+                 'DQB1*03:03', 'DQB1*05:01',
+                 'DPB1*04:01', 'DPB1*09:01']
             )
         )
 
@@ -66,6 +70,7 @@ class TestCompatibilityIndex(unittest.TestCase):
                     HLAMatch(hla_type=create_hla_type(raw_code='DQA1*02:01'), match_type=MatchType.NONE),
                     HLAMatch(hla_type=create_hla_type(raw_code='DPB1*09:01'), match_type=MatchType.NONE),
                     HLAMatch(hla_type=create_hla_type(raw_code='DQB1*03:03'), match_type=MatchType.BROAD),
+                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*05:01'), match_type=MatchType.BROAD),
                     HLAMatch(hla_type=create_hla_type(raw_code='DPB1*04:01'), match_type=MatchType.NONE)
                     }
 
