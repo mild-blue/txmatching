@@ -1,4 +1,4 @@
-<div class="popup" [class.open]="isOpened" cdk-scrollable #popup>
+<div class="popup {{style}}" [class.open]="isOpened" cdk-scrollable #popup>
   <div class="popup__header">
     <h1>{{ title }}</h1>
     <button (click)="close()">

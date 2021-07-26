@@ -15,6 +15,8 @@ import { finalize, first } from 'rxjs/operators';
 import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 import { TxmEventStateGenerated } from '@app/generated';
+import { TemplatePopupStyle } from '@app/components/template-popup/template-popup.interface';
+import { ReportConfig } from '@app/components/generate-report/generate-report.interface';
 
 @Component({
   selector: 'app-home',
@@ -35,6 +37,10 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
   public configIcon = faCog;
   public configOpened: boolean = false;
+  public exportOpened: boolean = false;
+
+  public templatePopupStyle = TemplatePopupStyle;
+  public uploadDownloadStatus = UploadDownloadStatus;
 
   constructor(private _matchingService: MatchingService,
               _reportService: ReportService,
@@ -91,6 +97,10 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.configOpened = !this.configOpened;
   }
 
+  public toggleGenerateReportPopup(): void {
+    this.exportOpened = !this.exportOpened;
+  }
+
   get canSetDefaultConfig(): boolean {
     const txmEventOpen = this.defaultTxmEvent?.state === TxmEventStateGenerated.Open;
     const configIdDefined = !!this._eventService.getConfigId();
@@ -138,7 +148,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     }
   }
 
-  public async downloadMatchingPdfReport(): Promise<void> {
+  public async downloadMatchingPdfReport(reportConfig: ReportConfig): Promise<void> {
     if (!this.defaultTxmEvent) {
       this._logger.error('Download report failed because defaultTxmEvent not set');
       return;
@@ -150,9 +160,15 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     }
 
     this._logger.log('Downloading with active matching', [activeMatching]);
+    this._logger.log('Report config', [reportConfig]);
 
     this._downloadMatchingInProgress = true;
-    this._reportService.downloadMatchingPdfReport(this.defaultTxmEvent.id, this._eventService.getConfigId(), activeMatching.orderId)
+    this._reportService.downloadMatchingPdfReport(
+      this.defaultTxmEvent.id,
+      this._eventService.getConfigId(),
+      activeMatching.orderId,
+      reportConfig
+    )
     .pipe(
       first(),
       finalize(() => this._downloadMatchingInProgress = false)
