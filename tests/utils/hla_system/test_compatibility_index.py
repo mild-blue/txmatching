@@ -22,6 +22,7 @@ A_INDEX = 0
 
 class TestCompatibilityIndex(DbTests):
     def setUp(self):
+        super().setUp()
         self._donor_recipient_index = [
             (donor_parameters_Joe, recipient_parameters_Jack, 22.0, 6.0),
             (donor_parameters_Joe, create_recipient_parameters_wrong(), 22.0, 6.0)

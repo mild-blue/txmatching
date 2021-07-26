@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 class TestSplitToBroadResolution(DbTests):
     def setUp(self):
+        super().setUp()
         self._original_split_and_expected_broad_res = [(donor_parameters_Joe.hla_typing,
                                                         {'A9', 'A10', 'B16', 'B15', 'DR4', 'DR5', 'DR52', 'DR53',
                                                          'DQ3', 'DQ3', 'CW3', 'DP2', 'DP10', 'CW12'}
