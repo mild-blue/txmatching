@@ -1,5 +1,4 @@
 import logging
-import unittest
 
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack)

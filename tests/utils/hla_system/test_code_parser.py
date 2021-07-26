@@ -22,7 +22,7 @@ from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
-    parse_hla_raw_code_and_add_parsing_error_to_db_session, check_number_of_hla_types_per_group
+    parse_hla_raw_code_and_add_parsing_error_to_db_session, get_hla_types_exceeding_max_number_per_group
 from txmatching.utils.hla_system.hla_transformations.parsing_error import \
     ParsingInfo
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
@@ -94,26 +94,25 @@ class TestCodeParser(DbTests):
     def test_checking_number_of_codes_per_group(self):
         codes_per_group = [
             HLAPerGroup(HLAGroup.A, [
-                HLAType('A*02:68', HLACode('A*02:68', 'A2', 'A2')),
-                HLAType('A*01:25', HLACode('A*01:25', 'A1', 'A1')),
-                HLAType('A*02:67', HLACode('A*02:67', 'A2', 'A2'))
+                create_hla_type('A*02:68'),
+                create_hla_type('A*01:25'),
+                create_hla_type('A*02:67')
             ]),
             HLAPerGroup(HLAGroup.B, [
-                HLAType('B*07:15', HLACode('B*07:15', 'B7', 'B7')),
-                HLAType('B*15:19', HLACode('B*15:19', 'B76', 'B15')),
+                create_hla_type('B*07:15'),
+                create_hla_type('B*15:19'),
             ]),
             HLAPerGroup(HLAGroup.Other, [
-                HLAType('DRB3*02:07', HLACode('DRB3*02:07', 'DR52', 'DR52')),
-                HLAType('DRB4*01:05', HLACode('DRB4*01:05', 'DR53', 'DR53')),
-                HLAType('DRB5*01:02', HLACode('DRB5*01:02', 'DR51', 'DR51')),
+                create_hla_type('DRB3*02:07'),
+                create_hla_type('DRB4*01:05'),
+                create_hla_type('DRB5*01:02')
             ])
         ]
 
         expected = ['A*02:68', 'A*01:25', 'A*02:67',
-                    'DRB3*02:07', 'DRB4*01:05', 'DRB5*01:02',
-                    ]
+                    'DRB3*02:07', 'DRB4*01:05', 'DRB5*01:02']
         raw_codes_with_wrong_number_per_group = [hla_type.raw_code for hla_type in
-                                                 check_number_of_hla_types_per_group(codes_per_group)]
+                                                 get_hla_types_exceeding_max_number_per_group(codes_per_group)]
 
         self.assertEqual(expected, raw_codes_with_wrong_number_per_group)
 

@@ -136,7 +136,7 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
     hla_per_groups = split_hla_types_to_groups(hla_types_parsed, parsing_info)
 
     # 4. check if there are max 2 hla_types per group
-    wrong_number_per_group = check_number_of_hla_types_per_group(hla_per_groups)
+    wrong_number_per_group = get_hla_types_exceeding_max_number_per_group(hla_per_groups, parsing_info)
     for wrong_code in wrong_number_per_group:
         add_parsing_error_to_db_session(
             wrong_code.raw_code,
@@ -150,7 +150,10 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
     )
 
 
-def check_number_of_hla_types_per_group(hla_per_groups: List[HLAPerGroup]) -> List[HLAType]:
+def get_hla_types_exceeding_max_number_per_group(
+        hla_per_groups: List[HLAPerGroup],
+        parsing_info: ParsingInfo = None
+) -> List[HLAType]:
     hla_codes_with_parsing_error = []
     for group in hla_per_groups:
         if group.hla_group != HLAGroup.Other and len(group.hla_types) > MAX_ANTIGENS_PER_GROUP:
@@ -158,9 +161,9 @@ def check_number_of_hla_types_per_group(hla_per_groups: List[HLAPerGroup]) -> Li
                 hla_codes_with_parsing_error += [hla_type]
 
         if group.hla_group == HLAGroup.Other:
-            hla_codes_per_group_other = split_hla_types_to_groups_other(group.hla_types)
+            hla_codes_per_group_other = split_hla_types_to_groups_other(group.hla_types, parsing_info)
             for hla_group in HLA_GROUPS_OTHER:
-                if len(hla_codes_per_group_other[hla_group]) > 2:
+                if len(hla_codes_per_group_other[hla_group]) > MAX_ANTIGENS_PER_GROUP:
                     for hla_type in hla_codes_per_group_other[hla_group]:
                         hla_codes_with_parsing_error += [hla_type]
 

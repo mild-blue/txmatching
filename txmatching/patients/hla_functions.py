@@ -25,14 +25,27 @@ def split_hla_types_to_groups(hla_types: List[HLAType], parsing_info: ParsingInf
             hla_types_in_groups.items()]
 
 
-def split_hla_types_to_groups_other(hla_types: List[HLAType]) -> Dict[HLAGroup, List[HLAType]]:
+def split_hla_types_to_groups_other(
+        hla_types: List[HLAType],
+        parsing_info: ParsingInfo = None
+) -> Dict[HLAGroup, List[HLAType]]:
     hla_types_in_groups = dict()
     for hla_group in HLA_GROUPS_OTHER:
         hla_types_in_groups[hla_group] = []
     for hla_type in hla_types:
+        match_found = False
         for hla_group in HLA_GROUPS_OTHER:
             if _is_hla_type_in_group(hla_type, hla_group):
                 hla_types_in_groups[hla_group] += [hla_type]
+                match_found = True
+                break
+        if not match_found:
+            add_parsing_error_to_db_session(
+                hla_type.raw_code, HlaCodeProcessingResultDetail.OTHER_PROBLEM,
+                f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any group. '
+                f'This should never happen. This unexpected HLA will be ignored.',
+                parsing_info
+            )
     return hla_types_in_groups
 
 
