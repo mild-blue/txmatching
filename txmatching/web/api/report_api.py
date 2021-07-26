@@ -45,16 +45,6 @@ class MatchingReport(Resource):
 
     @report_api.doc(
         params={
-            MATCHINGS_BELOW_CHOSEN_PARAM: {
-                'description': 'Number of matchings with lower score than chosen to include in report.',
-                'type': int,
-                'required': True
-            },
-            INCLUDE_PATIENTS_SECTION_PARAM: {
-                'description': 'If set to true, the resulting report will contain section with patients details..',
-                'type': bool,
-                'required': False
-            },
             'matching_id': {
                 'description': 'Id of matching that was chosen',
                 'type': int,
@@ -64,6 +54,8 @@ class MatchingReport(Resource):
             'config_id': ConfigIdPathParamDefinition
         }
     )
+    @report_api.request_arg_int(MATCHINGS_BELOW_CHOSEN_PARAM, 'Number of matchings with lower score than chosen to include in report.')
+    @report_api.request_arg_flag(INCLUDE_PATIENTS_SECTION_PARAM, 'If set, the resulting report will contain section with patients details.')
     @report_api.require_user_login()
     @report_api.response_ok(description='Generates PDF report.')
     @report_api.response_error_matching_not_found()

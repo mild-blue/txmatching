@@ -34,7 +34,7 @@ def request_arg_int(
     Get integer request parameter.
     """
     try:
-        val = int(request.args.get(key=param, default=default))  # TODOO
+        val = int(request.args.get(key=param, default=default))
         if (minimum is not None and val < minimum) or (maximum is not None and val > maximum):
             raise InvalidArgumentException(
                 f'Query argument {param} must be in '
