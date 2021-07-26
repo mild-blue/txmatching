@@ -42,7 +42,7 @@ def split_hla_types_to_groups_other(
         if not match_found:
             add_parsing_error_to_db_session(
                 hla_type.raw_code, HlaCodeProcessingResultDetail.OTHER_PROBLEM,
-                f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any group. '
+                f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any OTHER group. '
                 f'This should never happen. This unexpected HLA will be ignored.',
                 parsing_info
             )

@@ -25,7 +25,7 @@ class TestCompatibilityIndex(DbTests):
         super().setUp()
         self._donor_recipient_index = [
             (donor_parameters_Joe, recipient_parameters_Jack, 22.0, 6.0),
-            (donor_parameters_Joe, create_recipient_parameters_wrong(), 22.0, 6.0)
+            (donor_parameters_Joe, create_recipient_parameters_wrong(), 21.0, 5.0)
         ]
 
     def test_compatibility_index(self):
@@ -68,10 +68,7 @@ class TestCompatibilityIndex(DbTests):
         )
 
         expected = {HLAMatch(hla_type=create_hla_type(raw_code='C*04:01'), match_type=MatchType.NONE),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DQA1*02:01'), match_type=MatchType.NONE),
                     HLAMatch(hla_type=create_hla_type(raw_code='DPB1*09:01'), match_type=MatchType.NONE),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*03:03'), match_type=MatchType.BROAD),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*05:01'), match_type=MatchType.BROAD),
                     HLAMatch(hla_type=create_hla_type(raw_code='DPB1*04:01'), match_type=MatchType.NONE)
                     }
 

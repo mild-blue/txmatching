@@ -136,8 +136,8 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
     hla_per_groups = split_hla_types_to_groups(hla_types_parsed, parsing_info)
 
     # 4. check if there are max 2 hla_types per group
-    wrong_number_per_group = get_hla_types_exceeding_max_number_per_group(hla_per_groups, parsing_info)
-    for wrong_code in wrong_number_per_group:
+    hla_types_wrong_number_per_group = get_hla_types_exceeding_max_number_per_group(hla_per_groups, parsing_info)
+    for wrong_code in hla_types_wrong_number_per_group:
         add_parsing_error_to_db_session(
             wrong_code.raw_code,
             HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
@@ -146,7 +146,12 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
         )
 
     return HLATypingDTO(
-        hla_per_groups=hla_per_groups,
+        hla_per_groups=[
+            HLAPerGroup(
+                hla_group=group.hla_group,
+                hla_types=[hla_type for hla_type in group.hla_types if hla_type not in hla_types_wrong_number_per_group]
+            ) for group in hla_per_groups
+        ],
     )
 
 
