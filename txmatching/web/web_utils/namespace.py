@@ -69,3 +69,5 @@ class Namespace(flask_restx.Namespace):
                           description='Access denied. You do not have rights to access this endpoint.'),
             self.response_error_unexpected()
         ])
+
+    # TODOO: request args

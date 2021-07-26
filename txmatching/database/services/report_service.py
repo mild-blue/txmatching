@@ -45,12 +45,18 @@ LOGO_MILD_BLUE = './assets/logo_mild_blue.svg'
 COLOR_MILD_BLUE = '#2D4496'
 
 
+@dataclass
+class ReportConfiguration:
+    matchings_below_chosen: int
+    include_patients_section: bool
+
+
 # pylint: disable=too-many-locals
 def generate_html_report(
         txm_event: TxmEvent,
         configuration_db_id: int,
         matching_id: int,
-        matching_range_limit: int
+        report_config: ReportConfiguration
 ) -> Tuple[str, str]:
     latest_matchings_detailed = get_matchings_detailed_for_configuration(txm_event, configuration_db_id)
 
@@ -67,7 +73,7 @@ def generate_html_report(
                 lambda matching: matching.order_id != matching_id,
                 sorted_matchings
             ),
-            matching_range_limit
+            report_config.matchings_below_chosen
         )
     )
 
@@ -122,7 +128,8 @@ def generate_html_report(
         all_recipients={recipient.medical_id: recipient for recipient in txm_event.all_recipients},
         all_recipients_by_db_id={recipient.db_id: recipient for recipient in txm_event.all_recipients},
         logo=logo,
-        color=color
+        color=color,
+        include_patients_section=report_config.include_patients_section
     ))
 
     html_file_name = f'report_{get_formatted_now()}.html'
@@ -138,14 +145,14 @@ def generate_pdf_report(
         txm_event: TxmEvent,
         configuration_db_id: int,
         matching_id: int,
-        matching_range_limit: int,
+        report_config: ReportConfiguration,
         keep_html_file: bool = False
 ) -> Tuple[str, str]:
     directory, html_file_name = generate_html_report(
         txm_event,
         configuration_db_id,
         matching_id,
-        matching_range_limit
+        report_config
     )
 
     html_file_full_path = os.path.join(directory, html_file_name)

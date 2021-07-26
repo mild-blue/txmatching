@@ -18,7 +18,8 @@ from txmatching.database.services.config_service import (
     find_config_db_id_for_configuration_and_data,
     get_configuration_from_db_id_or_default)
 from txmatching.database.services.report_service import (
-    export_patients_to_xlsx_file, generate_pdf_report)
+    ReportConfiguration, export_patients_to_xlsx_file, generate_html_report,
+    generate_pdf_report)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
@@ -26,10 +27,13 @@ from txmatching.solve_service.solve_from_configuration import \
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.utils.time import get_formatted_now
 from txmatching.web.web_utils.namespaces import report_api
+from txmatching.web.web_utils.route_utils import (request_arg_flag,
+                                                  request_arg_int)
 
 logger = logging.getLogger(__name__)
 
-MATCHINGS_BELOW_CHOSEN = 'matchingsBelowChosen'
+MATCHINGS_BELOW_CHOSEN_PARAM = 'matchingsBelowChosen'
+INCLUDE_PATIENTS_SECTION_PARAM = 'includePatientsSection'
 MIN_MATCHINGS_BELOW_CHOSEN = 0
 MAX_MATCHINGS_BELOW_CHOSEN = 20
 
@@ -41,10 +45,15 @@ class MatchingReport(Resource):
 
     @report_api.doc(
         params={
-            MATCHINGS_BELOW_CHOSEN: {
+            MATCHINGS_BELOW_CHOSEN_PARAM: {
                 'description': 'Number of matchings with lower score than chosen to include in report.',
                 'type': int,
                 'required': True
+            },
+            INCLUDE_PATIENTS_SECTION_PARAM: {
+                'description': 'If set to true, the resulting report will contain section with patients details..',
+                'type': bool,
+                'required': False
             },
             'matching_id': {
                 'description': 'Id of matching that was chosen',
@@ -62,6 +71,13 @@ class MatchingReport(Resource):
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int], matching_id: int) -> str:
+        matchings_below_chosen = request_arg_int(
+            MATCHINGS_BELOW_CHOSEN_PARAM,
+            minimum=MIN_MATCHINGS_BELOW_CHOSEN,
+            maximum=MAX_MATCHINGS_BELOW_CHOSEN
+        )
+        include_patients_section = request_arg_flag(INCLUDE_PATIENTS_SECTION_PARAM)
+
         txm_event = get_txm_event_complete(txm_event_id)
 
         configuration = get_configuration_from_db_id_or_default(txm_event, configuration_db_id=config_id)
@@ -77,35 +93,25 @@ class MatchingReport(Resource):
 
         assert maybe_configuration_db_id is not None
 
-        matching_id = int(request.view_args['matching_id'])
-        if request.args.get(MATCHINGS_BELOW_CHOSEN) is None or request.args.get(MATCHINGS_BELOW_CHOSEN) == '':
-            raise InvalidArgumentException(f'Query argument {MATCHINGS_BELOW_CHOSEN} must be set.')
-
-        matching_range_limit = int(request.args.get(MATCHINGS_BELOW_CHOSEN))
-
-        if matching_range_limit < MIN_MATCHINGS_BELOW_CHOSEN or matching_range_limit > MAX_MATCHINGS_BELOW_CHOSEN:
-            raise InvalidArgumentException(
-                f'Query argument {MATCHINGS_BELOW_CHOSEN} must be in '
-                f'range [{MIN_MATCHINGS_BELOW_CHOSEN}, {MAX_MATCHINGS_BELOW_CHOSEN}]. '
-                f'Current value is {matching_range_limit}.'
-            )
-
-        directory, pdf_file_name = generate_pdf_report(
+        directory, report_file_name = generate_pdf_report(
             txm_event,
             maybe_configuration_db_id,
             matching_id,
-            matching_range_limit
+            ReportConfiguration(
+                matchings_below_chosen,
+                include_patients_section
+            )
         )
 
         response = send_from_directory(
             directory,
-            pdf_file_name,
+            report_file_name,
             as_attachment=True,
-            attachment_filename=pdf_file_name,
+            attachment_filename=report_file_name,
             cache_timeout=0
         )
 
-        response.headers['x-filename'] = pdf_file_name
+        response.headers['x-filename'] = report_file_name
         response.headers['Access-Control-Expose-Headers'] = 'x-filename'
         return response
 
