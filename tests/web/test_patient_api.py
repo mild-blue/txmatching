@@ -4,6 +4,7 @@ from local_testing_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
                                                  PATIENT_DATA_OBFUSCATED)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.hla_preparation_utils import (create_antibodies,
+                                                        create_antibody,
                                                         create_hla_typing)
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.services.txm_event_service import \
@@ -15,6 +16,7 @@ from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
+from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatch
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
@@ -421,3 +423,55 @@ class TestPatientService(DbTests):
 
             # Config is not deleted
             self.assertIsNotNone(ConfigModel.query.get(1))
+
+    def test_sorted_antibodies(self):
+        txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
+        antibodies = [('B*08:01', 2350, 1000),
+                      ('DPA1*02:20', 2350, 1000),
+                      ('DPB1*09:01', 2350, 1000),
+                      ('DPB1*895:01', 2350, 1000),
+                      ('DQA1*05:07', 2350, 1000)]
+
+        with self.app.test_client() as client:
+            json_data = {
+                'donor': {
+                    'medical_id': 'donor_test',
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'donor_type': DonorType.DONOR.value
+                },
+                'recipient': {
+                    'medical_id': 'recipient_test',
+                    'acceptable_blood_groups': [],
+                    'blood_group': 'A',
+                    'hla_typing': [],
+                    'recipient_cutoff': 2000,
+                    'hla_antibodies':
+                        [{'mfi': i[1], 'name':i[0], 'cutoff':i[2]} for i in reversed(antibodies)]
+                },
+                'country_code': 'CZE'
+            }
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{PATIENT_NAMESPACE}/pairs',
+                              headers=self.auth_headers, json=json_data)
+        self.assertEqual(200, res.status_code)
+
+        expected_result_antibodies = create_antibodies([create_antibody(*i) for i in antibodies])
+
+        txm_event = get_txm_event_complete(txm_event_db_id, True)
+        recipient = txm_event.all_recipients[0]
+        self.assertEqual(recipient.hla_antibodies, expected_result_antibodies)
+
+        with self.app.test_client() as client:
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/configs/default',
+                             headers=self.auth_headers)
+        self.assertEqual(200, res.status_code)
+
+        for donor in res.json['donors']:
+            antibodies_raw_codes = []
+            expected_antibody_raw_codes = [antibody[0] for antibody in antibodies]
+            for detailed_score_for_group in donor['detailed_score_with_related_recipient']:
+                for antibody in detailed_score_for_group['antibody_matches']:
+                    antibodies_raw_codes.append(antibody['hla_antibody']['raw_code'])
+            self.assertEqual(antibodies_raw_codes, expected_antibody_raw_codes)
