@@ -44,6 +44,7 @@ def request_arg_int(
         return val
     except ValueError:
         if default is None:
+            # pylint: disable=raise-missing-from
             raise InvalidArgumentException(f'Query argument {param} must be set.')
         return default
 
@@ -78,6 +79,7 @@ def request_arg_bool(param: str, default: Optional[bool] = None) -> bool:
                                            f'Accepted values are: true, false, 1, 2.')
     except ValueError:
         if default is None:
+            # pylint: disable=raise-missing-from
             raise InvalidArgumentException(f'Query argument {param} must be set.')
         return default
 

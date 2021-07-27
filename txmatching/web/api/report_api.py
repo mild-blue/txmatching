@@ -3,12 +3,11 @@
 import logging
 from typing import Optional
 
-from flask import request, send_file, send_from_directory
+from flask import send_file, send_from_directory
 from flask_restx import Resource
 
 from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
-from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
@@ -18,8 +17,7 @@ from txmatching.database.services.config_service import (
     find_config_db_id_for_configuration_and_data,
     get_configuration_from_db_id_or_default)
 from txmatching.database.services.report_service import (
-    ReportConfiguration, export_patients_to_xlsx_file, generate_html_report,
-    generate_pdf_report)
+    ReportConfiguration, export_patients_to_xlsx_file, generate_pdf_report)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
@@ -54,8 +52,10 @@ class MatchingReport(Resource):
             'config_id': ConfigIdPathParamDefinition
         }
     )
-    @report_api.request_arg_int(MATCHINGS_BELOW_CHOSEN_PARAM, 'Number of matchings with lower score than chosen to include in report.')
-    @report_api.request_arg_flag(INCLUDE_PATIENTS_SECTION_PARAM, 'If set, the resulting report will contain section with patients details.')
+    @report_api.request_arg_int(MATCHINGS_BELOW_CHOSEN_PARAM,
+                                'Number of matchings with lower score than chosen to include in report.')
+    @report_api.request_arg_flag(INCLUDE_PATIENTS_SECTION_PARAM,
+                                 'If set, the resulting report will contain section with patients details.')
     @report_api.require_user_login()
     @report_api.response_ok(description='Generates PDF report.')
     @report_api.response_error_matching_not_found()
