@@ -64,8 +64,9 @@ def find_all_cycles(n_donors: int,
             circuit_with_end = tuple(list(circuit) + [circuit[0]])
             all_circuits.append(circuit_with_end)
         if i > configuration.max_cycles_in_all_solutions_solver:
-            raise TooComplicatedDataForAllSolutionsSolver(f'Number of possible cycles in data was above threshold of '
-                                              f'{configuration.max_cycles_in_all_solutions_solver}')
+            raise TooComplicatedDataForAllSolutionsSolver(
+                f'Number of possible cycles in data was above threshold of '
+                f'{configuration.max_cycles_in_all_solutions_solver})')
 
     return all_circuits
 

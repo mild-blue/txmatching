@@ -129,7 +129,7 @@ def _user_auth_handlers(api: Api):
                          'is too complicated for AllSolutionsSolver, please use ILPSolver.', 'message': str(error)}, 400
 
     @api.errorhandler(CannotFindShortEnoughRoundsOrPathsInILPSolver)
-    def handle_too_complicated_data_for_ilp_solver_exception(error: TooComplicatedDataForAllSolutionsSolver):
+    def handle_too_complicated_data_for_ilp_solver_exception(error: CannotFindShortEnoughRoundsOrPathsInILPSolver):
         """too complicated data for solver _exception"""
         _log_warning(error)
         return {'error': 'There are too many possible solutions for the provided set of patients and the '

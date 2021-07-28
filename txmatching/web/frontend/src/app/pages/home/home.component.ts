@@ -33,6 +33,9 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
    * top matchings. This is set only for AllSolution solver. */
   public foundMatchingsCount?: number;
 
+  /* If set, error message is shown instead of "No matchings were found." */
+  public errorMessage?: string;
+
   public configuration?: Configuration;
 
   public configIcon = faCog;
@@ -202,6 +205,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.loading = true;
     this.matchings = [];
     this.foundMatchingsCount = 0;
+    this.errorMessage = undefined;
 
     this._logger.log('Calculating with config', [configuration]);
 
@@ -222,7 +226,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
          matching or contact the developers for more details using info@mild.blue or call +420 723 927 536.`);
       }
     } catch (e) {
-      this._alertService.error(`Error calculating matchings: "${e.message || e}"`);
+      this.errorMessage = e.message || e;
       this._logger.error(`Error calculating matchings: "${e.message || e}"`);
     } finally {
       this._logger.log('End of calculation');
