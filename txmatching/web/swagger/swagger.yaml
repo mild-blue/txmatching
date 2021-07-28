@@ -2005,19 +2005,18 @@ paths:
             description: 'Get all patients for the given txm event.  Example: /patients?include-antibodies-raw'
             operationId: get_all_patients
             parameters:
-            -   default: default
-                description: Configuration ID or "default".
-                in: path
-                name: config_id
-                required: true
-                type: string
-            -   description: 'Specify include-antibodies-raw to include raw antibodies
-                    as well. By default, raw antibodies are not included. Example:
-                    ?include-antibodies-raw'
-                in: query
-                name: include-antibodies-raw
-                required: false
-                type: boolean
+                - default: default
+                  description: Configuration ID or "default".
+                  in: path
+                  name: config_id
+                  required: true
+                  type: string
+                - description: 'Specify to include raw antibodies as well. By default,
+                    raw antibodies are not included. Example: ?include-antibodies-raw'
+                  in: query
+                  name: include-antibodies-raw
+                  required: false
+                  type: boolean
             responses:
                 '200':
                     description: List of donors and list of recipients.

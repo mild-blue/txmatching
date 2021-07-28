@@ -16,8 +16,8 @@ export class GenerateReportComponent implements OnInit {
 
   constructor(private _formBuilder: FormBuilder) {
     this.reportConfigForm = this._formBuilder.group({
-      matchingsBelowChosen: [10, [Validators.required, Validators.min(0)]],
-      includePatientsSection: [true, Validators.required]
+      matchingsBelowChosen: [0, [Validators.required, Validators.min(0)]],
+      includePatientsSection: [false, Validators.required]
     });
   }
 
