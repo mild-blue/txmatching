@@ -84,6 +84,7 @@ import { CountryComponent } from '@app/components/country/country.component';
 import { RecipientSettingsComponent } from './components/recipient-settings/recipient-settings.component';
 import { FormDirective } from './directives/form/form.directive';
 import { AntigenTitlePipe } from './pipes/antigen-title/antigen-title.pipe';
+import { GenerateReportComponent } from '@app/components/generate-report/generate-report.component';
 
 @NgModule({
   declarations: [
@@ -150,7 +151,8 @@ import { AntigenTitlePipe } from './pipes/antigen-title/antigen-title.pipe';
     RecipientSettingsComponent,
     SimpleNumberComponent,
     FormDirective,
-    AntigenTitlePipe
+    AntigenTitlePipe,
+    GenerateReportComponent
   ],
   imports: [
     BrowserModule,

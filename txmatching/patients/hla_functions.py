@@ -6,7 +6,7 @@ from typing import Dict, List, Union
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
                                            HLAPerGroup, HLAType)
 from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
-                                    HLA_GROUPS_PROPERTIES, HLAGroup)
+                                    HLA_GROUPS_PROPERTIES, HLAGroup, HLA_GROUPS_OTHER)
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
@@ -23,6 +23,30 @@ def split_hla_types_to_groups(hla_types: List[HLAType], parsing_info: ParsingInf
                         sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
                         ) for hla_group, hla_codes_in_group in
             hla_types_in_groups.items()]
+
+
+def split_hla_types_to_groups_other(
+        hla_types: List[HLAType],
+        parsing_info: ParsingInfo = None
+) -> Dict[HLAGroup, List[HLAType]]:
+    hla_types_in_groups = dict()
+    for hla_group in HLA_GROUPS_OTHER:
+        hla_types_in_groups[hla_group] = []
+    for hla_type in hla_types:
+        match_found = False
+        for hla_group in HLA_GROUPS_OTHER:
+            if _is_hla_type_in_group(hla_type, hla_group):
+                hla_types_in_groups[hla_group] += [hla_type]
+                match_found = True
+                break
+        if not match_found:
+            add_parsing_error_to_db_session(
+                hla_type.raw_code, HlaCodeProcessingResultDetail.OTHER_PROBLEM,
+                f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any OTHER group. '
+                f'This should never happen. This unexpected HLA will be ignored.',
+                parsing_info
+            )
+    return hla_types_in_groups
 
 
 def create_hla_antibodies_per_groups_from_hla_antibodies(

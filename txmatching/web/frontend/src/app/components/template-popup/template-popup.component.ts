@@ -1,4 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { TemplatePopupStyle } from '@app/components/template-popup/template-popup.interface';
 
 @Component({
   selector: 'app-template-popup',
@@ -9,6 +10,7 @@ export class TemplatePopupComponent implements OnChanges {
 
   @Input() title: string = '';
   @Input() isOpened: boolean = false;
+  @Input() style: TemplatePopupStyle = TemplatePopupStyle.FullSize;
   @Output() wasClosed: EventEmitter<void> = new EventEmitter<void>();
 
   @ViewChild('popup') popupElement?: ElementRef;

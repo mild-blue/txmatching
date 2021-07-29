@@ -1,16 +1,17 @@
 import logging
-import unittest
 
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack)
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.utils.hla_system.hla_transformations.utils import (
     broad_to_split, split_to_broad)
 
 logger = logging.getLogger(__name__)
 
 
-class TestSplitToBroadResolution(unittest.TestCase):
+class TestSplitToBroadResolution(DbTests):
     def setUp(self):
+        super().setUp()
         self._original_split_and_expected_broad_res = [(donor_parameters_Joe.hla_typing,
                                                         {'A9', 'A10', 'B16', 'B15', 'DR4', 'DR5', 'DR52', 'DR53',
                                                          'DQ3', 'DQ3', 'CW3', 'DP2', 'DP10', 'CW12'}

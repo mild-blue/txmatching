@@ -17,7 +17,9 @@
 {% include 'report_includes/configuration.html' %}
 {% include 'report_includes/matching_summary.html' %}
 {% include 'report_includes/matching.html' %}
-{% include 'report_includes/patients.html' %}
+{% if include_patients_section %}
+  {% include 'report_includes/patients.html' %}
+{% endif %}
 
 </body>
 </html>

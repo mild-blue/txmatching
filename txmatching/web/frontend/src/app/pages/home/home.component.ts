@@ -15,6 +15,8 @@ import { finalize, first } from 'rxjs/operators';
 import { EventService } from '@app/services/event/event.service';
 import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
 import { TxmEventStateGenerated } from '@app/generated';
+import { TemplatePopupStyle } from '@app/components/template-popup/template-popup.interface';
+import { ReportConfig } from '@app/components/generate-report/generate-report.interface';
 
 @Component({
   selector: 'app-home',
@@ -31,10 +33,17 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
    * top matchings. This is set only for AllSolution solver. */
   public foundMatchingsCount?: number;
 
+  /* If set, error message is shown instead of "No matchings were found." */
+  public errorMessage?: string;
+
   public configuration?: Configuration;
 
   public configIcon = faCog;
   public configOpened: boolean = false;
+  public exportOpened: boolean = false;
+
+  public templatePopupStyle = TemplatePopupStyle;
+  public uploadDownloadStatus = UploadDownloadStatus;
 
   constructor(private _matchingService: MatchingService,
               _reportService: ReportService,
@@ -91,6 +100,10 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.configOpened = !this.configOpened;
   }
 
+  public toggleGenerateReportPopup(): void {
+    this.exportOpened = !this.exportOpened;
+  }
+
   get canSetDefaultConfig(): boolean {
     const txmEventOpen = this.defaultTxmEvent?.state === TxmEventStateGenerated.Open;
     const configIdDefined = !!this._eventService.getConfigId();
@@ -138,7 +151,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     }
   }
 
-  public async downloadMatchingPdfReport(): Promise<void> {
+  public async downloadMatchingPdfReport(reportConfig: ReportConfig): Promise<void> {
     if (!this.defaultTxmEvent) {
       this._logger.error('Download report failed because defaultTxmEvent not set');
       return;
@@ -150,9 +163,15 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     }
 
     this._logger.log('Downloading with active matching', [activeMatching]);
+    this._logger.log('Report config', [reportConfig]);
 
     this._downloadMatchingInProgress = true;
-    this._reportService.downloadMatchingPdfReport(this.defaultTxmEvent.id, this._eventService.getConfigId(), activeMatching.orderId)
+    this._reportService.downloadMatchingPdfReport(
+      this.defaultTxmEvent.id,
+      this._eventService.getConfigId(),
+      activeMatching.orderId,
+      reportConfig
+    )
     .pipe(
       first(),
       finalize(() => this._downloadMatchingInProgress = false)
@@ -186,6 +205,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.loading = true;
     this.matchings = [];
     this.foundMatchingsCount = 0;
+    this.errorMessage = undefined;
 
     this._logger.log('Calculating with config', [configuration]);
 
@@ -206,7 +226,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
          matching or contact the developers for more details using info@mild.blue or call +420 723 927 536.`);
       }
     } catch (e) {
-      this._alertService.error(`Error calculating matchings: "${e.message || e}"`);
+      this.errorMessage = e.message || e;
       this._logger.error(`Error calculating matchings: "${e.message || e}"`);
     } finally {
       this._logger.log('End of calculation');

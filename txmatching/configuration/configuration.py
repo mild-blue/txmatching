@@ -50,9 +50,9 @@ class Configuration:
     max_number_of_matchings: Max matchings we keep in database and show to EDITOR.
     max_matchings_in_all_solutions_solver: Max allowed number of matchings all solutions solver searches for (to limit
      the duration of the computation)
-    max_matchings_in_all_solutions_solver: Max allowed number of cycles all solutions solver searches for in the
+    max_cycles_in_all_solutions_solver: Max allowed number of cycles all solutions solver searches for in the
     initial step of the comutation (to limit the duration of the computation)
-    max_matchings_in_all_solutions_solver: Max allowed number of matchings ilp solver searches for (to limit
+    max_matchings_in_ilp_solver: Max allowed number of matchings ilp solver searches for (to limit
      the duration of the computation)
     """
     scorer_constructor_name: str = 'SplitScorer'

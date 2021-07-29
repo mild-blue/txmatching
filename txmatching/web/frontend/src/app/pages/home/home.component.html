@@ -1,7 +1,7 @@
 <app-header [user]="user"
             [downloadMatchingStatus]="downloadMatchingStatus"
             [downloadPatientsStatus]="downloadPatientsStatus"
-            (downloadMatchingAction)="downloadMatchingPdfReport()"
+            (downloadMatchingAction)="toggleGenerateReportPopup()"
             (downloadPatientsAction)="downloadPatientsXlsxReport()"
             [txmEvents]="txmEvents"
             [defaultTxmEvent]="defaultTxmEvent"
@@ -63,8 +63,24 @@
                        (configSubmitted)="calculate($event)"></app-configuration>
   </app-template-popup>
 
+  <app-template-popup [isOpened]="exportOpened"
+                      [title]="'Generate report'"
+                      (wasClosed)="toggleGenerateReportPopup()"
+                      [style]="templatePopupStyle.HalfSize">
+    <app-generate-report (reportConfigSubmitted)="downloadMatchingPdfReport($event)"
+                         [loading]="downloadMatchingStatus === uploadDownloadStatus.loading"></app-generate-report>
+  </app-template-popup>
+
   <app-content>
-    <h3 *ngIf="!loading && matchings.length === 0">No matchings were found.<br>Try to change settings and recalculate.</h3>
+    <h3 *ngIf="!loading && matchings.length === 0">
+      <ng-container *ngIf="!errorMessage">
+        No matchings were found.<br>Try to change settings and recalculate.
+      </ng-container>
+      <ng-container *ngIf="errorMessage">
+        <mat-icon class="error-icon">error</mat-icon>
+        {{errorMessage}}
+      </ng-container>
+    </h3>
     <app-item-list *ngIf="!loading && matchings.length"
                    [items]="matchings"
                    [configuration]="configuration"

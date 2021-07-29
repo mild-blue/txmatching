@@ -1,0 +1,16 @@
+<div class="generate-report-form">
+  <form (ngSubmit)="onSubmit()" [formGroup]="reportConfigForm">
+
+    <mat-form-field>
+      <mat-label>Number of matchings other than the selected matching</mat-label>
+      <input formControlName="matchingsBelowChosen"
+             matInput type="number">
+    </mat-form-field>
+
+    <mat-slide-toggle formControlName="includePatientsSection">
+      Include patients section
+    </mat-slide-toggle>
+
+    <app-button type="submit" [loading]="loading" [disabled]="!isValid">Export PDF</app-button>
+  </form>
+</div>

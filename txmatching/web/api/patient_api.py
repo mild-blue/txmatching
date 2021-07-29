@@ -59,7 +59,8 @@ from txmatching.utils.hla_system.hla_transformations.parsing_error import \
     get_parsing_errors_for_patients
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import patient_api
-from txmatching.web.web_utils.route_utils import request_body, response_ok
+from txmatching.web.web_utils.route_utils import (request_arg_flag,
+                                                  request_body, response_ok)
 
 logger = logging.getLogger(__name__)
 
@@ -69,9 +70,13 @@ class AllPatients(Resource):
 
     @patient_api.doc(
         params={'config_id': ConfigIdPathParamDefinition},
-        description='Get all patients for the given txm event. By default, raw antibodies are not'
-                    'included. Specify include-antibodies-raw to include raw antibodies as well.'
+        description='Get all patients for the given txm event.  '
                     'Example: /patients?include-antibodies-raw'
+    )
+    @patient_api.request_arg_flag(
+        'include-antibodies-raw',
+        'Specify to include raw antibodies as well. '
+        'By default, raw antibodies are not included.'
     )
     @patient_api.require_user_login()
     @patient_api.response_ok(PatientsJson, description='List of donors and list of recipients.')
@@ -79,7 +84,7 @@ class AllPatients(Resource):
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
-        include_antibodies_raw = 'include-antibodies-raw' in request.args
+        include_antibodies_raw = request_arg_flag('include-antibodies-raw')
         logger.debug(f'include_antibodies_raw={include_antibodies_raw}')
         txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
         configuration = get_configuration_from_db_id_or_default(txm_event, config_id)

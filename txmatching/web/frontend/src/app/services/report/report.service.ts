@@ -4,8 +4,7 @@ import { map } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Report } from '@app/services/report/report.interface';
-
-const otherMatchingsCount = 10;
+import { ReportConfig } from '@app/components/generate-report/generate-report.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,11 @@ export class ReportService {
   constructor(private _http: HttpClient) {
   }
 
-  public downloadMatchingPdfReport(txmEventId: number, configId: number | undefined, matchingId: number): Observable<Report> {
+  public downloadMatchingPdfReport(
+    txmEventId: number,
+    configId: number | undefined, matchingId: number,
+    reportConfig: ReportConfig
+  ): Observable<Report> {
     const httpOptions: Object = {
       responseType: 'blob',
       observe: 'response'
@@ -23,7 +26,10 @@ export class ReportService {
     const configIdStr = configId !== undefined ? configId.toString() : 'default';
     // &v=${Date.now()} is done according to https://stackoverflow.com/questions/53207420/how-to-download-new-version-of-file-without-using-the-client-cache
     return this._http.get<HttpResponse<Blob>>(
-      `${environment.apiUrl}/txm-event/${txmEventId}/reports/configs/${configIdStr}/matchings/${matchingId}/pdf?matchingsBelowChosen=${otherMatchingsCount}&v=${Date.now()}`,
+      `${environment.apiUrl}/txm-event/${txmEventId}/reports/configs/${configIdStr}/matchings/${matchingId}/pdf` +
+      `?matchingsBelowChosen=${reportConfig.matchingsBelowChosen}` +
+      (reportConfig.includePatientsSection ? '&includePatientsSection=foo' : '') +
+      `&v=${Date.now()}`,
       httpOptions
     ).pipe(
       map((response: HttpResponse<Blob>) => {

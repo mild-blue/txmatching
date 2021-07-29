@@ -14,6 +14,7 @@ class HlaCodeProcessingResultDetail(str, Enum):
     UNKNOWN_TRANSFORMATION_FROM_HIGH_RES = 'Unable to transform high resolution HLA code. Its transformation to ' \
                                            'split or broad code is unknown. Immunologists should be contacted.'
     UNPARSABLE_HLA_CODE = 'Completely Unexpected HLA code.'
+    MORE_THAN_TWO_HLA_CODES_PER_GROUP = 'There can not be more than 2 antigens per group.'
 
     # not in a result of parse_hla_raw_code_with_details method
     MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \

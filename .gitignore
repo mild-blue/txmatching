@@ -314,6 +314,8 @@ devops/compose/docker-compose.yml
 .DS_Store
 logs/*
 !logs/.gitkeep
+local_testing_utilities/notebooks/data/*
+!local_testing_utilities/notebooks/data/.gitkeep
 
 # Ignore temoporary excel fileset
 **/*.xlsx#

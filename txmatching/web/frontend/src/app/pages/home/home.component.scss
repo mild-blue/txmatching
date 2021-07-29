@@ -59,4 +59,13 @@
     text-align: center;
     padding: $padding-y $padding-x;
   }
+
+  .error-icon {
+    color: #dc3545;
+    font-size: 45px;
+    height: 45px;
+    width: 45px;
+    display: block;
+    margin: 0 auto 20px auto;
+  }
 }
