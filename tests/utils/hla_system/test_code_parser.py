@@ -9,6 +9,7 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.services.txm_event_service import create_txm_event
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.patients.hla_code import HLACode
+from txmatching.patients.hla_model import HLAPerGroup, HLAType
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
@@ -21,7 +22,7 @@ from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
-    parse_hla_raw_code_and_add_parsing_error_to_db_session
+    parse_hla_raw_code_and_add_parsing_error_to_db_session, get_hla_types_exceeding_max_number_per_group
 from txmatching.utils.hla_system.hla_transformations.parsing_error import \
     ParsingInfo
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
@@ -89,6 +90,31 @@ class TestCodeParser(DbTests):
                                   f'{code} was processed to {result.maybe_hla_code} '
                                   f'with result {result.result_detail} expected was: '
                                   f'{expected_result} with result {expected_result_detail}')
+
+    def test_checking_number_of_codes_per_group(self):
+        codes_per_group = [
+            HLAPerGroup(HLAGroup.A, [
+                create_hla_type('A*02:68'),
+                create_hla_type('A*01:25'),
+                create_hla_type('A*02:67')
+            ]),
+            HLAPerGroup(HLAGroup.B, [
+                create_hla_type('B*07:15'),
+                create_hla_type('B*15:19'),
+            ]),
+            HLAPerGroup(HLAGroup.Other, [
+                create_hla_type('DRB3*02:07'),
+                create_hla_type('DRB4*01:05'),
+                create_hla_type('DRB5*01:02')
+            ])
+        ]
+
+        expected = ['A*02:68', 'A*01:25', 'A*02:67',
+                    'DRB3*02:07', 'DRB4*01:05', 'DRB5*01:02']
+        raw_codes_with_wrong_number_per_group = [hla_type.raw_code for hla_type in
+                                                 get_hla_types_exceeding_max_number_per_group(codes_per_group)]
+
+        self.assertEqual(expected, raw_codes_with_wrong_number_per_group)
 
     def test_parsing_with_db_storing(self):
         txm_event_db_id = create_txm_event('test_event').db_id
