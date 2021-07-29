@@ -8,7 +8,8 @@ from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, REPORTS_NAMESPACE, TXM_EVENT_NAMESPACE
-from txmatching.web.api.report_api import (MATCHINGS_BELOW_CHOSEN,
+from txmatching.web.api.report_api import (INCLUDE_PATIENTS_SECTION_PARAM,
+                                           MATCHINGS_BELOW_CHOSEN_PARAM,
                                            MAX_MATCHINGS_BELOW_CHOSEN,
                                            MIN_MATCHINGS_BELOW_CHOSEN)
 
@@ -23,16 +24,24 @@ class TestReportApi(DbTests):
         pairing_result = solve_from_configuration(Configuration(), txm_event)
         solver_service.save_pairing_result(pairing_result, 1)
 
+        # include param section
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                             f'{REPORTS_NAMESPACE}/configs/default/matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}=2',
+                             f'{REPORTS_NAMESPACE}/configs/default/matchings/3/pdf'
+                             f'?{MATCHINGS_BELOW_CHOSEN_PARAM}=2'
+                             f'&{INCLUDE_PATIENTS_SECTION_PARAM}',
                              headers=self.auth_headers)
 
-            self.assertEqual(200, res.status_code)
-            self.assertEqual('application/pdf', res.content_type)
-            self.assertIsNotNone(res.data)
-            self.assertTrue(res.content_length > 0)
-            self.assertIsNotNone(res.headers['x-filename'])
+            self._assert_pdf_response_ok(res)
+
+        # do not include param section
+        with self.app.test_client() as client:
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                             f'{REPORTS_NAMESPACE}/configs/default/matchings/3/pdf'
+                             f'?{MATCHINGS_BELOW_CHOSEN_PARAM}=2',
+                             headers=self.auth_headers)
+
+            self._assert_pdf_response_ok(res)
 
     def test_patients_xlsx(self):
         self.txm_event_db_id = self.fill_db_with_patients(
@@ -62,7 +71,7 @@ class TestReportApi(DbTests):
 
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
-                             f'{REPORTS_NAMESPACE}/configs/default/matchings/6666/pdf?{MATCHINGS_BELOW_CHOSEN}=2',
+                             f'{REPORTS_NAMESPACE}/configs/default/matchings/6666/pdf?{MATCHINGS_BELOW_CHOSEN_PARAM}=2',
                              headers=self.auth_headers)
 
             self.assertEqual(401, res.status_code)
@@ -84,7 +93,7 @@ class TestReportApi(DbTests):
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
                 f'{REPORTS_NAMESPACE}/configs/default/'
-                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
+                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN_PARAM}={MIN_MATCHINGS_BELOW_CHOSEN - 1}',
                 headers=self.auth_headers
             )
 
@@ -102,7 +111,7 @@ class TestReportApi(DbTests):
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
                 f'{REPORTS_NAMESPACE}/configs/default/'
-                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
+                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN_PARAM}={MAX_MATCHINGS_BELOW_CHOSEN + 1}',
                 headers=self.auth_headers
             )
 
@@ -120,27 +129,26 @@ class TestReportApi(DbTests):
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
                 f'{REPORTS_NAMESPACE}/configs/default/'
-                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MIN_MATCHINGS_BELOW_CHOSEN}',
+                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN_PARAM}={MIN_MATCHINGS_BELOW_CHOSEN}',
                 headers=self.auth_headers
             )
 
-            self.assertEqual(200, res.status_code)
-            self.assertEqual('application/pdf', res.content_type)
-            self.assertIsNotNone(res.data)
-            self.assertTrue(res.content_length > 0)
-            self.assertIsNotNone(res.headers['x-filename'])
+            self._assert_pdf_response_ok(res)
 
         # MAX_MATCHINGS_BELOW_CHOSEN - correct edge case
         with self.app.test_client() as client:
             res = client.get(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
                 f'{REPORTS_NAMESPACE}/configs/default/'
-                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN}={MAX_MATCHINGS_BELOW_CHOSEN}',
+                f'matchings/3/pdf?{MATCHINGS_BELOW_CHOSEN_PARAM}={MAX_MATCHINGS_BELOW_CHOSEN}',
                 headers=self.auth_headers
             )
 
-            self.assertEqual(200, res.status_code)
-            self.assertEqual('application/pdf', res.content_type)
-            self.assertIsNotNone(res.data)
-            self.assertTrue(res.content_length > 0)
-            self.assertIsNotNone(res.headers['x-filename'])
+            self._assert_pdf_response_ok(res)
+
+    def _assert_pdf_response_ok(self, res):
+        self.assertEqual(200, res.status_code)
+        self.assertEqual('application/pdf', res.content_type)
+        self.assertIsNotNone(res.data)
+        self.assertTrue(res.content_length > 0)
+        self.assertIsNotNone(res.headers['x-filename'])

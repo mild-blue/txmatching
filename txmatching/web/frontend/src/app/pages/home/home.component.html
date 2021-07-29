@@ -1,7 +1,7 @@
 <app-header [user]="user"
             [downloadMatchingStatus]="downloadMatchingStatus"
             [downloadPatientsStatus]="downloadPatientsStatus"
-            (downloadMatchingAction)="downloadMatchingPdfReport()"
+            (downloadMatchingAction)="toggleGenerateReportPopup()"
             (downloadPatientsAction)="downloadPatientsXlsxReport()"
             [txmEvents]="txmEvents"
             [defaultTxmEvent]="defaultTxmEvent"
@@ -61,6 +61,14 @@
                        [configuration]="configuration"
                        [patients]="patients"
                        (configSubmitted)="calculate($event)"></app-configuration>
+  </app-template-popup>
+
+  <app-template-popup [isOpened]="exportOpened"
+                      [title]="'Generate report'"
+                      (wasClosed)="toggleGenerateReportPopup()"
+                      [style]="templatePopupStyle.HalfSize">
+    <app-generate-report (reportConfigSubmitted)="downloadMatchingPdfReport($event)"
+                         [loading]="downloadMatchingStatus === uploadDownloadStatus.loading"></app-generate-report>
   </app-template-popup>
 
   <app-content>

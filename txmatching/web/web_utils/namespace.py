@@ -34,6 +34,53 @@ class Namespace(flask_restx.Namespace):
             self.expect(model, validate=False)
         ])
 
+    def request_arg_int(
+            self,
+            param: str,
+            description: str = '',
+            required: bool = True,
+    ):
+        return self.doc(
+            params={
+                param: {
+                    'description': f'{description} Example: {param}=42',
+                    'type': int,
+                    'required': required
+                }
+            }
+        )
+
+    def request_arg_bool(
+            self,
+            param: str,
+            description: str = '',
+            required: bool = True,
+    ):
+        return self.doc(
+            params={
+                param: {
+                    'description': f'{description} Example: {param}=true, {param}=1, {param}=FaLse',
+                    'type': bool,
+                    'required': required
+                }
+            }
+        )
+
+    def request_arg_flag(
+            self,
+            param: str,
+            description: str = ''
+    ):
+        return self.doc(
+            params={
+                param: {
+                    'description': f'{description} Example: ?{param}',
+                    'type': bool,
+                    'required': False
+                }
+            }
+        )
+
     def response_ok(self, model=None, description=None, code=200):
         return self.response(code, model=model, description=description)
         # TODO: marshall instead https://github.com/mild-blue/txmatching/issues/562

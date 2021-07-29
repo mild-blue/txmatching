@@ -2002,17 +2002,21 @@ paths:
             - patients
     /v1/txm-event/{txm_event_id}/patients/configs/{config_id}:
         get:
-            description: 'Get all patients for the given txm event. By default, raw
-                antibodies are notincluded. Specify include-antibodies-raw to include
-                raw antibodies as well.Example: /patients?include-antibodies-raw'
+            description: 'Get all patients for the given txm event.  Example: /patients?include-antibodies-raw'
             operationId: get_all_patients
             parameters:
-            -   default: default
-                description: Configuration ID or "default".
-                in: path
-                name: config_id
-                required: true
-                type: string
+                - default: default
+                  description: Configuration ID or "default".
+                  in: path
+                  name: config_id
+                  required: true
+                  type: string
+                - description: 'Specify to include raw antibodies as well. By default,
+                    raw antibodies are not included. Example: ?include-antibodies-raw'
+                  in: query
+                  name: include-antibodies-raw
+                  required: false
+                  type: boolean
             responses:
                 '200':
                     description: List of donors and list of recipients.
@@ -2260,8 +2264,14 @@ paths:
                 name: matching_id
                 required: true
                 type: integer
-            -   description: Number of matchings with lower score than chosen to include
-                    in report.
+            -   description: 'If set, the resulting report will contain section with
+                    patients details. Example: ?includePatientsSection'
+                in: query
+                name: includePatientsSection
+                required: false
+                type: boolean
+            -   description: 'Number of matchings with lower score than chosen to
+                    include in report. Example: matchingsBelowChosen=42'
                 in: query
                 name: matchingsBelowChosen
                 required: true

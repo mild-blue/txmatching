@@ -21,8 +21,8 @@ class TestMatchingApi(unittest.TestCase):
         #                                     new_swagger.items()}
         #     json.dump(swagger_without_ordered_dict, f, ensure_ascii=False, indent=4)
         self.assertDictEqual(old_swagger, new_swagger, msg='Swagger generated not equal to current '
-                                                           'maybe you have simply forgotten to regenerate it in '
-                                                           'test_utilities/generate_swagger.py?')
+                                                           'maybe you have simply forgotten to regenerate it '
+                                                           'using "make generate-swagger-all".')
 
     def test_public_swagger_generation(self):
         with open(PATH_TO_PUBLIC_SWAGGER_JSON) as f:
@@ -37,5 +37,5 @@ class TestMatchingApi(unittest.TestCase):
         #                                     new_swagger.items()}
         #     json.dump(swagger_without_ordered_dict, f, ensure_ascii=False, indent=4)
         self.assertDictEqual(old_swagger, new_swagger, msg='Swagger generated not equal to current '
-                                                           'maybe you have simply forgotten to regenerate it in '
-                                                           'test_utilities/generate_swagger.py?')
+                                                           'maybe you have simply forgotten to regenerate it '
+                                                           'using "make generate-swagger-all".')
