@@ -1,11 +1,11 @@
 import logging
-import unittest
 
 from tests.patients.test_patient_parameters import (donor_parameters_Joe,
                                                     recipient_parameters_Jack,
-                                                    recipient_parameters_Wrong)
+                                                    create_recipient_parameters_wrong)
 from tests.test_utilities.hla_preparation_utils import (create_hla_type,
                                                         create_hla_typing)
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.scorers.high_res_hla_additive_scorer import \
     HighResScorerCIConfiguration
 from txmatching.scorers.split_hla_additive_scorer import \
@@ -20,11 +20,12 @@ OTHER_INDEX = 3
 A_INDEX = 0
 
 
-class TestCompatibilityIndex(unittest.TestCase):
+class TestCompatibilityIndex(DbTests):
     def setUp(self):
+        super().setUp()
         self._donor_recipient_index = [
             (donor_parameters_Joe, recipient_parameters_Jack, 22.0, 6.0),
-            (donor_parameters_Joe, recipient_parameters_Wrong, 22.0, 6.0)
+            (donor_parameters_Joe, create_recipient_parameters_wrong(), 21.0, 5.0)
         ]
 
     def test_compatibility_index(self):
@@ -67,10 +68,7 @@ class TestCompatibilityIndex(unittest.TestCase):
         )
 
         expected = {HLAMatch(hla_type=create_hla_type(raw_code='C*04:01'), match_type=MatchType.NONE),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DQA1*02:01'), match_type=MatchType.NONE),
                     HLAMatch(hla_type=create_hla_type(raw_code='DPB1*09:01'), match_type=MatchType.NONE),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*03:03'), match_type=MatchType.BROAD),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*05:01'), match_type=MatchType.BROAD),
                     HLAMatch(hla_type=create_hla_type(raw_code='DPB1*04:01'), match_type=MatchType.NONE)
                     }
 
