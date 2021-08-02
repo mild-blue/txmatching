@@ -13,6 +13,7 @@ from txmatching.solvers.all_solutions_solver.score_matrix_solver import \
     find_possible_path_combinations_from_score_matrix
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import Solver
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 
@@ -32,7 +33,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
             find_possible_path_combinations_from_score_matrix(score_matrix=np.array(self._score_matrix),
                                                               donors=_get_donors_for_score_matrix(self._score_matrix),
                                                               configuration=Configuration(
-                                                                  solver_constructor_name='AllSolutionsSolver',
+                                                                  solver_constructor_name=Solver.AllSolutionsSolver,
                                                                   max_cycle_length=100,
                                                                   max_sequence_length=100,
                                                                   max_number_of_distinct_countries_in_round=100)
@@ -58,7 +59,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
         solutions = find_possible_path_combinations_from_score_matrix(score_matrix_test,
                                                                       _get_donors_for_score_matrix(score_matrix_test),
                                                                       Configuration(
-                                                                          solver_constructor_name='AllSolutionsSolver',
+                                                                          solver_constructor_name=Solver.AllSolutionsSolver,
                                                                           max_sequence_length=100,
                                                                           max_cycle_length=100))
         self.assertEqual(36, len(list(solutions)))

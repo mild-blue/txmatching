@@ -20,7 +20,7 @@ from txmatching.scorers.split_hla_additive_scorer import SplitScorer
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import HLACrossmatchLevel
+from txmatching.utils.enums import HLACrossmatchLevel, Solver
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.logged_user import get_current_user_id
@@ -94,7 +94,7 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(6, len(app_users))
 
         all_matchings = list(solve_from_configuration(Configuration(
-            solver_constructor_name='AllSolutionsSolver',
+            solver_constructor_name=Solver.AllSolutionsSolver,
             max_cycle_length=100,
             max_sequence_length=100,
             max_number_of_distinct_countries_in_round=100,

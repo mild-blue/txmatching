@@ -1,9 +1,8 @@
 from txmatching.patients.patient import DonorType
-from txmatching.scorers.scorer_from_config import SUPPORTED_SCORERS
-from txmatching.solvers.solver_from_config import SUPPORTED_SOLVERS
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import HLACrossmatchLevel, Sex, TxmEventState
+from txmatching.utils.enums import (HLACrossmatchLevel, Scorer, Sex, Solver,
+                                    TxmEventState)
 from txmatching.web.web_utils.namespaces import enums_api
 
 CountryCodeJson = enums_api.schema_model('CountryCode', {
@@ -29,12 +28,12 @@ DonorTypeEnumJson = enums_api.schema_model('DonorType', {
 })
 
 ScorerEnumJson = enums_api.schema_model('Scorer', {
-    'enum': [scorer.__name__ for scorer in SUPPORTED_SCORERS],
+    'enum': [scorer.value for scorer in Scorer],
     'type': 'string'
 })
 
 SolverEnumJson = enums_api.schema_model('Solver', {
-    'enum': [solver.__name__ for solver in SUPPORTED_SOLVERS],
+    'enum': [solver.value for solver in Solver],
     'type': 'string'
 })
 
