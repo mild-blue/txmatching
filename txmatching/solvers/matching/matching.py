@@ -93,9 +93,14 @@ class Matching:
                     ])
 
     def get_country_codes_counts(self) -> List[CountryDTO]:
-        return [CountryDTO(country,
-                           self.get_donors_for_country_count(country),
-                           self.get_recipients_for_country_count(country)) for country in self._countries]
+        countries = [CountryDTO(country, self.get_donors_for_country_count(country), self.get_recipients_for_country_count(country)) for country in self._countries]
+        sorted_countries = sorted(
+            countries,
+            key=lambda country: (
+                country.country_code
+            )
+        )
+        return sorted_countries
 
     def get_cycles(self) -> List[TransplantCycle]:
         return self._cycles
