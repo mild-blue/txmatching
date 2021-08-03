@@ -28,6 +28,17 @@ class HLAGroup(str, Enum):
     ALL = 'ALL'
 
 
+class Scorer(str, Enum):
+    SplitScorer = 'SplitScorer'
+    HighResScorer = 'HighResScorer'
+    HighResWithDQDPScorer = 'HighResWithDQDPScorer'
+
+
+class Solver(str, Enum):
+    AllSolutionsSolver = 'AllSolutionsSolver'
+    ILPSolver = 'ILPSolver'
+
+
 HLA_GROUPS_PROPERTIES = {
     HLAGroup.A: HLAGroupProperties(
         name='A',

@@ -8,7 +8,7 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import HLACrossmatchLevel
+from txmatching.utils.enums import HLACrossmatchLevel, Solver
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 
@@ -17,14 +17,14 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
         self.assertEqual(1, len(list(solve_from_configuration(
-            Configuration(solver_constructor_name='AllSolutionsSolver'), txm_event
+            Configuration(solver_constructor_name=Solver.AllSolutionsSolver), txm_event
         ).calculated_matchings_list)))
 
     def test_solve_from_configuration(self):
         txm_event_db_id = self.fill_db_with_patients()
         txm_event = get_txm_event_complete(txm_event_db_id)
         configuration = Configuration(
-            solver_constructor_name='AllSolutionsSolver',
+            solver_constructor_name=Solver.AllSolutionsSolver,
             manual_donor_recipient_scores=[
                 ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=4, score=1.0)])
         self.assertEqual(1, len(list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)))
@@ -33,7 +33,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data2.xlsx'))
         txm_event = get_txm_event_complete(txm_event_db_id)
         max_country_count = 1
-        configuration = Configuration(solver_constructor_name='AllSolutionsSolver',
+        configuration = Configuration(solver_constructor_name=Solver.AllSolutionsSolver,
                                       max_number_of_distinct_countries_in_round=max_country_count)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
         self.assertEqual(1, len(solutions))
@@ -43,7 +43,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_solve_from_configuration_forbidden_countries(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data3.xlsx'))
         txm_event = get_txm_event_complete(txm_event_db_id)
-        configuration = Configuration(solver_constructor_name='AllSolutionsSolver',
+        configuration = Configuration(solver_constructor_name=Solver.AllSolutionsSolver,
                                       max_number_of_distinct_countries_in_round=3)
         solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
         self.assertEqual(1, len(solutions))
@@ -52,7 +52,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_sequence_length in range(1, 6):
-            configuration = Configuration(solver_constructor_name='AllSolutionsSolver',
+            configuration = Configuration(solver_constructor_name=Solver.AllSolutionsSolver,
                                           use_high_resolution=True, max_sequence_length=max_sequence_length,
                                           max_number_of_matchings=1000)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
@@ -64,7 +64,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_cycle_length in range(2, 5):
-            configuration = Configuration(solver_constructor_name='AllSolutionsSolver',
+            configuration = Configuration(solver_constructor_name=Solver.AllSolutionsSolver,
                                           use_high_resolution=True, max_cycle_length=max_cycle_length,
                                           max_number_of_matchings=1000)
             solutions = list(solve_from_configuration(configuration, txm_event).calculated_matchings_list)
@@ -79,7 +79,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                                         txm_event.active_donors_dict.items()}
         for debt in range(0, 4):
             configuration = Configuration(
-                solver_constructor_name='AllSolutionsSolver',
+                solver_constructor_name=Solver.AllSolutionsSolver,
                 use_high_resolution=True,
                 max_debt_for_country_for_blood_group_zero=debt,
                 max_number_of_matchings=7,
@@ -96,7 +96,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         for debt in range(1, 4):
             configuration = Configuration(
-                solver_constructor_name='AllSolutionsSolver',
+                solver_constructor_name=Solver.AllSolutionsSolver,
                 use_high_resolution=True,
                 max_debt_for_country=debt,
                 max_number_of_matchings=3,
@@ -114,7 +114,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         required_patient = 5
         configuration = Configuration(
-            solver_constructor_name='AllSolutionsSolver',
+            solver_constructor_name=Solver.AllSolutionsSolver,
             use_high_resolution=True,
             max_number_of_matchings=10,
             max_cycle_length=10)
@@ -123,7 +123,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertNotIn(required_patient, {pair.recipient.db_id for pair in solutions[0].matching_pairs})
 
         configuration = Configuration(
-            solver_constructor_name='AllSolutionsSolver',
+            solver_constructor_name=Solver.AllSolutionsSolver,
             use_high_resolution=True,
             required_patient_db_ids=[required_patient],
             max_number_of_matchings=3,
@@ -135,5 +135,5 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_solver_no_patients(self):
         txm_event = create_or_overwrite_txm_event(name='test')
         solve_from_configuration(Configuration(
-            solver_constructor_name='AllSolutionsSolver',
+            solver_constructor_name=Solver.AllSolutionsSolver,
         ), txm_event)
