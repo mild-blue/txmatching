@@ -1,6 +1,7 @@
 import datetime
 import difflib
 import os
+import sys
 
 from local_testing_utilities.generate_patients import \
     store_generated_patients_from_folder
@@ -10,15 +11,14 @@ from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import \
     find_config_db_id_for_configuration_and_data
 from txmatching.database.services.report_service import (ReportConfiguration,
-                                                         generate_html_report,
-                                                         generate_pdf_report)
+                                                         generate_html_report)
 from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, get_txm_event_db_id_by_name)
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
 
-SAMPLE_MATCHING_ID = 1
+SAMPLE_MATCHING_ID = 5
 HTML_DATETIME_LINE = 556
 
 
@@ -66,10 +66,6 @@ class TestReport(DbTests):
             n=0
         )
         for line in diff:
-            for prefix in ('---', '+++', '@@'):
-                if line.startswith(prefix):
-                    break
-            else:
-                print(line)
+            sys.stdout.write(line)
 
         os.remove(result_html_full_path)
