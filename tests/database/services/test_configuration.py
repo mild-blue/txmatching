@@ -7,6 +7,7 @@ from txmatching.database.services.config_service import (
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.utils.country_enum import Country
+from txmatching.utils.enums import Solver
 
 
 class TestConfiguration(DbTests):
@@ -14,7 +15,7 @@ class TestConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
         configuration_expected = Configuration(
-            solver_constructor_name='AllSolutionsSolver',
+            solver_constructor_name=Solver.AllSolutionsSolver,
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
         config_id = save_configuration_to_db(configuration_expected, txm_event, 1)
 
@@ -25,7 +26,7 @@ class TestConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
         configuration_expected = Configuration(
-            solver_constructor_name='AllSolutionsSolver',
+            solver_constructor_name=Solver.AllSolutionsSolver,
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
         self.assertNotEqual(Configuration(), configuration_expected)
         config_id = save_configuration_to_db(configuration_expected, txm_event, 1)

@@ -11,6 +11,7 @@ from txmatching.solve_service.solver_lock import run_with_solver_lock
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.pairing_result import PairingResult
 from txmatching.solvers.solver_from_config import solver_from_configuration
+from txmatching.utils.enums import Solver
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +81,7 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
     for idx, matching_in_good_order in enumerate(matchings):
         matching_in_good_order.set_order_id(idx + 1)
 
-    if configuration.solver_constructor_name == 'ILPSolver':
+    if configuration.solver_constructor_name == Solver.ILPSolver:
         result_count = None
     else:
         result_count = i + 1
