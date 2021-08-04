@@ -81,6 +81,8 @@ export class EventService {
       map(parseTxmEvent)
     ).toPromise();
 
+    this._configId = undefined;
+
     // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
     // @ts-ignore
     return this._defaultTxmEvent;
