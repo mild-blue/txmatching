@@ -43,7 +43,9 @@ class MatchingsDetailed:
     max_transplant_score: float
 
 
-def get_database_pairing_result_for_pairing_result_model(pairing_result_model: PairingResultModel) -> DatabasePairingResult:
+def get_database_pairing_result_for_pairing_result_model(
+        pairing_result_model: PairingResultModel
+) -> DatabasePairingResult:
     matchings = from_dict(data_class=MatchingsModel,
                           data=pairing_result_model.calculated_matchings)
     score_matrix = pairing_result_model.score_matrix['score_matrix_dto']

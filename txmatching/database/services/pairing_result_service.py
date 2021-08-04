@@ -49,7 +49,8 @@ def get_pairing_result_comparable_to_config(
     for pairing_result_model in pairing_result_models:  # type: PairingResultModel
         config_from_model = configuration_from_config_model(pairing_result_model.original_config)
         if configuration.comparable(config_from_model):
-            logger.debug(f'Found pairing result with id {pairing_result_model.id} comparable to configuration {config_id}')
+            logger.debug(f'Found pairing result with id {pairing_result_model.id} '
+                         f'comparable to configuration {config_id}')
             return pairing_result_model
 
     logger.info(f'Pairing result for patients hash {patients_hash} and config {config_id} not found')
@@ -65,7 +66,11 @@ def solve_from_config_id_and_save(
     return _save_pairing_result(pairing_result, config_id, txm_event)
 
 
-def _save_pairing_result(pairing_result: PairingResult, original_config_id: int, txm_event: TxmEvent) -> PairingResultModel:
+def _save_pairing_result(
+        pairing_result: PairingResult,
+        original_config_id: int,
+        txm_event: TxmEvent
+) -> PairingResultModel:
     calculated_matchings_model = dataclasses.asdict(
         _calculated_matchings_to_model(pairing_result)
     )

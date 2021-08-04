@@ -144,6 +144,7 @@ def generate_html_report(
     return TMP_DIR, html_file_name
 
 
+# pylint: disable=too-many-arguments
 def generate_pdf_report(
         txm_event: TxmEvent,
         configuration_db_id: int,
