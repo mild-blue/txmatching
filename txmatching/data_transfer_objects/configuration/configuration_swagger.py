@@ -21,10 +21,10 @@ ConfigurationJson = matching_api.model(
     {
         'scorer_constructor_name': fields.Nested(ScorerEnumJson,
                                                  required=True,
-                                                 example=_default_configuration.scorer_constructor_name),
+                                                 example=_default_configuration.scorer_constructor_name.name),
         'solver_constructor_name': fields.Nested(SolverEnumJson,
                                                  required=True,
-                                                 example=_default_configuration.solver_constructor_name),
+                                                 example=_default_configuration.solver_constructor_name.name),
         'require_compatible_blood_group': fields.Boolean(required=True,
                                                          example=_default_configuration.require_compatible_blood_group),
         'minimum_total_score': fields.Float(required=True, example=_default_configuration.minimum_total_score),

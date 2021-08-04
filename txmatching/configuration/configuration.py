@@ -7,7 +7,7 @@ from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore,
                                                  PatientDbId)
 from txmatching.utils.country_enum import Country
-from txmatching.utils.enums import HLACrossmatchLevel
+from txmatching.utils.enums import HLACrossmatchLevel, Scorer, Solver
 
 DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Country.ISR),
                                   ForbiddenCountryCombination(Country.ISR, Country.AUT)]
@@ -56,8 +56,8 @@ class Configuration:
     max_matchings_in_ilp_solver: Max allowed number of matchings ilp solver searches for (to limit
      the duration of the computation)
     """
-    scorer_constructor_name: str = 'SplitScorer'
-    solver_constructor_name: str = 'ILPSolver'
+    scorer_constructor_name: Scorer = Scorer.SplitScorer
+    solver_constructor_name: Solver = Solver.ILPSolver
     require_compatible_blood_group: bool = False
     minimum_total_score: float = 0.0
     require_better_match_in_compatibility_index: bool = False

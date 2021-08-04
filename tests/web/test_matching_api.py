@@ -13,7 +13,8 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
-from txmatching.utils.enums import HLACrossmatchLevel, HLAGroup, MatchType
+from txmatching.utils.enums import (HLACrossmatchLevel, HLAGroup, MatchType,
+                                    Solver)
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, MATCHING_NAMESPACE, TXM_EVENT_NAMESPACE
 
@@ -234,7 +235,7 @@ class TestSaveAndGetConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
 
         with self.app.test_client() as client:
-            conf_dto = dataclasses.asdict(Configuration(solver_constructor_name='AllSolutionsSolver',
+            conf_dto = dataclasses.asdict(Configuration(solver_constructor_name=Solver.AllSolutionsSolver,
                                                         max_number_of_distinct_countries_in_round=1))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -244,7 +245,7 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(200, res.status_code)
             self.assertEqual(9, res.json['found_matchings_count'])
 
-            conf_dto2 = dataclasses.asdict(Configuration(solver_constructor_name='AllSolutionsSolver',
+            conf_dto2 = dataclasses.asdict(Configuration(solver_constructor_name=Solver.AllSolutionsSolver,
                                                          max_number_of_distinct_countries_in_round=50,
                                                          hla_crossmatch_level=HLACrossmatchLevel.NONE))
 
@@ -259,7 +260,7 @@ class TestSaveAndGetConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
 
         with self.app.test_client() as client:
-            conf_dto = dataclasses.asdict(Configuration(solver_constructor_name='AllSolutionsSolver',
+            conf_dto = dataclasses.asdict(Configuration(solver_constructor_name=Solver.AllSolutionsSolver,
                                                         max_number_of_distinct_countries_in_round=1))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
