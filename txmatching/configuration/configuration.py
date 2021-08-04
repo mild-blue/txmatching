@@ -16,6 +16,7 @@ DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Count
 class ComparisonMode(Enum):
     Smaller = 1
     Set = 2
+    Ignore = 3
 
 
 COMPARISON_MODE = 'comparison_mode'
@@ -81,7 +82,9 @@ class Configuration:
                                       compare=True)
     max_debt_for_country_for_blood_group_zero: int = field(default=3,
                                                            compare=True)
-    max_matchings_to_show_to_viewer: int = field(default=0, compare=False)
+    max_matchings_to_show_to_viewer: int = field(default=0,
+                                                 compare=True,
+                                                 metadata={COMPARISON_MODE: ComparisonMode.Ignore})
     max_number_of_matchings: int = field(default=5,
                                          compare=True,
                                          metadata={COMPARISON_MODE: ComparisonMode.Smaller})
@@ -114,11 +117,10 @@ class Configuration:
                 elif fld.metadata.get(COMPARISON_MODE, None) == ComparisonMode.Smaller:
                     if val1 > val2:
                         return False
+                elif fld.metadata.get(COMPARISON_MODE, None) == ComparisonMode.Ignore:
+                    pass
                 else:
                     if val1 != val2:
                         return False
 
         return True
-
-    def __eq__(self, other):
-        return self.comparable(other) and other.comparable(self)

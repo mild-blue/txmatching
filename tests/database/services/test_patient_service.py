@@ -162,11 +162,12 @@ class TestPatientService(DbTests):
         txm_event = create_or_overwrite_txm_event(name=TXM_EVENT_NAME)
 
         # Insert config and validates that it is stored into DB
+        original_patients_hash = get_patients_persistent_hash(txm_event)
         user_id = get_current_user_id()
         config = ConfigModel(
             txm_event_id=txm_event.db_id,
             parameters={},
-            patients_hash=get_patients_persistent_hash(txm_event),
+            # patients_hash=get_patients_persistent_hash(txm_event),
             created_by=user_id
         )
 
@@ -183,7 +184,7 @@ class TestPatientService(DbTests):
 
         # Validate that patients hash has changed
         txm_event_new = get_txm_event_complete(txm_event.db_id)
-        self.assertNotEqual(config.patients_hash, get_patients_persistent_hash(txm_event_new))
+        self.assertNotEqual(original_patients_hash, get_patients_persistent_hash(txm_event_new))
 
     def test_get_patients_hash(self):
         txm_event_1 = TxmEvent(

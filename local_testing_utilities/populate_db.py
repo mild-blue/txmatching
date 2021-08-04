@@ -9,15 +9,18 @@ from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.user.totp import generate_totp_seed
 from txmatching.configuration.configuration import Configuration
-from txmatching.database.services import solver_service
 from txmatching.database.services.app_user_management import persist_user
+from txmatching.database.services.config_service import \
+    save_configuration_to_db
+from txmatching.database.services.matching_service import \
+    get_database_pairing_result_for_pairing_result_model
+from txmatching.database.services.pairing_result_service import \
+    solve_from_config_id_and_save
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, set_allowed_txm_event_ids_for_user)
 from txmatching.database.sql_alchemy_schema import AppUserModel, ConfigModel
-from txmatching.solve_service.solve_from_configuration import \
-    solve_from_configuration
 from txmatching.utils.country_enum import Country
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -135,12 +138,19 @@ def populate_db_with_split_data():
 
     txm_event = get_txm_event_complete(txm_event.db_id)
 
-    result = solve_from_configuration(txm_event=txm_event,
-                                      configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
-                                                                  use_high_resolution=True))
-    solver_service.save_pairing_result(result, 1)
+    configuration = Configuration(
+        max_sequence_length=100,
+        max_cycle_length=100,
+        use_high_resolution=True
+    )
 
-    logger.info(f'Successfully stored {len(list(result.calculated_matchings_list))} matchings into the database.')
+    config_id = save_configuration_to_db(configuration=configuration, txm_event_id=txm_event.db_id, user_id=1)
+
+    pairing_result_model = solve_from_config_id_and_save(config_id=config_id, configuration=configuration, txm_event=txm_event)
+
+    result = get_database_pairing_result_for_pairing_result_model(pairing_result_model)
+
+    logger.info(f'Successfully stored {len(result.matchings.matchings)} matchings into the database.')
 
 
 def populate_small_db():

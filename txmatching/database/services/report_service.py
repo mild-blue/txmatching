@@ -26,7 +26,9 @@ from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
 from txmatching.database.services.config_service import \
     get_configuration_from_db_id_or_default
 from txmatching.database.services.matching_service import (
-    create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
+    create_calculated_matchings_dto,
+    get_matchings_detailed_for_pairing_result_model)
+from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.patients.hla_model import HLAAntibody, HLAType
 from txmatching.patients.patient import (Donor, DonorType, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
@@ -55,10 +57,11 @@ class ReportConfiguration:
 def generate_html_report(
         txm_event: TxmEvent,
         configuration_db_id: int,
+        pairing_result_model: PairingResultModel,
         matching_id: int,
         report_config: ReportConfiguration
 ) -> Tuple[str, str]:
-    latest_matchings_detailed = get_matchings_detailed_for_configuration(txm_event, configuration_db_id)
+    latest_matchings_detailed = get_matchings_detailed_for_pairing_result_model(pairing_result_model, txm_event)
 
     # lower ID -> better evaluation
     sorted_matchings = sorted(latest_matchings_detailed.matchings, key=lambda m: m.order_id)
@@ -144,6 +147,7 @@ def generate_html_report(
 def generate_pdf_report(
         txm_event: TxmEvent,
         configuration_db_id: int,
+        pairing_result_model: PairingResultModel,
         matching_id: int,
         report_config: ReportConfiguration,
         keep_html_file: bool = False
@@ -151,6 +155,7 @@ def generate_pdf_report(
     directory, html_file_name = generate_html_report(
         txm_event,
         configuration_db_id,
+        pairing_result_model,
         matching_id,
         report_config
     )

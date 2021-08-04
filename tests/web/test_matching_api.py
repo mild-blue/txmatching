@@ -4,7 +4,11 @@ from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.configuration import Configuration
-from txmatching.database.services import solver_service
+from txmatching.database.services import pairing_result_service
+from txmatching.database.services.config_service import \
+    save_configuration_to_db
+from txmatching.database.services.pairing_result_service import \
+    solve_from_config_id_and_save
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
@@ -24,15 +28,21 @@ class TestSaveAndGetConfiguration(DbTests):
 
     def test_get_matchings(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data.xlsx'))
-        # TODO remove in https://github.com/mild-blue/txmatching/issues/372
+
         configuration = Configuration(
             require_compatible_blood_group=False,
             require_better_match_in_compatibility_index=False,
             require_better_match_in_compatibility_index_or_blood_group=False,
             max_number_of_distinct_countries_in_round=10
         )
-        pairing_result = solve_from_configuration(configuration, get_txm_event_complete(txm_event_db_id))
-        solver_service.save_pairing_result(pairing_result, 1)
+
+        config_id = save_configuration_to_db(configuration=configuration, txm_event_id=txm_event_db_id, user_id=1)
+
+        solve_from_config_id_and_save(
+            config_id=config_id,
+            configuration=configuration,
+            txm_event=get_txm_event_complete(txm_event_db_id)
+        )
 
         with self.app.test_client() as client:
             conf_dto = dataclasses.asdict(configuration)

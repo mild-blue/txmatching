@@ -14,7 +14,6 @@ from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
 class TestMatchingApi(DbTests):
 
     def test_txm_event_creation_successful(self):
-
         txm_name = 'test2'
 
         self.login_with_role(UserRole.ADMIN)
@@ -50,7 +49,6 @@ class TestMatchingApi(DbTests):
             self.assertEqual('TXM event "test2" already exists.', res.json['message'])
 
     def test_txm_event_creation_failure_invalid_role(self):
-
         txm_name = 'test2'
 
         # VIEWER role
@@ -74,7 +72,6 @@ class TestMatchingApi(DbTests):
             self.assertIsNotNone(res.json)
 
     def test_txm_event_creation_invalid_data(self):
-
         self.login_with_role(UserRole.ADMIN)
 
         with self.app.test_client() as client:
@@ -94,7 +91,7 @@ class TestMatchingApi(DbTests):
         self.fill_db_with_patients_and_results()
         txm_name = 'test'
         tmx_event_model = TxmEventModel.query.filter(TxmEventModel.name == txm_name).first()
-        self.assertEqual(1, len(tmx_event_model.configs[0].pairing_results))
+        self.assertEqual(1, len(tmx_event_model.configs))
         self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name).first())
         self.assertEqual(1, len(PairingResultModel.query.all()))
 

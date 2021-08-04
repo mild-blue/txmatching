@@ -16,7 +16,7 @@ class TestConfiguration(DbTests):
         configuration_expected = Configuration(
             solver_constructor_name='AllSolutionsSolver',
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
-        config_id = save_configuration_to_db(configuration_expected, txm_event, 1)
+        config_id = save_configuration_to_db(configuration_expected, txm_event.db_id, 1)
 
         configuration_actual = get_configuration_from_db_id_or_default(txm_event, config_id)
         self.assertEqual(configuration_expected, configuration_actual)
@@ -28,7 +28,7 @@ class TestConfiguration(DbTests):
             solver_constructor_name='AllSolutionsSolver',
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
         self.assertNotEqual(Configuration(), configuration_expected)
-        config_id = save_configuration_to_db(configuration_expected, txm_event, 1)
+        config_id = save_configuration_to_db(configuration_expected, txm_event.db_id, 1)
 
         actual_configuration = get_configuration_from_db_id_or_default(txm_event, None)
         self.assertEqual(Configuration(), actual_configuration)
@@ -105,3 +105,40 @@ class TestConfiguration(DbTests):
             Configuration(required_patient_db_ids=[2, 1]).comparable(Configuration(required_patient_db_ids=[1, 2])))
         self.assertFalse(
             Configuration(required_patient_db_ids=[1]).comparable(Configuration(required_patient_db_ids=[1, 2])))
+
+    def test_configuration_equality(self):
+        self.assertNotEqual(
+            Configuration(max_cycle_length=5),
+            Configuration(max_cycle_length=4)
+        )
+        self.assertNotEqual(
+            Configuration(
+                forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)]
+            ),
+            Configuration(
+                forbidden_country_combinations=[ForbiddenCountryCombination(Country.AUT, Country.CZE)]
+            )
+        )
+        self.assertNotEqual(
+            Configuration(forbidden_country_combinations=[
+                ForbiddenCountryCombination(Country.CZE, Country.AUT),
+                ForbiddenCountryCombination(Country.ISR, Country.CAN),
+            ]),
+            Configuration(forbidden_country_combinations=[
+                ForbiddenCountryCombination(Country.ISR, Country.CAN),
+                ForbiddenCountryCombination(Country.CZE, Country.AUT),
+            ])
+        )
+        self.assertNotEqual(
+            Configuration(max_matchings_to_show_to_viewer=10),
+            Configuration(max_matchings_to_show_to_viewer=20)
+        )
+
+        self.assertEqual(
+            Configuration(),
+            Configuration()
+        )
+        self.assertEqual(
+            Configuration(max_matchings_to_show_to_viewer=20),
+            Configuration(max_matchings_to_show_to_viewer=20)
+        )
