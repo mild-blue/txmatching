@@ -53,7 +53,8 @@ def get_pairing_result_comparable_to_config(
                          f'comparable to configuration {config_id}')
             return pairing_result_model
 
-    logger.info(f'Pairing result for patients hash {patients_hash} and config {config_id} not found')
+    logger.info(f'Pairing result for patients hash {patients_hash} and '
+                f'configuration comparable to config id {config_id} is not in db yet')
     return None
 
 
@@ -63,7 +64,10 @@ def solve_from_config_id_and_save(
         txm_event: TxmEvent
 ) -> PairingResultModel:
     pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
-    return _save_pairing_result(pairing_result, config_id, txm_event)
+    pairing_result_model = _save_pairing_result(pairing_result, config_id, txm_event)
+    logger.info(f'Pairing was solved from configuration {config_id} '
+                f'and saved as pairing result {pairing_result_model.id}')
+    return pairing_result_model
 
 
 def _save_pairing_result(

@@ -30,6 +30,7 @@ def save_configuration_to_db(configuration: Configuration, txm_event_id: int, us
 
     db.session.add(config_model)
     db.session.commit()
+    logger.info(f'Provided configuration for event {txm_event_id} saved with config id {config_model.id}')
     return config_model.id
 
 
@@ -106,5 +107,5 @@ def find_config_id_for_configuration(configuration: Configuration, txm_event_id:
             logger.debug(f'Found config for configuration with id {config_model.id}')
             return config_model.id
 
-    logger.info(f'Configuration for event {txm_event_id} not found')
+    logger.info(f'Provided configuration for event {txm_event_id} is not in db yet')
     return None
