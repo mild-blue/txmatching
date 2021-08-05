@@ -81,4 +81,6 @@ def process_parsing_result(high_res: Optional[str],
             ),
             detail if detail is not None else HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED
         )
+    if 'BW' in split_or_broad_raw:
+        return HlaCodeProcessingResult(None, detail if detail else HlaCodeProcessingResultDetail.WILL_BE_IGNORED)
     return HlaCodeProcessingResult(None, detail if detail else HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)

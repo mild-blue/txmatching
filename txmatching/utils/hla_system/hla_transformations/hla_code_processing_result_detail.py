@@ -10,6 +10,7 @@ class HlaCodeProcessingResultDetail(str, Enum):
     # returning no value
     MULTIPLE_SPLITS_OR_BROADS_FOUND = 'Multiple splits or broad were found, unable to choose the right one.' \
                                       ' Immunologists should be contacted.'
+    WILL_BE_IGNORED = 'This type of code is not relevant for further matching.'
     UNEXPECTED_SPLIT_RES_CODE = 'Unknown HLA code, seems to be in split resolution.'
     UNKNOWN_TRANSFORMATION_FROM_HIGH_RES = 'Unable to transform high resolution HLA code. Its transformation to ' \
                                            'split or broad code is unknown. Immunologists should be contacted.'
