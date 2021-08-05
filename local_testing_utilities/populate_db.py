@@ -146,7 +146,8 @@ def populate_db_with_split_data():
 
     config_id = save_configuration_to_db(configuration=configuration, txm_event_id=txm_event.db_id, user_id=1)
 
-    pairing_result_model = solve_from_config_id_and_save(config_id=config_id, configuration=configuration, txm_event=txm_event)
+    pairing_result_model = solve_from_config_id_and_save(config_id=config_id, configuration=configuration,
+                                                         txm_event=txm_event)
 
     result = get_database_pairing_result_for_pairing_result_model(pairing_result_model)
 
