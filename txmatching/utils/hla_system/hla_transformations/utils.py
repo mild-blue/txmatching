@@ -7,7 +7,8 @@ from txmatching.utils.hla_system.hla_regexes import (
     B_SEROLOGICAL_CODE_WITH_W_REGEX, CW_SEROLOGICAL_CODE_WITHOUT_W_REGEX,
     DQ_DP_SEROLOGICAL_CODE_WITH_AB_REGEX)
 from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
-                                                   BROAD_CODES, IGNORED_CODES,
+                                                   BROAD_CODES,
+                                                   IRRELEVANT_CODES,
                                                    SPLIT_CODES, SPLIT_TO_BROAD)
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result import \
     HlaCodeProcessingResult
@@ -81,7 +82,6 @@ def process_parsing_result(high_res: Optional[str],
             ),
             detail if detail is not None else HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED
         )
-    for code in IGNORED_CODES:
-        if code in split_or_broad_raw:
-            return HlaCodeProcessingResult(None, detail if detail else HlaCodeProcessingResultDetail.WILL_BE_IGNORED)
+    if split_or_broad_raw in IRRELEVANT_CODES:
+        return HlaCodeProcessingResult(None, detail if detail else HlaCodeProcessingResultDetail.IRRELEVANT_CODE)
     return HlaCodeProcessingResult(None, detail if detail else HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)
