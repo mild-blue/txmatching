@@ -66,8 +66,9 @@ codes = {
     'A*01:01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*01': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'BW4': (None, HlaCodeProcessingResultDetail.WILL_BE_IGNORED),
-    'BW6': (None, HlaCodeProcessingResultDetail.WILL_BE_IGNORED),
+    'BW4': (None, HlaCodeProcessingResultDetail.IRRELEVANT_CODE),
+    'BW6': (None, HlaCodeProcessingResultDetail.IRRELEVANT_CODE),
+    'BW42': (None, HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
     'A99': (None, HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
     # low res regexp but not in transformation table
     'A*99': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
@@ -125,7 +126,7 @@ class TestCodeParser(DbTests):
         for code, _ in codes.items():
             parse_hla_raw_code_and_add_parsing_error_to_db_session(code, parsing_info)
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(12, len(errors))
+        self.assertEqual(13, len(errors))
         self.assertSetEqual(
             {('TEST_MEDICAL_ID', txm_event_db_id)},
             {(error.medical_id, error.txm_event_id) for error in errors}
