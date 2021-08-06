@@ -37,6 +37,8 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
 
     standartized_high_res = _get_standartized_high_res(hla_raw_code)
     if standartized_high_res:
+        if standartized_high_res != hla_raw_code:
+            logger.warning(f'Ultra high resolution {hla_raw_code} parsed as high resolution {standartized_high_res}')
         return _process_standartized_high_res(standartized_high_res, hla_raw_code)
 
     standartized_high_res_letter_match = _get_standartized_high_res(hla_raw_code, HIGH_RES_REGEX_ENDING_WITH_LETTER)
@@ -69,8 +71,6 @@ def _get_standartized_high_res(hla_raw_code: str, regex=HIGH_RES_REGEX) -> Optio
     high_res_match = regex.search(hla_raw_code)
     if high_res_match:
         standartized_high_res = high_res_match.group(1)
-        if standartized_high_res != hla_raw_code:
-            logger.warning(f'Ultra high resolution {hla_raw_code} parsed as high resolution {standartized_high_res}')
         return standartized_high_res
     return None
 
