@@ -21,8 +21,9 @@ from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_
     HlaCodeProcessingResultDetail
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
-from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import \
-    parse_hla_raw_code_and_add_parsing_error_to_db_session, get_hla_types_exceeding_max_number_per_group
+from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
+    get_hla_types_exceeding_max_number_per_group,
+    parse_hla_raw_code_and_add_parsing_error_to_db_session)
 from txmatching.utils.hla_system.hla_transformations.parsing_error import \
     ParsingInfo
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
@@ -65,6 +66,9 @@ codes = {
     'A*01:01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
     'A*01': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
+    'BW4': (None, HlaCodeProcessingResultDetail.IRRELEVANT_CODE),
+    'BW6': (None, HlaCodeProcessingResultDetail.IRRELEVANT_CODE),
+    'BW42': (None, HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
     'A99': (None, HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
     # low res regexp but not in transformation table
     'A*99': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
@@ -122,7 +126,7 @@ class TestCodeParser(DbTests):
         for code, _ in codes.items():
             parse_hla_raw_code_and_add_parsing_error_to_db_session(code, parsing_info)
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(10, len(errors))
+        self.assertEqual(13, len(errors))
         self.assertSetEqual(
             {('TEST_MEDICAL_ID', txm_event_db_id)},
             {(error.medical_id, error.txm_event_id) for error in errors}
