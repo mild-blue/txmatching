@@ -18,8 +18,8 @@ from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
 
-SAMPLE_MATCHING_ID = 5
-HTML_DATETIME_LINE = 556
+SAMPLE_MATCHING_ID = 1
+REPORT_DATETIME_LINE = 556
 
 
 class TestReport(DbTests):
@@ -50,10 +50,10 @@ class TestReport(DbTests):
         with open(result_html_full_path, 'r', encoding='utf-8') as file_r:
             html_r = file_r.readlines()
 
-        if date_and_time in html_r[HTML_DATETIME_LINE - 1]:
-            html_r[HTML_DATETIME_LINE - 1] = html_s[HTML_DATETIME_LINE - 1]
+        if date_and_time in html_r[REPORT_DATETIME_LINE - 1]:
+            html_r[REPORT_DATETIME_LINE - 1] = html_s[REPORT_DATETIME_LINE - 1]
         # else: you may have forgotten to change HTML_DATETIME_LINE
-        #       when you changed the template report
+        #       when you changed the report template
 
         self.assertEqual(html_s, html_r)
 
