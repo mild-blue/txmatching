@@ -106,7 +106,7 @@ class TestMatching(DbTests):
         donors = get_test_donors()
         recipients = get_test_recipients()
         matching = MatchingWithScore(
-            matching_pairs=frozenset(),
+            matching_pairs=list(),
             score=0,
             order_id=0
         )
@@ -115,7 +115,7 @@ class TestMatching(DbTests):
         self.assertEquals(0, result)
 
         matching = MatchingWithScore(
-            matching_pairs=frozenset(),
+            matching_pairs=list(),
             score=0,
             order_id=0
         )

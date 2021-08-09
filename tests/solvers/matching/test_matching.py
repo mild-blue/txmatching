@@ -75,7 +75,7 @@ class TestMatching(TestCase):
 
     def _make_matching_from_donor_recipient_indices(self, donor_recipient_indices: List[Tuple[int, int]]) \
             -> Matching:
-        donor_recipient_pairs = frozenset(
+        donor_recipient_pairs = list(
             DonorRecipientPair(self._donors[donor_index], self._recipients[recipient_index])
             for donor_index, recipient_index in donor_recipient_indices)
         return Matching(donor_recipient_pairs)

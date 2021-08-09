@@ -38,8 +38,8 @@ class SolverBase:
     def get_matching_from_path_combinations(
             self,
             found_pairs_idxs_only: List[DonorRecipientPairIdxOnly]) -> MatchingWithScore:
-        found_pairs = frozenset(DonorRecipientPair(self.donors[found_pair_idxs_only.donor_idx],
-                                                   self.recipients[found_pair_idxs_only.recipient_idx])
-                                for found_pair_idxs_only in found_pairs_idxs_only)
+        found_pairs = list(DonorRecipientPair(self.donors[found_pair_idxs_only.donor_idx],
+                                              self.recipients[found_pair_idxs_only.recipient_idx])
+                           for found_pair_idxs_only in found_pairs_idxs_only)
         score = get_score_for_idx_pairs(self.score_matrix, found_pairs_idxs_only)
         return MatchingWithScore(found_pairs, score)

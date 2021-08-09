@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import FrozenSet, List, Optional, Set
+from typing import List, Optional, Set
 
 import numpy as np
 
@@ -18,7 +18,7 @@ class Matching:
     """
     Set of disjoint TransplantRound's
     """
-    matching_pairs: FrozenSet[DonorRecipientPair]
+    matching_pairs: List[DonorRecipientPair]
 
     def __post_init__(self):
         matching_pairs = list(self.matching_pairs)
