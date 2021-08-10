@@ -105,10 +105,10 @@ def _matchings_dto_to_matching_with_score(
     for json_matching in calculated_matchings.matchings:
         matching_list.append(
             MatchingWithScore(
-                list(DonorRecipientPair(donors_dict[donor_recipient_ids.donor],
-                                        recipients_dict[donor_recipient_ids.recipient])
-                     for donor_recipient_ids in json_matching.donors_recipients
-                     ),
+                frozenset(DonorRecipientPair(donors_dict[donor_recipient_ids.donor],
+                                             recipients_dict[donor_recipient_ids.recipient])
+                          for donor_recipient_ids in json_matching.donors_recipients
+                          ),
                 json_matching.score,
                 json_matching.db_id
             )
