@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional, Set
+from typing import FrozenSet, List, Optional, Set
 
 import numpy as np
 
@@ -18,7 +18,7 @@ class Matching:
     """
     Set of disjoint TransplantRound's
     """
-    matching_pairs: List[DonorRecipientPair]
+    matching_pairs: FrozenSet[DonorRecipientPair]
 
     def __post_init__(self):
         matching_pairs = list(self.matching_pairs)
@@ -108,10 +108,27 @@ class Matching:
     def get_sequences(self) -> List[TransplantSequence]:
         return self._sequences
 
+    def get_sorted_cycles(self) -> List[TransplantCycle]:
+        sorted_cycles = []
+        for cycle_id in range(len(self._cycles)):
+            if not self._cycles[cycle_id].donor_recipient_pairs:
+                continue
+            min_id = self._cycles[cycle_id].donor_recipient_pairs.index(
+                min(
+                    self._cycles[cycle_id].donor_recipient_pairs,
+                    key=lambda pair: pair.donor.db_id))
+            sorted_cycles.append(TransplantCycle(donor_recipient_pairs=(self._cycles[cycle_id].donor_recipient_pairs[min_id:]
+                                 + self._cycles[cycle_id].donor_recipient_pairs[:min_id])))
+        return sorted_cycles
+
     def get_rounds(self) -> List[TransplantRound]:
-        cycles = self.get_cycles()
+        cycles = self.get_sorted_cycles()
         sequences = self.get_sequences()
-        return cycles + sequences
+        rounds = sorted(
+            cycles + sequences,
+            key=lambda _round: _round.donor_recipient_pairs[0].donor.db_id
+        )
+        return rounds
 
     @property
     def _countries(self) -> Set[Country]:
