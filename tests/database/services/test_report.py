@@ -30,7 +30,7 @@ class TestReport(DbTests):
         txm_event_id = get_txm_event_db_id_by_name('high_res_example_data')
         txm_event = get_txm_event_complete(txm_event_id)
 
-        config = Configuration()
+        config = Configuration(max_number_of_matchings=5)
 
         pairing_result = solve_from_configuration(config, txm_event)
         solver_service.save_pairing_result(pairing_result, 1)
