@@ -38,6 +38,7 @@ export * from './newTxmEventGenerated';
 export * from './otpLoginGenerated';
 export * from './parsingErrorGenerated';
 export * from './passwordChangeGenerated';
+export * from './passwordResetGenerated';
 export * from './patientModelToUpdateGenerated';
 export * from './patientParametersGenerated';
 export * from './patientUploadSuccessResponseGenerated';

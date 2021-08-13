@@ -1,6 +1,7 @@
 import datetime
 import difflib
 import os
+import shutil
 import sys
 
 from local_testing_utilities.generate_patients import \
@@ -22,28 +23,41 @@ SAMPLE_MATCHING_ID = 1
 REPORT_DATETIME_LINE = 556
 
 
+def generate_report_for_test():
+    store_generated_patients_from_folder()
+    txm_event_id = get_txm_event_db_id_by_name('high_res_example_data')
+    txm_event = get_txm_event_complete(txm_event_id)
+
+    config = Configuration(max_number_of_matchings=5)
+
+    pairing_result = solve_from_configuration(config, txm_event)
+    solver_service.save_pairing_result(pairing_result, 1)
+
+    config_id = find_config_db_id_for_configuration_and_data(config, txm_event)
+
+    report_config = ReportConfiguration(0, False)
+
+    path, file_name = generate_html_report(txm_event, config_id, SAMPLE_MATCHING_ID, report_config)
+    result_html_full_path = path + '/' + file_name
+    return result_html_full_path
+
+
 class TestReport(DbTests):
 
     def test_generate_html_report(self):
 
-        store_generated_patients_from_folder()
-        txm_event_id = get_txm_event_db_id_by_name('high_res_example_data')
-        txm_event = get_txm_event_complete(txm_event_id)
-
-        config = Configuration(max_number_of_matchings=5)
-
-        pairing_result = solve_from_configuration(config, txm_event)
-        solver_service.save_pairing_result(pairing_result, 1)
-
-        config_id = find_config_db_id_for_configuration_and_data(config, txm_event)
-
-        report_config = ReportConfiguration(0, False)
-
-        path, file_name = generate_html_report(txm_event, config_id, SAMPLE_MATCHING_ID, report_config)
-        date_and_time = datetime.datetime.now().strftime('%b %d, %Y %H:%M')
-
-        result_html_full_path = path + '/' + file_name
         sample_html_full_path = get_absolute_path('tests/resources/sample_html_report.html')
+
+        # uncomment those two lines if you need to generate
+        # a new sample report and run test,
+        # then don't forget to comment lines back
+
+        # file_full_path = generate_report_for_test()
+        # shutil.move(file_full_path, sample_html_full_path)
+
+        result_html_full_path = generate_report_for_test()
+
+        date_and_time = datetime.datetime.now().strftime('%b %d, %Y %H:%M')
 
         with open(sample_html_full_path, 'r', encoding='utf-8') as file_s:
             html_s = file_s.readlines()
