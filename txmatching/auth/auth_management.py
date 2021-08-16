@@ -3,12 +3,14 @@ from typing import List
 from txmatching.auth.crypto.password_crypto import password_matches_hash
 from txmatching.auth.data_types import TokenType, UserRole
 from txmatching.auth.exceptions import (CredentialsMismatchException,
+                                        InvalidTokenException,
                                         require_auth_condition)
 from txmatching.auth.request_context import get_request_token
 from txmatching.auth.service.service_auth_management import register_service
 from txmatching.auth.user.user_auth_management import (change_user_password,
                                                        register_user)
 from txmatching.database.services.app_user_management import get_app_user_by_id
+from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.utils.country_enum import Country
 
 
@@ -29,6 +31,14 @@ def _change_password(user_id: int, current_password: str, new_password: str):
     user = get_app_user_by_id(user_id)
     if not password_matches_hash(user.pass_hash, current_password):
         raise CredentialsMismatchException()
+
+    change_user_password(user_id, new_password)
+
+
+def reset_password(reset_token: str, new_password: str):
+    user_id = AppUserModel.verify_reset_token(reset_token)
+    if user_id is None:
+        raise InvalidTokenException()
 
     change_user_password(user_id, new_password)
 

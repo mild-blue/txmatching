@@ -1,6 +1,10 @@
 import dataclasses
+import logging
 from typing import List
 
+from flask import current_app, session
+from itsdangerous import BadSignature
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from sqlalchemy import (BOOLEAN, JSON, TEXT, BigInteger, Column, DateTime,
                         Enum, Float, ForeignKey, Integer, LargeBinary,
                         UniqueConstraint)
@@ -16,6 +20,8 @@ from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import Sex, TxmEventState
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
     HlaCodeProcessingResultDetail
+
+logger = logging.getLogger(__name__)
 
 
 class ConfigModel(db.Model):
@@ -187,6 +193,24 @@ class AppUserModel(db.Model):
     created_at = Column(DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(current_app.secret_key, expires_sec)
+        session['token_used'] = False
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_reset_token(token):
+        try:
+            s = Serializer(current_app.secret_key)
+            user_id = s.loads(token)['user_id']
+            if session['token_used']:
+                user_id = None
+            session['token_used'] = True
+        except BadSignature as sign:
+            logger.exception(f'Signature {sign} does not match')
+            user_id = None
+        return user_id
 
 
 class UserToAllowedEvent(db.Model):

@@ -6,12 +6,16 @@ from flask import request
 from flask_restx import Resource, fields
 
 from txmatching.auth.auth_check import require_role
-from txmatching.auth.auth_management import change_password, register
+from txmatching.auth.auth_management import (change_password, register,
+                                             reset_password)
 from txmatching.auth.data_types import UserRole
+from txmatching.auth.exceptions import InvalidEmailException
 from txmatching.auth.login_flow import (credentials_login, otp_login,
                                         refresh_token, resend_otp)
 from txmatching.auth.user.topt_auth_check import allow_otp_request
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
+from txmatching.database.services.app_user_management import \
+    get_app_user_by_email
 from txmatching.utils.country_enum import Country
 from txmatching.web.web_utils.namespaces import user_api
 from txmatching.web.web_utils.route_utils import response_ok
@@ -24,6 +28,10 @@ LoginSuccessResponse = user_api.model('LoginSuccessResponse', {
 
 StatusResponse = user_api.model('StatusResponse', {
     'status': fields.String(required=True)
+})
+
+ResetRequestResponse = user_api.model('ResetRequestResponse', {
+    'token': fields.String(required=True)
 })
 
 
@@ -106,6 +114,36 @@ class PasswordChangeApi(Resource):
         return response_ok({'status': 'ok'})
 
 
+@user_api.route('/request-reset/<email>', methods=['GET'])
+class RequestReset(Resource):
+
+    @user_api.response_ok(ResetRequestResponse, description='Returns reset token.')
+    @user_api.response_errors()
+    def get(self, email):
+        user = get_app_user_by_email(email)
+        if user is None:
+            raise InvalidEmailException
+        reset_token = user.get_reset_token()
+        return response_ok(_send_token(reset_token))
+
+
+@user_api.route('/reset-password', methods=['PUT'])
+class ResetPassword(Resource):
+
+    reset_password_input = user_api.model('ResetPassword', {
+        'token': fields.String(required=True, description='Reset Token.'),
+        'password': fields.String(required=True, description='New password.')
+    })
+
+    @user_api.request_body(reset_password_input)
+    @user_api.response_ok(StatusResponse, description='Password reset successfully.')
+    @user_api.response_errors()
+    def put(self):
+        body = request.get_json()
+        reset_password(body['token'], body['password'])
+        return response_ok({'status': 'ok'})
+
+
 @user_api.route('/register', methods=['POST'])
 class RegistrationApi(Resource):
     registration_model = user_api.model('UserRegistration', dict(
@@ -139,3 +177,7 @@ class RegistrationApi(Resource):
 
 def _respond_token(token: str) -> dict:
     return {'auth_token': token}
+
+
+def _send_token(reset_token: str) -> dict:
+    return {'token': reset_token}
