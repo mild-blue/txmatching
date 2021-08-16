@@ -2,7 +2,7 @@ import datetime
 from unittest import mock
 from uuid import uuid4
 
-from local_testing_utilities.populate_db import ADMIN_USER, USERS
+from local_testing_utilities.populate_db import ADMIN_USER, USERS, VIEWER_USER
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.crypto.jwt_crypto import (encode_auth_token,
                                                parse_request_token)
@@ -165,22 +165,36 @@ class TestUserApi(DbTests):
             self.assertEqual(401, response.status_code)
 
     def test_get_reset_token(self):
+        self.login_with_credentials(ADMIN_USER)
         with self.app.test_client() as client:
-            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/request-reset/test@example.com')
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/test@example.com/reset-password-token',
+                                  headers=self.auth_headers)
             self.assertEqual(200, response.status_code)
             reset_token = response.json['token']
             self.assertIsNotNone(reset_token)
 
-    def test_get_reset_token_unregistered_email(self):
+    def test_get_reset_token_should_fail_user_is_not_admin(self):
+        self.login_with_credentials(VIEWER_USER)
         with self.app.test_client() as client:
-            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/request-reset/test')
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/test@example.com/reset-password-token',
+                                  headers=self.auth_headers)
+            self.assertEqual(500, response.status_code)
+            self.assertEqual('Internal error, please contact support.', response.json['error'])
+
+    def test_get_reset_token_unregistered_email(self):
+        self.login_with_credentials(ADMIN_USER)
+        with self.app.test_client() as client:
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/test/reset-password-token',
+                                  headers=self.auth_headers)
             self.assertEqual(401, response.status_code)
             self.assertEqual('Authentication failed.', response.json['error'])
             self.assertEqual('Invalid email address.', response.json['message'])
 
     def test_password_reset(self):
+        self.login_with_credentials(ADMIN_USER)
         with self.app.test_client() as client:
-            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/request-reset/test@example.com')
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/test@example.com/reset-password-token',
+                                  headers=self.auth_headers)
             self.assertEqual(200, response.status_code)
             reset_token = response.json['token']
             self.assertIsNotNone(reset_token)
@@ -189,13 +203,14 @@ class TestUserApi(DbTests):
                 'token': reset_token,
                 'password': str(uuid4())
             }
-
+        with self.app.test_client() as client:
             response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/reset-password',
                                   json=password_reset_request)
             self.assertEqual(200, response.status_code)
             self.assertEqual('ok', response.json['status'])
 
             # should fail -> repeatedly used token
+        with self.app.test_client() as client:
             response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/reset-password',
                                   json=password_reset_request)
             self._assert_invalid_reset_token(response)

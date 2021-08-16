@@ -47,8 +47,9 @@ Authorization: Bearer {{auth_token}}
 }
 ###
 
-GET {{url}}/v1/user/request-reset/test
+GET {{url}}/v1/user/""/reset-password-token
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 ###
 
