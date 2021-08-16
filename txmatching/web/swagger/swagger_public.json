@@ -423,6 +423,104 @@
                     "user"
                 ]
             }
+        },
+        "/v1/user/request-reset/{email}": {
+            "parameters": [
+                {
+                    "name": "email",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns reset token.",
+                        "schema": {
+                            "$ref": "#/definitions/ResetRequestResponse"
+                        }
+                    }
+                },
+                "operationId": "get_request_reset",
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/reset-password": {
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Password reset successfully.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_reset_password",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/ResetPassword"
+                        }
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
         }
     },
     "info": {
@@ -1091,6 +1189,34 @@
             },
             "type": "object"
         },
+        "ResetRequestResponse": {
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ResetPassword": {
+            "required": [
+                "password",
+                "token"
+            ],
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "description": "Reset Token."
+                },
+                "password": {
+                    "type": "string",
+                    "description": "New password."
+                }
+            },
+            "type": "object"
+        },
         "UserRegistration": {
             "required": [
                 "allowed_countries",
@@ -1223,6 +1349,12 @@
         },
         "WrongTokenUsedException": {
             "description": "wrong_used_token_exception"
+        },
+        "InvalidTokenException": {
+            "description": "invalid_token_exception"
+        },
+        "InvalidEmailException": {
+            "description": "invalid_email_exception"
         },
         "AuthenticationException": {
             "description": "general_authentication_exception"

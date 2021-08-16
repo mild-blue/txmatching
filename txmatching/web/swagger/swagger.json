@@ -109,6 +109,50 @@
             }
         },
         "/v1/txm-event": {
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "List of allowed txmEvents.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvents"
+                        }
+                    }
+                },
+                "description": "Get list of allowed txm txmEvents for the logged user.",
+                "operationId": "get_txm_event_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
             "post": {
                 "responses": {
                     "409": {
@@ -168,7 +212,9 @@
                 "tags": [
                     "txm-event"
                 ]
-            },
+            }
+        },
+        "/v1/txm-event/default": {
             "get": {
                 "responses": {
                     "500": {
@@ -196,14 +242,14 @@
                         }
                     },
                     "200": {
-                        "description": "List of allowed txmEvents.",
+                        "description": "Default event.",
                         "schema": {
-                            "$ref": "#/definitions/TxmEvents"
+                            "$ref": "#/definitions/TxmEvent"
                         }
                     }
                 },
-                "description": "Get list of allowed txm txmEvents for the logged user.",
-                "operationId": "get_txm_event_api",
+                "description": "Get default event",
+                "operationId": "get_txm_default_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -212,9 +258,7 @@
                 "tags": [
                     "txm-event"
                 ]
-            }
-        },
-        "/v1/txm-event/default": {
+            },
             "put": {
                 "responses": {
                     "409": {
@@ -266,50 +310,6 @@
                         }
                     }
                 ],
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "txm-event"
-                ]
-            },
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "Default event.",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEvent"
-                        }
-                    }
-                },
-                "description": "Get default event",
-                "operationId": "get_txm_default_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -1531,6 +1531,104 @@
                     "user"
                 ]
             }
+        },
+        "/v1/user/request-reset/{email}": {
+            "parameters": [
+                {
+                    "name": "email",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns reset token.",
+                        "schema": {
+                            "$ref": "#/definitions/ResetRequestResponse"
+                        }
+                    }
+                },
+                "operationId": "get_request_reset",
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/reset-password": {
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Password reset successfully.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_reset_password",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/ResetPassword"
+                        }
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
         }
     },
     "info": {
@@ -2208,6 +2306,34 @@
                     "description": "Current password."
                 },
                 "new_password": {
+                    "type": "string",
+                    "description": "New password."
+                }
+            },
+            "type": "object"
+        },
+        "ResetRequestResponse": {
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ResetPassword": {
+            "required": [
+                "password",
+                "token"
+            ],
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "description": "Reset Token."
+                },
+                "password": {
                     "type": "string",
                     "description": "New password."
                 }
@@ -3711,6 +3837,20 @@
             },
             "type": "object"
         },
+        "TxmEvents": {
+            "required": [
+                "events"
+            ],
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TxmEvent"
+                    }
+                }
+            },
+            "type": "object"
+        },
         "TxmEvent": {
             "required": [
                 "id",
@@ -3739,20 +3879,6 @@
                 "CLOSED"
             ],
             "type": "string"
-        },
-        "TxmEvents": {
-            "required": [
-                "events"
-            ],
-            "properties": {
-                "events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/TxmEvent"
-                    }
-                }
-            },
-            "type": "object"
         },
         "DefaultTxmEvent": {
             "required": [
@@ -3813,6 +3939,12 @@
         },
         "WrongTokenUsedException": {
             "description": "wrong_used_token_exception"
+        },
+        "InvalidTokenException": {
+            "description": "invalid_token_exception"
+        },
+        "InvalidEmailException": {
+            "description": "invalid_email_exception"
         },
         "AuthenticationException": {
             "description": "general_authentication_exception"
