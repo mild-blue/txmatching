@@ -34,6 +34,15 @@ ADMIN_USER = {
     'role': UserRole.ADMIN,
     'require_2fa': False
 }
+
+TEST_USER = {
+    'email': 'test@example.com',
+    'password_hash': PASSWORD_HASH,
+    'password': PASSWORD,
+    'role': UserRole.ADMIN,
+    'require_2fa': False
+}
+
 VIEWER_USER = {
     'email': 'viewer@example.com',
     'password_hash': PASSWORD_HASH,
@@ -81,7 +90,7 @@ EDITOR_WITH_ONLY_ONE_COUNTRY = {
     ALLOWED_EDIT_COUNTRIES: [Country.CZE]
 }
 USERS = [
-    ADMIN_USER, SERVICE_USER, OTP_USER, ADMIN_WITH_DEFAULT_TXM_EVENT, VIEWER_USER, EDITOR_WITH_ONLY_ONE_COUNTRY
+    ADMIN_USER, TEST_USER, SERVICE_USER, OTP_USER, ADMIN_WITH_DEFAULT_TXM_EVENT, VIEWER_USER, EDITOR_WITH_ONLY_ONE_COUNTRY
 ]
 
 
