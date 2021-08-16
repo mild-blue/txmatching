@@ -16,6 +16,10 @@ class TransplantRound:
 
     donor_recipient_pairs: List[DonorRecipientPair]
 
+    def __post_init__(self):
+        if len(self.donor_recipient_pairs) == 0:
+            raise AssertionError('Number of Transplants in a cycle must be non-empty')
+
     def length(self) -> int:
         return len(self.donor_recipient_pairs)
 

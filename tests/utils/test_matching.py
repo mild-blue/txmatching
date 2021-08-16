@@ -112,7 +112,7 @@ class TestMatching(DbTests):
         )
 
         result = get_count_of_transplants(matching)
-        self.assertEquals(0, result)
+        self.assertEqual(0, result)
 
         matching = MatchingWithScore(
             matching_pairs=frozenset(),
@@ -122,7 +122,6 @@ class TestMatching(DbTests):
 
         matching._cycles = [
             TransplantCycle(donor_recipient_pairs=[DonorRecipientPair(donors[0], recipients[0])]),
-            TransplantCycle(donor_recipient_pairs=[]),
             TransplantCycle(donor_recipient_pairs=[
                 DonorRecipientPair(donors[0], recipients[0]),
                 DonorRecipientPair(donors[1], recipients[1]),
@@ -136,4 +135,4 @@ class TestMatching(DbTests):
         ]
 
         result = get_count_of_transplants(matching)
-        self.assertEquals(4, result)
+        self.assertEqual(4, result)
