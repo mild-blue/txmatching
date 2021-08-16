@@ -27,7 +27,7 @@ export interface RecipientGenerated {
      */
     internal_medical_id?: string;
     /**
-     * Medical id of the patient
+     * Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.
      */
     medical_id: string;
     parameters: PatientParametersGenerated;
