@@ -60,7 +60,7 @@ def get_reset_token(email_to_reset_password: str):
 def reset_password(reset_token: str, new_password: str):
     user = get_app_user_by_id(_verify_reset_token(reset_token))
     if user.reset_token != reset_token:
-        raise InvalidTokenException('Reset password token is invalid.')
+        raise InvalidTokenException(f'Reset password token {reset_token} is invalid.')
 
     change_user_password(user.id, new_password)
     update_reset_token_for_user(user.id, None)
@@ -71,7 +71,7 @@ def _verify_reset_token(token: str):
         s = Serializer(current_app.secret_key)
         user_id = s.loads(token)['user_id']
     except BadSignature as bad_sign:
-        raise InvalidTokenException('Reset password token is invalid.') from bad_sign
+        raise InvalidTokenException(f'Reset password token {token} is invalid.') from bad_sign
     return user_id
 
 
