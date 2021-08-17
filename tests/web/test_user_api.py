@@ -179,16 +179,17 @@ class TestUserApi(DbTests):
             response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/test@example.com/reset-password-token',
                                   headers=self.auth_headers)
             self.assertEqual(403, response.status_code)
-            self.assertEqual('Not authorized.', response.json['error'])
+            self.assertEqual('Access denied', response.json['error'])
 
     def test_get_reset_token_unregistered_email(self):
         self.login_with_credentials(ADMIN_USER)
+        email_to_reset_password = 'test'
         with self.app.test_client() as client:
-            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/test/reset-password-token',
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/{email_to_reset_password}/reset-password-token',
                                   headers=self.auth_headers)
             self.assertEqual(401, response.status_code)
             self.assertEqual('Authentication failed.', response.json['error'])
-            self.assertEqual('Invalid email address.', response.json['message'])
+            self.assertEqual(f'User with email {email_to_reset_password} not found.', response.json['message'])
 
     def test_password_reset(self):
         self.login_with_credentials(ADMIN_USER)

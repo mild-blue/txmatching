@@ -11,7 +11,6 @@ from txmatching.auth.data_types import TokenType, UserRole
 from txmatching.auth.exceptions import (CredentialsMismatchException,
                                         InvalidEmailException,
                                         InvalidTokenException,
-                                        UnauthorizedException,
                                         require_auth_condition)
 from txmatching.auth.request_context import get_request_token, get_user_role
 from txmatching.auth.service.service_auth_management import register_service
@@ -46,12 +45,9 @@ def _change_password(user_id: int, current_password: str, new_password: str):
 
 
 def get_reset_token(email_to_reset_password: str):
-    if get_user_role() != UserRole.ADMIN:
-        raise UnauthorizedException
-
     user_to_reset_password = get_app_user_by_email(email_to_reset_password)
     if user_to_reset_password is None:
-        raise InvalidEmailException
+        raise InvalidEmailException(f'User with email {email_to_reset_password} not found.')
 
     expires_sec = timedelta(weeks=1).total_seconds()
     s = Serializer(current_app.secret_key, expires_sec)
@@ -64,10 +60,10 @@ def get_reset_token(email_to_reset_password: str):
 def reset_password(reset_token: str, new_password: str):
     user = get_app_user_by_id(_verify_reset_token(reset_token))
     if user.reset_token != reset_token:
-        raise InvalidTokenException()
+        raise InvalidTokenException('Reset password token is invalid.')
 
     change_user_password(user.id, new_password)
-    update_reset_token_for_user(user.id)
+    update_reset_token_for_user(user.id, None)
 
 
 def _verify_reset_token(token: str):
@@ -75,7 +71,7 @@ def _verify_reset_token(token: str):
         s = Serializer(current_app.secret_key)
         user_id = s.loads(token)['user_id']
     except BadSignature as bad_sign:
-        raise InvalidTokenException() from bad_sign
+        raise InvalidTokenException('Reset password token is invalid.') from bad_sign
     return user_id
 
 

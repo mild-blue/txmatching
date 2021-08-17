@@ -117,6 +117,7 @@ class RequestReset(Resource):
     @user_api.require_user_login()
     @user_api.response_ok(ResetRequestResponse, description='Returns reset token.')
     @user_api.response_errors()
+    @require_role(UserRole.ADMIN)
     def get(self, email):
         reset_token = get_reset_token(email)
         return response_ok({'token': reset_token})
@@ -172,7 +173,3 @@ class RegistrationApi(Resource):
 
 def _respond_token(token: str) -> dict:
     return {'auth_token': token}
-
-
-def _send_token(reset_token: str) -> dict:
-    return {'token': reset_token}
