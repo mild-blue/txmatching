@@ -1,0 +1,3766 @@
+<html>
+<head>
+  <title>Matching Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<style>
+    /* General */
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-size: 13px;
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 300;
+        background: #ffffff;
+        color: #000;
+    }
+
+    h1 {
+        margin-top: 0;
+        font-size: 40px;
+    }
+
+    h2 {
+        margin-top: 0;
+        margin-bottom: 5px;
+        font-size: 30px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #858585;
+    }
+
+    h3 {
+        text-transform: uppercase;
+        margin-top: 10px;
+        font-size: 20px;
+    }
+
+    h4 {
+        margin: 0;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    strong {
+        font-weight: 700;
+    }
+
+    /* Box */
+    .box {
+        padding: 30px;
+    }
+
+    /* Helper classes */
+    .mb-0 {
+        margin-bottom: 0 !important;
+    }
+
+    .pt-0 {
+        padding-top: 0 !important;
+    }
+
+    .pb-0 {
+        padding-bottom: 0 !important;
+    }
+
+    .color-primary {
+        color: #e2001a !important;
+    }
+
+    .page-break {
+        page-break-after: always;
+    }
+
+</style><style>
+    /* Header */
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        margin-bottom: 20px;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .header-middle {
+        margin-top: 290px;
+        margin-bottom: 360px;
+        text-align: center;
+    }
+
+    .header h1 {
+        margin: 0 200px;
+        color: #e2001a;
+        font-size: 90px;
+    }
+
+    /* Logo */
+    .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+    }
+
+    .logo img {
+        height: 50px;
+    }
+
+    .logo h2 {
+        margin: 0 0 0 20px;
+        padding-left: 20px;
+        color: #e2001a;
+        line-height: 1;
+        font-size: 18px;
+        position: relative;
+        border: none;
+    }
+
+    .logo h2::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 3px;
+        height: 100%;
+        background: #e2001a;
+    }
+
+    /* Date */
+    .date {
+        height: 50px;
+        font-weight: 400;
+        font-family: monospace;
+    }
+
+</style><style>
+    /* Configuration */
+    .configuration {
+        display: flex;
+        -webkit-box-align: start;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-align: start;
+    }
+
+    .configuration ul {
+        margin-right: 12px;
+    }
+
+    .configuration ul li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .configuration ul li:not(:last-child) {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .configuration .label {
+        margin-right: 40px;
+        /* wkhtmltopdf otherwise sometimes wraps in a wrong place */
+        white-space: nowrap;
+    }
+
+    .configuration .value {
+        /* wkhtmltopdf otherwise sometimes wraps in a wrong place */
+        white-space: nowrap;
+    }
+</style><style>
+    .transplant-header {
+        font-weight: 700;
+        font-size: 14px;
+        height: 40px;
+    }
+    .transplant-header h4 {
+        margin-left: 5px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .non-compatible {
+        background-color: #666666;
+        color: #f9f9f9
+    }
+
+    .compatible {
+        background: #e9ecef;
+        color: black;
+    }
+
+    .transplant-header .score {
+        color: black;
+    }
+
+    .transplant-header span {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .transplant-header .donor-type-label {
+        border-radius: 3px;
+        border: 1px solid;
+        padding: 2px 5px;
+        margin-left: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+    }
+
+    /* Transplant table */
+
+    .small {
+        display: inline-block;
+        margin-left: 5px;
+    }
+
+    .small, .small * {
+        font-size: 10px !important;
+    }
+
+    .center-holder {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+    }
+
+    .patient-info, .patient-note {
+        margin-top: 2px;
+        font-size: 12px;
+        font-weight: 300;
+    }
+
+    .patient-info span + span::before {
+        content: '-';
+        margin: 0 5px;
+        font-weight: bold;
+    }
+
+    .patient-note {
+        white-space: pre-line;
+        font-style: italic;
+    }
+
+    .transplant-content table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .transplant-content tr {
+        border-top: 1px solid #dddddd;
+    }
+
+    .transplant-content tr.anti-header td {
+        background: #eff3f7;
+        font-size: 10px;
+        padding: 1px;
+        text-transform: uppercase;
+        color: #6c757d;
+    }
+
+    .transplant-content td {
+        text-align: center;
+        padding: 1px 5px;
+        border: 1px solid #dddddd;
+
+        width: auto;
+    }
+
+    .transplant-content td:first-child {
+        width: 20%;
+        text-align: left;
+        font-weight: 700;
+    }
+
+    .transplant-content td:not([colspan]) {
+        width: 20%;
+    }
+
+
+    .transplant-content td.antibodies-td {
+        width: 30%;
+        font-weight: 700;
+    }
+
+    .transplant-content td:last-child {
+        width: 10%;
+        font-weight: 700;
+    }
+
+    .footer-score td {
+        text-align: right;
+    }
+
+    .footer-score td:not(:last-child) {
+        border: none !important;
+    }
+
+    .footer-score td:last-child {
+        background: transparent;
+    }
+
+    .footer-score span {
+        font-size: 18px;
+        font-weight: 700;
+        color: #e2001a;
+    }
+
+    /* Code */
+    .code {
+        display: inline-block;
+        border-radius: 3px;
+        border: 1px solid;
+        padding: 2px;
+        margin: 1px 0;
+        white-space: nowrap;
+
+        /* white background is better for printing */
+        /* background: #e9ecef; */
+        color: #6c757d;
+
+        font-weight: 600;
+    }
+
+    .code.matching {
+        background: rgba(40, 167, 69, 0.2);
+        border-color: #28a745;
+        color: #28a745;
+    }
+
+    .code.bad-matching {
+        background: rgba(220, 53, 69, 0.2);
+        border-color: #dc3545 !important;
+        color: #dc3545 !important;
+    }
+
+    /* Patient */
+    .patient {
+        display: flex;
+        align-items: center;
+        font-weight: 700;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-align: center;
+    }
+
+    .flag {
+        display: inline-block;
+        margin: 3px 5px 0 0;
+        border: 1px solid #ddd;
+        position: relative;
+        top: 1px;
+    }
+
+    .flag img {
+        height: 14px;
+        width: 16px;
+    }
+</style><style>
+    /* Matching */
+    .matching-header {
+        page-break-inside: avoid !important;
+    }
+
+    .matching-info {
+        width: 100%;
+        display: flex;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+    }
+
+    .matching-info li * {
+        vertical-align: top;
+    }
+
+    .matching-info li:last-child {
+        -webkit-box-flex: 1;
+    }
+
+    .matching-info li:not(:last-child) {
+        padding-right: 5px;
+    }
+
+    .matching-info li:not(:last-child)::after {
+        content: '|';
+        margin: 0 5px 0 10px;
+        color: #454545;
+    }
+
+    /* Matching round */
+    .matching-round {
+        margin-bottom: 20px;
+    }
+
+    /* Matching transplant */
+    .matching-transplant {
+        border-top: none;
+        padding-top: 10px;
+    }
+
+    .matching-transplant, .matching-transplant > * {
+        page-break-inside: avoid !important;
+    }
+
+    .matching-transplant h3 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: justify;
+        -webkit-box-align: center;
+    }
+
+    .matching-transplant h3 div {
+        white-space: nowrap;
+    }
+
+    .donor-type-label {
+        font-size: 13px;
+    }
+
+    /* Matching summary */
+    .matching-summary {
+        padding-top: 7px; /* new page */
+    }
+
+    .matching-summary, .matching-summary > * {
+        page-break-inside: avoid !important;
+    }
+
+    .matching-summary.selected {
+        border-bottom: 1px solid gray;
+        padding-bottom: 15px;
+    }
+
+    table.matching-summary-table {
+        border-collapse: collapse;
+    }
+
+    table.matching-summary-table tr {
+        border-top: 1px solid #dddddd;
+    }
+
+    table.matching-summary-table tr:first-child {
+        border-top: none;
+    }
+
+    table.matching-summary-table td {
+        vertical-align: top;
+    }
+
+    .matching-summary-round-title {
+        font-weight: 700;
+        margin: 4px;
+    }
+
+    .patient-pair {
+        border-radius: 3px;
+        padding: 2px 5px;
+        margin: 3px 2px;
+        display: inline-block;
+
+        /* fix wkhtmltopdf artefacts */
+        border: 1px solid #e9ecef;
+    }
+
+    .patient-pair-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* wkhtmltopdf */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+    }
+
+    .patient-pair-content .icon-right {
+        margin: 0 7px;
+        font-weight: 800;
+    }
+
+    .patient-pair-content .flag {
+        border: 1px solid #666;
+    }
+
+    .patient-pair-content .warning-icon {
+        font-weight: bold;
+        background-color: #dc3545;
+        width: 21px;
+        height: 21px;
+        text-align: center;
+        border-radius: 50%;
+        color: white;
+        margin-right: 7px;
+    }
+
+    li > .flag {
+        top: -1px;
+    }
+
+</style>
+<body>
+
+<div class="box">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">
+        <img alt="logo" src="./assets/logo_ikem.svg"/>
+        <h2>
+          Transplant<br>Matching
+        </h2>
+      </div>
+      <div class="date">
+        Generated
+        <span>Aug 10, 2021 17:39:00</span>
+      </div>
+    </div>
+
+    <div class="header-middle">
+      <h1>Matching Report</h1>
+    </div>
+  </div>
+
+
+</div>
+<div class="box">
+  <h3>Configuration</h3>
+  <div class="configuration">
+    <ul>
+      <li>
+        <div class="label">TXM event</div>
+        <div class="value"><strong>high_res_example_data</strong></div>
+      </li>
+      <li>
+        <div class="label">Solver</div>
+        <div class="value"><strong>Solver.ILPSolver</strong></div>
+      </li>
+      <li>
+        <div class="label">Scorer</div>
+        <div class="value"><strong>Scorer.SplitScorer</strong></div>
+      </li>
+      <li>
+        <div class="label">Forbidden crossmatch level</div>
+        <div class="value"><strong>BROAD</strong></div>
+      </li>
+      <li>
+        <div class="label">Require compatible blood group</div>
+        <div class="value">      No
+  </div>
+      </li>
+      <li>
+        <div class="label">Require new donor having better CI match than original donor</div>
+        <div class="value">      No
+  </div>
+      </li>
+      <li>
+        <div class="label">Require new donor having better CI match than original donor or blood group match
+        </div>
+        <div class="value">      No
+  
+        </div>
+      </li>
+      <li>
+        <div class="label">Use binary scoring</div>
+        <div class="value">      No
+  </div>
+      </li>
+      <li>
+        <div class="label">Use high resolution</div>
+        <div class="value">      <strong>Yes</strong>
+  </div>
+      </li>
+      <li>
+        <div class="label">Manual donor recipient scores</div>
+        <div class="value">
+          <strong></strong>
+        </div>
+      </li>
+    </ul>
+    <ul>
+      <li>
+        <div class="label">Maximum number of matchings</div>
+        <div class="value"><strong>5</strong></div>
+      </li>
+      <li>
+        <div class="label">Minimum transplant score</div>
+        <div class="value"><strong>0.0</strong></div>
+      </li>
+      <li>
+        <div class="label">Max countries in round</div>
+        <div class="value"><strong>3</strong></div>
+      </li>
+      <li>
+        <div class="label">Max cycle length</div>
+        <div class="value"><strong>4</strong></div>
+      </li>
+      <li>
+        <div class="label">Max sequence length</div>
+        <div class="value"><strong>4</strong></div>
+      </li>
+      <li>
+        <div class="label">Compatible blood group bonus</div>
+        <div class="value"><strong>0.0</strong></div>
+      </li>
+      <li>
+        <div class="label">Max kidney debt for one country</div>
+        <div class="value"><strong>3</strong></div>
+      </li>
+      <li>
+        <div class="label">Max donor with blood group 0 debt for one country</div>
+        <div class="value"><strong>3</strong></div>
+      </li>
+      <li>
+        <div class="label">Forbidden country combinations</div>
+        <div class="value">
+          <strong>AUT - ISR<br>ISR - AUT</strong>
+        </div>
+      </li>
+      <li>
+        <div class="label">Required patient ids</div>
+        <div class="value"><strong></strong></div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="page-break"></div>
+<div class="box">
+  <h1 class="mb-0">Matchings summaries</h1>
+
+      <div class="matching-summary selected">
+
+      <!-- Matching title -->
+      <h3 class="mb-0">
+                  <span class="color-primary">Selected:</span>
+                Matching #1
+      </h3>
+
+      <!-- Matching info -->
+      <ul class="matching-info">
+        <li>Score: <strong class="color-primary">54.0</strong></li>
+        <li>Rounds: <strong>4</strong></li>
+        <li>Transplants: <strong>12</strong></li>
+        <!-- countries stats -->
+                  <li>
+            <div class="flag">
+              <img src="assets/countries/CAN.png"/>
+            </div>
+            <strong>
+              5/5
+            </strong>
+          </li>
+                  <li>
+            <div class="flag">
+              <img src="assets/countries/CZE.png"/>
+            </div>
+            <strong>
+              2/3
+            </strong>
+          </li>
+                  <li>
+            <div class="flag">
+              <img src="assets/countries/IND.png"/>
+            </div>
+            <strong>
+              5/4
+            </strong>
+          </li>
+              </ul>
+
+      <!-- Table with matching rounds -->
+      <table class="matching-summary-table">
+                  <tr>
+
+            <td>
+              <div class="matching-summary-round-title">
+                1
+              </div>
+            </td>
+
+            <td>
+              <!-- Transplants tiles-->
+              <div>
+                                  <!-- Patient pair -->
+                  <div
+                    class="patient-pair compatible"
+                    style="border-right: 10px solid #ffa400">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CZE.png"/>
+                        </div>
+                        CZE_5
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CAN.png"/>
+                        </div>
+                        CAN_0R
+                      </div>
+                    </div>
+                  </div>
+                                                                      <!-- Patient pair -->
+                  <div
+                    class="patient-pair compatible"
+                    style="border-right: 10px solid #cfe733">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CAN.png"/>
+                        </div>
+                        CAN_0
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CZE.png"/>
+                        </div>
+                        CZE_5R
+                      </div>
+                    </div>
+                  </div>
+                                                                  </div>
+            </td>
+
+          </tr>
+                  <tr>
+
+            <td>
+              <div class="matching-summary-round-title">
+                2B
+              </div>
+            </td>
+
+            <td>
+              <!-- Transplants tiles-->
+              <div>
+                                  <!-- Patient pair -->
+                  <div
+                    class="patient-pair non-compatible"
+                    style="border-right: 10px solid #cfe733">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CAN.png"/>
+                        </div>
+                        CAN_7
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CAN.png"/>
+                        </div>
+                        CAN_8R
+                      </div>
+                    </div>
+                  </div>
+                                                                      <!-- Patient pair -->
+                  <div
+                    class="patient-pair compatible"
+                    style="border-right: 10px solid #ffe14c">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CAN.png"/>
+                        </div>
+                        CAN_8
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CAN.png"/>
+                        </div>
+                        CAN_9R
+                      </div>
+                    </div>
+                  </div>
+                                                                  </div>
+            </td>
+
+          </tr>
+                  <tr>
+
+            <td>
+              <div class="matching-summary-round-title">
+                3B
+              </div>
+            </td>
+
+            <td>
+              <!-- Transplants tiles-->
+              <div>
+                                  <!-- Patient pair -->
+                  <div
+                    class="patient-pair non-compatible"
+                    style="border-right: 10px solid #ffa400">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/IND.png"/>
+                        </div>
+                        IND_0
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CAN.png"/>
+                        </div>
+                        CAN_4R
+                      </div>
+                    </div>
+                  </div>
+                                                                      <!-- Patient pair -->
+                  <div
+                    class="patient-pair compatible"
+                    style="border-right: 10px solid #ffa400">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CAN.png"/>
+                        </div>
+                        CAN_4
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/IND.png"/>
+                        </div>
+                        IND_7R
+                      </div>
+                    </div>
+                  </div>
+                                                                      <!-- Patient pair -->
+                  <div
+                    class="patient-pair compatible"
+                    style="border-right: 10px solid #ffa400">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/IND.png"/>
+                        </div>
+                        IND_7
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/IND.png"/>
+                        </div>
+                        IND_6R
+                      </div>
+                    </div>
+                  </div>
+                                    <br>                                  <!-- Patient pair -->
+                  <div
+                    class="patient-pair compatible"
+                    style="border-right: 10px solid #ffa400">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/IND.png"/>
+                        </div>
+                        IND_6
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/IND.png"/>
+                        </div>
+                        IND_4R
+                      </div>
+                    </div>
+                  </div>
+                                                                  </div>
+            </td>
+
+          </tr>
+                  <tr>
+
+            <td>
+              <div class="matching-summary-round-title">
+                4N
+              </div>
+            </td>
+
+            <td>
+              <!-- Transplants tiles-->
+              <div>
+                                  <!-- Patient pair -->
+                  <div
+                    class="patient-pair compatible"
+                    style="border-right: 10px solid #ffa400">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/IND.png"/>
+                        </div>
+                        IND_2
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CAN.png"/>
+                        </div>
+                        CAN_3R
+                      </div>
+                    </div>
+                  </div>
+                                                                      <!-- Patient pair -->
+                  <div
+                    class="patient-pair compatible"
+                    style="border-right: 10px solid #ffe14c">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CAN.png"/>
+                        </div>
+                        CAN_3
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CZE.png"/>
+                        </div>
+                        CZE_8R
+                      </div>
+                    </div>
+                  </div>
+                                                                      <!-- Patient pair -->
+                  <div
+                    class="patient-pair compatible"
+                    style="border-right: 10px solid #ffe14c">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CZE.png"/>
+                        </div>
+                        CZE_8
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/IND.png"/>
+                        </div>
+                        IND_5R
+                      </div>
+                    </div>
+                  </div>
+                                    <br>                                  <!-- Patient pair -->
+                  <div
+                    class="patient-pair compatible"
+                    style="border-right: 10px solid #ffa400">
+                    <div class="patient-pair-content">
+                                            <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/IND.png"/>
+                        </div>
+                        IND_5
+                      </div>
+                      <div class="icon-right"> ></div>
+                      <div class="patient">
+                        <div class="flag">
+                          <img src="assets/countries/CZE.png"/>
+                        </div>
+                        CZE_2R
+                      </div>
+                    </div>
+                  </div>
+                                                                  </div>
+            </td>
+
+          </tr>
+              </table>
+    </div>
+  </div>
+
+<div class="page-break"></div>
+<div class="box pb-0">
+  <h1 class="mb-0">Selected matching detail</h1>
+</div>
+
+  <div class="box">
+    
+    <!-- Matching rounds -->
+          <div class="matching-round">
+        
+        <!-- Matching round transplants -->
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+              
+              <div class="matching-header">
+                <h2>
+                  Matching #1
+                </h2>
+
+                <!-- Matching info -->
+                <ul class="matching-info">
+                  <li>Score: <strong class="color-primary">54.0</strong></li>
+                  <li>Rounds: <strong>4</strong></li>
+                  <li>Transplants: <strong>12</strong></li>
+                  <!-- countries stats -->
+                                      <li>
+                      <div class="flag">
+                        <img src="assets/countries/CAN.png"/>
+                      </div>
+                      <strong>
+                        5/5
+                      </strong>
+                    </li>
+                                      <li>
+                      <div class="flag">
+                        <img src="assets/countries/CZE.png"/>
+                      </div>
+                      <strong>
+                        2/3
+                      </strong>
+                    </li>
+                                      <li>
+                      <div class="flag">
+                        <img src="assets/countries/IND.png"/>
+                      </div>
+                      <strong>
+                        5/4
+                      </strong>
+                    </li>
+                                  </ul>
+              </div>
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+                          <h3>
+                <div>Round #1</div>
+                <div class="donor-type-label"></div>
+              </h3>
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CZE.png"/>
+                </div>
+                CZE_5
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/CAN.png"/>
+                  </div>
+                  CAN_0R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #ffa400">
+          <div>
+            <div>
+              <span>-</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/CZE.png"/>
+              </div>
+              CZE_5
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1962</span>
+                                      <span>156/54</span>
+                      </div>
+                      <div class="patient-note">
+              Patient
+note
+multiline
+            </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CAN.png"/>
+                </div>
+                CAN_0R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>F</span>
+                                            <span>1950</span>
+                                            <span>177/69</span>
+              
+                              <span>Aug 19, 2019</span>
+                                            <span>3</span>
+                                        </div>
+                          <div class="patient-note">
+                Patient note bar
+              </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code matching">
+            B
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code matching">
+              B
+            </div>
+            <div class="small">
+              Acceptable:
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code   ">A*02:09</div>
+                          <div class="code   ">A*02:09</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*74:01</div>
+                          <div class="code   ">A*74:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:14</div>
+                          <div class="code   ">A*02:16</div>
+                          <div class="code   ">A*02:97</div>
+                          <div class="code   ">A*03:04</div>
+                          <div class="code   ">A*11:14</div>
+                          <div class="code   ">A*23:12</div>
+                          <div class="code   ">A*24:37</div>
+                          <div class="code   ">A*26:02</div>
+                          <div class="code   ">A*26:23</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code   ">B*35:10</div>
+                          <div class="code   ">B*38:09</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*59:01</div>
+                          <div class="code   ">B*59:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*08:15</div>
+                          <div class="code   ">B*15:20</div>
+                          <div class="code   ">B*35:13</div>
+                          <div class="code   ">B*35:44</div>
+                          <div class="code   ">B*35:52</div>
+                          <div class="code   ">B*39:12</div>
+                          <div class="code   ">B*40:26</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*14:08</div>
+                          <div class="code   ">DRB1*14:08</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*04:64</div>
+                          <div class="code   ">DRB1*08:18</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*04:13</div>
+                          <div class="code   ">DRB1*08:09</div>
+                          <div class="code   ">DRB1*11:29</div>
+                          <div class="code   ">DRB1*13:54</div>
+                          <div class="code   ">DRB1*14:16</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*858:01</div>
+                          <div class="code   ">DQA1*01:11</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*760:01</div>
+                          <div class="code   ">DQA1*05:02</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*1016:01</div>
+                          <div class="code   ">DPB1*1087:01</div>
+                          <div class="code   ">DPB1*630:01</div>
+                          <div class="code   ">DPB1*706:01</div>
+                          <div class="code   ">DPB1*778:01</div>
+                          <div class="code   ">DPB1*797:01</div>
+                          <div class="code   ">DPB1*812:01</div>
+                          <div class="code   ">DPB1*843:01</div>
+                          <div class="code   ">DQA1*01:09</div>
+                          <div class="code   ">DQA1*01:34</div>
+                          <div class="code   ">DQA1*02:08</div>
+                          <div class="code   ">DQA1*03:06</div>
+                          <div class="code   ">DQA1*04:06</div>
+                          <div class="code   ">DQB1*03:10</div>
+                          <div class="code   ">DQB1*04:02</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CAN.png"/>
+                </div>
+                CAN_0
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/CZE.png"/>
+                  </div>
+                  CZE_5R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #cfe733">
+          <div>
+            <div>
+              <span>12.0</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/CAN.png"/>
+              </div>
+              CAN_0
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1956</span>
+                                      <span>163/63</span>
+                      </div>
+                      <div class="patient-note">
+              Patient
+note
+multiline
+            </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CZE.png"/>
+                </div>
+                CZE_5R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>F</span>
+                                            <span>1985</span>
+                                            <span>185/61</span>
+              
+                              <span>Oct 27, 2018</span>
+                                            <span>3</span>
+                                        </div>
+                          <div class="patient-note">
+                Patient note bar
+              </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code matching">
+            A
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code matching">
+              A
+            </div>
+            <div class="small">
+              Acceptable:
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code   ">A*02:14</div>
+                          <div class="code   ">A*02:14</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*24:37</div>
+                          <div class="code   ">A*26:02</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:09</div>
+                          <div class="code   ">A*02:42</div>
+                          <div class="code   ">A*03:02</div>
+                          <div class="code   ">A*11:13</div>
+                          <div class="code   ">A*11:14</div>
+                          <div class="code   ">A*11:25</div>
+                          <div class="code   ">A*23:12</div>
+                          <div class="code   ">A*24:37</div>
+                          <div class="code   ">A*26:26</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code   ">B*15:108</div>
+                          <div class="code       matching
+  ">B*35:52</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*15:71</div>
+                          <div class="code       matching
+  ">B*35:52</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*15:80</div>
+                          <div class="code   ">B*35:10</div>
+                          <div class="code   ">B*35:41</div>
+                          <div class="code   ">B*38:09</div>
+                          <div class="code   ">B*40:07</div>
+                          <div class="code   ">B*40:26</div>
+                          <div class="code   ">B*47:03</div>
+                          <div class="code   ">B*48:07</div>
+                          <div class="code   ">B*52:08</div>
+                          <div class="code   ">B*59:01</div>
+                      </td>
+          <td>
+                          3.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*03:14</div>
+                          <div class="code       matching
+  ">DRB1*13:08</div>
+                      </td>
+          <td>
+                          <div class="code       matching
+  ">DRB1*13:66</div>
+                          <div class="code   ">DRB1*14:60</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*07:01</div>
+                          <div class="code   ">DRB1*13:01</div>
+                          <div class="code   ">DRB1*13:07</div>
+                          <div class="code   ">DRB1*15:01</div>
+                      </td>
+          <td>
+                          9.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*471:01</div>
+                          <div class="code   ">DPB1*760:01</div>
+                          <div class="code   ">DQA1*01:09</div>
+                          <div class="code   ">DQA1*01:14</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*630:01</div>
+                          <div class="code   ">DPB1*843:01</div>
+                          <div class="code   ">DQA1*03:16</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*1087:01</div>
+                          <div class="code   ">DPB1*1110:01</div>
+                          <div class="code   ">DPB1*180:01</div>
+                          <div class="code   ">DPB1*210:01</div>
+                          <div class="code   ">DPB1*24:01</div>
+                          <div class="code   ">DPB1*356:01</div>
+                          <div class="code   ">DPB1*49:01</div>
+                          <div class="code   ">DPB1*509:01</div>
+                          <div class="code   ">DPB1*630:01</div>
+                          <div class="code   ">DPB1*784:01</div>
+                          <div class="code   ">DPB1*812:01</div>
+                          <div class="code   ">DPB1*843:01</div>
+                          <div class="code   ">DQA1*01:18</div>
+                          <div class="code   ">DQA1*02:03</div>
+                          <div class="code   ">DQA1*02:05</div>
+                          <div class="code   ">DQA1*03:03</div>
+                          <div class="code   ">DQA1*03:09</div>
+                          <div class="code   ">DQB1*03:06</div>
+                          <div class="code   ">DQB1*06:01</div>
+                          <div class="code   ">DQB1*06:25</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+              </div>
+          <div class="matching-round">
+        
+        <!-- Matching round transplants -->
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+                          <h3>
+                <div>Round #2</div>
+                <div class="donor-type-label">bridging donor</div>
+              </h3>
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header non-compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CAN.png"/>
+                </div>
+                CAN_7
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/CAN.png"/>
+                  </div>
+                  CAN_8R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #cfe733">
+          <div>
+            <div>
+              <span>19.0</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/CAN.png"/>
+              </div>
+              CAN_7
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1975</span>
+                                      <span>162/105</span>
+                      </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CAN.png"/>
+                </div>
+                CAN_8R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>M</span>
+                                            <span>1969</span>
+                                            <span>170/61</span>
+              
+                              <span>Nov 27, 2018</span>
+                                            <span>2</span>
+                                        </div>
+                          <div class="patient-note">
+                Patient note foo
+              </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code ">
+            B
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code ">
+              0
+            </div>
+            <div class="small">
+              Acceptable:
+                              <div class="code">0</div>
+                              <div class="code">AB</div>
+                              <div class="code">B</div>
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code       matching
+  ">A*02:09</div>
+                          <div class="code   ">A*30:15</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*01:53N</div>
+                          <div class="code       matching
+  ">A*02:140</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:140</div>
+                          <div class="code   ">A*02:393</div>
+                          <div class="code   ">A*03:350</div>
+                          <div class="code   ">A*11:12</div>
+                          <div class="code   ">A*11:13</div>
+                          <div class="code   ">A*11:15</div>
+                          <div class="code   ">A*23:12</div>
+                          <div class="code   ">A*24:225</div>
+                          <div class="code   ">A*31:01</div>
+                      </td>
+          <td>
+                          1.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code   ">B*56:03</div>
+                          <div class="code   ">B*56:03</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*39:12</div>
+                          <div class="code   ">B*51:35</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*07:70</div>
+                          <div class="code   ">B*15:80</div>
+                          <div class="code   ">B*35:44</div>
+                          <div class="code   ">B*35:61</div>
+                          <div class="code   ">B*40:26</div>
+                          <div class="code   ">B*51:09</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code       matching
+  ">DRB1*04:20</div>
+                          <div class="code       matching
+  ">DRB1*04:29</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*03:01</div>
+                          <div class="code       matching
+  ">DRB1*04:29</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*03:12</div>
+                          <div class="code   ">DRB1*03:14</div>
+                          <div class="code   ">DRB1*08:07</div>
+                          <div class="code   ">DRB1*08:12</div>
+                          <div class="code   ">DRB1*11:37</div>
+                          <div class="code   ">DRB1*13:03</div>
+                          <div class="code   ">DRB1*13:66</div>
+                          <div class="code   ">DRB1*15:01</div>
+                      </td>
+          <td>
+                          18.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*685:01</div>
+                          <div class="code   ">DPB1*843:01</div>
+                          <div class="code   ">DQA1*01:09</div>
+                          <div class="code       matching
+  ">DQA1*04:08</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*356:01</div>
+                          <div class="code   ">DPB1*812:01</div>
+                          <div class="code       matching
+  ">DQA1*04:08</div>
+                          <div class="code   ">DQA1*04:08</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPA1*02:04</div>
+                          <div class="code   ">DPB1*1110:01</div>
+                          <div class="code   ">DPB1*317:01</div>
+                          <div class="code   ">DPB1*459:01</div>
+                          <div class="code   ">DPB1*778:01</div>
+                          <div class="code   ">DPB1*837:01</div>
+                          <div class="code   ">DQA1*01:14</div>
+                          <div class="code   ">DQA1*01:34</div>
+                          <div class="code   ">DQA1*02:05</div>
+                          <div class="code   ">DQA1*02:08</div>
+                          <div class="code   ">DQA1*03:08</div>
+                          <div class="code   ">DQA1*03:11</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CAN.png"/>
+                </div>
+                CAN_8
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/CAN.png"/>
+                  </div>
+                  CAN_9R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #ffe14c">
+          <div>
+            <div>
+              <span>5.0</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/CAN.png"/>
+              </div>
+              CAN_8
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1957</span>
+                                      <span>159/66</span>
+                      </div>
+                      <div class="patient-note">
+              Patient
+note
+multiline
+            </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CAN.png"/>
+                </div>
+                CAN_9R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>M</span>
+                                            <span>1999</span>
+                                            <span>176/67</span>
+              
+                              <span>Jan 02, 2019</span>
+                                            <span>3</span>
+                                        </div>
+                          <div class="patient-note">
+                Patient
+note
+multiline
+              </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code matching">
+            A
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code matching">
+              AB
+            </div>
+            <div class="small">
+              Acceptable:
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code       matching
+  ">A*30:15</div>
+                          <div class="code       matching
+  ">A*30:15</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:08</div>
+                          <div class="code       matching
+  ">A*31:02</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:08</div>
+                          <div class="code   ">A*02:09</div>
+                          <div class="code   ">A*03:219</div>
+                          <div class="code   ">A*11:12</div>
+                          <div class="code   ">A*11:25</div>
+                          <div class="code   ">A*24:225</div>
+                          <div class="code   ">A*26:26</div>
+                      </td>
+          <td>
+                          2.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code       matching
+  ">B*15:04</div>
+                          <div class="code   ">B*39:08</div>
+                      </td>
+          <td>
+                          <div class="code       matching
+  ">B*15:06</div>
+                          <div class="code   ">B*35:52</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*15:108</div>
+                          <div class="code   ">B*27:38</div>
+                          <div class="code   ">B*39:11</div>
+                          <div class="code   ">B*39:12</div>
+                          <div class="code   ">B*40:07</div>
+                          <div class="code   ">B*40:48</div>
+                          <div class="code   ">B*52:08</div>
+                          <div class="code   ">B*56:03</div>
+                      </td>
+          <td>
+                          3.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*04:20</div>
+                          <div class="code   ">DRB1*11:07</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*01:91Q</div>
+                          <div class="code   ">DRB1*13:07</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*01:09</div>
+                          <div class="code   ">DRB1*03:07</div>
+                          <div class="code   ">DRB1*04:17</div>
+                          <div class="code   ">DRB1*04:64</div>
+                          <div class="code   ">DRB1*11:29</div>
+                          <div class="code   ">DRB1*13:03</div>
+                          <div class="code   ">DRB1*14:08</div>
+                          <div class="code   ">DRB1*16:09</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*509:01</div>
+                          <div class="code   ">DPB1*706:01</div>
+                          <div class="code   ">DQA1*01:07Q</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*414:01</div>
+                          <div class="code   ">DPB1*762:01</div>
+                          <div class="code   ">DQA1*02:05</div>
+                          <div class="code   ">DQB1*06:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*210:01</div>
+                          <div class="code   ">DPB1*312:01</div>
+                          <div class="code   ">DPB1*388:01</div>
+                          <div class="code   ">DPB1*702:01</div>
+                          <div class="code   ">DPB1*710:01</div>
+                          <div class="code   ">DPB1*762:01</div>
+                          <div class="code   ">DPB1*801:01</div>
+                          <div class="code   ">DPB1*858:01</div>
+                          <div class="code   ">DQA1*01:34</div>
+                          <div class="code   ">DQA1*01:38</div>
+                          <div class="code   ">DQA1*01:48</div>
+                          <div class="code   ">DQA1*02:05</div>
+                          <div class="code   ">DQA1*03:16</div>
+                          <div class="code   ">DQA1*05:14</div>
+                          <div class="code   ">DQB1*04:02</div>
+                          <div class="code   ">DQB1*05:01</div>
+                          <div class="code   ">DQB1*06:08</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+              </div>
+          <div class="matching-round">
+        
+        <!-- Matching round transplants -->
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+                          <h3>
+                <div>Round #3</div>
+                <div class="donor-type-label">bridging donor</div>
+              </h3>
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header non-compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/IND.png"/>
+                </div>
+                IND_0
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/CAN.png"/>
+                  </div>
+                  CAN_4R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #ffa400">
+          <div>
+            <div>
+              <span>-</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/IND.png"/>
+              </div>
+              IND_0
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1957</span>
+                                      <span>154/102</span>
+                      </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CAN.png"/>
+                </div>
+                CAN_4R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>M</span>
+                                            <span>1959</span>
+                                            <span>179/79</span>
+              
+                              <span>Sep 19, 2018</span>
+                                            <span>0</span>
+                                        </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code ">
+            A
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code ">
+              B
+            </div>
+            <div class="small">
+              Acceptable:
+                              <div class="code">AB</div>
+                              <div class="code">A</div>
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code   ">A*02:46</div>
+                          <div class="code   ">A*36:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*24:225</div>
+                          <div class="code   ">A*26:22</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:08</div>
+                          <div class="code   ">A*02:393</div>
+                          <div class="code   ">A*02:95</div>
+                          <div class="code   ">A*11:12</div>
+                          <div class="code   ">A*24:37</div>
+                          <div class="code   ">A*74:01</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code   ">B*59:01</div>
+                          <div class="code   ">B*59:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*15:80</div>
+                          <div class="code   ">B*27:38</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*07:70</div>
+                          <div class="code   ">B*15:06</div>
+                          <div class="code   ">B*15:146</div>
+                          <div class="code   ">B*15:80</div>
+                          <div class="code   ">B*35:02</div>
+                          <div class="code   ">B*39:08</div>
+                          <div class="code   ">B*44:09</div>
+                          <div class="code   ">B*56:03</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*08:18</div>
+                          <div class="code   ">DRB1*11:37</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*13:07</div>
+                          <div class="code   ">DRB1*16:02</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*01:09</div>
+                          <div class="code   ">DRB1*04:17</div>
+                          <div class="code   ">DRB1*04:42</div>
+                          <div class="code   ">DRB1*04:64</div>
+                          <div class="code   ">DRB1*08:01</div>
+                          <div class="code   ">DRB1*11:52</div>
+                          <div class="code   ">DRB1*14:08</div>
+                          <div class="code   ">DRB1*14:60</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*512:01</div>
+                          <div class="code   ">DPB1*51:01</div>
+                          <div class="code   ">DQA1*02:05</div>
+                          <div class="code       matching
+  ">DQB1*03:10</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*487:01</div>
+                          <div class="code   ">DPB1*710:01</div>
+                          <div class="code   ">DQA1*05:14</div>
+                          <div class="code       matching
+  ">DQB1*03:10</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*210:01</div>
+                          <div class="code   ">DPB1*24:01</div>
+                          <div class="code   ">DPB1*388:01</div>
+                          <div class="code   ">DPB1*414:01</div>
+                          <div class="code   ">DPB1*49:01</div>
+                          <div class="code   ">DPB1*710:01</div>
+                          <div class="code   ">DPB1*760:01</div>
+                          <div class="code   ">DPB1*762:01</div>
+                          <div class="code   ">DQA1*01:01</div>
+                          <div class="code   ">DQA1*01:22</div>
+                          <div class="code   ">DQA1*02:03</div>
+                          <div class="code   ">DQA1*03:08</div>
+                          <div class="code   ">DQA1*03:09</div>
+                          <div class="code   ">DQA1*03:11</div>
+                          <div class="code   ">DQA1*05:13</div>
+                          <div class="code   ">DQA1*06:02</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CAN.png"/>
+                </div>
+                CAN_4
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/IND.png"/>
+                  </div>
+                  IND_7R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #ffa400">
+          <div>
+            <div>
+              <span>-</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/CAN.png"/>
+              </div>
+              CAN_4
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1958</span>
+                                      <span>158/81</span>
+                      </div>
+                      <div class="patient-note">
+              Patient note foo
+            </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/IND.png"/>
+                </div>
+                IND_7R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>F</span>
+                                            <span>1985</span>
+                                            <span>153/67</span>
+              
+                              <span>Nov 10, 2018</span>
+                                            <span>3</span>
+                                        </div>
+                          <div class="patient-note">
+                Patient
+note
+multiline
+              </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code matching">
+            B
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code matching">
+              B
+            </div>
+            <div class="small">
+              Acceptable:
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code   ">A*30:15</div>
+                          <div class="code   ">A*30:15</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*11:13</div>
+                          <div class="code   ">A*11:13</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:09</div>
+                          <div class="code   ">A*03:02</div>
+                          <div class="code   ">A*03:04</div>
+                          <div class="code   ">A*03:350</div>
+                          <div class="code   ">A*11:15</div>
+                          <div class="code   ">A*26:82</div>
+                          <div class="code   ">A*36:01</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code   ">B*15:71</div>
+                          <div class="code   ">B*15:71</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*15:108</div>
+                          <div class="code   ">B*51:09</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*07:70</div>
+                          <div class="code   ">B*15:04</div>
+                          <div class="code   ">B*15:80</div>
+                          <div class="code   ">B*35:10</div>
+                          <div class="code   ">B*35:52</div>
+                          <div class="code   ">B*40:07</div>
+                          <div class="code   ">B*40:56</div>
+                          <div class="code   ">B*51:09</div>
+                          <div class="code   ">B*59:01</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*03:06</div>
+                          <div class="code   ">DRB1*08:09</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*04:64</div>
+                          <div class="code   ">DRB1*04:64</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*03:07</div>
+                          <div class="code   ">DRB1*13:07</div>
+                          <div class="code   ">DRB1*16:09</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*702:01</div>
+                          <div class="code   ">DPB1*784:01</div>
+                          <div class="code   ">DQA1*06:02</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*797:01</div>
+                          <div class="code   ">DQA1*02:03</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*356:01</div>
+                          <div class="code   ">DPB1*435:01</div>
+                          <div class="code   ">DPB1*512:01</div>
+                          <div class="code   ">DPB1*51:01</div>
+                          <div class="code   ">DPB1*797:01</div>
+                          <div class="code   ">DPB1*801:01</div>
+                          <div class="code   ">DPB1*837:01</div>
+                          <div class="code   ">DQA1*01:11</div>
+                          <div class="code   ">DQA1*01:44</div>
+                          <div class="code   ">DQA1*03:09</div>
+                          <div class="code   ">DQA1*03:10</div>
+                          <div class="code   ">DQA1*03:12</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/IND.png"/>
+                </div>
+                IND_7
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/IND.png"/>
+                  </div>
+                  IND_6R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #ffa400">
+          <div>
+            <div>
+              <span>-</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/IND.png"/>
+              </div>
+              IND_7
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1987</span>
+                                      <span>163/59</span>
+                      </div>
+                      <div class="patient-note">
+              Patient note bar
+            </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/IND.png"/>
+                </div>
+                IND_6R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>M</span>
+                                            <span>1987</span>
+                                            <span>170/67</span>
+              
+                              <span>Apr 06, 2018</span>
+                                            <span>0</span>
+                                        </div>
+                          <div class="patient-note">
+                Patient note foo
+              </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code matching">
+            0
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code matching">
+              B
+            </div>
+            <div class="small">
+              Acceptable:
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code   ">A*03:02</div>
+                          <div class="code   ">A*03:02</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:07</div>
+                          <div class="code   ">A*02:07</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*11:14</div>
+                          <div class="code   ">A*24:225</div>
+                          <div class="code   ">A*26:02</div>
+                          <div class="code   ">A*26:112</div>
+                          <div class="code   ">A*26:82</div>
+                          <div class="code   ">A*30:15</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code   ">B*18:03</div>
+                          <div class="code   ">B*18:03</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*39:11</div>
+                          <div class="code   ">B*39:11</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*15:108</div>
+                          <div class="code   ">B*40:26</div>
+                          <div class="code   ">B*40:34</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*11:14</div>
+                          <div class="code   ">DRB1*11:14</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*16:09</div>
+                          <div class="code   ">DRB1*16:09</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*03:14</div>
+                          <div class="code   ">DRB1*04:42</div>
+                          <div class="code   ">DRB1*04:64</div>
+                          <div class="code   ">DRB1*11:07</div>
+                          <div class="code   ">DRB1*13:01</div>
+                          <div class="code   ">DRB1*13:08</div>
+                          <div class="code   ">DRB1*13:54</div>
+                          <div class="code   ">DRB1*16:05</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*706:01</div>
+                          <div class="code   ">DPB1*710:01</div>
+                          <div class="code   ">DQA1*05:13</div>
+                          <div class="code   ">DQB1*06:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*317:01</div>
+                          <div class="code   ">DQA1*01:44</div>
+                          <div class="code   ">DQA1*03:09</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*702:01</div>
+                          <div class="code   ">DPB1*801:01</div>
+                          <div class="code   ">DPB1*837:01</div>
+                          <div class="code   ">DQA1*01:48</div>
+                          <div class="code   ">DQA1*02:09</div>
+                          <div class="code   ">DQA1*03:11</div>
+                          <div class="code   ">DQA1*03:12</div>
+                          <div class="code   ">DQA1*04:06</div>
+                          <div class="code   ">DQA1*04:08</div>
+                          <div class="code   ">DQB1*03:06</div>
+                          <div class="code   ">DQB1*04:01</div>
+                          <div class="code   ">DQB1*05:01</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/IND.png"/>
+                </div>
+                IND_6
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/IND.png"/>
+                  </div>
+                  IND_4R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #ffa400">
+          <div>
+            <div>
+              <span>-</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/IND.png"/>
+              </div>
+              IND_6
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1979</span>
+                                      <span>165/94</span>
+                      </div>
+                      <div class="patient-note">
+              Patient
+note
+multiline
+            </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/IND.png"/>
+                </div>
+                IND_4R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>F</span>
+                                            <span>1988</span>
+                                            <span>173/95</span>
+              
+                              <span>Jun 25, 2018</span>
+                                            <span>1</span>
+                                        </div>
+                          <div class="patient-note">
+                Patient note foo
+              </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code matching">
+            A
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code matching">
+              A
+            </div>
+            <div class="small">
+              Acceptable:
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code   ">A*02:42</div>
+                          <div class="code   ">A*36:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*11:25</div>
+                          <div class="code   ">A*11:25</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:09</div>
+                          <div class="code   ">A*02:16</div>
+                          <div class="code   ">A*03:04</div>
+                          <div class="code   ">A*03:219</div>
+                          <div class="code   ">A*11:14</div>
+                          <div class="code   ">A*26:26</div>
+                          <div class="code   ">A*29:16</div>
+                          <div class="code   ">A*30:15</div>
+                          <div class="code   ">A*31:01</div>
+                          <div class="code   ">A*74:01</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code   ">B*15:02</div>
+                          <div class="code   ">B*15:02</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*48:07</div>
+                          <div class="code   ">B*55:05</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*15:04</div>
+                          <div class="code   ">B*15:108</div>
+                          <div class="code   ">B*15:146</div>
+                          <div class="code   ">B*39:11</div>
+                          <div class="code   ">B*40:26</div>
+                          <div class="code   ">B*44:09</div>
+                          <div class="code   ">B*55:05</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*03:14</div>
+                          <div class="code   ">DRB1*13:54</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*11:52</div>
+                          <div class="code   ">DRB1*11:52</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*01:09</div>
+                          <div class="code   ">DRB1*04:24</div>
+                          <div class="code   ">DRB1*08:18</div>
+                          <div class="code   ">DRB1*11:52</div>
+                          <div class="code   ">DRB1*13:08</div>
+                          <div class="code   ">DRB1*16:05</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*843:01</div>
+                          <div class="code   ">DQA1*02:05</div>
+                          <div class="code   ">DQA1*05:13</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*797:01</div>
+                          <div class="code   ">DQA1*01:34</div>
+                          <div class="code   ">DQA1*03:16</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*312:01</div>
+                          <div class="code   ">DPB1*317:01</div>
+                          <div class="code   ">DPB1*417:01</div>
+                          <div class="code   ">DPB1*459:01</div>
+                          <div class="code   ">DPB1*471:01</div>
+                          <div class="code   ">DPB1*487:01</div>
+                          <div class="code   ">DPB1*509:01</div>
+                          <div class="code   ">DPB1*630:01</div>
+                          <div class="code   ">DPB1*760:01</div>
+                          <div class="code   ">DPB1*797:01</div>
+                          <div class="code   ">DQA1*01:19</div>
+                          <div class="code   ">DQA1*03:06</div>
+                          <div class="code   ">DQA1*03:12</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+              </div>
+          <div class="matching-round">
+        
+        <!-- Matching round transplants -->
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+                          <h3>
+                <div>Round #4</div>
+                <div class="donor-type-label">non-directed donor</div>
+              </h3>
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/IND.png"/>
+                </div>
+                IND_2
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/CAN.png"/>
+                  </div>
+                  CAN_3R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #ffa400">
+          <div>
+            <div>
+              <span>3.0</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/IND.png"/>
+              </div>
+              IND_2
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1985</span>
+                                      <span>158/102</span>
+                      </div>
+                      <div class="patient-note">
+              Patient
+note
+multiline
+            </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CAN.png"/>
+                </div>
+                CAN_3R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>M</span>
+                                            <span>1994</span>
+                                            <span>169/72</span>
+              
+                              <span>Nov 20, 2018</span>
+                                            <span>0</span>
+                                        </div>
+                          <div class="patient-note">
+                Patient note bar
+              </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code matching">
+            B
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code matching">
+              B
+            </div>
+            <div class="small">
+              Acceptable:
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code   ">A*02:72</div>
+                          <div class="code   ">A*02:72</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*29:16</div>
+                          <div class="code   ">A*29:16</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:07</div>
+                          <div class="code   ">A*02:14</div>
+                          <div class="code   ">A*02:16</div>
+                          <div class="code   ">A*02:95</div>
+                          <div class="code   ">A*11:15</div>
+                          <div class="code   ">A*24:37</div>
+                          <div class="code   ">A*26:82</div>
+                          <div class="code   ">A*74:01</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code   ">B*15:80</div>
+                          <div class="code       matching
+  ">B*35:02</div>
+                      </td>
+          <td>
+                          <div class="code       matching
+  ">B*35:44</div>
+                          <div class="code   ">B*35:52</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*07:70</div>
+                          <div class="code   ">B*35:44</div>
+                          <div class="code   ">B*35:61</div>
+                          <div class="code   ">B*39:08</div>
+                          <div class="code   ">B*40:07</div>
+                          <div class="code   ">B*40:48</div>
+                          <div class="code   ">B*44:09</div>
+                      </td>
+          <td>
+                          3.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*03:01</div>
+                          <div class="code   ">DRB1*08:09</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*13:66</div>
+                          <div class="code   ">DRB1*16:05</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*04:11</div>
+                          <div class="code   ">DRB1*08:12</div>
+                          <div class="code   ">DRB1*11:29</div>
+                          <div class="code   ">DRB1*14:08</div>
+                          <div class="code   ">DRB1*14:60</div>
+                          <div class="code   ">DRB1*16:05</div>
+                          <div class="code   ">DRB1*16:09</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*388:01</div>
+                          <div class="code   ">DPB1*702:01</div>
+                          <div class="code   ">DQA1*05:02</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*706:01</div>
+                          <div class="code   ">DPB1*778:01</div>
+                          <div class="code   ">DQA1*03:08</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*317:01</div>
+                          <div class="code   ">DPB1*509:01</div>
+                          <div class="code   ">DPB1*685:01</div>
+                          <div class="code   ">DPB1*784:01</div>
+                          <div class="code   ">DPB1*812:01</div>
+                          <div class="code   ">DPB1*858:01</div>
+                          <div class="code   ">DQA1*01:36</div>
+                          <div class="code   ">DQA1*01:44</div>
+                          <div class="code   ">DQA1*03:12</div>
+                          <div class="code   ">DQA1*04:08</div>
+                          <div class="code   ">DQA1*06:02</div>
+                          <div class="code   ">DQB1*04:01</div>
+                          <div class="code   ">DQB1*06:08</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CAN.png"/>
+                </div>
+                CAN_3
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/CZE.png"/>
+                  </div>
+                  CZE_8R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #ffe14c">
+          <div>
+            <div>
+              <span>6.0</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/CAN.png"/>
+              </div>
+              CAN_3
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1995</span>
+                                      <span>189/85</span>
+                      </div>
+                      <div class="patient-note">
+              Patient
+note
+multiline
+            </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CZE.png"/>
+                </div>
+                CZE_8R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>M</span>
+                                            <span>1951</span>
+                                            <span>174/103</span>
+              
+                              <span>Aug 19, 2019</span>
+                                            <span>2</span>
+                                        </div>
+                          <div class="patient-note">
+                Patient note bar
+              </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code matching">
+            A
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code matching">
+              A
+            </div>
+            <div class="small">
+              Acceptable:
+                              <div class="code">AB</div>
+                              <div class="code">0</div>
+                              <div class="code">B</div>
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code   ">A*36:01</div>
+                          <div class="code   ">A*74:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:07</div>
+                          <div class="code   ">A*26:02</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:14</div>
+                          <div class="code   ">A*02:95</div>
+                          <div class="code   ">A*11:09</div>
+                          <div class="code   ">A*11:14</div>
+                          <div class="code   ">A*24:225</div>
+                          <div class="code   ">A*26:02</div>
+                          <div class="code   ">A*26:23</div>
+                          <div class="code   ">A*26:82</div>
+                          <div class="code   ">A*29:16</div>
+                          <div class="code   ">A*30:15</div>
+                          <div class="code   ">A*31:02</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code       matching
+  ">B*35:61</div>
+                          <div class="code       matching
+  ">B*35:61</div>
+                      </td>
+          <td>
+                          <div class="code       matching
+  ">B*35:41</div>
+                          <div class="code   ">B*48:07</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*15:04</div>
+                          <div class="code   ">B*15:80</div>
+                          <div class="code   ">B*18:03</div>
+                          <div class="code   ">B*35:02</div>
+                          <div class="code   ">B*35:13</div>
+                          <div class="code   ">B*35:44</div>
+                          <div class="code   ">B*38:09</div>
+                          <div class="code   ">B*40:26</div>
+                          <div class="code   ">B*40:34</div>
+                          <div class="code   ">B*51:35</div>
+                          <div class="code   ">B*52:08</div>
+                          <div class="code   ">B*55:05</div>
+                          <div class="code   ">B*56:03</div>
+                      </td>
+          <td>
+                          6.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*13:01</div>
+                          <div class="code   ">DRB1*13:54</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*07:01</div>
+                          <div class="code   ">DRB1*08:07</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*03:12</div>
+                          <div class="code   ">DRB1*04:42</div>
+                          <div class="code   ">DRB1*04:64</div>
+                          <div class="code   ">DRB1*08:18</div>
+                          <div class="code   ">DRB1*11:29</div>
+                          <div class="code   ">DRB1*13:07</div>
+                          <div class="code   ">DRB1*16:05</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*317:01</div>
+                          <div class="code   ">DPB1*858:01</div>
+                          <div class="code   ">DQB1*06:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*487:01</div>
+                          <div class="code   ">DPB1*685:01</div>
+                          <div class="code   ">DQA1*01:40Q</div>
+                          <div class="code   ">DQA1*03:08</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*1016:01</div>
+                          <div class="code   ">DPB1*1087:01</div>
+                          <div class="code   ">DPB1*210:01</div>
+                          <div class="code   ">DPB1*388:01</div>
+                          <div class="code   ">DPB1*417:01</div>
+                          <div class="code   ">DPB1*468:01</div>
+                          <div class="code   ">DPB1*509:01</div>
+                          <div class="code   ">DPB1*702:01</div>
+                          <div class="code   ">DPB1*710:01</div>
+                          <div class="code   ">DPB1*812:01</div>
+                          <div class="code   ">DPB1*837:01</div>
+                          <div class="code   ">DPB1*843:01</div>
+                          <div class="code   ">DQA1*01:14</div>
+                          <div class="code   ">DQA1*01:34</div>
+                          <div class="code   ">DQA1*01:36</div>
+                          <div class="code   ">DQA1*01:44</div>
+                          <div class="code   ">DQA1*02:03</div>
+                          <div class="code   ">DQA1*05:14</div>
+                          <div class="code   ">DQA1*06:02</div>
+                          <div class="code   ">DQB1*03:06</div>
+                          <div class="code   ">DQB1*03:10</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CZE.png"/>
+                </div>
+                CZE_8
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/IND.png"/>
+                  </div>
+                  IND_5R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #ffe14c">
+          <div>
+            <div>
+              <span>7.0</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/CZE.png"/>
+              </div>
+              CZE_8
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1954</span>
+                                      <span>155/83</span>
+                      </div>
+                      <div class="patient-note">
+              Patient note foo
+            </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/IND.png"/>
+                </div>
+                IND_5R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>M</span>
+                                            <span>1967</span>
+                                            <span>154/58</span>
+              
+                              <span>Jan 19, 2019</span>
+                                            <span>1</span>
+                                        </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code matching">
+            B
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code matching">
+              B
+            </div>
+            <div class="small">
+              Acceptable:
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code   ">A*02:42</div>
+                          <div class="code       matching
+  ">A*24:37</div>
+                      </td>
+          <td>
+                          <div class="code       matching
+  ">A*24:37</div>
+                          <div class="code   ">A*30:15</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:393</div>
+                          <div class="code   ">A*02:97</div>
+                          <div class="code   ">A*11:12</div>
+                          <div class="code   ">A*11:15</div>
+                          <div class="code   ">A*29:16</div>
+                      </td>
+          <td>
+                          1.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code       matching
+  ">B*15:06</div>
+                          <div class="code       matching
+  ">B*15:06</div>
+                      </td>
+          <td>
+                          <div class="code       matching
+  ">B*15:06</div>
+                          <div class="code   ">B*15:80</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*18:03</div>
+                          <div class="code   ">B*35:10</div>
+                          <div class="code   ">B*35:52</div>
+                          <div class="code   ">B*40:34</div>
+                          <div class="code   ">B*40:48</div>
+                      </td>
+          <td>
+                          6.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*01:39N</div>
+                          <div class="code   ">DRB1*07:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*13:03</div>
+                          <div class="code   ">DRB1*13:03</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*03:01</div>
+                          <div class="code   ">DRB1*04:11</div>
+                          <div class="code   ">DRB1*04:17</div>
+                          <div class="code   ">DRB1*04:42</div>
+                          <div class="code   ">DRB1*08:18</div>
+                          <div class="code   ">DRB1*09:01</div>
+                          <div class="code   ">DRB1*13:01</div>
+                          <div class="code   ">DRB1*15:01</div>
+                          <div class="code   ">DRB1*16:09</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*784:01</div>
+                          <div class="code   ">DPB1*837:01</div>
+                          <div class="code       matching
+  ">DQA1*02:05</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*1016:01</div>
+                          <div class="code   ">DPB1*843:01</div>
+                          <div class="code   ">DQA1*01:01</div>
+                          <div class="code       matching
+  ">DQA1*02:08</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPA1*02:04</div>
+                          <div class="code   ">DPB1*180:01</div>
+                          <div class="code   ">DPB1*210:01</div>
+                          <div class="code   ">DPB1*417:01</div>
+                          <div class="code   ">DPB1*459:01</div>
+                          <div class="code   ">DPB1*710:01</div>
+                          <div class="code   ">DPB1*858:01</div>
+                          <div class="code   ">DQA1*01:18</div>
+                          <div class="code   ">DQA1*01:19</div>
+                          <div class="code   ">DQA1*03:09</div>
+                          <div class="code   ">DQA1*04:06</div>
+                          <div class="code   ">DQA1*04:08</div>
+                          <div class="code   ">DQA1*05:02</div>
+                          <div class="code   ">DQB1*06:25</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+                  <div class="matching-transplant">
+
+            <!-- Matching header: Prevent page break between round heading and first transplant -->
+            
+            <!-- Round header: Prevent page break between round heading and first transplant -->
+            
+            
+  <div class="transplant-content">
+    <table>
+      <tbody>
+      <tr class="transplant-header compatible">
+        <td colspan="4">
+          <h4>
+            <div class="patient-pair-content">
+                            <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/IND.png"/>
+                </div>
+                IND_5
+              </div>
+
+                              <div class="icon-right"> ></div>
+                <div class="patient">
+                  <div class="flag">
+                    <img src="assets/countries/CZE.png"/>
+                  </div>
+                  CZE_2R
+                </div>
+
+              
+              
+            </div>
+          </h4>
+        </td>
+        <td class="score" style="background: #ffa400">
+          <div>
+            <div>
+              <span>2.0</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="center-holder">
+            <div class="patient">
+              <div class="flag">
+                <img src="assets/countries/IND.png"/>
+              </div>
+              IND_5
+            </div>
+          </div>
+          <div class="patient-info">
+                          <span>F</span>
+                                      <span>1988</span>
+                                      <span>153/98</span>
+                      </div>
+                      <div class="patient-note">
+              Patient note bar
+            </div>
+                  </td>
+        <td colspan="2">
+                      <div class="center-holder">
+              <div class="patient">
+                <div class="flag">
+                  <img src="assets/countries/CZE.png"/>
+                </div>
+                CZE_2R
+              </div>
+            </div>
+            <div class="patient-info">
+                              <span>F</span>
+                                            <span>1971</span>
+                                            <span>189/66</span>
+              
+                              <span>May 19, 2019</span>
+                                            <span>3</span>
+                                        </div>
+                          <div class="patient-note">
+                Patient note bar
+              </div>
+                              </td>
+        <td>Score</td>
+      </tr>
+      <tr>
+        <td>Blood type</td>
+        <td>
+          <div class="code matching">
+            B
+          </div>
+        </td>
+        <td colspan="2">
+                      <div class="code matching">
+              B
+            </div>
+            <div class="small">
+              Acceptable:
+                          </div>
+                  </td>
+        <td>-</td>
+      </tr>
+      <tr class="anti-header">
+        <td></td>
+        <td>Antigens</td>
+        <td>Antigens</td>
+        <td class="antibodies-td">Antibodies</td>
+        <td></td>
+      </tr>
+              <tr>
+          <td>A</td>
+          <td>
+                          <div class="code       matching
+  ">A*02:140</div>
+                          <div class="code       matching
+  ">A*02:140</div>
+                      </td>
+          <td>
+                          <div class="code       matching
+  ">A*02:07</div>
+                          <div class="code   ">A*02:72</div>
+                      </td>
+          <td>
+                          <div class="code   ">A*02:08</div>
+                          <div class="code   ">A*02:09</div>
+                          <div class="code   ">A*02:14</div>
+                          <div class="code   ">A*02:16</div>
+                          <div class="code   ">A*02:393</div>
+                          <div class="code   ">A*02:46</div>
+                          <div class="code   ">A*11:25</div>
+                          <div class="code   ">A*24:225</div>
+                          <div class="code   ">A*26:22</div>
+                          <div class="code   ">A*31:23</div>
+                      </td>
+          <td>
+                          2.0
+                      </td>
+        </tr>
+              <tr>
+          <td>B</td>
+          <td>
+                          <div class="code   ">B*15:20</div>
+                          <div class="code   ">B*35:41</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*37:09</div>
+                          <div class="code   ">B*51:35</div>
+                      </td>
+          <td>
+                          <div class="code   ">B*39:12</div>
+                          <div class="code   ">B*40:07</div>
+                          <div class="code   ">B*40:34</div>
+                          <div class="code   ">B*48:07</div>
+                          <div class="code   ">B*55:05</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>DRB1</td>
+          <td>
+                          <div class="code   ">DRB1*04:11</div>
+                          <div class="code   ">DRB1*08:12</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*16:05</div>
+                          <div class="code   ">DRB1*16:05</div>
+                      </td>
+          <td>
+                          <div class="code   ">DRB1*04:20</div>
+                          <div class="code   ">DRB1*07:01</div>
+                          <div class="code   ">DRB1*13:66</div>
+                          <div class="code   ">DRB1*14:08</div>
+                          <div class="code   ">DRB1*14:16</div>
+                          <div class="code   ">DRB1*15:01</div>
+                      </td>
+          <td>
+                          0.0
+                      </td>
+        </tr>
+              <tr>
+          <td>Other</td>
+          <td>
+                          <div class="code   ">DPB1*459:01</div>
+                          <div class="code   ">DPB1*778:01</div>
+                          <div class="code   ">DQA1*01:18</div>
+                          <div class="code   ">DQA1*05:14</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*1016:01</div>
+                          <div class="code   ">DPB1*801:01</div>
+                          <div class="code   ">DQB1*03:10</div>
+                          <div class="code   ">DQB1*04:01</div>
+                      </td>
+          <td>
+                          <div class="code   ">DPB1*24:01</div>
+                          <div class="code   ">DPB1*388:01</div>
+                          <div class="code   ">DPB1*509:01</div>
+                          <div class="code   ">DPB1*630:01</div>
+                          <div class="code   ">DPB1*702:01</div>
+                          <div class="code   ">DPB1*843:01</div>
+                          <div class="code   ">DQA1*02:05</div>
+                          <div class="code   ">DQA1*02:09</div>
+                          <div class="code   ">DQA1*03:08</div>
+                          <div class="code   ">DQA1*04:06</div>
+                          <div class="code   ">DQB1*06:25</div>
+                      </td>
+          <td>
+                          -
+                      </td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+          </div>
+              </div>
+      </div>
+
+<div class="page-break"></div>
+</body>
+</html>
