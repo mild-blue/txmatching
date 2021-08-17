@@ -178,8 +178,8 @@ class TestUserApi(DbTests):
         with self.app.test_client() as client:
             response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/test@example.com/reset-password-token',
                                   headers=self.auth_headers)
-            self.assertEqual(500, response.status_code)
-            self.assertEqual('Internal error, please contact support.', response.json['error'])
+            self.assertEqual(403, response.status_code)
+            self.assertEqual('Not authorized.', response.json['error'])
 
     def test_get_reset_token_unregistered_email(self):
         self.login_with_credentials(ADMIN_USER)
