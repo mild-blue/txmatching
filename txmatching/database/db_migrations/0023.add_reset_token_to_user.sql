@@ -4,4 +4,4 @@
 --
 
 ALTER TABLE app_user
-    ADD COLUMN reset_token TEXT default NULL
+    ADD COLUMN reset_token TEXT default NULL;
