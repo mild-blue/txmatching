@@ -93,9 +93,15 @@ class Matching:
                     ])
 
     def get_country_codes_counts(self) -> List[CountryDTO]:
-        return [CountryDTO(country,
-                           self.get_donors_for_country_count(country),
-                           self.get_recipients_for_country_count(country)) for country in self._countries]
+        countries = [CountryDTO(country, self.get_donors_for_country_count(country),
+                                self.get_recipients_for_country_count(country)) for country in self._countries]
+        sorted_countries = sorted(
+            countries,
+            key=lambda country: (
+                country.country_code
+            )
+        )
+        return sorted_countries
 
     def get_cycles(self) -> List[TransplantCycle]:
         return self._cycles
@@ -103,9 +109,24 @@ class Matching:
     def get_sequences(self) -> List[TransplantSequence]:
         return self._sequences
 
+    def get_sorted_cycles(self) -> List[TransplantCycle]:
+        sorted_cycles = []
+        for cycle in self._cycles:
+            min_id = cycle.donor_recipient_pairs.index(
+                max(
+                    cycle.donor_recipient_pairs,
+                    key=lambda pair: pair.donor.medical_id))
+            sorted_cycles.append(
+                TransplantCycle(donor_recipient_pairs=(cycle.donor_recipient_pairs[min_id:]
+                                                       + cycle.donor_recipient_pairs[:min_id])))
+        return sorted_cycles
+
     def get_rounds(self) -> List[TransplantRound]:
-        cycles = self.get_cycles()
-        sequences = self.get_sequences()
+        cycles = sorted(self.get_sorted_cycles(),
+                        key=lambda _round: _round.donor_recipient_pairs[0].donor.medical_id)
+        sequences = sorted(self.get_sequences(),
+                           key=lambda _round: _round.donor_recipient_pairs[0].donor.medical_id)
+
         return cycles + sequences
 
     @property
