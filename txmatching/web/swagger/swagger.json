@@ -1532,54 +1532,6 @@
                 ]
             }
         },
-        "/v1/user/request-reset/{email}": {
-            "parameters": [
-                {
-                    "name": "email",
-                    "in": "path",
-                    "required": true,
-                    "type": "string"
-                }
-            ],
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "Returns reset token.",
-                        "schema": {
-                            "$ref": "#/definitions/ResetRequestResponse"
-                        }
-                    }
-                },
-                "operationId": "get_request_reset",
-                "tags": [
-                    "user"
-                ]
-            }
-        },
         "/v1/user/reset-password": {
             "put": {
                 "responses": {
@@ -1623,6 +1575,59 @@
                         "schema": {
                             "$ref": "#/definitions/ResetPassword"
                         }
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            }
+        },
+        "/v1/user/{email}/reset-password-token": {
+            "parameters": [
+                {
+                    "name": "email",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Returns reset token.",
+                        "schema": {
+                            "$ref": "#/definitions/ResetRequestResponse"
+                        }
+                    }
+                },
+                "operationId": "get_request_reset",
+                "security": [
+                    {
+                        "bearer": []
                     }
                 ],
                 "tags": [

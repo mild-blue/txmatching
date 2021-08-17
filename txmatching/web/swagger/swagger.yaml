@@ -2583,38 +2583,6 @@ paths:
             -   bearer: []
             tags:
             - user
-    /v1/user/request-reset/{email}:
-        get:
-            operationId: get_request_reset
-            responses:
-                '200':
-                    description: Returns reset token.
-                    schema:
-                        $ref: '#/definitions/ResetRequestResponse'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            tags:
-            - user
-        parameters:
-        -   in: path
-            name: email
-            required: true
-            type: string
     /v1/user/reset-password:
         put:
             operationId: put_reset_password
@@ -2648,6 +2616,40 @@ paths:
                         $ref: '#/definitions/FailResponse'
             tags:
             - user
+    /v1/user/{email}/reset-password-token:
+        get:
+            operationId: get_request_reset
+            responses:
+                '200':
+                    description: Returns reset token.
+                    schema:
+                        $ref: '#/definitions/ResetRequestResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - user
+        parameters:
+        -   in: path
+            name: email
+            required: true
+            type: string
 produces:
 - application/json
 responses:
