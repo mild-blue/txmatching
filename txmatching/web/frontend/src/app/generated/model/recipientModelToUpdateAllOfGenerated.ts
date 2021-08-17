@@ -16,7 +16,7 @@ import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 
 export interface RecipientModelToUpdateAllOfGenerated { 
     /**
-     * Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.
+     * Acceptable blood groups for the patient. Leave empty to use compatible blood groups.
      */
     acceptable_blood_groups?: Array<BloodGroupEnumGenerated>;
     cutoff?: number;

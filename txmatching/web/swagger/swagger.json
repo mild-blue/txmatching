@@ -1323,6 +1323,55 @@
             }
         },
         "/v1/user/otp": {
+            "put": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "New OTP was generated and sent.",
+                        "schema": {
+                            "$ref": "#/definitions/StatusResponse"
+                        }
+                    }
+                },
+                "operationId": "put_otp_login_api",
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            },
             "post": {
                 "responses": {
                     "503": {
@@ -1373,55 +1422,6 @@
                         }
                     }
                 ],
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "user"
-                ]
-            },
-            "put": {
-                "responses": {
-                    "503": {
-                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "New OTP was generated and sent.",
-                        "schema": {
-                            "$ref": "#/definitions/StatusResponse"
-                        }
-                    }
-                },
-                "operationId": "put_otp_login_api",
                 "security": [
                     {
                         "bearer": []
@@ -2028,7 +2028,7 @@
                 },
                 "acceptable_blood_groups": {
                     "type": "array",
-                    "description": "Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.",
+                    "description": "Acceptable blood groups for the patient. Leave empty to use compatible blood groups.",
                     "example": [
                         "A",
                         "0"
@@ -2049,7 +2049,7 @@
                 },
                 "hla_antibodies": {
                     "type": "array",
-                    "description": "Detected HLA antibodies of the patient. Use high resolution                                   if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.",
+                    "description": "Detected HLA antibodies of the patient. Use high resolution if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.",
                     "items": {
                         "$ref": "#/definitions/HLAAntibodyIn"
                     }
@@ -3431,7 +3431,7 @@
                     "properties": {
                         "acceptable_blood_groups": {
                             "type": "array",
-                            "description": "Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.",
+                            "description": "Acceptable blood groups for the patient. Leave empty to use compatible blood groups.",
                             "example": [
                                 "A",
                                 "0"

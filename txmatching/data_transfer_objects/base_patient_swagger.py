@@ -111,8 +111,8 @@ DonorToUpdate = {
 
 BaseRecipient = {
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.Nested(BloodGroupEnumJson),
-                                           description='Acceptable blood groups for the patient. Leave empty to use \
-                                            compatible blood groups.',
+                                           description='Acceptable blood groups for the patient. Leave empty to use '
+                                                       'compatible blood groups.',
                                            example=[BloodGroup.A.value, BloodGroup.ZERO.value]),
     'waiting_since': fields.Date(required=False,
                                  example='2015-01-17',
@@ -125,10 +125,10 @@ BaseRecipient = {
 
 NewRecipient = {**BaseRecipient, **{
     'hla_antibodies': fields.List(required=True,
-                                  description='Detected HLA antibodies of the patient. Use high resolution \
-                                  if available. If high resolution is provided it is assumed that all tested antibodies'
-                                              ' were provided. If not it is assumed that either all or just positive'
-                                              ' ones were.',
+                                  description='Detected HLA antibodies of the patient. Use high resolution '
+                                              'if available. If high resolution is provided it is assumed that all'
+                                              ' tested antibodies were provided. If not it is assumed that either '
+                                              'all or just positive ones were.',
                                   cls_or_instance=fields.Nested(
                                       HLAAntibodyJsonIn
                                   ))

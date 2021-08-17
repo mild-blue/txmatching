@@ -1170,8 +1170,7 @@ definitions:
         properties:
             acceptable_blood_groups: &id013
                 description: Acceptable blood groups for the patient. Leave empty
-                    to use                                             compatible
-                    blood groups.
+                    to use compatible blood groups.
                 example:
                 - A
                 - '0'
@@ -1181,10 +1180,10 @@ definitions:
             blood_group: *id003
             height: *id004
             hla_antibodies:
-                description: Detected HLA antibodies of the patient. Use high resolution                                   if
-                    available. If high resolution is provided it is assumed that all
-                    tested antibodies were provided. If not it is assumed that either
-                    all or just positive ones were.
+                description: Detected HLA antibodies of the patient. Use high resolution
+                    if available. If high resolution is provided it is assumed that
+                    all tested antibodies were provided. If not it is assumed that
+                    either all or just positive ones were.
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
