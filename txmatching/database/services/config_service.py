@@ -4,7 +4,6 @@ from typing import Dict, Optional
 
 from dacite import Config, from_dict
 
-from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.configuration_detailed import \
     ConfigurationDetailed
@@ -77,10 +76,10 @@ def get_configuration_from_db_id(configuration_db_id: int, txm_event_id: int) ->
     return configuration_from_config_model(config_model)
 
 
-def get_configuration_parameters_from_db_id_or_default(
+def get_configuration_from_db_id_or_default(
         txm_event: TxmEvent,
         configuration_db_id: Optional[int]
-) -> Configuration:
+) -> Optional[ConfigurationDetailed]:
     """
     Return configuration and does not check patient hash.
     - if specified, return configuration by configuration_db_id
@@ -88,11 +87,20 @@ def get_configuration_parameters_from_db_id_or_default(
     - otherwise, return default Configuration() object
     """
     if configuration_db_id is not None:
-        configuration = get_configuration_from_db_id(configuration_db_id, txm_event_id=txm_event.db_id)
+        return get_configuration_from_db_id(configuration_db_id, txm_event_id=txm_event.db_id)
     elif txm_event.default_config_id is not None:
-        configuration = get_configuration_from_db_id(txm_event.default_config_id, txm_event_id=txm_event.db_id)
+        return get_configuration_from_db_id(txm_event.default_config_id, txm_event_id=txm_event.db_id)
     else:
-        configuration = None
+        return None
+
+
+def get_configuration_parameters_from_db_id_or_default(
+        txm_event: TxmEvent,
+        configuration_db_id: Optional[int]
+) -> Configuration:
+    configuration = get_configuration_from_db_id_or_default(
+        txm_event, configuration_db_id
+    )
 
     return configuration.parameters if configuration is not None else Configuration()
 

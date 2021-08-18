@@ -8,13 +8,15 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
+from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
     to_lists_for_fe
 from txmatching.database.services.config_service import (
-    get_config_for_parameters_or_save, get_configuration_from_db_id,
-    get_configuration_parameters_from_db_id_or_default)
+    get_configuration_from_db_id_or_default,
+    get_configuration_parameters_from_db_id_or_default,
+    save_configuration_to_db)
 from txmatching.database.services.pairing_result_service import \
     get_pairing_result_comparable_to_config_or_solve
 from txmatching.database.services.report_service import (
@@ -72,12 +74,11 @@ class MatchingReport(Resource):
         txm_event = get_txm_event_complete(txm_event_id)
         user_id = get_current_user_id()
 
-        # If config_id not set, get default configuration id
-        if config_id is None:
-            config_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, configuration_db_id=config_id)
-            configuration = get_config_for_parameters_or_save(config_parameters, txm_event.db_id, user_id)
-        else:
-            configuration = get_configuration_from_db_id(config_id, txm_event.db_id)
+        configuration = get_configuration_from_db_id_or_default(txm_event, config_id)
+
+        # If configuration not in db yet, save default configuration
+        if configuration is None:
+            configuration = save_configuration_to_db(Configuration(), txm_event.db_id, user_id)
 
         # Get or solve pairing result
         pairing_result_model = get_pairing_result_comparable_to_config_or_solve(configuration, txm_event)
@@ -122,7 +123,7 @@ class PatientsXLSReport(Resource):
         txm_event = get_txm_event_complete(txm_event_id)
 
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
-                                                                           configuration_db_id=config_id)
+                                                                                      configuration_db_id=config_id)
 
         patients_dto = to_lists_for_fe(txm_event, configuration_parameters)
 

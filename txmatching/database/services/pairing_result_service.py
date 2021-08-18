@@ -2,7 +2,6 @@ import dataclasses
 import logging
 from typing import Optional
 
-from txmatching.configuration.configuration import Configuration
 from txmatching.configuration.configuration_detailed import \
     ConfigurationDetailed
 from txmatching.data_transfer_objects.matchings.donor_recipient_model import \
@@ -10,8 +9,8 @@ from txmatching.data_transfer_objects.matchings.donor_recipient_model import \
 from txmatching.data_transfer_objects.matchings.matchings_model import (
     MatchingModel, MatchingsModel)
 from txmatching.database.db import db
-from txmatching.database.services.config_service import (
-    configuration_from_config_model, get_configuration_from_db_id)
+from txmatching.database.services.config_service import \
+    configuration_from_config_model
 from txmatching.database.services.patient_service import \
     get_patients_persistent_hash
 from txmatching.database.services.scorer_service import score_matrix_to_dict

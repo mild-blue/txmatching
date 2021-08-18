@@ -21,8 +21,11 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: Configuration
         -> Dict[str, Union[List[DonorDTOOut], List[Recipient]]]:
     scorer = scorer_from_configuration(configuration_parameters)
     return {
-        'donors': sorted([donor_to_donor_dto_out(donor, txm_event.all_recipients, configuration_parameters, scorer) for donor in
-                          txm_event.all_donors], key=_patient_order_for_fe),
+        'donors': sorted([
+            donor_to_donor_dto_out(
+                donor, txm_event.all_recipients, configuration_parameters, scorer
+            ) for donor in txm_event.all_donors],
+            key=_patient_order_for_fe),
         'recipients': sorted(txm_event.all_recipients, key=_patient_order_for_fe)
     }
 
