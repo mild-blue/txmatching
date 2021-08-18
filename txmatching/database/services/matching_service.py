@@ -2,18 +2,16 @@ import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
-from dacite import from_dict
-
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CalculatedMatchingsDTO, MatchingDTO, RoundDTO, TransplantDTOOut)
 from txmatching.data_transfer_objects.matchings.matchings_model import \
     MatchingsModel
-from txmatching.data_transfer_objects.matchings.pairing_result import \
-    DatabasePairingResult
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
     get_detailed_score
 from txmatching.database.services.config_service import \
     configuration_from_config_model
+from txmatching.database.services.scorer_service import (
+    matchings_model_from_dict, score_matrix_from_dict)
 from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.matching import get_count_of_transplants
@@ -43,15 +41,6 @@ class MatchingsDetailed:
     max_transplant_score: float
 
 
-def get_database_pairing_result_for_pairing_result_model(
-        pairing_result_model: PairingResultModel
-) -> DatabasePairingResult:
-    matchings = from_dict(data_class=MatchingsModel,
-                          data=pairing_result_model.calculated_matchings)
-    score_matrix = pairing_result_model.score_matrix['score_matrix_dto']
-    return DatabasePairingResult(score_matrix=score_matrix, matchings=matchings)
-
-
 def get_matchings_detailed_for_pairing_result_model(
         pairing_result_model: PairingResultModel,
         txm_event: TxmEvent
@@ -60,15 +49,17 @@ def get_matchings_detailed_for_pairing_result_model(
     configuration = configuration_from_config_model(pairing_result_model.original_config)
     scorer = scorer_from_configuration(configuration)
 
-    database_pairing_result = get_database_pairing_result_for_pairing_result_model(pairing_result_model)
+    score_matrix = score_matrix_from_dict(pairing_result_model.score_matrix)
+    matchings_model = matchings_model_from_dict(pairing_result_model.calculated_matchings)
+
     logger.debug('Getting matchings with score')
-    matchings_with_score = _matchings_dto_to_matching_with_score(database_pairing_result.matchings,
+    matchings_with_score = _matchings_dto_to_matching_with_score(matchings_model,
                                                                  txm_event.active_donors_dict,
                                                                  txm_event.active_recipients_dict)
     logger.debug('Getting score dict with score')
     score_dict = {
         (donor_db_id, recipient_db_id): score for donor_db_id, row in
-        zip(txm_event.active_donors_dict, database_pairing_result.score_matrix) for recipient_db_id, score in
+        zip(txm_event.active_donors_dict, score_matrix) for recipient_db_id, score in
         zip(txm_event.active_recipients_dict, row)
     }
     logger.debug('Getting compatible_blood dict with score')
@@ -105,8 +96,8 @@ def get_matchings_detailed_for_pairing_result_model(
         compatible_blood_dict,
         detailed_compatibility_index_dict,
         antibody_matches_dict,
-        database_pairing_result.matchings.found_matchings_count,
-        database_pairing_result.matchings.show_not_all_matchings_found,
+        matchings_model.found_matchings_count,
+        matchings_model.show_not_all_matchings_found,
         scorer.max_transplant_score
     )
 

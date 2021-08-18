@@ -12,12 +12,12 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.config_service import \
     save_configuration_to_db
-from txmatching.database.services.matching_service import \
-    get_database_pairing_result_for_pairing_result_model
 from txmatching.database.services.pairing_result_service import \
     solve_from_config_id_and_save
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
+from txmatching.database.services.scorer_service import \
+    matchings_model_from_dict
 from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, set_allowed_txm_event_ids_for_user)
 from txmatching.database.sql_alchemy_schema import AppUserModel, ConfigModel
@@ -149,9 +149,9 @@ def populate_db_with_split_data():
     pairing_result_model = solve_from_config_id_and_save(config_id=config_id, configuration=configuration,
                                                          txm_event=txm_event)
 
-    result = get_database_pairing_result_for_pairing_result_model(pairing_result_model)
+    matchings_model = matchings_model_from_dict(pairing_result_model.calculated_matchings)
 
-    logger.info(f'Successfully stored {len(result.matchings.matchings)} matchings into the database.')
+    logger.info(f'Successfully stored {len(matchings_model.matchings)} matchings into the database.')
 
 
 def populate_small_db():
