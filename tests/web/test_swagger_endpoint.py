@@ -34,6 +34,7 @@ class TestSwaggerEndpoints(DbTests):
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/change-password': [401],
+                f'{API_VERSION[1:]}/{USER_NAMESPACE}/reset-password': [401],
                 f'{API_VERSION[1:]}/{PUBLIC_NAMESPACE}/patient-upload': [403],
                 f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/add-patients-file': [
                     400],

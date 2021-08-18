@@ -183,6 +183,7 @@ class AppUserModel(db.Model):
     phone_number = Column(TEXT, unique=False, nullable=True, default=None)
     require_2fa = Column(BOOLEAN, unique=False, nullable=False, default=True)
     allowed_edit_countries = Column(JSON, unique=False, nullable=False, default=lambda: [])
+    reset_token = Column(TEXT, unique=False, nullable=True, default=None)
 
     created_at = Column(DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())

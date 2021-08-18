@@ -10,7 +10,8 @@ from txmatching.auth.exceptions import (
     AuthenticationException, CannotFindShortEnoughRoundsOrPathsInILPSolver,
     CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
     GuardException, InvalidArgumentException, InvalidAuthCallException,
-    InvalidIpAddressAccessException, InvalidJWTException, InvalidOtpException,
+    InvalidEmailException, InvalidIpAddressAccessException,
+    InvalidJWTException, InvalidOtpException, InvalidTokenException,
     NotFoundException, SolverAlreadyRunningException,
     TooComplicatedDataForAllSolutionsSolver, UnauthorizedException,
     UserUpdateException, WrongTokenUsedException)
@@ -102,6 +103,18 @@ def _user_auth_handlers(api: Api):
         """wrong_used_token_exception"""
         _log_warning(error)
         return {'error': 'Authentication denied. Wrong token used.', 'message': str(error)}, 403
+
+    @api.errorhandler(InvalidTokenException)
+    def handle_invalid_token_exception(error: InvalidTokenException):
+        """invalid_token_exception"""
+        _log_warning(error)
+        return {'error': 'Authentication failed.', 'message': str(error)}, 401
+
+    @api.errorhandler(InvalidEmailException)
+    def handle_invalid_token_exception(error: InvalidEmailException):
+        """invalid_email_exception"""
+        _log_warning(error)
+        return {'error': 'Authentication failed.', 'message': str(error)}, 401
 
     @api.errorhandler(AuthenticationException)
     def handle_general_authentication_exception(error: AuthenticationException):

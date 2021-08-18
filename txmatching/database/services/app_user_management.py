@@ -29,3 +29,8 @@ def persist_user(user: AppUserModel):
 def update_password_for_user(user_id: int, new_password_hash: str):
     get_app_user_by_id(user_id).pass_hash = new_password_hash
     db.session.commit()
+
+
+def update_reset_token_for_user(user_id: int, reset_token):
+    get_app_user_by_id(user_id).reset_token = reset_token
+    db.session.commit()

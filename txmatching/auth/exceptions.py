@@ -78,6 +78,18 @@ class WrongTokenUsedException(AuthenticationException):
     """
 
 
+class InvalidTokenException(AuthenticationException):
+    """
+    Raised if invalid token was used.
+    """
+
+
+class InvalidEmailException(AuthenticationException):
+    """
+    Raised if invalid email was used.
+    """
+
+
 class InvalidArgumentException(BaseTxmException):
     """
     Raised if invalid argument received.

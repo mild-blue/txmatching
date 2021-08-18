@@ -6,7 +6,8 @@ from flask import request
 from flask_restx import Resource, fields
 
 from txmatching.auth.auth_check import require_role
-from txmatching.auth.auth_management import change_password, register
+from txmatching.auth.auth_management import (change_password, get_reset_token,
+                                             register, reset_password)
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.login_flow import (credentials_login, otp_login,
                                         refresh_token, resend_otp)
@@ -24,6 +25,10 @@ LoginSuccessResponse = user_api.model('LoginSuccessResponse', {
 
 StatusResponse = user_api.model('StatusResponse', {
     'status': fields.String(required=True)
+})
+
+ResetRequestResponse = user_api.model('ResetRequestResponse', {
+    'token': fields.String(required=True)
 })
 
 
@@ -103,6 +108,35 @@ class PasswordChangeApi(Resource):
     def put(self):
         data = request.get_json()
         change_password(current_password=data['current_password'], new_password=data['new_password'])
+        return response_ok({'status': 'ok'})
+
+
+@user_api.route('/<email>/reset-password-token', methods=['GET'])
+class RequestReset(Resource):
+
+    @user_api.require_user_login()
+    @user_api.response_ok(ResetRequestResponse, description='Returns reset token.')
+    @user_api.response_errors()
+    @require_role(UserRole.ADMIN)
+    def get(self, email):
+        reset_token = get_reset_token(email)
+        return response_ok({'token': reset_token})
+
+
+@user_api.route('/reset-password', methods=['PUT'])
+class ResetPassword(Resource):
+
+    reset_password_input = user_api.model('ResetPassword', {
+        'token': fields.String(required=True, description='Reset Token.'),
+        'password': fields.String(required=True, description='New password.')
+    })
+
+    @user_api.request_body(reset_password_input)
+    @user_api.response_ok(StatusResponse, description='Password reset successfully.')
+    @user_api.response_errors()
+    def put(self):
+        body = request.get_json()
+        reset_password(body['token'], body['password'])
         return response_ok({'status': 'ok'})
 
 
