@@ -2,7 +2,7 @@ import datetime
 from unittest import mock
 from uuid import uuid4
 
-from local_testing_utilities.populate_db import ADMIN_USER, USERS
+from local_testing_utilities.populate_db import ADMIN_USER, USERS, VIEWER_USER
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.crypto.jwt_crypto import (encode_auth_token,
                                                parse_request_token)
@@ -163,6 +163,73 @@ class TestUserApi(DbTests):
                                   json=password_change_request,
                                   headers=self.auth_headers)
             self.assertEqual(401, response.status_code)
+
+    def test_get_reset_token(self):
+        self.login_with_credentials(ADMIN_USER)
+        with self.app.test_client() as client:
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/test@example.com/reset-password-token',
+                                  headers=self.auth_headers)
+            self.assertEqual(200, response.status_code)
+            reset_token = response.json['token']
+            self.assertIsNotNone(reset_token)
+
+    def test_get_reset_token_should_fail_user_is_not_admin(self):
+        self.login_with_credentials(VIEWER_USER)
+        with self.app.test_client() as client:
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/test@example.com/reset-password-token',
+                                  headers=self.auth_headers)
+            self.assertEqual(403, response.status_code)
+            self.assertEqual('Access denied', response.json['error'])
+
+    def test_get_reset_token_unregistered_email(self):
+        self.login_with_credentials(ADMIN_USER)
+        email_to_reset_password = 'test'
+        with self.app.test_client() as client:
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/{email_to_reset_password}/reset-password-token',
+                                  headers=self.auth_headers)
+            self.assertEqual(401, response.status_code)
+            self.assertEqual('Authentication failed.', response.json['error'])
+            self.assertEqual(f'User with email {email_to_reset_password} not found.', response.json['message'])
+
+    def test_password_reset(self):
+        self.login_with_credentials(ADMIN_USER)
+        with self.app.test_client() as client:
+            response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/test@example.com/reset-password-token',
+                                  headers=self.auth_headers)
+            self.assertEqual(200, response.status_code)
+            reset_token = response.json['token']
+            self.assertIsNotNone(reset_token)
+
+            password_reset_request = {
+                'token': reset_token,
+                'password': str(uuid4())
+            }
+        with self.app.test_client() as client:
+            response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/reset-password',
+                                  json=password_reset_request)
+            self.assertEqual(200, response.status_code)
+            self.assertEqual('ok', response.json['status'])
+
+            # should fail -> repeatedly used token
+        with self.app.test_client() as client:
+            response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/reset-password',
+                                  json=password_reset_request)
+            self._assert_invalid_reset_token(response, reset_token)
+
+    def test_password_reset_should_fail_invalid_token(self):
+        password_reset_request = {
+            'token': str(uuid4()),
+            'password': str(uuid4())
+        }
+        with self.app.test_client() as client:
+            response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/reset-password',
+                                  json=password_reset_request)
+            self._assert_invalid_reset_token(response, password_reset_request['token'])
+
+    def _assert_invalid_reset_token(self, res, reset_token):
+        self.assertEqual(401, res.status_code)
+        self.assertEqual('Authentication failed.', res.json['error'])
+        self.assertEqual(f'Reset password token {reset_token} is invalid.', res.json['message'])
 
     def test_register_new_user_should_fail_not_admin(self):
         self.login_with_role(UserRole.VIEWER)

@@ -1306,6 +1306,25 @@ definitions:
         - require_better_match_in_compatibility_index_or_blood_group
         - require_compatible_blood_group
         type: object
+    ResetPassword:
+        properties:
+            password:
+                description: New password.
+                type: string
+            token:
+                description: Reset Token.
+                type: string
+        required:
+        - password
+        - token
+        type: object
+    ResetRequestResponse:
+        properties:
+            token:
+                type: string
+        required:
+        - token
+        type: object
     Round:
         properties:
             transplants:
@@ -2005,18 +2024,18 @@ paths:
             description: 'Get all patients for the given txm event.  Example: /patients?include-antibodies-raw'
             operationId: get_all_patients
             parameters:
-                - default: default
-                  description: Configuration ID or "default".
-                  in: path
-                  name: config_id
-                  required: true
-                  type: string
-                - description: 'Specify to include raw antibodies as well. By default,
+            -   default: default
+                description: Configuration ID or "default".
+                in: path
+                name: config_id
+                required: true
+                type: string
+            -   description: 'Specify to include raw antibodies as well. By default,
                     raw antibodies are not included. Example: ?include-antibodies-raw'
-                  in: query
-                  name: include-antibodies-raw
-                  required: false
-                  type: boolean
+                in: query
+                name: include-antibodies-raw
+                required: false
+                type: boolean
             responses:
                 '200':
                     description: List of donors and list of recipients.
@@ -2564,6 +2583,73 @@ paths:
             -   bearer: []
             tags:
             - user
+    /v1/user/reset-password:
+        put:
+            operationId: put_reset_password
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/ResetPassword'
+            responses:
+                '200':
+                    description: Password reset successfully.
+                    schema:
+                        $ref: '#/definitions/StatusResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            tags:
+            - user
+    /v1/user/{email}/reset-password-token:
+        get:
+            operationId: get_request_reset
+            responses:
+                '200':
+                    description: Returns reset token.
+                    schema:
+                        $ref: '#/definitions/ResetRequestResponse'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - user
+        parameters:
+        -   in: path
+            name: email
+            required: true
+            type: string
 produces:
 - application/json
 responses:
@@ -2589,12 +2675,16 @@ responses:
         description: invalid_argument_exception
     InvalidAuthCallException:
         description: invalid_auth_call_exception
+    InvalidEmailException:
+        description: invalid_email_exception
     InvalidIpAddressAccessException:
         description: invalid_ip_exception
     InvalidJWTException:
         description: invalid_jwt_exception
     InvalidOtpException:
         description: invalid_otp_exception
+    InvalidTokenException:
+        description: invalid_token_exception
     KeyError:
         description: key_error
     MaskError:

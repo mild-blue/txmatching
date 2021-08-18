@@ -4,7 +4,7 @@ GET {{url}}/v1/service/version
 Content-Type: application/json
 
 
-# The workflow below has endpoints that add a user, change password and call recompute endpoint
+# The workflow below has endpoints that add a user, change or reset password and call recompute endpoint
 ###
 
 POST {{url}}/v1/user/login
@@ -45,7 +45,21 @@ Authorization: Bearer {{auth_token}}
     "ISR"
   ]
 }
+###
 
+GET {{url}}/v1/user/""/reset-password-token
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+PUT {{url}}/v1/user/reset-password
+Content-Type: application/json
+
+{
+  "token": "",
+  "password": ""
+}
 
 ###
 

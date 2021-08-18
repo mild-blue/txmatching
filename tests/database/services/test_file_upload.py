@@ -88,7 +88,7 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(0, len(pairing_results))
         self.assertEqual(91, len(recipient_acceptable_bloods))
         self.assertEqual(1059, len(hla_antibodies_raw))
-        self.assertEqual(6, len(app_users))
+        self.assertEqual(7, len(app_users))
 
         all_matchings = list(solve_from_configuration(Configuration(
             solver_constructor_name=Solver.AllSolutionsSolver,

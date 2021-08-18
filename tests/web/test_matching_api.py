@@ -58,14 +58,19 @@ class TestSaveAndGetConfiguration(DbTests):
 
             expected_antibodies = [{'antibody_matches': [],
                                     'hla_group': 'A'},
-                                   {'antibody_matches': [{'hla_antibody': {'raw_code': 'B7', 'mfi': 8000, 'cutoff': 200, 'code': self._get_split('B7')},
+                                   {'antibody_matches': [{'hla_antibody': {'raw_code': 'B7', 'mfi': 8000, 'cutoff': 200,
+                                                                           'code': self._get_split('B7')},
                                                           'match_type': 'NONE'}],
                                     'hla_group': 'B'},
                                    {'antibody_matches': [],
                                     'hla_group': 'DRB1'},
-                                   {'antibody_matches': [{'hla_antibody': {'raw_code': 'DQ5', 'mfi': 8000, 'cutoff': 2000, 'code': self._get_split('DQ5', 'DQ1')},
+                                   {'antibody_matches': [{'hla_antibody': {'raw_code': 'DQ5', 'mfi': 8000,
+                                                                           'cutoff': 2000,
+                                                                           'code': self._get_split('DQ5', 'DQ1')},
                                                           'match_type': 'NONE'},
-                                                         {'hla_antibody': {'raw_code': 'DQ6', 'mfi': 8000, 'cutoff': 2000, 'code': self._get_split('DQ6', 'DQ1')},
+                                                         {'hla_antibody': {'raw_code': 'DQ6', 'mfi': 8000,
+                                                                           'cutoff': 2000,
+                                                                           'code': self._get_split('DQ6', 'DQ1')},
                                                           'match_type': 'NONE'}],
                                     'hla_group': 'Other'}]
 
@@ -211,22 +216,22 @@ class TestSaveAndGetConfiguration(DbTests):
                              3]['hla_group'])
 
         self.assertListEqual(expected_score[0]['donor_matches'],
-                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][0][
+                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1][
                                  'detailed_score_per_group'][0][
                                  'donor_matches'
                              ])
         self.assertListEqual(expected_score2[0]['donor_matches'],
-                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1][
+                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][0][
                                  'detailed_score_per_group'][0][
                                  'donor_matches'
                              ])
         self.assertListEqual(expected_score[0]['recipient_matches'],
-                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][0][
+                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1][
                                  'detailed_score_per_group'][0][
                                  'recipient_matches'
                              ])
         self.assertListEqual(expected_score2[0]['recipient_matches'],
-                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][1][
+                             res.json['calculated_matchings'][0]['rounds'][0]['transplants'][0][
                                  'detailed_score_per_group'][0][
                                  'recipient_matches'
                              ])
