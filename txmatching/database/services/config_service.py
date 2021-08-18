@@ -6,7 +6,8 @@ from dacite import Config, from_dict
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.configuration.configuration import Configuration
-from txmatching.configuration.configuration2 import ConfigurationDetailed
+from txmatching.configuration.configuration_detailed import \
+    ConfigurationDetailed
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ConfigModel, TxmEventModel
 from txmatching.patients.patient import TxmEvent

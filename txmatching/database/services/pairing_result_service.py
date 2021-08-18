@@ -3,7 +3,8 @@ import logging
 from typing import Optional
 
 from txmatching.configuration.configuration import Configuration
-from txmatching.configuration.configuration2 import ConfigurationDetailed
+from txmatching.configuration.configuration_detailed import \
+    ConfigurationDetailed
 from txmatching.data_transfer_objects.matchings.donor_recipient_model import \
     DonorRecipientModel
 from txmatching.data_transfer_objects.matchings.matchings_model import (
