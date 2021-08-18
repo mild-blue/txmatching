@@ -46,8 +46,8 @@ def get_matchings_detailed_for_pairing_result_model(
         txm_event: TxmEvent
 ) -> MatchingsDetailed:
     logger.debug(f'Getting detailed matchings for pairing result {pairing_result_model.id}')
-    configuration = configuration_from_config_model(pairing_result_model.original_config)
-    scorer = scorer_from_configuration(configuration)
+    configuration_parameters = configuration_from_config_model(pairing_result_model.original_config).parameters
+    scorer = scorer_from_configuration(configuration_parameters)
 
     score_matrix = score_matrix_from_dict(pairing_result_model.score_matrix)
     matchings_model = matchings_model_from_dict(pairing_result_model.calculated_matchings)
@@ -83,7 +83,7 @@ def get_matchings_detailed_for_pairing_result_model(
     antibody_matches_dict = {
         (donor_db_id, recipient_db_id): get_crossmatched_antibodies(donor.parameters.hla_typing,
                                                                     recipient.hla_antibodies,
-                                                                    configuration.use_high_resolution
+                                                                    configuration_parameters.use_high_resolution
                                                                     )
         for donor_db_id, donor in txm_event.active_donors_dict.items()
         for recipient_db_id, recipient in txm_event.active_recipients_dict.items() if

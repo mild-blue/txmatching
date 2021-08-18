@@ -4,7 +4,7 @@ from txmatching.configuration.configuration import Configuration
 from txmatching.database.services.config_service import \
     save_configuration_to_db
 from txmatching.database.services.pairing_result_service import \
-    solve_from_config_id_and_save
+    solve_from_configuration_and_save
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -22,14 +22,13 @@ class TestReportApi(DbTests):
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        configuration = Configuration()
-        config_id = save_configuration_to_db(
-            configuration=configuration,
+        configuration_parameters = Configuration()
+        configuration = save_configuration_to_db(
+            configuration=configuration_parameters,
             txm_event_id=txm_event.db_id,
             user_id=1
         )
-        solve_from_config_id_and_save(
-            config_id=config_id,
+        solve_from_configuration_and_save(
             configuration=configuration,
             txm_event=txm_event
         )
@@ -58,14 +57,13 @@ class TestReportApi(DbTests):
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        configuration = Configuration()
-        config_id = save_configuration_to_db(
-            configuration=configuration,
+        configuration_parameters = Configuration()
+        configuration = save_configuration_to_db(
+            configuration=configuration_parameters,
             txm_event_id=txm_event.db_id,
             user_id=1
         )
-        solve_from_config_id_and_save(
-            config_id=config_id,
+        solve_from_configuration_and_save(
             configuration=configuration,
             txm_event=txm_event
         )
@@ -85,14 +83,13 @@ class TestReportApi(DbTests):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        configuration = Configuration()
-        config_id = save_configuration_to_db(
-            configuration=configuration,
+        configuration_parameters = Configuration()
+        configuration = save_configuration_to_db(
+            configuration=configuration_parameters,
             txm_event_id=txm_event.db_id,
             user_id=1
         )
-        solve_from_config_id_and_save(
-            config_id=config_id,
+        solve_from_configuration_and_save(
             configuration=configuration,
             txm_event=txm_event
         )
@@ -113,14 +110,13 @@ class TestReportApi(DbTests):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        configuration = Configuration()
-        config_id = save_configuration_to_db(
-            configuration=configuration,
+        configuration_parameters = Configuration()
+        configuration = save_configuration_to_db(
+            configuration=configuration_parameters,
             txm_event_id=txm_event.db_id,
             user_id=1
         )
-        solve_from_config_id_and_save(
-            config_id=config_id,
+        solve_from_configuration_and_save(
             configuration=configuration,
             txm_event=txm_event
         )

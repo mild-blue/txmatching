@@ -2,7 +2,8 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.configuration import (
     Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore)
 from txmatching.database.services.config_service import (
-    configuration_from_dict, get_configuration_from_db_id_or_default,
+    configuration_parameters_from_dict,
+    get_configuration_parameters_from_db_id_or_default,
     save_configuration_to_db, set_config_as_default)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
@@ -14,31 +15,30 @@ class TestConfiguration(DbTests):
     def test_configuration(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
-        configuration_expected = Configuration(
+        configuration_parameters_expected = Configuration(
             solver_constructor_name=Solver.AllSolutionsSolver,
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
-        config_id = save_configuration_to_db(configuration_expected, txm_event.db_id, 1)
+        configuration_actual = save_configuration_to_db(configuration_parameters_expected, txm_event.db_id, 1)
 
-        configuration_actual = get_configuration_from_db_id_or_default(txm_event, config_id)
-        self.assertEqual(configuration_expected, configuration_actual)
+        self.assertEqual(configuration_parameters_expected, configuration_actual.parameters)
 
     def test_default_configuration(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
-        configuration_expected = Configuration(
+        configuration_parameters_expected = Configuration(
             solver_constructor_name=Solver.AllSolutionsSolver,
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
-        self.assertNotEqual(Configuration(), configuration_expected)
-        config_id = save_configuration_to_db(configuration_expected, txm_event.db_id, 1)
+        self.assertNotEqual(Configuration(), configuration_parameters_expected)
+        configuration = save_configuration_to_db(configuration_parameters_expected, txm_event.db_id, 1)
 
-        actual_configuration = get_configuration_from_db_id_or_default(txm_event, None)
-        self.assertEqual(Configuration(), actual_configuration)
+        actual_configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, None)
+        self.assertEqual(Configuration(), actual_configuration_parameters)
 
-        set_config_as_default(txm_event.db_id, config_id)
+        set_config_as_default(txm_event.db_id, configuration.id)
         txm_event = get_txm_event_complete(txm_event_db_id)
 
-        actual_configuration = get_configuration_from_db_id_or_default(txm_event, None)
-        self.assertEqual(configuration_expected, actual_configuration)
+        actual_configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, None)
+        self.assertEqual(configuration_parameters_expected, actual_configuration_parameters)
 
     def test_configuration_from_dto(self):
         self.fill_db_with_patients_and_results()
@@ -56,7 +56,7 @@ class TestConfiguration(DbTests):
                     'use_high_resolution': False,
                     'manual_donor_recipient_scores': [{'donor_db_id': 1, 'recipient_db_id': 0, 'score': 0.0}]}
 
-        config = configuration_from_dict(dto_dict)
+        config = configuration_parameters_from_dict(dto_dict)
         self.assertEqual(Country.AUT, config.forbidden_country_combinations[0].donor_country)
         self.assertEqual([ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=0, score=0.0)],
                          config.manual_donor_recipient_scores, )

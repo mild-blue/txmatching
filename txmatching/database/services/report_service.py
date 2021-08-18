@@ -24,7 +24,7 @@ from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.database.services.config_service import \
-    get_configuration_from_db_id_or_default
+    get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.matching_service import (
     create_calculated_matchings_dto,
     get_matchings_detailed_for_pairing_result_model)
@@ -85,10 +85,10 @@ def generate_html_report(
     calculated_matchings_dto = create_calculated_matchings_dto(latest_matchings_detailed, matchings,
                                                                configuration_db_id)
 
-    configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
-                                                            configuration_db_id=configuration_db_id)
+    configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
+                                                                       configuration_db_id=configuration_db_id)
 
-    patients_dto = to_lists_for_fe(txm_event, configuration)
+    patients_dto = to_lists_for_fe(txm_event, configuration_parameters)
 
     _prepare_tmp_dir()
     _copy_assets()
@@ -100,7 +100,7 @@ def generate_html_report(
     )
 
     required_patients_medical_ids = [txm_event.active_recipients_dict[recipient_db_id].medical_id
-                                     for recipient_db_id in configuration.required_patient_db_ids]
+                                     for recipient_db_id in configuration_parameters.required_patient_db_ids]
 
     manual_donor_recipient_scores_with_medical_ids = [
         (
@@ -114,7 +114,7 @@ def generate_html_report(
             ).medical_id,
             donor_recipient_score.score
         ) for donor_recipient_score in
-        configuration.manual_donor_recipient_scores
+        configuration_parameters.manual_donor_recipient_scores
     ]
 
     logo, color = _get_theme()
@@ -122,7 +122,7 @@ def generate_html_report(
         title='Matching Report',
         date=datetime.datetime.now().strftime('%b %d, %Y %H:%M:%S'),
         txm_event_name=txm_event.name,
-        configuration=configuration,
+        configuration=configuration_parameters,
         matchings=calculated_matchings_dto,
         patients=patients_dto,
         required_patients_medical_ids=required_patients_medical_ids,

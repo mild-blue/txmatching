@@ -3,6 +3,7 @@ import logging
 from typing import Optional
 
 from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.configuration2 import ConfigurationDetailed
 from txmatching.data_transfer_objects.matchings.donor_recipient_model import \
     DonorRecipientModel
 from txmatching.data_transfer_objects.matchings.matchings_model import (
@@ -23,24 +24,21 @@ logger = logging.getLogger(__name__)
 
 
 def get_pairing_result_comparable_to_config_or_solve(
-        config_id: int,
+        configuration: ConfigurationDetailed,
         txm_event: TxmEvent
 ) -> PairingResultModel:
-    configuration = get_configuration_from_db_id(config_id, txm_event.db_id)
-
-    maybe_pairing_result_model = get_pairing_result_comparable_to_config(config_id, configuration, txm_event)
+    maybe_pairing_result_model = get_pairing_result_comparable_to_config(configuration, txm_event)
     if maybe_pairing_result_model is not None:
         return maybe_pairing_result_model
     else:
-        return solve_from_config_id_and_save(config_id, configuration, txm_event)
+        return solve_from_configuration_and_save(configuration, txm_event)
 
 
 def get_pairing_result_comparable_to_config(
-        config_id: int,
-        configuration: Configuration,
+        configuration: ConfigurationDetailed,
         txm_event: TxmEvent
 ) -> Optional[PairingResultModel]:
-    logger.debug(f'Searching pairing result models comparable to configuration {config_id}')
+    logger.debug(f'Searching pairing result models comparable to configuration {configuration.id}')
     patients_hash = get_patients_persistent_hash(txm_event)
     pairing_result_models = PairingResultModel.query.filter(
         PairingResultModel.patients_hash == patients_hash
@@ -48,24 +46,23 @@ def get_pairing_result_comparable_to_config(
 
     for pairing_result_model in pairing_result_models:  # type: PairingResultModel
         config_from_model = configuration_from_config_model(pairing_result_model.original_config)
-        if configuration.comparable(config_from_model):
+        if configuration.parameters.comparable(config_from_model.parameters):
             logger.debug(f'Found pairing result with id {pairing_result_model.id} '
-                         f'comparable to configuration {config_id}')
+                         f'comparable to configuration {configuration.id}')
             return pairing_result_model
 
     logger.info(f'Pairing result for patients hash {patients_hash} and '
-                f'configuration comparable to config id {config_id} is not in db yet')
+                f'configuration comparable to config id {configuration.id} is not in db yet')
     return None
 
 
-def solve_from_config_id_and_save(
-        config_id: int,
-        configuration: Configuration,
+def solve_from_configuration_and_save(
+        configuration: ConfigurationDetailed,
         txm_event: TxmEvent
 ) -> PairingResultModel:
-    pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
-    pairing_result_model = _save_pairing_result(pairing_result, config_id, txm_event)
-    logger.info(f'Pairing was solved from configuration {config_id} '
+    pairing_result = solve_from_configuration(configuration.parameters, txm_event=txm_event)
+    pairing_result_model = _save_pairing_result(pairing_result, configuration.id, txm_event)
+    logger.info(f'Pairing was solved from configuration {configuration.id} '
                 f'and saved as pairing result {pairing_result_model.id}')
     return pairing_result_model
 

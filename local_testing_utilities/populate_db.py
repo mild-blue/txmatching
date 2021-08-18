@@ -13,7 +13,7 @@ from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.config_service import \
     save_configuration_to_db
 from txmatching.database.services.pairing_result_service import \
-    solve_from_config_id_and_save
+    solve_from_configuration_and_save
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.scorer_service import \
@@ -148,16 +148,18 @@ def populate_db_with_split_data():
 
     txm_event = get_txm_event_complete(txm_event.db_id)
 
-    configuration = Configuration(
+    configuration_parameters = Configuration(
         max_sequence_length=100,
         max_cycle_length=100,
         use_high_resolution=True
     )
 
-    config_id = save_configuration_to_db(configuration=configuration, txm_event_id=txm_event.db_id, user_id=1)
+    configuration = save_configuration_to_db(configuration=configuration_parameters,
+                                             txm_event_id=txm_event.db_id,
+                                             user_id=1)
 
-    pairing_result_model = solve_from_config_id_and_save(config_id=config_id, configuration=configuration,
-                                                         txm_event=txm_event)
+    pairing_result_model = solve_from_configuration_and_save(configuration=configuration,
+                                                             txm_event=txm_event)
 
     matchings_model = matchings_model_from_dict(pairing_result_model.calculated_matchings)
 

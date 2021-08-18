@@ -13,8 +13,8 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
     to_lists_for_fe
 from txmatching.database.services.config_service import (
-    get_config_id_for_configuration_or_save,
-    get_configuration_from_db_id_or_default)
+    get_config_for_parameters_or_save, get_configuration_from_db_id,
+    get_configuration_parameters_from_db_id_or_default)
 from txmatching.database.services.pairing_result_service import \
     get_pairing_result_comparable_to_config_or_solve
 from txmatching.database.services.report_service import (
@@ -74,15 +74,17 @@ class MatchingReport(Resource):
 
         # If config_id not set, get default configuration id
         if config_id is None:
-            configuration = get_configuration_from_db_id_or_default(txm_event, configuration_db_id=config_id)
-            config_id = get_config_id_for_configuration_or_save(configuration, txm_event.db_id, user_id)
+            config_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, configuration_db_id=config_id)
+            configuration = get_config_for_parameters_or_save(config_parameters, txm_event.db_id, user_id)
+        else:
+            configuration = get_configuration_from_db_id(config_id, txm_event.db_id)
 
         # Get or solve pairing result
-        pairing_result_model = get_pairing_result_comparable_to_config_or_solve(config_id, txm_event)
+        pairing_result_model = get_pairing_result_comparable_to_config_or_solve(configuration, txm_event)
 
         directory, report_file_name = generate_pdf_report(
             txm_event,
-            config_id,
+            configuration.id,
             pairing_result_model,
             matching_id,
             ReportConfiguration(
@@ -119,10 +121,10 @@ class PatientsXLSReport(Resource):
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
 
-        configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
-                                                                configuration_db_id=config_id)
+        configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
+                                                                           configuration_db_id=config_id)
 
-        patients_dto = to_lists_for_fe(txm_event, configuration)
+        patients_dto = to_lists_for_fe(txm_event, configuration_parameters)
 
         xls_file_name = f'patients_{get_formatted_now()}.xlsx'
         buffer = export_patients_to_xlsx_file(patients_dto)

@@ -8,7 +8,7 @@ from txmatching.database.services import pairing_result_service
 from txmatching.database.services.config_service import \
     save_configuration_to_db
 from txmatching.database.services.pairing_result_service import \
-    solve_from_config_id_and_save
+    solve_from_configuration_and_save
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.solve_service.solve_from_configuration import \
@@ -30,23 +30,24 @@ class TestSaveAndGetConfiguration(DbTests):
     def test_get_matchings(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data.xlsx'))
 
-        configuration = Configuration(
+        configuration_parameters = Configuration(
             require_compatible_blood_group=False,
             require_better_match_in_compatibility_index=False,
             require_better_match_in_compatibility_index_or_blood_group=False,
             max_number_of_distinct_countries_in_round=10
         )
 
-        config_id = save_configuration_to_db(configuration=configuration, txm_event_id=txm_event_db_id, user_id=1)
+        configuration = save_configuration_to_db(configuration=configuration_parameters,
+                                                 txm_event_id=txm_event_db_id,
+                                                 user_id=1)
 
-        solve_from_config_id_and_save(
-            config_id=config_id,
+        solve_from_configuration_and_save(
             configuration=configuration,
             txm_event=get_txm_event_complete(txm_event_db_id)
         )
 
         with self.app.test_client() as client:
-            conf_dto = dataclasses.asdict(configuration)
+            conf_dto = dataclasses.asdict(configuration_parameters)
 
             res = client.post(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{MATCHING_NAMESPACE}/calculate-for-config',
