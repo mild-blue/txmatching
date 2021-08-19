@@ -4,7 +4,7 @@ from txmatching.configuration.config_parameters import ConfigParameters
 
 
 @dataclass
-class ConfigurationDetailed:
+class Configuration:
     id: int
     txm_event_id: int
     parameters: ConfigParameters

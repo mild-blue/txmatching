@@ -5,8 +5,7 @@ from typing import Dict, Optional
 from dacite import Config, from_dict
 
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.configuration.configuration_detailed import \
-    ConfigurationDetailed
+from txmatching.configuration.configuration import Configuration
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ConfigModel, TxmEventModel
 from txmatching.patients.patient import TxmEvent
@@ -16,8 +15,8 @@ from txmatching.utils.enums import HLACrossmatchLevel, Scorer, Solver
 logger = logging.getLogger(__name__)
 
 
-def configuration_from_config_model(config_model: ConfigModel) -> ConfigurationDetailed:
-    return ConfigurationDetailed(
+def configuration_from_config_model(config_model: ConfigModel) -> Configuration:
+    return Configuration(
         id=config_model.id,
         txm_event_id=config_model.txm_event_id,
         parameters=configuration_parameters_from_dict(config_model.parameters)
@@ -31,7 +30,7 @@ def configuration_parameters_from_dict(config_dict: Dict) -> ConfigParameters:
     return configuration
 
 
-def save_config_parameters_to_db(config_parameters: ConfigParameters, txm_event_id: int, user_id: int) -> ConfigurationDetailed:
+def save_config_parameters_to_db(config_parameters: ConfigParameters, txm_event_id: int, user_id: int) -> Configuration:
     config_model = _config_parameters_to_config_model(config_parameters, txm_event_id, user_id)
 
     db.session.add(config_model)
@@ -59,7 +58,7 @@ def _config_parameters_to_config_model(
     )
 
 
-def get_configuration_from_db_id(configuration_db_id: int, txm_event_id: int) -> Optional[ConfigurationDetailed]:
+def get_configuration_from_db_id(configuration_db_id: int, txm_event_id: int) -> Optional[Configuration]:
     config_model = ConfigModel.query.get(configuration_db_id)
     if config_model is None:
         # As txm_event.default_config_id column is integer and not linked to config.id
@@ -79,7 +78,7 @@ def get_configuration_from_db_id(configuration_db_id: int, txm_event_id: int) ->
 def get_configuration_from_db_id_or_default(
         txm_event: TxmEvent,
         configuration_db_id: Optional[int]
-) -> Optional[ConfigurationDetailed]:
+) -> Optional[Configuration]:
     """
     Return configuration and does not check patient hash.
     - if specified, return configuration by configuration_db_id
@@ -106,7 +105,7 @@ def get_configuration_parameters_from_db_id_or_default(
 
 
 def get_config_for_parameters_or_save(configuration_parameters: ConfigParameters,
-                                      txm_event_id: int, user_id: int) -> ConfigurationDetailed:
+                                      txm_event_id: int, user_id: int) -> Configuration:
     maybe_config = find_config_for_parameters(configuration_parameters, txm_event_id)
 
     if maybe_config is not None:
@@ -118,7 +117,7 @@ def get_config_for_parameters_or_save(configuration_parameters: ConfigParameters
 def find_config_for_parameters(
         configuration_parameters: ConfigParameters,
         txm_event_id: int
-) -> Optional[ConfigurationDetailed]:
+) -> Optional[Configuration]:
     logger.debug('Searching models for configuration')
     config_models = ConfigModel.query.filter(
         ConfigModel.txm_event_id == txm_event_id

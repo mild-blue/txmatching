@@ -2,8 +2,7 @@ import dataclasses
 import logging
 from typing import Optional
 
-from txmatching.configuration.configuration_detailed import \
-    ConfigurationDetailed
+from txmatching.configuration.configuration import Configuration
 from txmatching.data_transfer_objects.matchings.donor_recipient_model import \
     DonorRecipientModel
 from txmatching.data_transfer_objects.matchings.matchings_model import (
@@ -24,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_pairing_result_comparable_to_config_or_solve(
-        configuration: ConfigurationDetailed,
+        configuration: Configuration,
         txm_event: TxmEvent
 ) -> PairingResultModel:
     maybe_pairing_result_model = get_pairing_result_comparable_to_config(configuration, txm_event)
@@ -35,7 +34,7 @@ def get_pairing_result_comparable_to_config_or_solve(
 
 
 def get_pairing_result_comparable_to_config(
-        configuration: ConfigurationDetailed,
+        configuration: Configuration,
         txm_event: TxmEvent
 ) -> Optional[PairingResultModel]:
     logger.debug(f'Searching pairing result models comparable to configuration {configuration.id}')
@@ -57,7 +56,7 @@ def get_pairing_result_comparable_to_config(
 
 
 def solve_from_configuration_and_save(
-        configuration: ConfigurationDetailed,
+        configuration: Configuration,
         txm_event: TxmEvent
 ) -> PairingResultModel:
     pairing_result = solve_from_configuration(configuration.parameters, txm_event=txm_event)
