@@ -1,6 +1,6 @@
 from typing import Dict, List, Union
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
@@ -17,7 +17,7 @@ from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
 
 
-def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: Configuration) \
+def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters) \
         -> Dict[str, Union[List[DonorDTOOut], List[Recipient]]]:
     scorer = scorer_from_configuration(configuration_parameters)
     return {
@@ -40,7 +40,7 @@ def recipient_to_recipient_dto_out(recipient: Recipient) -> RecipientDTOOut:
 
 def donor_to_donor_dto_out(donor: Donor,
                            all_recipients: List[Recipient],
-                           configuration: Configuration,
+                           config_parameters: ConfigParameters,
                            scorer: AdditiveScorer) -> DonorDTOOut:
     donor_dto = DonorDTOOut(db_id=donor.db_id,
                             medical_id=donor.medical_id,
@@ -63,7 +63,7 @@ def donor_to_donor_dto_out(donor: Donor,
         antibodies = get_crossmatched_antibodies(
             donor.parameters.hla_typing,
             related_recipient.hla_antibodies,
-            configuration.use_high_resolution
+            config_parameters.use_high_resolution
         )
         compatibility_index_detailed = get_detailed_compatibility_index(
             donor_hla_typing=donor.parameters.hla_typing,

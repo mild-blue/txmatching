@@ -4,7 +4,7 @@ from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.db import db
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
@@ -90,7 +90,7 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(1059, len(hla_antibodies_raw))
         self.assertEqual(7, len(app_users))
 
-        all_matchings = list(solve_from_configuration(Configuration(
+        all_matchings = list(solve_from_configuration(ConfigParameters(
             solver_constructor_name=Solver.AllSolutionsSolver,
             max_cycle_length=100,
             max_sequence_length=100,

@@ -6,7 +6,7 @@ from enum import Enum
 from dacite import Config, from_dict
 
 from local_testing_utilities.utils import create_or_overwrite_txm_event
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
 from txmatching.database.services.patient_upload_service import (
@@ -49,6 +49,7 @@ if __name__ == '__main__':
             f'{len(patient_upload_dto.donors) + len(patient_upload_dto.recipients)}')
         txm_event = get_txm_event_complete(txm_event_db_id)
         result = solve_from_configuration(txm_event=txm_event,
-                                          configuration=Configuration(max_sequence_length=100, max_cycle_length=100,
-                                                                      use_high_resolution=True))
+                                          config_parameters=ConfigParameters(max_sequence_length=100,
+                                                                             max_cycle_length=100,
+                                                                             use_high_resolution=True))
         logger.info(f'Successfully stored {len(list(result.calculated_matchings_list))} matchings into the database.')

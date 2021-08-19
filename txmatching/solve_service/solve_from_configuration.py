@@ -2,7 +2,7 @@ import heapq
 import logging
 from typing import Iterator, List, Optional, Tuple
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.filters.filter_base import FilterBase
 from txmatching.filters.filter_from_config import filter_from_config
 from txmatching.patients.patient import TxmEvent
@@ -16,28 +16,28 @@ from txmatching.utils.enums import Solver
 logger = logging.getLogger(__name__)
 
 
-def solve_from_configuration(configuration: Configuration, txm_event: TxmEvent) -> PairingResult:
-    return run_with_solver_lock(lambda: _solve_from_configuration_unsafe(configuration, txm_event))
+def solve_from_configuration(config_parameters: ConfigParameters, txm_event: TxmEvent) -> PairingResult:
+    return run_with_solver_lock(lambda: _solve_from_configuration_unsafe(config_parameters, txm_event))
 
 
-def _solve_from_configuration_unsafe(configuration: Configuration, txm_event: TxmEvent) -> PairingResult:
-    scorer = scorer_from_configuration(configuration)
-    solver = solver_from_configuration(configuration,
+def _solve_from_configuration_unsafe(config_parameters: ConfigParameters, txm_event: TxmEvent) -> PairingResult:
+    scorer = scorer_from_configuration(config_parameters)
+    solver = solver_from_configuration(config_parameters,
                                        donors_dict=txm_event.active_donors_dict,
                                        recipients_dict=txm_event.active_recipients_dict,
                                        scorer=scorer)
 
     all_matchings = solver.solve()
-    matching_filter = filter_from_config(configuration)
+    matching_filter = filter_from_config(config_parameters)
 
     matchings_filtered_sorted, all_results_found, matching_count = _filter_and_sort_matchings(
         all_matchings,
         matching_filter,
-        configuration)
+        config_parameters)
 
     logger.info(f'{len(matchings_filtered_sorted)} matchings were found.')
 
-    return PairingResult(configuration=configuration,
+    return PairingResult(configuration=config_parameters,
                          score_matrix=solver.score_matrix,
                          calculated_matchings_list=matchings_filtered_sorted,
                          txm_event_db_id=txm_event.db_id,
@@ -47,7 +47,7 @@ def _solve_from_configuration_unsafe(configuration: Configuration, txm_event: Tx
 
 def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
                                matching_filter: FilterBase,
-                               configuration: Configuration
+                               config_parameters: ConfigParameters
                                ) -> Tuple[List[MatchingWithScore], bool, Optional[int]]:
     matchings_heap = []
     all_results_found = True
@@ -63,17 +63,17 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
             )
 
             heapq.heappush(matchings_heap, matching_entry)
-            if len(matchings_heap) > configuration.max_number_of_matchings:
+            if len(matchings_heap) > config_parameters.max_number_of_matchings:
                 heapq.heappop(matchings_heap)
 
             if i % 100000 == 0:
                 logger.info(f'Processed {i} matchings')
 
-            if i == configuration.max_matchings_in_all_solutions_solver - 1:
+            if i == config_parameters.max_matchings_in_all_solutions_solver - 1:
                 logger.error(
-                    f'Max number of matchings {configuration.max_matchings_in_all_solutions_solver} was reached. '
-                    f'Returning only best {configuration.max_number_of_matchings} matchings from '
-                    f'{configuration.max_matchings_in_all_solutions_solver} found up to now.')
+                    f'Max number of matchings {config_parameters.max_matchings_in_all_solutions_solver} was reached. '
+                    f'Returning only best {config_parameters.max_number_of_matchings} matchings from '
+                    f'{config_parameters.max_matchings_in_all_solutions_solver} found up to now.')
                 all_results_found = False
                 break
 
@@ -81,7 +81,7 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
     for idx, matching_in_good_order in enumerate(matchings):
         matching_in_good_order.set_order_id(idx + 1)
 
-    if configuration.solver_constructor_name == Solver.ILPSolver:
+    if config_parameters.solver_constructor_name == Solver.ILPSolver:
         result_count = None
     else:
         result_count = i + 1

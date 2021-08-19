@@ -8,10 +8,10 @@ from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.user.totp import generate_totp_seed
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.config_service import \
-    save_configuration_to_db
+    save_config_parameters_to_db
 from txmatching.database.services.pairing_result_service import \
     solve_from_configuration_and_save
 from txmatching.database.services.patient_upload_service import \
@@ -148,15 +148,15 @@ def populate_db_with_split_data():
 
     txm_event = get_txm_event_complete(txm_event.db_id)
 
-    configuration_parameters = Configuration(
+    configuration_parameters = ConfigParameters(
         max_sequence_length=100,
         max_cycle_length=100,
         use_high_resolution=True
     )
 
-    configuration = save_configuration_to_db(configuration=configuration_parameters,
-                                             txm_event_id=txm_event.db_id,
-                                             user_id=1)
+    configuration = save_config_parameters_to_db(config_parameters=configuration_parameters,
+                                                 txm_event_id=txm_event.db_id,
+                                                 user_id=1)
 
     pairing_result_model = solve_from_configuration_and_save(configuration=configuration,
                                                              txm_event=txm_event)

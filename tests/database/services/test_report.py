@@ -6,9 +6,9 @@ import sys
 from local_testing_utilities.generate_patients import \
     store_generated_patients_from_folder
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.services.config_service import \
-    save_configuration_to_db
+    save_config_parameters_to_db
 from txmatching.database.services.pairing_result_service import \
     solve_from_configuration_and_save
 from txmatching.database.services.report_service import (ReportConfiguration,
@@ -26,9 +26,9 @@ def generate_report_for_test():
     txm_event_id = get_txm_event_db_id_by_name('high_res_example_data')
     txm_event = get_txm_event_complete(txm_event_id)
 
-    configuration_parameters = Configuration(max_number_of_matchings=5)
-    configuration = save_configuration_to_db(
-        configuration=configuration_parameters,
+    configuration_parameters = ConfigParameters(max_number_of_matchings=5)
+    configuration = save_config_parameters_to_db(
+        config_parameters=configuration_parameters,
         txm_event_id=txm_event_id,
         user_id=1
     )

@@ -3,7 +3,7 @@ from typing import Dict, Iterable, List
 
 import networkx as nx
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, DonorType, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
@@ -14,19 +14,19 @@ from txmatching.utils.country_enum import Country
 class DataAndConfigurationForILPSolver:
     non_directed_donors: Iterable[int]
     regular_donors: Iterable[int]
-    configuration: Configuration
+    configuration: ConfigParameters
     country_codes_dict: Dict[int, Country]
     required_patients: List[int]
     graph: nx.Graph
 
     def __init__(self, active_donors_dict: Dict[DonorDbId, Donor],
                  active_recipients_dict: Dict[RecipientDbId, Recipient],
-                 configuration: Configuration):
+                 config_parameters: ConfigParameters):
 
-        self.configuration = configuration
+        self.configuration = config_parameters
         self.non_directed_donors = [i for i, donor in enumerate(active_donors_dict.values()) if
                                     donor.donor_type != DonorType.DONOR]
-        self.graph = self._create_graph(configuration, active_donors_dict, active_recipients_dict)
+        self.graph = self._create_graph(config_parameters, active_donors_dict, active_recipients_dict)
 
         self.regular_donors = set(self.graph.nodes()) - set(self.non_directed_donors)
 
@@ -35,7 +35,7 @@ class DataAndConfigurationForILPSolver:
                                       active_donors_dict[
                                           active_recipients_dict[recipient_db_id].related_donor_db_id].db_id]
                                   for
-                                  recipient_db_id in configuration.required_patient_db_ids]
+                                  recipient_db_id in config_parameters.required_patient_db_ids]
 
         self.country_codes_dict = {i: donor.parameters.country_code for i, donor in
                                    enumerate(active_donors_dict.values())}
@@ -43,11 +43,11 @@ class DataAndConfigurationForILPSolver:
                                   enumerate(active_donors_dict.values())}
 
     def _create_graph(self,
-                      configuration: Configuration,
+                      config_parameters: ConfigParameters,
                       active_donors_dict: Dict[DonorDbId, Donor],
                       active_recipients_dict: Dict[RecipientDbId, Recipient]) -> nx.Graph:
 
-        donor_score_matrix = self._get_donor_score_matrix(configuration, active_donors_dict, active_recipients_dict)
+        donor_score_matrix = self._get_donor_score_matrix(config_parameters, active_donors_dict, active_recipients_dict)
         num_nodes = len(donor_score_matrix)
         edges = []
         for from_node in range(0, num_nodes):
@@ -69,10 +69,10 @@ class DataAndConfigurationForILPSolver:
         return graph
 
     @staticmethod
-    def _get_donor_score_matrix(configuration: Configuration,
+    def _get_donor_score_matrix(config_parameters: ConfigParameters,
                                 active_donors_dict: Dict[DonorDbId, Donor],
                                 active_recipients_dict: Dict[RecipientDbId, Recipient]):
-        scorer = scorer_from_configuration(configuration)
+        scorer = scorer_from_configuration(config_parameters)
         score_matrix = []
         for donor in active_donors_dict.values():
             row = []

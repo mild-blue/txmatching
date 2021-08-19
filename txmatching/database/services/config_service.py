@@ -4,7 +4,7 @@ from typing import Dict, Optional
 
 from dacite import Config, from_dict
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.configuration.configuration_detailed import \
     ConfigurationDetailed
 from txmatching.database.db import db
@@ -24,15 +24,15 @@ def configuration_from_config_model(config_model: ConfigModel) -> ConfigurationD
     )
 
 
-def configuration_parameters_from_dict(config_dict: Dict) -> Configuration:
-    configuration = from_dict(data_class=Configuration,
+def configuration_parameters_from_dict(config_dict: Dict) -> ConfigParameters:
+    configuration = from_dict(data_class=ConfigParameters,
                               data=config_dict,
                               config=Config(cast=[Country, HLACrossmatchLevel, Scorer, Solver]))
     return configuration
 
 
-def save_configuration_to_db(configuration: Configuration, txm_event_id: int, user_id: int) -> ConfigurationDetailed:
-    config_model = _configuration_to_config_model(configuration, txm_event_id, user_id)
+def save_config_parameters_to_db(config_parameters: ConfigParameters, txm_event_id: int, user_id: int) -> ConfigurationDetailed:
+    config_model = _config_parameters_to_config_model(config_parameters, txm_event_id, user_id)
 
     db.session.add(config_model)
     db.session.commit()
@@ -47,13 +47,13 @@ def set_config_as_default(txm_event_id: int, configuration_db_id: Optional[int])
     db.session.commit()
 
 
-def _configuration_to_config_model(
-        configuration: Configuration,
+def _config_parameters_to_config_model(
+        config_parameters: ConfigParameters,
         txm_event_db_id: int,
         user_id: int
 ) -> ConfigModel:
     return ConfigModel(
-        parameters=dataclasses.asdict(configuration),
+        parameters=dataclasses.asdict(config_parameters),
         txm_event_id=txm_event_db_id,
         created_by=user_id
     )
@@ -97,26 +97,26 @@ def get_configuration_from_db_id_or_default(
 def get_configuration_parameters_from_db_id_or_default(
         txm_event: TxmEvent,
         configuration_db_id: Optional[int]
-) -> Configuration:
+) -> ConfigParameters:
     configuration = get_configuration_from_db_id_or_default(
         txm_event, configuration_db_id
     )
 
-    return configuration.parameters if configuration is not None else Configuration()
+    return configuration.parameters if configuration is not None else ConfigParameters()
 
 
-def get_config_for_parameters_or_save(configuration_parameters: Configuration,
+def get_config_for_parameters_or_save(configuration_parameters: ConfigParameters,
                                       txm_event_id: int, user_id: int) -> ConfigurationDetailed:
     maybe_config = find_config_for_parameters(configuration_parameters, txm_event_id)
 
     if maybe_config is not None:
         return maybe_config
     else:
-        return save_configuration_to_db(configuration_parameters, txm_event_id, user_id)
+        return save_config_parameters_to_db(configuration_parameters, txm_event_id, user_id)
 
 
 def find_config_for_parameters(
-        configuration_parameters: Configuration,
+        configuration_parameters: ConfigParameters,
         txm_event_id: int
 ) -> Optional[ConfigurationDetailed]:
     logger.debug('Searching models for configuration')

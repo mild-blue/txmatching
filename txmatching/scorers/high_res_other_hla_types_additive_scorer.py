@@ -1,4 +1,4 @@
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.scorers.high_res_hla_additive_scorer import (
     EQUAL_BONUS_PER_GROUPS, PROPOSED_MATCH_TYPE_BONUS)
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
@@ -20,8 +20,8 @@ class HighResOtherHLATypesHLAAdditiveScorerCIConfiguration(CIConfiguration):
 class HighResWithDQDPScorer(HLAAdditiveScorer):
 
     @classmethod
-    def from_config(cls, configuration: Configuration) -> 'HighResWithDQDPScorer':
-        hla_additive_scorer = HighResWithDQDPScorer(configuration)
+    def from_config(cls, config_parameters: ConfigParameters) -> 'HighResWithDQDPScorer':
+        hla_additive_scorer = HighResWithDQDPScorer(config_parameters)
         return hla_additive_scorer
 
     @property

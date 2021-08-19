@@ -25,7 +25,7 @@ COMPARISON_MODE = 'comparison_mode'
 # pylint: disable=too-many-instance-attributes
 # I think it is reasonable to have many attributes here
 @dataclass
-class Configuration:
+class ConfigParameters:
     """
     Attributes:
     scorer_constructor_name: Scorer to use.

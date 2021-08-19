@@ -1,8 +1,8 @@
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.services.config_service import \
-    save_configuration_to_db
+    save_config_parameters_to_db
 from txmatching.database.services.pairing_result_service import \
     solve_from_configuration_and_save
 from txmatching.database.services.txm_event_service import \
@@ -22,9 +22,9 @@ class TestReportApi(DbTests):
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        configuration_parameters = Configuration()
-        configuration = save_configuration_to_db(
-            configuration=configuration_parameters,
+        configuration_parameters = ConfigParameters()
+        configuration = save_config_parameters_to_db(
+            config_parameters=configuration_parameters,
             txm_event_id=txm_event.db_id,
             user_id=1
         )
@@ -57,9 +57,9 @@ class TestReportApi(DbTests):
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        configuration_parameters = Configuration()
-        configuration = save_configuration_to_db(
-            configuration=configuration_parameters,
+        configuration_parameters = ConfigParameters()
+        configuration = save_config_parameters_to_db(
+            config_parameters=configuration_parameters,
             txm_event_id=txm_event.db_id,
             user_id=1
         )
@@ -83,9 +83,9 @@ class TestReportApi(DbTests):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        configuration_parameters = Configuration()
-        configuration = save_configuration_to_db(
-            configuration=configuration_parameters,
+        configuration_parameters = ConfigParameters()
+        configuration = save_config_parameters_to_db(
+            config_parameters=configuration_parameters,
             txm_event_id=txm_event.db_id,
             user_id=1
         )
@@ -110,9 +110,9 @@ class TestReportApi(DbTests):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        configuration_parameters = Configuration()
-        configuration = save_configuration_to_db(
-            configuration=configuration_parameters,
+        configuration_parameters = ConfigParameters()
+        configuration = save_config_parameters_to_db(
+            config_parameters=configuration_parameters,
             txm_event_id=txm_event.db_id,
             user_id=1
         )

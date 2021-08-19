@@ -2,8 +2,8 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from txmatching.configuration.configuration import (Configuration,
-                                                    ManualDonorRecipientScore)
+from txmatching.configuration.config_parameters import (
+    ConfigParameters, ManualDonorRecipientScore)
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.score_matrix import ScoreMatrix
@@ -68,7 +68,7 @@ class AdditiveScorer(ScorerBase):
         return score
 
     @classmethod
-    def from_config(cls, configuration: Configuration) -> 'AdditiveScorer':
+    def from_config(cls, config_parameters: ConfigParameters) -> 'AdditiveScorer':
         raise NotImplementedError('Has to be overridden')
 
     @property

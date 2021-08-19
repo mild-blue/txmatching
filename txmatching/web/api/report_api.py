@@ -8,7 +8,7 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
@@ -16,7 +16,7 @@ from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
 from txmatching.database.services.config_service import (
     get_configuration_from_db_id_or_default,
     get_configuration_parameters_from_db_id_or_default,
-    save_configuration_to_db)
+    save_config_parameters_to_db)
 from txmatching.database.services.pairing_result_service import \
     get_pairing_result_comparable_to_config_or_solve
 from txmatching.database.services.report_service import (
@@ -78,7 +78,7 @@ class MatchingReport(Resource):
 
         # If configuration not in db yet, save default configuration
         if configuration is None:
-            configuration = save_configuration_to_db(Configuration(), txm_event.db_id, user_id)
+            configuration = save_config_parameters_to_db(ConfigParameters(), txm_event.db_id, user_id)
 
         # Get or solve pairing result
         pairing_result_model = get_pairing_result_comparable_to_config_or_solve(configuration, txm_event)
