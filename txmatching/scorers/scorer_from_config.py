@@ -17,4 +17,8 @@ def scorer_from_configuration(config_parameters: ConfigParameters) -> AdditiveSc
     if config_parameters.scorer_constructor_name == 'HLAAdditiveScorer':
         config_parameters.scorer_constructor_name = Scorer.SplitScorer
 
-    return construct_configurable_object(config_parameters.scorer_constructor_name, SUPPORTED_SCORERS, config_parameters)
+    return construct_configurable_object(
+        config_parameters.scorer_constructor_name,
+        SUPPORTED_SCORERS,
+        config_parameters
+    )
