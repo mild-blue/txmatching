@@ -25,11 +25,6 @@ LoginSuccessResponse = user_api.model('LoginSuccessResponse', {
     'auth_token': fields.String(required=True),
 })
 
-# TODOO: remove and use SuccessJsonOut instead
-StatusResponse = user_api.model('StatusResponse', {
-    'status': fields.String(required=True)
-})
-
 ResetRequestResponse = user_api.model('ResetRequestResponse', {
     'token': fields.String(required=True)
 })
@@ -78,13 +73,13 @@ class OtpLoginApi(Resource):
         return response_ok(_respond_token(auth_response))
 
     @user_api.doc(security='bearer')
-    @user_api.response_ok(StatusResponse, description='New OTP was generated and sent.')
+    @user_api.response_ok(SuccessJsonOut, description='Whether the new OTP was generated and sent.')
     @user_api.response_errors()
     @user_api.response_error_sms_gate()
     @allow_otp_request()
     def put(self):
         resend_otp()
-        return response_ok({'status': 'ok'})
+        return response_ok(SuccessDTOOut(success=True))
 
 
 @user_api.route('/refresh-token', methods=['GET'])
@@ -106,12 +101,12 @@ class PasswordChangeApi(Resource):
 
     @user_api.require_user_login()
     @user_api.request_body(input)
-    @user_api.response_ok(StatusResponse, description='Password changed successfully.')
+    @user_api.response_ok(SuccessJsonOut, description='Whether the password was changed successfully.')
     @user_api.response_errors()
     def put(self):
         data = request.get_json()
         change_password(current_password=data['current_password'], new_password=data['new_password'])
-        return response_ok({'status': 'ok'})
+        return response_ok(SuccessDTOOut(success=True))
 
 
 @user_api.route('/<email>/reset-password-token', methods=['GET'])
@@ -166,7 +161,7 @@ class RegistrationApi(Resource):
 
     @user_api.require_user_login()
     @user_api.request_body(registration_model)
-    @user_api.response_ok(StatusResponse, description='User registered successfully.')
+    @user_api.response_ok(SuccessJsonOut, description='Whether the user was registered successfully.')
     @user_api.response_errors()
     @require_role(UserRole.ADMIN)
     def post(self):
@@ -176,7 +171,7 @@ class RegistrationApi(Resource):
                  role=UserRole(post_data['role']),
                  second_factor=post_data['second_factor'],
                  allowed_countries=[Country(country_value) for country_value in post_data['allowed_countries']])
-        return response_ok({'status': 'ok'})
+        return response_ok(SuccessDTOOut(success=True))
 
 
 def _respond_token(token: str) -> dict:

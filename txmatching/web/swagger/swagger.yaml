@@ -1364,13 +1364,6 @@ definitions:
         - AllSolutionsSolver
         - ILPSolver
         type: string
-    StatusResponse:
-        properties:
-            status:
-                type: string
-        required:
-        - status
-        type: object
     Success:
         properties:
             success:
@@ -2382,9 +2375,9 @@ paths:
                     $ref: '#/definitions/PasswordChange'
             responses:
                 '200':
-                    description: Password changed successfully.
+                    description: Whether the password changed successfully.
                     schema:
-                        $ref: '#/definitions/StatusResponse'
+                        $ref: '#/definitions/Success'
                 '400':
                     description: Wrong data format.
                     schema:
@@ -2490,9 +2483,9 @@ paths:
             operationId: put_otp_login_api
             responses:
                 '200':
-                    description: New OTP was generated and sent.
+                    description: Whether the new OTP was generated and sent.
                     schema:
-                        $ref: '#/definitions/StatusResponse'
+                        $ref: '#/definitions/Success'
                 '400':
                     description: Wrong data format.
                     schema:
@@ -2561,7 +2554,7 @@ paths:
                 '200':
                     description: User registered successfully.
                     schema:
-                        $ref: '#/definitions/StatusResponse'
+                        $ref: '#/definitions/Success'
                 '400':
                     description: Wrong data format.
                     schema:
@@ -2594,9 +2587,9 @@ paths:
                     $ref: '#/definitions/ResetPassword'
             responses:
                 '200':
-                    description: Password reset successfully.
+                    description: Whether the password reset was successful.
                     schema:
-                        $ref: '#/definitions/StatusResponse'
+                        $ref: '#/definitions/Success'
                 '400':
                     description: Wrong data format.
                     schema:
