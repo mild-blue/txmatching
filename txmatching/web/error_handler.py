@@ -108,13 +108,13 @@ def _user_auth_handlers(api: Api):
     def handle_invalid_token_exception(error: InvalidTokenException):
         """invalid_token_exception"""
         _log_warning(error)
-        return {'error': 'Authentication failed.', 'message': str(error)}, 401
+        return {'error': 'Authentication failed.', 'message': str(error)}, 403
 
     @api.errorhandler(InvalidEmailException)
     def handle_invalid_token_exception(error: InvalidEmailException):
         """invalid_email_exception"""
         _log_warning(error)
-        return {'error': 'Authentication failed.', 'message': str(error)}, 401
+        return {'error': 'Authentication failed.', 'message': str(error)}, 403
 
     @api.errorhandler(AuthenticationException)
     def handle_general_authentication_exception(error: AuthenticationException):

@@ -48,6 +48,8 @@ export * from './recipientInputGenerated';
 export * from './recipientModelToUpdateAllOfGenerated';
 export * from './recipientModelToUpdateGenerated';
 export * from './recipientRequirementsGenerated';
+export * from './resetPasswordGenerated';
+export * from './resetRequestResponseGenerated';
 export * from './roundGenerated';
 export * from './scorerGenerated';
 export * from './serviceStatusGenerated';

@@ -13,6 +13,8 @@ from txmatching.auth.login_flow import (credentials_login, otp_login,
                                         refresh_token, resend_otp)
 from txmatching.auth.user.topt_auth_check import allow_otp_request
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
+from txmatching.data_transfer_objects.shared_dto import SuccessDTOOut
+from txmatching.data_transfer_objects.shared_swagger import SuccessJsonOut
 from txmatching.utils.country_enum import Country
 from txmatching.web.web_utils.namespaces import user_api
 from txmatching.web.web_utils.route_utils import response_ok
@@ -23,6 +25,7 @@ LoginSuccessResponse = user_api.model('LoginSuccessResponse', {
     'auth_token': fields.String(required=True),
 })
 
+# TODOO: remove and use SuccessJsonOut instead
 StatusResponse = user_api.model('StatusResponse', {
     'status': fields.String(required=True)
 })
@@ -132,12 +135,17 @@ class ResetPassword(Resource):
     })
 
     @user_api.request_body(reset_password_input)
-    @user_api.response_ok(StatusResponse, description='Password reset successfully.')
+    @user_api.response_ok(SuccessJsonOut, description='Whether the password reset was successful.')
     @user_api.response_errors()
     def put(self):
         body = request.get_json()
+
+        # This is for testing purposes only. It emulates success response but do not change anything.
+        if body['token'] == 'mock-success':
+            return response_ok(SuccessDTOOut(success=True))
+
         reset_password(body['token'], body['password'])
-        return response_ok({'status': 'ok'})
+        return response_ok(SuccessDTOOut(success=True))
 
 
 @user_api.route('/register', methods=['POST'])

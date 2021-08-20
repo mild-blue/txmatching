@@ -7,12 +7,14 @@ import { PatientsComponent } from '@app/pages/patients/patients.component';
 import { AuthenticationComponent } from '@app/pages/authentication/authentication.component';
 import { OtpGuard } from '@app/guards/otp/otp.guard';
 import { LoginGuard } from '@app/guards/login/login.guard';
+import { ResetPasswordComponent } from '@app/pages/reset-password/reset-password.component';
 
 const routes: Routes = [
   { path: 'matchings', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'patients', component: PatientsComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   { path: 'authentication', component: AuthenticationComponent, canActivate: [OtpGuard] },
+  { path: 'reset-password/:token', component: ResetPasswordComponent },
 
   // otherwise redirect to home
   { path: '', pathMatch: 'full', redirectTo: 'matchings' },
