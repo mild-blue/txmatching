@@ -136,7 +136,7 @@
                         }
                     },
                     "200": {
-                        "description": "Whether the password changed successfully.",
+                        "description": "Whether the password was changed successfully.",
                         "schema": {
                             "$ref": "#/definitions/Success"
                         }
@@ -397,7 +397,7 @@
                         }
                     },
                     "200": {
-                        "description": "User registered successfully.",
+                        "description": "Whether the user was registered successfully.",
                         "schema": {
                             "$ref": "#/definitions/Success"
                         }

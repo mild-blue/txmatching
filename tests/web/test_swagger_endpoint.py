@@ -16,6 +16,9 @@ class TestSwaggerEndpoints(DbTests):
             'get': {
                 f'{API_VERSION[1:]}/{SERVICE_NAMESPACE}/status': [200],
                 f'{API_VERSION[1:]}/{SERVICE_NAMESPACE}/version': [200],
+            },
+            'put': {
+                f'{API_VERSION[1:]}/{USER_NAMESPACE}/reset-password': [403]
             }
         }
         with self.app.test_client() as client:
@@ -34,7 +37,7 @@ class TestSwaggerEndpoints(DbTests):
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/change-password': [401],
-                f'{API_VERSION[1:]}/{USER_NAMESPACE}/reset-password': [401],
+                f'{API_VERSION[1:]}/{USER_NAMESPACE}/reset-password': [403],
                 f'{API_VERSION[1:]}/{PUBLIC_NAMESPACE}/patient-upload': [403],
                 f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/add-patients-file': [
                     400],
