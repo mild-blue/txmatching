@@ -19,11 +19,14 @@ import { PatientModelToUpdateGenerated } from './patientModelToUpdateGenerated';
 
 
 export interface RecipientModelToUpdateGenerated { 
-    blood_group?: BloodGroupEnumGenerated;
+    blood_group: BloodGroupEnumGenerated;
     /**
      * Database id of the patient
      */
     db_id: number;
+    /**
+     * Height of the patient in centimeters.
+     */
     height?: number;
     /**
      * Provide full list of all the HLA types of the patient, not just the change set
@@ -31,10 +34,16 @@ export interface RecipientModelToUpdateGenerated {
     hla_typing?: HlaTypingToUpdateGenerated;
     note?: string;
     sex?: SexEnumGenerated;
+    /**
+     * Weight of the patient in kilograms.
+     */
     weight?: number;
+    /**
+     * Year of birth of the patient.
+     */
     year_of_birth?: number;
     /**
-     * Provide full list of all the acceptable blood groups of the patient, not just the change set
+     * Acceptable blood groups for the patient. Leave empty to use compatible blood groups.
      */
     acceptable_blood_groups?: Array<BloodGroupEnumGenerated>;
     cutoff?: number;
