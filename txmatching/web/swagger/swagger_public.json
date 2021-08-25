@@ -849,13 +849,41 @@
                 "medical_id"
             ],
             "properties": {
+                "blood_group": {
+                    "$ref": "#/definitions/BloodGroupEnum"
+                },
+                "sex": {
+                    "$ref": "#/definitions/SexEnum"
+                },
+                "height": {
+                    "type": "integer",
+                    "description": "Height of the patient in centimeters.",
+                    "example": 178
+                },
+                "weight": {
+                    "type": "number",
+                    "description": "Weight of the patient in kilograms.",
+                    "example": 78.4
+                },
+                "year_of_birth": {
+                    "type": "integer",
+                    "description": "Year of birth of the patient.",
+                    "example": 1945
+                },
+                "note": {
+                    "type": "string",
+                    "default": "",
+                    "example": "donor note"
+                },
                 "medical_id": {
                     "type": "string",
                     "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
                     "example": "D1037"
                 },
-                "blood_group": {
-                    "$ref": "#/definitions/BloodGroupEnum"
+                "internal_medical_id": {
+                    "type": "string",
+                    "description": "Custom medical ID that will not be shown in UI, but will be stored and can be seen in patient xlsx export.",
+                    "example": "123456"
                 },
                 "hla_typing": {
                     "type": "array",
@@ -884,6 +912,46 @@
                     "type": "string",
                     "description": "Medical ID of the related recipient, empty for bridging and non-directed donors.",
                     "example": "R1037"
+                }
+            },
+            "type": "object"
+        },
+        "BloodGroupEnum": {
+            "enum": [
+                "A",
+                "B",
+                "AB",
+                "0"
+            ],
+            "type": "string"
+        },
+        "SexEnum": {
+            "enum": [
+                "M",
+                "F"
+            ],
+            "type": "string",
+            "description": "Sex of the patient."
+        },
+        "DonorType": {
+            "enum": [
+                "DONOR",
+                "BRIDGING_DONOR",
+                "NON_DIRECTED"
+            ],
+            "type": "string",
+            "description": "Type of the donor."
+        },
+        "RecipientInput": {
+            "required": [
+                "blood_group",
+                "hla_antibodies",
+                "hla_typing",
+                "medical_id"
+            ],
+            "properties": {
+                "blood_group": {
+                    "$ref": "#/definitions/BloodGroupEnum"
                 },
                 "sex": {
                     "$ref": "#/definitions/SexEnum"
@@ -908,73 +976,15 @@
                     "default": "",
                     "example": "donor note"
                 },
+                "medical_id": {
+                    "type": "string",
+                    "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
+                    "example": "D1037"
+                },
                 "internal_medical_id": {
                     "type": "string",
                     "description": "Custom medical ID that will not be shown in UI, but will be stored and can be seen in patient xlsx export.",
                     "example": "123456"
-                }
-            },
-            "type": "object"
-        },
-        "BloodGroupEnum": {
-            "enum": [
-                "A",
-                "B",
-                "AB",
-                "0"
-            ],
-            "type": "string"
-        },
-        "DonorType": {
-            "enum": [
-                "DONOR",
-                "BRIDGING_DONOR",
-                "NON_DIRECTED"
-            ],
-            "type": "string",
-            "description": "Type of the donor."
-        },
-        "SexEnum": {
-            "enum": [
-                "M",
-                "F"
-            ],
-            "type": "string",
-            "description": "Sex of the patient."
-        },
-        "RecipientInput": {
-            "required": [
-                "blood_group",
-                "hla_antibodies",
-                "hla_typing",
-                "medical_id"
-            ],
-            "properties": {
-                "hla_antibodies": {
-                    "type": "array",
-                    "description": "Detected HLA antibodies of the patient. Use high resolution                                   if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.",
-                    "items": {
-                        "$ref": "#/definitions/HLAAntibodyIn"
-                    }
-                },
-                "acceptable_blood_groups": {
-                    "type": "array",
-                    "description": "Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.",
-                    "example": [
-                        "A",
-                        "0"
-                    ],
-                    "items": {
-                        "$ref": "#/definitions/BloodGroupEnum"
-                    }
-                },
-                "medical_id": {
-                    "type": "string",
-                    "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
-                    "example": "R1037"
-                },
-                "blood_group": {
-                    "$ref": "#/definitions/BloodGroupEnum"
                 },
                 "hla_typing": {
                     "type": "array",
@@ -996,28 +1006,16 @@
                         "type": "string"
                     }
                 },
-                "sex": {
-                    "$ref": "#/definitions/SexEnum"
-                },
-                "height": {
-                    "type": "integer",
-                    "description": "Height of the patient in centimeters.",
-                    "example": 178
-                },
-                "weight": {
-                    "type": "number",
-                    "description": "Weight of the patient in kilograms.",
-                    "example": 78.4
-                },
-                "year_of_birth": {
-                    "type": "integer",
-                    "description": "Year of birth of the patient.",
-                    "example": 1945
-                },
-                "note": {
-                    "type": "string",
-                    "default": "",
-                    "example": "recipient note"
+                "acceptable_blood_groups": {
+                    "type": "array",
+                    "description": "Acceptable blood groups for the patient. Leave empty to use compatible blood groups.",
+                    "example": [
+                        "A",
+                        "0"
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/BloodGroupEnum"
+                    }
                 },
                 "waiting_since": {
                     "type": "string",
@@ -1029,10 +1027,12 @@
                     "type": "integer",
                     "description": "Number of previous kidney transplants."
                 },
-                "internal_medical_id": {
-                    "type": "string",
-                    "description": "Custom medical ID that will not be shown in UI, but will be stored and can be seen in patient xlsx export.",
-                    "example": "123456"
+                "hla_antibodies": {
+                    "type": "array",
+                    "description": "Detected HLA antibodies of the patient. Use high resolution if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.",
+                    "items": {
+                        "$ref": "#/definitions/HLAAntibodyIn"
+                    }
                 }
             },
             "type": "object"
