@@ -136,9 +136,9 @@
                         }
                     },
                     "200": {
-                        "description": "Password changed successfully.",
+                        "description": "Whether the password was changed successfully.",
                         "schema": {
-                            "$ref": "#/definitions/StatusResponse"
+                            "$ref": "#/definitions/Success"
                         }
                     }
                 },
@@ -248,9 +248,9 @@
                         }
                     },
                     "200": {
-                        "description": "New OTP was generated and sent.",
+                        "description": "Whether the new OTP was generated and sent.",
                         "schema": {
-                            "$ref": "#/definitions/StatusResponse"
+                            "$ref": "#/definitions/Success"
                         }
                     }
                 },
@@ -397,9 +397,9 @@
                         }
                     },
                     "200": {
-                        "description": "User registered successfully.",
+                        "description": "Whether the user was registered successfully.",
                         "schema": {
-                            "$ref": "#/definitions/StatusResponse"
+                            "$ref": "#/definitions/Success"
                         }
                     }
                 },
@@ -452,9 +452,9 @@
                         }
                     },
                     "200": {
-                        "description": "Password reset successfully.",
+                        "description": "Whether the password reset was successful.",
                         "schema": {
-                            "$ref": "#/definitions/StatusResponse"
+                            "$ref": "#/definitions/Success"
                         }
                     }
                 },
@@ -1166,13 +1166,13 @@
             },
             "type": "object"
         },
-        "StatusResponse": {
+        "Success": {
             "required": [
-                "status"
+                "success"
             ],
             "properties": {
-                "status": {
-                    "type": "string"
+                "success": {
+                    "type": "boolean"
                 }
             },
             "type": "object"

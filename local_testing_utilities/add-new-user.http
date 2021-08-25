@@ -47,10 +47,11 @@ Authorization: Bearer {{auth_token}}
 }
 ###
 
-GET {{url}}/v1/user/""/reset-password-token
+GET {{url}}/v1/user/admin@example.com/reset-password-token
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
+> {% client.log("Change password page has a format: http://localhost:4200/#/reset-password/" + response.body["token"]) %}
 ###
 
 PUT {{url}}/v1/user/reset-password

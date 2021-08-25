@@ -11,7 +11,14 @@
  */
 
 
-export interface StatusResponseGenerated { 
-    status: string;
+export interface ResetPasswordGenerated { 
+    /**
+     * New password.
+     */
+    password: string;
+    /**
+     * Reset Token.
+     */
+    token: string;
 }
 

@@ -3,11 +3,12 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { DecodedToken, User } from '@app/model/User';
 import { environment } from '@environments/environment';
-import { map } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { AuthResponse } from '@app/services/auth/auth.interface';
 import jwt_decode from 'jwt-decode';
 import { Router } from '@angular/router';
 import { UserTokenType } from '@app/model/enums/UserTokenType';
+import { ResetPasswordGenerated, SuccessGenerated } from '@app/generated';
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +84,20 @@ export class AuthService {
     localStorage.removeItem('user');
     this._currentUserSubject.next(undefined);
     this._router.navigate(['/login']);
+  }
+
+  public resetPassword(token: string, password: string): Observable<boolean> {
+    const payload: ResetPasswordGenerated = {
+      token, password
+    };
+
+    return this._http.put<SuccessGenerated>(
+      `${environment.apiUrl}/user/reset-password`,
+      payload
+    ).pipe(
+      first(),
+      map(_ => _.success)
+    );
   }
 
   private _setCurrentUser(): void {

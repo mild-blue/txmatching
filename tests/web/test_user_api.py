@@ -91,7 +91,7 @@ class TestUserApi(DbTests):
                 response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/otp',
                                       headers={'Authorization': f'Bearer {temp_otp_login_token}'})
                 self.assertEqual(200, response.status_code)
-                self.assertEqual('ok', response.json['status'])
+                self.assertEqual(True, response.json['success'])
                 self.assertEqual(2, self.triggered_times)
 
                 # try to login with correct structure and valid token
@@ -187,7 +187,7 @@ class TestUserApi(DbTests):
         with self.app.test_client() as client:
             response = client.get(f'{API_VERSION}/{USER_NAMESPACE}/{email_to_reset_password}/reset-password-token',
                                   headers=self.auth_headers)
-            self.assertEqual(401, response.status_code)
+            self.assertEqual(403, response.status_code)
             self.assertEqual('Authentication failed.', response.json['error'])
             self.assertEqual(f'User with email {email_to_reset_password} not found.', response.json['message'])
 
@@ -208,7 +208,7 @@ class TestUserApi(DbTests):
             response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/reset-password',
                                   json=password_reset_request)
             self.assertEqual(200, response.status_code)
-            self.assertEqual('ok', response.json['status'])
+            self.assertEqual(True, response.json['success'])
 
             # should fail -> repeatedly used token
         with self.app.test_client() as client:
@@ -227,7 +227,7 @@ class TestUserApi(DbTests):
             self._assert_invalid_reset_token(response, password_reset_request['token'])
 
     def _assert_invalid_reset_token(self, res, reset_token):
-        self.assertEqual(401, res.status_code)
+        self.assertEqual(403, res.status_code)
         self.assertEqual('Authentication failed.', res.json['error'])
         self.assertEqual(f'Reset password token {reset_token} is invalid.', res.json['message'])
 

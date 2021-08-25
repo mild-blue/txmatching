@@ -12,7 +12,7 @@ from txmatching.auth.exceptions import (CredentialsMismatchException,
                                         InvalidEmailException,
                                         InvalidTokenException,
                                         require_auth_condition)
-from txmatching.auth.request_context import get_request_token, get_user_role
+from txmatching.auth.request_context import get_request_token
 from txmatching.auth.service.service_auth_management import register_service
 from txmatching.auth.user.user_auth_management import (change_user_password,
                                                        register_user)
@@ -50,8 +50,8 @@ def get_reset_token(email_to_reset_password: str):
         raise InvalidEmailException(f'User with email {email_to_reset_password} not found.')
 
     expires_sec = timedelta(weeks=1).total_seconds()
-    s = Serializer(current_app.secret_key, expires_sec)
-    reset_token = s.dumps({'user_id': user_to_reset_password.id}).decode('utf-8')
+    serializer = Serializer(current_app.secret_key, expires_sec)
+    reset_token = serializer.dumps({'user_id': user_to_reset_password.id}).decode('utf-8')
 
     update_reset_token_for_user(user_to_reset_password.id, reset_token)
     return reset_token
@@ -68,8 +68,8 @@ def reset_password(reset_token: str, new_password: str):
 
 def _verify_reset_token(token: str):
     try:
-        s = Serializer(current_app.secret_key)
-        user_id = s.loads(token)['user_id']
+        serializer = Serializer(current_app.secret_key)
+        user_id = serializer.loads(token)['user_id']
     except BadSignature as bad_sign:
         raise InvalidTokenException(f'Reset password token {token} is invalid.') from bad_sign
     return user_id
