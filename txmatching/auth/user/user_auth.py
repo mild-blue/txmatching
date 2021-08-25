@@ -2,10 +2,14 @@ import datetime
 import logging
 
 from txmatching.auth.auth_failed_slowdown import auth_failed_slow_down
-from txmatching.auth.data_types import BearerTokenRequest, UserRole, TokenType, DecodedBearerToken
-from txmatching.auth.exceptions import InvalidOtpException, require_auth_condition
+from txmatching.auth.data_types import (BearerTokenRequest, DecodedBearerToken,
+                                        TokenType, UserRole)
+from txmatching.auth.exceptions import (InvalidOtpException,
+                                        require_auth_condition)
 from txmatching.auth.user.sms_service import send_sms
-from txmatching.auth.user.totp import OTP_VALIDITY_MINUTES, generate_otp_for_user, verify_otp_for_user
+from txmatching.auth.user.totp import (OTP_VALIDITY_MINUTES,
+                                       generate_otp_for_user,
+                                       verify_otp_for_user)
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 logger = logging.getLogger(__name__)

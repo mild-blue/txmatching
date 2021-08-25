@@ -123,7 +123,6 @@ class RequestReset(Resource):
 
 @user_api.route('/reset-password', methods=['PUT'])
 class ResetPassword(Resource):
-
     reset_password_input = user_api.model('ResetPassword', {
         'token': fields.String(required=True, description='Reset Token.'),
         'password': fields.String(required=True, description='New password.')
@@ -149,6 +148,8 @@ class RegistrationApi(Resource):
         email=fields.String(required=True, description='Email/username used for authentication.'),
         password=fields.String(required=True, description='User\'s password.'),
         role=fields.String(required=True, enum=[role.name for role in UserRole], description='User\'s role.'),
+        require_second_factor=fields.Boolean(required=True, example=True,
+                                             description='Whether to require second factor for the user'),
         second_factor=fields.String(required=True,
                                     description='2FA: Phone number for user account in standard format (see example), '
                                                 'IP address for SERVICE account.',
@@ -170,7 +171,8 @@ class RegistrationApi(Resource):
                  password=post_data['password'],
                  role=UserRole(post_data['role']),
                  second_factor=post_data['second_factor'],
-                 allowed_countries=[Country(country_value) for country_value in post_data['allowed_countries']])
+                 allowed_countries=[Country(country_value) for country_value in post_data['allowed_countries']],
+                 require_second_factor=post_data['require_second_factor'])
         return response_ok(SuccessDTOOut(success=True))
 
 

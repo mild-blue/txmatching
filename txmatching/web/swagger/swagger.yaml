@@ -1459,6 +1459,10 @@ definitions:
             password:
                 description: User's password.
                 type: string
+            require_second_factor:
+                description: Whether to require second factor for the user
+                example: true
+                type: boolean
             role:
                 description: User's role.
                 enum:
@@ -1477,6 +1481,7 @@ definitions:
         - allowed_countries
         - email
         - password
+        - require_second_factor
         - role
         - second_factor
         type: object

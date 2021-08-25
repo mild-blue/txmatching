@@ -1227,6 +1227,7 @@
                 "allowed_countries",
                 "email",
                 "password",
+                "require_second_factor",
                 "role",
                 "second_factor"
             ],
@@ -1249,6 +1250,11 @@
                         "EDITOR",
                         "SERVICE"
                     ]
+                },
+                "require_second_factor": {
+                    "type": "boolean",
+                    "description": "Whether to require second factor for the user",
+                    "example": true
                 },
                 "second_factor": {
                     "type": "string",

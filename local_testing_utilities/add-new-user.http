@@ -11,6 +11,19 @@ POST {{url}}/v1/user/login
 Content-Type: application/json
 
 {
+  "email": "t@t.cz",
+  "password": "bagr"
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+
+###
+
+
+POST {{url}}/v1/user/login
+Content-Type: application/json
+
+{
   "email": "{{email}}",
   "password": "{{password}}"
 }
@@ -35,10 +48,10 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "email": "",
-  "password": "",
-  "role": "ADMIN",
-  "second_factor": "",
+  "email": "t@t.cz",
+  "password": "aa",
+  "role": "VIEWER",
+  "second_factor": "+420602322527",
   "allowed_countries": [
     "AUT",
     "CZE",
@@ -47,7 +60,7 @@ Authorization: Bearer {{auth_token}}
 }
 ###
 
-GET {{url}}/v1/user/admin@example.com/reset-password-token
+GET {{url}}/v1/user/t@t.cz/reset-password-token
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
@@ -58,8 +71,8 @@ PUT {{url}}/v1/user/reset-password
 Content-Type: application/json
 
 {
-  "token": "",
-  "password": ""
+  "token": "eyJhbGciOiJIUzUxMiIsImlhdCI6MTYyOTgyMjEyOCwiZXhwIjoxNjMwNDI2OTI4LjB9.eyJ1c2VyX2lkIjo4fQ.ez1dKTjw8LdwJ7X-frrcjXEWt7WSq_ZpCfifcpxLjNQ_Q4P7WRBgLqGfw3f86xzpeO3GRed7OgjMxzc59Igonw",
+  "password": "bag2r"
 }
 
 ###
