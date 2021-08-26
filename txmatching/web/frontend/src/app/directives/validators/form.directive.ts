@@ -1,4 +1,4 @@
-import { AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn, NgModel } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn, NgModel, FormGroup } from '@angular/forms';
 import { Patient } from '@app/model/Patient';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Hla } from '@app/model/Hla';
@@ -6,6 +6,26 @@ import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { PatientEditable } from '@app/model/PatientEditable';
 
 export const separatorKeysCodes: number[] = [ENTER, SPACE];
+
+// custom validator to check that two fields match
+export function mustMatchValidator(controlName: string, matchingControlName: string) {
+  return (formGroup: FormGroup) => {
+    const control = formGroup.controls[controlName];
+    const matchingControl = formGroup.controls[matchingControlName];
+
+    if (matchingControl.errors && !matchingControl.errors.mustMatch) {
+      // return if another validator has already found an error on the matchingControl
+      return;
+    }
+
+    // set error on matchingControl if validation fails
+    if (control.value !== matchingControl.value) {
+      matchingControl.setErrors({ mustMatch: true });
+    } else {
+      matchingControl.setErrors(null);
+    }
+  }
+}
 
 export function patientNameValidator(patients: Patient[]): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {

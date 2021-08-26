@@ -16,7 +16,7 @@ import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 
 export interface RecipientInputGenerated { 
     /**
-     * Acceptable blood groups for the patient. Leave empty to use                                             compatible blood groups.
+     * Acceptable blood groups for the patient. Leave empty to use compatible blood groups.
      */
     acceptable_blood_groups?: Array<BloodGroupEnumGenerated>;
     blood_group: BloodGroupEnumGenerated;
@@ -25,7 +25,7 @@ export interface RecipientInputGenerated {
      */
     height?: number;
     /**
-     * Detected HLA antibodies of the patient. Use high resolution                                   if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.
+     * Detected HLA antibodies of the patient. Use high resolution if available. If high resolution is provided it is assumed that all tested antibodies were provided. If not it is assumed that either all or just positive ones were.
      */
     hla_antibodies: Array<HLAAntibodyInGenerated>;
     /**

@@ -85,6 +85,7 @@ import { RecipientSettingsComponent } from './components/recipient-settings/reci
 import { FormDirective } from './directives/form/form.directive';
 import { AntigenTitlePipe } from './pipes/antigen-title/antigen-title.pipe';
 import { GenerateReportComponent } from '@app/components/generate-report/generate-report.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -152,7 +153,8 @@ import { GenerateReportComponent } from '@app/components/generate-report/generat
     SimpleNumberComponent,
     FormDirective,
     AntigenTitlePipe,
-    GenerateReportComponent
+    GenerateReportComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,

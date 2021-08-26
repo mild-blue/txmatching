@@ -15,11 +15,14 @@ import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 
 
 export interface PatientModelToUpdateGenerated { 
-    blood_group?: BloodGroupEnumGenerated;
+    blood_group: BloodGroupEnumGenerated;
     /**
      * Database id of the patient
      */
     db_id: number;
+    /**
+     * Height of the patient in centimeters.
+     */
     height?: number;
     /**
      * Provide full list of all the HLA types of the patient, not just the change set
@@ -27,7 +30,13 @@ export interface PatientModelToUpdateGenerated {
     hla_typing?: HlaTypingToUpdateGenerated;
     note?: string;
     sex?: SexEnumGenerated;
+    /**
+     * Weight of the patient in kilograms.
+     */
     weight?: number;
+    /**
+     * Year of birth of the patient.
+     */
     year_of_birth?: number;
 }
 

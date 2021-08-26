@@ -28,7 +28,7 @@ from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     UpdatedDonorDTOOut
 from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
     UpdatedRecipientDTOOut
-from txmatching.data_transfer_objects.patients.patient_swagger import (
+from txmatching.data_transfer_objects.patients.patient_in_swagger import (
     DonorModelPairInJson, DonorToUpdateJson, PatientsJson,
     RecipientToUpdateJson, UpdatedDonorJsonOut, UpdatedRecipientJsonOut)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
