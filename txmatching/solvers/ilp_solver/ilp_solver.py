@@ -18,7 +18,7 @@ class ILPSolver(SolverBase):
 
     def solve(self) -> Iterator[MatchingWithScore]:
         config_for_ilp_solver = DataAndConfigurationForILPSolver(self.donors_dict, self.recipients_dict,
-                                                                 self.configuration)
+                                                                 self.config_parameters)
         solutions = solve_ilp(config_for_ilp_solver)
         recipients_db_id_to_order_id = {
             recipient.db_id: order_id for order_id, recipient in enumerate(self.recipients)

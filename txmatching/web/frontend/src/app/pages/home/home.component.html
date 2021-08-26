@@ -22,7 +22,9 @@
           </app-count>
         </h1>
         <div class="header-description" *ngIf="!loading">
-          Showing top {{matchings.length}} matchings for {{getConfigId === undefined ? 'default configuration' : 'configuration ID ' + getConfigId}}.
+          Showing top {{matchings.length}} matchings for
+          {{getConfigId === undefined || isCurrentConfigDefault ? 'default ' : ''}}
+          {{getConfigId !== undefined ? 'configuration with ID ' + getConfigId : 'configuration'}}.
         </div>
       </div>
       <div class="buttons">

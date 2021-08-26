@@ -12,16 +12,15 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
     ConfigurationJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import \
     CalculatedMatchingsJson
-from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
-    configuration_from_dict, find_config_db_id_for_configuration_and_data,
-    update_max_matchings_to_show_to_viewer)
+    configuration_parameters_from_dict, get_config_for_parameters_or_save)
 from txmatching.database.services.matching_service import (
-    create_calculated_matchings_dto, get_matchings_detailed_for_configuration)
+    create_calculated_matchings_dto,
+    get_matchings_detailed_for_pairing_result_model)
+from txmatching.database.services.pairing_result_service import \
+    get_pairing_result_comparable_to_config_or_solve
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.solve_service.solve_from_configuration import \
-    solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import matching_api
 from txmatching.web.web_utils.route_utils import response_ok
@@ -38,31 +37,25 @@ class CalculateFromConfig(Resource):
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
-        configuration = configuration_from_dict(request.json)
+        configuration_parameters = configuration_parameters_from_dict(request.json)
         user_id = get_current_user_id()
-        maybe_configuration_db_id = find_config_db_id_for_configuration_and_data(txm_event=txm_event,
-                                                                                 configuration=configuration)
-        if maybe_configuration_db_id:
-            # In case max_matchings_to_show_to_viewer was updated, ensure that the value is stored in the
-            # configuration.
-            # TODO handle better in https://github.com/mild-blue/txmatching/issues/587
-            update_max_matchings_to_show_to_viewer(maybe_configuration_db_id, configuration)
-        else:
-            pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
-            solver_service.save_pairing_result(pairing_result, user_id)
-            maybe_configuration_db_id = find_config_db_id_for_configuration_and_data(txm_event=txm_event,
-                                                                                     configuration=configuration)
 
-        assert maybe_configuration_db_id is not None
-        matchings_detailed = get_matchings_detailed_for_configuration(txm_event, maybe_configuration_db_id)
+        # 1. Get or save config
+        configuration = get_config_for_parameters_or_save(configuration_parameters, txm_event.db_id, user_id)
+
+        # 2. Get or solve pairing result
+        pairing_result_model = get_pairing_result_comparable_to_config_or_solve(configuration, txm_event)
+
+        # 3. Get matchings detailed from pairing_result_model
+        matchings_detailed = get_matchings_detailed_for_pairing_result_model(pairing_result_model, txm_event)
 
         calculated_matchings_dto = create_calculated_matchings_dto(matchings_detailed, matchings_detailed.matchings,
-                                                                   maybe_configuration_db_id)
+                                                                   configuration.id)
         calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[
-                                                        :configuration.max_number_of_matchings]
+                                                        :configuration_parameters.max_number_of_matchings]
         if get_user_role() == UserRole.VIEWER:
             calculated_matchings_dto.calculated_matchings = calculated_matchings_dto.calculated_matchings[
-                                                            :configuration.max_matchings_to_show_to_viewer]
+                                                            :configuration_parameters.max_matchings_to_show_to_viewer]
             calculated_matchings_dto.show_not_all_matchings_found = False
         logging.debug('Collected matchings and sending them')
         return response_ok(calculated_matchings_dto)

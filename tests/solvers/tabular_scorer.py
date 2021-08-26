@@ -1,13 +1,13 @@
 from typing import List, Union
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
 
 
 class TabularScorer(AdditiveScorer):
     @classmethod
-    def from_config(cls, configuration: Configuration) -> 'AdditiveScorer':
+    def from_config(cls, config_parameters: ConfigParameters) -> 'AdditiveScorer':
         raise NotImplementedError('Will not be implemented for the moment as this class is just for testing')
 
     def score_transplant_calculated(self, donor: Donor,

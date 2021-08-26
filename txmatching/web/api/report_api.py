@@ -8,20 +8,21 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
     to_lists_for_fe
-from txmatching.database.services import solver_service
 from txmatching.database.services.config_service import (
-    find_config_db_id_for_configuration_and_data,
-    get_configuration_from_db_id_or_default)
+    get_configuration_from_db_id_or_default,
+    get_configuration_parameters_from_db_id_or_default,
+    save_config_parameters_to_db)
+from txmatching.database.services.pairing_result_service import \
+    get_pairing_result_comparable_to_config_or_solve
 from txmatching.database.services.report_service import (
     ReportConfiguration, export_patients_to_xlsx_file, generate_pdf_report)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.solve_service.solve_from_configuration import \
-    solve_from_configuration
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.utils.time import get_formatted_now
 from txmatching.web.web_utils.namespaces import report_api
@@ -71,23 +72,21 @@ class MatchingReport(Resource):
         include_patients_section = request_arg_flag(INCLUDE_PATIENTS_SECTION_PARAM)
 
         txm_event = get_txm_event_complete(txm_event_id)
+        user_id = get_current_user_id()
 
-        configuration = get_configuration_from_db_id_or_default(txm_event, configuration_db_id=config_id)
-        maybe_configuration_db_id = find_config_db_id_for_configuration_and_data(txm_event=txm_event,
-                                                                                 configuration=configuration)
+        configuration = get_configuration_from_db_id_or_default(txm_event, config_id)
 
-        if maybe_configuration_db_id is None:
-            pairing_result = solve_from_configuration(configuration, txm_event=txm_event)
-            user_id = get_current_user_id()
-            solver_service.save_pairing_result(pairing_result, user_id)
-            maybe_configuration_db_id = find_config_db_id_for_configuration_and_data(txm_event=txm_event,
-                                                                                     configuration=configuration)
+        # If configuration not in db yet, save default configuration
+        if configuration is None:
+            configuration = save_config_parameters_to_db(ConfigParameters(), txm_event.db_id, user_id)
 
-        assert maybe_configuration_db_id is not None
+        # Get or solve pairing result
+        pairing_result_model = get_pairing_result_comparable_to_config_or_solve(configuration, txm_event)
 
         directory, report_file_name = generate_pdf_report(
             txm_event,
-            maybe_configuration_db_id,
+            configuration.id,
+            pairing_result_model,
             matching_id,
             ReportConfiguration(
                 matchings_below_chosen,
@@ -123,10 +122,10 @@ class PatientsXLSReport(Resource):
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
 
-        configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
-                                                                configuration_db_id=config_id)
+        configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
+                                                                                      configuration_db_id=config_id)
 
-        patients_dto = to_lists_for_fe(txm_event, configuration)
+        patients_dto = to_lists_for_fe(txm_event, configuration_parameters)
 
         xls_file_name = f'patients_{get_formatted_now()}.xlsx'
         buffer = export_patients_to_xlsx_file(patients_dto)

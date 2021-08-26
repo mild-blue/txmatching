@@ -1,11 +1,12 @@
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.configuration.configuration import Configuration
-from txmatching.database.services import solver_service
+from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.database.services.config_service import \
+    save_config_parameters_to_db
+from txmatching.database.services.pairing_result_service import \
+    solve_from_configuration_and_save
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.solve_service.solve_from_configuration import \
-    solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import API_VERSION, REPORTS_NAMESPACE, TXM_EVENT_NAMESPACE
 from txmatching.web.api.report_api import (INCLUDE_PATIENTS_SECTION_PARAM,
@@ -21,8 +22,16 @@ class TestReportApi(DbTests):
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        pairing_result = solve_from_configuration(Configuration(), txm_event)
-        solver_service.save_pairing_result(pairing_result, 1)
+        configuration_parameters = ConfigParameters()
+        configuration = save_config_parameters_to_db(
+            config_parameters=configuration_parameters,
+            txm_event_id=txm_event.db_id,
+            user_id=1
+        )
+        solve_from_configuration_and_save(
+            configuration=configuration,
+            txm_event=txm_event
+        )
 
         # include param section
         with self.app.test_client() as client:
@@ -48,8 +57,16 @@ class TestReportApi(DbTests):
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        pairing_result = solve_from_configuration(Configuration(), txm_event)
-        solver_service.save_pairing_result(pairing_result, 1)
+        configuration_parameters = ConfigParameters()
+        configuration = save_config_parameters_to_db(
+            config_parameters=configuration_parameters,
+            txm_event_id=txm_event.db_id,
+            user_id=1
+        )
+        solve_from_configuration_and_save(
+            configuration=configuration,
+            txm_event=txm_event
+        )
 
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
@@ -66,8 +83,16 @@ class TestReportApi(DbTests):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        pairing_result = solve_from_configuration(Configuration(), txm_event)
-        solver_service.save_pairing_result(pairing_result, 1)
+        configuration_parameters = ConfigParameters()
+        configuration = save_config_parameters_to_db(
+            config_parameters=configuration_parameters,
+            txm_event_id=txm_event.db_id,
+            user_id=1
+        )
+        solve_from_configuration_and_save(
+            configuration=configuration,
+            txm_event=txm_event
+        )
 
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
@@ -85,8 +110,16 @@ class TestReportApi(DbTests):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(self.txm_event_db_id)
-        pairing_result = solve_from_configuration(Configuration(), txm_event)
-        solver_service.save_pairing_result(pairing_result, 1)
+        configuration_parameters = ConfigParameters()
+        configuration = save_config_parameters_to_db(
+            config_parameters=configuration_parameters,
+            txm_event_id=txm_event.db_id,
+            user_id=1
+        )
+        solve_from_configuration_and_save(
+            configuration=configuration,
+            txm_event=txm_event
+        )
 
         # Less than min value - failure
         with self.app.test_client() as client:

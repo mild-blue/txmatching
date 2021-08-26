@@ -42,7 +42,7 @@ from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     PatientsRecomputeParsingSuccessJson
 from txmatching.database.services.config_service import \
-    get_configuration_from_db_id_or_default
+    get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.patient_service import (
     delete_donor_recipient_pair, get_donor_recipient_pair,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
@@ -87,8 +87,8 @@ class AllPatients(Resource):
         include_antibodies_raw = request_arg_flag('include-antibodies-raw')
         logger.debug(f'include_antibodies_raw={include_antibodies_raw}')
         txm_event = get_txm_event_complete(txm_event_id, load_antibodies_raw=include_antibodies_raw)
-        configuration = get_configuration_from_db_id_or_default(txm_event, config_id)
-        lists_for_fe = to_lists_for_fe(txm_event, configuration)
+        configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
+        lists_for_fe = to_lists_for_fe(txm_event, configuration_parameters)
         logger.debug('Sending patients to FE')
         return response_ok(lists_for_fe)
 
@@ -191,9 +191,9 @@ class AlterDonor(Resource):
         guard_open_txm_event(txm_event_id)
         txm_event = get_txm_event_complete(txm_event_id)
         all_recipients = txm_event.all_recipients
-        configuration = get_configuration_from_db_id_or_default(txm_event=txm_event,
-                                                                configuration_db_id=config_id)
-        scorer = scorer_from_configuration(configuration)
+        configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
+                                                                           configuration_db_id=config_id)
+        scorer = scorer_from_configuration(configuration_parameters)
         updated_donor = update_donor(donor_update_dto, txm_event_id)
 
         return response_ok(
@@ -201,7 +201,7 @@ class AlterDonor(Resource):
                 donor=donor_to_donor_dto_out(
                     updated_donor,
                     all_recipients,
-                    configuration,
+                    configuration_parameters,
                     scorer
                 ),
                 parsing_errors=get_parsing_errors_for_patients([updated_donor.medical_id], txm_event_id)

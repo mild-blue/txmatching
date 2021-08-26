@@ -1,6 +1,6 @@
 from typing import Dict
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.solvers.matching.matching import Matching
 
 
@@ -9,8 +9,8 @@ class ScorerBase:
         """
         Higher score means better matching
         """
-        raise NotImplementedError("Has to be overridden")
+        raise NotImplementedError('Has to be overridden')
 
     @classmethod
-    def from_config(cls, configuration: Configuration) -> "ScorerBase":
-        raise NotImplementedError("Has to be overridden")
+    def from_config(cls, config_parameters: ConfigParameters) -> 'ScorerBase':
+        raise NotImplementedError('Has to be overridden')

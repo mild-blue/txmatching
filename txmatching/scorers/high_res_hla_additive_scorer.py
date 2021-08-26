@@ -1,4 +1,4 @@
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
 from txmatching.utils.enums import HLAGroup, MatchType
 from txmatching.utils.hla_system.compatibility_index import CIConfiguration
@@ -35,8 +35,8 @@ class HighResScorerCIConfiguration(CIConfiguration):
 class HighResScorer(HLAAdditiveScorer):
 
     @classmethod
-    def from_config(cls, configuration: Configuration) -> 'HighResScorer':
-        hla_additive_scorer = HighResScorer(configuration)
+    def from_config(cls, config_parameters: ConfigParameters) -> 'HighResScorer':
+        hla_additive_scorer = HighResScorer(config_parameters)
         return hla_additive_scorer
 
     @property

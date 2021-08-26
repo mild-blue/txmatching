@@ -110,10 +110,6 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     return txmEventOpen && configIdDefined;
   }
 
-  get isCurrentConfigDefault(): boolean {
-    return this._eventService.getConfigId() === this.defaultTxmEvent?.defaultConfigId;
-  }
-
   get getTitleOfDefaultConfigButton(): string {
     if (!this.canSetDefaultConfig) {
       return 'The current configuration cannot be set as default';

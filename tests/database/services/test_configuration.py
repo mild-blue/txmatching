@@ -1,9 +1,10 @@
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.configuration.configuration import (
-    Configuration, ForbiddenCountryCombination, ManualDonorRecipientScore)
+from txmatching.configuration.config_parameters import (
+    ConfigParameters, ForbiddenCountryCombination, ManualDonorRecipientScore)
 from txmatching.database.services.config_service import (
-    configuration_from_dict, get_configuration_from_db_id_or_default,
-    save_configuration_to_db, set_config_as_default)
+    configuration_parameters_from_dict,
+    get_configuration_parameters_from_db_id_or_default,
+    save_config_parameters_to_db, set_config_as_default)
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.utils.country_enum import Country
@@ -14,31 +15,30 @@ class TestConfiguration(DbTests):
     def test_configuration(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
-        configuration_expected = Configuration(
+        configuration_parameters_expected = ConfigParameters(
             solver_constructor_name=Solver.AllSolutionsSolver,
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
-        config_id = save_configuration_to_db(configuration_expected, txm_event, 1)
+        configuration_actual = save_config_parameters_to_db(configuration_parameters_expected, txm_event.db_id, 1)
 
-        configuration_actual = get_configuration_from_db_id_or_default(txm_event, config_id)
-        self.assertEqual(configuration_expected, configuration_actual)
+        self.assertEqual(configuration_parameters_expected, configuration_actual.parameters)
 
     def test_default_configuration(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
-        configuration_expected = Configuration(
+        configuration_parameters_expected = ConfigParameters(
             solver_constructor_name=Solver.AllSolutionsSolver,
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
-        self.assertNotEqual(Configuration(), configuration_expected)
-        config_id = save_configuration_to_db(configuration_expected, txm_event, 1)
+        self.assertNotEqual(ConfigParameters(), configuration_parameters_expected)
+        configuration = save_config_parameters_to_db(configuration_parameters_expected, txm_event.db_id, 1)
 
-        actual_configuration = get_configuration_from_db_id_or_default(txm_event, None)
-        self.assertEqual(Configuration(), actual_configuration)
+        actual_configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, None)
+        self.assertEqual(ConfigParameters(), actual_configuration_parameters)
 
-        set_config_as_default(txm_event.db_id, config_id)
+        set_config_as_default(txm_event.db_id, configuration.id)
         txm_event = get_txm_event_complete(txm_event_db_id)
 
-        actual_configuration = get_configuration_from_db_id_or_default(txm_event, None)
-        self.assertEqual(configuration_expected, actual_configuration)
+        actual_configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, None)
+        self.assertEqual(configuration_parameters_expected, actual_configuration_parameters)
 
     def test_configuration_from_dto(self):
         self.fill_db_with_patients_and_results()
@@ -56,7 +56,7 @@ class TestConfiguration(DbTests):
                     'use_high_resolution': False,
                     'manual_donor_recipient_scores': [{'donor_db_id': 1, 'recipient_db_id': 0, 'score': 0.0}]}
 
-        config = configuration_from_dict(dto_dict)
+        config = configuration_parameters_from_dict(dto_dict)
         self.assertEqual(Country.AUT, config.forbidden_country_combinations[0].donor_country)
         self.assertEqual([ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=0, score=0.0)],
                          config.manual_donor_recipient_scores, )
@@ -65,44 +65,81 @@ class TestConfiguration(DbTests):
 
     def test_configuration_comparison(self):
         self.assertFalse(
-            Configuration(max_cycle_length=5).comparable(
-                Configuration(max_cycle_length=4))
+            ConfigParameters(max_cycle_length=5).comparable(
+                ConfigParameters(max_cycle_length=4))
         )
-        self.assertFalse(Configuration(
+        self.assertFalse(ConfigParameters(
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)]).comparable(
-            Configuration(forbidden_country_combinations=[ForbiddenCountryCombination(Country.AUT, Country.CZE)]))
+            ConfigParameters(forbidden_country_combinations=[ForbiddenCountryCombination(Country.AUT, Country.CZE)]))
         )
         self.assertTrue(
-            Configuration(forbidden_country_combinations=[
+            ConfigParameters(forbidden_country_combinations=[
                 ForbiddenCountryCombination(Country.CZE, Country.AUT),
                 ForbiddenCountryCombination(Country.ISR, Country.CAN),
             ]).comparable(
-                Configuration(forbidden_country_combinations=[
+                ConfigParameters(forbidden_country_combinations=[
                     ForbiddenCountryCombination(Country.ISR, Country.CAN),
                     ForbiddenCountryCombination(Country.CZE, Country.AUT),
                 ])
             )
         )
         self.assertTrue(
-            Configuration(max_matchings_to_show_to_viewer=10).comparable(
-                Configuration(max_matchings_to_show_to_viewer=20)
+            ConfigParameters(max_matchings_to_show_to_viewer=10).comparable(
+                ConfigParameters(max_matchings_to_show_to_viewer=20)
             )
         )
 
         self.assertTrue(
-            Configuration(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 2, 1),
-                                                         ManualDonorRecipientScore(1, 3, 1)]).comparable(
-                Configuration(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 3, 1),
-                                                             ManualDonorRecipientScore(1, 2, 1)])
+            ConfigParameters(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 2, 1),
+                                                            ManualDonorRecipientScore(1, 3, 1)]).comparable(
+                ConfigParameters(manual_donor_recipient_scores=[ManualDonorRecipientScore(1, 3, 1),
+                                                                ManualDonorRecipientScore(1, 2, 1)])
             )
         )
 
-        self.assertTrue(Configuration().comparable(Configuration()))
-        self.assertTrue(Configuration(max_matchings_in_all_solutions_solver=10).comparable(
-            Configuration(max_matchings_in_all_solutions_solver=100)))
-        self.assertFalse(Configuration(max_matchings_in_all_solutions_solver=100).comparable(
-            Configuration(max_matchings_in_all_solutions_solver=10)))
+        self.assertTrue(ConfigParameters().comparable(ConfigParameters()))
+        self.assertTrue(ConfigParameters(max_matchings_in_all_solutions_solver=10).comparable(
+            ConfigParameters(max_matchings_in_all_solutions_solver=100)))
+        self.assertFalse(ConfigParameters(max_matchings_in_all_solutions_solver=100).comparable(
+            ConfigParameters(max_matchings_in_all_solutions_solver=10)))
         self.assertTrue(
-            Configuration(required_patient_db_ids=[2, 1]).comparable(Configuration(required_patient_db_ids=[1, 2])))
+            ConfigParameters(required_patient_db_ids=[2, 1]).comparable(ConfigParameters(required_patient_db_ids=[1, 2])))
         self.assertFalse(
-            Configuration(required_patient_db_ids=[1]).comparable(Configuration(required_patient_db_ids=[1, 2])))
+            ConfigParameters(required_patient_db_ids=[1]).comparable(ConfigParameters(required_patient_db_ids=[1, 2])))
+
+    def test_configuration_equality(self):
+        self.assertNotEqual(
+            ConfigParameters(max_cycle_length=5),
+            ConfigParameters(max_cycle_length=4)
+        )
+        self.assertNotEqual(
+            ConfigParameters(
+                forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)]
+            ),
+            ConfigParameters(
+                forbidden_country_combinations=[ForbiddenCountryCombination(Country.AUT, Country.CZE)]
+            )
+        )
+        self.assertNotEqual(
+            ConfigParameters(forbidden_country_combinations=[
+                ForbiddenCountryCombination(Country.CZE, Country.AUT),
+                ForbiddenCountryCombination(Country.ISR, Country.CAN),
+            ]),
+            ConfigParameters(forbidden_country_combinations=[
+                ForbiddenCountryCombination(Country.ISR, Country.CAN),
+                ForbiddenCountryCombination(Country.CZE, Country.AUT),
+            ])
+        )
+        self.assertNotEqual(
+            ConfigParameters(max_matchings_to_show_to_viewer=10),
+            ConfigParameters(max_matchings_to_show_to_viewer=20)
+        )
+
+        self.assertEqual(
+            ConfigParameters(),
+            ConfigParameters()
+        )
+        self.assertEqual(
+            ConfigParameters(max_matchings_to_show_to_viewer=20),
+            ConfigParameters(max_matchings_to_show_to_viewer=20)
+        )

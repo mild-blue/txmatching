@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 from typing import Dict, Iterator
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class AllSolutionsSolver(SolverBase):
-    configuration: Configuration
+    config_parameters: ConfigParameters
     donors_dict: Dict[DonorDbId, Donor]
     recipients_dict: Dict[RecipientDbId, Recipient]
     scorer: AdditiveScorer
@@ -24,7 +24,7 @@ class AllSolutionsSolver(SolverBase):
     def solve(self) -> Iterator[MatchingWithScore]:
         possible_path_combinations = find_possible_path_combinations_from_score_matrix(
             score_matrix=self.score_matrix,
-            configuration=self.configuration,
+            config_parameters=self.config_parameters,
             donors=list(self.donors)
         )
 

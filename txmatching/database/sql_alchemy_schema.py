@@ -26,14 +26,12 @@ class ConfigModel(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     txm_event_id = Column(Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=False)
     parameters = Column(JSON, unique=False, nullable=False)
-    patients_hash = Column(BigInteger, unique=False, nullable=False)
     created_by = Column(Integer, unique=False, nullable=False)
     # created at and updated at is not handled by triggers as then am not sure how tests would work, as triggers
     # seem to be specific as per db and I do not think its worth the effort as this simple approach works fine
     created_at = Column(DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
-    pairing_results = relationship('PairingResultModel', backref='config', passive_deletes=True)
     UniqueConstraint('txm_event_id')
 
 
@@ -42,7 +40,9 @@ class PairingResultModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    config_id = Column(Integer, ForeignKey('config.id', ondelete='CASCADE'), unique=False, nullable=False)
+    original_config_id = Column(Integer, ForeignKey('config.id', ondelete='CASCADE'), unique=False, nullable=False)
+    original_config = relationship('ConfigModel', passive_deletes=True, lazy='joined')
+    patients_hash = Column(BigInteger, unique=False, nullable=False)
     calculated_matchings = Column(JSON, unique=False, nullable=False)
     score_matrix = Column(JSON, unique=False, nullable=False)
     valid = Column(BOOLEAN, unique=False, nullable=False)

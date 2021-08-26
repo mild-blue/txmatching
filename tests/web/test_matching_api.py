@@ -3,12 +3,13 @@ import dataclasses
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.configuration.configuration import Configuration
-from txmatching.database.services import solver_service
+from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.database.services.config_service import \
+    save_config_parameters_to_db
+from txmatching.database.services.pairing_result_service import \
+    solve_from_configuration_and_save
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.solve_service.solve_from_configuration import \
-    solve_from_configuration
 from txmatching.utils.enums import (HLACrossmatchLevel, HLAGroup, MatchType,
                                     Solver)
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -25,18 +26,25 @@ class TestSaveAndGetConfiguration(DbTests):
 
     def test_get_matchings(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data.xlsx'))
-        # TODO remove in https://github.com/mild-blue/txmatching/issues/372
-        configuration = Configuration(
+
+        configuration_parameters = ConfigParameters(
             require_compatible_blood_group=False,
             require_better_match_in_compatibility_index=False,
             require_better_match_in_compatibility_index_or_blood_group=False,
             max_number_of_distinct_countries_in_round=10
         )
-        pairing_result = solve_from_configuration(configuration, get_txm_event_complete(txm_event_db_id))
-        solver_service.save_pairing_result(pairing_result, 1)
+
+        configuration = save_config_parameters_to_db(config_parameters=configuration_parameters,
+                                                     txm_event_id=txm_event_db_id,
+                                                     user_id=1)
+
+        solve_from_configuration_and_save(
+            configuration=configuration,
+            txm_event=get_txm_event_complete(txm_event_db_id)
+        )
 
         with self.app.test_client() as client:
-            conf_dto = dataclasses.asdict(configuration)
+            conf_dto = dataclasses.asdict(configuration_parameters)
 
             res = client.post(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{MATCHING_NAMESPACE}/calculate-for-config',
@@ -230,8 +238,8 @@ class TestSaveAndGetConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
 
         with self.app.test_client() as client:
-            conf_dto = dataclasses.asdict(Configuration(solver_constructor_name=Solver.AllSolutionsSolver,
-                                                        max_number_of_distinct_countries_in_round=1))
+            conf_dto = dataclasses.asdict(ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
+                                                           max_number_of_distinct_countries_in_round=1))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',
@@ -240,9 +248,9 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(200, res.status_code)
             self.assertEqual(9, res.json['found_matchings_count'])
 
-            conf_dto2 = dataclasses.asdict(Configuration(solver_constructor_name=Solver.AllSolutionsSolver,
-                                                         max_number_of_distinct_countries_in_round=50,
-                                                         hla_crossmatch_level=HLACrossmatchLevel.NONE))
+            conf_dto2 = dataclasses.asdict(ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
+                                                            max_number_of_distinct_countries_in_round=50,
+                                                            hla_crossmatch_level=HLACrossmatchLevel.NONE))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',
@@ -255,8 +263,8 @@ class TestSaveAndGetConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
 
         with self.app.test_client() as client:
-            conf_dto = dataclasses.asdict(Configuration(solver_constructor_name=Solver.AllSolutionsSolver,
-                                                        max_number_of_distinct_countries_in_round=1))
+            conf_dto = dataclasses.asdict(ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
+                                                           max_number_of_distinct_countries_in_round=1))
 
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',

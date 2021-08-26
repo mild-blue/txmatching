@@ -14,15 +14,16 @@ from local_testing_utilities.populate_db import (ADMIN_USER, SERVICE_USER,
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.auth.auth_check import store_user_in_context
 from txmatching.auth.data_types import UserRole
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.db import db
-from txmatching.database.services import solver_service
+from txmatching.database.services.config_service import \
+    save_config_parameters_to_db
+from txmatching.database.services.pairing_result_service import \
+    solve_from_configuration_and_save
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_excel
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.solve_service.solve_from_configuration import \
-    solve_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.web import (API_VERSION, USER_NAMESPACE, add_all_namespaces,
@@ -83,8 +84,16 @@ class DbTests(unittest.TestCase):
     def fill_db_with_patients_and_results(self) -> int:
         txm_event_db_id = self.fill_db_with_patients()
         txm_event = get_txm_event_complete(txm_event_db_id)
-        pairing_result = solve_from_configuration(Configuration(), txm_event)
-        solver_service.save_pairing_result(pairing_result, 1)
+        configuration_parameters = ConfigParameters()
+        configuration = save_config_parameters_to_db(
+            config_parameters=configuration_parameters,
+            txm_event_id=txm_event_db_id,
+            user_id=1
+        )
+        solve_from_configuration_and_save(
+            configuration=configuration,
+            txm_event=txm_event
+        )
         return txm_event_db_id
 
     @staticmethod
