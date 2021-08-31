@@ -1,4 +1,4 @@
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.scorers.hla_additive_scorer import HLAAdditiveScorer
 from txmatching.utils.enums import HLAGroup, MatchType
 from txmatching.utils.hla_system.compatibility_index import CIConfiguration
@@ -29,8 +29,8 @@ class SplitScorerCIConfiguration(CIConfiguration):
 class SplitScorer(HLAAdditiveScorer):
 
     @classmethod
-    def from_config(cls, configuration: Configuration) -> 'SplitScorer':
-        hla_additive_scorer = SplitScorer(configuration)
+    def from_config(cls, config_parameters: ConfigParameters) -> 'SplitScorer':
+        hla_additive_scorer = SplitScorer(config_parameters)
         return hla_additive_scorer
 
     @property

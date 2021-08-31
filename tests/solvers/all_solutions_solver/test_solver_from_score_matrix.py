@@ -5,7 +5,7 @@ from typing import List
 import numpy as np
 
 from tests.solvers.tabular_scorer import TabularScorer
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.hla_model import HLATyping
 from txmatching.patients.patient import Donor
 from txmatching.patients.patient_parameters import PatientParameters
@@ -32,7 +32,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
         all_solutions = list(
             find_possible_path_combinations_from_score_matrix(score_matrix=np.array(self._score_matrix),
                                                               donors=_get_donors_for_score_matrix(self._score_matrix),
-                                                              configuration=Configuration(
+                                                              config_parameters=ConfigParameters(
                                                                   solver_constructor_name=Solver.AllSolutionsSolver,
                                                                   max_cycle_length=100,
                                                                   max_sequence_length=100,
@@ -58,7 +58,7 @@ class TestAllSolutionsSolver(unittest.TestCase):
 
         solutions = find_possible_path_combinations_from_score_matrix(score_matrix_test,
                                                                       _get_donors_for_score_matrix(score_matrix_test),
-                                                                      Configuration(
+                                                                      ConfigParameters(
                                                                           solver_constructor_name=Solver.AllSolutionsSolver,
                                                                           max_sequence_length=100,
                                                                           max_cycle_length=100))

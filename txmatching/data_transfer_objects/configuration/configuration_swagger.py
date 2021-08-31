@@ -1,6 +1,6 @@
 from flask_restx import fields
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.enums_swagger import (
     CountryCodeJson, HlaCrossmatchLevelJson, ScorerEnumJson, SolverEnumJson)
 from txmatching.web.web_utils.namespaces import matching_api
@@ -15,7 +15,7 @@ ForbiddenCountryCombination = matching_api.model('ForbiddenCountryCombination', 
     'donor_country': fields.Nested(CountryCodeJson, required=True),
     'recipient_country': fields.Nested(CountryCodeJson, required=True),
 })
-_default_configuration = Configuration()
+_default_configuration = ConfigParameters()
 ConfigurationJson = matching_api.model(
     'Configuration',
     {

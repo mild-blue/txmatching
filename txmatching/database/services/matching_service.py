@@ -8,9 +8,11 @@ from txmatching.data_transfer_objects.matchings.matchings_model import \
     MatchingsModel
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
     get_detailed_score
-from txmatching.database.services.config_service import (
-    get_configuration_from_db_id_or_default,
-    get_pairing_result_for_configuration_db_id)
+from txmatching.database.services.config_service import \
+    configuration_from_config_model
+from txmatching.database.services.scorer_service import (
+    matchings_model_from_dict, score_matrix_from_dict)
+from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
@@ -39,21 +41,25 @@ class MatchingsDetailed:
     max_transplant_score: float
 
 
-def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
-                                             configuration_db_id: int) -> MatchingsDetailed:
-    logger.debug('Getting detailed matchings')
-    configuration = get_configuration_from_db_id_or_default(txm_event, configuration_db_id)
-    scorer = scorer_from_configuration(configuration)
+def get_matchings_detailed_for_pairing_result_model(
+        pairing_result_model: PairingResultModel,
+        txm_event: TxmEvent
+) -> MatchingsDetailed:
+    logger.debug(f'Getting detailed matchings for pairing result {pairing_result_model.id}')
+    configuration_parameters = configuration_from_config_model(pairing_result_model.original_config).parameters
+    scorer = scorer_from_configuration(configuration_parameters)
 
-    database_pairing_result = get_pairing_result_for_configuration_db_id(configuration_db_id)
+    score_matrix = score_matrix_from_dict(pairing_result_model.score_matrix)
+    matchings_model = matchings_model_from_dict(pairing_result_model.calculated_matchings)
+
     logger.debug('Getting matchings with score')
-    matchings_with_score = _matchings_dto_to_matching_with_score(database_pairing_result.matchings,
+    matchings_with_score = _matchings_dto_to_matching_with_score(matchings_model,
                                                                  txm_event.active_donors_dict,
                                                                  txm_event.active_recipients_dict)
     logger.debug('Getting score dict with score')
     score_dict = {
         (donor_db_id, recipient_db_id): score for donor_db_id, row in
-        zip(txm_event.active_donors_dict, database_pairing_result.score_matrix) for recipient_db_id, score in
+        zip(txm_event.active_donors_dict, score_matrix) for recipient_db_id, score in
         zip(txm_event.active_recipients_dict, row)
     }
     logger.debug('Getting compatible_blood dict with score')
@@ -77,7 +83,7 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
     antibody_matches_dict = {
         (donor_db_id, recipient_db_id): get_crossmatched_antibodies(donor.parameters.hla_typing,
                                                                     recipient.hla_antibodies,
-                                                                    configuration.use_high_resolution
+                                                                    configuration_parameters.use_high_resolution
                                                                     )
         for donor_db_id, donor in txm_event.active_donors_dict.items()
         for recipient_db_id, recipient in txm_event.active_recipients_dict.items() if
@@ -90,8 +96,8 @@ def get_matchings_detailed_for_configuration(txm_event: TxmEvent,
         compatible_blood_dict,
         detailed_compatibility_index_dict,
         antibody_matches_dict,
-        database_pairing_result.matchings.found_matchings_count,
-        database_pairing_result.matchings.show_not_all_matchings_found,
+        matchings_model.found_matchings_count,
+        matchings_model.show_not_all_matchings_found,
         scorer.max_transplant_score
     )
 

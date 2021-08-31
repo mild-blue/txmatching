@@ -6,7 +6,7 @@ import numpy as np
 from graph_tool import Graph, topology
 
 from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
 from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only import \
@@ -51,7 +51,7 @@ def get_compatible_donor_idxs_per_donor_idx(score_matrix: np.ndarray,
 def find_all_cycles(n_donors: int,
                     compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
                     donors: List[Donor],
-                    configuration: Configuration) -> List[Path]:
+                    config_parameters: ConfigParameters) -> List[Path]:
     """
     Circuits between pairs, each pair is denoted by it's pair = donor index
     """
@@ -59,14 +59,14 @@ def find_all_cycles(n_donors: int,
                                                                            compatible_donor_idxs_per_donor_idx)
     all_circuits = []
     for i, circuit in enumerate(topology.all_circuits(donor_to_compatible_donor_graph)):
-        if (len(circuit) <= configuration.max_cycle_length and
-                country_count_in_path(circuit, donors) <= configuration.max_number_of_distinct_countries_in_round):
+        if (len(circuit) <= config_parameters.max_cycle_length and
+                country_count_in_path(circuit, donors) <= config_parameters.max_number_of_distinct_countries_in_round):
             circuit_with_end = tuple(list(circuit) + [circuit[0]])
             all_circuits.append(circuit_with_end)
-        if i > configuration.max_cycles_in_all_solutions_solver:
+        if i > config_parameters.max_cycles_in_all_solutions_solver:
             raise TooComplicatedDataForAllSolutionsSolver(
                 f'Number of possible cycles in data was above threshold of '
-                f'{configuration.max_cycles_in_all_solutions_solver})')
+                f'{config_parameters.max_cycles_in_all_solutions_solver})')
 
     return all_circuits
 

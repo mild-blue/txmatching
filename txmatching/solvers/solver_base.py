@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, Iterator, List
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
@@ -16,7 +16,7 @@ from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 
 @dataclass(init=True)
 class SolverBase:
-    configuration: Configuration
+    config_parameters: ConfigParameters
     donors_dict: Dict[DonorDbId, Donor]
     recipients_dict: Dict[RecipientDbId, Recipient]
     scorer: AdditiveScorer

@@ -1,22 +1,20 @@
 import datetime
 import difflib
 import os
-import shutil
 import sys
 
 from local_testing_utilities.generate_patients import \
     store_generated_patients_from_folder
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.configuration.configuration import Configuration
-from txmatching.database.services import solver_service
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.services.config_service import \
-    find_config_db_id_for_configuration_and_data
+    save_config_parameters_to_db
+from txmatching.database.services.pairing_result_service import \
+    solve_from_configuration_and_save
 from txmatching.database.services.report_service import (ReportConfiguration,
                                                          generate_html_report)
 from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, get_txm_event_db_id_by_name)
-from txmatching.solve_service.solve_from_configuration import \
-    solve_from_configuration
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 SAMPLE_MATCHING_ID = 1
@@ -28,16 +26,21 @@ def generate_report_for_test():
     txm_event_id = get_txm_event_db_id_by_name('high_res_example_data')
     txm_event = get_txm_event_complete(txm_event_id)
 
-    config = Configuration(max_number_of_matchings=5)
+    configuration_parameters = ConfigParameters(max_number_of_matchings=5)
+    configuration = save_config_parameters_to_db(
+        config_parameters=configuration_parameters,
+        txm_event_id=txm_event_id,
+        user_id=1
+    )
 
-    pairing_result = solve_from_configuration(config, txm_event)
-    solver_service.save_pairing_result(pairing_result, 1)
-
-    config_id = find_config_db_id_for_configuration_and_data(config, txm_event)
+    pairing_result_model = solve_from_configuration_and_save(configuration, txm_event)
 
     report_config = ReportConfiguration(0, False)
 
-    path, file_name = generate_html_report(txm_event, config_id, SAMPLE_MATCHING_ID, report_config)
+    path, file_name = generate_html_report(
+        txm_event, configuration.id, pairing_result_model,
+        SAMPLE_MATCHING_ID, report_config
+    )
     result_html_full_path = path + '/' + file_name
     return result_html_full_path
 

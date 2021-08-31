@@ -125,4 +125,8 @@ export class AbstractLoggedComponent implements OnInit {
   get getConfigId(): number | undefined {
     return this._eventService.getConfigId();
   }
+
+  get isCurrentConfigDefault(): boolean {
+    return this._eventService.getConfigId() === this.defaultTxmEvent?.defaultConfigId;
+  }
 }

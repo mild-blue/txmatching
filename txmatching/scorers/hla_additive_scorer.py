@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Optional
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
@@ -15,9 +15,9 @@ from txmatching.utils.hla_system.hla_crossmatch import \
 
 
 class HLAAdditiveScorer(AdditiveScorer, ABC):
-    def __init__(self, configuration: Configuration = Configuration()):
-        super().__init__(configuration.manual_donor_recipient_scores)
-        self._configuration = configuration
+    def __init__(self, config_parameters: ConfigParameters = ConfigParameters()):
+        super().__init__(config_parameters.manual_donor_recipient_scores)
+        self._configuration = config_parameters
 
     @property
     def ci_configuration(self) -> CIConfiguration:

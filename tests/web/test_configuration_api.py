@@ -1,7 +1,7 @@
 import dataclasses
 
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.web import (API_VERSION, CONFIGURATION_NAMESPACE,
                             MATCHING_NAMESPACE, TXM_EVENT_NAMESPACE)
 
@@ -13,20 +13,21 @@ class TestPatientService(DbTests):
 
         self.assertEqual(0, self._get_config('default', txm_event_db_id)['max_matchings_to_show_to_viewer'])
 
-        configuration = Configuration(max_matchings_to_show_to_viewer=10)
-        first_config_id = self._calculate_for_config(configuration, txm_event_db_id)['config_id']
-        # TODO this set default should not be needed here https://github.com/mild-blue/txmatching/issues/587
+        config_parameters = ConfigParameters(max_matchings_to_show_to_viewer=10)
+        first_config_id = self._calculate_for_config(config_parameters, txm_event_db_id)['config_id']
         self._set_default_config(first_config_id, txm_event_db_id)
         self.assertEqual(10, self._get_config('default', txm_event_db_id)['max_matchings_to_show_to_viewer'])
+        self.assertEqual(10, self._get_config(first_config_id, txm_event_db_id)['max_matchings_to_show_to_viewer'])
 
-        configuration = Configuration(max_matchings_to_show_to_viewer=2)
-        should_be_first_config_id = self._calculate_for_config(configuration, txm_event_db_id)['config_id']
-        self.assertEqual(first_config_id, should_be_first_config_id)
-        self.assertEqual(2, self._get_config('default', txm_event_db_id)['max_matchings_to_show_to_viewer'])
+        config_parameters = ConfigParameters(max_matchings_to_show_to_viewer=2)
+        second_config_id = self._calculate_for_config(config_parameters, txm_event_db_id)['config_id']
+        self.assertNotEqual(first_config_id, second_config_id)
+        self.assertEqual(10, self._get_config('default', txm_event_db_id)['max_matchings_to_show_to_viewer'])
+        self.assertEqual(2, self._get_config(second_config_id, txm_event_db_id)['max_matchings_to_show_to_viewer'])
 
-        configuration = Configuration(max_number_of_matchings=13)
-        second_config_id = self._calculate_for_config(configuration, txm_event_db_id)['config_id']
-        self._set_default_config(second_config_id, txm_event_db_id)
+        config_parameters = ConfigParameters(max_number_of_matchings=13)
+        third_config_id = self._calculate_for_config(config_parameters, txm_event_db_id)['config_id']
+        self._set_default_config(third_config_id, txm_event_db_id)
         self.assertEqual(0, self._get_config('default', txm_event_db_id)['max_matchings_to_show_to_viewer'])
 
     def _calculate_for_config(self, configuration, txm_event_db_id):
