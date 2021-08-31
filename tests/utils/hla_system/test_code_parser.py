@@ -229,7 +229,7 @@ class TestCodeParser(DbTests):
         Test that for each high res code in HIGH_RES_TO_SPLIT_OR_BROAD has the same split code as all corresponding
         ultra high res codes.
         """
-        high_res_to_splits = dict()
+        high_res_to_splits = {}
         all_codes = PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.split.to_dict()
         for high_res_or_ultra_high_res, split_or_broad in all_codes.items():
             if split_or_broad is None:

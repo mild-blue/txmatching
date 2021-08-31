@@ -79,6 +79,7 @@ definitions:
     Configuration:
         properties:
             blood_group_compatibility_bonus:
+                example: 0.0
                 type: number
             forbidden_country_combinations:
                 items:
@@ -109,6 +110,7 @@ definitions:
                 example: 20
                 type: integer
             max_matchings_to_show_to_viewer:
+                example: 0
                 type: integer
             max_number_of_distinct_countries_in_round:
                 example: 3
@@ -123,14 +125,19 @@ definitions:
                 example: 4
                 type: integer
             minimum_total_score:
+                example: 0.0
                 type: number
             require_better_match_in_compatibility_index:
+                example: false
                 type: boolean
             require_better_match_in_compatibility_index_or_blood_group:
+                example: false
                 type: boolean
             require_compatible_blood_group:
+                example: false
                 type: boolean
             required_patient_db_ids:
+                example: []
                 items:
                     type: integer
                 type: array
@@ -143,6 +150,7 @@ definitions:
                 -   $ref: '#/definitions/Solver'
                 example: ILPSolver
             use_binary_scoring:
+                example: false
                 type: boolean
             use_high_resolution:
                 example: true
@@ -1193,6 +1201,7 @@ definitions:
             note: *id005
             previous_transplants: &id014
                 description: Number of previous kidney transplants.
+                example: 0
                 type: integer
             sex: *id006
             waiting_since: &id015

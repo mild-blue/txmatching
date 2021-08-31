@@ -14,9 +14,9 @@ DEFAULT_FORBIDDEN_COUNTRY_LIST = [ForbiddenCountryCombination(Country.AUT, Count
 
 
 class ComparisonMode(Enum):
-    Smaller = 1
-    Set = 2
-    Ignore = 3
+    SMALLER = 1
+    SET = 2
+    IGNORE = 3
 
 
 COMPARISON_MODE = 'comparison_mode'
@@ -68,15 +68,15 @@ class ConfigParameters:
     max_sequence_length: int = 4
     max_number_of_distinct_countries_in_round: int = 3
     required_patient_db_ids: List[PatientDbId] = field(default_factory=list,
-                                                       metadata={COMPARISON_MODE: ComparisonMode.Set})
+                                                       metadata={COMPARISON_MODE: ComparisonMode.SET})
     use_high_resolution: bool = True
     hla_crossmatch_level: HLACrossmatchLevel = HLACrossmatchLevel.BROAD
     forbidden_country_combinations: List[ForbiddenCountryCombination] = field(
         default_factory=lambda: DEFAULT_FORBIDDEN_COUNTRY_LIST,
-        metadata={COMPARISON_MODE: ComparisonMode.Set})
+        metadata={COMPARISON_MODE: ComparisonMode.SET})
     manual_donor_recipient_scores: List[ManualDonorRecipientScore] = field(
         default_factory=list,
-        metadata={COMPARISON_MODE: ComparisonMode.Set}
+        metadata={COMPARISON_MODE: ComparisonMode.SET}
     )
     max_debt_for_country: int = field(default=3,
                                       compare=True)
@@ -84,23 +84,23 @@ class ConfigParameters:
                                                            compare=True)
     max_matchings_to_show_to_viewer: int = field(default=0,
                                                  compare=True,
-                                                 metadata={COMPARISON_MODE: ComparisonMode.Ignore})
+                                                 metadata={COMPARISON_MODE: ComparisonMode.IGNORE})
     max_number_of_matchings: int = field(default=5,
                                          compare=True,
-                                         metadata={COMPARISON_MODE: ComparisonMode.Smaller})
+                                         metadata={COMPARISON_MODE: ComparisonMode.SMALLER})
     max_matchings_in_all_solutions_solver: int = field(default=10000,
                                                        compare=True,
-                                                       metadata={COMPARISON_MODE: ComparisonMode.Smaller})
+                                                       metadata={COMPARISON_MODE: ComparisonMode.SMALLER})
     max_cycles_in_all_solutions_solver: int = field(default=1000000,
                                                     compare=True,
-                                                    metadata={COMPARISON_MODE: ComparisonMode.Smaller})
+                                                    metadata={COMPARISON_MODE: ComparisonMode.SMALLER})
     max_matchings_in_ilp_solver: int = field(default=20,
                                              compare=True,
-                                             metadata={COMPARISON_MODE: ComparisonMode.Smaller})
+                                             metadata={COMPARISON_MODE: ComparisonMode.SMALLER})
 
     max_number_of_dynamic_constrains_ilp_solver: int = field(default=100,
                                                              compare=True,
-                                                             metadata={COMPARISON_MODE: ComparisonMode.Smaller})
+                                                             metadata={COMPARISON_MODE: ComparisonMode.SMALLER})
 
     def comparable(self, other):
         """
@@ -111,13 +111,13 @@ class ConfigParameters:
                 val1 = getattr(self, fld.name, None)
                 val2 = getattr(other, fld.name, None)
 
-                if fld.metadata.get(COMPARISON_MODE, None) == ComparisonMode.Set:
+                if fld.metadata.get(COMPARISON_MODE, None) == ComparisonMode.SET:
                     if set(val1) != set(val2):
                         return False
-                elif fld.metadata.get(COMPARISON_MODE, None) == ComparisonMode.Smaller:
+                elif fld.metadata.get(COMPARISON_MODE, None) == ComparisonMode.SMALLER:
                     if val1 > val2:
                         return False
-                elif fld.metadata.get(COMPARISON_MODE, None) == ComparisonMode.Ignore:
+                elif fld.metadata.get(COMPARISON_MODE, None) == ComparisonMode.IGNORE:
                     pass
                 else:
                     if val1 != val2:

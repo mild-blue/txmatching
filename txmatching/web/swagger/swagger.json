@@ -109,50 +109,6 @@
             }
         },
         "/v1/txm-event": {
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "List of allowed txmEvents.",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEvents"
-                        }
-                    }
-                },
-                "description": "Get list of allowed txm txmEvents for the logged user.",
-                "operationId": "get_txm_event_api",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "txm-event"
-                ]
-            },
             "post": {
                 "responses": {
                     "409": {
@@ -204,6 +160,50 @@
                         }
                     }
                 ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "List of allowed txmEvents.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvents"
+                        }
+                    }
+                },
+                "description": "Get list of allowed txm txmEvents for the logged user.",
+                "operationId": "get_txm_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -1323,55 +1323,6 @@
             }
         },
         "/v1/user/otp": {
-            "put": {
-                "responses": {
-                    "503": {
-                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "Whether the new OTP was generated and sent.",
-                        "schema": {
-                            "$ref": "#/definitions/Success"
-                        }
-                    }
-                },
-                "operationId": "put_otp_login_api",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "user"
-                ]
-            },
             "post": {
                 "responses": {
                     "503": {
@@ -1422,6 +1373,55 @@
                         }
                     }
                 ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "user"
+                ]
+            },
+            "put": {
+                "responses": {
+                    "503": {
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Whether the new OTP was generated and sent.",
+                        "schema": {
+                            "$ref": "#/definitions/Success"
+                        }
+                    }
+                },
+                "operationId": "put_otp_login_api",
                 "security": [
                     {
                         "bearer": []
@@ -2148,7 +2148,8 @@
                 },
                 "previous_transplants": {
                     "type": "integer",
-                    "description": "Number of previous kidney transplants."
+                    "description": "Number of previous kidney transplants.",
+                    "example": 0
                 },
                 "hla_antibodies": {
                     "type": "array",
@@ -2482,22 +2483,28 @@
                     ]
                 },
                 "require_compatible_blood_group": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "minimum_total_score": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 0.0
                 },
                 "require_better_match_in_compatibility_index": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "require_better_match_in_compatibility_index_or_blood_group": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "blood_group_compatibility_bonus": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 0.0
                 },
                 "use_binary_scoring": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "max_cycle_length": {
                     "type": "integer",
@@ -2513,6 +2520,7 @@
                 },
                 "required_patient_db_ids": {
                     "type": "array",
+                    "example": [],
                     "items": {
                         "type": "integer"
                     }
@@ -2537,7 +2545,8 @@
                     }
                 },
                 "max_matchings_to_show_to_viewer": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "max_number_of_matchings": {
                     "type": "integer",
@@ -3579,7 +3588,8 @@
                         },
                         "previous_transplants": {
                             "type": "integer",
-                            "description": "Number of previous kidney transplants."
+                            "description": "Number of previous kidney transplants.",
+                            "example": 0
                         },
                         "hla_antibodies": {
                             "description": "Provide full list of all the HLA antibodies of the patient, not just the change set",
@@ -3838,20 +3848,6 @@
             },
             "type": "object"
         },
-        "TxmEvents": {
-            "required": [
-                "events"
-            ],
-            "properties": {
-                "events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/TxmEvent"
-                    }
-                }
-            },
-            "type": "object"
-        },
         "TxmEvent": {
             "required": [
                 "id",
@@ -3880,6 +3876,20 @@
                 "CLOSED"
             ],
             "type": "string"
+        },
+        "TxmEvents": {
+            "required": [
+                "events"
+            ],
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TxmEvent"
+                    }
+                }
+            },
+            "type": "object"
         },
         "DefaultTxmEvent": {
             "required": [

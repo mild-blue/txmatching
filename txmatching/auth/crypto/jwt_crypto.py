@@ -2,7 +2,7 @@ import datetime
 
 import jwt
 
-from txmatching.auth.data_types import TokenType, UserRole, DecodedBearerToken
+from txmatching.auth.data_types import DecodedBearerToken, TokenType, UserRole
 from txmatching.auth.exceptions import InvalidJWTException
 
 JWT_SIGN_ALGORITHM = 'HS256'
@@ -73,4 +73,4 @@ def encode_auth_token(
         payload,
         jwt_secret,
         algorithm=JWT_SIGN_ALGORITHM
-    ).decode()
+    )

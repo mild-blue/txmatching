@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_donor_idx_to_recipient_idx(score_matrix: np.ndarray) -> Dict[int, int]:
-    donor_idx_to_recipient_idx = dict()
+    donor_idx_to_recipient_idx = {}
     n_donor, _ = score_matrix.shape
     for donor_idx in range(n_donor):
         recipient_indices = np.where(score_matrix[donor_idx, :] == ORIGINAL_DONOR_RECIPIENT_SCORE)[0]
