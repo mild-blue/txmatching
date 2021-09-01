@@ -75,13 +75,16 @@ def _verify_reset_token(token: str):
     return user_id
 
 
-def register(email: str, password: str, role: UserRole, second_factor: str, allowed_countries: List[Country]):
+# pylint: disable=too-many-arguments
+# not worth the effor as it is just an admin API
+def register(email: str, password: str, role: UserRole, second_factor: str, allowed_countries: List[Country],
+             require_second_factor: bool):
     """
     Registers new user entity.
     """
     if role == UserRole.SERVICE:
         register_service(email=email, password=password, allowed_countries=allowed_countries,
-                         whitelisted_ip=second_factor)
+                         whitelisted_ip=second_factor, require_second_factor=require_second_factor)
     else:
         register_user(email=email, password=password, allowed_countries=allowed_countries, role=role,
-                      phone_number=second_factor)
+                      phone_number=second_factor, require_second_factor=require_second_factor)

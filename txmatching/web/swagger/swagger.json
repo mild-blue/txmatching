@@ -109,50 +109,6 @@
             }
         },
         "/v1/txm-event": {
-            "get": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "List of allowed txmEvents.",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEvents"
-                        }
-                    }
-                },
-                "description": "Get list of allowed txm txmEvents for the logged user.",
-                "operationId": "get_txm_event_api",
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ],
-                "tags": [
-                    "txm-event"
-                ]
-            },
             "post": {
                 "responses": {
                     "409": {
@@ -212,9 +168,7 @@
                 "tags": [
                     "txm-event"
                 ]
-            }
-        },
-        "/v1/txm-event/default": {
+            },
             "get": {
                 "responses": {
                     "500": {
@@ -242,14 +196,14 @@
                         }
                     },
                     "200": {
-                        "description": "Default event.",
+                        "description": "List of allowed txmEvents.",
                         "schema": {
-                            "$ref": "#/definitions/TxmEvent"
+                            "$ref": "#/definitions/TxmEvents"
                         }
                     }
                 },
-                "description": "Get default event",
-                "operationId": "get_txm_default_event_api",
+                "description": "Get list of allowed txm txmEvents for the logged user.",
+                "operationId": "get_txm_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -258,7 +212,9 @@
                 "tags": [
                     "txm-event"
                 ]
-            },
+            }
+        },
+        "/v1/txm-event/default": {
             "put": {
                 "responses": {
                     "409": {
@@ -310,6 +266,50 @@
                         }
                     }
                 ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Default event.",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEvent"
+                        }
+                    }
+                },
+                "description": "Get default event",
+                "operationId": "get_txm_default_event_api",
                 "security": [
                     {
                         "bearer": []
@@ -2350,6 +2350,7 @@
                 "allowed_countries",
                 "email",
                 "password",
+                "require_second_factor",
                 "role",
                 "second_factor"
             ],
@@ -2372,6 +2373,11 @@
                         "EDITOR",
                         "SERVICE"
                     ]
+                },
+                "require_second_factor": {
+                    "type": "boolean",
+                    "description": "Whether to require second factor for the user",
+                    "example": true
                 },
                 "second_factor": {
                     "type": "string",
@@ -3838,20 +3844,6 @@
             },
             "type": "object"
         },
-        "TxmEvents": {
-            "required": [
-                "events"
-            ],
-            "properties": {
-                "events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/TxmEvent"
-                    }
-                }
-            },
-            "type": "object"
-        },
         "TxmEvent": {
             "required": [
                 "id",
@@ -3880,6 +3872,20 @@
                 "CLOSED"
             ],
             "type": "string"
+        },
+        "TxmEvents": {
+            "required": [
+                "events"
+            ],
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TxmEvent"
+                    }
+                }
+            },
+            "type": "object"
         },
         "DefaultTxmEvent": {
             "required": [

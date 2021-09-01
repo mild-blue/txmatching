@@ -26,6 +26,10 @@ export interface UserRegistrationGenerated {
      */
     password: string;
     /**
+     * Whether to require second factor for the user
+     */
+    require_second_factor: boolean;
+    /**
      * User\'s role.
      */
     role: UserRegistrationGeneratedRoleEnum;

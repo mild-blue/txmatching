@@ -12,15 +12,17 @@ from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.utils.country_enum import Country
 
 
-def register_user(email: str, password: str, allowed_countries: List[Country], role: UserRole,
-                  phone_number: str) -> AppUserModel:
+# pylint: disable=too-many-arguments
+# not worth the effor as it is just an admin API
+def register_user(email: str, password: str, allowed_countries: List[Country], require_second_factor: bool,
+                  phone_number: str, role: UserRole) -> AppUserModel:
     """
     Registers new user for given email, password and role.
     """
     require_auth_condition(role != UserRole.SERVICE, f'{role} used for registering user!')
 
     normalized_email = email.lower()
-    _assert_user_registration(normalized_email, password, role, phone_number)
+    _assert_user_registration(normalized_email, password, require_second_factor, phone_number, role)
 
     user = AppUserModel(
         email=normalized_email,
@@ -28,7 +30,8 @@ def register_user(email: str, password: str, allowed_countries: List[Country], r
         role=role,
         second_factor_material=generate_totp_seed(),
         phone_number=phone_number,
-        allowed_edit_countries=allowed_countries
+        allowed_edit_countries=allowed_countries,
+        require_2fa=require_second_factor
     )
     persist_user(user)
     return user
@@ -43,7 +46,8 @@ def change_user_password(user_id: int, new_password: str):
     update_password_for_user(user_id=user_id, new_password_hash=password_hash)
 
 
-def _assert_user_registration(normalized_email: str, password: str, role: Optional[UserRole], phone_number: str):
+def _assert_user_registration(normalized_email: str, password: str, require_second_factor: bool,
+                              phone_number: Optional[str], role: Optional[UserRole]):
     if not normalized_email:
         raise UserUpdateException('Invalid email address.')
     if not role:
@@ -51,7 +55,11 @@ def _assert_user_registration(normalized_email: str, password: str, role: Option
     if get_app_user_by_email(normalized_email):
         raise UserUpdateException('The e-mail address is already in use.')
     _assert_user_password_validity(password)
-    _assert_phone_number_validity(phone_number)
+    if require_second_factor:
+        _assert_phone_number_validity(phone_number)
+    else:
+        if not phone_number:
+            raise UserUpdateException('Phone number should not be filled in in case second factor is disabled.')
 
 
 def _assert_phone_number_validity(phone_number: str):
