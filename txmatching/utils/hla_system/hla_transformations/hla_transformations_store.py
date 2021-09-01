@@ -12,8 +12,8 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     create_hla_antibodies_per_groups_from_hla_antibodies,
     split_hla_types_to_groups, split_hla_types_to_groups_other)
-from txmatching.patients.hla_model import HLAAntibody, HLAType, HLAPerGroup
-from txmatching.utils.enums import HLAGroup, HLA_GROUPS_OTHER
+from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
+from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import (
     OK_PROCESSING_RESULTS, HlaCodeProcessingResultDetail)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (

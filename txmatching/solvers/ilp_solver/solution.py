@@ -4,10 +4,10 @@ from typing import Iterable, Tuple
 
 
 class Status(str, Enum):
-    NoSolution = 'NoSolution'
-    Optimal = 'Optimal'
-    Infeasible = 'Infeasible'
-    Heuristic = 'Heuristic'
+    NO_SOLUTION = 'NoSolution'
+    OPTIMAL = 'Optimal'
+    INFEASIBLE = 'Infeasible'
+    HEURISTIC = 'Heuristic'
 
 
 @dataclass

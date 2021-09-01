@@ -140,7 +140,7 @@ def _get_pairs_from_path(path: Path, pair_index_to_recipient_index: Dict[int, in
 def construct_path_intersection_graph(all_paths: List[Path]) -> Tuple[Graph, Dict[int, Path]]:
     graph = Graph(directed=False)
 
-    path_number_to_path = {path_number: path for path_number, path in enumerate(all_paths)}
+    path_number_to_path = dict(enumerate(all_paths))
     path_to_path_number = {path: path_number for path_number, path in enumerate(all_paths)}
 
     unique_indices = {index for path in all_paths for index in path}

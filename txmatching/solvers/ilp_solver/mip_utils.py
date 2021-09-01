@@ -14,12 +14,12 @@ def mip_get_result_status(model: mip.Model) -> Status:
     solve_status = model.status
 
     if solve_status == mip.OptimizationStatus.FEASIBLE:
-        return Status.Heuristic
+        return Status.HEURISTIC
     elif solve_status == mip.OptimizationStatus.OPTIMAL:
-        return Status.Optimal
+        return Status.OPTIMAL
     elif solve_status == mip.OptimizationStatus.INFEASIBLE:
-        return Status.Infeasible
+        return Status.INFEASIBLE
     elif solve_status == mip.OptimizationStatus.INT_INFEASIBLE:
         raise NotImplementedError()
     else:
-        return Status.NoSolution
+        return Status.NO_SOLUTION

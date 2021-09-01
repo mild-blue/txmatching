@@ -9,7 +9,7 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.services.txm_event_service import create_txm_event
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAPerGroup, HLAType
+from txmatching.patients.hla_model import HLAPerGroup
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res

@@ -15,12 +15,12 @@ repos:
       - id: check-merge-conflict
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: ^txmatching/web/frontend/src/app/generated/|txmatching/web/swagger/
+        exclude: ^txmatching/web/frontend/src/app/generated/|txmatching/web/swagger/|tests/resources/
       - id: mixed-line-ending
       - id: check-executables-have-shebangs
       - id: check-symlinks
       - id: trailing-whitespace
-        exclude: ^txmatching/web/frontend/src/app/generated/|txmatching/web/swagger/
+        exclude: ^txmatching/web/frontend/src/app/generated/|txmatching/web/swagger/|tests/resources/
       - id: double-quote-string-fixer
 
   - repo: https://github.com/kynan/nbstripout

@@ -46,18 +46,18 @@ class PublicSwaggerGenApp:
 
 
 def generate_private():
-    with open(PATH_TO_SWAGGER_JSON, 'w') as file:
+    with open(PATH_TO_SWAGGER_JSON, 'w', encoding='utf-8') as file:
         swagger = SwaggerGenApp().api.__schema__
         swagger_without_ordered_dict = {k: dict(v) if isinstance(v, OrderedDict) else v for k, v in swagger.items()}
         del swagger_without_ordered_dict['host']
         json.dump(swagger_without_ordered_dict, file, ensure_ascii=False, indent=4)
-    with open(PATH_TO_SWAGGER_YAML, 'w') as file:
+    with open(PATH_TO_SWAGGER_YAML, 'w', encoding='utf-8') as file:
         yaml.dump(swagger_without_ordered_dict, file, indent=4)
     return swagger_without_ordered_dict
 
 
 def generate_public():
-    with open(PATH_TO_PUBLIC_SWAGGER_JSON, 'w') as file:
+    with open(PATH_TO_PUBLIC_SWAGGER_JSON, 'w', encoding='utf-8') as file:
         swagger = PublicSwaggerGenApp().api.__schema__
         swagger_without_ordered_dict = {k: dict(v) if isinstance(v, OrderedDict) else v for k, v in
                                         swagger.items()}

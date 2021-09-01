@@ -3,7 +3,7 @@ import os
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
 from flask import current_app as app
 
@@ -148,7 +148,7 @@ def _read_version(default: str) -> str:
 
     version = None
     if file_path:
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             version = file.readline().strip()
             logger.debug(f'Setting version as: {version}')
 

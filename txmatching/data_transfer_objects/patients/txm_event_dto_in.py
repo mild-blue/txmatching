@@ -11,7 +11,9 @@ class TxmEventDTOIn:
 
 @dataclass
 class TxmDefaultEventDTOIn:
+    # pylint:disable=invalid-name
     id: int
+    # pylint:enable=invalid-name
 
 
 @dataclass

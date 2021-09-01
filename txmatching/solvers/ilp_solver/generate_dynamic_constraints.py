@@ -18,7 +18,7 @@ def add_dynamic_constraints(data_and_configuration: DataAndConfigurationForILPSo
                          if mip_var_to_bool(edge_present)]
 
     sol_graph = nx.DiGraph()
-    sol_graph.add_edges_from([edge for edge in edges_in_solution])
+    sol_graph.add_edges_from(edge for edge in edges_in_solution)
 
     cycles = []
     sequences = []
@@ -78,9 +78,9 @@ def _get_sequences_to_forbid(sequences, data_and_configuration: DataAndConfigura
     sequences_to_forbid = []
     if non_compliant_sequences:
 
-        if internal_configuration.max_sequence_limit_method == MaxSequenceLimitMethod.LazyForbidAllMaximalSequences:
+        if internal_configuration.max_sequence_limit_method == MaxSequenceLimitMethod.LAZY_FORBID_ALL_MAXIMAL_SEQUENCES:
             sequences_to_forbid.extend(non_compliant_sequences)
         elif internal_configuration.max_sequence_limit_method == \
-                MaxSequenceLimitMethod.LazyForbidSmallestMaximalSequence:
+                MaxSequenceLimitMethod.LAZY_FORBID_SMALLEST_MAXIMAL_SEQUENCE:
             sequences_to_forbid.append(min(non_compliant_sequences, key=len))
     return sequences_to_forbid
