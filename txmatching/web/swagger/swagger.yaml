@@ -1507,1089 +1507,1092 @@ info:
     title: API
     version: '1.0'
 paths:
-    /v1/public/patient-upload:
-        put:
-            description: This endpoint allows the country editor to upload patient
-                data for given TXM event. TXM event name has to be provided by an
-                ADMIN. You can either add patients to the current dataset or remove
-                all patients from respective country in case there were any. To access
-                this endpoint one has to have credentials to service account and obtain
-                jwt token via the login endpoint.
-            operationId: put_txm_event_upload_patients
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/UploadPatients'
-            responses:
-                '200':
-                    description: Success
+    /v1/public/patient-upload: !!python/object/apply:collections.OrderedDict
+    -   -   - put
+            -   description: This endpoint allows the country editor to upload patient
+                    data for given TXM event. TXM event name has to be provided by
+                    an ADMIN. You can either add patients to the current dataset or
+                    remove all patients from respective country in case there were
+                    any. To access this endpoint one has to have credentials to service
+                    account and obtain jwt token via the login endpoint.
+                operationId: put_txm_event_upload_patients
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
                     schema:
-                        $ref: '#/definitions/PatientUploadSuccessResponse'
-                '400':
-                    description: Wrong data format.
+                        $ref: '#/definitions/UploadPatients'
+                responses:
+                    '200':
+                        description: Success
+                        schema:
+                            $ref: '#/definitions/PatientUploadSuccessResponse'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - public
+    /v1/service/status: !!python/object/apply:collections.OrderedDict
+    -   -   - get
+            -   operationId: get_status
+                responses:
+                    '200':
+                        description: Returns ok if the service is healthy.
+                        schema:
+                            $ref: '#/definitions/ServiceStatus'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '503':
+                        description: Some services are failing.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                tags:
+                - service
+    /v1/service/version: !!python/object/apply:collections.OrderedDict
+    -   -   - get
+            -   operationId: get_version
+                responses:
+                    '200':
+                        description: Returns version of the code
+                        schema:
+                            $ref: '#/definitions/Version'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                tags:
+                - service
+    /v1/txm-event: !!python/object/apply:collections.OrderedDict
+    -   -   - get
+            -   description: Get list of allowed txm txmEvents for the logged user.
+                operationId: get_txm_event_api
+                responses:
+                    '200':
+                        description: List of allowed txmEvents.
+                        schema:
+                            $ref: '#/definitions/TxmEvents'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - txm-event
+        -   - post
+            -   description: Endpoint that lets an ADMIN create a new TXM event. The
+                    ADMIN should specify TXM event name.
+                operationId: post_txm_event_api
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
                     schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
+                        $ref: '#/definitions/NewTxmEvent'
+                responses:
+                    '201':
+                        description: Returns the newly created TXM event object.
+                        schema:
+                            $ref: '#/definitions/TxmEvent'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '409':
+                        description: Non-unique patients provided.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - txm-event
+    /v1/txm-event/default: !!python/object/apply:collections.OrderedDict
+    -   -   - get
+            -   description: Get default event
+                operationId: get_txm_default_event_api
+                responses:
+                    '200':
+                        description: Default event.
+                        schema:
+                            $ref: '#/definitions/TxmEvent'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - txm-event
+        -   - put
+            -   description: Set default txm event for the logged user.
+                operationId: put_txm_default_event_api
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
                     schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
+                        $ref: '#/definitions/DefaultTxmEvent'
+                responses:
+                    '200':
+                        description: Returns the default event.
+                        schema:
+                            $ref: '#/definitions/TxmEvent'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '409':
+                        description: Non-unique patients provided.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - txm-event
+    /v1/txm-event/{name}: !!python/object/apply:collections.OrderedDict
+    -   -   - delete
+            -   description: Endpoint that lets an ADMIN delete existing TXM event.
+                    The ADMIN should know the TXM event name.
+                operationId: delete_txm_event_delete_api
+                parameters:
+                -   description: Name of the TXM event to be deleted.
+                    in: path
+                    name: name
+                    required: true
+                    type: string
+                responses:
+                    '200':
+                        description: Returns status code representing result of TXM
+                            event object deletion.
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - txm-event
+    /v1/txm-event/{txm_event_id}: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - put
+            -   description: TXM event parameters that should be updated.
+                operationId: put_txm_event_update_api
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
                     schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
+                        $ref: '#/definitions/TxmEventUpdate'
+                responses:
+                    '200':
+                        description: Returns the updated TXM event.
+                        schema:
+                            $ref: '#/definitions/TxmEvent'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                tags:
+                - txm-event
+    /v1/txm-event/{txm_event_id}/configuration/set-default: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - put
+            -   description: Set default configuration id for the txm event.
+                operationId: put_default_configuration_api
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
                     schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - public
-    /v1/service/status:
-        get:
-            operationId: get_status
-            responses:
-                '200':
-                    description: Returns ok if the service is healthy.
-                    schema:
-                        $ref: '#/definitions/ServiceStatus'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '503':
-                    description: Some services are failing.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            tags:
-            - service
-    /v1/service/version:
-        get:
-            operationId: get_version
-            responses:
-                '200':
-                    description: Returns version of the code
-                    schema:
-                        $ref: '#/definitions/Version'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            tags:
-            - service
-    /v1/txm-event:
-        get:
-            description: Get list of allowed txm txmEvents for the logged user.
-            operationId: get_txm_event_api
-            responses:
-                '200':
-                    description: List of allowed txmEvents.
-                    schema:
-                        $ref: '#/definitions/TxmEvents'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - txm-event
-        post:
-            description: Endpoint that lets an ADMIN create a new TXM event. The ADMIN
-                should specify TXM event name.
-            operationId: post_txm_event_api
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/NewTxmEvent'
-            responses:
-                '201':
-                    description: Returns the newly created TXM event object.
-                    schema:
-                        $ref: '#/definitions/TxmEvent'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '409':
-                    description: Non-unique patients provided.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - txm-event
-    /v1/txm-event/default:
-        get:
-            description: Get default event
-            operationId: get_txm_default_event_api
-            responses:
-                '200':
-                    description: Default event.
-                    schema:
-                        $ref: '#/definitions/TxmEvent'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - txm-event
-        put:
-            description: Set default txm event for the logged user.
-            operationId: put_txm_default_event_api
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/DefaultTxmEvent'
-            responses:
-                '200':
-                    description: Returns the default event.
-                    schema:
-                        $ref: '#/definitions/TxmEvent'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '409':
-                    description: Non-unique patients provided.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - txm-event
-    /v1/txm-event/{name}:
-        delete:
-            description: Endpoint that lets an ADMIN delete existing TXM event. The
-                ADMIN should know the TXM event name.
-            operationId: delete_txm_event_delete_api
-            parameters:
-            -   description: Name of the TXM event to be deleted.
-                in: path
-                name: name
-                required: true
-                type: string
-            responses:
-                '200':
-                    description: Returns status code representing result of TXM event
-                        object deletion.
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - txm-event
-    /v1/txm-event/{txm_event_id}:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-        put:
-            description: TXM event parameters that should be updated.
-            operationId: put_txm_event_update_api
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/TxmEventUpdate'
-            responses:
-                '200':
-                    description: Returns the updated TXM event.
-                    schema:
-                        $ref: '#/definitions/TxmEvent'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            tags:
-            - txm-event
-    /v1/txm-event/{txm_event_id}/configuration/set-default:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-        put:
-            description: Set default configuration id for the txm event.
-            operationId: put_default_configuration_api
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/Identifier'
-            responses:
-                '200':
-                    description: Whether the update was successful
-                    schema:
-                        $ref: '#/definitions/Success'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - configuration
-    /v1/txm-event/{txm_event_id}/configuration/{config_id}:
-        get:
-            operationId: get_configuration_api
-            parameters:
-            -   default: default
-                description: Configuration ID or "default".
-                in: path
-                name: config_id
-                required: true
-                type: string
-            responses:
-                '200':
-                    description: Returns the latest matching configuration for the
-                        current user.
+                        $ref: '#/definitions/Identifier'
+                responses:
+                    '200':
+                        description: Whether the update was successful
+                        schema:
+                            $ref: '#/definitions/Success'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - configuration
+    /v1/txm-event/{txm_event_id}/configuration/{config_id}: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - get
+            -   operationId: get_configuration_api
+                parameters:
+                -   default: default
+                    description: Configuration ID or "default".
+                    in: path
+                    name: config_id
+                    required: true
+                    type: string
+                responses:
+                    '200':
+                        description: Returns the latest matching configuration for
+                            the current user.
+                        schema:
+                            $ref: '#/definitions/Configuration'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - configuration
+    /v1/txm-event/{txm_event_id}/matching/calculate-for-config: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - post
+            -   operationId: post_calculate_from_config
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
                     schema:
                         $ref: '#/definitions/Configuration'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - configuration
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-    /v1/txm-event/{txm_event_id}/matching/calculate-for-config:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-        post:
-            operationId: post_calculate_from_config
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/Configuration'
-            responses:
-                '200':
-                    description: List of all matchings for given configuration.
-                    schema:
-                        $ref: '#/definitions/CalculatedMatchings'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - matching
-    /v1/txm-event/{txm_event_id}/patients/add-patients-file:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-        put:
-            consumes:
-            - multipart/form-data
-            operationId: put_add_patients_file
-            parameters:
-            -   description: Excel file to upload data.
-                in: formData
-                name: file
-                required: true
-                type: file
-            responses:
-                '200':
-                    description: Success.
-                    schema:
-                        $ref: '#/definitions/PatientUploadSuccessResponse'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - patients
-    /v1/txm-event/{txm_event_id}/patients/configs/{config_id}:
-        get:
-            description: 'Get all patients for the given txm event.  Example: /patients?include-antibodies-raw'
-            operationId: get_all_patients
-            parameters:
-            -   default: default
-                description: Configuration ID or "default".
-                in: path
-                name: config_id
-                required: true
-                type: string
-            -   description: 'Specify to include raw antibodies as well. By default,
-                    raw antibodies are not included. Example: ?include-antibodies-raw'
-                in: query
-                name: include-antibodies-raw
-                required: false
-                type: boolean
-            responses:
-                '200':
-                    description: List of donors and list of recipients.
-                    schema:
-                        $ref: '#/definitions/Patients'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - patients
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-    /v1/txm-event/{txm_event_id}/patients/configs/{config_id}/donor:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-        put:
-            operationId: put_alter_donor
-            parameters:
-            -   default: default
-                description: Configuration ID or "default".
-                in: path
-                name: config_id
-                required: true
-                type: string
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/DonorModelToUpdate'
-            responses:
-                '200':
-                    description: Updated donor.
-                    schema:
-                        $ref: '#/definitions/UpdatedDonor'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - patients
-    /v1/txm-event/{txm_event_id}/patients/pairs:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-        post:
-            operationId: post_donor_recipient_pairs
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/DonorModelPairIn'
-            responses:
-                '200':
-                    description: Added new donor (possibly with recipient)
-                    schema:
-                        $ref: '#/definitions/PatientUploadSuccessResponse'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - patients
-    /v1/txm-event/{txm_event_id}/patients/pairs/{donor_db_id}:
-        delete:
-            description: Delete existing donor recipient pair.
-            operationId: delete_donor_recipient_pair
-            parameters:
-            -   description: Donor id that will be deleted including its recipient
-                    if there is any
-                in: path
-                name: donor_db_id
-                required: true
-                type: integer
-            responses:
-                '200':
-                    description: Returns status code representing result of donor
-                        recipient pair object deletion.
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - patients
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-    /v1/txm-event/{txm_event_id}/patients/recipient:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-        put:
-            operationId: put_alter_recipient
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/RecipientModelToUpdate'
-            responses:
-                '200':
-                    description: Updated recipient.
-                    schema:
-                        $ref: '#/definitions/UpdatedRecipient'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - patients
-    /v1/txm-event/{txm_event_id}/patients/recompute-parsing:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-        post:
-            description: Endpoint that lets an ADMIN recompute parsed antigens and
-                antibodies for all patients in the given txm event.
-            operationId: post_recompute_parsing
-            responses:
-                '200':
-                    description: Returns the recomputation statistics.
-                    schema:
-                        $ref: '#/definitions/PatientsRecomputeParsingSuccess'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            tags:
-            - patients
-    /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/matchings/{matching_id}/pdf:
-        get:
-            operationId: get_matching_report
-            parameters:
-            -   default: default
-                description: Configuration ID or "default".
-                in: path
-                name: config_id
-                required: true
-                type: string
-            -   description: Id of matching that was chosen
-                in: path
-                name: matching_id
-                required: true
-                type: integer
-            -   description: 'If set, the resulting report will contain section with
-                    patients details. Example: ?includePatientsSection'
-                in: query
-                name: includePatientsSection
-                required: false
-                type: boolean
-            -   description: 'Number of matchings with lower score than chosen to
-                    include in report. Example: matchingsBelowChosen=42'
-                in: query
-                name: matchingsBelowChosen
-                required: true
-                type: integer
-            responses:
-                '200':
-                    description: Generates PDF report.
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '404':
-                    description: Matching for provided id was not found.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - reports
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-    /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/patients/xlsx:
-        get:
-            operationId: get_patients_xls_report
-            parameters:
-            -   default: default
-                description: Configuration ID or "default".
-                in: path
-                name: config_id
-                required: true
-                type: string
-            responses:
-                '200':
-                    description: Generates XLSX report.
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '404':
-                    description: Matching for provided id was not found.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - reports
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-    /v1/user/change-password:
-        put:
-            operationId: put_password_change_api
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/PasswordChange'
-            responses:
-                '200':
-                    description: Whether the password was changed successfully.
-                    schema:
-                        $ref: '#/definitions/Success'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - user
-    /v1/user/login:
-        post:
-            description: 'Endpoint to be used for login of users. Returns JWT. This
-                JWT serves two purposes: in the case of normal accounts it can be
-                used to obtain OTP at the /otp endpoint; in the case of service accounts
-                it can be directly used to access /public/patient-upload endpoint'
-            operationId: post_login_api
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/UserLogin'
-            responses:
-                '200':
-                    description: 'Login successful. JWT generated. User must attach
-                        the token to every request in the "Authorization" header with
-                        the prefix "Bearer". Example: "Authorization: Bearer some_token",
-                        where some_token is the token received in the response.'
-                    schema:
-                        $ref: '#/definitions/LoginSuccessResponse'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            tags:
-            - user
-    /v1/user/otp:
-        post:
-            operationId: post_otp_login_api
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/OtpLogin'
-            responses:
-                '200':
-                    description: OTP validation was successful. JWT generated.
-                    schema:
-                        $ref: '#/definitions/LoginSuccessResponse'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '503':
-                    description: It was not possible to reach the SMS gate, thus the
-                        one time password could not be send.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - user
-        put:
-            operationId: put_otp_login_api
-            responses:
-                '200':
-                    description: Whether the new OTP was generated and sent.
-                    schema:
-                        $ref: '#/definitions/Success'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '503':
-                    description: It was not possible to reach the SMS gate, thus the
-                        one time password could not be send.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - user
-    /v1/user/refresh-token:
-        get:
-            operationId: get_refresh_token_api
-            responses:
-                '200':
-                    description: Token successfully refreshed.
-                    schema:
-                        $ref: '#/definitions/LoginSuccessResponse'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - user
-    /v1/user/register:
-        post:
-            operationId: post_registration_api
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/UserRegistration'
-            responses:
-                '200':
-                    description: Whether the user was registered successfully.
-                    schema:
-                        $ref: '#/definitions/Success'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - user
-    /v1/user/reset-password:
-        put:
-            operationId: put_reset_password
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/ResetPassword'
-            responses:
-                '200':
-                    description: Whether the password reset was successful.
-                    schema:
-                        $ref: '#/definitions/Success'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            tags:
-            - user
-    /v1/user/{email}/reset-password-token:
-        get:
-            operationId: get_request_reset
-            responses:
-                '200':
-                    description: Returns reset token.
-                    schema:
-                        $ref: '#/definitions/ResetRequestResponse'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-            security:
-            -   bearer: []
-            tags:
-            - user
-        parameters:
-        -   in: path
-            name: email
-            required: true
-            type: string
+                responses:
+                    '200':
+                        description: List of all matchings for given configuration.
+                        schema:
+                            $ref: '#/definitions/CalculatedMatchings'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - matching
+    /v1/txm-event/{txm_event_id}/patients/add-patients-file: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - put
+            -   consumes:
+                - multipart/form-data
+                operationId: put_add_patients_file
+                parameters:
+                -   description: Excel file to upload data.
+                    in: formData
+                    name: file
+                    required: true
+                    type: file
+                responses:
+                    '200':
+                        description: Success.
+                        schema:
+                            $ref: '#/definitions/PatientUploadSuccessResponse'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - patients
+    /v1/txm-event/{txm_event_id}/patients/configs/{config_id}: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - get
+            -   description: 'Get all patients for the given txm event.  Example:
+                    /patients?include-antibodies-raw'
+                operationId: get_all_patients
+                parameters:
+                -   default: default
+                    description: Configuration ID or "default".
+                    in: path
+                    name: config_id
+                    required: true
+                    type: string
+                -   description: 'Specify to include raw antibodies as well. By default,
+                        raw antibodies are not included. Example: ?include-antibodies-raw'
+                    in: query
+                    name: include-antibodies-raw
+                    required: false
+                    type: boolean
+                responses:
+                    '200':
+                        description: List of donors and list of recipients.
+                        schema:
+                            $ref: '#/definitions/Patients'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - patients
+    /v1/txm-event/{txm_event_id}/patients/configs/{config_id}/donor: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - put
+            -   operationId: put_alter_donor
+                parameters:
+                -   default: default
+                    description: Configuration ID or "default".
+                    in: path
+                    name: config_id
+                    required: true
+                    type: string
+                -   in: body
+                    name: payload
+                    required: true
+                    schema:
+                        $ref: '#/definitions/DonorModelToUpdate'
+                responses:
+                    '200':
+                        description: Updated donor.
+                        schema:
+                            $ref: '#/definitions/UpdatedDonor'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - patients
+    /v1/txm-event/{txm_event_id}/patients/pairs: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - post
+            -   operationId: post_donor_recipient_pairs
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
+                    schema:
+                        $ref: '#/definitions/DonorModelPairIn'
+                responses:
+                    '200':
+                        description: Added new donor (possibly with recipient)
+                        schema:
+                            $ref: '#/definitions/PatientUploadSuccessResponse'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - patients
+    /v1/txm-event/{txm_event_id}/patients/pairs/{donor_db_id}: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - delete
+            -   description: Delete existing donor recipient pair.
+                operationId: delete_donor_recipient_pair
+                parameters:
+                -   description: Donor id that will be deleted including its recipient
+                        if there is any
+                    in: path
+                    name: donor_db_id
+                    required: true
+                    type: integer
+                responses:
+                    '200':
+                        description: Returns status code representing result of donor
+                            recipient pair object deletion.
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - patients
+    /v1/txm-event/{txm_event_id}/patients/recipient: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - put
+            -   operationId: put_alter_recipient
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
+                    schema:
+                        $ref: '#/definitions/RecipientModelToUpdate'
+                responses:
+                    '200':
+                        description: Updated recipient.
+                        schema:
+                            $ref: '#/definitions/UpdatedRecipient'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - patients
+    /v1/txm-event/{txm_event_id}/patients/recompute-parsing: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - post
+            -   description: Endpoint that lets an ADMIN recompute parsed antigens
+                    and antibodies for all patients in the given txm event.
+                operationId: post_recompute_parsing
+                responses:
+                    '200':
+                        description: Returns the recomputation statistics.
+                        schema:
+                            $ref: '#/definitions/PatientsRecomputeParsingSuccess'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                tags:
+                - patients
+    /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/matchings/{matching_id}/pdf: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - get
+            -   operationId: get_matching_report
+                parameters:
+                -   default: default
+                    description: Configuration ID or "default".
+                    in: path
+                    name: config_id
+                    required: true
+                    type: string
+                -   description: Id of matching that was chosen
+                    in: path
+                    name: matching_id
+                    required: true
+                    type: integer
+                -   description: 'If set, the resulting report will contain section
+                        with patients details. Example: ?includePatientsSection'
+                    in: query
+                    name: includePatientsSection
+                    required: false
+                    type: boolean
+                -   description: 'Number of matchings with lower score than chosen
+                        to include in report. Example: matchingsBelowChosen=42'
+                    in: query
+                    name: matchingsBelowChosen
+                    required: true
+                    type: integer
+                responses:
+                    '200':
+                        description: Generates PDF report.
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '404':
+                        description: Matching for provided id was not found.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - reports
+    /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/patients/xlsx: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: txm_event_id
+                    required: true
+                    type: integer
+        -   - get
+            -   operationId: get_patients_xls_report
+                parameters:
+                -   default: default
+                    description: Configuration ID or "default".
+                    in: path
+                    name: config_id
+                    required: true
+                    type: string
+                responses:
+                    '200':
+                        description: Generates XLSX report.
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '404':
+                        description: Matching for provided id was not found.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - reports
+    /v1/user/change-password: !!python/object/apply:collections.OrderedDict
+    -   -   - put
+            -   operationId: put_password_change_api
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
+                    schema:
+                        $ref: '#/definitions/PasswordChange'
+                responses:
+                    '200':
+                        description: Whether the password was changed successfully.
+                        schema:
+                            $ref: '#/definitions/Success'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - user
+    /v1/user/login: !!python/object/apply:collections.OrderedDict
+    -   -   - post
+            -   description: 'Endpoint to be used for login of users. Returns JWT.
+                    This JWT serves two purposes: in the case of normal accounts it
+                    can be used to obtain OTP at the /otp endpoint; in the case of
+                    service accounts it can be directly used to access /public/patient-upload
+                    endpoint'
+                operationId: post_login_api
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
+                    schema:
+                        $ref: '#/definitions/UserLogin'
+                responses:
+                    '200':
+                        description: 'Login successful. JWT generated. User must attach
+                            the token to every request in the "Authorization" header
+                            with the prefix "Bearer". Example: "Authorization: Bearer
+                            some_token", where some_token is the token received in
+                            the response.'
+                        schema:
+                            $ref: '#/definitions/LoginSuccessResponse'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                tags:
+                - user
+    /v1/user/otp: !!python/object/apply:collections.OrderedDict
+    -   -   - post
+            -   operationId: post_otp_login_api
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
+                    schema:
+                        $ref: '#/definitions/OtpLogin'
+                responses:
+                    '200':
+                        description: OTP validation was successful. JWT generated.
+                        schema:
+                            $ref: '#/definitions/LoginSuccessResponse'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '503':
+                        description: It was not possible to reach the SMS gate, thus
+                            the one time password could not be send.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - user
+        -   - put
+            -   operationId: put_otp_login_api
+                responses:
+                    '200':
+                        description: Whether the new OTP was generated and sent.
+                        schema:
+                            $ref: '#/definitions/Success'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '503':
+                        description: It was not possible to reach the SMS gate, thus
+                            the one time password could not be send.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - user
+    /v1/user/refresh-token: !!python/object/apply:collections.OrderedDict
+    -   -   - get
+            -   operationId: get_refresh_token_api
+                responses:
+                    '200':
+                        description: Token successfully refreshed.
+                        schema:
+                            $ref: '#/definitions/LoginSuccessResponse'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - user
+    /v1/user/register: !!python/object/apply:collections.OrderedDict
+    -   -   - post
+            -   operationId: post_registration_api
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
+                    schema:
+                        $ref: '#/definitions/UserRegistration'
+                responses:
+                    '200':
+                        description: Whether the user was registered successfully.
+                        schema:
+                            $ref: '#/definitions/Success'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - user
+    /v1/user/reset-password: !!python/object/apply:collections.OrderedDict
+    -   -   - put
+            -   operationId: put_reset_password
+                parameters:
+                -   in: body
+                    name: payload
+                    required: true
+                    schema:
+                        $ref: '#/definitions/ResetPassword'
+                responses:
+                    '200':
+                        description: Whether the password reset was successful.
+                        schema:
+                            $ref: '#/definitions/Success'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                tags:
+                - user
+    /v1/user/{email}/reset-password-token: !!python/object/apply:collections.OrderedDict
+    -   -   - parameters
+            -   -   in: path
+                    name: email
+                    required: true
+                    type: string
+        -   - get
+            -   operationId: get_request_reset
+                responses:
+                    '200':
+                        description: Returns reset token.
+                        schema:
+                            $ref: '#/definitions/ResetRequestResponse'
+                    '400':
+                        description: Wrong data format.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '401':
+                        description: Authentication failed.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '403':
+                        description: Access denied. You do not have rights to access
+                            this endpoint.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                    '500':
+                        description: Unexpected error, see contents for details.
+                        schema:
+                            $ref: '#/definitions/FailResponse'
+                security:
+                -   bearer: []
+                tags:
+                - user
 produces:
 - application/json
 responses:
