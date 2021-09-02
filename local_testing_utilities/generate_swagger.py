@@ -72,8 +72,13 @@ def generate_private():
     with open(PATH_TO_SWAGGER_JSON, 'w') as file:
         swagger = _api_to_swagger(SwaggerGenApp().api)
         json.dump(swagger, file, ensure_ascii=False, indent=4)
+
+    yaml.Dumper.add_representer(
+        OrderedDict,
+        lambda dumper, data: dumper.represent_dict(data.items())
+    )
     with open(PATH_TO_SWAGGER_YAML, 'w') as file:
-        yaml.dump(swagger, file, indent=4)
+        yaml.dump(swagger, file, indent=4, Dumper=yaml.Dumper)
     return swagger
 
 
