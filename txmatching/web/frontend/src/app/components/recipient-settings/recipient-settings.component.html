@@ -28,7 +28,7 @@
 
   <!-- Recipient antibodies -->
   <app-setting-item label="Antibodies">
-    <mat-form-field>
+    <mat-form-field class="multiline-hint">
       <mat-chip-list>
         <mat-chip *ngFor="let a of recipient.antibodies"
                   (removed)="recipient.removeAntibody(a)">
@@ -41,7 +41,11 @@
         <input disabled matInput>
       </mat-chip-list>
       <mat-hint>
-        Use the form below for adding recipient's antibodies.
+        Use the form below for adding recipient's antibodies. Please specify the antibodies in broad,
+        split or high resolution. If the antibodies are specified in high resolution, please provide
+        also negative samples where MFI < Antibodies cutoff. This information is required in matchings
+        computation algorithm. If the antibodies are specified in broad or split resolution,
+        negative samples are not required and will be ignored in the computation algorithm if provided.
       </mat-hint>
     </mat-form-field>
   </app-setting-item>
