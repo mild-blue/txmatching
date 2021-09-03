@@ -8,10 +8,10 @@ class BloodGroup(str, Enum):
     ZERO = '0'
 
     @classmethod
-    def _missing_(cls, name):
-        if name in {0, 'O'}:
+    def _missing_(cls, value):
+        if value in {0, 'O'}:
             return cls.ZERO
-        raise ValueError(f'{name} is not a valid BloodGroup')
+        raise ValueError(f'{value} is not a valid BloodGroup')
 
 
 COMPATIBLE_BLOOD_GROUPS = {

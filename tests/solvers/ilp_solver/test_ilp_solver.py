@@ -38,7 +38,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         max_country_count = 1
         config_parameters = ConfigParameters(max_number_of_distinct_countries_in_round=max_country_count,
-                                         solver_constructor_name=Solver.ILPSolver)
+                                             solver_constructor_name=Solver.ILPSolver)
         solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
         self.assertEqual(1, len(solutions))
         for round in solutions[0].get_rounds():
@@ -93,10 +93,10 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_cycle_length in range(2, 5):
             config_parameters = ConfigParameters(solver_constructor_name=Solver.ILPSolver,
-                                             use_high_resolution=True,
-                                             max_cycle_length=max_cycle_length,
-                                             max_sequence_length=0,
-                                             max_number_of_matchings=3)
+                                                 use_high_resolution=True,
+                                                 max_cycle_length=max_cycle_length,
+                                                 max_sequence_length=0,
+                                                 max_number_of_matchings=3)
             solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
             self.assertLessEqual(3, len(solutions),
                                  f'Failed for {max_cycle_length}')

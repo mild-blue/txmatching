@@ -34,7 +34,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         max_country_count = 1
         config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
-                                         max_number_of_distinct_countries_in_round=max_country_count)
+                                             max_number_of_distinct_countries_in_round=max_country_count)
         solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
         self.assertEqual(1, len(solutions))
         for round in solutions[0].get_rounds():
@@ -44,7 +44,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path('/tests/resources/data3.xlsx'))
         txm_event = get_txm_event_complete(txm_event_db_id)
         config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
-                                         max_number_of_distinct_countries_in_round=3)
+                                             max_number_of_distinct_countries_in_round=3)
         solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
         self.assertEqual(1, len(solutions))
 
@@ -53,8 +53,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_sequence_length in range(1, 6):
             config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
-                                             use_high_resolution=True, max_sequence_length=max_sequence_length,
-                                             max_number_of_matchings=1000)
+                                                 use_high_resolution=True, max_sequence_length=max_sequence_length,
+                                                 max_number_of_matchings=1000)
             solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
             self.assertEqual(max_sequence_length,
                              max([max([sequence.length() for sequence in solution.get_sequences()]) for solution in
@@ -65,8 +65,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         for max_cycle_length in range(2, 5):
             config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
-                                             use_high_resolution=True, max_cycle_length=max_cycle_length,
-                                             max_number_of_matchings=1000)
+                                                 use_high_resolution=True, max_cycle_length=max_cycle_length,
+                                                 max_number_of_matchings=1000)
             solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
             self.assertEqual(max_cycle_length,
                              max([max([cycle.length() for cycle in solution.get_cycles()], default=0) for solution in

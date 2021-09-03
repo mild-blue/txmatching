@@ -74,6 +74,7 @@ class RecipientRequirements(PersistentlyHashable):
         update_persistent_hash(hash_, bool(self.require_better_match_in_compatibility_index))
         update_persistent_hash(hash_, bool(self.require_compatible_blood_group))
 
+
 # pylint: disable=too-many-instance-attributes
 @dataclass
 class Recipient(Patient, PersistentlyHashable):
@@ -121,10 +122,7 @@ class TxmEvent(TxmEventBase):
     # I think it is reasonable to have multiple arguments here
     def __init__(self, db_id: int, name: str, default_config_id: Optional[int], state: TxmEventState,
                  all_donors: List[Donor], all_recipients: List[Recipient]):
-        self.db_id = db_id
-        self.name = name
-        self.default_config_id = default_config_id
-        self.state = state
+        super().__init__(db_id=db_id, name=name, default_config_id=default_config_id, state=state)
         self.all_donors = all_donors
         self.all_recipients = all_recipients
         self.active_donors_dict = {donor.db_id: donor for donor in self.all_donors if donor.active}

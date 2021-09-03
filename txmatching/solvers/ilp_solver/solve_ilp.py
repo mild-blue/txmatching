@@ -56,7 +56,7 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
                         f'Number of added dynamic constraints reached a threshold of'
                         f' {data_and_configuration.configuration.max_number_of_dynamic_constrains_ilp_solver}')
 
-        if status == Status.Optimal:
+        if status == Status.OPTIMAL:
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
             yield Solution(solution_edges)
             some_solution_yielded = True
@@ -146,7 +146,7 @@ def _add_objective(ilp_model: mip.Model,
                    data_and_configuration: DataAndConfigurationForILPSolver,
                    mapping: VariableMapping):
     # Objective.
-    if internal_parameters.objective_type == ObjectiveType.MaxTransplantsMaxWeights:
+    if internal_parameters.objective_type == ObjectiveType.MAX_TRANSPLANTS_MAX_WEIGHTS:
         weight_of_addition_of_extra_pair = max([data['weight'] for (_, _, data) in data_and_configuration.graph.edges(
             data=True)]) * data_and_configuration.graph.number_of_nodes()
         ilp_model.objective = mip.xsum([
@@ -155,12 +155,12 @@ def _add_objective(ilp_model: mip.Model,
                 from_node, to_node])
             for (from_node, to_node) in data_and_configuration.graph.edges()
         ])
-    elif internal_parameters.objective_type == ObjectiveType.MaxTransplants:
+    elif internal_parameters.objective_type == ObjectiveType.MAX_TRANSPLANTS:
         ilp_model.objective = mip.xsum([
             mapping.edge_to_var[from_node, to_node]
             for (from_node, to_node) in data_and_configuration.graph.edges()
         ])
-    elif internal_parameters.objective_type == ObjectiveType.MaxWeights:
+    elif internal_parameters.objective_type == ObjectiveType.MAX_WEIGHTS:
         ilp_model.objective = mip.xsum([
             data_and_configuration.graph[from_node][to_node]['weight'] * mapping.edge_to_var[from_node, to_node]
             for (from_node, to_node) in data_and_configuration.graph.edges()

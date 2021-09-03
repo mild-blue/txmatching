@@ -16,6 +16,7 @@ class HLAGroupProperties:
     max_count_per_patient: int
 
 
+# pylint:disable=invalid-name
 class HLAGroup(str, Enum):
     A = 'A'
     B = 'B'
@@ -38,6 +39,8 @@ class Solver(str, Enum):
     AllSolutionsSolver = 'AllSolutionsSolver'
     ILPSolver = 'ILPSolver'
 
+
+# pylint:enable=invalid-name
 
 HLA_GROUPS_PROPERTIES = {
     HLAGroup.A: HLAGroupProperties(
@@ -86,7 +89,7 @@ HLA_GROUPS_PROPERTIES = {
 
 HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR]
 GENE_HLA_GROUPS = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
-GENE_HLA_GROUPS_WITH_OTHER = [group for group in GENE_HLA_GROUPS] + [HLAGroup.Other]
+GENE_HLA_GROUPS_WITH_OTHER = GENE_HLA_GROUPS + [HLAGroup.Other]
 assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + [HLAGroup.Other, HLAGroup.ALL]) == set(HLAGroup)
 
 

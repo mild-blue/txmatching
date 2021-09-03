@@ -6,7 +6,8 @@ from typing import Dict, List, Union
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
                                            HLAPerGroup, HLAType)
 from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
-                                    HLA_GROUPS_PROPERTIES, HLAGroup, HLA_GROUPS_OTHER)
+                                    HLA_GROUPS_OTHER, HLA_GROUPS_PROPERTIES,
+                                    HLAGroup)
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
@@ -29,7 +30,7 @@ def split_hla_types_to_groups_other(
         hla_types: List[HLAType],
         parsing_info: ParsingInfo = None
 ) -> Dict[HLAGroup, List[HLAType]]:
-    hla_types_in_groups = dict()
+    hla_types_in_groups = {}
     for hla_group in HLA_GROUPS_OTHER:
         hla_types_in_groups[hla_group] = []
     for hla_type in hla_types:
@@ -121,7 +122,7 @@ def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
 def _split_hla_types_to_groups(hla_types: List[HLACodeAlias],
                                parsing_info: ParsingInfo
                                ) -> Dict[HLAGroup, List[HLACodeAlias]]:
-    hla_types_in_groups = dict()
+    hla_types_in_groups = {}
     for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
         hla_types_in_groups[hla_group] = []
     for hla_type in hla_types:

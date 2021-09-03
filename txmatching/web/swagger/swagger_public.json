@@ -1025,7 +1025,8 @@
                 },
                 "previous_transplants": {
                     "type": "integer",
-                    "description": "Number of previous kidney transplants."
+                    "description": "Number of previous kidney transplants.",
+                    "example": 0
                 },
                 "hla_antibodies": {
                     "type": "array",

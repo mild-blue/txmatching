@@ -23,19 +23,19 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         ILP_SCORES_NUMBER = 20
         config_parameters = ConfigParameters(use_high_resolution=True,
-                                         max_number_of_matchings=ILP_SCORES_NUMBER,
-                                         solver_constructor_name=Solver.ILPSolver,
-                                         hla_crossmatch_level=HLACrossmatchLevel.NONE)
+                                             max_number_of_matchings=ILP_SCORES_NUMBER,
+                                             solver_constructor_name=Solver.ILPSolver,
+                                             hla_crossmatch_level=HLACrossmatchLevel.NONE)
         solutions_ilp = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
 
         self.assertEqual(ILP_SCORES_NUMBER, len(solutions_ilp))
         self.assertSetEqual(BEST_SOLUTION_use_high_resolution_TRUE,
                             get_donor_recipient_pairs_from_solution(solutions_ilp[0].matching_pairs))
         config_parameters = ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
-                                         use_high_resolution=True,
-                                         max_number_of_matchings=1000,
-                                         max_debt_for_country=10,
-                                         hla_crossmatch_level=HLACrossmatchLevel.NONE)
+                                             use_high_resolution=True,
+                                             max_number_of_matchings=1000,
+                                             max_debt_for_country=10,
+                                             hla_crossmatch_level=HLACrossmatchLevel.NONE)
 
         solutions_all_sol_solver = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
         self.assertEqual(947, len(solutions_all_sol_solver))

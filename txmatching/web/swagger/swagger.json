@@ -2148,7 +2148,8 @@
                 },
                 "previous_transplants": {
                     "type": "integer",
-                    "description": "Number of previous kidney transplants."
+                    "description": "Number of previous kidney transplants.",
+                    "example": 0
                 },
                 "hla_antibodies": {
                     "type": "array",
@@ -2488,22 +2489,28 @@
                     ]
                 },
                 "require_compatible_blood_group": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "minimum_total_score": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 0.0
                 },
                 "require_better_match_in_compatibility_index": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "require_better_match_in_compatibility_index_or_blood_group": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "blood_group_compatibility_bonus": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 0.0
                 },
                 "use_binary_scoring": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "max_cycle_length": {
                     "type": "integer",
@@ -2519,6 +2526,7 @@
                 },
                 "required_patient_db_ids": {
                     "type": "array",
+                    "example": [],
                     "items": {
                         "type": "integer"
                     }
@@ -2543,7 +2551,8 @@
                     }
                 },
                 "max_matchings_to_show_to_viewer": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "max_number_of_matchings": {
                     "type": "integer",
@@ -3585,7 +3594,8 @@
                         },
                         "previous_transplants": {
                             "type": "integer",
-                            "description": "Number of previous kidney transplants."
+                            "description": "Number of previous kidney transplants.",
+                            "example": 0
                         },
                         "hla_antibodies": {
                             "description": "Provide full list of all the HLA antibodies of the patient, not just the change set",

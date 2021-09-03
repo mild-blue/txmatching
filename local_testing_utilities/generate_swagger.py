@@ -81,7 +81,6 @@ def generate_private():
         yaml.dump(swagger, file, indent=4, Dumper=yaml.Dumper)
     return swagger
 
-
 def generate_public():
     with open(PATH_TO_PUBLIC_SWAGGER_JSON, 'w') as file:
         swagger = _api_to_swagger(PublicSwaggerGenApp().api)
