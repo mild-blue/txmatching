@@ -25,9 +25,10 @@ from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup, Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.hla_regexes import HIGH_RES_REGEX_ENDING_WITH_LETTER
-from txmatching.utils.hla_system.hla_table import HIGH_RES_TO_SPLIT_OR_BROAD, \
-    PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
+from txmatching.utils.hla_system.hla_regexes import \
+    HIGH_RES_REGEX_ENDING_WITH_LETTER
+from txmatching.utils.hla_system.hla_table import (
+    HIGH_RES_TO_SPLIT_OR_BROAD, PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS)
 
 BRIDGING_PROBABILITY = 0.8
 NON_DIRECTED_PROBABILITY = 0.9
@@ -175,8 +176,8 @@ CUTOFF = 2000
 
 def generate_antibodies() -> List[HLAAntibodiesUploadDTO]:
     antibodies = []
-    for hla_group in TypizationFor:
-        for hla_code in TypizationFor[hla_group]:
+    for hla_codes_in_group in TypizationFor.values():
+        for hla_code in hla_codes_in_group:
             above_cutoff = random_true_with_prob(0.8)
             mfi = int(CUTOFF * 2) if above_cutoff else int(CUTOFF / 2)
             antibodies.append(HLAAntibodiesUploadDTO(
@@ -259,7 +260,7 @@ def generate_patients(txm_event_name: str = TXM_EVENT_NAME,
 def store_generated_patients_from_folder():
     patient_upload_objects = []
     for filename in os.listdir(DATA_FOLDER):
-        with open(f'{DATA_FOLDER}{filename}') as file_to_load:
+        with open(f'{DATA_FOLDER}{filename}', encoding='utf-8') as file_to_load:
             patient_upload_dto = from_dict(data_class=PatientUploadDTOIn,
                                            data=json.load(file_to_load), config=Config(cast=[Enum]))
             patient_upload_objects.append(patient_upload_dto)
@@ -274,5 +275,5 @@ def store_generated_patients(generated_patients: List[PatientUploadDTOIn]):
 
 if __name__ == '__main__':
     for upload_object in generate_patients(TXM_EVENT_NAME):
-        with open(f'{DATA_FOLDER}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w') as f:
+        with open(f'{DATA_FOLDER}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w', encoding='utf-8') as f:
             json.dump(dataclasses.asdict(upload_object), f)

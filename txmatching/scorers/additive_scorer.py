@@ -20,7 +20,7 @@ class AdditiveScorer(ScorerBase):
                 (don_rec_score.donor_db_id, don_rec_score.recipient_db_id): don_rec_score.score
                 for don_rec_score in manual_donor_recipient_scores}
         else:
-            self._manual_donor_recipient_scores = dict()
+            self._manual_donor_recipient_scores = {}
 
     def score_transplant(self, donor: Donor, recipient: Recipient, original_donor: Optional[Donor]) -> float:
         manual_score = self._manual_donor_recipient_scores.get((donor.db_id, recipient.db_id))

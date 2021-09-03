@@ -18,8 +18,8 @@ class FilterDefault(FilterBase):
         cycles = matching.get_cycles()
 
         for patient_db_id in self.configuration.required_patient_db_ids:
-            if not any([transplant_round.contains_patient_db_id(patient_db_id) for transplant_round in
-                        sequences + cycles]):
+            if not any(transplant_round.contains_patient_db_id(patient_db_id) for transplant_round in
+                       sequences + cycles):
                 return False
         if matching.max_debt_from_matching > self.configuration.max_debt_for_country:
             return False

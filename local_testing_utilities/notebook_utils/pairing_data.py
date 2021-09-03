@@ -105,7 +105,7 @@ PARSING_CONFIGS = [
 def _row_to_patient_pair(row: pd.Series, config: Tuple) -> Optional[PatientPair]:
     txm_event, header, sheet_name, nrows, col_map, filename = config
 
-    col_map_dict = dict()
+    col_map_dict = {}
     for key, col_names in asdict(col_map).items():
         col_map_dict[key] = None
         for col_name in col_names:

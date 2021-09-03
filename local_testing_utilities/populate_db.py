@@ -104,7 +104,7 @@ def add_users():
     user_models = []
     for user in USERS:
         if ALLOWED_EDIT_COUNTRIES not in user:
-            user[ALLOWED_EDIT_COUNTRIES] = [country for country in Country]
+            user[ALLOWED_EDIT_COUNTRIES] = list(Country)
         user_model = AppUserModel(
             email=user.get('email'),
             pass_hash=user.get('password_hash'),

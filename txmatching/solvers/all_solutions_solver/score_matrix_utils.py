@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_donor_idx_to_recipient_idx(score_matrix: np.ndarray) -> Dict[int, int]:
-    donor_idx_to_recipient_idx = dict()
+    donor_idx_to_recipient_idx = {}
     n_donor, _ = score_matrix.shape
     for donor_idx in range(n_donor):
         recipient_indices = np.where(score_matrix[donor_idx, :] == ORIGINAL_DONOR_RECIPIENT_SCORE)[0]
@@ -140,7 +140,7 @@ def _get_pairs_from_path(path: Path, pair_index_to_recipient_index: Dict[int, in
 def construct_path_intersection_graph(all_paths: List[Path]) -> Tuple[Graph, Dict[int, Path]]:
     graph = Graph(directed=False)
 
-    path_number_to_path = {path_number: path for path_number, path in enumerate(all_paths)}
+    path_number_to_path = dict(enumerate(all_paths))
     path_to_path_number = {path: path_number for path_number, path in enumerate(all_paths)}
 
     unique_indices = {index for path in all_paths for index in path}

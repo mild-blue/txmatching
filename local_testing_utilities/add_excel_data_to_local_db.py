@@ -39,7 +39,7 @@ if __name__ == '__main__':
         replace_or_add_patients_from_excel(patients)
         logger.info('Successfully parsed austrian patients')
 
-        with open(os.path.join(PATH_TO_DATA_FOR_UPLOAD, 'israel_data.json')) as json_file:
+        with open(os.path.join(PATH_TO_DATA_FOR_UPLOAD, 'israel_data.json'), encoding='utf-8') as json_file:
             data_json = json.load(json_file)
 
         patient_upload_dto = from_dict(data_class=PatientUploadDTOIn, data=data_json, config=Config(cast=[Enum]))

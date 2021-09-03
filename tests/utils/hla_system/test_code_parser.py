@@ -9,7 +9,7 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.services.txm_event_service import create_txm_event
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.patients.hla_code import HLACode
-from txmatching.patients.hla_model import HLAPerGroup, HLAType
+from txmatching.patients.hla_model import HLAPerGroup
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
@@ -229,7 +229,7 @@ class TestCodeParser(DbTests):
         Test that for each high res code in HIGH_RES_TO_SPLIT_OR_BROAD has the same split code as all corresponding
         ultra high res codes.
         """
-        high_res_to_splits = dict()
+        high_res_to_splits = {}
         all_codes = PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS.split.to_dict()
         for high_res_or_ultra_high_res, split_or_broad in all_codes.items():
             if split_or_broad is None:

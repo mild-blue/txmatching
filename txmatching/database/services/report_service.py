@@ -138,7 +138,7 @@ def generate_html_report(
     html_file_name = f'report_{get_formatted_now()}.html'
     html_file_full_path = os.path.join(TMP_DIR, html_file_name)
 
-    with open(html_file_full_path, 'w') as text_file:
+    with open(html_file_full_path, 'w', encoding='utf-8') as text_file:
         text_file.write(html)
 
     return TMP_DIR, html_file_name
@@ -250,7 +250,7 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
                 recipient_note=recipient.parameters.note,
                 recipient_blood_group=recipient.parameters.blood_group,
                 recipient_acceptable_blood_groups=(
-                    ', '.join([blood_group for blood_group in recipient.acceptable_blood_groups])
+                    ', '.join(blood_group for blood_group in recipient.acceptable_blood_groups)
                 ),
                 recipient_antigens=' '.join(
                     [hla.code.display_code for hla_group in recipient.parameters.hla_typing.hla_per_groups
@@ -266,6 +266,7 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
     buffer = BytesIO()
     writer = pd.ExcelWriter(buffer, engine='xlsxwriter')
     df_with_patients.to_excel(writer, sheet_name='Patients', index=False)
+    # pylint: disable=no-member
     workbook = writer.book
     worksheet = writer.sheets['Patients']
     # wrap text in the cells

@@ -165,7 +165,7 @@ def parse_excel_data(file_io: Union[str, FileStorage],
     missing_columns = set(column_map.__dict__.values()).difference(set(data.columns))
     if len(missing_columns) > 0:
         raise InvalidArgumentException(f'Missing columns: {missing_columns}. {EXPLANATION_FILE_STILL_SAVED}')
-    parsed_data = dict()
+    parsed_data = {}
 
     try:
         for _, row in data.iterrows():
