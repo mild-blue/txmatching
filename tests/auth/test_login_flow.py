@@ -149,7 +149,7 @@ class TestLoginFlow(DbTests):
     def _create_user(self, role: UserRole = UserRole.ADMIN, require_2fa: bool = True) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())
         email = str(uuid4())
-        register_user(email, pwd, [Country.CZE], role, '+420456678645')
+        register_user(email, pwd, [Country.CZE], True, '+420456678645', role)
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
         self.assertIsNotNone(db_usr)
         self.assertNotEqual(pwd, db_usr.pass_hash)
@@ -160,7 +160,7 @@ class TestLoginFlow(DbTests):
     def _create_service(self) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())
         email = str(uuid4())
-        register_service(email, pwd, [Country.CZE], '1.1.1.1')
+        register_service(email, pwd, [Country.CZE], True, '1.1.1.1')
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
         self.assertIsNotNone(db_usr)
         self.assertNotEqual(pwd, db_usr.pass_hash)

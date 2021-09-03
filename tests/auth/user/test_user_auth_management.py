@@ -17,7 +17,7 @@ class TestUserCrudWithDb(DbTests):
         pwd = str(uuid4())
         email = str(uuid4()) + 'abc'
         # check that we normalize email to lower
-        register_user(email.upper(), pwd, [Country.CZE], role, '+420456678645')
+        register_user(email.upper(), pwd, [Country.CZE], True, '+420456678645', role)
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
         self.assertIsNotNone(db_usr)
         self.assertNotEqual(pwd, db_usr.pass_hash)
@@ -50,9 +50,9 @@ class TestUserCrudWithDb(DbTests):
         ]
         for phone in invalid_phones:
             self.assertRaises(UserUpdateException,
-                              lambda: register_user(str(uuid4()), str(uuid4()), [], UserRole.ADMIN,
-                                                    phone_number=phone))
+                              lambda: register_user(str(uuid4()), str(uuid4()), [], True,
+                                                    phone, UserRole.ADMIN))
 
     def test_create_as_service(self):
         self.assertRaises(InvalidAuthCallException,
-                          lambda: register_user(str(uuid4()), str(uuid4()), [], UserRole.SERVICE, '+123456789'))
+                          lambda: register_user(str(uuid4()), str(uuid4()), [], True, '+123456789', UserRole.SERVICE))

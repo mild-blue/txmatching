@@ -10,18 +10,21 @@ from txmatching.database.sql_alchemy_schema import AppUserModel
 from txmatching.utils.country_enum import Country
 
 
-def register_service(email: str, password: str, allowed_countries: List[Country], whitelisted_ip: str) -> AppUserModel:
+def register_service(email: str, password: str, allowed_countries: List[Country], require_second_factor: bool,
+                     whitelisted_ip: str) -> AppUserModel:
     """
     Registers new service for given email, password and whitelisted_ip.
     """
     normalized_email = email.lower()
-    _assert_service_registration(normalized_email, password, whitelisted_ip)
+    _assert_service_registration(normalized_email, password,
+                                 require_second_factor, whitelisted_ip)
     user = AppUserModel(
         email=normalized_email,
         pass_hash=encode_password(password),
         role=UserRole.SERVICE,
         second_factor_material=whitelisted_ip,
-        allowed_edit_countries=allowed_countries
+        allowed_edit_countries=allowed_countries,
+        require_2fa=require_second_factor
     )
     persist_user(user)
     return user
@@ -36,16 +39,21 @@ def change_service_password(user_id: int, new_password: str):
     update_password_for_user(user_id=user_id, new_password_hash=pwd_hash)
 
 
-def _assert_service_registration(normalized_email: str, password: str, whitelisted_ip: str):
+def _assert_service_registration(normalized_email: str, password: str, require_second_factor: bool,
+                                 whitelisted_ip: str):
     if not normalized_email:
         raise UserUpdateException('Invalid email address.')
-    if not whitelisted_ip:
-        raise UserUpdateException('Missing IP Address.')
+
     if get_app_user_by_email(normalized_email):
         raise UserUpdateException('The e-mail address is already in use.')
-
     _assert_service_password_validity(password)
-    _assert_ip_address(whitelisted_ip)
+    if require_second_factor:
+        if not whitelisted_ip:
+            raise UserUpdateException('Missing IP Address.')
+        _assert_ip_address(whitelisted_ip)
+    else:
+        if whitelisted_ip:
+            raise UserUpdateException('IP address should not be filled in the case second factor is disabled.')
 
 
 def _assert_service_password_validity(password: str):

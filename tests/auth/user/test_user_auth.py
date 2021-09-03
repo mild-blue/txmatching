@@ -3,12 +3,15 @@ import random
 from unittest import TestCase, mock
 from uuid import uuid4
 
-from txmatching.auth.data_types import UserRole, BearerTokenRequest, TokenType, DecodedBearerToken
-from txmatching.auth.exceptions import InvalidOtpException, InvalidAuthCallException
-from txmatching.auth.user.totp import generate_totp_seed, generate_otp_for_user, \
-    verify_otp_for_user
-from txmatching.auth.user.user_auth import user_login_flow, user_otp_login, refresh_user_token, _send_sms_otp, \
-    JWT_FOR_OTP_ACQUISITION_VALIDITY_MINUTES
+from txmatching.auth.data_types import (BearerTokenRequest, DecodedBearerToken,
+                                        TokenType, UserRole)
+from txmatching.auth.exceptions import (InvalidAuthCallException,
+                                        InvalidOtpException)
+from txmatching.auth.user.totp import (generate_otp_for_user,
+                                       generate_totp_seed, verify_otp_for_user)
+from txmatching.auth.user.user_auth import (
+    JWT_FOR_OTP_ACQUISITION_VALIDITY_MINUTES, _send_sms_otp,
+    refresh_user_token, user_login_flow, user_otp_login)
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
@@ -53,7 +56,7 @@ class TestUserAuth(TestCase):
             pass_hash='',
             role=UserRole.ADMIN,
             second_factor_material=generate_totp_seed(),
-            phone_number='phone',
+            phone_number='',
             require_2fa=False
         )
         usr.id = 14

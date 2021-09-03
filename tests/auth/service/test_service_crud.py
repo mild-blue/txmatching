@@ -15,7 +15,7 @@ class TestServiceCrudWithDb(DbTests):
     def _create_and_get(self) -> Tuple[AppUserModel, str]:
         pwd = str(uuid4())
         email = str(uuid4())
-        register_service(email, pwd, [Country.CZE], '1.1.1.1')
+        register_service(email, pwd, [Country.CZE], True, '1.1.1.1')
         db_usr = AppUserModel.query.filter(AppUserModel.email == email).first()
         self.assertIsNotNone(db_usr)
         self.assertNotEqual(pwd, db_usr.pass_hash)
@@ -40,8 +40,8 @@ class TestServiceCrudWithDb(DbTests):
 
     def test_create_with_invalid_ip(self):
         self.assertRaises(UserUpdateException,
-                          lambda: register_service(str(uuid4()), str(uuid4()), [], '1'))
+                          lambda: register_service(str(uuid4()), str(uuid4()), [], True, '1'))
 
     def test_create_with_empty_pwd(self):
         self.assertRaises(UserUpdateException,
-                          lambda: register_service(str(uuid4()), '', [], '1.1.1.1'))
+                          lambda: register_service(str(uuid4()), '', [], True, '1.1.1.1'))
