@@ -69,7 +69,7 @@ def _api_to_swagger(api: Api) -> dict:
 
 
 def generate_private():
-    with open(PATH_TO_SWAGGER_JSON, 'w') as file:
+    with open(PATH_TO_SWAGGER_JSON, 'w', encoding='utf-8') as file:
         swagger = _api_to_swagger(SwaggerGenApp().api)
         json.dump(swagger, file, ensure_ascii=False, indent=4)
 
@@ -77,12 +77,13 @@ def generate_private():
         OrderedDict,
         lambda dumper, data: dumper.represent_dict(data.items())
     )
-    with open(PATH_TO_SWAGGER_YAML, 'w') as file:
+    with open(PATH_TO_SWAGGER_YAML, 'w', encoding='utf-8') as file:
         yaml.dump(swagger, file, indent=4, Dumper=yaml.Dumper)
     return swagger
 
+
 def generate_public():
-    with open(PATH_TO_PUBLIC_SWAGGER_JSON, 'w') as file:
+    with open(PATH_TO_PUBLIC_SWAGGER_JSON, 'w', encoding='utf-8') as file:
         swagger = _api_to_swagger(PublicSwaggerGenApp().api)
         json.dump(swagger, file, ensure_ascii=False, indent=4)
     return swagger
