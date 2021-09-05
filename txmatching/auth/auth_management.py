@@ -57,8 +57,7 @@ def get_reset_token(email_to_reset_password: str) -> str:
 
 
 def _get_reset_token(secret_key: str, user_id: int) -> str:
-    serializer = Serializer(secret_key)
-    token = serializer.dumps({'user_id': user_id})
+    token = _create_serializer(secret_key).dumps({'user_id': user_id})
     return token
 
 
@@ -80,12 +79,15 @@ def verify_reset_token(token: str) -> int:
 def _verify_reset_token(secret_key: str, reset_token: str, expiration: timedelta = timedelta(weeks=1)) -> int:
     try:
         expiration_seconds = int(expiration.total_seconds())
-        serializer = Serializer(secret_key)
-        user_id = serializer.loads(reset_token, max_age=expiration_seconds)['user_id']
+        user_id = _create_serializer(secret_key).loads(reset_token, max_age=expiration_seconds)['user_id']
     except BadSignature as bad_sign:
         raise InvalidTokenException('Reset password token is invalid.') from bad_sign
 
     return user_id
+
+
+def _create_serializer(secret_key: str) -> Serializer:
+    return Serializer(secret_key, salt=b'mild-blue-txm')
 
 
 # pylint: disable=too-many-arguments
