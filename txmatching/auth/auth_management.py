@@ -66,7 +66,7 @@ def reset_password(reset_token: str, new_password: str):
     user = get_app_user_by_id(verify_reset_token(reset_token))
     # check if there's an active reset token
     if user.reset_token is None:
-        raise InvalidTokenException(f'Reset password token is invalid.')
+        raise InvalidTokenException('Reset password token is invalid.')
     # change password
     change_user_password(user.id, new_password)
     # and delete activity flag
@@ -83,7 +83,7 @@ def _verify_reset_token(secret_key: str, reset_token: str, expiration: timedelta
         serializer = Serializer(secret_key)
         user_id = serializer.loads(reset_token, max_age=expiration_seconds)['user_id']
     except BadSignature as bad_sign:
-        raise InvalidTokenException(f'Reset password token is invalid.') from bad_sign
+        raise InvalidTokenException('Reset password token is invalid.') from bad_sign
 
     return user_id
 
