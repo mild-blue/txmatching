@@ -11,7 +11,7 @@ from txmatching.database.services.app_user_management import get_app_user_by_id
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
-class TestLoginFlow(DbTests):
+class TestAuthManagement(DbTests):
 
     def test__change_password(self):
         usr, current_password = self._create_user()

@@ -214,7 +214,7 @@ class TestUserApi(DbTests):
         with self.app.test_client() as client:
             response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/reset-password',
                                   json=password_reset_request)
-            self._assert_invalid_reset_token(response, reset_token)
+            self._assert_invalid_reset_token(response)
 
     def test_password_reset_should_fail_invalid_token(self):
         password_reset_request = {
@@ -224,12 +224,12 @@ class TestUserApi(DbTests):
         with self.app.test_client() as client:
             response = client.put(f'{API_VERSION}/{USER_NAMESPACE}/reset-password',
                                   json=password_reset_request)
-            self._assert_invalid_reset_token(response, password_reset_request['token'])
+            self._assert_invalid_reset_token(response)
 
-    def _assert_invalid_reset_token(self, res, reset_token):
+    def _assert_invalid_reset_token(self, res):
         self.assertEqual(403, res.status_code)
         self.assertEqual('Authentication failed.', res.json['error'])
-        self.assertEqual(f'Reset password token {reset_token} is invalid.', res.json['message'])
+        self.assertEqual(f'Reset password token is invalid.', res.json['message'])
 
     def test_register_new_user_should_fail_not_admin(self):
         self.login_with_role(UserRole.VIEWER)
