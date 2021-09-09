@@ -56,6 +56,8 @@ class PublicSwaggerGenApp:
 def _api_to_swagger(api: Api) -> dict:
     swagger = api.__schema__
     del swagger['host']
+
+    # Sort attributes so that the output would be deterministic
     swagger['paths'] = {
         path: OrderedDict(
             sorted(
@@ -65,6 +67,13 @@ def _api_to_swagger(api: Api) -> dict:
         )
         for path, props_dict in swagger['paths'].items()
     }
+    swagger['definitions'] = OrderedDict(
+        sorted(swagger['definitions'].items())
+    )
+    swagger['responses'] = OrderedDict(
+        sorted(swagger['responses'].items())
+    )
+
     return swagger
 
 

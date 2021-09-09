@@ -550,41 +550,14 @@
         }
     ],
     "definitions": {
-        "UploadPatients": {
-            "required": [
-                "country",
-                "donors",
-                "recipients",
-                "txm_event_name"
+        "BloodGroupEnum": {
+            "enum": [
+                "A",
+                "B",
+                "AB",
+                "0"
             ],
-            "properties": {
-                "country": {
-                    "$ref": "#/definitions/CountryCode"
-                },
-                "txm_event_name": {
-                    "type": "string",
-                    "description": "The TXM event name has to be provided by an ADMIN.",
-                    "example": "2020-10-example_event"
-                },
-                "donors": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/DonorInput"
-                    }
-                },
-                "recipients": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/RecipientInput"
-                    }
-                },
-                "add_to_existing_patients": {
-                    "type": "boolean",
-                    "description": "If *true* the currently uploaded patients will be added to the patients already in the system. If *false* the data in the system will be overwritten by the currently uploaded data.",
-                    "default": false
-                }
-            },
-            "type": "object"
+            "type": "string"
         },
         "CountryCode": {
             "enum": [
@@ -916,23 +889,6 @@
             },
             "type": "object"
         },
-        "BloodGroupEnum": {
-            "enum": [
-                "A",
-                "B",
-                "AB",
-                "0"
-            ],
-            "type": "string"
-        },
-        "SexEnum": {
-            "enum": [
-                "M",
-                "F"
-            ],
-            "type": "string",
-            "description": "Sex of the patient."
-        },
         "DonorType": {
             "enum": [
                 "DONOR",
@@ -941,6 +897,135 @@
             ],
             "type": "string",
             "description": "Type of the donor."
+        },
+        "FailResponse": {
+            "required": [
+                "error"
+            ],
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "HLAAntibodyIn": {
+            "required": [
+                "cutoff",
+                "mfi",
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "HLA antibody name in high (A\\*01:01), low (A\\*01), split (A1) or broad (A9) resolutions. In case of DP or DQ, when alpha and beta are provided, the expected format is DQ[01:01,02:02]",
+                    "example": "A*01:01"
+                },
+                "mfi": {
+                    "type": "integer",
+                    "description": "Mean fluorescence intensity. Use exact value.",
+                    "example": 2350
+                },
+                "cutoff": {
+                    "type": "integer",
+                    "description": "Default cutoff value for the specific patient and HLA antibody.",
+                    "example": 2000
+                }
+            },
+            "type": "object"
+        },
+        "LoginSuccessResponse": {
+            "required": [
+                "auth_token"
+            ],
+            "properties": {
+                "auth_token": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "OtpLogin": {
+            "required": [
+                "otp"
+            ],
+            "properties": {
+                "otp": {
+                    "type": "string",
+                    "description": "OTP for this login."
+                }
+            },
+            "type": "object"
+        },
+        "ParsingError": {
+            "required": [
+                "hla_code",
+                "hla_code_processing_result_detail",
+                "message"
+            ],
+            "properties": {
+                "hla_code": {
+                    "type": "string"
+                },
+                "hla_code_processing_result_detail": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "medical_id": {
+                    "type": "string"
+                },
+                "txm_event_id": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "PasswordChange": {
+            "required": [
+                "current_password",
+                "new_password"
+            ],
+            "properties": {
+                "current_password": {
+                    "type": "string",
+                    "description": "Current password."
+                },
+                "new_password": {
+                    "type": "string",
+                    "description": "New password."
+                }
+            },
+            "type": "object"
+        },
+        "PatientUploadSuccessResponse": {
+            "required": [
+                "donors_uploaded",
+                "parsing_errors",
+                "recipients_uploaded"
+            ],
+            "properties": {
+                "recipients_uploaded": {
+                    "type": "integer",
+                    "description": "Number of recipients successfully loaded into the application."
+                },
+                "donors_uploaded": {
+                    "type": "integer",
+                    "description": "Number of donors successfully loaded into the application."
+                },
+                "parsing_errors": {
+                    "type": "array",
+                    "description": "Errors and warnings that occurred in HLA codes parsing",
+                    "items": {
+                        "$ref": "#/definitions/ParsingError"
+                    }
+                }
+            },
+            "type": "object"
         },
         "RecipientInput": {
             "required": [
@@ -1038,157 +1123,17 @@
             },
             "type": "object"
         },
-        "HLAAntibodyIn": {
+        "ResetPassword": {
             "required": [
-                "cutoff",
-                "mfi",
-                "name"
+                "password",
+                "token"
             ],
             "properties": {
-                "name": {
+                "token": {
                     "type": "string",
-                    "description": "HLA antibody name in high (A\\*01:01), low (A\\*01), split (A1) or broad (A9) resolutions. In case of DP or DQ, when alpha and beta are provided, the expected format is DQ[01:01,02:02]",
-                    "example": "A*01:01"
-                },
-                "mfi": {
-                    "type": "integer",
-                    "description": "Mean fluorescence intensity. Use exact value.",
-                    "example": 2350
-                },
-                "cutoff": {
-                    "type": "integer",
-                    "description": "Default cutoff value for the specific patient and HLA antibody.",
-                    "example": 2000
-                }
-            },
-            "type": "object"
-        },
-        "FailResponse": {
-            "required": [
-                "error"
-            ],
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "PatientUploadSuccessResponse": {
-            "required": [
-                "donors_uploaded",
-                "parsing_errors",
-                "recipients_uploaded"
-            ],
-            "properties": {
-                "recipients_uploaded": {
-                    "type": "integer",
-                    "description": "Number of recipients successfully loaded into the application."
-                },
-                "donors_uploaded": {
-                    "type": "integer",
-                    "description": "Number of donors successfully loaded into the application."
-                },
-                "parsing_errors": {
-                    "type": "array",
-                    "description": "Errors and warnings that occurred in HLA codes parsing",
-                    "items": {
-                        "$ref": "#/definitions/ParsingError"
-                    }
-                }
-            },
-            "type": "object"
-        },
-        "ParsingError": {
-            "required": [
-                "hla_code",
-                "hla_code_processing_result_detail",
-                "message"
-            ],
-            "properties": {
-                "hla_code": {
-                    "type": "string"
-                },
-                "hla_code_processing_result_detail": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "medical_id": {
-                    "type": "string"
-                },
-                "txm_event_id": {
-                    "type": "integer"
-                }
-            },
-            "type": "object"
-        },
-        "UserLogin": {
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "description": "Email of the user to login."
+                    "description": "Reset Token."
                 },
                 "password": {
-                    "type": "string",
-                    "description": "User's password."
-                }
-            },
-            "type": "object"
-        },
-        "LoginSuccessResponse": {
-            "required": [
-                "auth_token"
-            ],
-            "properties": {
-                "auth_token": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "OtpLogin": {
-            "required": [
-                "otp"
-            ],
-            "properties": {
-                "otp": {
-                    "type": "string",
-                    "description": "OTP for this login."
-                }
-            },
-            "type": "object"
-        },
-        "Success": {
-            "required": [
-                "success"
-            ],
-            "properties": {
-                "success": {
-                    "type": "boolean"
-                }
-            },
-            "type": "object"
-        },
-        "PasswordChange": {
-            "required": [
-                "current_password",
-                "new_password"
-            ],
-            "properties": {
-                "current_password": {
-                    "type": "string",
-                    "description": "Current password."
-                },
-                "new_password": {
                     "type": "string",
                     "description": "New password."
                 }
@@ -1206,19 +1151,95 @@
             },
             "type": "object"
         },
-        "ResetPassword": {
+        "ServiceStatus": {
             "required": [
-                "password",
-                "token"
+                "status"
             ],
             "properties": {
-                "token": {
+                "status": {
                     "type": "string",
-                    "description": "Reset Token."
+                    "description": "Indication of service's health.",
+                    "example": "OK",
+                    "enum": [
+                        "OK",
+                        "Failing"
+                    ]
+                },
+                "exception": {
+                    "type": "string",
+                    "description": "Additional indication what is wrong."
+                }
+            },
+            "type": "object"
+        },
+        "SexEnum": {
+            "enum": [
+                "M",
+                "F"
+            ],
+            "type": "string",
+            "description": "Sex of the patient."
+        },
+        "Success": {
+            "required": [
+                "success"
+            ],
+            "properties": {
+                "success": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "UploadPatients": {
+            "required": [
+                "country",
+                "donors",
+                "recipients",
+                "txm_event_name"
+            ],
+            "properties": {
+                "country": {
+                    "$ref": "#/definitions/CountryCode"
+                },
+                "txm_event_name": {
+                    "type": "string",
+                    "description": "The TXM event name has to be provided by an ADMIN.",
+                    "example": "2020-10-example_event"
+                },
+                "donors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DonorInput"
+                    }
+                },
+                "recipients": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RecipientInput"
+                    }
+                },
+                "add_to_existing_patients": {
+                    "type": "boolean",
+                    "description": "If *true* the currently uploaded patients will be added to the patients already in the system. If *false* the data in the system will be overwritten by the currently uploaded data.",
+                    "default": false
+                }
+            },
+            "type": "object"
+        },
+        "UserLogin": {
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "description": "Email of the user to login."
                 },
                 "password": {
                     "type": "string",
-                    "description": "New password."
+                    "description": "User's password."
                 }
             },
             "type": "object"
@@ -1276,27 +1297,6 @@
             },
             "type": "object"
         },
-        "ServiceStatus": {
-            "required": [
-                "status"
-            ],
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "description": "Indication of service's health.",
-                    "example": "OK",
-                    "enum": [
-                        "OK",
-                        "Failing"
-                    ]
-                },
-                "exception": {
-                    "type": "string",
-                    "description": "Additional indication what is wrong."
-                }
-            },
-            "type": "object"
-        },
         "Version": {
             "required": [
                 "environment",
@@ -1323,83 +1323,83 @@
         }
     },
     "responses": {
-        "ParseError": {
-            "description": "When a mask can't be parsed"
-        },
-        "MaskError": {
-            "description": "When any error occurs on mask"
-        },
-        "SolverAlreadyRunningException": {
-            "description": "Solver already running"
-        },
-        "InvalidJWTException": {
-            "description": "invalid_jwt_exception"
-        },
-        "NotFoundException": {
-            "description": "not_found_exception"
-        },
-        "CredentialsMismatchException": {
-            "description": "credentials_mismatch_exception"
-        },
-        "InvalidOtpException": {
-            "description": "invalid_otp_exception"
-        },
-        "CouldNotSendOtpUsingSmsServiceException": {
-            "description": "could_not_send_otp"
-        },
-        "InvalidIpAddressAccessException": {
-            "description": "invalid_ip_exception"
-        },
-        "UserUpdateException": {
-            "description": "user_update_exception"
-        },
-        "InvalidAuthCallException": {
-            "description": "invalid_auth_call_exception"
-        },
-        "GuardException": {
-            "description": "guard_exception"
-        },
-        "WrongTokenUsedException": {
-            "description": "wrong_used_token_exception"
-        },
-        "InvalidTokenException": {
-            "description": "invalid_token_exception"
-        },
-        "InvalidEmailException": {
-            "description": "invalid_email_exception"
-        },
         "AuthenticationException": {
             "description": "general_authentication_exception"
-        },
-        "InvalidArgumentException": {
-            "description": "invalid_argument_exception"
-        },
-        "UnauthorizedException": {
-            "description": "unauthorized_exception"
-        },
-        "TooComplicatedDataForAllSolutionsSolver": {
-            "description": "too complicated data for solver _exception"
         },
         "CannotFindShortEnoughRoundsOrPathsInILPSolver": {
             "description": "too complicated data for solver _exception"
         },
+        "CouldNotSendOtpUsingSmsServiceException": {
+            "description": "could_not_send_otp"
+        },
+        "CredentialsMismatchException": {
+            "description": "credentials_mismatch_exception"
+        },
         "DaciteError": {
             "description": "dacite_exception"
         },
-        "KeyError": {
-            "description": "key_error"
-        },
-        "ValueError": {
-            "description": "value_error"
+        "Exception": {
+            "description": "default_exception_error"
         },
         "Forbidden": {
             "description": "access_denied"
         },
+        "GuardException": {
+            "description": "guard_exception"
+        },
         "HTTPException": {
             "description": "http_exception"
         },
-        "Exception": {
-            "description": "default_exception_error"
+        "InvalidArgumentException": {
+            "description": "invalid_argument_exception"
+        },
+        "InvalidAuthCallException": {
+            "description": "invalid_auth_call_exception"
+        },
+        "InvalidEmailException": {
+            "description": "invalid_email_exception"
+        },
+        "InvalidIpAddressAccessException": {
+            "description": "invalid_ip_exception"
+        },
+        "InvalidJWTException": {
+            "description": "invalid_jwt_exception"
+        },
+        "InvalidOtpException": {
+            "description": "invalid_otp_exception"
+        },
+        "InvalidTokenException": {
+            "description": "invalid_token_exception"
+        },
+        "KeyError": {
+            "description": "key_error"
+        },
+        "MaskError": {
+            "description": "When any error occurs on mask"
+        },
+        "NotFoundException": {
+            "description": "not_found_exception"
+        },
+        "ParseError": {
+            "description": "When a mask can't be parsed"
+        },
+        "SolverAlreadyRunningException": {
+            "description": "Solver already running"
+        },
+        "TooComplicatedDataForAllSolutionsSolver": {
+            "description": "too complicated data for solver _exception"
+        },
+        "UnauthorizedException": {
+            "description": "unauthorized_exception"
+        },
+        "UserUpdateException": {
+            "description": "user_update_exception"
+        },
+        "ValueError": {
+            "description": "value_error"
+        },
+        "WrongTokenUsedException": {
+            "description": "wrong_used_token_exception"
         }
     }
 }
