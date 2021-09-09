@@ -3854,20 +3854,6 @@
             },
             "type": "object"
         },
-        "TxmEvents": {
-            "required": [
-                "events"
-            ],
-            "properties": {
-                "events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/TxmEvent"
-                    }
-                }
-            },
-            "type": "object"
-        },
         "TxmEvent": {
             "required": [
                 "id",
@@ -3896,6 +3882,20 @@
                 "CLOSED"
             ],
             "type": "string"
+        },
+        "TxmEvents": {
+            "required": [
+                "events"
+            ],
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TxmEvent"
+                    }
+                }
+            },
+            "type": "object"
         },
         "DefaultTxmEvent": {
             "required": [
