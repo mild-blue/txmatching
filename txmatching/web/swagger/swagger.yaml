@@ -1845,6 +1845,11 @@ paths:
             tags:
             - configuration
     /v1/txm-event/{txm_event_id}/configuration/{config_id}:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
         get:
             operationId: get_configuration_api
             parameters:
@@ -1881,11 +1886,6 @@ paths:
             -   bearer: []
             tags:
             - configuration
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
     /v1/txm-event/{txm_event_id}/matching/calculate-for-config:
         parameters:
         -   in: path
@@ -1969,6 +1969,11 @@ paths:
             tags:
             - patients
     /v1/txm-event/{txm_event_id}/patients/configs/{config_id}:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
         get:
             description: 'Get all patients for the given txm event.  Example: /patients?include-antibodies-raw'
             operationId: get_all_patients
@@ -2011,11 +2016,6 @@ paths:
             -   bearer: []
             tags:
             - patients
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
     /v1/txm-event/{txm_event_id}/patients/configs/{config_id}/donor:
         parameters:
         -   in: path
@@ -2103,6 +2103,11 @@ paths:
             tags:
             - patients
     /v1/txm-event/{txm_event_id}/patients/pairs/{donor_db_id}:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
         delete:
             description: Delete existing donor recipient pair.
             operationId: delete_donor_recipient_pair
@@ -2138,11 +2143,6 @@ paths:
             -   bearer: []
             tags:
             - patients
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
     /v1/txm-event/{txm_event_id}/patients/recipient:
         parameters:
         -   in: path
@@ -2218,6 +2218,11 @@ paths:
             tags:
             - patients
     /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/matchings/{matching_id}/pdf:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
         get:
             operationId: get_matching_report
             parameters:
@@ -2272,12 +2277,12 @@ paths:
             -   bearer: []
             tags:
             - reports
+    /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/patients/xlsx:
         parameters:
         -   in: path
             name: txm_event_id
             required: true
             type: integer
-    /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/patients/xlsx:
         get:
             operationId: get_patients_xls_report
             parameters:
@@ -2315,11 +2320,6 @@ paths:
             -   bearer: []
             tags:
             - reports
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
     /v1/user/change-password:
         put:
             operationId: put_password_change_api
@@ -2566,6 +2566,11 @@ paths:
             tags:
             - user
     /v1/user/{email}/reset-password-token:
+        parameters:
+        -   in: path
+            name: email
+            required: true
+            type: string
         get:
             operationId: get_request_reset
             responses:
@@ -2594,11 +2599,6 @@ paths:
             -   bearer: []
             tags:
             - user
-        parameters:
-        -   in: path
-            name: email
-            required: true
-            type: string
 produces:
 - application/json
 responses:
