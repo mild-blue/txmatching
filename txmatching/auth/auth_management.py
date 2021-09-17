@@ -15,7 +15,8 @@ from txmatching.auth.request_context import get_request_token
 from txmatching.auth.service.service_auth_management import register_service
 from txmatching.auth.user.user_auth_management import (change_user_password,
                                                        register_user)
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
+from txmatching.configuration.app_configuration.application_configuration import \
+    get_application_configuration
 from txmatching.database.services.app_user_management import (
     get_app_user_by_email, get_app_user_by_id, update_reset_token_for_user)
 from txmatching.utils.country_enum import Country
@@ -51,7 +52,7 @@ def get_reset_token(email_to_reset_password: str) -> str:
 
     token = _get_reset_token(get_application_configuration().jwt_secret, user_to_reset_password.id)
     # store that there's an active password reset token for the user
-    update_reset_token_for_user(user_to_reset_password.id, 'active')
+    update_reset_token_for_user(user_to_reset_password.id, token)
 
     return token
 
@@ -64,7 +65,7 @@ def _get_reset_token(secret_key: str, user_id: int) -> str:
 def reset_password(reset_token: str, new_password: str):
     user = get_app_user_by_id(verify_reset_token(reset_token))
     # check if there's an active reset token
-    if user.reset_token is None:
+    if user.reset_token != reset_token:
         raise InvalidTokenException('Reset password token is invalid.')
     # change password
     change_user_password(user.id, new_password)
