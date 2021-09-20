@@ -64,7 +64,6 @@ class DbTests(unittest.TestCase):
         self.app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self._database_name}'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.app.config['SQLALCHEMY_ECHO'] = False  # Enable if you want to see DB queries.
-        self.app.secret_key = 'secret'
         db.init_app(self.app)
 
         self.app.app_context().push()
