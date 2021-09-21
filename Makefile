@@ -144,3 +144,16 @@ copy-generated-ts-to-fe:
 	cp -r $(SWAGGER_OUTPUT_DIR)/model $(FE_GENERATED_DIR)
 	echo "export * from './model/models';" > $(FE_GENERATED_DIR)/index.ts
 	git add $(FE_GENERATED_DIR)
+
+create-demo-event-json:
+	echo "Type TXM event name data should be uploaded to:"; \
+	read name; \
+	echo $${name}; \
+	for lang in CZE CAN IND; do \
+	  	out=/tmp/demo_event_$${lang}.json ; \
+		cat tests/resources/high_res_example_data/high_res_example_data_$${lang}.json \
+			| sed "s/high_res_example_data/$${name}/" \
+			> $${out} ; \
+		echo $${out}: ;\
+		cat $${out} ; \
+	done; \
