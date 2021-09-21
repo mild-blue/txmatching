@@ -40,6 +40,14 @@ class TestUserCrudWithDb(DbTests):
         self.assertTrue(password_matches_hash(usr.pass_hash, new_pwd))
         self.assertFalse(password_matches_hash(usr.pass_hash, old_pwd))
 
+    def test_register_user_without_second_factor(self):
+        self.assertRaises(UserUpdateException,
+                          lambda: register_user(str(uuid4()), str(uuid4()), [], False,
+                                                '+42072156787', UserRole.ADMIN))
+
+        register_user(str(uuid4()), str(uuid4()), [], False,
+                      '', UserRole.ADMIN)
+
     def test_register_user_should_fail_invalid_phone(self):
         invalid_phones = [
             '',  # empty string
