@@ -7,9 +7,9 @@ GET {{url}}/v1/service/version
 Content-Type: application/json
 
 > {%
-client.global.set("demo_email", "demo10@example.com");
+client.global.set("demo_email", "demo@example.com");
 client.global.set("demo_password", "demo");
-client.global.set("txm_event_name", "DEMO10_TXM_EVENT");
+client.global.set("txm_event_name", "DEMO_TXM_EVENT");
 %}
 
 ### Registrer demo user
