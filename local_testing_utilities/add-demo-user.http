@@ -1,0 +1,156 @@
+# The workflow below has endpoints that add a demo user,
+# demo txm event and generate link for password reset
+
+### Test that api works and set demo user parameters
+
+GET {{url}}/v1/service/version
+Content-Type: application/json
+
+> {%
+client.global.set("demo_email", "demo@example.com");
+client.global.set("demo_password", "demo");
+client.global.set("txm_event_name", "DEMO_TXM_EVENT");
+%}
+
+### Registrer demo user
+
+POST {{url}}/v1/user/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("admin_auth_token", response.body["auth_token"]); %}
+
+###
+
+POST {{url}}/v1/user/register
+Content-Type: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+{
+  "email": "{{demo_email}}",
+  "password": "{{demo_password}}",
+  "role": "EDITOR",
+  "second_factor": "",
+  "require_second_factor": false,
+  "allowed_countries": [
+    "AUT",
+    "CZE",
+    "ISR"
+  ]
+}
+
+### Creates demo TXM event
+
+POST {{url}}/v1/txm-event
+Content-Type: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+
+{
+  "name": "{{txm_event_name}}"
+}
+
+> {% client.global.set("txm_event_id", response.body["id"]); %}
+
+###
+
+POST {{url}}/v1/user/login
+Content-Type: application/json
+
+{
+  "email": "{{service_username}}",
+  "password": "{{service_password}}"
+}
+
+> {% client.global.set("service_auth_token", response.body["auth_token"]); %}
+
+### Upload patient data
+
+###############
+# First, to prepare the patient data, please run the following script:
+# make create-demo-event-json
+###############
+
+###
+
+PUT {{url}}/v1/public/patient-upload
+Authorization: Bearer {{service_auth_token}}
+Content-Type: application/json
+
+< /tmp/demo_event_CZE.json
+
+###
+
+PUT {{url}}/v1/public/patient-upload
+Authorization: Bearer {{service_auth_token}}
+Content-Type: application/json
+
+< /tmp/demo_event_CAN.json
+
+###
+
+PUT {{url}}/v1/public/patient-upload
+Authorization: Bearer {{service_auth_token}}
+Content-Type: application/json
+
+< /tmp/demo_event_IND.json
+
+### Compute matchings for faster page load
+
+GET {{url}}/v1/txm-event/{{txm_event_id}}/configuration/default
+Authorization: Bearer {{admin_auth_token}}
+Content-Type: application/json
+
+> {% client.global.set("config", JSON.stringify(response.body)); %}
+
+###
+
+POST {{url}}/v1/txm-event/{{txm_event_id}}/matching/calculate-for-config
+Authorization: Bearer {{admin_auth_token}}
+Content-Type: application/json
+
+{{config}}
+
+> {% client.assert(response.body["calculated_matchings"].length > 0, "No matchings found, this should not happen.") %}
+
+###
+
+###############
+# Next, allow the TXM event for the user manually by modifying `user_to_allowed_event` table.
+###############
+
+### Test that the demo user can see the demo event
+
+POST {{url}}/v1/user/login
+Content-Type: application/json
+
+{
+  "email": "{{demo_email}}",
+  "password": "{{demo_password}}"
+}
+
+> {% client.global.set("demo_auth_token", response.body["auth_token"]); %}
+
+###
+
+GET {{url}}/v1/txm-event
+Content-Type: application/json
+Authorization: Bearer {{demo_auth_token}}
+
+###
+
+GET {{url}}/v1/txm-event/default
+Authorization: Bearer {{demo_auth_token}}
+Content-Type: application/json
+
+### Demo user is ready now, lets generate reset password link
+
+GET {{url}}/v1/user/{{demo_email}}/reset-password-token
+Content-Type: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+> {% client.log("Change password page has a format: http://localhost:4200/#/reset-password/" + response.body["token"]) %}

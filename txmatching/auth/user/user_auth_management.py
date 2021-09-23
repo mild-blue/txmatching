@@ -58,7 +58,7 @@ def _assert_user_registration(normalized_email: str, password: str, require_seco
     if require_second_factor:
         _assert_phone_number_validity(phone_number)
     else:
-        if not phone_number:
+        if phone_number:
             raise UserUpdateException('Phone number should not be filled in in case second factor is disabled.')
 
 
