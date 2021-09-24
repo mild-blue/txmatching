@@ -22,8 +22,10 @@ class HLAGroup(str, Enum):
     B = 'B'
     DRB1 = 'DRB1'
     CW = 'CW'
-    DP = 'DP'
-    DQ = 'DQ'
+    DPA = 'DPA'
+    DPB = 'DPB'
+    DQA = 'DQA'
+    DQB = 'DQB'
     OTHER_DR = 'OTHER_DR'
     Other = 'Other'
     ALL = 'ALL'
@@ -67,27 +69,39 @@ HLA_GROUPS_PROPERTIES = {
         high_res_code_regex=r'^C\*',
         max_count_per_patient=2
     ),
-    HLAGroup.DP: HLAGroupProperties(
-        name='DP',
-        split_code_regex=r'^DPA?\d+',
-        high_res_code_regex=r'DP[AB]1\*',
+    HLAGroup.DPA: HLAGroupProperties(
+        name='DPA',
+        split_code_regex=r'^DPA\d+',
+        high_res_code_regex=r'DPA1\*',
         max_count_per_patient=4
     ),
-    HLAGroup.DQ: HLAGroupProperties(
-        name='DQ',
-        split_code_regex=r'^DQA?\d+',
-        high_res_code_regex=r'DQ[AB]1\*',
+    HLAGroup.DPB: HLAGroupProperties(
+        name='DPB',
+        split_code_regex=r'^DP\d+',
+        high_res_code_regex=r'DPB1\*',
+        max_count_per_patient=4
+    ),
+    HLAGroup.DQA: HLAGroupProperties(
+        name='DQA',
+        split_code_regex=r'^DQA\d+',
+        high_res_code_regex=r'DQA1\*',
+        max_count_per_patient=4
+    ),
+    HLAGroup.DQB: HLAGroupProperties(
+        name='DQB',
+        split_code_regex=r'^DQ\d+',
+        high_res_code_regex=r'DQB1\*',
         max_count_per_patient=4
     ),
     HLAGroup.OTHER_DR: HLAGroupProperties(
         name='OTHER_DR',
         split_code_regex=r'^DR5[123]',
         high_res_code_regex=r'DRB[^1]\*',
-        max_count_per_patient=2  # TODO check if this is correct https://github.com/mild-blue/txmatching/issues/592
+        max_count_per_patient=2
     )
 }
 
-HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DP, HLAGroup.DQ, HLAGroup.OTHER_DR]
+HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DPA, HLAGroup.DPB, HLAGroup.DQA, HLAGroup.DQB, HLAGroup.OTHER_DR]
 GENE_HLA_GROUPS = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
 GENE_HLA_GROUPS_WITH_OTHER = GENE_HLA_GROUPS + [HLAGroup.Other]
 assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + [HLAGroup.Other, HLAGroup.ALL]) == set(HLAGroup)

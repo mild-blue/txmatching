@@ -109,12 +109,36 @@ class TestCodeParser(DbTests):
             HLAPerGroup(HLAGroup.Other, [
                 create_hla_type('DRB3*02:07'),
                 create_hla_type('DRB4*01:05'),
-                create_hla_type('DRB5*01:02')
+                create_hla_type('DRB5*01:02'),
+                create_hla_type('DPA1*01:03'),
+                create_hla_type('DPA1*02:04'),
+                create_hla_type('DPA1*01:07'),
+                create_hla_type('DPB1*04:01'),
+                create_hla_type('DPB1*09:01')
             ])
         ]
 
-        expected = ['A*02:68', 'A*01:25', 'A*02:67',
-                    'DRB3*02:07', 'DRB4*01:05', 'DRB5*01:02']
+        expected = {'A*02:68', 'A*01:25', 'A*02:67',
+                    'DRB3*02:07', 'DRB4*01:05', 'DRB5*01:02', 'DPA1*01:03', 'DPA1*02:04', 'DPA1*01:07'}
+        raw_codes_with_wrong_number_per_group = {hla_type.raw_code for hla_type in
+                                                 get_hla_types_exceeding_max_number_per_group(codes_per_group)}
+
+        self.assertEqual(expected, raw_codes_with_wrong_number_per_group)
+
+    def test_number_of_codes_per_group_is_correct(self):
+        codes_per_group = [
+            HLAPerGroup(HLAGroup.A, []),
+            HLAPerGroup(HLAGroup.B, []),
+            HLAPerGroup(HLAGroup.Other, [
+                create_hla_type('DPA1*01:03'),
+                create_hla_type('DPA1*01:07'),
+                create_hla_type('DPB1*04:01'),
+                create_hla_type('DPB1*09:01')
+
+            ])
+        ]
+
+        expected = []
         raw_codes_with_wrong_number_per_group = [hla_type.raw_code for hla_type in
                                                  get_hla_types_exceeding_max_number_per_group(codes_per_group)]
 
