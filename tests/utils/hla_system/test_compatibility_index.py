@@ -1,8 +1,8 @@
 import logging
 
-from tests.patients.test_patient_parameters import (donor_parameters_Joe,
-                                                    recipient_parameters_Jack,
-                                                    create_recipient_parameters_wrong)
+from tests.patients.test_patient_parameters import (
+    create_recipient_parameters_wrong, donor_parameters_Joe,
+    recipient_parameters_Jack)
 from tests.test_utilities.hla_preparation_utils import (create_hla_type,
                                                         create_hla_typing)
 from tests.test_utilities.prepare_app_for_tests import DbTests
@@ -69,7 +69,10 @@ class TestCompatibilityIndex(DbTests):
 
         expected = {HLAMatch(hla_type=create_hla_type(raw_code='C*04:01'), match_type=MatchType.NONE),
                     HLAMatch(hla_type=create_hla_type(raw_code='DPB1*09:01'), match_type=MatchType.NONE),
-                    HLAMatch(hla_type=create_hla_type(raw_code='DPB1*04:01'), match_type=MatchType.NONE)
+                    HLAMatch(hla_type=create_hla_type(raw_code='DPB1*04:01'), match_type=MatchType.NONE),
+                    HLAMatch(hla_type=create_hla_type(raw_code='DQA1*02:01'), match_type=MatchType.NONE),
+                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*03:03'), match_type=MatchType.BROAD),
+                    HLAMatch(hla_type=create_hla_type(raw_code='DQB1*05:01'), match_type=MatchType.BROAD),
                     }
 
         self.assertSetEqual(expected, set(ci[OTHER_INDEX].recipient_matches))

@@ -23,7 +23,7 @@ class TestHlaScorer(DbTests):
     def test_scorer_max_scores(self):
         self.assertEqual(26, self.split_scorer.max_transplant_score)
         self.assertEqual(18, self.high_res_scorer.max_transplant_score)
-        self.assertEqual(54, self.high_res_other_hla_types_scorer.max_transplant_score)
+        self.assertEqual(78, self.high_res_other_hla_types_scorer.max_transplant_score)
 
     def test_scorers_on_some_patients(self):
         donor = _create_donor(['A*01:01', 'A3', 'B7', 'B37', 'DR11', 'DR15', 'DR52', 'DR51', 'DQ7', 'DQ6'])

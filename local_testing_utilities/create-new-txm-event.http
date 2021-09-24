@@ -1,0 +1,67 @@
+GET {{url}}/v1/service/version
+Content-Type: application/json
+
+
+###
+POST {{url}}/v1/user/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+###
+
+POST {{url}}/v1/user/otp
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "otp": ""
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+###
+
+
+POST {{url}}/v1/txm-event
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+
+{
+  "name": "35-TXM-2021-10"
+}
+
+> {% client.global.set("txm_event_id", response.body["id"]); %}
+
+###
+
+POST {{url}}/v1/user/login
+Content-Type: application/json
+
+{
+  "email": "{{service_username}}",
+  "password": "{{service_password}}"
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+
+###
+
+
+PUT {{url}}/v1/public/patient-upload
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+# Here if you want to provide data in the file use the code below
+< /path/to/json
+# or i you want to provide the json directly use it as below
+//{
+//  "country": "AUT",
+//  "txm_event_name": "test33",
+//  "donors": [],
+//  "recipients": []
+//}
