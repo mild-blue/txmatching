@@ -6,7 +6,9 @@ PARSE_HLA_CODE_EXCEPTIONS = {
     'DQB1*03:19': 'DQ7',
     'DRB1*07:07': 'DR7',
     # Based on email communication with Mater Roder from 12.7.2021
-    'C*07:18': 'CW7'
+    'C*07:18': 'CW7',
+    # Based on email communication with Mater Roder from 11.1.2022
+    'A*26:12': 'A26'
 }
 
 PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES = {
