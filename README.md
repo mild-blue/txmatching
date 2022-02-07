@@ -1,59 +1,71 @@
 # txmatching
 
-Solver for kidney exchange problems.
+Solver for kidney pair donation matching problems.
 
-## Algorithm API
-The file structure containing the key classes of the algoritm API is:
+## About
+
+This is a tool that allows kidney pair donation centre to find the best possible matching from a pool of patients.
+
+It consist of backend written in Python and an Angular frontend.
+
+## How to quickly run the app locally without docker
+
+The project can run only on mac or linux as we are using [graph-tool](https://graph-tool.skewed.de/) package that
+does not support windows.
+
+### Prepare Frontend
+In order to build Frontend for the app one must run `make build-fe`.
+If it does not work, you might have some dependencies missing. 
+For details see [README.md](txmatching/web/frontend/README.md).
+
+One must do that every time when something was changed in the FE code in order to have up to date FE.
+
+What this does is that it builds FE code to `txmatching/web/frontend/dist/frontend` directory,
+where it is picked up by the Flask.
+
+In case npm can't find some of packages and you get this error:
 ```
-txmatching
-    ├── filters
-    │   └── filter_base.py
-    ├── patients
-    │   ├── donor.py
-    │   ├── patient.py
-    │   └── recipient.py
-    ├── scorers
-    │   ├── additive_scorer.py
-    │   └── scorer_base.py
-    └── solvers
-        ├── solver_base.py
-        └── matching
-            ├── transplant_cycle.py
-            ├── matching.py
-            ├── transplant_round.py
-            └── transplant_sequence.py
-
+ENOENT: no such file or directory, chmod '.../node_modules/...`
 ```
-The optimal matchings are found in several steps.
-1. Define list of donors and recipients
-    - `Donor(patient_id: str, parameters: PatientParameters)`
-    - `Recipient(patient_id: str, parameters: PatientParameters, related_donors: Donor)`
+try to remove `node_modules` folder from `txmatching/web/frontend/`, run `npm cache clean -f` and then run the command again.
 
-2. Define scorer, that can optionally have some <b>parameters</b>
-    - `scorer = ScorerBase() [HLAAdditiveScorer, ...]`
 
-3. Find list of suitable transplant matchings by running a solver on the
-lists of donors, recipients using scorer.
-    - `SolverBase().solve(donors, recipients, scorer)`
 
-    which returns a list of matchings in the form:
-    - `Matching(donor_recipient_list: List[DonorRecipientTuple])`
+### Prepare Backend
+Backend is written in Python. We are using [conda](https://docs.conda.io/en/latest/miniconda.html) for
+dependency management. To be able to run the project you must have it istalled.
 
-    which consist of several disjoint rounds.
-    - `TransplantRound(donor_recipient_list: List[DonorRecipientTuple])`
+After you have conda ready and setup. Execute `make conda-create` which creates Conda env for you.
 
-    These can be either a closed cycle or sequence of transplants
-    - `TransplantCycle[TransplantRound]`
-    - `TransplantSequence[TransplantRound]`
+activate the environment with `conda activate txmatching`
 
-4. These matchings can then be optionally filtered according to some <b>parameters</b>
-    - `Filter.keep(matching) -> bool`
+#### Install wkhtmltopdf
 
-## Loading Excel Data
-For testing purposes the patient data can be loaded from `.xlsx` file using the utility `utils/excel_parsing/parse_excel_data.py`. This requires that you set environment variable
-```
-PATIENT_DATA_PATH=/home/user/path/to/your/patient_data.xlsx
-```
+For pdf generation, a [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) is required to be installed.
+
+`sudo apt update`
+
+`sudo apt install wget xfonts-75dpi`
+
+`cd /tmp`
+
+`wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb` (choose your version)
+
+`sudo dpkg -i wkhtmltox_0.12.6-1.focal_amd64.deb` (of the correct version that you want to install)
+
+`wkhtmltopdf --version` (to check that it worked)
+
+
+### Prepare Database
+You need to have docker installed. And you need to have activated environment from the previous step.
+
+After that simply run `make setup-small-non-empty-db`
+
+This runs postgres database in docker that has already some data inside.
+
+### Run the app
+ run `make run`. This should start the app at localhost:8080. To log in use credentials `admin@example.com` and 
+ password `admin`
 
 ## Swagger
 We have a swagger UI running on `/doc/` route (so for example, `localhost:8080/doc/`).
@@ -67,17 +79,11 @@ using `openapi-generator-cli` tool. To install this tool, please refer to [READM
 
 You can automatically generate both swagger file and TS files by running `make generate-swagger-all`.
 
-## Dependencies Management
+## Development
+
+### Dependencies Management
 We are using `conda` for managing dependencies as [graph-tool](https://graph-tool.skewed.de/)
 can be installed just from the `conda-forge` repository.
-
-#### Project Installation
-After you cloned the repository, execute `make conda-create` which creates Conda env for you.
-
-#### Development
-One must switch to `conda` env before development - use `conda activate txmatching`
-to switch to correct environment.
-This must be execute every time when you try to use new terminal.
 
 #### Adding New dependencies
 To add new package put `<package>` to `conda.yml` and execute `make conda-update`.
@@ -97,24 +103,7 @@ when someone updates and you pull new version from git do the following:
 make conda-update
 ```
 
-#### Required Libraries
-
-For pdf generation, a [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) is required to be installed.
-
-`sudo apt update`
-
-`sudo apt install wget xfonts-75dpi`
-
-`cd /tmp`
-
-`wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb` (choose your version)
-
-`sudo dpkg -i wkhtmltox_0.12.6-1.focal_amd64.deb` (of the correct version that you want to install)
-
-`wkhtmltopdf --version` (to check that it worked)
-
-
-## Git Hooks
+### Git Hooks
 there are some githooks in this project. It is advised to use them. After installing dependencies in conda it should be enough to run
 ```
 pre-commit install
@@ -123,49 +112,17 @@ then everytime you commit it first fails in case there were some changes done by
 If you recommit it will pass, because all the needed changes were done. Its especially so we do not push notebooks
 that would contain data to git.
 
-## Application Configuration
+### Application Configuration
 Right now Flask web server tries to load configuration from the environment
 with fallback to loading from [`local_config.py`](txmatching/web/local_config.py).
 All current configuration can be found [here](txmatching/configuration/app_configuration/application_configuration.py).
 To obtain configuration in the code, one should call `get_application_configuration()`
  from [application_configuration.py](txmatching/configuration/app_configuration/application_configuration.py).
 
-## Graph Tool
-Currently some of the solvers use [graph-tool](https://graph-tool.skewed.de/) package. This can't
-easily be installed via pip and you have to use for example conda to install it.
-This is the reason we're using Conda. There's also no package for Windows, thus we support only
-mac and linux.
+### Testing
+To run tests simply run them either in IDE or via `make check`
 
-## Testing
-To run tests simply run them.
-
-## Experimenting
-It is useful to have non-empty db, for that run
-
-```
-make setup-non-empty-db
-```
-
-run tests
-
-## Run BE Locally
-To run BE locally just run [app.py](txmatching/web/app.py) file in your IDE.
-
-### Frontend
-
-For detailed FE related stuff see [README.md](txmatching/web/frontend/README.md).
-
-#### Build FE for BE
-In order to build FE for the app one must run `make build-fe`.
-One must do that every time when something was changed in the FE code in order to have up to date FE.
-What this does is that it builds FE code to `txmatching/web/frontend/dist/frontend` directory,
-where it is picked up by the Flask.
-
-In case npm can't find some of packages and you get this error: 
-```
-ENOENT: no such file or directory, chmod '.../node_modules/...`
-```
-try to remove `node_modules` folder from `txmatching/web/frontend/`, run `npm cache clean -f` and then run the command again.
+This runs unit tests and also linter.
 
 
-To run FE locally use command `make run-fe`. 
+
