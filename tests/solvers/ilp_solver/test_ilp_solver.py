@@ -1,10 +1,12 @@
+from local_testing_utilities.generate_patients import store_generated_patients_from_folder, SMALL_DATA_FOLDER, \
+    GENERATED_TXM_EVENT_NAME
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import (
     ConfigParameters, ManualDonorRecipientScore)
 from txmatching.database.services.txm_event_service import \
-    get_txm_event_complete
+    get_txm_event_complete, get_txm_event_db_id_by_name
 from txmatching.patients.patient import Donor
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
@@ -172,6 +174,13 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_solver_no_patients(self):
         txm_event = create_or_overwrite_txm_event(name='test')
         solve_from_configuration(ConfigParameters(solver_constructor_name=Solver.ILPSolver), txm_event)
+
+    def test_solver_small(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER)
+
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+        solution = solve_from_configuration(ConfigParameters(solver_constructor_name=Solver.ILPSolver), txm_event)
+        self.assertEqual(len(solution.calculated_matchings_list), 1)
 
 
 def _set_donor_blood_group(donor: Donor) -> Donor:
