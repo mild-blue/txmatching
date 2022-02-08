@@ -1,4 +1,6 @@
 from logging.config import dictConfig
+from pathlib import Path
+PATH_TO_LOG = '../logs'
 
 LOGGING_CONFIG = {
     'version': 1,
@@ -25,7 +27,7 @@ LOGGING_CONFIG = {
             'level': 'INFO',
             'formatter': 'info',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '../logs/info.log',
+            'filename': f'{PATH_TO_LOG}/info.log',
             'mode': 'a',
             'maxBytes': 1048576,
             'backupCount': 10
@@ -34,7 +36,7 @@ LOGGING_CONFIG = {
             'level': 'WARNING',
             'formatter': 'error',
             'class': 'logging.FileHandler',
-            'filename': '../logs/error.log',
+            'filename': f'{PATH_TO_LOG}/error.log',
             'mode': 'a',
         },
         # Just a sample of email logger, not used now
@@ -61,4 +63,6 @@ LOGGING_CONFIG = {
 
 
 def setup_logging():
+    # Prepare logging folder if it does not exist
+    Path(PATH_TO_LOG).mkdir(parents=True, exist_ok=True)
     dictConfig(LOGGING_CONFIG)

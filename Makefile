@@ -1,6 +1,7 @@
 include .env.local
 
 CONDA_ENV=txmatching
+ROOT_FOLDER_NAME=txmatching
 
 SWAGGER_INPUT_FILE='txmatching/web/swagger/swagger.yaml'
 SWAGGER_OUTPUT_DIR='/tmp/swagger-generated'
@@ -74,7 +75,7 @@ logs:
 setup-empty-db:
 	docker-compose stop db || true
 	docker-compose rm -f db || true
-	docker volume rm txmatching_txmatching-postgres || true
+	docker volume rm $(ROOT_FOLDER_NAME)_txmatching-postgres || true
 	docker-compose up -d db
 	sleep 2
 	make migrate-db
