@@ -6,12 +6,12 @@ Solver for kidney pair donation matching problems.
 
 This is a tool that allows kidney pair donation centre to find the best possible matching from a pool of patients.
 
-It consist of backend written in Python and an Angular frontend.
+It consists of backend written in Python and an Angular frontend.
 
 ## How to quickly run the app locally without docker
 
-The project can run only on mac or linux as we are using [graph-tool](https://graph-tool.skewed.de/) package that
-does not support windows.
+The project can run only on MacOS or Linux as we are using [graph-tool](https://graph-tool.skewed.de/) package that
+does not support Windows.
 
 ### Prepare Frontend
 In order to build Frontend for the app one must run `make build-fe`.
@@ -37,17 +37,17 @@ dependency management. To be able to run the project you must have it istalled.
 
 After you have conda ready and setup. Execute `make conda-create` which creates Conda env for you.
 
-activate the environment with `conda activate txmatching`
+Finally, activate the environment with `conda activate txmatching`
 
 #### Install wkhtmltopdf
 
 For pdf generation, a [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html) is required to be installed.
 
-`sudo apt update`
-
-`sudo apt install wget xfonts-75dpi`
-
-`cd /tmp`
+```
+sudo apt update
+sudo apt install wget xfonts-75dpi
+cd /tmp
+```
 
 `wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb` (choose your version)
 
@@ -64,7 +64,7 @@ After that simply run `make setup-small-non-empty-db`
 This runs postgres database in docker that has already some data inside.
 
 ### Run the app
- run `make run`. This should start the app at localhost:8080. To log in use credentials `admin@example.com` and 
+ Simply run `make run`. This should start the app at localhost:8080. To log in use credentials `admin@example.com` and 
  password `admin`
 
 ## Swagger
@@ -87,8 +87,8 @@ can be installed just from the `conda-forge` repository.
 
 #### Adding New dependencies
 To add new package put `<package>` to `conda.yml` and execute `make conda-update`.
-Please try to install specific version which you put to `conda.yml` in order to guarantee that whole team has same
-packages versions.
+Please try to install specific version which you put to `conda.yml` in order to guarantee that whole team has the same
+versions of packages.
 Try to put package to `dependencies` part of yaml, that are the packages installed from conda repository,
 if the package is not in the conda repo, put it in the `pip` part of yaml.
 
