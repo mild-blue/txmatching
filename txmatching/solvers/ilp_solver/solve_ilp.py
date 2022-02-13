@@ -1,7 +1,7 @@
 import logging
 import tempfile
 from os import close, dup, dup2
-from typing import Iterable, Tuple
+from typing import Iterable, Set, Tuple
 
 import mip
 
@@ -27,6 +27,7 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
         return []
     ilp_model = mip.Model(sense=mip.MAXIMIZE, solver_name=mip.CBC)
     mapping = VariableMapping(ilp_model, data_and_configuration)
+    all_solutions = set()
 
     _add_objective(ilp_model, internal_parameters, data_and_configuration, mapping)
 
@@ -58,8 +59,9 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
 
         if status == Status.OPTIMAL:
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
-            yield Solution(solution_edges)
-            some_solution_yielded = True
+            if _solution_is_valid(solution_edges, all_solutions):
+                yield Solution(solution_edges)
+                some_solution_yielded = True
             _add_constraints_removing_solution(ilp_model, data_and_configuration, solution_edges, mapping)
         else:
             break
@@ -192,3 +194,14 @@ def _add_constraints_removing_solution(ilp_model: mip.Model,
                (from_node, to_node) not in sol_edges_set}
 
     ilp_model.add_constr(mip.xsum([mapping.edge_to_var[edge] for edge in missing]) >= 0.5)
+
+def _solution_is_valid(solution_edges: Iterable[Tuple[int, int]],
+                       all_solutions: Set[Tuple[Tuple[int, int]]]
+                       ):
+    sol_edges_set = tuple(sorted(solution_edges))
+
+    if sol_edges_set in all_solutions or sol_edges_set == ():
+        return False
+
+    all_solutions.add(sol_edges_set)
+    return True
