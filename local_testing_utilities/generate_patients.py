@@ -32,8 +32,9 @@ from txmatching.utils.hla_system.hla_table import (
 
 BRIDGING_PROBABILITY = 0.8
 NON_DIRECTED_PROBABILITY = 0.9
-TXM_EVENT_NAME = 'high_res_example_data'
-DATA_FOLDER = get_absolute_path(f'tests/resources/{TXM_EVENT_NAME}/')
+GENERATED_TXM_EVENT_NAME = 'high_res_example_data'
+LARGE_DATA_FOLDER = get_absolute_path(f'tests/resources/{GENERATED_TXM_EVENT_NAME}/')
+SMALL_DATA_FOLDER = get_absolute_path('tests/resources/high_res_example_small_data/')
 
 
 def generate_waiting_since() -> str:
@@ -247,7 +248,7 @@ def generate_patients_for_one_country(country: Country, txm_event_name: str, cou
     )
 
 
-def generate_patients(txm_event_name: str = TXM_EVENT_NAME,
+def generate_patients(txm_event_name: str = GENERATED_TXM_EVENT_NAME,
                       countries: Optional[List[Country]] = None,
                       count_per_country=10) -> List[PatientUploadDTOIn]:
     if countries is None:
@@ -259,10 +260,10 @@ def generate_patients(txm_event_name: str = TXM_EVENT_NAME,
     return patient_upload_objects
 
 
-def store_generated_patients_from_folder():
+def store_generated_patients_from_folder(folder=LARGE_DATA_FOLDER):
     patient_upload_objects = []
-    for filename in os.listdir(DATA_FOLDER):
-        with open(f'{DATA_FOLDER}{filename}', encoding='utf-8') as file_to_load:
+    for filename in os.listdir(folder):
+        with open(f'{folder}{filename}', encoding='utf-8') as file_to_load:
             patient_upload_dto = from_dict(data_class=PatientUploadDTOIn,
                                            data=json.load(file_to_load), config=Config(cast=[Enum]))
             patient_upload_objects.append(patient_upload_dto)
@@ -270,12 +271,16 @@ def store_generated_patients_from_folder():
 
 
 def store_generated_patients(generated_patients: List[PatientUploadDTOIn]):
-    create_or_overwrite_txm_event(TXM_EVENT_NAME)
+    create_or_overwrite_txm_event(GENERATED_TXM_EVENT_NAME)
     for patient_upload_dto in generated_patients:
         replace_or_add_patients_from_one_country(patient_upload_dto)
 
 
 if __name__ == '__main__':
-    for upload_object in generate_patients(TXM_EVENT_NAME):
-        with open(f'{DATA_FOLDER}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w', encoding='utf-8') as f:
+    data_folder_to_store_data = SMALL_DATA_FOLDER
+    PATIENT_COUNT = 3
+    countries_to_generate = [Country.CZE]
+    for upload_object in generate_patients(GENERATED_TXM_EVENT_NAME, countries_to_generate, PATIENT_COUNT):
+        with open(f'{data_folder_to_store_data}{GENERATED_TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
+                  encoding='utf-8') as f:
             json.dump(dataclasses.asdict(upload_object), f)

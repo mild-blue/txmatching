@@ -2,8 +2,7 @@ import logging
 from typing import List
 
 from local_testing_utilities.generate_patients import (
-    generate_patients, store_generated_patients,
-    store_generated_patients_from_folder)
+    store_generated_patients_from_folder, SMALL_DATA_FOLDER)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
@@ -136,10 +135,8 @@ def _add_users(users: List[AppUserModel]):
     assert len(AppUserModel.query.all()) == len(users)
 
 
-def populate_db_with_split_data():
-    create_or_overwrite_txm_event(name='test')
+def populate_db_with_split_data(user_models):
     txm_event = create_or_overwrite_txm_event(name='mock_data_CZE_CAN_IND')
-    user_models = add_users()
     add_allowed_events_to_users(user_models)
     patients = parse_excel_data(get_absolute_path(PATIENT_DATA_OBFUSCATED), country=None,
                                 txm_event_name='mock_data_CZE_CAN_IND')
@@ -167,9 +164,13 @@ def populate_db_with_split_data():
 
 
 def populate_small_db():
-    store_generated_patients(generate_patients(count_per_country=3))
+    create_or_overwrite_txm_event(name='test')
+    add_users()
+    store_generated_patients_from_folder(SMALL_DATA_FOLDER)
 
 
 def populate_large_db():
-    populate_db_with_split_data()
+    create_or_overwrite_txm_event(name='test')
+    user_models = add_users()
+    populate_db_with_split_data(user_models)
     store_generated_patients_from_folder()

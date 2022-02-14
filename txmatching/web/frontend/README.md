@@ -43,7 +43,7 @@ After downloading a new version of frontend app, you need to run `npm install` i
 
 ## Development server
 
-Run `ng serve` for a dev server. You can alternatively run `npm run start`.
+Run `ng serve` for a dev server. You can alternatively run `npm run start` or use `make run-fe` in the root folder of the project.
 Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
