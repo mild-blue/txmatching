@@ -22,7 +22,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
         config_parameters = ConfigParameters(solver_constructor_name=Solver.ILPSolver)
-        self.assertEqual(config_parameters.max_number_of_matchings,
+        self.assertGreaterEqual(config_parameters.max_number_of_matchings,
                          len(list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)))
 
     def test_solve_from_configuration(self):
@@ -32,7 +32,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             solver_constructor_name=Solver.ILPSolver,
             manual_donor_recipient_scores=[
                 ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=4, score=1.0)])
-        self.assertEqual(config_parameters.max_number_of_matchings,
+        self.assertGreaterEqual(config_parameters.max_number_of_matchings,
                          len(list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)))
 
     def test_solve_from_configuration_multiple_countries_old_version(self):
@@ -67,7 +67,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             solver_constructor_name=Solver.ILPSolver,
             max_number_of_distinct_countries_in_round=3)
         solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
-        self.assertEqual(config_parameters.max_number_of_matchings, len(solutions))
+        self.assertGreaterEqual(config_parameters.max_number_of_matchings, len(solutions))
 
     def test_with_sequence_length_limit(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
