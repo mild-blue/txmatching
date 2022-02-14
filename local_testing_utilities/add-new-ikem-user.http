@@ -1,0 +1,62 @@
+# test the api works
+
+GET {{url}}/v1/service/version
+Content-Type: application/json
+
+> {%
+client.global.set("new_user_email", "");
+client.global.set("txm_event_name", "");
+client.global.set("second_factor", "");
+%}
+
+###
+POST {{url}}/v1/user/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+
+###
+
+POST {{url}}/v1/user/otp
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "otp": ""
+}
+
+> {% client.global.set("auth_token", response.body["auth_token"]); %}
+
+###
+
+
+POST {{url}}/v1/user/register
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "email": {{new_user_email}},
+  "password": "supersecretpasswordthatwillbechangedanyway",
+  "role": "EDITOR",
+  "second_factor": {{second_factor}},
+  "allowed_countries": [
+    "BEL"
+  ],
+  "require_second_factor": true
+}
+
+###
+
+GET {{url}}/v1/user/{{new_user_email}}/reset-password-token
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.log("Change password page for " + client.global.get("new_user_email") + " has a format https://txmatching.ikem.cz/#/reset-password/" + response.body["token"]) %}
+
+###

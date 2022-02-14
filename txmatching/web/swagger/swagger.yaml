@@ -1369,6 +1369,16 @@ definitions:
         - name
         - state
         type: object
+    TxmEventExport:
+        properties:
+            country:
+                $ref: '#/definitions/CountryCode'
+            new_txm_event_name:
+                type: string
+        required:
+        - country
+        - new_txm_event_name
+        type: object
     TxmEventState:
         enum:
         - OPEN
@@ -1728,17 +1738,16 @@ paths:
             -   bearer: []
             tags:
             - txm-event
-    /v1/txm-event/{name}:
+    /v1/txm-event/{txm_event_id}:
         delete:
-            description: Endpoint that lets an ADMIN delete existing TXM event. The
-                ADMIN should know the TXM event name.
+            description: Endpoint that lets an ADMIN delete existing TXM event.
             operationId: delete_txm_event_delete_api
             parameters:
-            -   description: Name of the TXM event to be deleted.
+            -   description: Id of the TXM event to be deleted.
                 in: path
-                name: name
+                name: txm_event_id
                 required: true
-                type: string
+                type: integer
             responses:
                 '200':
                     description: Returns status code representing result of TXM event
@@ -1762,45 +1771,6 @@ paths:
                         $ref: '#/definitions/FailResponse'
             security:
             -   bearer: []
-            tags:
-            - txm-event
-    /v1/txm-event/{txm_event_id}:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
-        put:
-            description: TXM event parameters that should be updated.
-            operationId: put_txm_event_update_api
-            parameters:
-            -   in: body
-                name: payload
-                required: true
-                schema:
-                    $ref: '#/definitions/TxmEventUpdate'
-            responses:
-                '200':
-                    description: Returns the updated TXM event.
-                    schema:
-                        $ref: '#/definitions/TxmEvent'
-                '400':
-                    description: Wrong data format.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '401':
-                    description: Authentication failed.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '403':
-                    description: Access denied. You do not have rights to access this
-                        endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '500':
-                    description: Unexpected error, see contents for details.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
             tags:
             - txm-event
     /v1/txm-event/{txm_event_id}/configuration/set-default:
@@ -1886,6 +1856,48 @@ paths:
             -   bearer: []
             tags:
             - configuration
+    /v1/txm-event/{txm_event_id}/export:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        post:
+            description: Export patients from provided country and TXM event. Make
+                the file ready to beuploaded again with already new txm event name
+                ready.
+            operationId: post_txm_export_event_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/TxmEventExport'
+            responses:
+                '200':
+                    description: Exported patients DTO, Ready to be uploaded tosome
+                        other event
+                    schema:
+                        $ref: '#/definitions/UploadPatients'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            tags:
+            - txm-event
     /v1/txm-event/{txm_event_id}/matching/calculate-for-config:
         parameters:
         -   in: path

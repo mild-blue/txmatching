@@ -320,7 +320,7 @@
                 ]
             }
         },
-        "/v1/txm-event/{name}": {
+        "/v1/txm-event/{txm_event_id}": {
             "delete": {
                 "responses": {
                     "500": {
@@ -351,79 +351,20 @@
                         "description": "Returns status code representing result of TXM event object deletion."
                     }
                 },
-                "description": "Endpoint that lets an ADMIN delete existing TXM event. The ADMIN should know the TXM event name.",
+                "description": "Endpoint that lets an ADMIN delete existing TXM event.",
                 "operationId": "delete_txm_event_delete_api",
                 "parameters": [
                     {
-                        "name": "name",
+                        "name": "txm_event_id",
                         "in": "path",
                         "required": true,
-                        "type": "string",
-                        "description": "Name of the TXM event to be deleted."
+                        "type": "integer",
+                        "description": "Id of the TXM event to be deleted."
                     }
                 ],
                 "security": [
                     {
                         "bearer": []
-                    }
-                ],
-                "tags": [
-                    "txm-event"
-                ]
-            }
-        },
-        "/v1/txm-event/{txm_event_id}": {
-            "parameters": [
-                {
-                    "name": "txm_event_id",
-                    "in": "path",
-                    "required": true,
-                    "type": "integer"
-                }
-            ],
-            "put": {
-                "responses": {
-                    "500": {
-                        "description": "Unexpected error, see contents for details.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Access denied. You do not have rights to access this endpoint.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "200": {
-                        "description": "Returns the updated TXM event.",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEvent"
-                        }
-                    }
-                },
-                "description": "TXM event parameters that should be updated.",
-                "operationId": "put_txm_event_update_api",
-                "parameters": [
-                    {
-                        "name": "payload",
-                        "required": true,
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/TxmEventUpdate"
-                        }
                     }
                 ],
                 "tags": [
@@ -555,6 +496,65 @@
                 ],
                 "tags": [
                     "configuration"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/export": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Exported patients DTO, Ready to be uploaded tosome other event",
+                        "schema": {
+                            "$ref": "#/definitions/UploadPatients"
+                        }
+                    }
+                },
+                "description": "Export patients from provided country and TXM event. Make the file ready to beuploaded again with already new txm event name ready.",
+                "operationId": "post_txm_export_event_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEventExport"
+                        }
+                    }
+                ],
+                "tags": [
+                    "txm-event"
                 ]
             }
         },
@@ -3717,6 +3717,21 @@
                 },
                 "state": {
                     "$ref": "#/definitions/TxmEventState"
+                }
+            },
+            "type": "object"
+        },
+        "TxmEventExport": {
+            "required": [
+                "country",
+                "new_txm_event_name"
+            ],
+            "properties": {
+                "country": {
+                    "$ref": "#/definitions/CountryCode"
+                },
+                "new_txm_event_name": {
+                    "type": "string"
                 }
             },
             "type": "object"

@@ -47,10 +47,13 @@ def create_txm_event(name: str) -> TxmEvent:
                     state=TxmEventState.OPEN, all_donors=[], all_recipients=[])
 
 
-def delete_txm_event(name: str):
-    txm_event_db_id = get_txm_event_db_id_by_name(name)
-    TxmEventModel.query.filter(TxmEventModel.id == txm_event_db_id).delete()
-    db.session.commit()
+def delete_txm_event(txm_event_id: int):
+    txm_event_to_be_deleted = TxmEventModel.query.filter(TxmEventModel.id == txm_event_id).all()
+    if txm_event_to_be_deleted:
+        TxmEventModel.query.filter(TxmEventModel.id == txm_event_id).delete()
+        db.session.commit()
+    else:
+        raise InvalidArgumentException(f'No TXM event with id {id} found.')
 
 
 def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int, country_code: Country):
