@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
               internal_parameters: InternalILPSolverParameters = InternalILPSolverParameters()) -> Iterable[Solution]:
     if len(data_and_configuration.graph.edges) < 1:
-        return []
+        return
     ilp_model = mip.Model(sense=mip.MAXIMIZE, solver_name=mip.CBC)
     mapping = VariableMapping(ilp_model, data_and_configuration)
 
@@ -35,6 +35,9 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
     matchings_to_search_for = min(data_and_configuration.configuration.max_number_of_matchings,
                                   data_and_configuration.configuration.max_matchings_in_ilp_solver)
     some_solution_yielded = False
+
+    _add_constraints_removing_solution(ilp_model, data_and_configuration, [], mapping)
+
     for _ in range(matchings_to_search_for):
         number_of_times_dynamic_constraint_added = 0
         while True:
@@ -60,6 +63,8 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
             yield Solution(solution_edges)
             some_solution_yielded = True
+            if (data_and_configuration.graph.edges - set(solution_edges)) == set():
+                break
             _add_constraints_removing_solution(ilp_model, data_and_configuration, solution_edges, mapping)
         else:
             break

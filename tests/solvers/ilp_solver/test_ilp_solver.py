@@ -1,10 +1,12 @@
+from local_testing_utilities.generate_patients import store_generated_patients_from_folder, SMALL_DATA_FOLDER, \
+    GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER_WITH_ROUND, SMALL_DATA_FOLDER_WITH_NO_SOLUTION
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import (
     ConfigParameters, ManualDonorRecipientScore)
 from txmatching.database.services.txm_event_service import \
-    get_txm_event_complete
+    get_txm_event_complete, get_txm_event_db_id_by_name
 from txmatching.patients.patient import Donor
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
@@ -20,7 +22,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
         config_parameters = ConfigParameters(solver_constructor_name=Solver.ILPSolver)
-        self.assertEqual(config_parameters.max_number_of_matchings,
+        self.assertGreaterEqual(config_parameters.max_number_of_matchings,
                          len(list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)))
 
     def test_solve_from_configuration(self):
@@ -30,7 +32,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             solver_constructor_name=Solver.ILPSolver,
             manual_donor_recipient_scores=[
                 ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=4, score=1.0)])
-        self.assertEqual(config_parameters.max_number_of_matchings,
+        self.assertGreaterEqual(config_parameters.max_number_of_matchings,
                          len(list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)))
 
     def test_solve_from_configuration_multiple_countries_old_version(self):
@@ -65,7 +67,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             solver_constructor_name=Solver.ILPSolver,
             max_number_of_distinct_countries_in_round=3)
         solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
-        self.assertEqual(config_parameters.max_number_of_matchings, len(solutions))
+        self.assertGreaterEqual(config_parameters.max_number_of_matchings, len(solutions))
 
     def test_with_sequence_length_limit(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
@@ -172,6 +174,27 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_solver_no_patients(self):
         txm_event = create_or_overwrite_txm_event(name='test')
         solve_from_configuration(ConfigParameters(solver_constructor_name=Solver.ILPSolver), txm_event)
+
+    def test_solver_small(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER)
+
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+        solution = solve_from_configuration(ConfigParameters(solver_constructor_name=Solver.ILPSolver), txm_event)
+        self.assertEqual(len(solution.calculated_matchings_list), 1)
+
+    def test_solver_small_with_no_solution(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_NO_SOLUTION)
+
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+        solution = solve_from_configuration(ConfigParameters(solver_constructor_name=Solver.ILPSolver), txm_event)
+        self.assertEqual(len(solution.calculated_matchings_list), 0)
+
+    def test_solver_small_with_round(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_ROUND)
+
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+        solution = solve_from_configuration(ConfigParameters(solver_constructor_name=Solver.ILPSolver), txm_event)
+        self.assertEqual(len(solution.calculated_matchings_list), 1)
 
 
 def _set_donor_blood_group(donor: Donor) -> Donor:
