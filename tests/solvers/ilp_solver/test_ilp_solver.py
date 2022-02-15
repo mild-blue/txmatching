@@ -1,5 +1,5 @@
 from local_testing_utilities.generate_patients import store_generated_patients_from_folder, SMALL_DATA_FOLDER, \
-    GENERATED_TXM_EVENT_NAME
+    GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER_WITH_ROUND
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app_for_tests import DbTests
@@ -177,6 +177,13 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
 
     def test_solver_small(self):
         store_generated_patients_from_folder(SMALL_DATA_FOLDER)
+
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+        solution = solve_from_configuration(ConfigParameters(solver_constructor_name=Solver.ILPSolver), txm_event)
+        self.assertEqual(len(solution.calculated_matchings_list), 1)
+
+    def test_solver_small_with_round(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_ROUND)
 
         txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
         solution = solve_from_configuration(ConfigParameters(solver_constructor_name=Solver.ILPSolver), txm_event)

@@ -35,7 +35,7 @@ NON_DIRECTED_PROBABILITY = 0.9
 GENERATED_TXM_EVENT_NAME = 'high_res_example_data'
 LARGE_DATA_FOLDER = get_absolute_path(f'tests/resources/{GENERATED_TXM_EVENT_NAME}/')
 SMALL_DATA_FOLDER = get_absolute_path('tests/resources/high_res_example_small_data/')
-
+SMALL_DATA_FOLDER_WITH_ROUND = get_absolute_path('tests/resources/high_res_example_small_data_with_round/')
 
 def generate_waiting_since() -> str:
     return f'{random.choice(range(2018, 2020))}-{random.choice(range(1, 12))}-{random.choice(range(1, 28))}'
