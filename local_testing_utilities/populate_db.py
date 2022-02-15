@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from local_testing_utilities.generate_patients import (
-    store_generated_patients_from_folder, SMALL_DATA_FOLDER)
+    store_generated_patients_from_folder, SMALL_DATA_FOLDER, SMALL_DATA_FOLDER_WITH_NO_SOLUTION)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
