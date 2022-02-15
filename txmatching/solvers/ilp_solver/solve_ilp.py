@@ -25,9 +25,6 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
               internal_parameters: InternalILPSolverParameters = InternalILPSolverParameters()) -> Iterable[Solution]:
     if len(data_and_configuration.graph.edges) < 1:
         return
-    if len(data_and_configuration.graph.edges) == 1:
-        yield Solution(data_and_configuration.graph.edges)
-        return
     ilp_model = mip.Model(sense=mip.MAXIMIZE, solver_name=mip.CBC)
     mapping = VariableMapping(ilp_model, data_and_configuration)
 
@@ -66,6 +63,8 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
             yield Solution(solution_edges)
             some_solution_yielded = True
+            if (data_and_configuration.graph.edges - set(solution_edges)) == set():
+                break
             _add_constraints_removing_solution(ilp_model, data_and_configuration, solution_edges, mapping)
         else:
             break
