@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {environment} from '@environments/environment';
-import {LoggerService} from '@app/services/logger/logger.service';
-import {AlertService} from '@app/services/alert/alert.service';
-import {getErrorMessage} from "@app/helpers/error";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '@environments/environment';
+import { LoggerService } from '@app/services/logger/logger.service';
+import { AlertService } from '@app/services/alert/alert.service';
+import { getErrorMessage } from '@app/helpers/error';
 
 @Injectable({
   providedIn: 'root'

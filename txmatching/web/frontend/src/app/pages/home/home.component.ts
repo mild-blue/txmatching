@@ -1,23 +1,23 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AuthService} from '@app/services/auth/auth.service';
-import {faCog} from '@fortawesome/free-solid-svg-icons';
-import {ConfigurationService} from '@app/services/configuration/configuration.service';
-import {Configuration} from '@app/model/Configuration';
-import {MatchingService} from '@app/services/matching/matching.service';
-import {AlertService} from '@app/services/alert/alert.service';
-import {Matching} from '@app/model/Matching';
-import {PatientService} from '@app/services/patient/patient.service';
-import {LoggerService} from '@app/services/logger/logger.service';
-import {ReportService} from '@app/services/report/report.service';
-import {UploadDownloadStatus} from '@app/components/header/header.interface';
-import {Report} from '@app/services/report/report.interface';
-import {finalize, first} from 'rxjs/operators';
-import {EventService} from '@app/services/event/event.service';
-import {AbstractLoggedComponent} from '@app/pages/abstract-logged/abstract-logged.component';
-import {TxmEventStateGenerated} from '@app/generated';
-import {TemplatePopupStyle} from '@app/components/template-popup/template-popup.interface';
-import {ReportConfig} from '@app/components/generate-report/generate-report.interface';
-import {getErrorMessage} from "@app/helpers/error";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AuthService } from '@app/services/auth/auth.service';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
+import { ConfigurationService } from '@app/services/configuration/configuration.service';
+import { Configuration } from '@app/model/Configuration';
+import { MatchingService } from '@app/services/matching/matching.service';
+import { AlertService } from '@app/services/alert/alert.service';
+import { Matching } from '@app/model/Matching';
+import { PatientService } from '@app/services/patient/patient.service';
+import { LoggerService } from '@app/services/logger/logger.service';
+import { ReportService } from '@app/services/report/report.service';
+import { UploadDownloadStatus } from '@app/components/header/header.interface';
+import { Report } from '@app/services/report/report.interface';
+import { finalize, first } from 'rxjs/operators';
+import { EventService } from '@app/services/event/event.service';
+import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
+import { TxmEventStateGenerated } from '@app/generated';
+import { TemplatePopupStyle } from '@app/components/template-popup/template-popup.interface';
+import { ReportConfig } from '@app/components/generate-report/generate-report.interface';
+import { getErrorMessage } from '@app/helpers/error';
 
 @Component({
   selector: 'app-home',
@@ -119,8 +119,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     return this.isCurrentConfigDefault
       ? `The current configuration is set as default for all users (configuration id: ${this._eventService.getConfigId()})`
       : `Set the current configuration as default for all users ` +
-        `(current configuration id: ${this._eventService.getConfigId()}, ` +
-        `default configuration id: ${this.defaultTxmEvent?.defaultConfigId})`;
+      `(current configuration id: ${this._eventService.getConfigId()}, ` +
+      `default configuration id: ${this.defaultTxmEvent?.defaultConfigId})`;
   }
 
   public async setConfigAsDefault(): Promise<void> {
@@ -142,7 +142,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       } else {
         this._alertService.error('Error occured when updating default configuration');
       }
-    } catch(e) {
+    } catch (e) {
       this._alertService.error(`Error setting default configuration: "${getErrorMessage(e)}"`);
       this._logger.error(`Error setting default configuration: "${getErrorMessage(e)}"`);
     }
@@ -232,7 +232,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   private async _initPatientsConfigurationMatchings(): Promise<void> {
-    if(!this.defaultTxmEvent) {
+    if (!this.defaultTxmEvent) {
       this._logger.error('Init matchings failed because defaultTxmEvent not set');
       return;
     }
@@ -248,7 +248,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   private async _initMatchings(): Promise<void> {
-    if(!this.configuration) {
+    if (!this.configuration) {
       this._logger.error('Init matchings failed because configuration not set');
       return;
     }

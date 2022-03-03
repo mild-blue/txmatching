@@ -1,15 +1,15 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {ListItemDetailAbstractComponent} from '@app/components/list-item/list-item.interface';
-import {PatientService} from '@app/services/patient/patient.service';
-import {Donor} from '@app/model/Donor';
-import {PatientList} from '@app/model/PatientList';
-import {TxmEvent} from '@app/model/Event';
-import {LoggerService} from '@app/services/logger/logger.service';
-import {DonorEditable} from '@app/model/DonorEditable';
-import {AlertService} from '@app/services/alert/alert.service';
-import {faTrash} from '@fortawesome/free-solid-svg-icons';
-import {EventService} from '@app/services/event/event.service';
-import {getErrorMessage} from "@app/helpers/error";
+import { Component, Input, OnInit } from '@angular/core';
+import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
+import { PatientService } from '@app/services/patient/patient.service';
+import { Donor } from '@app/model/Donor';
+import { PatientList } from '@app/model/PatientList';
+import { TxmEvent } from '@app/model/Event';
+import { LoggerService } from '@app/services/logger/logger.service';
+import { DonorEditable } from '@app/model/DonorEditable';
+import { AlertService } from '@app/services/alert/alert.service';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { EventService } from '@app/services/event/event.service';
+import { getErrorMessage } from '@app/helpers/error';
 
 @Component({
   selector: 'app-patient-detail-donor',
