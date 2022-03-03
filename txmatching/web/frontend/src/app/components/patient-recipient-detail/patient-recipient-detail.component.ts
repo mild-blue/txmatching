@@ -1,12 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
-import { PatientService } from '@app/services/patient/patient.service';
-import { Recipient } from '@app/model/Recipient';
-import { PatientList } from '@app/model/PatientList';
-import { TxmEvent } from '@app/model/Event';
-import { RecipientEditable } from '@app/model/RecipientEditable';
-import { LoggerService } from '@app/services/logger/logger.service';
-import { AlertService } from '@app/services/alert/alert.service';
+import {Component, Input, OnInit} from '@angular/core';
+import {ListItemDetailAbstractComponent} from '@app/components/list-item/list-item.interface';
+import {PatientService} from '@app/services/patient/patient.service';
+import {Recipient} from '@app/model/Recipient';
+import {PatientList} from '@app/model/PatientList';
+import {TxmEvent} from '@app/model/Event';
+import {RecipientEditable} from '@app/model/RecipientEditable';
+import {LoggerService} from '@app/services/logger/logger.service';
+import {AlertService} from '@app/services/alert/alert.service';
+import {getErrorMessage} from "@app/helpers/error";
 
 @Component({
   selector: 'app-patient-detail-recipient',
@@ -65,8 +66,8 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
       this.success = true;
     })
     .catch((e) => {
-      this._alertService.error(`Error saving recipient: "${e.message || e}"`);
-      this._logger.error(`Error saving recipient: "${e.message || e}"`);
+      this._alertService.error(`Error saving recipient: "${getErrorMessage(e)}"`);
+      this._logger.error(`Error saving recipient: "${getErrorMessage(e)}"`);
     })
     .finally(() => this.loading = false);
   }

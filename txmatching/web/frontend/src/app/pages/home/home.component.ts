@@ -1,22 +1,23 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AuthService } from '@app/services/auth/auth.service';
-import { faCog } from '@fortawesome/free-solid-svg-icons';
-import { ConfigurationService } from '@app/services/configuration/configuration.service';
-import { Configuration } from '@app/model/Configuration';
-import { MatchingService } from '@app/services/matching/matching.service';
-import { AlertService } from '@app/services/alert/alert.service';
-import { Matching } from '@app/model/Matching';
-import { PatientService } from '@app/services/patient/patient.service';
-import { LoggerService } from '@app/services/logger/logger.service';
-import { ReportService } from '@app/services/report/report.service';
-import { UploadDownloadStatus } from '@app/components/header/header.interface';
-import { Report } from '@app/services/report/report.interface';
-import { finalize, first } from 'rxjs/operators';
-import { EventService } from '@app/services/event/event.service';
-import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
-import { TxmEventStateGenerated } from '@app/generated';
-import { TemplatePopupStyle } from '@app/components/template-popup/template-popup.interface';
-import { ReportConfig } from '@app/components/generate-report/generate-report.interface';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AuthService} from '@app/services/auth/auth.service';
+import {faCog} from '@fortawesome/free-solid-svg-icons';
+import {ConfigurationService} from '@app/services/configuration/configuration.service';
+import {Configuration} from '@app/model/Configuration';
+import {MatchingService} from '@app/services/matching/matching.service';
+import {AlertService} from '@app/services/alert/alert.service';
+import {Matching} from '@app/model/Matching';
+import {PatientService} from '@app/services/patient/patient.service';
+import {LoggerService} from '@app/services/logger/logger.service';
+import {ReportService} from '@app/services/report/report.service';
+import {UploadDownloadStatus} from '@app/components/header/header.interface';
+import {Report} from '@app/services/report/report.interface';
+import {finalize, first} from 'rxjs/operators';
+import {EventService} from '@app/services/event/event.service';
+import {AbstractLoggedComponent} from '@app/pages/abstract-logged/abstract-logged.component';
+import {TxmEventStateGenerated} from '@app/generated';
+import {TemplatePopupStyle} from '@app/components/template-popup/template-popup.interface';
+import {ReportConfig} from '@app/components/generate-report/generate-report.interface';
+import {getErrorMessage} from "@app/helpers/error";
 
 @Component({
   selector: 'app-home',
@@ -142,8 +143,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
         this._alertService.error('Error occured when updating default configuration');
       }
     } catch(e) {
-      this._alertService.error(`Error setting default configuration: "${e.message || e}"`);
-      this._logger.error(`Error setting default configuration: "${e.message || e}"`);
+      this._alertService.error(`Error setting default configuration: "${getErrorMessage(e)}"`);
+      this._logger.error(`Error setting default configuration: "${getErrorMessage(e)}"`);
     }
   }
 
@@ -222,8 +223,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
          matching or contact the developers for more details using info@mild.blue or call +420 723 927 536.`);
       }
     } catch (e) {
-      this.errorMessage = e.message || e;
-      this._logger.error(`Error calculating matchings: "${e.message || e}"`);
+      this.errorMessage = getErrorMessage(e);
+      this._logger.error(`Error calculating matchings: "${getErrorMessage(e)}"`);
     } finally {
       this._logger.log('End of calculation');
       this.loading = false;
