@@ -290,7 +290,7 @@ def _get_ci_for_recipient_donor_types_in_group(
     )
 
 
-# if a group belongs to {A, B, DR}, it should have precisely 2 HLA proteins (either one duplicate, or two unique)
+# if a group is a gene group, it should have precisely 2 HLA proteins (either one duplicate, or two unique)
 def _hla_types_for_gene_hla_group(donor_hla_typing: HLATyping, hla_group: HLAGroup) -> List[HLAType]:
     hla_types = _hla_types_for_hla_group(donor_hla_typing, hla_group)
 
