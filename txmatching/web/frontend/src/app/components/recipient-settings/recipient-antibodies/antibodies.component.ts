@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
-import { ENTER } from '@angular/cdk/keycodes';
+import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { ControlErrorStateMatcher } from '@app/directives/validators/form.directive';
 import { Antibody } from '@app/model/Hla';
 import { RecipientEditable } from '@app/model/RecipientEditable';
@@ -20,7 +20,7 @@ export class RecipientAntibodiesComponent {
     mfi: new FormControl('', Validators.required)
   });
 
-  public separatorKeysCodes: number[] = [ENTER];
+  public separatorKeysCodes: number[] = [ENTER, SPACE];
   public errorMatcher = new ControlErrorStateMatcher();
 
   public antibodyValue: string = '';
