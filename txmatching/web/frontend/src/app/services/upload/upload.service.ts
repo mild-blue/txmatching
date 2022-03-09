@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { AlertService } from '@app/services/alert/alert.service';
+import { getErrorMessage } from '@app/helpers/error';
 
 @Injectable({
   providedIn: 'root'
@@ -40,8 +41,8 @@ export class UploadService {
         this._alertService.success('Patients were uploaded successfully.', callbackLabel, callbackAction);
       },
       (e: Error) => {
-        this._alertService.error(`Error uploading patients: "${e.message || e}"`);
-        this._logger.error(`Error uploading patients: "${e.message || e}"`);
+        this._alertService.error(`Error uploading patients: "${getErrorMessage(e)}"`);
+        this._logger.error(`Error uploading patients: "${getErrorMessage(e)}"`);
       });
   }
 }

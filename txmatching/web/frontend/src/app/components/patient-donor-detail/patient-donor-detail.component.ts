@@ -9,6 +9,7 @@ import { DonorEditable } from '@app/model/DonorEditable';
 import { AlertService } from '@app/services/alert/alert.service';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { EventService } from '@app/services/event/event.service';
+import { getErrorMessage } from '@app/helpers/error';
 
 @Component({
   selector: 'app-patient-detail-donor',
@@ -81,8 +82,8 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
       this.success = true;
     })
     .catch((e) => {
-      this._alertService.error(`Error saving donor: "${e.message || e}"`);
-      this._logger.error(`Error saving donor: "${e.message || e}"`);
+      this._alertService.error(`Error saving donor: "${getErrorMessage(e)}"`);
+      this._logger.error(`Error saving donor: "${getErrorMessage(e)}"`);
     })
     .finally(() => this.loading = false);
   }

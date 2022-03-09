@@ -1,1 +1,7 @@
+*.spec.ts
+test.ts
+main.ts
+zone-flags.ts
+dist
+e2e
 src/app/generated/

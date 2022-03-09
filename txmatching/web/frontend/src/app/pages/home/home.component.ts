@@ -17,6 +17,7 @@ import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-log
 import { TxmEventStateGenerated } from '@app/generated';
 import { TemplatePopupStyle } from '@app/components/template-popup/template-popup.interface';
 import { ReportConfig } from '@app/components/generate-report/generate-report.interface';
+import { getErrorMessage } from '@app/helpers/error';
 
 @Component({
   selector: 'app-home',
@@ -118,8 +119,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     return this.isCurrentConfigDefault
       ? `The current configuration is set as default for all users (configuration id: ${this._eventService.getConfigId()})`
       : `Set the current configuration as default for all users ` +
-        `(current configuration id: ${this._eventService.getConfigId()}, ` +
-        `default configuration id: ${this.defaultTxmEvent?.defaultConfigId})`;
+      `(current configuration id: ${this._eventService.getConfigId()}, ` +
+      `default configuration id: ${this.defaultTxmEvent?.defaultConfigId})`;
   }
 
   public async setConfigAsDefault(): Promise<void> {
@@ -141,9 +142,9 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       } else {
         this._alertService.error('Error occured when updating default configuration');
       }
-    } catch(e) {
-      this._alertService.error(`Error setting default configuration: "${e.message || e}"`);
-      this._logger.error(`Error setting default configuration: "${e.message || e}"`);
+    } catch (e) {
+      this._alertService.error(`Error setting default configuration: "${getErrorMessage(e)}"`);
+      this._logger.error(`Error setting default configuration: "${getErrorMessage(e)}"`);
     }
   }
 
@@ -222,8 +223,8 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
          matching or contact the developers for more details using info@mild.blue or call +420 723 927 536.`);
       }
     } catch (e) {
-      this.errorMessage = e.message || e;
-      this._logger.error(`Error calculating matchings: "${e.message || e}"`);
+      this.errorMessage = getErrorMessage(e);
+      this._logger.error(`Error calculating matchings: "${getErrorMessage(e)}"`);
     } finally {
       this._logger.log('End of calculation');
       this.loading = false;
@@ -231,7 +232,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   private async _initPatientsConfigurationMatchings(): Promise<void> {
-    if(!this.defaultTxmEvent) {
+    if (!this.defaultTxmEvent) {
       this._logger.error('Init matchings failed because defaultTxmEvent not set');
       return;
     }
@@ -247,7 +248,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   private async _initMatchings(): Promise<void> {
-    if(!this.configuration) {
+    if (!this.configuration) {
       this._logger.error('Init matchings failed because configuration not set');
       return;
     }

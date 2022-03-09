@@ -9,8 +9,9 @@ import { ConfigurationService } from '@app/services/configuration/configuration.
 import { PatientService } from '@app/services/patient/patient.service';
 import { UploadDownloadStatus } from '@app/components/header/header.interface';
 import { Report } from '@app/services/report/report.interface';
-import { first, finalize } from 'rxjs/operators';
+import { finalize, first } from 'rxjs/operators';
 import { ReportService } from '@app/services/report/report.service';
+import { getErrorMessage } from '@app/helpers/error';
 
 @Component({ template: '' })
 export class AbstractLoggedComponent implements OnInit {
@@ -30,7 +31,8 @@ export class AbstractLoggedComponent implements OnInit {
               protected _configService: ConfigurationService,
               protected _eventService: EventService,
               protected _patientService: PatientService,
-              protected _logger: LoggerService) { }
+              protected _logger: LoggerService) {
+  }
 
   ngOnInit(): void {
     this.user = this._authService.currentUserValue;
@@ -48,13 +50,13 @@ export class AbstractLoggedComponent implements OnInit {
       this.txmEvents = await this._eventService.getEvents();
       this.defaultTxmEvent = await this._eventService.getDefaultEvent();
     } catch (e) {
-      this._alertService.error(`Error loading txm events: "${e.message || e}"`);
-      this._logger.error(`Error loading txm events: "${e.message || e}"`);
+      this._alertService.error(`Error loading txm events: "${getErrorMessage(e)}"`);
+      this._logger.error(`Error loading txm events: "${getErrorMessage(e)}"`);
     }
   }
 
   protected async _initConfiguration(): Promise<void> {
-    if(!this.defaultTxmEvent) {
+    if (!this.defaultTxmEvent) {
       this._logger.error(`Configuration init failed because defaultTxmEvent not set`);
       return;
     }
@@ -65,14 +67,14 @@ export class AbstractLoggedComponent implements OnInit {
       );
       this._logger.log('Got config from server', [this.configuration]);
     } catch (e) {
-      this._alertService.error(`Error loading configuration: "${e.message || e}"`);
-      this._logger.error(`Error loading configuration: "${e.message || e}"`);
+      this._alertService.error(`Error loading configuration: "${getErrorMessage(e)}"`);
+      this._logger.error(`Error loading configuration: "${getErrorMessage(e)}"`);
     }
   }
 
   protected async _initPatients(includeAntibodiesRaw: boolean): Promise<void> {
-    if(!this.defaultTxmEvent) {
-      this._logger.error(`Init patients failed because defaultTxmEvent not set`);
+    if (!this.defaultTxmEvent) {
+      this._logger.error('Init patients failed because defaultTxmEvent not set');
       return;
     }
 
@@ -82,8 +84,8 @@ export class AbstractLoggedComponent implements OnInit {
       );
       this._logger.log('Got patients from server', [this.patients]);
     } catch (e) {
-      this._alertService.error(`Error loading patients: "${e.message || e}"`);
-      this._logger.error(`Error loading patients: "${e.message || e}"`);
+      this._alertService.error(`Error loading patients: "${getErrorMessage(e)}"`);
+      this._logger.error(`Error loading patients: "${getErrorMessage(e)}"`);
       throw e;
     }
   }
