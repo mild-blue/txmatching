@@ -1,5 +1,5 @@
 # Build frontend
-FROM node:12.16.1-alpine as frontend-build
+FROM node:16.14.0-alpine as frontend-build
 
 COPY txmatching/web/frontend ./frontend
 WORKDIR ./frontend
