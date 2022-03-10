@@ -1,9 +1,6 @@
 # pylint: disable=no-self-use
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
-import dataclasses
-import json
 import logging
-import os
 
 from flask_restx import Resource
 
@@ -16,8 +13,6 @@ from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
     TxmEventUpdateDTOIn)
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
     TxmEventsDTOOut
-from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
-    PatientUploadDTOIn
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     TxmDefaultEventJsonIn, TxmEventExportJsonIn, TxmEventJsonIn,
     TxmEventJsonOut, TxmEventsJson, TxmEventUpdateJsonIn)
