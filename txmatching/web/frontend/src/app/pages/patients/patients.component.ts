@@ -20,6 +20,7 @@ import { PatientPairToAdd } from '@app/services/patient/patient.service.interfac
 import { DonorType } from '@app/model/enums/DonorType';
 import { ReportService } from '@app/services/report/report.service';
 import { ParsingError } from '@app/model/ParsingError';
+import { getErrorMessage } from '@app/helpers/error';
 
 @Component({
   selector: 'app-patients',
@@ -121,8 +122,8 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
         return undefined;
       });
     } catch (e) {
-      this._alertService.error(`Error uploading patients: "${e.message || e}"`);
-      this._logger.error(`Error uploading patients: "${e.message || e}"`);
+      this._alertService.error(`Error uploading patients: "${getErrorMessage(e)}"`);
+      this._logger.error(`Error uploading patients: "${getErrorMessage(e)}"`);
     }
   }
 
