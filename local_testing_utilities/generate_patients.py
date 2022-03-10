@@ -20,7 +20,7 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
     RecipientUploadDTO
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
-from txmatching.patients.patient import DonorType
+from txmatching.patients.patient import DonorType, TxmEvent
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup, Sex
@@ -262,20 +262,21 @@ def generate_patients(txm_event_name: str = GENERATED_TXM_EVENT_NAME,
     return patient_upload_objects
 
 
-def store_generated_patients_from_folder(folder=LARGE_DATA_FOLDER):
+def store_generated_patients_from_folder(folder=LARGE_DATA_FOLDER) -> TxmEvent:
     patient_upload_objects = []
     for filename in os.listdir(folder):
         with open(f'{folder}{filename}', encoding='utf-8') as file_to_load:
             patient_upload_dto = from_dict(data_class=PatientUploadDTOIn,
                                            data=json.load(file_to_load), config=Config(cast=[Enum]))
             patient_upload_objects.append(patient_upload_dto)
-    store_generated_patients(patient_upload_objects)
+    return store_generated_patients(patient_upload_objects)
 
 
-def store_generated_patients(generated_patients: List[PatientUploadDTOIn]):
-    create_or_overwrite_txm_event(GENERATED_TXM_EVENT_NAME)
+def store_generated_patients(generated_patients: List[PatientUploadDTOIn]) -> TxmEvent:
+    txm_event = create_or_overwrite_txm_event(GENERATED_TXM_EVENT_NAME)
     for patient_upload_dto in generated_patients:
         replace_or_add_patients_from_one_country(patient_upload_dto)
+    return txm_event
 
 
 if __name__ == '__main__':

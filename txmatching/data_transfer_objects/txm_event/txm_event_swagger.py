@@ -1,6 +1,7 @@
 from flask_restx import fields
 
-from txmatching.data_transfer_objects.enums_swagger import TxmEventStateJson
+from txmatching.data_transfer_objects.enums_swagger import (CountryCodeJson,
+                                                            TxmEventStateJson)
 from txmatching.data_transfer_objects.hla.parsing_error_swagger import \
     ParsingErrorJson
 from txmatching.web.web_utils.namespaces import txm_event_api
@@ -36,4 +37,9 @@ TxmEventsJson = txm_event_api.model('TxmEvents', {
 
 TxmEventUpdateJsonIn = txm_event_api.model('TxmEventUpdate', {
     'state': fields.Nested(TxmEventStateJson, required=False),
+})
+
+TxmEventExportJsonIn = txm_event_api.model('TxmEventExport', {
+    'country': fields.Nested(CountryCodeJson, required=True),
+    'new_txm_event_name': fields.String(required=True)
 })

@@ -6,18 +6,23 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_role, require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
+from txmatching.data_transfer_objects.external_patient_upload.swagger import \
+    UploadPatientsJson
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
-    TxmDefaultEventDTOIn, TxmEventDTOIn, TxmEventUpdateDTOIn)
+    TxmDefaultEventDTOIn, TxmEventDTOIn, TxmEventExportDTOIn,
+    TxmEventUpdateDTOIn)
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
     TxmEventsDTOOut
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
-    TxmDefaultEventJsonIn, TxmEventJsonIn, TxmEventJsonOut, TxmEventsJson,
-    TxmEventUpdateJsonIn)
+    TxmDefaultEventJsonIn, TxmEventExportJsonIn, TxmEventJsonIn,
+    TxmEventJsonOut, TxmEventsJson, TxmEventUpdateJsonIn)
 from txmatching.database.services.txm_event_service import (
     convert_txm_event_base_to_dto, create_txm_event, delete_txm_event,
     get_allowed_txm_event_ids_for_current_user, get_txm_event_base,
     get_txm_event_id_for_current_user, set_txm_event_state,
     update_default_txm_event_id_for_current_user)
+from txmatching.utils.export.export_txm_event import \
+    get_patients_upload_json_from_txm_event_for_country
 from txmatching.web.web_utils.namespaces import txm_event_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
@@ -86,7 +91,7 @@ class TxmDefaultEventApi(Resource):
         txm_event = get_txm_event_base(get_txm_event_id_for_current_user())
         return response_ok(convert_txm_event_base_to_dto(txm_event))
 
-
+# noinspection PyUnresolvedReferences
 @txm_event_api.route('/<int:txm_event_id>', methods=['PUT'])
 class TxmEventUpdateApi(Resource):
 
@@ -108,23 +113,45 @@ class TxmEventUpdateApi(Resource):
 
 # noinspection PyUnresolvedReferences
 # because Pycharm clearly does not know how what that is
-@txm_event_api.route('/<name>', methods=['DELETE'])
+@txm_event_api.route('/<int:txm_event_id>', methods=['DELETE'])
 class TxmEventDeleteApi(Resource):
 
     @txm_event_api.doc(
         params={
-            'name': {
-                'description': 'Name of the TXM event to be deleted.',
-                'type': str,
+            'txm_event_id': {
+                'description': 'Id of the TXM event to be deleted.',
+                'type': int,
                 'required': True,
                 'in': 'path'
             }
         },
         security='bearer',
-        description='Endpoint that lets an ADMIN delete existing TXM event. The ADMIN should know the TXM event name.'
+        description='Endpoint that lets an ADMIN delete existing TXM event.'
     )
     @txm_event_api.response_ok(description='Returns status code representing result of TXM event object deletion.')
     @txm_event_api.response_errors()
     @require_role(UserRole.ADMIN)
-    def delete(self, name: str):
-        delete_txm_event(name)
+    def delete(self, txm_event_id: int):
+        delete_txm_event(txm_event_id)
+
+
+# noinspection PyUnresolvedReferences
+@txm_event_api.route('/<int:txm_event_id>/export', methods=['POST'])
+class TxmExportEventApi(Resource):
+    @require_role(UserRole.ADMIN)
+    @txm_event_api.response_ok(UploadPatientsJson, description='Exported patients DTO, Ready to be uploaded to'
+                                                               'some other event')
+    @txm_event_api.response_errors()
+    @txm_event_api.request_body(
+        TxmEventExportJsonIn,
+        description='Export patients from provided country and TXM event. Make the file ready to be'
+                    'uploaded again with already new txm event name ready.'
+    )
+    def post(self, txm_event_id: int) -> str:
+        export_dto = request_body(TxmEventExportDTOIn)
+        txm_event_json = get_patients_upload_json_from_txm_event_for_country(
+            txm_event_id=txm_event_id,
+            country_code=export_dto.country,
+            txm_event_name=export_dto.new_txm_event_name
+        )
+        return response_ok(txm_event_json)

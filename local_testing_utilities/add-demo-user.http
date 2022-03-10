@@ -153,4 +153,6 @@ GET {{url}}/v1/user/{{demo_email}}/reset-password-token
 Content-Type: application/json
 Authorization: Bearer {{admin_auth_token}}
 
-> {% client.log("Change password page has a format: http://localhost:4200/#/reset-password/" + response.body["token"]) %}
+> {%
+client.log("Change password page for " + client.global.get("demo_email") + " has a format: +" +
+ "txm.demo.mild.blue/#/reset-password/" + response.body["token"]) %}

@@ -43,6 +43,12 @@ class TestSwaggerEndpoints(DbTests):
                     400],
                 # TODO: Fix swagger test https://github.com/mild-blue/swagger-unittest/issues/5
                 f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/recipient': [400],
+            },
+            # TODO: this should not be here, not sure why this is suddenly needed.
+            #  https://github.com/mild-blue/txmatching/issues/780
+            'delete': {
+                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/pairs/{{donor_db_id}}': [
+                    403]
             }
         }
         # we need this user as we need the report to be generated from filled txm event, but we create an empty

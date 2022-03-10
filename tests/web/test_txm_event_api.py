@@ -90,8 +90,8 @@ class TestMatchingApi(DbTests):
     def test_txm_event_deletion(self):
         self.fill_db_with_patients_and_results()
         txm_name = 'test'
-        tmx_event_model = TxmEventModel.query.filter(TxmEventModel.name == txm_name).first()
-        self.assertEqual(1, len(tmx_event_model.configs))
+        txm_event_model = TxmEventModel.query.filter(TxmEventModel.name == txm_name).first()
+        self.assertEqual(1, len(txm_event_model.configs))
         self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name).first())
         self.assertEqual(1, len(PairingResultModel.query.all()))
 
@@ -100,7 +100,7 @@ class TestMatchingApi(DbTests):
         # Successful deletion
         with self.app.test_client() as client:
             res = client.delete(
-                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_name}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_model.id}',
                 headers=self.auth_headers
             )
 
@@ -112,7 +112,7 @@ class TestMatchingApi(DbTests):
         # Second deletion should fail
         with self.app.test_client() as client:
             res = client.delete(
-                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_name}',
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_model.id}',
                 headers=self.auth_headers
             )
 

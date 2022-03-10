@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import TxmEventState
 
 
@@ -19,3 +20,9 @@ class TxmDefaultEventDTOIn:
 @dataclass
 class TxmEventUpdateDTOIn:
     state: Optional[TxmEventState]
+
+
+@dataclass
+class TxmEventExportDTOIn:
+    country: Country
+    new_txm_event_name: str
