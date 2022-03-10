@@ -1,3 +1,5 @@
+from local_testing_utilities.generate_patients import store_generated_patients_from_folder, SMALL_DATA_FOLDER, \
+    GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER_WITH_ROUND, SMALL_DATA_FOLDER_WITH_NO_SOLUTION
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.solvers.ilp_solver.test_ilp_solver import _set_donor_blood_group
@@ -5,7 +7,7 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import (
     ConfigParameters, ManualDonorRecipientScore)
 from txmatching.database.services.txm_event_service import \
-    get_txm_event_complete
+    get_txm_event_complete, get_txm_event_db_id_by_name
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.enums import HLACrossmatchLevel, Solver
@@ -137,3 +139,44 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         solve_from_configuration(ConfigParameters(
             solver_constructor_name=Solver.AllSolutionsSolver,
         ), txm_event)
+
+    def test_manual_scores_set_manual_score_of_original_pair(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_ROUND)
+
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+        config_parameters = ConfigParameters(
+            solver_constructor_name=Solver.AllSolutionsSolver,
+            manual_donor_recipient_scores=[
+                ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=1, score=7.0)])
+        solution = solve_from_configuration(config_parameters, txm_event).calculated_matchings_list
+        self.assertEqual(len(solution), 1)
+
+    def test_manual_scores_set_manual_score_of_every_pair_to_negative(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_ROUND)
+
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+        config_parameters = ConfigParameters(
+            solver_constructor_name=Solver.AllSolutionsSolver,
+            manual_donor_recipient_scores=[
+                ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=2, score=-1.0),
+                ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=2, score=-1.0),
+                ManualDonorRecipientScore(donor_db_id=2, recipient_db_id=2, score=-1.0),
+                ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=1, score=-1.0),
+                ManualDonorRecipientScore(donor_db_id=2, recipient_db_id=1, score=-1.0),
+                ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=1, score=-1.0)])
+        solutions = solve_from_configuration(config_parameters, txm_event).calculated_matchings_list
+        self.assertEqual(len(solutions), 0)
+
+    def test_manual_scores_make_cycle(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_ROUND)
+
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+        config_parameters = ConfigParameters(
+            solver_constructor_name=Solver.AllSolutionsSolver,
+            manual_donor_recipient_scores=[
+                ManualDonorRecipientScore(donor_db_id=2, recipient_db_id=1, score=4.0),
+                ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=2, score=1.0),
+                ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=1, score=1.0),
+                ])
+        solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
+        self.assertEqual(len(solutions), 1)
