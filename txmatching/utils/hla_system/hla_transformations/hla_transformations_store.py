@@ -145,6 +145,17 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
             parsing_info=parsing_info
         )
 
+    # 5. check if a basic group is missing
+    for group in hla_per_groups:
+        if group.hla_group != HLAGroup.Other and hla_group_is_empty(group):
+            group_name = "Group " +  group.hla_group.name
+            add_parsing_error_to_db_session(
+                group_name, 
+                HlaCodeProcessingResultDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                HlaCodeProcessingResultDetail.BASIC_HLA_GROUP_IS_EMPTY.value,
+                parsing_info
+            )
+
     return HLATypingDTO(
         hla_per_groups=[
             HLAPerGroup(
@@ -153,6 +164,12 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
             ) for group in hla_per_groups
         ],
     )
+
+
+def hla_group_is_empty(hla_group: [HLAPerGroup]) -> bool:
+    if not hla_group.hla_types:
+        return True
+    return False
 
 
 def get_hla_types_exceeding_max_number_per_group(
