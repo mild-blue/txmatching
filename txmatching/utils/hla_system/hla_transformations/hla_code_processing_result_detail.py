@@ -7,7 +7,7 @@ class HlaCodeProcessingResultDetail(str, Enum):
     HIGH_RES_WITHOUT_SPLIT = 'High res can be converted to broad resolution but split resolution is unknown'
     HIGH_RES_WITH_LETTER = 'High res code has letter in the end. Such codes are not converted to split and broad.'
 
-    # returning no value
+    # returning no value (hla code)
     MULTIPLE_SPLITS_OR_BROADS_FOUND = 'Multiple splits or broad were found, unable to choose the right one.' \
                                       ' Immunologists should be contacted.'
     IRRELEVANT_CODE = 'This type of code is not relevant for further matching.'
@@ -15,8 +15,10 @@ class HlaCodeProcessingResultDetail(str, Enum):
     UNKNOWN_TRANSFORMATION_FROM_HIGH_RES = 'Unable to transform high resolution HLA code. Its transformation to ' \
                                            'split or broad code is unknown. Immunologists should be contacted.'
     UNPARSABLE_HLA_CODE = 'Completely Unexpected HLA code.'
+
+    # returning no value (hla group)
     MORE_THAN_TWO_HLA_CODES_PER_GROUP = 'There can not be more than 2 antigens per group.'
-    BASIC_HLA_GROUP_IS_EMPTY = 'This group should not be empty.'
+    BASIC_HLA_GROUP_IS_EMPTY = 'This HLA group should contain at least one antigen.'
 
     # not in a result of parse_hla_raw_code_with_details method
     MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \
