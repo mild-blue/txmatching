@@ -30,3 +30,18 @@ OK_PROCESSING_RESULTS = {
     HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT,
     HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER
 }
+
+WARNING_PROCESSING_RESULTS = {
+    HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND,
+    HlaCodeProcessingResultDetail.IRRELEVANT_CODE,
+    HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE,
+    HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES,
+    HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE,
+    HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
+}
+
+ERROR_PROCESSING_RESULTS = {
+    HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
+    HlaCodeProcessingResultDetail.MFI_PROBLEM,
+    HlaCodeProcessingResultDetail.OTHER_PROBLEM
+}
