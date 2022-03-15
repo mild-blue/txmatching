@@ -197,7 +197,7 @@ class TestPatientService(DbTests):
 
         errors = ParsingErrorModel.query.all()
         self.assertEqual(7, len(errors))
-        self.assertEqual('Group A', errors[0].hla_code)
+        self.assertEqual('TEST', errors[3].hla_code)
         self.assertEqual(
             HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
             errors[3].hla_code_processing_result_detail

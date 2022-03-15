@@ -145,6 +145,7 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
             parsing_info=parsing_info
         )
 
+    # TODO https://github.com/mild-blue/txmatching/issues/790 hla_code should be nullable
     # 5. check if a basic group is missing
     for group in hla_per_groups:
         if group.hla_group != HLAGroup.Other and hla_group_is_empty(group):
