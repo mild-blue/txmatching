@@ -1,17 +1,22 @@
 import heapq
 import logging
-from typing import Iterator, List, Optional, Tuple
+from typing import Dict, Iterator, List, Optional, Tuple
 
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.filters.filter_base import FilterBase
 from txmatching.filters.filter_from_config import filter_from_config
-from txmatching.patients.patient import TxmEvent
+from txmatching.patients.patient import Recipient, TxmEvent
+from txmatching.patients.patient_types import RecipientDbId
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.solve_service.solver_lock import run_with_solver_lock
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.solvers.pairing_result import PairingResult
 from txmatching.solvers.solver_from_config import solver_from_configuration
 from txmatching.utils.enums import Solver
+from txmatching.utils.hla_system.hla_crossmatch import (
+    are_all_samples_positive_in_high_res,
+    is_number_of_antigens_insufficient_in_high_res
+)
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +31,9 @@ def _solve_from_configuration_unsafe(config_parameters: ConfigParameters, txm_ev
                                        donors_dict=txm_event.active_donors_dict,
                                        recipients_dict=txm_event.active_recipients_dict,
                                        scorer=scorer)
+
+    _check_if_recipients_have_valid_antibodies_in_high_res(config_parameters.use_high_resolution, 
+                                                           txm_event.active_recipients_dict)
 
     all_matchings = solver.solve()
     matching_filter = filter_from_config(config_parameters)
@@ -87,3 +95,19 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
         result_count = i + 1
 
     return matchings, all_results_found, result_count
+
+
+def _check_if_recipients_have_valid_antibodies_in_high_res(
+    high_res: bool, all_recipients: Dict[RecipientDbId, Recipient]
+) -> None:
+    if high_res:
+        for recipient_id, recipient in all_recipients.items():
+            if are_all_samples_positive_in_high_res(recipient.hla_antibodies):
+                logger.error(
+                    f'All samples are positive in high res for recipient with id {recipient_id} - this should not happen.'
+                )
+            if is_number_of_antigens_insufficient_in_high_res(recipient.hla_antibodies):
+                logger.error(
+                    f'The number of anitgens is insufficient in high res for recipient with id {recipient_id}.'
+                )
+    return None

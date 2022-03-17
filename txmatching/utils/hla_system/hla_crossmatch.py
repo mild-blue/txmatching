@@ -5,6 +5,7 @@ from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLATyping
 from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
                                     HLAGroup)
 
+SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES = 20
 
 @dataclass(eq=True, frozen=True)
 class AntibodyMatch:
@@ -115,3 +116,25 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
             ))
 
     return antibody_matches_for_groups
+
+
+def are_all_samples_positive_in_high_res(recipient_antibodies: HLAAntibodies) -> bool:
+    everything_is_positive = True
+
+    for group in recipient_antibodies.hla_antibodies_per_groups:
+        for hla_antibody in group.hla_antibody_list:
+            if hla_antibody.mfi < hla_antibody.cutoff:
+                everything_is_positive = False
+
+    return everything_is_positive
+
+
+def is_number_of_antigens_insufficient_in_high_res(recipient_antibodies: HLAAntibodies) -> bool:
+    total_number_of_antigens = 0
+
+    for group in recipient_antibodies.hla_antibodies_per_groups:
+            total_number_of_antigens = total_number_of_antigens + len(group.hla_antibody_list)
+
+    if total_number_of_antigens < SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES:
+        return True
+    return False
