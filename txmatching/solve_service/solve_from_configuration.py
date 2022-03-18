@@ -32,7 +32,7 @@ def _solve_from_configuration_unsafe(config_parameters: ConfigParameters, txm_ev
                                        recipients_dict=txm_event.active_recipients_dict,
                                        scorer=scorer)
 
-    _check_if_recipients_have_valid_antibodies_in_high_res(config_parameters.use_high_resolution, 
+    _check_if_recipients_have_valid_antibodies_in_high_res(config_parameters.use_high_resolution,
                                                            txm_event.active_recipients_dict)
 
     all_matchings = solver.solve()
@@ -99,7 +99,7 @@ def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
 
 def _check_if_recipients_have_valid_antibodies_in_high_res(
     high_res: bool, all_recipients: Dict[RecipientDbId, Recipient]
-) -> None:
+):
     if high_res:
         for recipient_id, recipient in all_recipients.items():
             if are_all_samples_positive_in_high_res(recipient.hla_antibodies):
@@ -110,4 +110,3 @@ def _check_if_recipients_have_valid_antibodies_in_high_res(
                 logger.error(
                     f'The number of anitgens is insufficient in high res for recipient with id {recipient_id}.'
                 )
-    return None

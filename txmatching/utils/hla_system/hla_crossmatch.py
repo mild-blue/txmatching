@@ -133,7 +133,7 @@ def is_number_of_antigens_insufficient_in_high_res(recipient_antibodies: HLAAnti
     total_number_of_antigens = 0
 
     for group in recipient_antibodies.hla_antibodies_per_groups:
-            total_number_of_antigens = total_number_of_antigens + len(group.hla_antibody_list)
+        total_number_of_antigens = total_number_of_antigens + len(group.hla_antibody_list)
 
     if total_number_of_antigens < SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES:
         return True
