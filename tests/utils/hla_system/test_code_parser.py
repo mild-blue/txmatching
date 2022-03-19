@@ -22,7 +22,8 @@ from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
-    get_hla_types_exceeding_max_number_per_group,
+    basic_group_is_empty,
+    group_exceedes_max_number_of_hla_types,
     parse_hla_raw_code_and_add_parsing_error_to_db_session)
 from txmatching.utils.hla_system.hla_transformations.parsing_error import \
     ParsingInfo
@@ -106,22 +107,16 @@ class TestCodeParser(DbTests):
                 create_hla_type('B*07:15'),
                 create_hla_type('B*15:19'),
             ]),
-            HLAPerGroup(HLAGroup.Other, [
-                create_hla_type('DRB3*02:07'),
-                create_hla_type('DRB4*01:05'),
-                create_hla_type('DRB5*01:02'),
-                create_hla_type('DPA1*01:03'),
-                create_hla_type('DPA1*02:04'),
-                create_hla_type('DPA1*01:07'),
-                create_hla_type('DPB1*04:01'),
-                create_hla_type('DPB1*09:01')
+            HLAPerGroup(HLAGroup.DRB1, [
+                create_hla_type('DRB1*12:05'),
+                create_hla_type('DRB1*13:16'),
+                create_hla_type('DRB1*13:16'),
             ])
         ]
 
-        expected = {'A*02:68', 'A*01:25', 'A*02:67',
-                    'DRB3*02:07', 'DRB4*01:05', 'DRB5*01:02', 'DPA1*01:03', 'DPA1*02:04', 'DPA1*01:07'}
-        raw_codes_with_wrong_number_per_group = {hla_type.raw_code for hla_type in
-                                                 get_hla_types_exceeding_max_number_per_group(codes_per_group)}
+        expected = {'A', 'DRB1'}
+        raw_codes_with_wrong_number_per_group = {group.hla_group.name for group in codes_per_group if
+                                                 group_exceedes_max_number_of_hla_types(group.hla_types)}
 
         self.assertEqual(expected, raw_codes_with_wrong_number_per_group)
 
@@ -138,9 +133,9 @@ class TestCodeParser(DbTests):
             ])
         ]
 
-        expected = []
-        raw_codes_with_wrong_number_per_group = [hla_type.raw_code for hla_type in
-                                                 get_hla_types_exceeding_max_number_per_group(codes_per_group)]
+        expected = {'A', 'B'}
+        raw_codes_with_wrong_number_per_group = {group.hla_group.name for group in codes_per_group if
+                                                 basic_group_is_empty(group.hla_types)}
 
         self.assertEqual(expected, raw_codes_with_wrong_number_per_group)
 
