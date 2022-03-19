@@ -41,6 +41,7 @@ WARNING_PROCESSING_RESULTS = {
     HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES,
     HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE,
     HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
+    HlaCodeProcessingResultDetail.BASIC_HLA_GROUP_IS_EMPTY
 }
 
 ERROR_PROCESSING_RESULTS = {
