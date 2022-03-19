@@ -119,14 +119,11 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
 
 
 def are_all_samples_positive_in_high_res(recipient_antibodies: HLAAntibodies) -> bool:
-    everything_is_positive = True
-
     for group in recipient_antibodies.hla_antibodies_per_groups:
         for hla_antibody in group.hla_antibody_list:
             if hla_antibody.mfi < hla_antibody.cutoff:
-                everything_is_positive = False
-
-    return everything_is_positive
+                return False
+    return True
 
 
 def is_number_of_antigens_insufficient_in_high_res(recipient_antibodies: HLAAntibodies) -> bool:
