@@ -14,8 +14,8 @@ from txmatching.patients.hla_functions import (
     split_hla_types_to_groups, split_hla_types_to_groups_other)
 from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
 from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import (
-    OK_PROCESSING_RESULTS, HlaCodeProcessingResultDetail)
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
+    OK_PROCESSING_RESULTS, ParsingIssueDetail)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.parsing_error import (
@@ -80,8 +80,8 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
         if len(cutoffs) > 1:
             add_parsing_error_to_db_session(
                 raw_code,
-                HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
-                message=HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.value,
+                ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
+                message=ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.value,
                 parsing_info=parsing_info
             )
             continue
@@ -144,8 +144,8 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
             group_name = "Group " +  group.hla_group.name
             add_parsing_error_to_db_session(
                 group_name,
-                HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
-                HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value,
+                ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
+                ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value,
                 parsing_info
             )
         if group.hla_group == HLAGroup.Other:
@@ -156,8 +156,8 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
                     group_name = "Group " +  hla_group.name
                     add_parsing_error_to_db_session(
                         group_name,
-                        HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
-                        HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value,
+                        ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
+                        ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value,
                         parsing_info
                     )
 
@@ -169,8 +169,8 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
             group_name = "Group " +  group.hla_group.name
             add_parsing_error_to_db_session(
                 group_name,
-                HlaCodeProcessingResultDetail.BASIC_HLA_GROUP_IS_EMPTY,
-                HlaCodeProcessingResultDetail.BASIC_HLA_GROUP_IS_EMPTY.value,
+                ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+                ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value,
                 parsing_info
             )
 

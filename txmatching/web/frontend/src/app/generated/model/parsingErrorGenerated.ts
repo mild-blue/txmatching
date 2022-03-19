@@ -13,9 +13,9 @@
 
 export interface ParsingErrorGenerated { 
     hla_code: string;
-    hla_code_processing_result_detail: string;
     medical_id?: string;
     message: string;
+    parsing_issue_detail: string;
     txm_event_id?: number;
 }
 

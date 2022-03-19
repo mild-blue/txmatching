@@ -10,8 +10,8 @@ from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
                                     HLAGroup)
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
-    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ParsingIssueDetail
 from txmatching.utils.hla_system.hla_transformations.parsing_error import (
     ParsingInfo, add_parsing_error_to_db_session)
 
@@ -42,7 +42,7 @@ def split_hla_types_to_groups_other(
                 break
         if not match_found:
             add_parsing_error_to_db_session(
-                hla_type.raw_code, HlaCodeProcessingResultDetail.OTHER_PROBLEM,
+                hla_type.raw_code, ParsingIssueDetail.OTHER_PROBLEM,
                 f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any OTHER group. '
                 f'This should never happen. This unexpected HLA will be ignored.',
                 parsing_info
@@ -85,8 +85,8 @@ def _join_duplicate_antibodies(
         if len(cutoffs) != 1:
             add_parsing_error_to_db_session(
                 hla_code_raw,
-                HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
-                message=HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.value,
+                ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
+                message=ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.value,
                 parsing_info=parsing_info
             )
             continue
@@ -134,7 +134,7 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias],
                 break
         if not match_found:
             add_parsing_error_to_db_session(
-                hla_type.raw_code, HlaCodeProcessingResultDetail.OTHER_PROBLEM,
+                hla_type.raw_code, ParsingIssueDetail.OTHER_PROBLEM,
                 f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any group. '
                 f'This should never happen. This unexpected HLA will be ignored.',
                 parsing_info

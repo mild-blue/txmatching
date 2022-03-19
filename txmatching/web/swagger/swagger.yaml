@@ -1012,18 +1012,18 @@ definitions:
         properties:
             hla_code:
                 type: string
-            hla_code_processing_result_detail:
-                type: string
             medical_id:
                 type: string
             message:
+                type: string
+            parsing_issue_detail:
                 type: string
             txm_event_id:
                 type: integer
         required:
         - hla_code
-        - hla_code_processing_result_detail
         - message
+        - parsing_issue_detail
         type: object
     PasswordChange:
         properties:

@@ -1,8 +1,8 @@
 from typing import Set, Union
 
 from txmatching.utils.hla_system.hla_regexes import try_convert_ultra_high_res
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
-    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ParsingIssueDetail
 from txmatching.utils.hla_system.rel_dna_ser_parsing import (
     PATH_TO_REL_DNA_SER, parse_rel_dna_ser)
 
@@ -74,20 +74,20 @@ def _get_possible_splits_for_high_res_code(high_res_code: str) -> Set[str]:
             high_res.startswith(f'{high_res_code}:')}
 
 
-def high_res_low_res_to_split_or_broad(high_res_code: str) -> Union[str, HlaCodeProcessingResultDetail]:
+def high_res_low_res_to_split_or_broad(high_res_code: str) -> Union[str, ParsingIssueDetail]:
     maybe_split_code = _HIGH_RES_TO_SPLIT_DICT.get(high_res_code)
     if maybe_split_code:
         return maybe_split_code
     else:
         possible_split_or_broad_codes = _get_possible_splits_for_high_res_code(high_res_code)
         if len(possible_split_or_broad_codes) == 0:
-            return HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE
+            return ParsingIssueDetail.UNPARSABLE_HLA_CODE
 
         maybe_split_or_broad_code = possible_split_or_broad_codes.pop()
         if len(possible_split_or_broad_codes) > 0:
-            return HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND
+            return ParsingIssueDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND
         if maybe_split_or_broad_code is None:
-            return HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES
+            return ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES
         else:
             return maybe_split_or_broad_code
 

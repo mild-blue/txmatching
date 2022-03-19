@@ -3018,14 +3018,14 @@
         "ParsingError": {
             "required": [
                 "hla_code",
-                "hla_code_processing_result_detail",
-                "message"
+                "message",
+                "parsing_issue_detail"
             ],
             "properties": {
                 "hla_code": {
                     "type": "string"
                 },
-                "hla_code_processing_result_detail": {
+                "parsing_issue_detail": {
                     "type": "string"
                 },
                 "message": {

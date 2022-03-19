@@ -12,8 +12,8 @@ from txmatching.utils.hla_system.hla_table import (ALL_SPLIT_BROAD_CODES,
                                                    SPLIT_CODES, SPLIT_TO_BROAD)
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result import \
     HlaCodeProcessingResult
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
-    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ParsingIssueDetail
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ def _cleanup_split_or_broad_code(serological_hla_code: str) -> str:
 
 def process_parsing_result(high_res: Optional[str],
                            split_or_broad_raw: Optional[str],
-                           detail: Optional[HlaCodeProcessingResultDetail] = None) -> HlaCodeProcessingResult:
+                           detail: Optional[ParsingIssueDetail] = None) -> HlaCodeProcessingResult:
     if split_or_broad_raw is None:
         assert detail is not None
         return HlaCodeProcessingResult(
@@ -69,19 +69,19 @@ def process_parsing_result(high_res: Optional[str],
                 split=split_or_broad_raw,
                 broad=split_to_broad(split_or_broad_raw)
             ),
-            detail if detail is not None else HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED
+            detail if detail is not None else ParsingIssueDetail.SUCCESSFULLY_PARSED
         )
     if split_or_broad_raw in BROAD_CODES:
         if high_res is not None:
-            detail = HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT
+            detail = ParsingIssueDetail.HIGH_RES_WITHOUT_SPLIT
         return HlaCodeProcessingResult(
             HLACode(
                 high_res=high_res,
                 split=None,
                 broad=split_to_broad(split_or_broad_raw)
             ),
-            detail if detail is not None else HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED
+            detail if detail is not None else ParsingIssueDetail.SUCCESSFULLY_PARSED
         )
     if split_or_broad_raw in IRRELEVANT_CODES:
-        return HlaCodeProcessingResult(None, detail if detail else HlaCodeProcessingResultDetail.IRRELEVANT_CODE)
-    return HlaCodeProcessingResult(None, detail if detail else HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE)
+        return HlaCodeProcessingResult(None, detail if detail else ParsingIssueDetail.IRRELEVANT_CODE)
+    return HlaCodeProcessingResult(None, detail if detail else ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE)
