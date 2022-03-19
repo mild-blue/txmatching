@@ -1,5 +1,5 @@
 export interface ParsingError {
-  hlaCode: string;
+  hlaCodeOrGroup?: string;
   ParsingIssueDetail: string;
   message: string;
   medicalId?: string;

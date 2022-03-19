@@ -51,7 +51,7 @@ class TestMatchingApi(DbTests):
                 'Group B', 'Group B', 'Group B', 'Group B', 'Group B', 'Group B', 'Group B',
                 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1',
             ],
-            [error['hla_code'] for error in res.json['parsing_errors']]
+            [error['hla_code_or_group'] for error in res.json['parsing_errors']]
         )
         self.assertEqual(1, len(UploadedDataModel.query.all()))
         self.assertSetEqual({BloodGroup.ZERO, BloodGroup.A},
@@ -122,7 +122,7 @@ class TestMatchingApi(DbTests):
 
         self._check_response(res, 200)
         self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A'], 
-                              [error['hla_code'] for error in res.json['parsing_errors']])
+                              [error['hla_code_or_group'] for error in res.json['parsing_errors']])
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
         expected_antibodies = {
@@ -146,7 +146,7 @@ class TestMatchingApi(DbTests):
 
         self._check_response(res, 200)
         self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A'], 
-                              [error['hla_code'] for error in res.json['parsing_errors']])
+                              [error['hla_code_or_group'] for error in res.json['parsing_errors']])
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
         expected_antibodies = {'DQA6', 'DQ8', 'DQA5', 'DQ2', 'DQ7'}

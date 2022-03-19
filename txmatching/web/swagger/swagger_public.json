@@ -962,12 +962,11 @@
         },
         "ParsingError": {
             "required": [
-                "hla_code",
                 "message",
                 "parsing_issue_detail"
             ],
             "properties": {
-                "hla_code": {
+                "hla_code_or_group": {
                     "type": "string"
                 },
                 "parsing_issue_detail": {

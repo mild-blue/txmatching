@@ -12,7 +12,7 @@
 
 
 export interface ParsingErrorGenerated { 
-    hla_code: string;
+    hla_code_or_group?: string;
     medical_id?: string;
     message: string;
     parsing_issue_detail: string;

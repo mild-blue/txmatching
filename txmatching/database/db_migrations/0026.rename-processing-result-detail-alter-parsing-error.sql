@@ -5,3 +5,5 @@
 
 ALTER TYPE HLA_CODE_PROCESSING_RESULT_DETAIL RENAME TO PARSING_ISSUE_DETAIL;
 ALTER TABLE parsing_error RENAME COLUMN hla_code_processing_result_detail TO parsing_issue_detail;
+ALTER TABLE parsing_error ALTER COLUMN hla_code DROP NOT NULL;
+ALTER TABLE parsing_error RENAME COLUMN hla_code TO hla_code_or_group;

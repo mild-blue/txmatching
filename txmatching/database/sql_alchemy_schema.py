@@ -225,7 +225,7 @@ class ParsingErrorModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    hla_code = Column(TEXT, unique=False, nullable=False)
+    hla_code_or_group = Column(TEXT, unique=False, nullable=True)
     parsing_issue_detail = Column(Enum(ParsingIssueDetail), unique=False, nullable=False)
     message = Column(TEXT, unique=False, nullable=False, default='')
     medical_id = Column(TEXT, unique=False, nullable=True)
