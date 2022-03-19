@@ -17,6 +17,8 @@ from txmatching.utils.hla_system.hla_transformations.parsing_error import (
 
 logger = logging.getLogger(__name__)
 
+SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES = 20
+
 
 def split_hla_types_to_groups(hla_types: List[HLAType], parsing_info: ParsingInfo = None) -> List[HLAPerGroup]:
     hla_types_in_groups = _split_hla_types_to_groups(hla_types, parsing_info)
@@ -140,3 +142,22 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias],
                 parsing_info
             )
     return hla_types_in_groups
+
+
+def all_samples_are_positive_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bool:
+    for antibody in recipient_antibodies:
+        if antibody.code.high_res is None:
+            return False
+        if antibody.mfi < antibody.cutoff:
+            return False
+    return True
+
+
+def number_of_antigens_is_insufficient_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bool:
+    for antibody in recipient_antibodies:
+        if antibody.code.high_res is None:
+            return False
+
+    if len(recipient_antibodies) < SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES:
+        return True
+    return False
