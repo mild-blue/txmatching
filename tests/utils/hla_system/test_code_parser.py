@@ -17,8 +17,8 @@ from txmatching.utils.hla_system.hla_table import \
     PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
-    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import (
+    ERROR_PROCESSING_RESULTS, OK_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS, HlaCodeProcessingResultDetail)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
@@ -262,3 +262,22 @@ class TestCodeParser(DbTests):
         split_counts = {len(split_to_high_res) for split_to_high_res in high_res_to_splits.values()}
 
         self.assertSetEqual({1}, split_counts)
+
+    def test_parsing_errors_exactly_in_one_severity_category(self):
+        self.assertTrue(
+            {(processing_result in OK_PROCESSING_RESULTS and 
+              processing_result not in WARNING_PROCESSING_RESULTS and
+              processing_result not in ERROR_PROCESSING_RESULTS) for processing_result in OK_PROCESSING_RESULTS}
+        )
+
+        self.assertTrue(
+            {(processing_result not in OK_PROCESSING_RESULTS and 
+              processing_result in WARNING_PROCESSING_RESULTS and
+              processing_result not in ERROR_PROCESSING_RESULTS) for processing_result in WARNING_PROCESSING_RESULTS}
+        )
+
+        self.assertTrue(
+            {(processing_result not in OK_PROCESSING_RESULTS and 
+              processing_result not in WARNING_PROCESSING_RESULTS and
+              processing_result in ERROR_PROCESSING_RESULTS) for processing_result in ERROR_PROCESSING_RESULTS}
+        )
