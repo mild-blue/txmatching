@@ -50,6 +50,7 @@ class TestMatchingApi(DbTests):
                 'Group A', 'Group A',
                 'Group B', 'Group B', 'Group B', 'Group B', 'Group B', 'Group B', 'Group B',
                 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1',
+                'Antibodies', 'Antibodies'
             ],
             [error['hla_code_or_group'] for error in res.json['parsing_errors']]
         )
@@ -70,7 +71,7 @@ class TestMatchingApi(DbTests):
         self.assertEqual('D1', txm_event.active_donors_dict[1].medical_id)
         self.assertEqual('TEST_INTERNAL_MEDICAL_ID', txm_event.active_donors_dict[1].internal_medical_id)
         # three errors from the real processing and 2 from get_hla_typing above
-        self._check_expected_errors_in_db(24)
+        self._check_expected_errors_in_db(26)
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         txm_event_name = 'invalid_name'
@@ -145,7 +146,7 @@ class TestMatchingApi(DbTests):
                                                 recipients_json=SPECIAL_RECIPIENTS_MULTIPLE_SAME_HLA_CODES)
 
         self._check_response(res, 200)
-        self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A'], 
+        self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A', 'Antibodies'], 
                               [error['hla_code_or_group'] for error in res.json['parsing_errors']])
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.active_recipients_dict[1]
@@ -154,7 +155,7 @@ class TestMatchingApi(DbTests):
         expected_antibodies_over_cutoff = {'DQA6', 'DQ8'}
         self.assertSetEqual(expected_antibodies_over_cutoff,
                             _get_hla_antibodies_over_cutoff_split_or_broad_codes(recipient))
-        self._check_expected_errors_in_db(3)
+        self._check_expected_errors_in_db(4)
 
     def test_txm_event_patient_successful_upload_exceptional_hla_types(self):
         res, txm_event = self._txm_event_upload(donors_json=SPECIAL_DONORS_SPECIAL_HLA_CODES,

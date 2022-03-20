@@ -10,8 +10,11 @@ from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
 from txmatching.database.sql_alchemy_schema import HLAAntibodyRawModel
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
+    all_samples_are_positive_in_high_res,
     create_hla_antibodies_per_groups_from_hla_antibodies,
-    split_hla_types_to_groups, split_hla_types_to_groups_other)
+    number_of_antigens_is_insufficient_in_high_res,
+    split_hla_types_to_groups,
+    split_hla_types_to_groups_other)
 from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
 from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
@@ -99,7 +102,23 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
                     )
                 )
 
-    # 3. split antibodies to groups (and join duplicates)
+    # 3. validate antibodies
+    if all_samples_are_positive_in_high_res(hla_antibodies_parsed):
+        add_parsing_error_to_db_session(
+            "Antibodies",
+            ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES,
+            message=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES.value,
+            parsing_info=parsing_info
+        )
+    if number_of_antigens_is_insufficient_in_high_res(hla_antibodies_parsed):
+        add_parsing_error_to_db_session(
+            "Antibodies",
+            ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
+            message=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES.value,
+            parsing_info=parsing_info
+        )
+
+    # 4. split antibodies to groups (and join duplicates)
     hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(
         hla_antibodies_parsed, parsing_info
     )

@@ -19,6 +19,8 @@ class ParsingIssueDetail(str, Enum):
     # returning no value (hla group)
     MORE_THAN_TWO_HLA_CODES_PER_GROUP = 'There can not be more than 2 antigens per group.'
     BASIC_HLA_GROUP_IS_EMPTY = 'This HLA group should contain at least one antigen.'
+    INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES = 'There should be at least 20 antibodies in high resolution.'
+    ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES = 'There are only positive antibodies in high resolution.'
 
     # not in a result of parse_hla_raw_code_with_details method
     MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \
