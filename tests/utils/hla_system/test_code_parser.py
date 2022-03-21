@@ -17,8 +17,8 @@ from txmatching.utils.hla_system.hla_table import \
     PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import (
-    ERROR_PROCESSING_RESULTS, OK_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS, HlaCodeProcessingResultDetail)
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
+    ERROR_PROCESSING_RESULTS, OK_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS, ParsingIssueDetail)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
@@ -30,58 +30,58 @@ from txmatching.utils.hla_system.hla_transformations.parsing_error import \
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
 
 codes = {
-    'A1': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A32': (HLACode(None, 'A32', 'A19'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'B7': (HLACode(None, 'B7', 'B7'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'B51': (HLACode(None, 'B51', 'B5'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DR11': (HLACode(None, 'DR11', 'DR5'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DR15': (HLACode(None, 'DR15', 'DR2'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*23': (HLACode(None, 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*23:01': (HLACode('A*23:01', 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*23:04': (HLACode('A*23:04', 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*24:02': (HLACode('A*24:02', 'A24', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*01:52:01N': (HLACode('A*01:52:01N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
-    'A*02:03': (HLACode('A*02:03', 'A203', 'A203'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*11:01:35': (HLACode('A*11:01', 'A11', 'A11'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'C*01:02': (HLACode('C*01:02', 'CW1', 'CW1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DPA1*01:07': (HLACode('DPA1*01:07', 'DPA1', 'DPA1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DRB4*01:01': (HLACode('DRB4*01:01', 'DR53', 'DR53'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DQB1*02:01:01:01': (HLACode('DQB1*02:01', 'DQ2', 'DQ2'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'NONEXISTENTN': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
-    'NONEXISTENT': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
-    'NONEXISTENT*11': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
-    'A*68:06': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
-    'B*46:10': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
-    'A*02:719': (None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
-    'DQA1*01:03': (HLACode('DQA1*01:03', 'DQA1', 'DQA1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DQB01': (HLACode(None, None, 'DQ1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'C12': (HLACode(None, 'CW12', 'CW12'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'B*15:10': (HLACode('B*15:10', 'B71', 'B70'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'B*15:11': (HLACode('B*15:11', 'B75', 'B15'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'C1': (HLACode(None, 'CW1', 'CW1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DPB13': (HLACode(None, 'DP13', 'DP13'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A9': (HLACode(None, None, 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A23': (HLACode(None, 'A23', 'A9'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*24:19': (HLACode('A*24:19', None, 'A9'), HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT),
-    'A*01:01:01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*01:01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*01:01': (HLACode('A*01:01', 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'A*01': (HLACode(None, 'A1', 'A1'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'BW4': (None, HlaCodeProcessingResultDetail.IRRELEVANT_CODE),
-    'BW6': (None, HlaCodeProcessingResultDetail.IRRELEVANT_CODE),
-    'BW42': (None, HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
-    'A99': (None, HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE),
+    'A1': (HLACode(None, 'A1', 'A1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A32': (HLACode(None, 'A32', 'A19'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'B7': (HLACode(None, 'B7', 'B7'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'B51': (HLACode(None, 'B51', 'B5'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DR11': (HLACode(None, 'DR11', 'DR5'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DR15': (HLACode(None, 'DR15', 'DR2'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*23': (HLACode(None, 'A23', 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*23:01': (HLACode('A*23:01', 'A23', 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*23:04': (HLACode('A*23:04', 'A23', 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*24:02': (HLACode('A*24:02', 'A24', 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*01:52:01N': (HLACode('A*01:52:01N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
+    'A*02:03': (HLACode('A*02:03', 'A203', 'A203'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*11:01:35': (HLACode('A*11:01', 'A11', 'A11'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'C*01:02': (HLACode('C*01:02', 'CW1', 'CW1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DPA1*01:07': (HLACode('DPA1*01:07', 'DPA1', 'DPA1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DRB4*01:01': (HLACode('DRB4*01:01', 'DR53', 'DR53'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DQB1*02:01:01:01': (HLACode('DQB1*02:01', 'DQ2', 'DQ2'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'NONEXISTENTN': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'NONEXISTENT': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'NONEXISTENT*11': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'A*68:06': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'B*46:10': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'A*02:719': (None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES),
+    'DQA1*01:03': (HLACode('DQA1*01:03', 'DQA1', 'DQA1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DQB01': (HLACode(None, None, 'DQ1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'C12': (HLACode(None, 'CW12', 'CW12'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'B*15:10': (HLACode('B*15:10', 'B71', 'B70'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'B*15:11': (HLACode('B*15:11', 'B75', 'B15'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'C1': (HLACode(None, 'CW1', 'CW1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DPB13': (HLACode(None, 'DP13', 'DP13'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A9': (HLACode(None, None, 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A23': (HLACode(None, 'A23', 'A9'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*24:19': (HLACode('A*24:19', None, 'A9'), ParsingIssueDetail.HIGH_RES_WITHOUT_SPLIT),
+    'A*01:01:01:01': (HLACode('A*01:01', 'A1', 'A1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*01:01:01': (HLACode('A*01:01', 'A1', 'A1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*01:01': (HLACode('A*01:01', 'A1', 'A1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'A*01': (HLACode(None, 'A1', 'A1'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'BW4': (None, ParsingIssueDetail.IRRELEVANT_CODE),
+    'BW6': (None, ParsingIssueDetail.IRRELEVANT_CODE),
+    'BW42': (None, ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE),
+    'A99': (None, ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE),
     # low res regexp but not in transformation table
-    'A*99': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
+    'A*99': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
     # ultra high res regexp but not in tranformation table
-    'A*68:06:01': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
-    'A*02:284N': (HLACode('A*02:284N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
-    'DRB1*04:280N': (HLACode('DRB1*04:280N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
-    'A*11:21N': (HLACode('A*11:21N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
-    'A*11:11:11:11N': (HLACode('A*11:11:11:11N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
-    'DOA*01:04N': (None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE),
-    'DRB4*01:03': (HLACode('DRB4*01:03', 'DR53', 'DR53'), HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED),
-    'DRB4*01:03N': (HLACode('DRB4*01:03N', None, None), HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER),
+    'A*68:06:01': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'A*02:284N': (HLACode('A*02:284N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
+    'DRB1*04:280N': (HLACode('DRB1*04:280N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
+    'A*11:21N': (HLACode('A*11:21N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
+    'A*11:11:11:11N': (HLACode('A*11:11:11:11N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
+    'DOA*01:04N': (None, ParsingIssueDetail.UNPARSABLE_HLA_CODE),
+    'DRB4*01:03': (HLACode('DRB4*01:03', 'DR53', 'DR53'), ParsingIssueDetail.SUCCESSFULLY_PARSED),
+    'DRB4*01:03N': (HLACode('DRB4*01:03N', None, None), ParsingIssueDetail.HIGH_RES_WITH_LETTER),
 }
 
 
@@ -207,8 +207,8 @@ class TestCodeParser(DbTests):
         self.assertEqual(3, len(ParsingErrorModel.query.all()))
 
         self.assertEqual(
-            {HlaCodeProcessingResultDetail.MFI_PROBLEM},
-            {error.hla_code_processing_result_detail for error in ParsingErrorModel.query.all()}
+            {ParsingIssueDetail.MFI_PROBLEM},
+            {error.parsing_issue_detail for error in ParsingErrorModel.query.all()}
         )
         # Checks that we truly group by high res codes. In this case both DQA1*01:01 and DQA1*01:02 are DQA1 in split.
         # DQA1*01:01 is dropped whereas DQA1*01:02 is kept.
@@ -264,20 +264,28 @@ class TestCodeParser(DbTests):
         self.assertSetEqual({1}, split_counts)
 
     def test_parsing_errors_exactly_in_one_severity_category(self):
-        self.assertTrue(
-            {(processing_result in OK_PROCESSING_RESULTS and 
-              processing_result not in WARNING_PROCESSING_RESULTS and
-              processing_result not in ERROR_PROCESSING_RESULTS) for processing_result in OK_PROCESSING_RESULTS}
-        )
+        
+        for processing_result in ParsingIssueDetail:
+            self.assertTrue(
+            (processing_result in OK_PROCESSING_RESULTS or 
+             processing_result in WARNING_PROCESSING_RESULTS or
+             processing_result in ERROR_PROCESSING_RESULTS)
+            )
 
-        self.assertTrue(
-            {(processing_result not in OK_PROCESSING_RESULTS and 
-              processing_result in WARNING_PROCESSING_RESULTS and
-              processing_result not in ERROR_PROCESSING_RESULTS) for processing_result in WARNING_PROCESSING_RESULTS}
-        )
+        for processing_result in OK_PROCESSING_RESULTS:
+            self.assertTrue(
+             (processing_result not in WARNING_PROCESSING_RESULTS and
+             processing_result not in ERROR_PROCESSING_RESULTS) 
+            )
 
-        self.assertTrue(
-            {(processing_result not in OK_PROCESSING_RESULTS and 
-              processing_result not in WARNING_PROCESSING_RESULTS and
-              processing_result in ERROR_PROCESSING_RESULTS) for processing_result in ERROR_PROCESSING_RESULTS}
-        )
+        for processing_result in WARNING_PROCESSING_RESULTS:
+            self.assertTrue(
+            (processing_result not in OK_PROCESSING_RESULTS and 
+             processing_result not in ERROR_PROCESSING_RESULTS)
+            )
+
+        for processing_result in ERROR_PROCESSING_RESULTS:
+            self.assertTrue(
+            (processing_result not in OK_PROCESSING_RESULTS and 
+              processing_result not in WARNING_PROCESSING_RESULTS)
+            )

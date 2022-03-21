@@ -2,8 +2,8 @@ from typing import List
 
 import numpy as np
 
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
-    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ParsingIssueDetail
 from txmatching.utils.hla_system.hla_transformations.parsing_error import (
     ParsingInfo, add_parsing_error_to_db_session)
 
@@ -68,7 +68,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
 
         if RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW * cutoff < relevant_mean < cutoff:
             add_parsing_error_to_db_session(
-                raw_code, HlaCodeProcessingResultDetail.MFI_PROBLEM,
+                raw_code, ParsingIssueDetail.MFI_PROBLEM,
                 f'Dropping {raw_code} antibody: '
                 f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
                 f'To be consulted with immunologist, because the antibody is dropped even though it has some high MFI '
@@ -78,7 +78,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
 
         elif relevant_mean > cutoff > min_mfi:
             add_parsing_error_to_db_session(
-                raw_code, HlaCodeProcessingResultDetail.MFI_PROBLEM,
+                raw_code, ParsingIssueDetail.MFI_PROBLEM,
                 f'Not dropping {raw_code} antibody: '
                 f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
                 f'To be consulted with immunologist, because the antibody is NOT dropped even though there are some MFI'
@@ -88,7 +88,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
 
         elif relevant_mean < cutoff and only_one_number_used:
             add_parsing_error_to_db_session(
-                raw_code, HlaCodeProcessingResultDetail.MFI_PROBLEM,
+                raw_code, ParsingIssueDetail.MFI_PROBLEM,
                 f'Dropping {raw_code} antibody: '
                 f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
                 f'To be consulted with immunologist, because the antibody is dropped even though only one MFI value was'

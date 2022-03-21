@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class HlaCodeProcessingResultDetail(str, Enum):
+class ParsingIssueDetail(str, Enum):
     # still returning value
     SUCCESSFULLY_PARSED = 'Code successfully parsed without anything unexpected.'
     HIGH_RES_WITHOUT_SPLIT = 'High res can be converted to broad resolution but split resolution is unknown'
@@ -31,23 +31,25 @@ class HlaCodeProcessingResultDetail(str, Enum):
 
 
 OK_PROCESSING_RESULTS = {
-    HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED,
-    HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT,
-    HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER
+    ParsingIssueDetail.SUCCESSFULLY_PARSED,
+    ParsingIssueDetail.HIGH_RES_WITHOUT_SPLIT,
+    ParsingIssueDetail.HIGH_RES_WITH_LETTER
 }
 
 WARNING_PROCESSING_RESULTS = {
-    HlaCodeProcessingResultDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND,
-    HlaCodeProcessingResultDetail.IRRELEVANT_CODE,
-    HlaCodeProcessingResultDetail.UNEXPECTED_SPLIT_RES_CODE,
-    HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES,
-    HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE,
-    HlaCodeProcessingResultDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
-    HlaCodeProcessingResultDetail.BASIC_HLA_GROUP_IS_EMPTY
+    ParsingIssueDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND,
+    ParsingIssueDetail.IRRELEVANT_CODE,
+    ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE,
+    ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES,
+    ParsingIssueDetail.UNPARSABLE_HLA_CODE,
+    ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
+    ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
+    ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
+    ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
 }
 
 ERROR_PROCESSING_RESULTS = {
-    HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
-    HlaCodeProcessingResultDetail.MFI_PROBLEM,
-    HlaCodeProcessingResultDetail.OTHER_PROBLEM
+    ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
+    ParsingIssueDetail.MFI_PROBLEM,
+    ParsingIssueDetail.OTHER_PROBLEM,
 }
