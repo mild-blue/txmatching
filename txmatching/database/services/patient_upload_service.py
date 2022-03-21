@@ -40,46 +40,50 @@ from txmatching.utils.hla_system.hla_transformations.parsing_error import (
 logger = logging.getLogger(__name__)
 
 
-def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO, txm_event_db_id: int):
+def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO, txm_event_db_id: int) -> (List[DonorModel], List[RecipientModel]):
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
 
-    _add_patients_from_one_country(
+    donors, recipients = _add_patients_from_one_country(
         donors=[donor_recipient_pair_dto.donor],
         recipients=[donor_recipient_pair_dto.recipient] if donor_recipient_pair_dto.recipient else [],
         country_code=donor_recipient_pair_dto.country_code,
         txm_event_db_id=txm_event_db_id
     )
     db.session.commit()
+    return (donors, recipients)
 
 
-def get_patients_errors_from_upload_dto(patient_upload_dto: PatientUploadDTOIn) -> List[ParsingError]:
+def get_patients_errors_from_upload_dto(donors: List[DonorModel], recipients: List[RecipientModel]) -> List[ParsingError]:
     txm_event_db_id = get_txm_event_db_id_by_name(patient_upload_dto.txm_event_name)
-    medical_ids = [patient.medical_id for patient in patient_upload_dto.donors] + \
-                  [patient.medical_id for patient in patient_upload_dto.recipients]
-    return get_parsing_errors_for_patients(medical_ids, txm_event_db_id)
+    donor_ids = [patient.id for patient in donors]
+    recipient_id = [patient.id for patient in recipients]
+
+    return get_parsing_errors_for_patients(txm_event_db_id, donor_ids, recipient_ids)
 
 
-def get_patients_errors_from_pair_dto(pair_dto: DonorRecipientPairDTO, txm_event_id: int) -> List[ParsingError]:
-    medical_ids = [pair_dto.donor.medical_id]
-    if pair_dto.recipient is not None:
-        medical_ids.append(pair_dto.recipient.medical_id)
-    return get_parsing_errors_for_patients(medical_ids, txm_event_id)
+def get_patients_errors_from_pair_dto(donors: DonorModel, recipients: RecipientModel, txm_event_id: int) -> List[ParsingError]:
+    donor_ids = [donors[0].id]
+    recipient_ids = []
+    if len(recipients)>0:
+        recipient_ids.append(recipients[0].id)
+    return get_parsing_errors_for_patients(txm_event_db_id, donor_ids, recipient_ids)
 
 
-def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn):
+def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn) -> (List[DonorModel], List[RecipientModel]):
     txm_event_db_id = get_txm_event_db_id_by_name(patient_upload_dto.txm_event_name)
     if not patient_upload_dto.add_to_existing_patients:
         remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id,
                                                                 patient_upload_dto.country)
 
-    _add_patients_from_one_country(
+    donors, recipients  = _add_patients_from_one_country(
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,
         country_code=patient_upload_dto.country,
         txm_event_db_id=txm_event_db_id
     )
     db.session.commit()
+    return (donors, recipients)
 
 
 def replace_or_add_patients_from_excel(patient_upload_dtos: List[PatientUploadDTOIn]):
@@ -122,27 +126,36 @@ def _recipient_upload_dto_to_recipient_model(
         internal_medical_id=recipient.internal_medical_id
     )
 
-    _parse_and_update_hla_typing_in_model(recipient_model)
+    _parse_and_update_hla_typing_in_model(recipient_model=recipient_model)
     _parse_and_update_hla_antibodies_in_model(recipient_model)
 
     return recipient_model
 
 
-def _parse_and_update_hla_typing_in_model(patient_model: db.Model):
-    hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
-    patient_model.hla_typing = dataclasses.asdict(
-        parse_hla_typing_raw_and_add_parsing_error_to_db_session(
-            hla_typing_raw,
-            ParsingInfo(medical_id=patient_model.medical_id, txm_event_id=patient_model.txm_event_id)
+def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipient_model: RecipientModel = None):
+    if donor_model is not None:
+        hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=donor_model.hla_typing_raw)
+        donor_model.hla_typing = dataclasses.asdict(
+            parse_hla_typing_raw_and_add_parsing_error_to_db_session(
+                hla_typing_raw,
+                ParsingInfo(txm_event_id=donor_model.txm_event_id, donor_id=donor_model.id)
+            )
         )
-    )
+    else:
+        hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=recipient_model.hla_typing_raw)
+        recipient_model.hla_typing = dataclasses.asdict(
+            parse_hla_typing_raw_and_add_parsing_error_to_db_session(
+                hla_typing_raw,
+                ParsingInfo(txm_event_id=recipient_model.txm_event_id, recipient_id=recipient_model.id)
+            )
+        )
 
 
 def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
     hla_antibodies_raw = recipient_model.hla_antibodies_raw
     hla_antibodies_parsed = parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
         hla_antibodies_raw,
-        ParsingInfo(medical_id=recipient_model.medical_id, txm_event_id=recipient_model.txm_event_id)
+        ParsingInfo(recipient_id=recipient_model.id, txm_event_id=recipient_model.txm_event_id)
     )
     recipient_model.hla_antibodies = dataclasses.asdict(hla_antibodies_parsed)
 
@@ -201,7 +214,7 @@ def _donor_upload_dto_to_donor_model(
         internal_medical_id=donor.internal_medical_id
     )
 
-    _parse_and_update_hla_typing_in_model(donor_model)
+    _parse_and_update_hla_typing_in_model(donor_model=donor_model)
 
     return donor_model
 
@@ -211,7 +224,7 @@ def _add_patients_from_one_country(
         recipients: List[RecipientUploadDTO],
         country_code: Country,
         txm_event_db_id: int
-):
+) -> (List[DonorModel], List[RecipientModel]):
     related_recipient_medical_ids = [donor.related_recipient_medical_id for donor in donors
                                      if donor.related_recipient_medical_id is not None]
 
@@ -241,3 +254,4 @@ def _add_patients_from_one_country(
         for donor in donors
     ]
     db.session.add_all(donor_models)
+    return (donor_models, recipient_models)

@@ -56,9 +56,9 @@ class TxmEventUploadPatients(Resource):
         # save the original request to the database
         save_original_data(patient_upload_dto.txm_event_name, current_user_id, request.json)
         # perform update operation
-        replace_or_add_patients_from_one_country(patient_upload_dto)
+        donors, recipients = replace_or_add_patients_from_one_country(patient_upload_dto)
         # Get parsing errors for uploaded patients
-        parsing_errors = get_patients_errors_from_upload_dto(patient_upload_dto)
+        parsing_errors = get_patients_errors_from_upload_dto(donors, recipients)
         return response_ok(PatientUploadDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),
             donors_uploaded=len(patient_upload_dto.donors),
