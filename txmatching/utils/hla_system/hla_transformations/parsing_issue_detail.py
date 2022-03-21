@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class HlaCodeProcessingResultDetail(str, Enum):
+class ParsingIssueDetail(str, Enum):
     # still returning value
     SUCCESSFULLY_PARSED = 'Code successfully parsed without anything unexpected.'
     HIGH_RES_WITHOUT_SPLIT = 'High res can be converted to broad resolution but split resolution is unknown'
@@ -19,6 +19,8 @@ class HlaCodeProcessingResultDetail(str, Enum):
     # returning no value (hla group)
     MORE_THAN_TWO_HLA_CODES_PER_GROUP = 'There can not be more than 2 antigens per group.'
     BASIC_HLA_GROUP_IS_EMPTY = 'This HLA group should contain at least one antigen.'
+    INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES = 'There should be at least 20 antibodies in high resolution.'
+    ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES = 'There are only positive antibodies in high resolution.'
 
     # not in a result of parse_hla_raw_code_with_details method
     MULTIPLE_CUTOFFS_PER_ANTIBODY = 'There were multiple cutoff values for antibody. ' \
@@ -29,7 +31,7 @@ class HlaCodeProcessingResultDetail(str, Enum):
 
 
 OK_PROCESSING_RESULTS = {
-    HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED,
-    HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT,
-    HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER
+    ParsingIssueDetail.SUCCESSFULLY_PARSED,
+    ParsingIssueDetail.HIGH_RES_WITHOUT_SPLIT,
+    ParsingIssueDetail.HIGH_RES_WITH_LETTER
 }

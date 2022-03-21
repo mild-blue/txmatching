@@ -17,8 +17,8 @@ from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatch
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
-    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ParsingIssueDetail
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
 
 
@@ -196,11 +196,11 @@ class TestPatientService(DbTests):
         self.assertEqual(200, res.status_code)
 
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(7, len(errors))
-        self.assertEqual('TEST', errors[3].hla_code)
+        self.assertEqual(9, len(errors))
+        self.assertEqual('TEST', errors[3].hla_code_or_group)
         self.assertEqual(
-            HlaCodeProcessingResultDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
-            errors[3].hla_code_processing_result_detail
+            ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
+            errors[3].parsing_issue_detail
         )
 
     def test_donor_recipient_pair_deletion(self):
