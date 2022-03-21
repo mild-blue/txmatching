@@ -14,8 +14,8 @@ from txmatching.utils.country_enum import Country
 # pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
 from txmatching.utils.enums import Sex, TxmEventState
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
-    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ParsingIssueDetail
 
 
 class ConfigModel(db.Model):
@@ -225,8 +225,8 @@ class ParsingErrorModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    hla_code = Column(TEXT, unique=False, nullable=False)
-    hla_code_processing_result_detail = Column(Enum(HlaCodeProcessingResultDetail), unique=False, nullable=False)
+    hla_code_or_group = Column(TEXT, unique=False, nullable=True)
+    parsing_issue_detail = Column(Enum(ParsingIssueDetail), unique=False, nullable=False)
     message = Column(TEXT, unique=False, nullable=False, default='')
     medical_id = Column(TEXT, unique=False, nullable=True)
     txm_event_id = Column(Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=True)

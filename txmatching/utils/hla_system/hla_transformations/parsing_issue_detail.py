@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class HlaCodeProcessingResultDetail(str, Enum):
+class ParsingIssueDetail(str, Enum):
     # still returning value
     SUCCESSFULLY_PARSED = 'Code successfully parsed without anything unexpected.'
     HIGH_RES_WITHOUT_SPLIT = 'High res can be converted to broad resolution but split resolution is unknown'
@@ -31,7 +31,7 @@ class HlaCodeProcessingResultDetail(str, Enum):
 
 
 OK_PROCESSING_RESULTS = {
-    HlaCodeProcessingResultDetail.SUCCESSFULLY_PARSED,
-    HlaCodeProcessingResultDetail.HIGH_RES_WITHOUT_SPLIT,
-    HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER
+    ParsingIssueDetail.SUCCESSFULLY_PARSED,
+    ParsingIssueDetail.HIGH_RES_WITHOUT_SPLIT,
+    ParsingIssueDetail.HIGH_RES_WITH_LETTER
 }

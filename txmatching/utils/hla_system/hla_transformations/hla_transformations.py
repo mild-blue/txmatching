@@ -10,8 +10,8 @@ from txmatching.utils.hla_system.hla_table import (
     high_res_low_res_to_split_or_broad)
 from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result import \
     HlaCodeProcessingResult
-from txmatching.utils.hla_system.hla_transformations.hla_code_processing_result_detail import \
-    HlaCodeProcessingResultDetail
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ParsingIssueDetail
 from txmatching.utils.hla_system.hla_transformations.utils import \
     process_parsing_result
 from txmatching.utils.hla_system.rel_dna_ser_exceptions import (
@@ -27,7 +27,7 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
         return process_parsing_result(hla_raw_code, PARSE_HLA_CODE_EXCEPTIONS[hla_raw_code])
     if re.match(LOW_RES_REGEX, hla_raw_code):
         exception_split_broad_code = high_res_low_res_to_split_or_broad(hla_raw_code)
-        if isinstance(exception_split_broad_code, HlaCodeProcessingResultDetail):
+        if isinstance(exception_split_broad_code, ParsingIssueDetail):
             return HlaCodeProcessingResult(None, exception_split_broad_code)
         logger.warning(f'Low res code {hla_raw_code} parsed as split code {exception_split_broad_code}')
         return process_parsing_result(None, exception_split_broad_code)
@@ -46,11 +46,11 @@ def parse_hla_raw_code_with_details(hla_raw_code: str) -> HlaCodeProcessingResul
         if (standartized_high_res_letter_match in ALL_HIGH_RES_CODES
                 or hla_raw_code in ALL_HIGH_RES_CODES
                 or standartized_high_res_letter_match in HIGH_RES_TO_SPLIT_OR_BROAD):
-            return process_parsing_result(hla_raw_code, None, HlaCodeProcessingResultDetail.HIGH_RES_WITH_LETTER)
+            return process_parsing_result(hla_raw_code, None, ParsingIssueDetail.HIGH_RES_WITH_LETTER)
         else:
-            return HlaCodeProcessingResult(None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
+            return HlaCodeProcessingResult(None, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
 
-    return HlaCodeProcessingResult(None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
+    return HlaCodeProcessingResult(None, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
 
 
 def preprocess_hla_code_in(hla_code_in: str) -> List[str]:
@@ -82,10 +82,10 @@ def _process_standartized_high_res(standartized_high_res: str, hla_raw_code: str
     )
     if exception_split_broad_code is None:
         if hla_raw_code in ALL_HIGH_RES_CODES:
-            return HlaCodeProcessingResult(None, HlaCodeProcessingResultDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES)
+            return HlaCodeProcessingResult(None, ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES)
         else:
-            return HlaCodeProcessingResult(None, HlaCodeProcessingResultDetail.UNPARSABLE_HLA_CODE)
-    if isinstance(exception_split_broad_code, HlaCodeProcessingResultDetail):
+            return HlaCodeProcessingResult(None, ParsingIssueDetail.UNPARSABLE_HLA_CODE)
+    if isinstance(exception_split_broad_code, ParsingIssueDetail):
         return HlaCodeProcessingResult(None, exception_split_broad_code)
 
     return process_parsing_result(standartized_high_res, exception_split_broad_code)
