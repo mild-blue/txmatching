@@ -108,9 +108,9 @@ class DonorRecipientPairs(Resource):
                                          country=donor_recipient_pair_dto_in.country_code)
         guard_open_txm_event(txm_event_id)
 
-        add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
+        donor, recipient = add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
 
-        parsing_errors = get_patients_errors_from_pair_dto(donor_recipient_pair_dto_in, txm_event_id)
+        parsing_errors = get_patients_errors_from_pair_dto(donor, recipient, txm_event_id)
 
         return response_ok(PatientUploadDTOOut(
             donors_uploaded=1,
@@ -170,7 +170,7 @@ class AlterRecipient(Resource):
         return response_ok(
             UpdatedRecipientDTOOut(
                 recipient=recipient_to_recipient_dto_out(updated_recipient),
-                parsing_errors=get_parsing_errors_for_patients([updated_recipient.medical_id], txm_event_id)
+                parsing_errors=get_parsing_errors_for_patients(recipient_ids=[updated_recipient.db_id], txm_event_id=txm_event_id)
             )
         )
 
@@ -204,7 +204,7 @@ class AlterDonor(Resource):
                     configuration_parameters,
                     scorer
                 ),
-                parsing_errors=get_parsing_errors_for_patients([updated_donor.medical_id], txm_event_id)
+                parsing_errors=get_parsing_errors_for_patients(donor_ids=[updated_donor.db_id], txm_event_id=txm_event_id)
             )
         )
 

@@ -12,8 +12,9 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
 
 @dataclass
 class ParsingInfo:
-    medical_id: str
     txm_event_id: int
+    donor_id: int = None
+    recipient_id: int = None
 
 
 # You need to commit the session to save the changes to the db (db.session.commit())
@@ -27,7 +28,8 @@ def add_parsing_error_to_db_session(
         hla_code_or_group=hla_code_or_group,
         parsing_issue_detail=parsing_issue_detail,
         message=message,
-        medical_id=parsing_info.medical_id if parsing_info is not None else None,
+        donor_id = parsing_info.donor_id,
+        recipient_id = parsing_info.recipient_id,
         txm_event_id=parsing_info.txm_event_id if parsing_info is not None else None,
     )
     db.session.add(parsing_error)
@@ -38,7 +40,8 @@ def _convert_parsing_error_models_to_dataclasses(parsing_error_models: List[Pars
         hla_code_or_group=parsing_error_model.hla_code_or_group,
         parsing_issue_detail=parsing_error_model.parsing_issue_detail.name,
         message=parsing_error_model.message,
-        medical_id=parsing_error_model.medical_id,
+        donor_id = parsing_error_model.donor_id,
+        recipient_id = parsing_error_model.recipient_id,
         txm_event_id=parsing_error_model.txm_event_id
     ) for parsing_error_model in parsing_error_models
         # TODO: https://github.com/mild-blue/txmatching/issues/629
@@ -53,23 +56,33 @@ def get_parsing_errors_for_txm_event_id(txm_event_id: int) -> List[ParsingError]
     )
 
 
-def get_parsing_errors_for_patients(medical_ids: List[str], txm_event_id: int) -> List[ParsingError]:
-    return _convert_parsing_error_models_to_dataclasses(
-        ParsingErrorModel.query.filter(
-            and_(ParsingErrorModel.medical_id.in_(medical_ids),
-                 ParsingErrorModel.txm_event_id == txm_event_id)
-        ).all()
-    )
+def get_parsing_errors_for_patients(txm_event_id: int, donor_ids: List[int] = [], recipient_ids: List[int] = []) -> List[ParsingError]:
+    parsing_errors = ParsingErrorModel.query.filter(
+        and_(ParsingErrorModel.donor_id.in_(donor_ids),
+                ParsingErrorModel.txm_event_id == txm_event_id)
+    ).all() + ParsingErrorModel.query.filter(
+        and_(ParsingErrorModel.recipient_id.in_(recipient_ids),
+                ParsingErrorModel.txm_event_id == txm_event_id)
+    ).all()
+
+    return _convert_parsing_error_models_to_dataclasses(parsing_errors)
 
 
 def delete_parsing_errors_for_patient(
-        medical_id: str,
-        txm_event_id: int
+        txm_event_id: int,
+        donor_id: int = None,
+        recipient_id: int = None,
 ):
-    ParsingErrorModel.query.filter(
-        and_(ParsingErrorModel.medical_id == medical_id,
-             ParsingErrorModel.txm_event_id == txm_event_id)
-    ).delete()
+    if recipient_id is not None:
+        ParsingErrorModel.query.filter(
+            and_(ParsingErrorModel.recipient_id == recipient_id,
+                ParsingErrorModel.txm_event_id == txm_event_id)
+        ).delete()
+    else:
+        ParsingErrorModel.query.filter(
+            and_(ParsingErrorModel.donor_id == donor_id,
+                ParsingErrorModel.txm_event_id == txm_event_id)
+        ).delete()
 
 
 def delete_parsing_errors_for_txm_event_id(txm_event_id: int):
