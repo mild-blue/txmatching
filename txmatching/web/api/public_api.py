@@ -58,7 +58,7 @@ class TxmEventUploadPatients(Resource):
         # perform update operation
         donors, recipients = replace_or_add_patients_from_one_country(patient_upload_dto)
         # Get parsing errors for uploaded patients
-        parsing_errors = get_patients_errors_from_upload_dto(donors, recipients)
+        parsing_errors = get_patients_errors_from_upload_dto(donors, recipients, txm_event_db_id)
         return response_ok(PatientUploadDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),
             donors_uploaded=len(patient_upload_dto.donors),

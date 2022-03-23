@@ -141,14 +141,14 @@ class TestCodeParser(DbTests):
 
     def test_parsing_with_db_storing(self):
         txm_event_db_id = create_txm_event('test_event').db_id
-        parsing_info = ParsingInfo(medical_id='TEST_MEDICAL_ID', txm_event_id=txm_event_db_id)
+        parsing_info = ParsingInfo(recipient_id=11, txm_event_id=txm_event_db_id)
         for code, _ in codes.items():
             parse_hla_raw_code_and_add_parsing_error_to_db_session(code, parsing_info)
         errors = ParsingErrorModel.query.all()
         self.assertEqual(13, len(errors))
         self.assertSetEqual(
-            {('TEST_MEDICAL_ID', txm_event_db_id)},
-            {(error.medical_id, error.txm_event_id) for error in errors}
+            {(11, txm_event_db_id)},
+            {(error.recipient_id, error.txm_event_id) for error in errors}
         )
 
     def test_parse_hla_ser(self):

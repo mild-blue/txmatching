@@ -56,7 +56,12 @@ def get_parsing_errors_for_txm_event_id(txm_event_id: int) -> List[ParsingError]
     )
 
 
-def get_parsing_errors_for_patients(txm_event_id: int, donor_ids: List[int] = [], recipient_ids: List[int] = []) -> List[ParsingError]:
+def get_parsing_errors_for_patients(txm_event_id: int, donor_ids: List[int] = None, recipient_ids: List[int] = None) -> List[ParsingError]:
+    if donor_ids is None:
+        donor_ids = []
+    if recipient_ids is None:
+        recipient_ids = []
+
     parsing_errors = ParsingErrorModel.query.filter(
         and_(ParsingErrorModel.donor_id.in_(donor_ids),
                 ParsingErrorModel.txm_event_id == txm_event_id)
