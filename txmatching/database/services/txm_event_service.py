@@ -71,7 +71,7 @@ def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int
     )]
     for recipient_id in recipient_ids:
         delete_parsing_errors_for_patient(recipient_id=recipient_id, txm_event_id=txm_event_db_id)
-    
+
 
     DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
                                  DonorModel.country == country_code)).delete()
