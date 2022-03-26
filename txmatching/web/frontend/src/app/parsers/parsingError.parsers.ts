@@ -6,7 +6,8 @@ export const parseParsingError = (data: ParsingErrorGenerated): ParsingError => 
     hlaCodeOrGroup: data.hla_code_or_group,
     ParsingIssueDetail: data.parsing_issue_detail,
     message: data.message,
-    medicalId: data.medical_id,
+    donorId: data.donor_id,
+    recipientId: data.recipient_id,
     eventId: data.txm_event_id
   };
 };
