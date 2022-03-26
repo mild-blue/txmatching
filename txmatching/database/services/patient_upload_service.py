@@ -61,8 +61,7 @@ def get_patients_errors_from_upload_dto(donors: List[DonorModel], recipients: Li
     return get_parsing_errors_for_patients(txm_event_db_id, donor_ids, recipient_ids)
 
 
-def get_patients_errors_from_pair_dto(donors: DonorModel, recipients: RecipientModel, txm_event_db_id: int) -> List[ParsingError]:
-    # ugly
+def get_patients_errors_from_pair_dto(donors: List[DonorModel], recipients: List[RecipientModel], txm_event_db_id: int) -> List[ParsingError]:
     donor_ids = [donors[0].id]
     recipient_ids = []
     if len(recipients)>0:

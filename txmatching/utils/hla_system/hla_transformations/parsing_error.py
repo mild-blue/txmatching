@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import and_
 
@@ -13,8 +13,8 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
 @dataclass
 class ParsingInfo:
     txm_event_id: int
-    donor_id: int = None
-    recipient_id: int = None
+    donor_id: Optional[int] = None
+    recipient_id: Optional[int] = None
 
 
 # You need to commit the session to save the changes to the db (db.session.commit())
@@ -28,8 +28,8 @@ def add_parsing_error_to_db_session(
         hla_code_or_group=hla_code_or_group,
         parsing_issue_detail=parsing_issue_detail,
         message=message,
-        donor_id = parsing_info.donor_id,
-        recipient_id = parsing_info.recipient_id,
+        donor_id = parsing_info.donor_id if parsing_info is not None else None,
+        recipient_id = parsing_info.recipient_id if parsing_info is not None else None,
         txm_event_id=parsing_info.txm_event_id if parsing_info is not None else None,
     )
     db.session.add(parsing_error)
