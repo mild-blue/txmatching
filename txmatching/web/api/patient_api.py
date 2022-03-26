@@ -108,9 +108,9 @@ class DonorRecipientPairs(Resource):
                                          country=donor_recipient_pair_dto_in.country_code)
         guard_open_txm_event(txm_event_id)
 
-        donor, recipient = add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
+        donors, recipients = add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
 
-        parsing_errors = get_patients_errors_from_pair_dto(donor, recipient, txm_event_id)
+        parsing_errors = get_patients_errors_from_pair_dto(donors, recipients, txm_event_id)
 
         return response_ok(PatientUploadDTOOut(
             donors_uploaded=1,

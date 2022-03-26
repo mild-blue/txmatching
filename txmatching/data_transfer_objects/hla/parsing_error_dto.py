@@ -8,5 +8,5 @@ class ParsingError:
     parsing_issue_detail: str
     message: str
     txm_event_id: Optional[int]
-    donor_id: int = None
-    recipient_id: int = None
+    donor_id: Optional[int] = None
+    recipient_id: Optional[int] = None
