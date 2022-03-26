@@ -12,10 +12,11 @@
 
 
 export interface ParsingErrorGenerated { 
+    donor_id?: number;
     hla_code_or_group?: string;
-    medical_id?: string;
     message: string;
     parsing_issue_detail: string;
+    recipient_id?: number;
     txm_event_id?: number;
 }
 

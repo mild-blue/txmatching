@@ -3030,8 +3030,11 @@
                 "message": {
                     "type": "string"
                 },
-                "medical_id": {
-                    "type": "string"
+                "donor_id": {
+                    "type": "integer"
+                },
+                "recipient_id": {
+                    "type": "integer"
                 },
                 "txm_event_id": {
                     "type": "integer"
