@@ -74,6 +74,7 @@ def _get_donors_for_score_matrix(score_matrix: np.array) -> List[Donor]:
                                          hla_typing=HLATyping(hla_types_raw_list=[], hla_per_groups=[])
                                          ),
             db_id=1,
-            medical_id='test'
+            medical_id='test',
+            parsing_errors=[]
         ))
     return donors

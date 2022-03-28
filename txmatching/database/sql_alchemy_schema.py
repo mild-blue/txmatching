@@ -100,6 +100,7 @@ class RecipientModel(db.Model):
     hla_antibodies = Column(JSON, unique=False, nullable=False)
     hla_antibodies_raw = relationship('HLAAntibodyRawModel', backref='recipient', passive_deletes=True,
                                       lazy='selectin')  # type: List[HLAAntibodyRawModel]
+    parsing_errors = relationship('ParsingErrorModel', backref='recipient', passive_deletes=True)
     UniqueConstraint('medical_id', 'txm_event_id')
 
     def __repr__(self):
@@ -132,6 +133,7 @@ class DonorModel(db.Model):
     recipient = relationship('RecipientModel', backref=backref('donor', uselist=False),
                              passive_deletes=True,
                              lazy='joined')
+    parsing_errors = relationship('ParsingErrorModel', backref='donor', passive_deletes=True)
     UniqueConstraint('medical_id', 'txm_event_id')
 
     def __repr__(self):

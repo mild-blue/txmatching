@@ -24,6 +24,7 @@ def add_parsing_error_to_db_session(
         message: str,
         parsing_info: ParsingInfo = None
 ):
+    print("\n\n\n\n herhehrer")
     parsing_error = ParsingErrorModel(
         hla_code_or_group=hla_code_or_group,
         parsing_issue_detail=parsing_issue_detail,
@@ -35,7 +36,7 @@ def add_parsing_error_to_db_session(
     db.session.add(parsing_error)
 
 
-def _convert_parsing_error_models_to_dataclasses(parsing_error_models: List[ParsingErrorModel]) -> List[ParsingError]:
+def convert_parsing_error_models_to_dataclasses(parsing_error_models: List[ParsingErrorModel]) -> List[ParsingError]:
     return [ParsingError(
         hla_code_or_group=parsing_error_model.hla_code_or_group,
         parsing_issue_detail=parsing_error_model.parsing_issue_detail.name,
@@ -49,7 +50,7 @@ def _convert_parsing_error_models_to_dataclasses(parsing_error_models: List[Pars
 
 
 def get_parsing_errors_for_txm_event_id(txm_event_id: int) -> List[ParsingError]:
-    return _convert_parsing_error_models_to_dataclasses(
+    return convert_parsing_error_models_to_dataclasses(
         ParsingErrorModel.query.filter(
             ParsingErrorModel.txm_event_id == txm_event_id
         ).all()
@@ -70,7 +71,7 @@ def get_parsing_errors_for_patients(txm_event_id: int, donor_ids: List[int] = No
                 ParsingErrorModel.txm_event_id == txm_event_id)
     ).all()
 
-    return _convert_parsing_error_models_to_dataclasses(parsing_errors)
+    return convert_parsing_error_models_to_dataclasses(parsing_errors)
 
 
 def delete_parsing_errors_for_patient(

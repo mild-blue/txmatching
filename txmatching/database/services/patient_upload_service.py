@@ -26,7 +26,7 @@ from txmatching.database.services.txm_event_service import (
     get_txm_event_complete, get_txm_event_db_id_by_name,
     remove_donors_and_recipients_from_txm_event_for_country)
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
+    DonorModel, HLAAntibodyRawModel, ParsingErrorModel, RecipientAcceptableBloodModel,
     RecipientModel)
 from txmatching.patients.hla_model import HLATypeRaw
 from txmatching.patients.patient import DonorType, calculate_cutoff
@@ -35,7 +35,7 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
     parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
     parse_hla_typing_raw_and_add_parsing_error_to_db_session)
 from txmatching.utils.hla_system.hla_transformations.parsing_error import (
-    ParsingInfo, get_parsing_errors_for_patients)
+    ParsingInfo, convert_parsing_error_models_to_dataclasses, get_parsing_errors_for_patients)
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +98,9 @@ def _recipient_upload_dto_to_recipient_model(
     acceptable_blood_groups = [] if recipient.acceptable_blood_groups is None \
         else recipient.acceptable_blood_groups
 
+    parsing_errors = [] if recipient.parsing_errors is None \
+        else recipient.parsing_errors
+
     recipient_model = RecipientModel(
         medical_id=recipient.medical_id,
         country=country_code,
@@ -122,7 +125,8 @@ def _recipient_upload_dto_to_recipient_model(
         yob=recipient.year_of_birth,
         note=recipient.note,
         previous_transplants=recipient.previous_transplants,
-        internal_medical_id=recipient.internal_medical_id
+        internal_medical_id=recipient.internal_medical_id,
+        parsing_errors=parsing_errors
     )
 
     _parse_and_update_hla_typing_in_model(recipient_model=recipient_model)
@@ -140,6 +144,8 @@ def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipi
                 ParsingInfo(txm_event_id=donor_model.txm_event_id, donor_id=donor_model.id)
             )
         )
+        donor_model.parsing_errors =  convert_parsing_error_models_to_dataclasses(
+        ParsingErrorModel.query.filter(ParsingErrorModel.donor_id == donor_model.id))
     else:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=recipient_model.hla_typing_raw)
         recipient_model.hla_typing = dataclasses.asdict(
@@ -148,6 +154,8 @@ def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipi
                 ParsingInfo(txm_event_id=recipient_model.txm_event_id, recipient_id=recipient_model.id)
             )
         )
+        recipient_model.parsing_errors =  convert_parsing_error_models_to_dataclasses(
+        ParsingErrorModel.query.filter(ParsingErrorModel.recipient_id == recipient_model.id))
 
 
 def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
