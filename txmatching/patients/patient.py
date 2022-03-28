@@ -3,6 +3,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 
+from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
@@ -40,6 +41,7 @@ class Patient(PersistentlyHashable):
 
 @dataclass
 class Donor(Patient, PersistentlyHashable):
+    parsing_errors: Optional[List[ParsingError]] = None
     related_recipient_db_id: Optional[RecipientDbId] = None
     donor_type: DonorType = DonorType.DONOR
     active: bool = True
@@ -48,6 +50,7 @@ class Donor(Patient, PersistentlyHashable):
     def update_persistent_hash(self, hash_: HashType):
         super().update_persistent_hash(hash_)
         update_persistent_hash(hash_, Donor)
+        update_persistent_hash(hash_, sorted(self.parsing_errors))
         update_persistent_hash(hash_, self.related_recipient_db_id)
         update_persistent_hash(hash_, self.donor_type)
         update_persistent_hash(hash_, self.active)
@@ -81,6 +84,7 @@ class Recipient(Patient, PersistentlyHashable):
     related_donor_db_id: DonorDbId
     acceptable_blood_groups: List[BloodGroup]
     hla_antibodies: HLAAntibodies
+    parsing_errors: Optional[List[ParsingError]] = None
     recipient_cutoff: Optional[int] = None
     recipient_requirements: RecipientRequirements = RecipientRequirements()
     waiting_since: Optional[datetime] = None
@@ -96,6 +100,7 @@ class Recipient(Patient, PersistentlyHashable):
         update_persistent_hash(hash_, Recipient)
         update_persistent_hash(hash_, self.related_donor_db_id)
         update_persistent_hash(hash_, sorted(self.acceptable_blood_groups))
+        update_persistent_hash(hash_, sorted(self.parsing_errors))
         update_persistent_hash(hash_, self.recipient_cutoff)
         update_persistent_hash(hash_, self.hla_antibodies)
         update_persistent_hash(hash_, self.recipient_requirements)

@@ -577,6 +577,10 @@ definitions:
                 type: string
             parameters:
                 $ref: '#/definitions/PatientParameters'
+            parsing_errors:
+                items:
+                    $ref: '#/definitions/ParsingError'
+                type: array
             related_recipient_db_id:
                 description: Database id of the related recipient
                 type: integer
@@ -1156,6 +1160,10 @@ definitions:
             medical_id: *id010
             parameters:
                 $ref: '#/definitions/PatientParameters'
+            parsing_errors:
+                items:
+                    $ref: '#/definitions/ParsingError'
+                type: array
             previous_transplants:
                 type: integer
             recipient_cutoff:

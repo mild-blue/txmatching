@@ -132,7 +132,8 @@ def _create_donor(hla_typing: List[str]):
             hla_typing=create_hla_typing(
                 hla_typing
             )
-        )
+        ),
+        parsing_errors=[]
     )
 
 
@@ -147,5 +148,6 @@ def _create_recipient(hla_typing: List[str]):
             country_code=Country.CZE,
             hla_typing=create_hla_typing(hla_typing)
         ),
-        hla_antibodies=create_antibodies([])
+        hla_antibodies=create_antibodies([]),
+        parsing_errors=[]
     )

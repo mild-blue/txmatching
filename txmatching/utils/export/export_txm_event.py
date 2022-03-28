@@ -40,6 +40,7 @@ def get_patients_upload_json_from_txm_event_for_country(
             year_of_birth=donor.parameters.year_of_birth,
             note=donor.parameters.note,
             internal_medical_id=None,
+            parsing_errors=donor.parsing_errors
         )
         for donor in
         txm_event.active_donors_dict.values() if donor.parameters.country_code == country_code
@@ -63,6 +64,7 @@ def get_patients_upload_json_from_txm_event_for_country(
             waiting_since=recipient.waiting_since.strftime('%Y-%m-%d') if recipient.waiting_since is not None else None,
             previous_transplants=recipient.previous_transplants,
             acceptable_blood_groups=recipient.acceptable_blood_groups,
+            parsing_errors=recipient.parsing_errors
         )
         for recipient in
         txm_event.active_recipients_dict.values() if recipient.parameters.country_code == country_code

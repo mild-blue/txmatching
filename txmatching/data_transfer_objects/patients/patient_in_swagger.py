@@ -36,6 +36,10 @@ DonorJson = patient_api.model('Donor', {**DbId, **MedicalId, **{
         description=DESCRIPTION_DETAILED_SCORE,
         example=EXAMPLE_DETAILED_SCORE,
         cls_or_instance=fields.Nested(DetailedScoreForGroupJson)),
+    'parsing_errors': fields.List(
+        required=False,
+        cls_or_instance=fields.Nested(ParsingErrorJson)
+    )
 }})
 
 RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **{
@@ -48,7 +52,11 @@ RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **{
     'recipient_requirements': fields.Nested(RecipientRequirements),
     'waiting_since': fields.DateTime(required=False),
     'previous_transplants': fields.Integer(required=False),
-    'recipient_cutoff': fields.Integer(required=False)
+    'recipient_cutoff': fields.Integer(required=False),
+    'parsing_errors': fields.List(
+        required=False,
+        cls_or_instance=fields.Nested(ParsingErrorJson)
+    )
 }})
 
 PatientsJson = patient_api.model('Patients', {

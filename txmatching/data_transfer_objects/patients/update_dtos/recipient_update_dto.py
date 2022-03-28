@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto import \
@@ -17,3 +18,4 @@ class RecipientUpdateDTO(PatientUpdateDTO):
     cutoff: Optional[int] = None
     waiting_since: Optional[str] = None
     previous_transplants: Optional[int] = None
+    parsing_errors: Optional[List[ParsingError]] = None

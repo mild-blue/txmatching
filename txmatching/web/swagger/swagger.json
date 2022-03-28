@@ -2402,6 +2402,12 @@
                     "items": {
                         "$ref": "#/definitions/DetailedScoreForGroup"
                     }
+                },
+                "parsing_errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ParsingError"
+                    }
                 }
             },
             "type": "object"
@@ -3282,6 +3288,12 @@
                 },
                 "recipient_cutoff": {
                     "type": "integer"
+                },
+                "parsing_errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ParsingError"
+                    }
                 }
             },
             "type": "object"
