@@ -224,8 +224,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         )
         recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
 
-        parsing_errors = convert_parsing_error_models_to_dataclasses(
-        ParsingErrorModel.query.filter(ParsingErrorModel.donor_id == old_recipient_model.id))
+        parsing_errors = ParsingErrorModel.query.filter(ParsingErrorModel.recipient_id == old_recipient_model.id)
 
         recipient_update_dict['parsing_errors'] = parsing_errors
 
@@ -250,8 +249,7 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     donor_update_dict = _create_patient_update_dict_base(donor_update_dto, parsing_info)
     if donor_update_dto.active is not None:
         donor_update_dict['active'] = donor_update_dto.active
-    parsing_errors = convert_parsing_error_models_to_dataclasses(
-        ParsingErrorModel.query.filter(ParsingErrorModel.donor_id == donor_update_dto.db_id))
+    parsing_errors = ParsingErrorModel.query.filter(ParsingErrorModel.donor_id == donor_update_dto.db_id)
     donor_update_dict['parsing_errors'] = parsing_errors
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
     db.session.commit()

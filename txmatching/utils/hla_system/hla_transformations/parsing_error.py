@@ -24,7 +24,6 @@ def add_parsing_error_to_db_session(
         message: str,
         parsing_info: ParsingInfo = None
 ):
-    print("\n\n\n\n herhehrer")
     parsing_error = ParsingErrorModel(
         hla_code_or_group=hla_code_or_group,
         parsing_issue_detail=parsing_issue_detail,
