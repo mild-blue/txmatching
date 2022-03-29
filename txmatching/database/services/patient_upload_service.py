@@ -144,8 +144,11 @@ def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipi
                 ParsingInfo(txm_event_id=donor_model.txm_event_id, donor_id=donor_model.id)
             )
         )
-        donor_model.parsing_errors =  convert_parsing_error_models_to_dataclasses(
-        ParsingErrorModel.query.filter(ParsingErrorModel.donor_id == donor_model.id))
+        donor_model.parsing_errors = convert_parsing_error_models_to_dataclasses(
+            ParsingErrorModel.query.filter(
+                (ParsingErrorModel.donor_id != None) & (ParsingErrorModel.donor_id == donor_model.id)
+            )
+        )
     else:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=recipient_model.hla_typing_raw)
         recipient_model.hla_typing = dataclasses.asdict(
@@ -154,8 +157,11 @@ def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipi
                 ParsingInfo(txm_event_id=recipient_model.txm_event_id, recipient_id=recipient_model.id)
             )
         )
-        recipient_model.parsing_errors =  convert_parsing_error_models_to_dataclasses(
-        ParsingErrorModel.query.filter(ParsingErrorModel.recipient_id == recipient_model.id))
+        recipient_model.parsing_errors = convert_parsing_error_models_to_dataclasses(
+            ParsingErrorModel.query.filter(
+                (ParsingErrorModel.recipient_id != None) & (ParsingErrorModel.recipient_id == recipient_model.id)
+            )
+        )
 
 
 def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel):
