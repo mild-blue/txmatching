@@ -41,7 +41,7 @@ from txmatching.utils.hla_system.hla_transformations.parsing_error import (
 logger = logging.getLogger(__name__)
 
 
-def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO, 
+def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
                              txm_event_db_id: int) -> (List[DonorModel], List[RecipientModel]):
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
@@ -56,7 +56,7 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
     return (donors, recipients)
 
 
-def get_patients_errors_from_upload_dto(donors: List[DonorModel], recipients: List[RecipientModel], 
+def get_patients_errors_from_upload_dto(donors: List[DonorModel], recipients: List[RecipientModel],
                                         txm_event_db_id: int) -> List[ParsingError]:
     donor_ids = [patient.id for patient in donors]
     recipient_ids = [patient.id for patient in recipients]
@@ -64,7 +64,7 @@ def get_patients_errors_from_upload_dto(donors: List[DonorModel], recipients: Li
     return get_parsing_errors_for_patients(txm_event_db_id, donor_ids, recipient_ids)
 
 
-def get_patients_errors_from_pair_dto(donors: List[DonorModel], recipients: List[RecipientModel], 
+def get_patients_errors_from_pair_dto(donors: List[DonorModel], recipients: List[RecipientModel],
                                       txm_event_db_id: int) -> List[ParsingError]:
     donor_ids = [donors[0].id]
     recipient_ids = []
@@ -139,7 +139,7 @@ def _recipient_upload_dto_to_recipient_model(
     hla_antibodies_parsing_errors = _parse_and_update_hla_antibodies_in_model(recipient_model)
     parsing_errors = convert_parsing_error_dataclasses_to_models(
         parsing_errors + hla_typing_parsing_errors + hla_antibodies_parsing_errors)
-    
+
     db.session.add_all(parsing_errors)
     return recipient_model
 
@@ -148,7 +148,7 @@ def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipi
     if donor_model is not None:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=donor_model.hla_typing_raw)
         parsing_errors, hla_typing = parse_hla_typing_raw_and_add_parsing_error_to_db_session(hla_typing_raw)
-        new_parsing_errors = add_ids_to_parsing_errors(parsing_errors=parsing_errors, 
+        new_parsing_errors = add_ids_to_parsing_errors(parsing_errors=parsing_errors,
                                         donor_id=donor_model.id,
                                         txm_event_id=donor_model.txm_event_id)
         donor_model.hla_typing = dataclasses.asdict(hla_typing)
@@ -156,7 +156,7 @@ def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipi
     else:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=recipient_model.hla_typing_raw)
         parsing_errors, hla_typing = parse_hla_typing_raw_and_add_parsing_error_to_db_session(hla_typing_raw)
-        new_parsing_errors = add_ids_to_parsing_errors(parsing_errors=parsing_errors, 
+        new_parsing_errors = add_ids_to_parsing_errors(parsing_errors=parsing_errors,
                                         recipient_id=recipient_model.id,
                                         txm_event_id=recipient_model.txm_event_id)
         recipient_model.hla_typing = dataclasses.asdict(hla_typing)
@@ -169,7 +169,7 @@ def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel) -
     parsing_errors, hla_antibodies_parsed = parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
         hla_antibodies_raw
     )
-    new_parsing_errors = add_ids_to_parsing_errors(parsing_errors=parsing_errors, 
+    new_parsing_errors = add_ids_to_parsing_errors(parsing_errors=parsing_errors,
                                     recipient_id=recipient_model.id,
                                     txm_event_id=recipient_model.txm_event_id)
     recipient_model.hla_antibodies = dataclasses.asdict(hla_antibodies_parsed)
@@ -233,7 +233,7 @@ def _donor_upload_dto_to_donor_model(
     hla_typing_parsing_errors = _parse_and_update_hla_typing_in_model(donor_model=donor_model)
     parsing_errors = convert_parsing_error_dataclasses_to_models(
         parsing_errors + hla_typing_parsing_errors)
-    
+
     db.session.add_all(parsing_errors)
     return donor_model
 
