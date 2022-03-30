@@ -52,6 +52,13 @@ SWAGGER_PUBLIC = 'swagger_public.json'
 PATH_TO_SWAGGER_JSON = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER}')
 PATH_TO_SWAGGER_YAML = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER_YAML}')
 PATH_TO_PUBLIC_SWAGGER_JSON = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER_PUBLIC}')
+AUTHORIZATIONS = {
+    'bearer': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization'
+    }
+}
 
 
 class ApiWithProvidedSpecsUrl(Api):
@@ -173,13 +180,6 @@ def create_app() -> Flask:
         app.config['ERROR_INCLUDE_MESSAGE'] = False
 
         # Set up Swagger and API
-        authorizations = {
-            'bearer': {
-                'type': 'apiKey',
-                'in': 'header',
-                'name': 'Authorization'
-            }
-        }
 
         full_swagger = application_configuration.environment != ApplicationEnvironment.PRODUCTION
         if full_swagger:
@@ -189,18 +189,18 @@ def create_app() -> Flask:
 
         # only limited swagger when we're running in the production
 
-        api = ApiWithProvidedSpecsUrl(
-            authorizations=authorizations,
+        api = Api(
+            authorizations=AUTHORIZATIONS,
             version=VERSION,
             title=SWAGGER_TITLE,
-            specs_url=specs_url
+            doc='/doc/'
         )
 
         def generate_docs():
             return ui_for(api)
 
-        app.add_url_rule(f'/{SWAGGER_URL}/', view_func=generate_docs)
-        api.init_app(app, add_specs=False)
+        # app.add_url_rule(f'/{SWAGGER_URL}/', view_func=ui_for)
+        api.init_app(app, add_specs=True)
         add_all_namespaces(api)
 
         register_error_handlers(api)

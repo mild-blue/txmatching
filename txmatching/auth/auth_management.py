@@ -1,6 +1,5 @@
 import logging
 from datetime import timedelta
-from typing import List
 
 from itsdangerous import BadSignature
 from itsdangerous import URLSafeTimedSerializer as Serializer
@@ -17,9 +16,12 @@ from txmatching.auth.user.user_auth_management import (change_user_password,
                                                        register_user)
 from txmatching.configuration.app_configuration.application_configuration import \
     get_application_configuration
+from txmatching.data_transfer_objects.users.user_dto import \
+    UserRegistrationDtoIn
 from txmatching.database.services.app_user_management import (
     get_app_user_by_email, get_app_user_by_id, update_reset_token_for_user)
-from txmatching.utils.country_enum import Country
+from txmatching.database.services.txm_event_service import (
+    get_txm_event_db_id_by_name, set_allowed_txm_event_ids_for_user)
 
 logger = logging.getLogger(__name__)
 
@@ -45,14 +47,17 @@ def _change_password(user_id: int, current_password: str, new_password: str):
     change_user_password(user_id, new_password)
 
 
-def get_reset_token(email_to_reset_password: str) -> str:
-    user_to_reset_password = get_app_user_by_email(email_to_reset_password)
+def get_user_id_for_email(email: str) -> int:
+    user_to_reset_password = get_app_user_by_email(email)
     if user_to_reset_password is None:
-        raise InvalidEmailException(f'User with email {email_to_reset_password} not found.')
+        raise InvalidEmailException(f'User with email {email} not found.')
+    return user_to_reset_password.id
 
-    token = _get_reset_token(get_application_configuration().jwt_secret, user_to_reset_password.id)
+
+def get_reset_token(user_id: int) -> str:
+    token = _get_reset_token(get_application_configuration().jwt_secret, user_id)
     # store that there's an active password reset token for the user
-    update_reset_token_for_user(user_to_reset_password.id, token)
+    update_reset_token_for_user(user_id, token)
 
     return token
 
@@ -63,14 +68,17 @@ def _get_reset_token(secret_key: str, user_id: int) -> str:
 
 
 def reset_password(reset_token: str, new_password: str):
-    user = get_app_user_by_id(verify_reset_token(reset_token))
+    user_id = verify_reset_token(reset_token)
+    maybe_user = get_app_user_by_id(user_id)
+    if maybe_user is None:
+        raise InvalidEmailException(f'User with email {user_id} not found.')
     # check if there's an active reset token
-    if user.reset_token != reset_token:
+    if maybe_user.reset_token != reset_token:
         raise InvalidTokenException('Reset password token is invalid.')
     # change password
-    change_user_password(user.id, new_password)
+    change_user_password(maybe_user.id, new_password)
     # and delete activity flag
-    update_reset_token_for_user(user.id, None)
+    update_reset_token_for_user(maybe_user.id, None)
 
 
 def verify_reset_token(token: str) -> int:
@@ -92,15 +100,21 @@ def _create_serializer(secret_key: str) -> Serializer:
 
 
 # pylint: disable=too-many-arguments
-# not worth the effort as it is just an admin API
-def register(email: str, password: str, role: UserRole, second_factor: str, allowed_countries: List[Country],
-             require_second_factor: bool):
+def register(registration_dto: UserRegistrationDtoIn) -> str:
     """
     Registers new user entity.
     """
-    if role == UserRole.SERVICE:
-        register_service(email=email, password=password, allowed_countries=allowed_countries,
-                         whitelisted_ip=second_factor, require_second_factor=require_second_factor)
+    txm_event_ids = [get_txm_event_db_id_by_name(name) for name in registration_dto.allowed_txm_events]
+    if registration_dto.role == UserRole.SERVICE:
+        user_model = register_service(email=registration_dto.email, password=registration_dto.password,
+                                      allowed_countries=registration_dto.allowed_countries,
+                                      whitelisted_ip=registration_dto.second_factor,
+                                      require_second_factor=registration_dto.require_second_factor)
     else:
-        register_user(email=email, password=password, allowed_countries=allowed_countries, role=role,
-                      phone_number=second_factor, require_second_factor=require_second_factor)
+        user_model = register_user(email=registration_dto.email, password=registration_dto.password,
+                                   allowed_countries=registration_dto.allowed_countries, role=registration_dto.role,
+                                   phone_number=registration_dto.second_factor,
+                                   require_second_factor=registration_dto.require_second_factor)
+
+    set_allowed_txm_event_ids_for_user(user_model, txm_event_ids)
+    return get_reset_token(user_model.id)

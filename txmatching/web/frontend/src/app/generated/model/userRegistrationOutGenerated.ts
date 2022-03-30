@@ -12,7 +12,7 @@
 import { CountryCodeGenerated } from './countryCodeGenerated';
 
 
-export interface UserRegistrationGenerated { 
+export interface UserRegistrationOutGenerated { 
     /**
      * Countries that the user has access to.
      */
@@ -26,23 +26,19 @@ export interface UserRegistrationGenerated {
      */
     email: string;
     /**
-     * User\'s password.
+     * token to reset password
      */
-    password: string;
+    password_reset_token: string;
     /**
-     * Whether to require second factor for the user
+     * detailed description how to reset password including url
      */
-    require_second_factor: boolean;
+    password_reset_token_message: string;
     /**
      * User\'s role.
      */
-    role: UserRegistrationGeneratedRoleEnum;
-    /**
-     * 2FA: Phone number for user account in standard format (see example), IP address for SERVICE account.
-     */
-    second_factor: string;
+    role: UserRegistrationOutGeneratedRoleEnum;
 }
-export enum UserRegistrationGeneratedRoleEnum {
+export enum UserRegistrationOutGeneratedRoleEnum {
     Admin = 'ADMIN',
     Viewer = 'VIEWER',
     Editor = 'EDITOR',

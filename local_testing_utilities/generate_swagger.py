@@ -6,9 +6,10 @@ from flask import Flask
 from flask_restx import Api
 from openapi_spec_validator import validate_v2_spec
 
-from txmatching.web import (PATH_TO_PUBLIC_SWAGGER_JSON, PATH_TO_SWAGGER_JSON,
-                            PATH_TO_SWAGGER_YAML, add_all_namespaces,
-                            add_public_namespaces, register_error_handlers)
+from txmatching.web import (AUTHORIZATIONS, PATH_TO_PUBLIC_SWAGGER_JSON,
+                            PATH_TO_SWAGGER_JSON, PATH_TO_SWAGGER_YAML,
+                            add_all_namespaces, add_public_namespaces,
+                            register_error_handlers)
 
 _PATH_ARGS_ORDER = {
     'parameters': 1,
@@ -32,6 +33,7 @@ class SwaggerGenApp:
         self.app.config['POSTGRES_URL'] = 'str'
         self.app.config['JWT_SECRET'] = 'str'
         self.app.config['JWT_EXPIRATION_DAYS'] = 10
+        self.api.authorizations = AUTHORIZATIONS
         self.app.app_context().push()
         add_all_namespaces(self.api)
         register_error_handlers(self.api)
@@ -48,6 +50,7 @@ class PublicSwaggerGenApp:
         self.app.config['POSTGRES_URL'] = 'str'
         self.app.config['JWT_SECRET'] = 'str'
         self.app.config['JWT_EXPIRATION_DAYS'] = 10
+        self.api.authorizations = AUTHORIZATIONS
         self.app.app_context().push()
         add_public_namespaces(self.api)
         register_error_handlers(self.api)

@@ -1497,6 +1497,14 @@ definitions:
                 items:
                     $ref: '#/definitions/CountryCode'
                 type: array
+            allowed_txm_events:
+                description: Countries that the user has access to.
+                example:
+                - test
+                items:
+                    description: Name of TXM event
+                    type: string
+                type: array
             email:
                 description: Email/username used for authentication.
                 type: string
@@ -1523,11 +1531,59 @@ definitions:
                 type: string
         required:
         - allowed_countries
+        - allowed_txm_events
         - email
         - password
         - require_second_factor
         - role
         - second_factor
+        type: object
+    UserRegistrationOut:
+        properties:
+            allowed_countries:
+                description: Countries that the user has access to.
+                example:
+                - AUT
+                - CZE
+                items:
+                    $ref: '#/definitions/CountryCode'
+                type: array
+            allowed_txm_events:
+                description: Countries that the user has access to.
+                example:
+                - test
+                items:
+                    description: Name of TXM event
+                    type: string
+                type: array
+            email:
+                description: Email/username used for authentication.
+                type: string
+            password_reset_token:
+                description: token to reset password
+                example: long_string_token
+                type: string
+            password_reset_token_message:
+                description: detailed description how to reset password including
+                    url
+                example: 'To reset password go tu url: www.reset.password/token'
+                type: string
+            role:
+                description: User's role.
+                enum:
+                - ADMIN
+                - VIEWER
+                - EDITOR
+                - SERVICE
+                example: ADMIN
+                type: string
+        required:
+        - allowed_countries
+        - allowed_txm_events
+        - email
+        - password_reset_token
+        - password_reset_token_message
+        - role
         type: object
     Version:
         properties:
@@ -2545,9 +2601,9 @@ paths:
                     $ref: '#/definitions/UserRegistration'
             responses:
                 '200':
-                    description: Whether the user was registered successfully.
+                    description: Detailed info about the registered user.
                     schema:
-                        $ref: '#/definitions/Success'
+                        $ref: '#/definitions/UserRegistrationOut'
                 '400':
                     description: Wrong data format.
                     schema:
@@ -2691,6 +2747,11 @@ responses:
         description: value_error
     WrongTokenUsedException:
         description: wrong_used_token_exception
+securityDefinitions:
+    bearer:
+        in: header
+        name: Authorization
+        type: apiKey
 swagger: '2.0'
 tags:
 -   name: public
