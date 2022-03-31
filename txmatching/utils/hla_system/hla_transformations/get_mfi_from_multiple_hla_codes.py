@@ -12,7 +12,7 @@ RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW = 0.5
 RELATIVE_CLOSENESS_TO_CUTOFF_FROM_ABOVE = 1.25
 RELATIVE_CLOSENESS_TO_MINIMUM = 1 / 2
 
-# todo toto vyzera ze nejde
+
 def get_mfi_from_multiple_hla_codes(mfis: List[int],
                                     cutoff: int,
                                     raw_code: str) -> (List[ParsingError], int):
