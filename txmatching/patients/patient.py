@@ -50,7 +50,8 @@ class Donor(Patient, PersistentlyHashable):
     def update_persistent_hash(self, hash_: HashType):
         super().update_persistent_hash(hash_)
         update_persistent_hash(hash_, Donor)
-        update_persistent_hash(hash_, sorted(self.parsing_errors))
+        # TODO this is not hashable:
+        # update_persistent_hash(hash_, sorted(self.parsing_errors))
         update_persistent_hash(hash_, self.related_recipient_db_id)
         update_persistent_hash(hash_, self.donor_type)
         update_persistent_hash(hash_, self.active)
@@ -100,7 +101,8 @@ class Recipient(Patient, PersistentlyHashable):
         update_persistent_hash(hash_, Recipient)
         update_persistent_hash(hash_, self.related_donor_db_id)
         update_persistent_hash(hash_, sorted(self.acceptable_blood_groups))
-        update_persistent_hash(hash_, sorted(self.parsing_errors))
+        # TODO this is not hashable:
+        # update_persistent_hash(hash_, sorted(self.parsing_errors))
         update_persistent_hash(hash_, self.recipient_cutoff)
         update_persistent_hash(hash_, self.hla_antibodies)
         update_persistent_hash(hash_, self.recipient_requirements)

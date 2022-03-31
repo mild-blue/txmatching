@@ -26,7 +26,7 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
     group_exceedes_max_number_of_hla_types,
     parse_hla_raw_code_and_add_parsing_error_to_db_session)
 from txmatching.utils.hla_system.hla_transformations.parsing_error import \
-    ParsingInfo
+    add_parsing_error_to_db_session
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
 
 codes = {
@@ -141,9 +141,9 @@ class TestCodeParser(DbTests):
 
     def test_parsing_with_db_storing(self):
         txm_event_db_id = create_txm_event('test_event').db_id
-        parsing_info = ParsingInfo(txm_event_id=txm_event_db_id)
         for code, _ in codes.items():
-            parse_hla_raw_code_and_add_parsing_error_to_db_session(code, parsing_info)
+            parsing_errors, actual_code = parse_hla_raw_code_and_add_parsing_error_to_db_session(code)
+            add_parsing_error_to_db_session(parsing_errors=parsing_errors, txm_event_id=txm_event_db_id)
         errors = ParsingErrorModel.query.all()
         self.assertEqual(13, len(errors))
         self.assertSetEqual(
@@ -184,26 +184,26 @@ class TestCodeParser(DbTests):
     def test_mfi_extraction(self):
         # When one value extremely low, calculate average only from such value.
         self.assertEqual(0, len(ParsingErrorModel.query.all()))
-        self.assertEqual(1, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test'))
+        self.assertEqual(1, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test')[1])
         self.assertEqual(1, len(ParsingErrorModel.query.all()))
-        self.assertEqual(1000, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test'))
+        self.assertEqual(1000, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test')[1])
         self.assertEqual(2, len(ParsingErrorModel.query.all()))
-        self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test'))
+        self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test')[1])
 
         # When multiple values low, calculate the average only from those values.
-        self.assertEqual(900, get_mfi_from_multiple_hla_codes([1000, 900, 800, 19000, 20000, 18000], 2000, 'test'))
+        self.assertEqual(900, get_mfi_from_multiple_hla_codes([1000, 900, 800, 19000, 20000, 18000], 2000, 'test')[1])
 
         # When similarly high MFIs calculate the average
-        self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000], 2000, 'test'))
-        self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000], 2000, 'test'))
-        self.assertEqual(15000, get_mfi_from_multiple_hla_codes([20000, 10000], 2000, 'test'))
+        self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000], 2000, 'test')[1])
+        self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000], 2000, 'test')[1])
+        self.assertEqual(15000, get_mfi_from_multiple_hla_codes([20000, 10000], 2000, 'test')[1])
 
         # When the lowest MFI is significantly lower than the other values, but there are not MFIs close to such lowest
         # value, average of values lower then overall average is calculated. This might not be optimal in some cases,
         # as the one below (one might maybe drop the hla code. But the algorithm is better safe than sorry.)
         # This case is reported in logger and will be investigated on per instance basis.
         self.assertEqual(2, len(ParsingErrorModel.query.all()))
-        self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test'))
+        self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test')[1])
         self.assertEqual(3, len(ParsingErrorModel.query.all()))
 
         self.assertEqual(

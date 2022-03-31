@@ -10,30 +10,45 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
     ParsingIssueDetail
 
 
-@dataclass
-class ParsingInfo:
-    txm_event_id: int
-    donor_id: Optional[int] = None
-    recipient_id: Optional[int] = None
-
-
 # You need to commit the session to save the changes to the db (db.session.commit())
 def add_parsing_error_to_db_session(
-        hla_code_or_group: str,
-        parsing_issue_detail: ParsingIssueDetail,
-        message: str,
-        parsing_info: ParsingInfo = None
+        parsing_errors: List[ParsingError], donor_id: int = None, recipient_id: int = None, txm_event_id: int = None
 ):
-    parsing_error = ParsingErrorModel(
-        hla_code_or_group=hla_code_or_group,
-        parsing_issue_detail=parsing_issue_detail,
-        message=message,
-        donor_id = parsing_info.donor_id if parsing_info is not None else None,
-        recipient_id = parsing_info.recipient_id if parsing_info is not None else None,
-        txm_event_id=parsing_info.txm_event_id if parsing_info is not None else None,
-    )
-    db.session.add(parsing_error)
+    for parsing_error in parsing_errors:
+        parsing_error.donor_id=donor_id
+        parsing_error.recipient_id=recipient_id
+        parsing_error.txm_event_id=txm_event_id
 
+        parsing_error_to_db = ParsingErrorModel(
+            hla_code_or_group=parsing_error.hla_code_or_group,
+            parsing_issue_detail=parsing_error.parsing_issue_detail,
+            message=parsing_error.message,
+            donor_id = parsing_error.donor_id,
+            recipient_id = parsing_error.recipient_id,
+            txm_event_id=parsing_error.txm_event_id,
+        )
+        db.session.add(parsing_error_to_db)
+
+
+def add_ids_to_parsing_errors(
+        parsing_errors: List[ParsingError], donor_id: int = None, recipient_id: int = None, txm_event_id: int = None
+) -> List[ParsingErrorModel]:
+    for parsing_error in parsing_errors:
+        parsing_error.donor_id=donor_id
+        parsing_error.recipient_id=recipient_id
+        parsing_error.txm_event_id=txm_event_id
+    
+    parsing_error_models = [
+            ParsingErrorModel(
+            hla_code_or_group=parsing_error.hla_code_or_group,
+            parsing_issue_detail=parsing_error.parsing_issue_detail,
+            message=parsing_error.message,
+            donor_id = parsing_error.donor_id,
+            recipient_id = parsing_error.recipient_id,
+            txm_event_id=parsing_error.txm_event_id
+        )
+        for parsing_error in parsing_errors]
+    return parsing_error_models
 
 def convert_parsing_error_models_to_dataclasses(parsing_error_models: List[ParsingErrorModel]) -> List[ParsingError]:
     return [ParsingError(
@@ -48,6 +63,17 @@ def convert_parsing_error_models_to_dataclasses(parsing_error_models: List[Parsi
         if parsing_error_model.parsing_issue_detail != ParsingIssueDetail.MFI_PROBLEM]
 
 
+def convert_parsing_error_dataclasses_to_models(parsing_errors: List[ParsingError]) -> List[ParsingErrorModel]:
+    return [ParsingErrorModel(
+        hla_code_or_group=parsing_error.hla_code_or_group,
+        parsing_issue_detail=parsing_error.parsing_issue_detail.name,
+        message=parsing_error.message,
+        donor_id = parsing_error.donor_id,
+        recipient_id = parsing_error.recipient_id,
+        txm_event_id=parsing_error.txm_event_id
+    ) for parsing_error in parsing_errors if parsing_error.parsing_issue_detail != ParsingIssueDetail.MFI_PROBLEM]
+
+
 def get_parsing_errors_for_txm_event_id(txm_event_id: int) -> List[ParsingError]:
     return convert_parsing_error_models_to_dataclasses(
         ParsingErrorModel.query.filter(
@@ -56,7 +82,8 @@ def get_parsing_errors_for_txm_event_id(txm_event_id: int) -> List[ParsingError]
     )
 
 
-def get_parsing_errors_for_patients(txm_event_id: int, donor_ids: List[int] = None, recipient_ids: List[int] = None) -> List[ParsingError]:
+def get_parsing_errors_for_patients(txm_event_id: int, donor_ids: List[int] = None, 
+                                    recipient_ids: List[int] = None) -> List[ParsingError]:
     if donor_ids is None:
         donor_ids = []
     if recipient_ids is None:
