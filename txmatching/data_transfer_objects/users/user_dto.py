@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
-from typing import List, Optional
+from dataclasses import dataclass
+from typing import List
 
 from txmatching.auth.data_types import UserRole
 from txmatching.utils.country_enum import Country

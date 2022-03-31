@@ -185,22 +185,24 @@ def create_app() -> Flask:
         if full_swagger:
             specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER}'
         else:
-            specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER_PUBLIC}'
+            # only limited swagger when we're running in the production
+            # specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER_PUBLIC}'
+            # for the moment we show the full swagger always as not everything is possible to do via FE.
 
-        # only limited swagger when we're running in the production
+            specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER}'
 
-        api = Api(
+        api = ApiWithProvidedSpecsUrl(
             authorizations=AUTHORIZATIONS,
             version=VERSION,
             title=SWAGGER_TITLE,
-            doc='/doc/'
+            specs_url=specs_url
         )
 
         def generate_docs():
             return ui_for(api)
 
-        # app.add_url_rule(f'/{SWAGGER_URL}/', view_func=ui_for)
-        api.init_app(app, add_specs=True)
+        app.add_url_rule(f'/{SWAGGER_URL}/', view_func=generate_docs)
+        api.init_app(app, add_specs=False)
         add_all_namespaces(api)
 
         register_error_handlers(api)

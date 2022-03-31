@@ -273,7 +273,8 @@ class TestUserApi(DbTests):
             'role': UserRole.ADMIN,
             'second_factor': '+420123456789',
             'require_second_factor': True,
-            'allowed_countries': []
+            'allowed_countries': [],
+            'allowed_txm_events': []
         }
         self.assertIsNone(get_app_user_by_email(new_user['email']))
         with self.app.test_client() as client:
