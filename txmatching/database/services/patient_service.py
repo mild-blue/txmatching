@@ -136,7 +136,7 @@ def _get_hla_typing_from_patient_model(
         hla_per_groups=hla_typing_dto.hla_per_groups,
     )
 
-# asi netreba rozlisovat lebo vracias poloprazdne errory
+
 def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> (List[ParsingError], dict):
     patient_update_dict = {}
     parsing_errors = []
