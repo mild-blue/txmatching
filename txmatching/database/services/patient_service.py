@@ -187,11 +187,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
             RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
         db.session.add_all(acceptable_blood_models)
 
-    if recipient_update_dto.parsing_errors:
-        updated_parsing_errors = convert_parsing_error_dataclasses_to_models(recipient_update_dto.parsing_errors)
-        ParsingErrorModel.query.filter(ParsingErrorModel.recipient_id == recipient_update_dto.db_id).delete()
-        parsing_errors = parsing_errors + updated_parsing_errors
-    
     if recipient_update_dto.hla_antibodies or recipient_update_dto.cutoff:
         # not the best approach: in case cutoff was different per antibody before it will be unified now, but
         # but good for the moment
@@ -254,12 +249,8 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     parsing_errors, donor_update_dict = _create_patient_update_dict_base(donor_update_dto)
     parsing_errors = add_ids_to_parsing_errors(parsing_errors=parsing_errors, 
                                     donor_id=old_donor_model.id,
-                                    txm_event_id=old_donor_model.txm_event_id)
-    if donor_update_dto.parsing_errors:
-        updated_parsing_errors = convert_parsing_error_dataclasses_to_models(donor_update_dto.parsing_errors)
-        ParsingErrorModel.query.filter(ParsingErrorModel.recipient_id == donor_update_dto.db_id).delete()
-        parsing_errors = parsing_errors + updated_parsing_errors
-    
+                                    txm_event_id=old_donor_model.txm_event_id)    
+
     db.session.add_all(parsing_errors)
     if donor_update_dto.active is not None:
         donor_update_dict['active'] = donor_update_dto.active
@@ -298,18 +289,15 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
             new_parsing_errors = add_ids_to_parsing_errors(parsing_errors=patient_parsing_errors, 
                                             recipient_id=patient_model.id,
                                             txm_event_id=patient_model.txm_event_id)
-        
+        db.session.add_all(new_parsing_errors)
+        # todo
+        patient_model.parsing_errors=new_parsing_errors
         new_hla_typing = dataclasses.asdict(hla_typing)
 
         if new_hla_typing != patient_model.hla_typing:
             logger.debug(f'Updating hla_typing of {patient_model}:')
             patient_model.hla_typing = new_hla_typing
             result.patients_changed_antigens += 1
-
-        if new_parsing_errors != patient_model.parsing_errors:
-            logger.debug(f'Updating parsing_errors of {patient_model}:')
-            patient_model.parsing_errors = new_parsing_errors
-            result.parsing_errors = result.parsing_errors + convert_parsing_error_models_to_dataclasses(new_parsing_errors)
 
         result.patients_checked_antigens += 1
 
@@ -322,16 +310,13 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
                                         recipient_id=recipient_model.id,
                                         txm_event_id=recipient_model.txm_event_id)
         new_hla_antibodies = dataclasses.asdict(hla_antibodies)
-
+        db.session.add_all(new_parsing_errors)
+        # todo
+        recipient_model.parsing_errors = recipient_model.parsing_errors + new_parsing_errors
         if new_hla_antibodies != recipient_model.hla_antibodies:
             logger.debug(f'Updating hla_antibodies of {recipient_model}:')
             recipient_model.hla_antibodies = new_hla_antibodies
             result.patients_changed_antibodies += 1
-
-        if new_parsing_errors != recipient_model.parsing_errors:
-            logger.debug(f'Updating parsing_errors of {recipient_model}:')
-            recipient_model.parsing_errors = recipient_model.parsing_errors + new_parsing_errors
-            result.parsing_errors = result.parsing_errors + convert_parsing_error_models_to_dataclasses(new_parsing_errors)
 
         result.patients_checked_antibodies += 1
 
