@@ -103,9 +103,6 @@ def _recipient_upload_dto_to_recipient_model(
     acceptable_blood_groups = [] if recipient.acceptable_blood_groups is None \
         else recipient.acceptable_blood_groups
 
-    parsing_errors = [] if recipient.parsing_errors is None \
-        else convert_parsing_error_dataclasses_to_models(recipient.parsing_errors)
-
     recipient_model = RecipientModel(
         medical_id=recipient.medical_id,
         country=country_code,
@@ -130,8 +127,7 @@ def _recipient_upload_dto_to_recipient_model(
         yob=recipient.year_of_birth,
         note=recipient.note,
         previous_transplants=recipient.previous_transplants,
-        internal_medical_id=recipient.internal_medical_id,
-        parsing_errors=parsing_errors
+        internal_medical_id=recipient.internal_medical_id
     )
 
     parsing_errors = []
@@ -139,8 +135,9 @@ def _recipient_upload_dto_to_recipient_model(
     hla_antibodies_parsing_errors = _parse_and_update_hla_antibodies_in_model(recipient_model)
     parsing_errors = convert_parsing_error_dataclasses_to_models(
         parsing_errors + hla_typing_parsing_errors + hla_antibodies_parsing_errors)
-
+    
     db.session.add_all(parsing_errors)
+    recipient_model.parsing_errors=parsing_errors
     return recipient_model
 
 
@@ -152,7 +149,6 @@ def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipi
                                         donor_id=donor_model.id,
                                         txm_event_id=donor_model.txm_event_id)
         donor_model.hla_typing = dataclasses.asdict(hla_typing)
-        donor_model.parsing_errors =  new_parsing_errors
     else:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=recipient_model.hla_typing_raw)
         parsing_errors, hla_typing = parse_hla_typing_raw_and_add_parsing_error_to_db_session(hla_typing_raw)
@@ -160,7 +156,6 @@ def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipi
                                         recipient_id=recipient_model.id,
                                         txm_event_id=recipient_model.txm_event_id)
         recipient_model.hla_typing = dataclasses.asdict(hla_typing)
-        recipient_model.parsing_errors =  new_parsing_errors
     return parsing_errors
 
 
@@ -173,7 +168,6 @@ def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel) -
                                     recipient_id=recipient_model.id,
                                     txm_event_id=recipient_model.txm_event_id)
     recipient_model.hla_antibodies = dataclasses.asdict(hla_antibodies_parsed)
-    recipient_model.parsing_errors = new_parsing_errors
     transformed_hla_antibodies = get_hla_antibodies_from_recipient_model(recipient_model)
     recipient_model.recipient_cutoff = calculate_cutoff(transformed_hla_antibodies.hla_antibodies_raw_list)
     return parsing_errors
@@ -235,6 +229,7 @@ def _donor_upload_dto_to_donor_model(
         parsing_errors + hla_typing_parsing_errors)
 
     db.session.add_all(parsing_errors)
+    donor_model.parsing_errors=parsing_errors
     return donor_model
 
 

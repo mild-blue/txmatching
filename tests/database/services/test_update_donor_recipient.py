@@ -110,22 +110,12 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertIn(original_donor_model.id, original_txm_event.active_donors_dict.keys())
         self.assertIn(original_donor_model.recipient_id, original_txm_event.active_recipients_dict.keys())
 
-        parsing_error = ParsingError(
-            hla_code_or_group='none',
-            parsing_issue_detail='error',
-            message='error',
-            txm_event_id=txm_event_db_id,
-            donor_id=donor_db_id
-        )
-
         update_donor(DonorUpdateDTO(
             active=False,
-            db_id=donor_db_id,
-            parsing_errors=[parsing_error]
+            db_id=donor_db_id
         ), txm_event_db_id)
         new_txm_event = get_txm_event_complete(txm_event_db_id)
 
-        self.assertTrue(len(original_donor_model.parsing_errors) > 0)
         self.assertEqual(False, DonorModel.query.get(donor_db_id).active)
         self.assertNotIn(donor_db_id, new_txm_event.active_donors_dict.keys())
         self.assertNotIn(original_donor_model.recipient_id, new_txm_event.active_recipients_dict.keys())
