@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
@@ -21,4 +20,3 @@ class DonorUploadDTO:
     year_of_birth: Optional[int] = None
     note: str = ''
     internal_medical_id: Optional[str] = None
-    parsing_errors: Optional[List[ParsingError]] = None
