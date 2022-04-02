@@ -129,15 +129,13 @@ def _recipient_upload_dto_to_recipient_model(
         previous_transplants=recipient.previous_transplants,
         internal_medical_id=recipient.internal_medical_id
     )
-
-    parsing_errors = []
     hla_typing_parsing_errors = _parse_and_update_hla_typing_in_model(recipient_model=recipient_model)
     hla_antibodies_parsing_errors = _parse_and_update_hla_antibodies_in_model(recipient_model)
-    parsing_errors = convert_parsing_error_dataclasses_to_models(
-        parsing_errors + hla_typing_parsing_errors + hla_antibodies_parsing_errors)
-
-    db.session.add_all(parsing_errors)
-    recipient_model.parsing_errors=parsing_errors
+    parsing_errors = hla_typing_parsing_errors + hla_antibodies_parsing_errors
+    parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(
+                                                                        parsing_errors=parsing_errors,
+                                                                        txm_event_id=recipient_model.txm_event_id)
+    recipient_model.parsing_errors = parsing_errors
     return recipient_model
 
 
@@ -162,6 +160,7 @@ def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel) -
     transformed_hla_antibodies = get_hla_antibodies_from_recipient_model(recipient_model)
     recipient_model.recipient_cutoff = calculate_cutoff(transformed_hla_antibodies.hla_antibodies_raw_list)
     return parsing_errors
+
 
 def _donor_upload_dto_to_donor_model(
         donor: DonorUploadDTO,
@@ -214,13 +213,6 @@ def _donor_upload_dto_to_donor_model(
         internal_medical_id=donor.internal_medical_id
     )
 
-    parsing_errors = []
-    hla_typing_parsing_errors = _parse_and_update_hla_typing_in_model(donor_model=donor_model)
-    parsing_errors = convert_parsing_error_dataclasses_to_models(
-        parsing_errors + hla_typing_parsing_errors)
-
-    db.session.add_all(parsing_errors)
-    donor_model.parsing_errors=parsing_errors
     return donor_model
 
 
@@ -260,28 +252,4 @@ def _add_patients_from_one_country(
     ]
     db.session.add_all(donor_models)
 
-    _add_parsing_errors_to_patients(donor_models, recipient_models, txm_event_db_id)
-
     return (donor_models, recipient_models)
-
-
-def _add_parsing_errors_to_patients(donor_models: List[DonorModel], recipient_models: List[RecipientModel], txm_event_id: int):
-    for donor_model in donor_models:
-        parsing_errors = _parse_and_update_hla_typing_in_model(donor_model=donor_model)
-        parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(
-                                                                            parsing_errors=parsing_errors,
-                                                                            donor_id=donor_model.id,
-                                                                            txm_event_id=txm_event_id)
-        db.session.add_all(parsing_errors)
-        donor_model.parsing_errors=parsing_errors
-
-    for recipient_model in recipient_models:
-        hla_typing_parsing_errors = _parse_and_update_hla_typing_in_model(recipient_model=recipient_model)
-        hla_antibodies_parsing_errors = _parse_and_update_hla_antibodies_in_model(recipient_model)
-        parsing_errors = hla_typing_parsing_errors + hla_antibodies_parsing_errors
-        parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(
-                                                                            parsing_errors=parsing_errors,
-                                                                            recipient_id=recipient_model.id,
-                                                                            txm_event_id=txm_event_id)
-        db.session.add_all(parsing_errors)
-        recipient_model.parsing_errors=parsing_errors

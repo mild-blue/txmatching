@@ -197,10 +197,10 @@ class TestPatientService(DbTests):
 
         errors = ParsingErrorModel.query.all()
         self.assertEqual(9, len(errors))
-        self.assertEqual('TEST', errors[6].hla_code_or_group)
+        self.assertEqual('TEST', errors[3].hla_code_or_group)
         self.assertEqual(
             ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
-            errors[6].parsing_issue_detail
+            errors[3].parsing_issue_detail
         )
 
     def test_donor_recipient_pair_deletion(self):
