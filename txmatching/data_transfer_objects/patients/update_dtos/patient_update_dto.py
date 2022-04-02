@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.data_transfer_objects.patients.update_dtos.hla_code_update_dtos import \
     HLATypingUpdateDTO
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
@@ -21,4 +20,3 @@ class PatientUpdateDTO:
     weight: Optional[Kilograms] = None
     year_of_birth: Optional[int] = None
     note: Optional[str] = None
-    parsing_errors: Optional[List[ParsingError]] = None
