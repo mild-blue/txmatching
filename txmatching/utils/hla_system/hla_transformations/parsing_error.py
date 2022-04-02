@@ -49,6 +49,7 @@ def add_ids_to_parsing_errors_and_return_parsing_errors_models(
         for parsing_error in parsing_errors]
     return parsing_error_models
 
+
 def convert_parsing_error_models_to_dataclasses(parsing_error_models: List[ParsingErrorModel]) -> List[ParsingError]:
     return [ParsingError(
         hla_code_or_group=parsing_error_model.hla_code_or_group,
