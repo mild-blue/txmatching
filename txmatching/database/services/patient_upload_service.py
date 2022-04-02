@@ -213,6 +213,11 @@ def _donor_upload_dto_to_donor_model(
         internal_medical_id=donor.internal_medical_id
     )
 
+    parsing_errors = _parse_and_update_hla_typing_in_model(donor_model=donor_model)
+    parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(
+                                                                        parsing_errors=parsing_errors,
+                                                                        txm_event_id=donor_model.txm_event_id)
+    donor_model.parsing_errors = parsing_errors
     return donor_model
 
 
