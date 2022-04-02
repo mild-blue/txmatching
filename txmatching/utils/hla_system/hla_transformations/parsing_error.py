@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 
 from sqlalchemy import and_
 
@@ -30,14 +29,14 @@ def add_parsing_error_to_db_session(
         db.session.add(parsing_error_to_db)
 
 
-def add_ids_to_parsing_errors(
+def add_ids_to_parsing_errors_and_return_parsing_errors_models(
         parsing_errors: List[ParsingError], donor_id: int = None, recipient_id: int = None, txm_event_id: int = None
 ) -> List[ParsingErrorModel]:
     for parsing_error in parsing_errors:
         parsing_error.donor_id=donor_id
         parsing_error.recipient_id=recipient_id
         parsing_error.txm_event_id=txm_event_id
-    
+
     parsing_error_models = [
             ParsingErrorModel(
             hla_code_or_group=parsing_error.hla_code_or_group,
@@ -82,7 +81,7 @@ def get_parsing_errors_for_txm_event_id(txm_event_id: int) -> List[ParsingError]
     )
 
 
-def get_parsing_errors_for_patients(txm_event_id: int, donor_ids: List[int] = None, 
+def get_parsing_errors_for_patients(txm_event_id: int, donor_ids: List[int] = None,
                                     recipient_ids: List[int] = None) -> List[ParsingError]:
     if donor_ids is None:
         donor_ids = []

@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 MAX_ANTIGENS_PER_GROUP = 2
 
 
-def parse_hla_raw_code_and_add_parsing_error_to_db_session(
+def parse_hla_raw_code_and_return_parsing_error_list(
         hla_raw_code: str
 ) -> (List[ParsingError], Optional[HLACode]):
     """
@@ -54,7 +54,7 @@ def parse_hla_raw_code_and_add_parsing_error_to_db_session(
     return (parsing_errors, parsing_result.maybe_hla_code)
 
 
-def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
+def parse_hla_antibodies_raw_and_return_parsing_error_list(
         hla_antibodies_raw: List[HLAAntibodyRawModel]
 ) -> (List[ParsingError], HLAAntibodiesDTO):
     # 1. preprocess raw codes (their count can increase)
@@ -94,7 +94,7 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
 
         # Parse antibodies and keep only valid ones
         for hla_antibody in antibody_group:
-            antibody_parsing_errors, code = parse_hla_raw_code_and_add_parsing_error_to_db_session(hla_antibody.raw_code)
+            antibody_parsing_errors, code = parse_hla_raw_code_and_return_parsing_error_list(hla_antibody.raw_code)
             if code is not None:
                 hla_antibodies_parsed.append(
                     HLAAntibody(
@@ -136,7 +136,7 @@ def parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
     ))
 
 
-def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
+def parse_hla_typing_raw_and_return_parsing_error_list(
         hla_typing_raw: HLATypingRawDTO,
 ) -> (List[ParsingError], HLATypingDTO):
     parsing_errors = []
@@ -150,7 +150,7 @@ def parse_hla_typing_raw_and_add_parsing_error_to_db_session(
     # 2. parse preprocessed codes and keep only valid ones
     hla_types_parsed = []
     for raw_code in raw_codes_preprocessed:
-        raw_codes_parsing_errors, code = parse_hla_raw_code_and_add_parsing_error_to_db_session(raw_code)
+        raw_codes_parsing_errors, code = parse_hla_raw_code_and_return_parsing_error_list(raw_code)
         if code is not None:
             hla_types_parsed.append(
                 HLAType(

@@ -39,8 +39,7 @@ def get_patients_upload_json_from_txm_event_for_country(
             weight=donor.parameters.weight,
             year_of_birth=donor.parameters.year_of_birth,
             note=donor.parameters.note,
-            internal_medical_id=None,
-            parsing_errors=donor.parsing_errors
+            internal_medical_id=None
         )
         for donor in
         txm_event.active_donors_dict.values() if donor.parameters.country_code == country_code
@@ -63,8 +62,7 @@ def get_patients_upload_json_from_txm_event_for_country(
             ) for code in recipient.hla_antibodies.hla_antibodies_raw_list],
             waiting_since=recipient.waiting_since.strftime('%Y-%m-%d') if recipient.waiting_since is not None else None,
             previous_transplants=recipient.previous_transplants,
-            acceptable_blood_groups=recipient.acceptable_blood_groups,
-            parsing_errors=recipient.parsing_errors
+            acceptable_blood_groups=recipient.acceptable_blood_groups
         )
         for recipient in
         txm_event.active_recipients_dict.values() if recipient.parameters.country_code == country_code
