@@ -6,9 +6,9 @@ from typing import List, Optional, Tuple, Union
 import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
     HLATypingDTO, HLATypingRawDTO)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
@@ -35,8 +35,7 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
 from txmatching.utils.hla_system.hla_transformations.parsing_error import (
     add_ids_to_parsing_errors_and_return_parsing_errors_models,
     convert_parsing_error_models_to_dataclasses,
-    delete_parsing_errors_for_patient,
-    delete_parsing_errors_for_txm_event_id,
+    delete_parsing_errors_for_patient, delete_parsing_errors_for_txm_event_id,
     get_parsing_errors_for_txm_event_id)
 from txmatching.utils.persistent_hash import (get_hash_digest,
                                               initialize_persistent_hash,
@@ -301,7 +300,7 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     # Update hla_antibodies for recipients
     for recipient_model in recipient_models:
         hla_antibodies_raw = recipient_model.hla_antibodies_raw
-        patient_parsing_errors, hla_antibodies = parse_hla_typing_raw_and_return_parsing_error_list(
+        patient_parsing_errors, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_error_list(
                                                  hla_antibodies_raw)
         new_parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(parsing_errors=patient_parsing_errors,
                                         recipient_id=recipient_model.id,
