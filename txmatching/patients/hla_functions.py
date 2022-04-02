@@ -56,12 +56,11 @@ def split_hla_types_to_groups_other(
 def create_hla_antibodies_per_groups_from_hla_antibodies(
         hla_antibodies: List[HLAAntibody],
 ) -> (List[ParsingError], List[AntibodiesPerGroup]):
-    parsing_errors = []
 
     antibodies_parsing_errors, hla_antibodies_joined = _join_duplicate_antibodies(hla_antibodies)
     antibodies_per_groups_parsing_errors, hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_joined)
 
-    parsing_errors = parsing_errors + antibodies_parsing_errors + antibodies_per_groups_parsing_errors
+    parsing_errors = antibodies_parsing_errors + antibodies_per_groups_parsing_errors
     return (parsing_errors, hla_antibodies_per_groups)
 
 
@@ -125,7 +124,7 @@ def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
         raise AssertionError(f'Broad or high res should be provided: {hla_type.code}')
 
 
-def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> (List[ParsingError], Dict[HLAGroup, 
+def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> (List[ParsingError], Dict[HLAGroup,
                                List[HLACodeAlias]]):
     parsing_errors = []
     hla_types_in_groups = {}
