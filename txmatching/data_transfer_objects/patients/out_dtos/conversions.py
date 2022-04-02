@@ -48,8 +48,7 @@ def donor_to_donor_dto_out(donor: Donor,
                             donor_type=donor.donor_type,
                             related_recipient_db_id=donor.related_recipient_db_id,
                             active=donor.active,
-                            internal_medical_id=donor.internal_medical_id,
-                            parsing_errors=donor.parsing_errors
+                            internal_medical_id=donor.internal_medical_id
                             )
     if donor.related_recipient_db_id:
         related_recipient = next(recipient for recipient in all_recipients if
