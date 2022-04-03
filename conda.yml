@@ -4,6 +4,7 @@ channels:
 dependencies:
   - autopep8=1.5.7
   - bcrypt=3.2.0
+  - blinker=1.4
   - dacite==1.6.0
   - flask-restx==0.5.0
   - flask-sqlalchemy=2.5.1
@@ -24,7 +25,9 @@ dependencies:
   - requests=2.26.0
   - responses=0.13.4
   - scipy=1.7.1
+  - sentry-sdk[flask]==1.5.8
   - sqlalchemy=1.4.23
+  - Werkzeug=2.0.3
   - xlrd=2.0.1
   - xlsxwriter=3.0.1
   - pip:
@@ -36,6 +39,5 @@ dependencies:
       - pylint-flask-sqlalchemy==0.2.0
       - pylint-flask==0.6
       - pylint-plugin-utils==0.6
-      - sentry-sdk[flask]==1.5.8
       - swagger-unittest==0.3.4
       - yoyo-migrations==7.3.2
