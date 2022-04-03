@@ -26,3 +26,19 @@ git lfs pull Miniconda3-4.8.5-Linux-x86_64.sh
 ### Dockerfile.conda-dependencies
 Image based on the `Dockerfile.conda-base` contains installed dependencies from the `conda.yml`.
 It can be directly used as a runtime for the project or as a base for executing the tests.
+
+
+```
+NOTE: `Dockerfile.conda-dependencies` depends on `Dockerfile.conda-base`, so do not forget to update version
+in `Dockerfile.conda-dependencies` file.
+```
+
+### GH pipeline
+
+There exist GH pipeline for building these images (see `/github/workflows/base-images.yml`).
+To build new version(s), do following steps:
+
+- Update version in `.env.template`.
+- Update version in `Dockerfile.conda-dependencies`.
+- Push changes and run GH action.
+- Do not forget to update version in main `Dockerfile`.
