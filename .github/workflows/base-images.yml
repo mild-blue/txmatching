@@ -1,0 +1,26 @@
+name: Build Base Images Pipeline
+
+on:
+  # manual dispatch
+  workflow_dispatch:
+
+jobs:
+  build_base_images:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push images
+        run: |
+          cd dockerbase
+          cat .env.template | grep "VERSION=" > .env
+          make publish-in-pipeline
