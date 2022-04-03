@@ -33,10 +33,9 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
     parse_hla_antibodies_raw_and_return_parsing_error_list,
     parse_hla_typing_raw_and_return_parsing_error_list)
 from txmatching.utils.hla_system.hla_transformations.parsing_error import (
-    add_ids_to_parsing_errors_and_return_parsing_errors_models,
     convert_parsing_error_models_to_dataclasses,
     delete_parsing_errors_for_patient, delete_parsing_errors_for_txm_event_id,
-    get_parsing_errors_for_txm_event_id)
+    get_parsing_errors_for_txm_event_id, parsing_errors_to_models)
 from txmatching.utils.persistent_hash import (get_hash_digest,
                                               initialize_persistent_hash,
                                               update_persistent_hash)
@@ -159,7 +158,7 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> (L
     if patient_update_dto.note is not None:
         patient_update_dict['note'] = patient_update_dto.note
 
-    return (parsing_errors, patient_update_dict)
+    return parsing_errors, patient_update_dict
 
 
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
@@ -171,9 +170,9 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
     delete_parsing_errors_for_patient(recipient_id=old_recipient_model.id,
                                       txm_event_id=old_recipient_model.txm_event_id)
     updated_parsing_errors, recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto)
-    updated_parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(parsing_errors=updated_parsing_errors,
-                                    recipient_id=old_recipient_model.id,
-                                    txm_event_id=old_recipient_model.txm_event_id)
+    updated_parsing_errors = parsing_errors_to_models(parsing_errors=updated_parsing_errors,
+                                                      recipient_id=old_recipient_model.id,
+                                                      txm_event_id=old_recipient_model.txm_event_id)
     parsing_errors = parsing_errors + updated_parsing_errors
     if recipient_update_dto.acceptable_blood_groups:
         acceptable_blood_models = [
@@ -218,9 +217,9 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         antibody_parsing_errors, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_error_list(
             new_hla_antibody_raw_models,
         )
-        updated_parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(parsing_errors=antibody_parsing_errors,
-                                    recipient_id=old_recipient_model.id,
-                                    txm_event_id=old_recipient_model.txm_event_id)
+        updated_parsing_errors = parsing_errors_to_models(parsing_errors=antibody_parsing_errors,
+                                                          recipient_id=old_recipient_model.id,
+                                                          txm_event_id=old_recipient_model.txm_event_id)
         parsing_errors = parsing_errors + updated_parsing_errors
         recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
 
@@ -244,9 +243,9 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     delete_parsing_errors_for_patient(donor_id=old_donor_model.id,
                                       txm_event_id=old_donor_model.txm_event_id)
     parsing_errors, donor_update_dict = _create_patient_update_dict_base(donor_update_dto)
-    parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(parsing_errors=parsing_errors,
-                                    donor_id=old_donor_model.id,
-                                    txm_event_id=old_donor_model.txm_event_id)
+    parsing_errors = parsing_errors_to_models(parsing_errors=parsing_errors,
+                                              donor_id=old_donor_model.id,
+                                              txm_event_id=old_donor_model.txm_event_id)
 
     db.session.add_all(parsing_errors)
     if donor_update_dto.active is not None:
@@ -279,15 +278,15 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
         patient_parsing_errors, hla_typing = parse_hla_typing_raw_and_return_parsing_error_list(hla_typing_raw)
         if patient_model in donor_models:
-            new_parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(parsing_errors=patient_parsing_errors,
-                                            donor_id=patient_model.id,
-                                            txm_event_id=patient_model.txm_event_id)
+            new_parsing_errors = parsing_errors_to_models(parsing_errors=patient_parsing_errors,
+                                                          donor_id=patient_model.id,
+                                                          txm_event_id=patient_model.txm_event_id)
         else:
-            new_parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(parsing_errors=patient_parsing_errors,
-                                            recipient_id=patient_model.id,
-                                            txm_event_id=patient_model.txm_event_id)
+            new_parsing_errors = parsing_errors_to_models(parsing_errors=patient_parsing_errors,
+                                                          recipient_id=patient_model.id,
+                                                          txm_event_id=patient_model.txm_event_id)
         db.session.add_all(new_parsing_errors)
-        patient_model.parsing_errors=new_parsing_errors
+        patient_model.parsing_errors = new_parsing_errors
         new_hla_typing = dataclasses.asdict(hla_typing)
 
         if new_hla_typing != patient_model.hla_typing:
@@ -301,10 +300,10 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     for recipient_model in recipient_models:
         hla_antibodies_raw = recipient_model.hla_antibodies_raw
         patient_parsing_errors, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_error_list(
-                                                 hla_antibodies_raw)
-        new_parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(parsing_errors=patient_parsing_errors,
-                                        recipient_id=recipient_model.id,
-                                        txm_event_id=recipient_model.txm_event_id)
+            hla_antibodies_raw)
+        new_parsing_errors = parsing_errors_to_models(parsing_errors=patient_parsing_errors,
+                                                      recipient_id=recipient_model.id,
+                                                      txm_event_id=recipient_model.txm_event_id)
         new_hla_antibodies = dataclasses.asdict(hla_antibodies)
         db.session.add_all(new_parsing_errors)
         recipient_model.parsing_errors = recipient_model.parsing_errors + new_parsing_errors

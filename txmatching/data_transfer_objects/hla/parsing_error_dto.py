@@ -4,6 +4,7 @@ from typing import Optional
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
+
 @dataclass
 class ParsingError(PersistentlyHashable):
     hla_code_or_group: Optional[str]

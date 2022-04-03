@@ -35,8 +35,7 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
     parse_hla_antibodies_raw_and_return_parsing_error_list,
     parse_hla_typing_raw_and_return_parsing_error_list)
 from txmatching.utils.hla_system.hla_transformations.parsing_error import (
-    add_ids_to_parsing_errors_and_return_parsing_errors_models,
-    get_parsing_errors_for_patients)
+    get_parsing_errors_for_patients, parsing_errors_to_models)
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +131,7 @@ def _recipient_upload_dto_to_recipient_model(
     hla_typing_parsing_errors = _parse_and_update_hla_typing_in_model(recipient_model=recipient_model)
     hla_antibodies_parsing_errors = _parse_and_update_hla_antibodies_in_model(recipient_model)
     parsing_errors = hla_typing_parsing_errors + hla_antibodies_parsing_errors
-    parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(
+    parsing_errors = parsing_errors_to_models(
                                                                         parsing_errors=parsing_errors,
                                                                         txm_event_id=recipient_model.txm_event_id)
     recipient_model.parsing_errors = parsing_errors
@@ -214,7 +213,7 @@ def _donor_upload_dto_to_donor_model(
     )
 
     parsing_errors = _parse_and_update_hla_typing_in_model(donor_model=donor_model)
-    parsing_errors = add_ids_to_parsing_errors_and_return_parsing_errors_models(
+    parsing_errors = parsing_errors_to_models(
                                                                         parsing_errors=parsing_errors,
                                                                         txm_event_id=donor_model.txm_event_id)
     donor_model.parsing_errors = parsing_errors
