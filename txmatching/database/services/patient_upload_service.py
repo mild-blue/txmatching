@@ -7,7 +7,7 @@ import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.hla.parsing_error_dto import (
-    ParsingError, ParsingErrorDTO)
+    ParsingError, ParsingErrorPublicDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
     HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
@@ -59,7 +59,7 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
 
 
 def get_patients_errors_from_upload_dto(donors: List[DonorModel], recipients: List[RecipientModel],
-                                        txm_event_db_id: int) -> List[ParsingErrorDTO]:
+                                        txm_event_db_id: int) -> List[ParsingErrorPublicDTO]:
     donor_ids = [patient.id for patient in donors]
     recipient_ids = [patient.id for patient in recipients]
     parsing_errors = get_parsing_errors_for_patients(txm_event_db_id, donor_ids, recipient_ids)
@@ -69,12 +69,14 @@ def get_patients_errors_from_upload_dto(donors: List[DonorModel], recipients: Li
 
 
 def get_patients_errors_from_pair_dto(donors: List[DonorModel], recipients: List[RecipientModel],
-                                      txm_event_db_id: int) -> List[ParsingError]:
+                                      txm_event_db_id: int) -> List[ParsingErrorPublicDTO]:
     donor_ids = [donors[0].id]
     recipient_ids = []
     if len(recipients) > 0:
         recipient_ids.append(recipients[0].id)
-    return get_parsing_errors_for_patients(txm_event_db_id, donor_ids, recipient_ids)
+    parsing_errors = get_parsing_errors_for_patients(txm_event_db_id, donor_ids, recipient_ids)
+    txm_event = get_txm_event_complete(txm_event_db_id)
+    return [parsing_error_to_dto(parsing_error, txm_event) for parsing_error in parsing_errors]
 
 
 def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn

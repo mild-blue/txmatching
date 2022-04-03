@@ -32,7 +32,7 @@ from txmatching.data_transfer_objects.patients.patient_in_swagger import (
     DonorModelPairInJson, DonorToUpdateJson, PatientsJson,
     RecipientToUpdateJson, UpdatedDonorJsonOut, UpdatedRecipientJsonOut)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
-    PatientUploadDTOOut
+    PatientUploadPublicDTOOut
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
     DonorUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
@@ -112,7 +112,7 @@ class DonorRecipientPairs(Resource):
 
         parsing_errors = get_patients_errors_from_pair_dto(donors, recipients, txm_event_id)
 
-        return response_ok(PatientUploadDTOOut(
+        return response_ok(PatientUploadPublicDTOOut(
             donors_uploaded=1,
             recipients_uploaded=1 if donor_recipient_pair_dto_in.recipient else 0,
             parsing_errors=parsing_errors
@@ -250,7 +250,7 @@ class AddPatientsFile(Resource):
             guard_user_has_access_to_country(user_id=user_id, country=parsed_country_data.country)
 
         replace_or_add_patients_from_excel(parsed_data)
-        return response_ok(PatientUploadDTOOut(
+        return response_ok(PatientUploadPublicDTOOut(
             recipients_uploaded=sum(len(parsed_data_country.recipients) for parsed_data_country in parsed_data),
             donors_uploaded=sum(len(parsed_data_country.donors) for parsed_data_country in parsed_data),
             parsing_errors=[]  # TODO: https://github.com/mild-blue/txmatching/issues/619

@@ -2,14 +2,14 @@ import logging
 from typing import Optional
 
 from txmatching.data_transfer_objects.hla.parsing_error_dto import (
-    ParsingError, ParsingErrorDTO)
+    ParsingError, ParsingErrorPublicDTO)
 from txmatching.patients.patient import TxmEvent
 
 logger = logging.getLogger(__name__)
 
 
-def parsing_error_to_dto(parsing_error: ParsingError, txm_event: TxmEvent) -> ParsingErrorDTO:
-    return ParsingErrorDTO(
+def parsing_error_to_dto(parsing_error: ParsingError, txm_event: TxmEvent) -> ParsingErrorPublicDTO:
+    return ParsingErrorPublicDTO(
         hla_code_or_group=parsing_error.hla_code_or_group,
         parsing_issue_detail=parsing_error.parsing_issue_detail,
         message=parsing_error.message,

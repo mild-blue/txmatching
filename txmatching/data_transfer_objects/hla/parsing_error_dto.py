@@ -6,7 +6,7 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
 
 
 @dataclass
-class ParsingErrorDTO:
+class ParsingErrorPublicDTO:
     hla_code_or_group: Optional[str]
     parsing_issue_detail: str
     message: str
