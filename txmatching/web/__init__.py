@@ -10,6 +10,8 @@ from flask_restx.apidoc import ui_for
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from werkzeug.middleware.proxy_fix import ProxyFix
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 from txmatching.auth.crypto import bcrypt
 from txmatching.configuration.app_configuration.application_configuration import (
@@ -126,6 +128,25 @@ def create_app() -> Flask:
     # For flask.flash (gives feedback when uploading files)
     app.secret_key = 'secret key'
 
+    def init_sentry(application_configuration: ApplicationConfiguration):
+        dsn = application_configuration.sentry_dsn
+        if dsn:
+            sentry_sdk.init(
+                dsn=dsn,
+                integrations=[FlaskIntegration()],
+
+                # Set traces_sample_rate to 1.0 to capture 100%
+                # of transactions for performance monitoring.
+                # We recommend adjusting this value in production.
+                traces_sample_rate=1.0,
+
+                # By default the SDK will try to use the SENTRY_RELEASE
+                # environment variable, or infer a git commit
+                # SHA as release, however you may want to set
+                # something more human-readable.
+                # release="myapp@1.0.0",
+            )
+
     def load_local_development_config():
         config_file = 'txmatching.web.local_config'
         if importing.find_spec(config_file):
@@ -237,6 +258,7 @@ def create_app() -> Flask:
     with app.app_context():
         load_local_development_config()
         application_config = get_application_configuration()
+        init_sentry(application_config)
         # use configuration for app
         configure_db(application_config)
         configure_encryption()
@@ -259,7 +281,6 @@ def add_public_namespaces(api: Api):
 
 
 def add_all_namespaces(api: Api):
-
     add_public_namespaces(api)
     api.add_namespace(matching_api,
                       path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{MATCHING_NAMESPACE}')
