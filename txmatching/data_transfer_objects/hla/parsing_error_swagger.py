@@ -7,7 +7,6 @@ ParsingErrorJson = public_api.model('ParsingError', {
     'parsing_issue_detail': fields.String(required=True),
     'message': fields.String(required=True),
     # TODO: make all fields required https://github.com/mild-blue/txmatching/issues/621
-    'donor_id': fields.Integer(required=False),
-    'recipient_id': fields.Integer(required=False),
+    'medical_id': fields.String(required=False),
     'txm_event_id': fields.Integer(required=False),
 })

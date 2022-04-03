@@ -1014,16 +1014,14 @@ definitions:
         type: object
     ParsingError:
         properties:
-            donor_id:
-                type: integer
             hla_code_or_group:
+                type: string
+            medical_id:
                 type: string
             message:
                 type: string
             parsing_issue_detail:
                 type: string
-            recipient_id:
-                type: integer
             txm_event_id:
                 type: integer
         required:

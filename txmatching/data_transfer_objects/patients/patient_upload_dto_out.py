@@ -1,14 +1,15 @@
 from dataclasses import dataclass
 from typing import List
 
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
+from txmatching.data_transfer_objects.hla.parsing_error_dto import (
+    ParsingError, ParsingErrorDTO)
 
 
 @dataclass
 class PatientUploadDTOOut:
     recipients_uploaded: int
     donors_uploaded: int
-    parsing_errors: List[ParsingError]
+    parsing_errors: List[ParsingErrorDTO]
 
 
 @dataclass

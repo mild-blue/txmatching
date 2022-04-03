@@ -6,7 +6,8 @@ from typing import Dict, List
 import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
+from txmatching.data_transfer_objects.hla.parsing_error_dto import (
+    ParsingError, ParsingErrorDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
     HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
@@ -17,6 +18,8 @@ from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in
     PatientUploadDTOIn
 from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
+from txmatching.data_transfer_objects.patients.utils import \
+    parsing_error_to_dto
 from txmatching.database.db import db
 from txmatching.database.services.parsing_utils import (
     check_existing_ids_for_duplicates, parse_date_to_datetime)
@@ -52,28 +55,30 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
         txm_event_db_id=txm_event_db_id
     )
     db.session.commit()
-    return (donors, recipients)
+    return donors, recipients
 
 
 def get_patients_errors_from_upload_dto(donors: List[DonorModel], recipients: List[RecipientModel],
-                                        txm_event_db_id: int) -> List[ParsingError]:
+                                        txm_event_db_id: int) -> List[ParsingErrorDTO]:
     donor_ids = [patient.id for patient in donors]
     recipient_ids = [patient.id for patient in recipients]
+    parsing_errors = get_parsing_errors_for_patients(txm_event_db_id, donor_ids, recipient_ids)
+    txm_event = get_txm_event_complete(txm_event_db_id)
 
-    return get_parsing_errors_for_patients(txm_event_db_id, donor_ids, recipient_ids)
+    return [parsing_error_to_dto(parsing_error, txm_event) for parsing_error in parsing_errors]
 
 
 def get_patients_errors_from_pair_dto(donors: List[DonorModel], recipients: List[RecipientModel],
                                       txm_event_db_id: int) -> List[ParsingError]:
     donor_ids = [donors[0].id]
     recipient_ids = []
-    if len(recipients)>0:
+    if len(recipients) > 0:
         recipient_ids.append(recipients[0].id)
     return get_parsing_errors_for_patients(txm_event_db_id, donor_ids, recipient_ids)
 
 
 def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn
-) -> (List[DonorModel], List[RecipientModel]):
+                                             ) -> (List[DonorModel], List[RecipientModel]):
     txm_event_db_id = get_txm_event_db_id_by_name(patient_upload_dto.txm_event_name)
     if not patient_upload_dto.add_to_existing_patients:
         remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id,
@@ -86,7 +91,7 @@ def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDT
         txm_event_db_id=txm_event_db_id
     )
     db.session.commit()
-    return (donors, recipients)
+    return donors, recipients
 
 
 def replace_or_add_patients_from_excel(patient_upload_dtos: List[PatientUploadDTOIn]):
@@ -132,13 +137,14 @@ def _recipient_upload_dto_to_recipient_model(
     hla_antibodies_parsing_errors = _parse_and_update_hla_antibodies_in_model(recipient_model)
     parsing_errors = hla_typing_parsing_errors + hla_antibodies_parsing_errors
     parsing_errors = parsing_errors_to_models(
-                                                                        parsing_errors=parsing_errors,
-                                                                        txm_event_id=recipient_model.txm_event_id)
+        parsing_errors=parsing_errors,
+        txm_event_id=recipient_model.txm_event_id)
     recipient_model.parsing_errors = parsing_errors
     return recipient_model
 
 
-def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipient_model: RecipientModel = None) -> List[ParsingError]:
+def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipient_model: RecipientModel = None) -> \
+        List[ParsingError]:
     if donor_model is not None:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=donor_model.hla_typing_raw)
         parsing_errors, hla_typing = parse_hla_typing_raw_and_return_parsing_error_list(hla_typing_raw)
@@ -214,8 +220,8 @@ def _donor_upload_dto_to_donor_model(
 
     parsing_errors = _parse_and_update_hla_typing_in_model(donor_model=donor_model)
     parsing_errors = parsing_errors_to_models(
-                                                                        parsing_errors=parsing_errors,
-                                                                        txm_event_id=donor_model.txm_event_id)
+        parsing_errors=parsing_errors,
+        txm_event_id=donor_model.txm_event_id)
     donor_model.parsing_errors = parsing_errors
     return donor_model
 

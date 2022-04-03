@@ -6,6 +6,15 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
 
 
 @dataclass
+class ParsingErrorDTO:
+    hla_code_or_group: Optional[str]
+    parsing_issue_detail: str
+    message: str
+    txm_event_name: Optional[str]
+    medical_id: Optional[str]
+
+
+@dataclass
 class ParsingError(PersistentlyHashable):
     hla_code_or_group: Optional[str]
     parsing_issue_detail: str
