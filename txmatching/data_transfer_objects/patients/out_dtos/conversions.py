@@ -1,6 +1,7 @@
 from typing import Dict, List, Union
 
 from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
@@ -15,9 +16,8 @@ from txmatching.utils.hla_system.compatibility_index import (
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
-from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import WARNING_PROCESSING_RESULTS, \
-    ERROR_PROCESSING_RESULTS
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
+    ERROR_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS)
 
 
 def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters) \
@@ -134,13 +134,12 @@ def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityI
 
 def get_messages(parsing_errors: List[ParsingError]) -> Dict[str, List[str]]:
     return {
-        "infos": [],
-        "warnings": [
-            warning.hla_code_or_group + ": " + warning.message for warning in parsing_errors
+        'infos': [],
+        'warnings': [
+            warning.hla_code_or_group + ': ' + warning.message for warning in parsing_errors
             if warning.parsing_issue_detail in WARNING_PROCESSING_RESULTS
         ],
-        "errors": [
-            error.hla_code_or_group + ": " + error.message for error in parsing_errors
+        'errors': [
+            error.hla_code_or_group + ': ' + error.message for error in parsing_errors
             if error.parsing_issue_detail in ERROR_PROCESSING_RESULTS]
     }
-

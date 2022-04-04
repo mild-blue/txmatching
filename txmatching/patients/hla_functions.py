@@ -22,9 +22,9 @@ SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES = 20
 def split_hla_types_to_groups(hla_types: List[HLAType]) -> (List[ParsingError], List[HLAPerGroup]):
     parsing_errors, hla_types_in_groups = _split_hla_types_to_groups(hla_types)
     return (parsing_errors, [HLAPerGroup(hla_group,
-                        sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
-                        ) for hla_group, hla_codes_in_group in
-            hla_types_in_groups.items()])
+                                         sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
+                                         ) for hla_group, hla_codes_in_group in
+                             hla_types_in_groups.items()])
 
 
 def split_hla_types_to_groups_other(
@@ -56,7 +56,6 @@ def split_hla_types_to_groups_other(
 def create_hla_antibodies_per_groups_from_hla_antibodies(
         hla_antibodies: List[HLAAntibody],
 ) -> (List[ParsingError], List[AntibodiesPerGroup]):
-
     antibodies_parsing_errors, hla_antibodies_joined = _join_duplicate_antibodies(hla_antibodies)
     antibodies_per_groups_parsing_errors, hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_joined)
 
@@ -67,9 +66,9 @@ def create_hla_antibodies_per_groups_from_hla_antibodies(
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> (List[ParsingError], List[AntibodiesPerGroup]):
     parsing_errors, hla_antibodies_in_groups = _split_hla_types_to_groups(hla_antibodies)
     return (parsing_errors, [AntibodiesPerGroup(hla_group,
-                               sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
-                               ) for hla_group, hla_codes_in_group in
-            hla_antibodies_in_groups.items()])
+                                                sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
+                                                ) for hla_group, hla_codes_in_group in
+                             hla_antibodies_in_groups.items()])
 
 
 def _join_duplicate_antibodies(
@@ -98,8 +97,8 @@ def _join_duplicate_antibodies(
 
         cutoff = cutoffs.pop()
         mfi_parsing_errors, mfi = get_mfi_from_multiple_hla_codes([hla_code.mfi for hla_code in antibody_group_list],
-                                              cutoff,
-                                              hla_code_raw)
+                                                                  cutoff,
+                                                                  hla_code_raw)
         parsing_errors = parsing_errors + mfi_parsing_errors
         new_antibody = HLAAntibody(
             code=antibody_group_list[0].code,
@@ -109,7 +108,7 @@ def _join_duplicate_antibodies(
         )
         hla_antibodies_joined.append(new_antibody)
 
-    return (parsing_errors, hla_antibodies_joined)
+    return parsing_errors, hla_antibodies_joined
 
 
 HLACodeAlias = Union[HLAType, HLAAntibody]
@@ -125,7 +124,7 @@ def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
 
 
 def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> (List[ParsingError], Dict[HLAGroup,
-                               List[HLACodeAlias]]):
+                                                                                           List[HLACodeAlias]]):
     parsing_errors = []
     hla_types_in_groups = {}
     for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
@@ -146,7 +145,7 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> (List[ParsingEr
                             f'This should never happen. This unexpected HLA will be ignored.',
                 )
             )
-    return (parsing_errors, hla_types_in_groups)
+    return parsing_errors, hla_types_in_groups
 
 
 def all_samples_are_positive_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bool:

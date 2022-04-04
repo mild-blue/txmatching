@@ -13,15 +13,14 @@ from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_functions import (
     all_samples_are_positive_in_high_res,
     create_hla_antibodies_per_groups_from_hla_antibodies,
-    number_of_antigens_is_insufficient_in_high_res,
-    split_hla_types_to_groups,
+    number_of_antigens_is_insufficient_in_high_res, split_hla_types_to_groups,
     split_hla_types_to_groups_other)
 from txmatching.patients.hla_model import HLAAntibody, HLAPerGroup, HLAType
 from txmatching.utils.enums import HLA_GROUPS_OTHER, HLAGroup
-from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
-    OK_PROCESSING_RESULTS, ParsingIssueDetail)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
+    OK_PROCESSING_RESULTS, ParsingIssueDetail)
 
 logger = logging.getLogger(__name__)
 
@@ -37,13 +36,12 @@ def parse_hla_raw_code_and_return_parsing_error_list(
     It must be in separated file with little redundancy caused by cyclic import:
     txmatching.database.sql_alchemy_schema -> txmatching.patients.patient ->
     txmatching.patients.patient_parameters -> txmatching.utils.hla_system.hla_transformations
-    :type parsing_info: object
     :param hla_raw_code: HLA raw code
     :return:
     """
     parsing_errors = []
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
-    if not parsing_result.maybe_hla_code or parsing_result.result_detail.name not in OK_PROCESSING_RESULTS:
+    if not parsing_result.maybe_hla_code or parsing_result.result_detail not in OK_PROCESSING_RESULTS:
         parsing_errors.append(
             ParsingError(
                 hla_code_or_group=hla_raw_code,
@@ -51,7 +49,7 @@ def parse_hla_raw_code_and_return_parsing_error_list(
                 message=parsing_result.result_detail.value,
             )
         )
-    return (parsing_errors, parsing_result.maybe_hla_code)
+    return parsing_errors, parsing_result.maybe_hla_code
 
 
 def parse_hla_antibodies_raw_and_return_parsing_error_list(
@@ -110,7 +108,7 @@ def parse_hla_antibodies_raw_and_return_parsing_error_list(
     if all_samples_are_positive_in_high_res(hla_antibodies_parsed):
         parsing_errors.append(
             ParsingError(
-                hla_code_or_group="Antibodies",
+                hla_code_or_group='Antibodies',
                 parsing_issue_detail=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES,
                 message=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES.value,
             )
@@ -118,7 +116,7 @@ def parse_hla_antibodies_raw_and_return_parsing_error_list(
     if number_of_antigens_is_insufficient_in_high_res(hla_antibodies_parsed):
         parsing_errors.append(
             ParsingError(
-                hla_code_or_group="Antibodies",
+                hla_code_or_group='Antibodies',
                 parsing_issue_detail=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
                 message=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES.value,
             )
@@ -171,7 +169,7 @@ def parse_hla_typing_raw_and_return_parsing_error_list(
     for group in hla_per_groups:
         if group.hla_group != HLAGroup.Other and group_exceedes_max_number_of_hla_types(group.hla_types):
             invalid_hla_groups.append(group.hla_group.name)
-            group_name = "Group " +  group.hla_group.name
+            group_name = 'Group ' + group.hla_group.name
             parsing_errors.append(
                 ParsingError(
                     hla_code_or_group=group_name,
@@ -185,7 +183,7 @@ def parse_hla_typing_raw_and_return_parsing_error_list(
             for hla_group in HLA_GROUPS_OTHER:
                 if group_exceedes_max_number_of_hla_types(hla_codes_per_group_other[hla_group]):
                     invalid_hla_groups.append(hla_group.name)
-                    group_name = "Group " +  hla_group.name
+                    group_name = 'Group ' + hla_group.name
                     parsing_errors.append(
                         ParsingError(
                             hla_code_or_group=group_name,
@@ -199,7 +197,7 @@ def parse_hla_typing_raw_and_return_parsing_error_list(
     for group in hla_per_groups:
         if group.hla_group != HLAGroup.Other and basic_group_is_empty(group.hla_types):
             invalid_hla_groups.append(group.hla_group.name)
-            group_name = "Group " +  group.hla_group.name
+            group_name = 'Group ' + group.hla_group.name
             parsing_errors.append(
                 ParsingError(
                     hla_code_or_group=group_name,
