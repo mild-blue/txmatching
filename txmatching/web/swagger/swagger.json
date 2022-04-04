@@ -3869,7 +3869,7 @@
             ],
             "type": "string"
         },
-        "TxmEventUpdate": {
+        "TxmEventUpdateIn": {
             "properties": {
                 "state": {
                     "$ref": "#/definitions/TxmEventState"
@@ -4122,8 +4122,7 @@
                     "enum": [
                         "PRODUCTION",
                         "STAGING",
-                        "DEVELOPMENT",
-                        "UNKNOWN"
+                        "DEVELOPMENT"
                     ]
                 }
             },

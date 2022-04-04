@@ -24,8 +24,7 @@ export interface VersionGenerated {
 export enum VersionGeneratedEnvironmentEnum {
     Production = 'PRODUCTION',
     Staging = 'STAGING',
-    Development = 'DEVELOPMENT',
-    Unknown = 'UNKNOWN'
+    Development = 'DEVELOPMENT'
 };
 
 

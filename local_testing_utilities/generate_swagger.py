@@ -33,6 +33,8 @@ class SwaggerGenApp:
         self.app.config['POSTGRES_URL'] = 'str'
         self.app.config['JWT_SECRET'] = 'str'
         self.app.config['JWT_EXPIRATION_DAYS'] = 10
+        self.app.config['ENVIRONMENT'] = 'PRODUCTION'
+        self.app.config['USE_2FA'] = 'FALSE'
         self.api.authorizations = AUTHORIZATIONS
         self.app.app_context().push()
         add_all_namespaces(self.api)
@@ -50,6 +52,8 @@ class PublicSwaggerGenApp:
         self.app.config['POSTGRES_URL'] = 'str'
         self.app.config['JWT_SECRET'] = 'str'
         self.app.config['JWT_EXPIRATION_DAYS'] = 10
+        self.app.config['ENVIRONMENT'] = 'PRODUCTION'
+        self.app.config['USE_2FA'] = 'FALSE'
         self.api.authorizations = AUTHORIZATIONS
         self.app.app_context().push()
         add_public_namespaces(self.api)

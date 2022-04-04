@@ -60,6 +60,12 @@ class DbTests(unittest.TestCase):
             os.remove(get_absolute_path(f'/tests/test_utilities/{self._database_name}'))
 
         self.app = Flask(__name__)
+        self.app.config['ENVIRONMENT'] = 'DEVELOPMENT'
+        self.app.config['USE_2FA'] = 'TRUE'
+        self.app.config['SMS_SERVICE_URL'] = 'url'
+        self.app.config['SMS_SERVICE_SENDER'] = 'sender'
+        self.app.config['SMS_SERVICE_LOGIN'] = 'login'
+        self.app.config['SMS_SERVICE_PASSWORD'] = 'pass'
         self.app.config['SERVER_NAME'] = 'test'
         self.app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self._database_name}'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

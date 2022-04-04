@@ -1393,8 +1393,7 @@
                     "enum": [
                         "PRODUCTION",
                         "STAGING",
-                        "DEVELOPMENT",
-                        "UNKNOWN"
+                        "DEVELOPMENT"
                     ]
                 }
             },

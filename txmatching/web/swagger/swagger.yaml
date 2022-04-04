@@ -1456,7 +1456,7 @@ definitions:
         - OPEN
         - CLOSED
         type: string
-    TxmEventUpdate:
+    TxmEventUpdateIn:
         properties:
             state:
                 $ref: '#/definitions/TxmEventState'
@@ -1640,7 +1640,6 @@ definitions:
                 - PRODUCTION
                 - STAGING
                 - DEVELOPMENT
-                - UNKNOWN
                 example: PRODUCTION
                 type: string
             version:

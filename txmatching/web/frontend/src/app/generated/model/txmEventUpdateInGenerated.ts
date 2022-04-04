@@ -12,7 +12,7 @@
 import { TxmEventStateGenerated } from './txmEventStateGenerated';
 
 
-export interface TxmEventUpdateGenerated { 
+export interface TxmEventUpdateInGenerated { 
     state?: TxmEventStateGenerated;
 }
 
