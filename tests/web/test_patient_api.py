@@ -193,7 +193,16 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
 
+            res_ = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/configs/default',
+                             headers=self.auth_headers)
+
         self.assertEqual(200, res.status_code)
+        self.assertEqual(200, res_.status_code)
+
+        self.assertEqual(3, len(res_.json['donors'][0]['all_messages']['warnings']))
+        self.assertEqual(5, len(res_.json['recipients'][0]['all_messages']['warnings']))
+        self.assertEqual(1, len(res_.json['recipients'][0]['all_messages']['errors']))
 
         errors = ParsingErrorModel.query.all()
         self.assertEqual(9, len(errors))
