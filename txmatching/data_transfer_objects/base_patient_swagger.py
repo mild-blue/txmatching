@@ -150,3 +150,9 @@ RecipientToUpdate = {**BaseRecipient, **{
                                             example={'require_better_match_in_compatibility_index': True}),
     'cutoff': fields.Integer(required=False)
 }}
+
+AllMessagesJson = patient_api.model('AllMessages', {
+    'infos': fields.List(required=False, cls_or_instance=fields.String),
+    'warnings': fields.List(required=False, cls_or_instance=fields.String),
+    'errors': fields.List(required=False, cls_or_instance=fields.String)
+})
