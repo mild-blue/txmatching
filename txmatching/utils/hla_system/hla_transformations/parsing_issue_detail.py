@@ -31,25 +31,25 @@ class ParsingIssueDetail(str, Enum):
 
 
 OK_PROCESSING_RESULTS = {
-    ParsingIssueDetail.SUCCESSFULLY_PARSED,
-    ParsingIssueDetail.HIGH_RES_WITHOUT_SPLIT,
-    ParsingIssueDetail.HIGH_RES_WITH_LETTER
+    ParsingIssueDetail.SUCCESSFULLY_PARSED.name,
+    ParsingIssueDetail.HIGH_RES_WITHOUT_SPLIT.name,
+    ParsingIssueDetail.HIGH_RES_WITH_LETTER.name
 }
 
 WARNING_PROCESSING_RESULTS = {
-    ParsingIssueDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND,
-    ParsingIssueDetail.IRRELEVANT_CODE,
-    ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE,
-    ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES,
-    ParsingIssueDetail.UNPARSABLE_HLA_CODE,
-    ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
-    ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
-    ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
-    ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
+    ParsingIssueDetail.MULTIPLE_SPLITS_OR_BROADS_FOUND.name,
+    ParsingIssueDetail.IRRELEVANT_CODE.name,
+    ParsingIssueDetail.UNEXPECTED_SPLIT_RES_CODE.name,
+    ParsingIssueDetail.UNKNOWN_TRANSFORMATION_FROM_HIGH_RES.name,
+    ParsingIssueDetail.UNPARSABLE_HLA_CODE.name,
+    ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.name,
+    ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.name,
+    ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES.name,
+    ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES.name
 }
 
 ERROR_PROCESSING_RESULTS = {
-    ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
-    ParsingIssueDetail.MFI_PROBLEM,
-    ParsingIssueDetail.OTHER_PROBLEM,
+    ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.name,
+    ParsingIssueDetail.MFI_PROBLEM.name,
+    ParsingIssueDetail.OTHER_PROBLEM.name,
 }

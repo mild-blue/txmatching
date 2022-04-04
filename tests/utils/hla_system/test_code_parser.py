@@ -241,25 +241,25 @@ class TestCodeParser(DbTests):
 
         for processing_result in ParsingIssueDetail:
             self.assertTrue(
-            (processing_result in OK_PROCESSING_RESULTS or
-             processing_result in WARNING_PROCESSING_RESULTS or
-             processing_result in ERROR_PROCESSING_RESULTS)
+                (processing_result.name in OK_PROCESSING_RESULTS or
+                 processing_result.name in WARNING_PROCESSING_RESULTS or
+                 processing_result.name in ERROR_PROCESSING_RESULTS)
             )
 
         for processing_result in OK_PROCESSING_RESULTS:
             self.assertTrue(
-             (processing_result not in WARNING_PROCESSING_RESULTS and
-             processing_result not in ERROR_PROCESSING_RESULTS)
+                (processing_result not in WARNING_PROCESSING_RESULTS and
+                 processing_result not in ERROR_PROCESSING_RESULTS)
             )
 
         for processing_result in WARNING_PROCESSING_RESULTS:
             self.assertTrue(
-            (processing_result not in OK_PROCESSING_RESULTS and
-             processing_result not in ERROR_PROCESSING_RESULTS)
+                (processing_result not in OK_PROCESSING_RESULTS and
+                 processing_result not in ERROR_PROCESSING_RESULTS)
             )
 
         for processing_result in ERROR_PROCESSING_RESULTS:
             self.assertTrue(
-            (processing_result not in OK_PROCESSING_RESULTS and
-              processing_result not in WARNING_PROCESSING_RESULTS)
+                (processing_result not in OK_PROCESSING_RESULTS and
+                 processing_result not in WARNING_PROCESSING_RESULTS)
             )

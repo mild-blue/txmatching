@@ -43,7 +43,7 @@ def parse_hla_raw_code_and_return_parsing_error_list(
     """
     parsing_errors = []
     parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
-    if not parsing_result.maybe_hla_code or parsing_result.result_detail not in OK_PROCESSING_RESULTS:
+    if not parsing_result.maybe_hla_code or parsing_result.result_detail.name not in OK_PROCESSING_RESULTS:
         parsing_errors.append(
             ParsingError(
                 hla_code_or_group=hla_raw_code,
