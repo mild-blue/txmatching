@@ -2,6 +2,21 @@ basePath: /
 consumes:
 - application/json
 definitions:
+    AllMessages:
+        properties:
+            errors:
+                items:
+                    type: string
+                type: array
+            infos:
+                items:
+                    type: string
+                type: array
+            warnings:
+                items:
+                    type: string
+                type: array
+        type: object
     AntibodiesPerGroup:
         properties:
             hla_antibody_list:
@@ -491,6 +506,8 @@ definitions:
             active:
                 description: Whether the user shall be used in pairing calculation
                 type: boolean
+            all_messages:
+                $ref: '#/definitions/AllMessages'
             compatible_blood_with_related_recipient:
                 description: Indicator whether Donor and related recipients have compatible
                     blood groups
@@ -1167,6 +1184,8 @@ definitions:
                 items:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
+            all_messages:
+                $ref: '#/definitions/AllMessages'
             db_id: *id009
             hla_antibodies:
                 $ref: '#/definitions/HlaAntibodies'

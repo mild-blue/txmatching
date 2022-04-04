@@ -1,6 +1,7 @@
 from typing import Dict, List, Union
 
 from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
@@ -15,6 +16,8 @@ from txmatching.utils.hla_system.compatibility_index import (
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
+    ERROR_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS)
 
 
 def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters) \
@@ -26,7 +29,11 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
                 donor, txm_event.all_recipients, configuration_parameters, scorer
             ) for donor in txm_event.all_donors],
             key=_patient_order_for_fe),
-        'recipients': sorted(txm_event.all_recipients, key=_patient_order_for_fe)
+        'recipients': sorted([
+            recipient_to_recipient_dto_out(
+                recipient
+            ) for recipient in txm_event.all_recipients],
+            key=_patient_order_for_fe)
     }
 
 
@@ -35,7 +42,21 @@ def _patient_order_for_fe(patient: Union[DonorDTOOut, Recipient]) -> str:
 
 
 def recipient_to_recipient_dto_out(recipient: Recipient) -> RecipientDTOOut:
-    return recipient
+    return RecipientDTOOut(
+        db_id=recipient.db_id,
+        medical_id=recipient.medical_id,
+        parameters=recipient.parameters,
+        acceptable_blood_groups=recipient.acceptable_blood_groups,
+        hla_antibodies=recipient.hla_antibodies,
+        related_donor_db_id=recipient.related_donor_db_id,
+        parsing_errors=recipient.parsing_errors,
+        recipient_cutoff=recipient.recipient_cutoff,
+        recipient_requirements=recipient.recipient_requirements,
+        waiting_since=recipient.waiting_since,
+        previous_transplants=recipient.previous_transplants,
+        internal_medical_id=recipient.internal_medical_id,
+        all_messages=get_messages(recipient.parsing_errors)
+    )
 
 
 def donor_to_donor_dto_out(donor: Donor,
@@ -48,7 +69,9 @@ def donor_to_donor_dto_out(donor: Donor,
                             donor_type=donor.donor_type,
                             related_recipient_db_id=donor.related_recipient_db_id,
                             active=donor.active,
-                            internal_medical_id=donor.internal_medical_id
+                            internal_medical_id=donor.internal_medical_id,
+                            parsing_errors=donor.parsing_errors,
+                            all_messages=get_messages(donor.parsing_errors)
                             )
     if donor.related_recipient_db_id:
         related_recipient = next(recipient for recipient in all_recipients if
@@ -107,3 +130,16 @@ def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityI
             )
         )
     return detailed_scores
+
+
+def get_messages(parsing_errors: List[ParsingError]) -> Dict[str, List[str]]:
+    return {
+        'infos': [],
+        'warnings': [
+            warning.hla_code_or_group + ': ' + warning.message for warning in parsing_errors
+            if warning.parsing_issue_detail in WARNING_PROCESSING_RESULTS
+        ],
+        'errors': [
+            error.hla_code_or_group + ': ' + error.message for error in parsing_errors
+            if error.parsing_issue_detail in ERROR_PROCESSING_RESULTS]
+    }

@@ -32,7 +32,7 @@ def parsing_errors_to_models(
 def convert_parsing_error_models_to_dataclasses(parsing_error_models: List[ParsingErrorModel]) -> List[ParsingError]:
     return [ParsingError(
         hla_code_or_group=parsing_error_model.hla_code_or_group,
-        parsing_issue_detail=parsing_error_model.parsing_issue_detail.name,
+        parsing_issue_detail=parsing_error_model.parsing_issue_detail,
         message=parsing_error_model.message,
         donor_id=parsing_error_model.donor_id,
         recipient_id=parsing_error_model.recipient_id,

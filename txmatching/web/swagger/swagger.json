@@ -1680,6 +1680,29 @@
         }
     ],
     "definitions": {
+        "AllMessages": {
+            "properties": {
+                "infos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "warnings": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "type": "object"
+        },
         "AntibodiesPerGroup": {
             "required": [
                 "hla_antibody_list",
@@ -2415,6 +2438,9 @@
                     "items": {
                         "$ref": "#/definitions/ParsingError"
                     }
+                },
+                "all_messages": {
+                    "$ref": "#/definitions/AllMessages"
                 }
             },
             "type": "object"
@@ -3325,6 +3351,9 @@
                     "items": {
                         "$ref": "#/definitions/ParsingError"
                     }
+                },
+                "all_messages": {
+                    "$ref": "#/definitions/AllMessages"
                 }
             },
             "type": "object"

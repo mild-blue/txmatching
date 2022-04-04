@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional, Dict
 
 from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.patients.patient import Recipient
@@ -7,7 +7,7 @@ from txmatching.patients.patient import Recipient
 
 @dataclass
 class RecipientDTOOut(Recipient):
-    pass
+    all_messages: Optional[Dict[str, List[str]]] = None
 
 
 @dataclass
