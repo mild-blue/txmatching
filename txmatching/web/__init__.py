@@ -52,6 +52,13 @@ SWAGGER_PUBLIC = 'swagger_public.json'
 PATH_TO_SWAGGER_JSON = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER}')
 PATH_TO_SWAGGER_YAML = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER_YAML}')
 PATH_TO_PUBLIC_SWAGGER_JSON = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER_PUBLIC}')
+AUTHORIZATIONS = {
+    'bearer': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization'
+    }
+}
 
 
 class ApiWithProvidedSpecsUrl(Api):
@@ -173,24 +180,19 @@ def create_app() -> Flask:
         app.config['ERROR_INCLUDE_MESSAGE'] = False
 
         # Set up Swagger and API
-        authorizations = {
-            'bearer': {
-                'type': 'apiKey',
-                'in': 'header',
-                'name': 'Authorization'
-            }
-        }
 
         full_swagger = application_configuration.environment != ApplicationEnvironment.PRODUCTION
         if full_swagger:
             specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER}'
         else:
-            specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER_PUBLIC}'
+            # only limited swagger when we're running in the production
+            # specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER_PUBLIC}'
+            # for the moment we show the full swagger always as not everything is possible to do via FE.
 
-        # only limited swagger when we're running in the production
+            specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER}'
 
         api = ApiWithProvidedSpecsUrl(
-            authorizations=authorizations,
+            authorizations=AUTHORIZATIONS,
             version=VERSION,
             title=SWAGGER_TITLE,
             specs_url=specs_url

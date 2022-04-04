@@ -68,4 +68,5 @@ export * from './updatedRecipientGenerated';
 export * from './uploadPatientsGenerated';
 export * from './userLoginGenerated';
 export * from './userRegistrationGenerated';
+export * from './userRegistrationOutGenerated';
 export * from './versionGenerated';
