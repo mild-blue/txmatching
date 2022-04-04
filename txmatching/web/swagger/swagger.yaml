@@ -577,6 +577,10 @@ definitions:
                 type: string
             parameters:
                 $ref: '#/definitions/PatientParameters'
+            parsing_errors:
+                items:
+                    $ref: '#/definitions/ParsingError'
+                type: array
             related_recipient_db_id:
                 description: Database id of the related recipient
                 type: integer
@@ -1010,6 +1014,24 @@ definitions:
         type: object
     ParsingError:
         properties:
+            donor_id:
+                type: integer
+            hla_code_or_group:
+                type: string
+            message:
+                type: string
+            parsing_issue_detail:
+                type: string
+            recipient_id:
+                type: integer
+            txm_event_id:
+                type: integer
+        required:
+        - message
+        - parsing_issue_detail
+        type: object
+    ParsingErrorPublic:
+        properties:
             hla_code_or_group:
                 type: string
             medical_id:
@@ -1018,8 +1040,8 @@ definitions:
                 type: string
             parsing_issue_detail:
                 type: string
-            txm_event_id:
-                type: integer
+            txm_event_name:
+                type: string
         required:
         - message
         - parsing_issue_detail
@@ -1094,7 +1116,7 @@ definitions:
             parsing_errors:
                 description: Errors and warnings that occurred in HLA codes parsing
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingErrorPublic'
                 type: array
             recipients_uploaded:
                 description: Number of recipients successfully loaded into the application.
@@ -1154,6 +1176,10 @@ definitions:
             medical_id: *id010
             parameters:
                 $ref: '#/definitions/PatientParameters'
+            parsing_errors:
+                items:
+                    $ref: '#/definitions/ParsingError'
+                type: array
             previous_transplants:
                 type: integer
             recipient_cutoff:

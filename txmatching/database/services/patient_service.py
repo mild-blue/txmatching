@@ -1,11 +1,12 @@
 import dataclasses
 import logging
 from enum import Enum
-from typing import Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
@@ -29,12 +30,12 @@ from txmatching.patients.patient import (Donor, Patient, Recipient,
                                          RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
-    parse_hla_antibodies_raw_and_add_parsing_error_to_db_session,
-    parse_hla_typing_raw_and_add_parsing_error_to_db_session)
+    parse_hla_antibodies_raw_and_return_parsing_error_list,
+    parse_hla_typing_raw_and_return_parsing_error_list)
 from txmatching.utils.hla_system.hla_transformations.parsing_error import (
-    ParsingInfo, delete_parsing_errors_for_patient,
-    delete_parsing_errors_for_txm_event_id,
-    get_parsing_errors_for_txm_event_id)
+    convert_parsing_error_models_to_dataclasses,
+    delete_parsing_errors_for_patient, delete_parsing_errors_for_txm_event_id,
+    get_parsing_errors_for_txm_event_id, parsing_errors_to_models)
 from txmatching.utils.persistent_hash import (get_hash_digest,
                                               initialize_persistent_hash,
                                               update_persistent_hash)
@@ -51,7 +52,8 @@ def get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
                  donor_type=donor_model.donor_type,
                  related_recipient_db_id=donor_model.recipient_id,
                  active=donor_model.active,
-                 internal_medical_id=donor_model.internal_medical_id
+                 internal_medical_id=donor_model.internal_medical_id,
+                 parsing_errors=convert_parsing_error_models_to_dataclasses(donor_model.parsing_errors)
                  )
 
 
@@ -74,7 +76,8 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
                           recipient_requirements=RecipientRequirements(**recipient_model.recipient_requirements),
                           waiting_since=recipient_model.waiting_since,
                           previous_transplants=recipient_model.previous_transplants,
-                          internal_medical_id=recipient_model.internal_medical_id
+                          internal_medical_id=recipient_model.internal_medical_id,
+                          parsing_errors=convert_parsing_error_models_to_dataclasses(recipient_model.parsing_errors)
                           )
     return recipient
 
@@ -131,9 +134,9 @@ def _get_hla_typing_from_patient_model(
     )
 
 
-def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO, parsing_info: ParsingInfo) -> dict:
+def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> (List[ParsingError], dict):
     patient_update_dict = {}
-
+    parsing_errors = []
     if patient_update_dto.blood_group is not None:
         patient_update_dict['blood'] = patient_update_dto.blood_group
     if patient_update_dto.hla_typing is not None:
@@ -141,12 +144,10 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO, parsi
             hla_types_list=[HLATypeRaw(hla_type.raw_code) for hla_type in patient_update_dto.hla_typing.hla_types_list]
         )
         patient_update_dict['hla_typing_raw'] = dataclasses.asdict(hla_typing_raw)
-        patient_update_dict['hla_typing'] = dataclasses.asdict(
-            parse_hla_typing_raw_and_add_parsing_error_to_db_session(
-                hla_typing_raw,
-                parsing_info
-            )
+        parsing_errors, hla_typing_dict = parse_hla_typing_raw_and_return_parsing_error_list(
+            hla_typing_raw
         )
+        patient_update_dict['hla_typing'] = dataclasses.asdict(hla_typing_dict)
 
     # For the following parameters we support setting null value
     patient_update_dict['sex'] = patient_update_dto.sex
@@ -157,18 +158,22 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO, parsi
     if patient_update_dto.note is not None:
         patient_update_dict['note'] = patient_update_dto.note
 
-    return patient_update_dict
+    return parsing_errors, patient_update_dict
 
 
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
+    parsing_errors = []
     if txm_event_db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to.')
 
-    delete_parsing_errors_for_patient(old_recipient_model.medical_id,
+    delete_parsing_errors_for_patient(recipient_id=old_recipient_model.id,
                                       txm_event_id=old_recipient_model.txm_event_id)
-    parsing_info = ParsingInfo(medical_id=old_recipient_model.medical_id, txm_event_id=old_recipient_model.txm_event_id)
-    recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto, parsing_info)
+    updated_parsing_errors, recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto)
+    updated_parsing_errors = parsing_errors_to_models(parsing_errors=updated_parsing_errors,
+                                                      recipient_id=old_recipient_model.id,
+                                                      txm_event_id=old_recipient_model.txm_event_id)
+    parsing_errors = parsing_errors + updated_parsing_errors
     if recipient_update_dto.acceptable_blood_groups:
         acceptable_blood_models = [
             RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient_update_dto.db_id) for blood
@@ -177,6 +182,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         RecipientAcceptableBloodModel.query.filter(
             RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
         db.session.add_all(acceptable_blood_models)
+
     if recipient_update_dto.hla_antibodies or recipient_update_dto.cutoff:
         # not the best approach: in case cutoff was different per antibody before it will be unified now, but
         # but good for the moment
@@ -208,14 +214,16 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         db.session.add_all(new_hla_antibody_raw_models)
 
         # Change parsed hla_antibodies for a given patient in db
-        parsing_info = ParsingInfo(medical_id=old_recipient_model.medical_id,
-                                   txm_event_id=old_recipient_model.txm_event_id)
-        hla_antibodies = parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(
+        antibody_parsing_errors, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_error_list(
             new_hla_antibody_raw_models,
-            parsing_info
         )
+        updated_parsing_errors = parsing_errors_to_models(parsing_errors=antibody_parsing_errors,
+                                                          recipient_id=old_recipient_model.id,
+                                                          txm_event_id=old_recipient_model.txm_event_id)
+        parsing_errors = parsing_errors + updated_parsing_errors
         recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
 
+    db.session.add_all(parsing_errors)
     if recipient_update_dto.recipient_requirements:
         recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
             recipient_update_dto.recipient_requirements)
@@ -232,9 +240,14 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     if txm_event_db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to')
 
-    delete_parsing_errors_for_patient(old_donor_model.medical_id, txm_event_id=old_donor_model.txm_event_id)
-    parsing_info = ParsingInfo(medical_id=old_donor_model.medical_id, txm_event_id=old_donor_model.txm_event_id)
-    donor_update_dict = _create_patient_update_dict_base(donor_update_dto, parsing_info)
+    delete_parsing_errors_for_patient(donor_id=old_donor_model.id,
+                                      txm_event_id=old_donor_model.txm_event_id)
+    parsing_errors, donor_update_dict = _create_patient_update_dict_base(donor_update_dto)
+    parsing_errors = parsing_errors_to_models(parsing_errors=parsing_errors,
+                                              donor_id=old_donor_model.id,
+                                              txm_event_id=old_donor_model.txm_event_id)
+
+    db.session.add_all(parsing_errors)
     if donor_update_dto.active is not None:
         donor_update_dict['active'] = donor_update_dto.active
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
@@ -252,7 +265,7 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         patients_changed_antibodies=0,
         parsing_errors=[],
     )
-
+    new_parsing_errors = []
     # Clear parsing errors table
     delete_parsing_errors_for_txm_event_id(txm_event_id)
 
@@ -263,13 +276,18 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     # Update hla_typing for donors and recipients
     for patient_model in donor_models + recipient_models:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
-        parsing_info = ParsingInfo(medical_id=patient_model.medical_id, txm_event_id=patient_model.txm_event_id)
-        new_hla_typing = dataclasses.asdict(
-            parse_hla_typing_raw_and_add_parsing_error_to_db_session(
-                hla_typing_raw,
-                parsing_info
-            )
-        )
+        patient_parsing_errors, hla_typing = parse_hla_typing_raw_and_return_parsing_error_list(hla_typing_raw)
+        if patient_model in donor_models:
+            new_parsing_errors = parsing_errors_to_models(parsing_errors=patient_parsing_errors,
+                                                          donor_id=patient_model.id,
+                                                          txm_event_id=patient_model.txm_event_id)
+        else:
+            new_parsing_errors = parsing_errors_to_models(parsing_errors=patient_parsing_errors,
+                                                          recipient_id=patient_model.id,
+                                                          txm_event_id=patient_model.txm_event_id)
+        db.session.add_all(new_parsing_errors)
+        patient_model.parsing_errors = new_parsing_errors
+        new_hla_typing = dataclasses.asdict(hla_typing)
 
         if new_hla_typing != patient_model.hla_typing:
             logger.debug(f'Updating hla_typing of {patient_model}:')
@@ -281,11 +299,14 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
     # Update hla_antibodies for recipients
     for recipient_model in recipient_models:
         hla_antibodies_raw = recipient_model.hla_antibodies_raw
-        parsing_info = ParsingInfo(medical_id=recipient_model.medical_id, txm_event_id=recipient_model.txm_event_id)
-        new_hla_antibodies = dataclasses.asdict(
-            parse_hla_antibodies_raw_and_add_parsing_error_to_db_session(hla_antibodies_raw, parsing_info)
-        )
-
+        patient_parsing_errors, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_error_list(
+            hla_antibodies_raw)
+        new_parsing_errors = parsing_errors_to_models(parsing_errors=patient_parsing_errors,
+                                                      recipient_id=recipient_model.id,
+                                                      txm_event_id=recipient_model.txm_event_id)
+        new_hla_antibodies = dataclasses.asdict(hla_antibodies)
+        db.session.add_all(new_parsing_errors)
+        recipient_model.parsing_errors = recipient_model.parsing_errors + new_parsing_errors
         if new_hla_antibodies != recipient_model.hla_antibodies:
             logger.debug(f'Updating hla_antibodies of {recipient_model}:')
             recipient_model.hla_antibodies = new_hla_antibodies
@@ -350,10 +371,10 @@ def get_donor_recipient_pair(donor_id: int, txm_event_id: int) -> Tuple[Donor, O
 def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
     donor, maybe_recipient = get_donor_recipient_pair(donor_id, txm_event_id)
 
-    delete_parsing_errors_for_patient(donor.medical_id, txm_event_id)
+    delete_parsing_errors_for_patient(donor_id=donor_id, txm_event_id=txm_event_id)
     DonorModel.query.filter(DonorModel.id == donor.db_id).delete()
     if maybe_recipient is not None:
-        delete_parsing_errors_for_patient(maybe_recipient.medical_id, txm_event_id)
+        delete_parsing_errors_for_patient(recipient_id=maybe_recipient.db_id, txm_event_id=txm_event_id)
         RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
 
     db.session.commit()

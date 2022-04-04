@@ -45,7 +45,8 @@ def get_test_donors():
                 note='donor note 1'
             ),
             related_recipient_db_id=None,
-            donor_type=DonorType.DONOR
+            donor_type=DonorType.DONOR,
+            parsing_errors=[]
         ),
         Donor(
             db_id=2,
@@ -67,7 +68,8 @@ def get_test_donors():
                 note='donor note 2'
             ),
             related_recipient_db_id=None,
-            donor_type=DonorType.DONOR
+            donor_type=DonorType.DONOR,
+            parsing_errors=[]
         )
     ]
 
@@ -99,7 +101,8 @@ def get_test_recipients():
             hla_antibodies=create_antibodies([]),
             recipient_requirements=RecipientRequirements(),
             waiting_since=None,
-            previous_transplants=None
+            previous_transplants=None,
+            parsing_errors=[]
         ),
         Recipient(
             db_id=4,
@@ -127,7 +130,8 @@ def get_test_recipients():
             hla_antibodies=create_antibodies([]),
             recipient_requirements=RecipientRequirements(),
             waiting_since=None,
-            previous_transplants=None
+            previous_transplants=None,
+            parsing_errors=[]
         ),
     ]
 

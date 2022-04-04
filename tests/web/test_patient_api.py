@@ -259,13 +259,15 @@ class TestPatientService(DbTests):
                 'db_id': donor_db_id,
                 'blood_group': 'A',
                 'hla_typing': {
-                    'hla_types_list': []
+                    'hla_types_list': [{'raw_code': 'A*01:02'},
+                                         {'raw_code': 'B7'},
+                                         {'raw_code': 'DR11'}]
                 },
                 'sex': 'M',
                 'height': 200,
                 'weight': 100,
                 'year_of_birth': 1990,
-                'active': True
+                'active': True,
             }
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/configs/default/donor',
@@ -277,7 +279,7 @@ class TestPatientService(DbTests):
         txm_event = get_txm_event_complete(txm_event_db_id)
         donor = txm_event.active_donors_dict[donor_db_id]
         self.assertEqual(donor.parameters.blood_group, BloodGroup.A)
-        self.assertEqual(donor.parameters.hla_typing, create_hla_typing([]))
+        self.assertEqual(donor.parameters.hla_typing, create_hla_typing(['A*01:02', 'B7', 'DR11']))
         self.assertEqual(donor.parameters.sex, Sex.M)
         self.assertEqual(donor.parameters.height, 200)
         self.assertEqual(donor.parameters.weight, 100)
@@ -338,7 +340,8 @@ class TestPatientService(DbTests):
                     'require_better_match_in_compatibility_index_or_blood_group': True,
                     'require_compatible_blood_group': True
                 },
-                'cutoff': 42
+                'cutoff': 42,
+                'parsing_errors': []
             }
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/recipient',

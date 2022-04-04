@@ -960,7 +960,7 @@
             },
             "type": "object"
         },
-        "ParsingError": {
+        "ParsingErrorPublic": {
             "required": [
                 "message",
                 "parsing_issue_detail"
@@ -978,8 +978,8 @@
                 "medical_id": {
                     "type": "string"
                 },
-                "txm_event_id": {
-                    "type": "integer"
+                "txm_event_name": {
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -1020,7 +1020,7 @@
                     "type": "array",
                     "description": "Errors and warnings that occurred in HLA codes parsing",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingErrorPublic"
                     }
                 }
             },

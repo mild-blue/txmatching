@@ -2402,6 +2402,12 @@
                     "items": {
                         "$ref": "#/definitions/DetailedScoreForGroup"
                     }
+                },
+                "parsing_errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ParsingError"
+                    }
                 }
             },
             "type": "object"
@@ -3030,11 +3036,38 @@
                 "message": {
                     "type": "string"
                 },
-                "medical_id": {
-                    "type": "string"
+                "donor_id": {
+                    "type": "integer"
+                },
+                "recipient_id": {
+                    "type": "integer"
                 },
                 "txm_event_id": {
                     "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "ParsingErrorPublic": {
+            "required": [
+                "message",
+                "parsing_issue_detail"
+            ],
+            "properties": {
+                "hla_code_or_group": {
+                    "type": "string"
+                },
+                "parsing_issue_detail": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "medical_id": {
+                    "type": "string"
+                },
+                "txm_event_name": {
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -3171,7 +3204,7 @@
                     "type": "array",
                     "description": "Errors and warnings that occurred in HLA codes parsing",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingErrorPublic"
                     }
                 }
             },
@@ -3279,6 +3312,12 @@
                 },
                 "recipient_cutoff": {
                     "type": "integer"
+                },
+                "parsing_errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ParsingError"
+                    }
                 }
             },
             "type": "object"
