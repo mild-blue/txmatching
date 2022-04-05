@@ -334,6 +334,18 @@ def get_patients_persistent_hash(txm_event: TxmEvent) -> int:
     return hash_digest
 
 
+def get_all_patients_persistent_hash(txm_event: TxmEvent) -> int:
+    donors = tuple(txm_event.all_donors)
+    recipients = tuple(txm_event.all_recipients)
+
+    hash_ = initialize_persistent_hash()
+    update_persistent_hash(hash_, donors)
+    update_persistent_hash(hash_, recipients)
+    hash_digest = get_hash_digest(hash_)
+
+    return hash_digest
+
+
 def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, RecipientModel]) -> Patient:
     return Patient(
         db_id=patient_model.id,

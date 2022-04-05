@@ -16,7 +16,7 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import (
-    delete_donor_recipient_pair, get_patients_persistent_hash,
+    delete_donor_recipient_pair, get_all_patients_persistent_hash, get_patients_persistent_hash,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event)
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
@@ -162,7 +162,7 @@ class TestPatientService(DbTests):
         txm_event = create_or_overwrite_txm_event(name=TXM_EVENT_NAME)
 
         # Insert config and validates that it is stored into DB
-        original_patients_hash = get_patients_persistent_hash(txm_event)
+        original_patients_hash = get_all_patients_persistent_hash(txm_event)
         user_id = get_current_user_id()
         config = ConfigModel(
             txm_event_id=txm_event.db_id,
@@ -184,7 +184,7 @@ class TestPatientService(DbTests):
 
         # Validate that patients hash has changed
         txm_event_new = get_txm_event_complete(txm_event.db_id)
-        self.assertNotEqual(original_patients_hash, get_patients_persistent_hash(txm_event_new))
+        self.assertNotEqual(original_patients_hash, get_all_patients_persistent_hash(txm_event_new)) # here todo
 
     def test_get_patients_hash(self):
         txm_event_1 = TxmEvent(
