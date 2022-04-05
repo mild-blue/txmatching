@@ -201,11 +201,11 @@ class TestPatientService(DbTests):
 
         self.assertEqual(0, len(res_.json['donors'][0]['all_messages']['warnings']))
         self.assertEqual(3, len(res_.json['donors'][0]['all_messages']['errors']))
-        self.assertEqual(1, len(res_.json['recipients'][0]['all_messages']['warnings']))
-        self.assertEqual(5, len(res_.json['recipients'][0]['all_messages']['errors']))
+        self.assertEqual(0, len(res_.json['recipients'][0]['all_messages']['warnings']))
+        self.assertEqual(4, len(res_.json['recipients'][0]['all_messages']['errors']))
 
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(9, len(errors))
+        self.assertEqual(7, len(errors))
         self.assertEqual('TEST', errors[3].hla_code_or_group)
         self.assertEqual(
             ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
