@@ -149,6 +149,9 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> (List[ParsingEr
 
 
 def all_samples_are_positive_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bool:
+    if len(recipient_antibodies) == 0:
+        return False
+
     for antibody in recipient_antibodies:
         if antibody.code.high_res is None:
             return False
@@ -158,6 +161,9 @@ def all_samples_are_positive_in_high_res(recipient_antibodies: List[HLAAntibody]
 
 
 def number_of_antigens_is_insufficient_in_high_res(recipient_antibodies: List[HLAAntibody]) -> bool:
+    if len(recipient_antibodies) == 0:
+        return False
+
     for antibody in recipient_antibodies:
         if antibody.code.high_res is None:
             return False
