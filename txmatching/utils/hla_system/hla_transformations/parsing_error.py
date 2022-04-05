@@ -4,8 +4,6 @@ from sqlalchemy import and_
 
 from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.database.sql_alchemy_schema import ParsingErrorModel
-from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
-    ParsingIssueDetail
 
 
 def parsing_errors_to_models(
@@ -37,9 +35,7 @@ def convert_parsing_error_models_to_dataclasses(parsing_error_models: List[Parsi
         donor_id=parsing_error_model.donor_id,
         recipient_id=parsing_error_model.recipient_id,
         txm_event_id=parsing_error_model.txm_event_id
-    ) for parsing_error_model in parsing_error_models
-        # TODO: https://github.com/mild-blue/txmatching/issues/629
-        if parsing_error_model.parsing_issue_detail != ParsingIssueDetail.MFI_PROBLEM]
+    ) for parsing_error_model in parsing_error_models]
 
 
 def get_parsing_errors_for_txm_event_id(txm_event_id: int) -> List[ParsingError]:
