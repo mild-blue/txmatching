@@ -1,3 +1,4 @@
+export * from './allMessagesGenerated';
 export * from './antibodiesPerGroupGenerated';
 export * from './antibodyMatchGenerated';
 export * from './antigenMatchGenerated';

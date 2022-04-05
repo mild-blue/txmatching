@@ -12,12 +12,14 @@
 import { RecipientRequirementsGenerated } from './recipientRequirementsGenerated';
 import { PatientParametersGenerated } from './patientParametersGenerated';
 import { ParsingErrorGenerated } from './parsingErrorGenerated';
+import { AllMessagesGenerated } from './allMessagesGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 import { HlaAntibodiesGenerated } from './hlaAntibodiesGenerated';
 
 
 export interface RecipientGenerated { 
     acceptable_blood_groups?: Array<BloodGroupEnumGenerated>;
+    all_messages?: AllMessagesGenerated;
     /**
      * Database id of the patient
      */

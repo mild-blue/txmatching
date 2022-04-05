@@ -13,6 +13,7 @@ import { PatientParametersGenerated } from './patientParametersGenerated';
 import { ParsingErrorGenerated } from './parsingErrorGenerated';
 import { DonorTypeGenerated } from './donorTypeGenerated';
 import { DetailedScoreForGroupGenerated } from './detailedScoreForGroupGenerated';
+import { AllMessagesGenerated } from './allMessagesGenerated';
 
 
 export interface DonorGenerated { 
@@ -20,6 +21,7 @@ export interface DonorGenerated {
      * Whether the user shall be used in pairing calculation
      */
     active: boolean;
+    all_messages?: AllMessagesGenerated;
     /**
      * Indicator whether Donor and related recipients have compatible blood groups
      */

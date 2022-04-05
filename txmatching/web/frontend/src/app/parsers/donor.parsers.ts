@@ -1,6 +1,6 @@
 import { DonorGenerated, DonorTypeGenerated, UpdatedDonorGenerated } from '../generated';
 import { Donor, DonorType, UpdatedDonor } from '../model';
-import { parsePatient } from './patient.parsers';
+import { parsePatient, parseAllMessages } from './patient.parsers';
 import { parseDetailedScorePerGroup } from './hla.parsers';
 import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
@@ -23,7 +23,8 @@ export const parseDonor = (data: DonorGenerated): Donor => {
     relatedRecipientDbId: data.related_recipient_db_id,
     scoreWithRelatedRecipient: data.score_with_related_recipient,
     maxScoreWithRelatedRecipient: data.max_score_with_related_recipient,
-    detailedScoreWithRelatedRecipient: data.detailed_score_with_related_recipient?.map(parseDetailedScorePerGroup) ?? []
+    detailedScoreWithRelatedRecipient: data.detailed_score_with_related_recipient?.map(parseDetailedScorePerGroup) ?? [],
+    all_messages: parseAllMessages(data.all_messages)
   };
 };
 

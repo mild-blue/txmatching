@@ -20,3 +20,9 @@ export interface PatientParameters {
   yearOfBirth?: number;
   note: string;
 }
+
+export interface AllMessages {
+  errors: string[];
+  warnings: string[];
+  infos: string[];
+}

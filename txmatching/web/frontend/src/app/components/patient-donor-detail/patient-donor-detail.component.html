@@ -1,4 +1,7 @@
 <div *ngIf="item" class="detail-donor">
+  <ng-container *ngIf="item.all_messages">
+    <app-warning *ngFor="let data of item.all_messages | keyvalue" [data]="data.value" [warningType]="data.key"></app-warning>
+  </ng-container>
 
   <div class="detail__header">
     <patient [patient]="item"></patient>
