@@ -23,7 +23,8 @@ export const parseDonor = (data: DonorGenerated): Donor => {
     relatedRecipientDbId: data.related_recipient_db_id,
     scoreWithRelatedRecipient: data.score_with_related_recipient,
     maxScoreWithRelatedRecipient: data.max_score_with_related_recipient,
-    detailedScoreWithRelatedRecipient: data.detailed_score_with_related_recipient?.map(parseDetailedScorePerGroup) ?? []
+    detailedScoreWithRelatedRecipient: data.detailed_score_with_related_recipient?.map(parseDetailedScorePerGroup) ?? [],
+    all_messages: data.all_messages
   };
 };
 

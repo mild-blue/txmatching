@@ -1,0 +1,48 @@
+@import "../../../../styles/variables";
+
+.warning-pill {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
+
+  font-size: 1.2rem;
+  border-radius: 3rem;
+  padding: 0.5rem 1rem;
+  filter: drop-shadow(0 3.2px 7.2px rgba(0, 0, 0, .1));
+  font-weight: 600;
+  min-height: 2.688rem;
+
+  p {
+    margin: 0;
+  }
+}
+
+
+.errors {
+  background-color: $error-bg;
+  color: $error-text;
+
+  mat-icon {
+    color: $error-icon;
+  }
+}
+
+.warnings {
+  background-color: $warning-bg;
+  color: $warning-text;
+
+  mat-icon {
+    color: $warning-icon;
+  }
+}
+
+.infos {
+  background-color: $info-bg;
+  color: $info-text;
+
+  mat-icon {
+    color: $info-icon;
+  }
+}
