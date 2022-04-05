@@ -16,7 +16,6 @@ from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatch
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
@@ -200,12 +199,13 @@ class TestPatientService(DbTests):
         self.assertEqual(200, res.status_code)
         self.assertEqual(200, res_.status_code)
 
-        self.assertEqual(3, len(res_.json['donors'][0]['all_messages']['warnings']))
-        self.assertEqual(5, len(res_.json['recipients'][0]['all_messages']['warnings']))
-        self.assertEqual(1, len(res_.json['recipients'][0]['all_messages']['errors']))
+        self.assertEqual(0, len(res_.json['donors'][0]['all_messages']['warnings']))
+        self.assertEqual(3, len(res_.json['donors'][0]['all_messages']['errors']))
+        self.assertEqual(0, len(res_.json['recipients'][0]['all_messages']['warnings']))
+        self.assertEqual(4, len(res_.json['recipients'][0]['all_messages']['errors']))
 
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(9, len(errors))
+        self.assertEqual(7, len(errors))
         self.assertEqual('TEST', errors[3].hla_code_or_group)
         self.assertEqual(
             ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,

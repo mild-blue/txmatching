@@ -49,8 +49,7 @@ class TestMatchingApi(DbTests):
                 'B*01:01N', 'BW4',
                 'Group A', 'Group A',
                 'Group B', 'Group B', 'Group B', 'Group B', 'Group B', 'Group B', 'Group B',
-                'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1',
-                'Antibodies', 'Antibodies'
+                'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1'
             ],
             [error['hla_code_or_group'] for error in res.json['parsing_errors']]
         )
