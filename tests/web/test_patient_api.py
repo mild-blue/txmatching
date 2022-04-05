@@ -286,7 +286,7 @@ class TestPatientService(DbTests):
 
         # Check that update was working
         txm_event = get_txm_event_complete(txm_event_db_id)
-        donor = txm_event.active_donors_dict[donor_db_id]
+        donor = txm_event.active_and_valid_donors_dict[donor_db_id]
         self.assertEqual(donor.parameters.blood_group, BloodGroup.A)
         self.assertEqual(donor.parameters.hla_typing, create_hla_typing(['A*01:02', 'B7', 'DR11']))
         self.assertEqual(donor.parameters.sex, Sex.M)
@@ -334,7 +334,7 @@ class TestPatientService(DbTests):
                 'db_id': recipient_db_id,
                 'blood_group': 'A',
                 'hla_typing': {
-                    'hla_types_list': []
+                    'hla_types_list': ['A1', 'B7', 'DR11']
                 },
                 'sex': 'M',
                 'height': 200,
@@ -360,7 +360,7 @@ class TestPatientService(DbTests):
 
         # Check that update was working
         txm_event = get_txm_event_complete(txm_event_db_id)
-        recipient = txm_event.active_recipients_dict[recipient_db_id]
+        recipient = txm_event.active_and_valid_recipients_dict[recipient_db_id]
         self.assertEqual(recipient.parameters.blood_group, BloodGroup.A)
         self.assertEqual(recipient.parameters.hla_typing, create_hla_typing([]))
         self.assertEqual(recipient.parameters.sex, Sex.M)

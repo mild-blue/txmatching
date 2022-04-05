@@ -67,7 +67,7 @@ class TestUpdateDonorRecipient(DbTests):
              for hla_code in hla_group.hla_types],
             recipient.acceptable_blood_groups
         )
-            for recipient in txm_event.active_recipients_dict.values()]
+            for recipient in txm_event.active_and_valid_recipients_dict.values()]
 
         donors_tuples = [(
             donor.medical_id,
@@ -75,10 +75,10 @@ class TestUpdateDonorRecipient(DbTests):
             donor.parameters.blood_group,
             [hla_code.code.display_code for hla_group in donor.parameters.hla_typing.hla_per_groups
              for hla_code in hla_group.hla_types],
-            txm_event.active_recipients_dict[
+            txm_event.active_and_valid_recipients_dict[
                 donor.related_recipient_db_id].medical_id if donor.related_recipient_db_id else ''
         )
-            for donor in txm_event.active_donors_dict.values()]
+            for donor in txm_event.active_and_valid_donors_dict.values()]
 
         self.assertEqual(1, len(configs))
         self.assertEqual(34, len(recipients))
@@ -106,7 +106,7 @@ class TestUpdateDonorRecipient(DbTests):
         self.maxDiff = None
 
         scorer = SplitScorer()
-        calculated_scores = scorer.get_score_matrix(txm_event.active_recipients_dict, txm_event.active_donors_dict)
+        calculated_scores = scorer.get_score_matrix(txm_event.active_and_valid_recipients_dict, txm_event.active_and_valid_donors_dict)
 
         # This commented out code serves the purpose to re-create the files in case something in the data changes
         # with open(get_absolute_path('tests/resources/recipients_tuples.json'), 'w') as f:
@@ -139,9 +139,9 @@ class TestUpdateDonorRecipient(DbTests):
 
         for i, donor in enumerate(donors_tuples):
             self.assertTrue(donor in expected_donors_tuples, f'Error in round {i}: {donor} not found')
-        for donor, expected_score_row, calculated_score_row in zip(txm_event.active_donors_dict.values(),
+        for donor, expected_score_row, calculated_score_row in zip(txm_event.active_and_valid_donors_dict.values(),
                                                                    expected_scores, calculated_scores.tolist()):
-            for recipient, expected_score, calculated_score in zip(txm_event.active_recipients_dict.values(),
+            for recipient, expected_score, calculated_score in zip(txm_event.active_and_valid_recipients_dict.values(),
                                                                    expected_score_row,
                                                                    calculated_score_row):
                 self.assertEqual(expected_score, calculated_score,
@@ -168,8 +168,8 @@ class TestUpdateDonorRecipient(DbTests):
         txm_event_db_id = self.fill_db_with_patients(file=get_absolute_path(PATIENT_DATA_OBFUSCATED))
         remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id, Country.IND)
         txm_event = get_txm_event_complete(txm_event_db_id)
-        country_donors = [donor for donor in txm_event.active_donors_dict.values() if
+        country_donors = [donor for donor in txm_event.active_and_valid_donors_dict.values() if
                           donor.parameters.country_code == Country.IND]
         self.assertEqual(0, len(country_donors))
-        self.assertEqual(26, len(txm_event.active_donors_dict))
-        self.assertEqual(25, len(txm_event.active_recipients_dict))
+        self.assertEqual(26, len(txm_event.active_and_valid_donors_dict))
+        self.assertEqual(25, len(txm_event.active_and_valid_recipients_dict))

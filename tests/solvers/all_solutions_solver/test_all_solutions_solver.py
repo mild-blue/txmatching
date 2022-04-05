@@ -77,8 +77,8 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_max_blood_group_zero_debt_between_countries(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
-        txm_event.active_donors_dict = {i: _set_donor_blood_group(donor) for i, donor in
-                                        txm_event.active_donors_dict.items()}
+        txm_event.active_and_valid_donors_dict = {i: _set_donor_blood_group(donor) for i, donor in
+                                        txm_event.active_and_valid_donors_dict.items()}
         for debt in range(0, 4):
             config_parameters = ConfigParameters(
                 solver_constructor_name=Solver.AllSolutionsSolver,

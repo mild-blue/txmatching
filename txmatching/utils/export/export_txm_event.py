@@ -16,7 +16,7 @@ from txmatching.utils.country_enum import Country
 
 def get_id_or_none(donor: Optional[Donor], txm_event: TxmEvent) -> Optional[str]:
     if donor.related_recipient_db_id is not None:
-        return txm_event.active_recipients_dict[donor.related_recipient_db_id].medical_id
+        return txm_event.active_and_valid_recipients_dict[donor.related_recipient_db_id].medical_id
     else:
         return None
 
@@ -42,7 +42,7 @@ def get_patients_upload_json_from_txm_event_for_country(
             internal_medical_id=None
         )
         for donor in
-        txm_event.active_donors_dict.values() if donor.parameters.country_code == country_code
+        txm_event.active_and_valid_donors_dict.values() if donor.parameters.country_code == country_code
     ]
     recipients = [
         RecipientUploadDTO(
@@ -65,7 +65,7 @@ def get_patients_upload_json_from_txm_event_for_country(
             acceptable_blood_groups=recipient.acceptable_blood_groups
         )
         for recipient in
-        txm_event.active_recipients_dict.values() if recipient.parameters.country_code == country_code
+        txm_event.active_and_valid_recipients_dict.values() if recipient.parameters.country_code == country_code
     ]
 
     return PatientUploadDTOIn(

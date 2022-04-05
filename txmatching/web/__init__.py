@@ -198,10 +198,10 @@ def create_app() -> Flask:
             specs_url=specs_url
         )
 
-        def generate_docs():
-            return ui_for(api)
+        # def generate_docs():
+        #     return ui_for(api)
 
-        app.add_url_rule(f'/{SWAGGER_URL}/', view_func=generate_docs)
+        # app.add_url_rule(f'/{SWAGGER_URL}/', view_func=generate_docs)
         api.init_app(app, add_specs=False)
         add_all_namespaces(api)
 

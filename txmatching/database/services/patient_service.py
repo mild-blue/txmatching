@@ -323,8 +323,8 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
 
 
 def get_patients_persistent_hash(txm_event: TxmEvent) -> int:
-    donors = tuple(txm_event.active_donors_dict.values())
-    recipients = tuple(txm_event.active_recipients_dict.values())
+    donors = tuple(txm_event.active_and_valid_donors_dict.values())
+    recipients = tuple(txm_event.active_and_valid_recipients_dict.values())
 
     hash_ = initialize_persistent_hash()
     update_persistent_hash(hash_, donors)
