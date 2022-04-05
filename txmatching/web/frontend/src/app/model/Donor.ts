@@ -1,7 +1,8 @@
-import { AllMessages, Patient } from '@app/model/Patient';
+import { Patient } from '@app/model/Patient';
 import { DetailedScorePerGroup } from '@app/model/Hla';
 import { DonorType } from '@app/model/enums/DonorType';
 import { ParsingError } from '@app/model/ParsingError';
+import { AllMessagesGenerated } from '@app/generated';
 
 export interface Donor extends Patient {
   active: boolean;
@@ -11,7 +12,7 @@ export interface Donor extends Patient {
   scoreWithRelatedRecipient?: number;
   maxScoreWithRelatedRecipient?: number;
   detailedScoreWithRelatedRecipient: DetailedScorePerGroup[];
-  all_messages: AllMessages;
+  all_messages?: AllMessagesGenerated;
 }
 
 export interface UpdatedDonor {

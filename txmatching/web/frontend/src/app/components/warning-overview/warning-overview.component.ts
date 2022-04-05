@@ -23,10 +23,20 @@ export class WarningOverviewComponent implements OnInit{
   }
 
   countAllMessages(data: Donor | Recipient | undefined): number {
-    if (!data) {
-      return 0;
+    let sumOfMessages = 0;
+
+    if (data?.all_messages?.warnings) {
+      sumOfMessages += data.all_messages.warnings.length;
     }
 
-    return data.all_messages.warnings.length + data.all_messages.infos.length + data.all_messages.errors.length;
+    if (data?.all_messages?.errors) {
+      sumOfMessages += data.all_messages.errors.length;
+    }
+
+    if (data?.all_messages?.infos) {
+      sumOfMessages += data.all_messages.infos.length;
+    }
+
+    return sumOfMessages;
   }
 }

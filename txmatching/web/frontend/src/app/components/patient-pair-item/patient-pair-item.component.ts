@@ -25,14 +25,29 @@ export class PatientPairItemComponent extends ListItemAbstractComponent implemen
   }
 
   countAllMessages(data: Donor | Recipient | undefined): number {
-    if (!data) {
-      return 0;
+    let sumOfMessages = 0;
+
+    if (data?.all_messages?.warnings) {
+      sumOfMessages += data.all_messages.warnings.length;
     }
 
-    return data.all_messages.warnings.length + data.all_messages.infos.length + data.all_messages.errors.length;
+    if (data?.all_messages?.errors) {
+      sumOfMessages += data.all_messages.errors.length;
+    }
+
+    if (data?.all_messages?.infos) {
+      sumOfMessages += data.all_messages.infos.length;
+    }
+
+    return sumOfMessages;
   }
 
   findMostSevereMessageType(donor: Donor | undefined, recipient: Recipient | undefined): 'errors' | 'warnings' | 'infos' {
+    if (!donor?.all_messages?.errors || !donor?.all_messages?.warnings ||
+      !recipient?.all_messages?.errors || !recipient?.all_messages?.warnings) {
+      return 'infos';
+    }
+
     if (donor?.all_messages.errors.length || recipient?.all_messages.errors.length) {
       return 'errors';
     }
