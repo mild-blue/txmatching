@@ -6,9 +6,7 @@
     </div>
     <div class="warning-card-content">
       <ng-container *ngIf="donor.all_messages">
-        <app-warning-pill *ngIf="donor.all_messages.errors" [count]="donor.all_messages.errors.length" warningType="errors"></app-warning-pill>
-        <app-warning-pill *ngIf="donor.all_messages.warnings" [count]="donor.all_messages.warnings.length" warningType="warnings"></app-warning-pill>
-        <app-warning-pill *ngIf="donor.all_messages.infos" [count]="donor.all_messages.infos.length" warningType="infos"></app-warning-pill>
+        <app-warning-pill *ngFor="let data of donor.all_messages | keyvalue" [count]="data.value.length" [warningType]="data.key"></app-warning-pill>
       </ng-container>
     </div>
   </div>
@@ -19,9 +17,7 @@
     </div>
     <div class="warning-card-content">
       <ng-container *ngIf="recipient.all_messages">
-        <app-warning-pill *ngIf="recipient.all_messages.errors" [count]="recipient.all_messages.errors.length" warningType="errors"></app-warning-pill>
-        <app-warning-pill *ngIf="recipient.all_messages.warnings" [count]="recipient.all_messages.warnings.length" warningType="warnings"></app-warning-pill>
-        <app-warning-pill *ngIf="recipient.all_messages.infos" [count]="recipient.all_messages.infos.length" warningType="infos"></app-warning-pill>
+        <app-warning-pill *ngFor="let data of recipient.all_messages | keyvalue" [count]="data.value.length" [warningType]="data.key"></app-warning-pill>
       </ng-container>
     </div>
   </div>

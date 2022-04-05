@@ -43,8 +43,6 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log(this.patients);
-    console.log(this.items);
     if (changes.listItemDetailComponent) {
       this._loadDetailComponent();
     }

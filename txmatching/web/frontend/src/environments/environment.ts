@@ -6,7 +6,7 @@ const apiVersion = 'v1';
 
 export const environment = {
   production: false,
-  apiUrl: `https://txm.stg.mild.blue/${apiVersion}`
+  apiUrl: `http://localhost:8080/${apiVersion}`
 };
 
 /*

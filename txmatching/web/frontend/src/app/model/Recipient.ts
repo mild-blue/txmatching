@@ -1,8 +1,7 @@
-import { Patient } from '@app/model/Patient';
+import { AllMessages, Patient } from '@app/model/Patient';
 import { Antibodies } from '@app/model/Hla';
 import { BloodGroup } from '@app/model/enums/BloodGroup';
 import { ParsingError } from '@app/model/ParsingError';
-import { AllMessagesGenerated } from '@app/generated';
 
 export interface Recipient extends Patient {
   acceptableBloodGroups: BloodGroup[];
@@ -12,7 +11,7 @@ export interface Recipient extends Patient {
   hlaAntibodies: Antibodies;
   recipientRequirements?: RecipientRequirements;
   relatedDonorDbId: number;
-  all_messages?: AllMessagesGenerated;
+  all_messages: AllMessages;
 }
 
 export interface RecipientRequirements {
