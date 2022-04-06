@@ -1,6 +1,8 @@
 <div *ngIf="donor" class="patient-pair patient-pair-{{style}}">
 
-  <mat-icon *ngIf="showWarning" class="warning-icon" matTooltip="Transplant contains a possible crossmatch.">error</mat-icon>
+  <div *ngIf="showWarning" class="warning-pill-list">
+    <app-warning-pill [generalWarning]="true" tooltip="Transplant contains a possible crossmatch." warningType="errors"></app-warning-pill>
+  </div>
 
   <ng-container *ngIf="recipient; then template_pair; else template_donor"></ng-container>
 

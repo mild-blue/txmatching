@@ -1,6 +1,11 @@
 @import "../../../styles/variables";
 
+:host {
+  width: 100%;
+}
+
 .matching-item {
+  margin: 1.25rem;
 
   h3 {
     margin-top: 0;

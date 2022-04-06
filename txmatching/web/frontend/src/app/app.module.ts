@@ -86,6 +86,9 @@ import { FormDirective } from './directives/form/form.directive';
 import { AntigenTitlePipe } from './pipes/antigen-title/antigen-title.pipe';
 import { GenerateReportComponent } from '@app/components/generate-report/generate-report.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { WarningComponent } from './components/warning/warning.component';
+import { WarningOverviewComponent } from './components/warning-overview/warning-overview.component';
+import { WarningPillComponent } from './components/warning-overview/warning-pill/warning-pill.component';
 
 @NgModule({
   declarations: [
@@ -154,7 +157,10 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
     FormDirective,
     AntigenTitlePipe,
     GenerateReportComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    WarningComponent,
+    WarningOverviewComponent,
+    WarningPillComponent
   ],
   imports: [
     BrowserModule,

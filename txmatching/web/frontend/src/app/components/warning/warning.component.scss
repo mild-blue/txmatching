@@ -1,0 +1,79 @@
+@import "../../../styles/variables";
+
+.warning-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  gap: 0.5rem;
+
+  border-radius: 2.5rem;
+  filter: drop-shadow(0 3.2px 7.2px rgba(0, 0, 0, .1));
+  padding: 1.5rem 1.875rem;
+  margin: 1rem 0;
+
+  div {
+    display: flex;
+    justify-content: center;
+
+    p {
+      height: 100%;
+    }
+  }
+
+  &-heading {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    height: 100%;
+    font-size: 2rem;
+
+    p {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    h2 {
+      text-transform: capitalize;
+      margin: 0;
+      font-size: 1.2rem;
+    }
+  }
+
+  &-body {
+    flex-direction: column;
+    align-items: start;
+
+    p {
+      margin: 0.3rem 0;
+    }
+  }
+}
+
+.errors {
+  background-color: $error-bg;
+  color: $error-text;
+
+  mat-icon {
+    color: $error-icon;
+  }
+}
+
+.warnings {
+  background-color: $warning-bg;
+  color: $warning-text;
+
+  mat-icon {
+    color: $warning-icon;
+  }
+}
+
+.infos {
+  background-color: $info-bg;
+  color: $info-text;
+
+  mat-icon {
+    color: $info-icon;
+  }
+}
+

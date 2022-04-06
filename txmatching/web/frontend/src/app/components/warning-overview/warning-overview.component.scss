@@ -1,0 +1,51 @@
+.warning-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  margin: 1rem auto 1.5rem;
+  max-width: 60rem;
+
+  &-col {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 1rem;
+    flex-wrap: wrap;
+    height: 100%;
+
+    border-radius: 2.5rem;
+    filter: drop-shadow(0 3.2px 7.2px rgba(0, 0, 0, .1));
+    background-color: #f8f9fa;
+    padding: 1rem;
+    max-width: 30rem;
+  }
+
+  &-content {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 0.7rem;
+    height: 100%;
+    color: #343434;
+    font-weight: 600;
+    font-size: 1.5rem;
+
+    p {
+      height: 100%;
+      margin: 0;
+    }
+
+    h2 {
+      text-transform: capitalize;
+      font-size: 1rem;
+      margin: 0;
+    }
+  }
+}
+
