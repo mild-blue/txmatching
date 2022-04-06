@@ -41,6 +41,7 @@ Note: Navigate to `txmatching/web/frontend` before running the commands bellow.
 ## Before starting dev server
 After downloading a new version of frontend app, you need to run `npm install` in case there is a need to install additional modules.
 
+If you want to connect to different BE, create environment.local.ts and run `ng serve --configuration=dev`.
 ## Development server
 
 Run `ng serve` for a dev server. You can alternatively run `npm run start` or use `make run-fe` in the root folder of the project.
