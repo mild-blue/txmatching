@@ -71,11 +71,11 @@
                 }
               ]
             },
-            "stg": {
+            "dev": {
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.stg.ts"
+                  "with": "src/environments/environment.local.ts"
                 }
               ],
               "optimization": true,
@@ -109,8 +109,8 @@
             "production": {
               "browserTarget": "frontend:build:production"
             },
-            "stg": {
-              "browserTarget": "frontend:build:stg"
+            "dev": {
+              "browserTarget": "frontend:build:dev"
             }
           }
         },
@@ -160,8 +160,8 @@
             "production": {
               "devServerTarget": "frontend:serve:production"
             },
-            "stg": {
-              "devServerTarget": "frontend:serve:stg"
+            "dev": {
+              "devServerTarget": "frontend:serve:dev"
             }
           }
         }
