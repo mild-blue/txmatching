@@ -23,8 +23,8 @@ def solve_from_configuration(config_parameters: ConfigParameters, txm_event: Txm
 def _solve_from_configuration_unsafe(config_parameters: ConfigParameters, txm_event: TxmEvent) -> PairingResult:
     scorer = scorer_from_configuration(config_parameters)
     solver = solver_from_configuration(config_parameters,
-                                       donors_dict=txm_event.active_donors_dict,
-                                       recipients_dict=txm_event.active_recipients_dict,
+                                       donors_dict=txm_event.active_and_valid_donors_dict,
+                                       recipients_dict=txm_event.active_and_valid_recipients_dict,
                                        scorer=scorer)
 
     all_matchings = solver.solve()

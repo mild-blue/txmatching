@@ -99,7 +99,7 @@ def generate_html_report(
         trim_blocks=True
     )
 
-    required_patients_medical_ids = [txm_event.active_recipients_dict[recipient_db_id].medical_id
+    required_patients_medical_ids = [txm_event.active_and_valid_recipients_dict[recipient_db_id].medical_id
                                      for recipient_db_id in configuration_parameters.required_patient_db_ids]
 
     manual_donor_recipient_scores_with_medical_ids = [

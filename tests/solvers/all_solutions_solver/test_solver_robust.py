@@ -1,5 +1,5 @@
-from tests.solvers.prepare_txm_event_with_many_solutions import \
-    prepare_txm_event_with_many_solutions
+from tests.solvers.prepare_txm_event_with_many_solutions import (
+    prepare_txm_event_with_many_solutions, prepare_txm_event_with_too_many_solutions)
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
 from txmatching.configuration.config_parameters import ConfigParameters
@@ -10,7 +10,7 @@ from txmatching.utils.enums import Solver
 
 class TestLargeMatchingDoesNotFail(DbTests):
     def testing_computation_for_patients_that_create_extremely_many_matchings(self):
-        txm_event = prepare_txm_event_with_many_solutions()
+        txm_event = prepare_txm_event_with_too_many_solutions()
         self.assertRaises(
             TooComplicatedDataForAllSolutionsSolver,
             lambda: solve_from_configuration(

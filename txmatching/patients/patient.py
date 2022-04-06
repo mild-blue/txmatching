@@ -122,8 +122,8 @@ class TxmEventBase:
 class TxmEvent(TxmEventBase):
     all_donors: List[Donor]
     all_recipients: List[Recipient]
-    active_donors_dict: Dict[DonorDbId, Donor]
-    active_recipients_dict: Dict[RecipientDbId, Recipient]
+    active_and_valid_donors_dict: Dict[DonorDbId, Donor]
+    active_and_valid_recipients_dict: Dict[RecipientDbId, Recipient]
 
     # pylint: disable=too-many-arguments
     # I think it is reasonable to have multiple arguments here
@@ -132,9 +132,10 @@ class TxmEvent(TxmEventBase):
         super().__init__(db_id=db_id, name=name, default_config_id=default_config_id, state=state)
         self.all_donors = all_donors
         self.all_recipients = all_recipients
-        self.active_donors_dict = {donor.db_id: donor for donor in self.all_donors if donor.active}
-        self.active_recipients_dict = {recipient.db_id: recipient for recipient in self.all_recipients if
-                                       recipient.related_donor_db_id in self.active_donors_dict}
+        (
+            self.active_and_valid_donors_dict,
+            self.active_and_valid_recipients_dict,
+        ) = _filter_patients_that_dont_have_parsing_errors(all_donors, all_recipients)
 
 
 def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
@@ -151,3 +152,41 @@ def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
                    mfi=0,
                    cutoff=DEFAULT_CUTOFF
                )).cutoff
+
+
+def _filter_patients_that_dont_have_parsing_errors(
+    donors: List[Donor], recipients: List[Recipient]
+    ) -> (Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]):
+    exclude_donors_ids = set()
+    exclude_recipients_ids = set()
+
+    for patient in donors:
+        if not _parsing_error_list_is_empty(patient.parsing_errors):
+            exclude_donors_ids.add(patient.db_id)
+            if patient.related_recipient_db_id is not None:
+                exclude_recipients_ids.add(patient.related_recipient_db_id)
+
+    for patient in recipients:
+        if not _parsing_error_list_is_empty(patient.parsing_errors):
+            if patient.db_id not in exclude_recipients_ids:
+                exclude_donors_ids.add(patient.related_donor_db_id)
+                exclude_recipients_ids.add(patient.db_id)
+
+    return_donors = {
+        patient.db_id: patient
+        for patient in donors
+        if patient.db_id not in exclude_donors_ids and patient.active
+    }
+    return_recipients = {
+        patient.db_id: patient
+        for patient in recipients
+        if patient.db_id not in exclude_recipients_ids and patient.related_donor_db_id in return_donors
+    }
+
+    return return_donors, return_recipients
+
+
+def _parsing_error_list_is_empty(parsing_errors: List[ParsingError]) -> bool:
+    if parsing_errors is not None and len(parsing_errors) > 0:
+        return False
+    return True
