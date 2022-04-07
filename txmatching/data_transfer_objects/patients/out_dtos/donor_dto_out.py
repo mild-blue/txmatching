@@ -19,3 +19,4 @@ class DonorDTOOut(Donor):
 class UpdatedDonorDTOOut:
     donor: DonorDTOOut
     parsing_errors: List[ParsingError]
+    overriding_error: bool

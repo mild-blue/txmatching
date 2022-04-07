@@ -2281,6 +2281,7 @@
                 "active",
                 "db_id",
                 "donor_type",
+                "etag",
                 "medical_id",
                 "parameters"
             ],
@@ -2292,6 +2293,11 @@
                 "medical_id": {
                     "type": "string",
                     "description": "Medical id of the patient"
+                },
+                "etag": {
+                    "type": "integer",
+                    "description": "Tag of the patient",
+                    "example": 1
                 },
                 "active": {
                     "type": "boolean",
@@ -3125,7 +3131,8 @@
         "PatientModelToUpdate": {
             "required": [
                 "blood_group",
-                "db_id"
+                "db_id",
+                "etag"
             ],
             "properties": {
                 "db_id": {
@@ -3158,6 +3165,11 @@
                     "type": "string",
                     "default": "",
                     "example": "donor note"
+                },
+                "etag": {
+                    "type": "integer",
+                    "description": "Tag of the patient",
+                    "example": 1
                 },
                 "hla_typing": {
                     "description": "Provide full list of all the HLA types of the patient, not just the change set",
@@ -3293,6 +3305,7 @@
         "Recipient": {
             "required": [
                 "db_id",
+                "etag",
                 "hla_antibodies",
                 "medical_id",
                 "parameters",
@@ -3308,6 +3321,11 @@
                     "type": "string",
                     "description": "Medical ID of the patient. This ID is unique thorough the system and can be used for the identification of a specific patient in your system. Typically, this is the patient ID used in your internal system.",
                     "example": "D1037"
+                },
+                "etag": {
+                    "type": "integer",
+                    "description": "Tag of the patient",
+                    "example": 1
                 },
                 "acceptable_blood_groups": {
                     "type": "array",
@@ -3842,6 +3860,7 @@
         "UpdatedDonor": {
             "required": [
                 "donor",
+                "overriding_error",
                 "parsing_errors"
             ],
             "properties": {
@@ -3853,12 +3872,16 @@
                     "items": {
                         "$ref": "#/definitions/ParsingError"
                     }
+                },
+                "overriding_error": {
+                    "type": "boolean"
                 }
             },
             "type": "object"
         },
         "UpdatedRecipient": {
             "required": [
+                "overriding_error",
                 "parsing_errors",
                 "recipient"
             ],
@@ -3871,6 +3894,9 @@
                     "items": {
                         "$ref": "#/definitions/ParsingError"
                     }
+                },
+                "overriding_error": {
+                    "type": "boolean"
                 }
             },
             "type": "object"

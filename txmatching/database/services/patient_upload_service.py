@@ -142,6 +142,7 @@ def _recipient_upload_dto_to_recipient_model(
         parsing_errors=parsing_errors,
         txm_event_id=recipient_model.txm_event_id)
     recipient_model.parsing_errors = parsing_errors
+    recipient_model.etag = 1
     return recipient_model
 
 
@@ -225,6 +226,7 @@ def _donor_upload_dto_to_donor_model(
         parsing_errors=parsing_errors,
         txm_event_id=donor_model.txm_event_id)
     donor_model.parsing_errors = parsing_errors
+    donor_model.etag = 1
     return donor_model
 
 

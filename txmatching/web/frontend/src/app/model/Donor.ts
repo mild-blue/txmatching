@@ -17,4 +17,5 @@ export interface Donor extends Patient {
 export interface UpdatedDonor {
   donor: Donor;
   parsingErrors: ParsingError[];
+  overridingError: boolean;
 }

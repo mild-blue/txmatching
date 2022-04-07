@@ -520,7 +520,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: &id016
+                example: &id017
                 -   antibody_matches:
                     -   hla_antibody:
                             code: &id002
@@ -583,6 +583,10 @@ definitions:
                 type: array
             donor_type:
                 $ref: '#/definitions/DonorType'
+            etag: &id004
+                description: Tag of the patient
+                example: 1
+                type: integer
             internal_medical_id:
                 description: Internal medical id of the patient
                 type: string
@@ -608,6 +612,7 @@ definitions:
         - active
         - db_id
         - donor_type
+        - etag
         - medical_id
         - parameters
         type: object
@@ -617,11 +622,11 @@ definitions:
                 $ref: '#/definitions/BloodGroupEnum'
             donor_type:
                 $ref: '#/definitions/DonorType'
-            height: &id004
+            height: &id005
                 description: Height of the patient in centimeters.
                 example: 178
                 type: integer
-            hla_typing: &id011
+            hla_typing: &id012
                 description: HLA typing of the patient. Use high resolution if available.
                 example:
                 - A1
@@ -638,19 +643,19 @@ definitions:
                 items:
                     type: string
                 type: array
-            internal_medical_id: &id012
+            internal_medical_id: &id013
                 description: Custom medical ID that will not be shown in UI, but will
                     be stored and can be seen in patient xlsx export.
                 example: '123456'
                 type: string
-            medical_id: &id010
+            medical_id: &id011
                 description: Medical ID of the patient. This ID is unique thorough
                     the system and can be used for the identification of a specific
                     patient in your system. Typically, this is the patient ID used
                     in your internal system.
                 example: D1037
                 type: string
-            note: &id005
+            note: &id006
                 default: ''
                 example: donor note
                 type: string
@@ -659,13 +664,13 @@ definitions:
                     and non-directed donors.
                 example: R1037
                 type: string
-            sex: &id006
+            sex: &id007
                 $ref: '#/definitions/SexEnum'
-            weight: &id007
+            weight: &id008
                 description: Weight of the patient in kilograms.
                 example: 78.4
                 type: number
-            year_of_birth: &id008
+            year_of_birth: &id009
                 description: Year of birth of the patient.
                 example: 1945
                 type: integer
@@ -1078,11 +1083,12 @@ definitions:
     PatientModelToUpdate:
         properties:
             blood_group: *id003
-            db_id: &id009
+            db_id: &id010
                 description: Database id of the patient
                 example: 1
                 type: integer
-            height: *id004
+            etag: *id004
+            height: *id005
             hla_typing:
                 allOf:
                 -   $ref: '#/definitions/HlaTypingToUpdate'
@@ -1093,13 +1099,14 @@ definitions:
                     -   raw_code: A*01:02
                     -   raw_code: B7
                     -   raw_code: DR11
-            note: *id005
-            sex: *id006
-            weight: *id007
-            year_of_birth: *id008
+            note: *id006
+            sex: *id007
+            weight: *id008
+            year_of_birth: *id009
         required:
         - blood_group
         - db_id
+        - etag
         type: object
     PatientParameters:
         properties:
@@ -1186,13 +1193,14 @@ definitions:
                 type: array
             all_messages:
                 $ref: '#/definitions/AllMessages'
-            db_id: *id009
+            db_id: *id010
+            etag: *id004
             hla_antibodies:
                 $ref: '#/definitions/HlaAntibodies'
             internal_medical_id:
                 description: Internal medical id of the patient
                 type: string
-            medical_id: *id010
+            medical_id: *id011
             parameters:
                 $ref: '#/definitions/PatientParameters'
             parsing_errors:
@@ -1213,6 +1221,7 @@ definitions:
                 type: string
         required:
         - db_id
+        - etag
         - hla_antibodies
         - medical_id
         - parameters
@@ -1220,7 +1229,7 @@ definitions:
         type: object
     RecipientInput:
         properties:
-            acceptable_blood_groups: &id013
+            acceptable_blood_groups: &id014
                 description: Acceptable blood groups for the patient. Leave empty
                     to use compatible blood groups.
                 example:
@@ -1230,7 +1239,7 @@ definitions:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
             blood_group: *id003
-            height: *id004
+            height: *id005
             hla_antibodies:
                 description: Detected HLA antibodies of the patient. Use high resolution
                     if available. If high resolution is provided it is assumed that
@@ -1239,23 +1248,23 @@ definitions:
                 items:
                     $ref: '#/definitions/HLAAntibodyIn'
                 type: array
-            hla_typing: *id011
-            internal_medical_id: *id012
-            medical_id: *id010
-            note: *id005
-            previous_transplants: &id014
+            hla_typing: *id012
+            internal_medical_id: *id013
+            medical_id: *id011
+            note: *id006
+            previous_transplants: &id015
                 description: Number of previous kidney transplants.
                 example: 0
                 type: integer
-            sex: *id006
-            waiting_since: &id015
+            sex: *id007
+            waiting_since: &id016
                 description: Date since when the patient has been on waiting list.
                     Use format YYYY-MM-DD.
                 example: '2015-01-17'
                 format: date
                 type: string
-            weight: *id007
-            year_of_birth: *id008
+            weight: *id008
+            year_of_birth: *id009
         required:
         - blood_group
         - hla_antibodies
@@ -1266,7 +1275,7 @@ definitions:
         allOf:
         -   $ref: '#/definitions/PatientModelToUpdate'
         -   properties:
-                acceptable_blood_groups: *id013
+                acceptable_blood_groups: *id014
                 cutoff:
                     type: integer
                 hla_antibodies:
@@ -1278,7 +1287,7 @@ definitions:
                         hla_antibodies_list:
                         -   mfi: 10000
                             raw_code: A*01:02
-                previous_transplants: *id014
+                previous_transplants: *id015
                 recipient_requirements:
                     allOf:
                     -   $ref: '#/definitions/RecipientRequirements'
@@ -1286,7 +1295,7 @@ definitions:
                         it will be overwritten
                     example:
                         require_better_match_in_compatibility_index: true
-                waiting_since: *id015
+                waiting_since: *id016
             type: object
     RecipientRequirements:
         properties:
@@ -1375,7 +1384,7 @@ definitions:
                     Group compatibility
 
                     index is calculated for.'
-                example: *id016
+                example: *id017
                 items:
                     $ref: '#/definitions/DetailedScoreForGroup'
                 type: array
@@ -1446,16 +1455,21 @@ definitions:
         properties:
             donor:
                 $ref: '#/definitions/Donor'
+            overriding_error:
+                type: boolean
             parsing_errors:
                 items:
                     $ref: '#/definitions/ParsingError'
                 type: array
         required:
         - donor
+        - overriding_error
         - parsing_errors
         type: object
     UpdatedRecipient:
         properties:
+            overriding_error:
+                type: boolean
             parsing_errors:
                 items:
                     $ref: '#/definitions/ParsingError'
@@ -1463,6 +1477,7 @@ definitions:
             recipient:
                 $ref: '#/definitions/Recipient'
         required:
+        - overriding_error
         - parsing_errors
         - recipient
         type: object

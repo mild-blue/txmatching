@@ -23,6 +23,10 @@ export interface DonorModelToUpdateGenerated {
      */
     db_id: number;
     /**
+     * Tag of the patient
+     */
+    etag: number;
+    /**
      * Height of the patient in centimeters.
      */
     height?: number;

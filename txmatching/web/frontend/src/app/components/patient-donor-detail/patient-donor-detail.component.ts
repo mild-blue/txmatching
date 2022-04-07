@@ -58,7 +58,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     this.loading = true;
     this.success = false;
     this._patientService.saveDonor(
-      this.defaultTxmEvent.id, this.item.dbId,
+      this.defaultTxmEvent.id, this.item.dbId, this.item.etag,
       this.donorEditable, this._eventService.getConfigId()
     )
     .then((updatedDonor) => {
@@ -69,7 +69,11 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
         Object.assign(this.item, updatedDonor.donor);
       }
 
-      if (updatedDonor.parsingErrors.length > 0) {
+      if (updatedDonor.overridingError){
+        this._alertService.infoPatientIsBeingOverriden();
+      }
+
+      if (updatedDonor.parsingErrors.length > 0 && !updatedDonor.overridingError) {
         this._alertService.infoWithParsingErrors(
           'Donor was updated but some parsing errors and warnings occurred. ' +
           'You can modify the patient to fix the issues or contact us if the issues are not clear on info@mild.blue or +420 723 927 536.',

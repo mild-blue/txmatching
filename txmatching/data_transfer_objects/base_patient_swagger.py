@@ -22,6 +22,10 @@ DbId = {
     'db_id': fields.Integer(required=True, description='Database id of the patient', example=1),
 }
 
+Etag = {
+    'etag': fields.Integer(required=True, description='Number of updates of a patient', example=1),
+}
+
 MedicalId = {
     'medical_id': fields.String(required=True, example='D1037', description=MEDICAL_ID_DESCRIPTION),
 }
@@ -89,7 +93,7 @@ NewPatient = {**BasePatient, **MedicalId, **{
                               example=ANTIGENS_EXAMPLE, description=HLA_TYPING_DESCRIPTION),
 }}
 
-PatientToUpdate = {**DbId, **BasePatient, **{
+PatientToUpdate = {**DbId, **BasePatient, **Etag, **{
     'hla_typing': fields.Nested(HLATypingToUpdateJson, required=False,
                                 description='Provide full list of all the HLA types of the patient, not just '
                                             'the change set',

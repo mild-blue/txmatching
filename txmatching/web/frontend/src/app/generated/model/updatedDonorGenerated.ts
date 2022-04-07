@@ -15,6 +15,7 @@ import { ParsingErrorGenerated } from './parsingErrorGenerated';
 
 export interface UpdatedDonorGenerated { 
     donor: DonorGenerated;
+    overriding_error: boolean;
     parsing_errors: Array<ParsingErrorGenerated>;
 }
 

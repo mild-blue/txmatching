@@ -165,12 +165,14 @@ class AlterRecipient(Resource):
         recipient_update_dto = request_body(RecipientUpdateDTO)
         guard_user_country_access_to_recipient(user_id=get_current_user_id(), recipient_id=recipient_update_dto.db_id)
         guard_open_txm_event(txm_event_id)
-        updated_recipient = update_recipient(recipient_update_dto, txm_event_id)
+        updated_recipient, someone_is_overriding_patient = update_recipient(recipient_update_dto, txm_event_id)
 
         return response_ok(
             UpdatedRecipientDTOOut(
                 recipient=recipient_to_recipient_dto_out(updated_recipient),
-                parsing_errors=get_parsing_errors_for_patients(recipient_ids=[updated_recipient.db_id], txm_event_id=txm_event_id)
+                parsing_errors=get_parsing_errors_for_patients(recipient_ids=[updated_recipient.db_id],
+                                                               txm_event_id=txm_event_id),
+                overriding_error=someone_is_overriding_patient
             )
         )
 
@@ -192,9 +194,9 @@ class AlterDonor(Resource):
         txm_event = get_txm_event_complete(txm_event_id)
         all_recipients = txm_event.all_recipients
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
-                                                                           configuration_db_id=config_id)
+                                                                                      configuration_db_id=config_id)
         scorer = scorer_from_configuration(configuration_parameters)
-        updated_donor = update_donor(donor_update_dto, txm_event_id)
+        updated_donor, someone_is_overriding_patient = update_donor(donor_update_dto, txm_event_id)
 
         return response_ok(
             UpdatedDonorDTOOut(
@@ -204,7 +206,9 @@ class AlterDonor(Resource):
                     configuration_parameters,
                     scorer
                 ),
-                parsing_errors=get_parsing_errors_for_patients(donor_ids=[updated_donor.db_id], txm_event_id=txm_event_id)
+                parsing_errors=get_parsing_errors_for_patients(donor_ids=[updated_donor.db_id],
+                                                               txm_event_id=txm_event_id),
+                overriding_error=someone_is_overriding_patient
             )
         )
 

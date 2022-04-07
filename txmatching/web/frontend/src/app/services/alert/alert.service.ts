@@ -35,17 +35,19 @@ export class AlertService {
 
   public infoWithParsingErrors(message: string, parsingErrors: ParsingError[]): void {
     const parsingErrorsStr = parsingErrors.map(
-      (parsingError) => 
-      {
-        if (parsingError.hlaCodeOrGroup != null){
-          return `<strong>${parsingError.hlaCodeOrGroup}</strong>: ${parsingError.message}`
-        }
-        else {
-          return `${parsingError.message}`
+      (parsingError) => {
+        if (parsingError.hlaCodeOrGroup != null) {
+          return `<strong>${parsingError.hlaCodeOrGroup}</strong>: ${parsingError.message}`;
+        } else {
+          return `${parsingError.message}`;
         }
       }
     ).join('<br>');
     this.info(`${message}<br><br>${parsingErrorsStr}`);
+  }
+
+  public infoPatientIsBeingOverriden(): void {
+    this.warn(`Problem with saving the patient: Someone updated this patient in the meantime.`);
   }
 
   public alert(alert: Alert): void {

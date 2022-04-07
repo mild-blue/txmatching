@@ -1,7 +1,7 @@
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.base_patient_swagger import (
-    DbId, DonorToUpdate, MedicalId, PatientParametersJson, PatientToUpdate,
+    DbId, DonorToUpdate, Etag, MedicalId, PatientParametersJson, PatientToUpdate,
     RecipientRequirements, RecipientToUpdate, AllMessagesJson)
 from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
                                                             CountryCodeJson,
@@ -17,7 +17,7 @@ from txmatching.data_transfer_objects.matchings.matching_swagger import (
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.web.web_utils.namespaces import patient_api
 
-DonorJson = patient_api.model('Donor', {**DbId, **MedicalId, **{
+DonorJson = patient_api.model('Donor', {**DbId, **MedicalId, **Etag, **{
     'active': fields.Boolean(required=True, description='Whether the user shall be used in pairing calculation'),
     'db_id': fields.Integer(required=True, description='Database id of the patient'),
     'medical_id': fields.String(required=True, description='Medical id of the patient'),
@@ -43,7 +43,7 @@ DonorJson = patient_api.model('Donor', {**DbId, **MedicalId, **{
     'all_messages': fields.Nested(required=False, model=AllMessagesJson)
 }})
 
-RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **{
+RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **Etag, **{
     'acceptable_blood_groups': fields.List(required=False, cls_or_instance=fields.Nested(BloodGroupEnumJson),
                                            example=[BloodGroup.A.value, BloodGroup.ZERO.value]),
     'internal_medical_id': fields.String(required=False, description='Internal medical id of the patient'),
@@ -69,11 +69,13 @@ PatientsJson = patient_api.model('Patients', {
 UpdatedDonorJsonOut = patient_api.model('UpdatedDonor', {
     'donor': fields.Nested(required=True, model=DonorJson),
     'parsing_errors': fields.List(required=True, cls_or_instance=fields.Nested(ParsingErrorJson)),
+    'overriding_error': fields.Boolean(required=True)
 })
 
 UpdatedRecipientJsonOut = patient_api.model('UpdatedRecipient', {
     'recipient': fields.Nested(required=True, model=RecipientJson),
     'parsing_errors': fields.List(required=True, cls_or_instance=fields.Nested(ParsingErrorJson)),
+    'overriding_error': fields.Boolean(required=True)
 })
 
 PatientToUpdateJson = patient_api.model('PatientModelToUpdate', PatientToUpdate)

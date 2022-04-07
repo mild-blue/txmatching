@@ -49,6 +49,7 @@ def get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
     return Donor(base_patient.db_id,
                  base_patient.medical_id,
                  parameters=base_patient.parameters,
+                 etag=base_patient.etag,
                  donor_type=donor_model.donor_type,
                  related_recipient_db_id=donor_model.recipient_id,
                  active=donor_model.active,
@@ -66,6 +67,7 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel,
     recipient = Recipient(base_patient.db_id,
                           base_patient.medical_id,
                           parameters=base_patient.parameters,
+                          etag=base_patient.etag,
                           related_donor_db_id=related_donor_db_id,
                           hla_antibodies=get_hla_antibodies_from_recipient_model(recipient_model),
                           # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum,
@@ -154,6 +156,7 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> (L
     patient_update_dict['height'] = patient_update_dto.height
     patient_update_dict['weight'] = patient_update_dto.weight
     patient_update_dict['yob'] = patient_update_dto.year_of_birth
+    patient_update_dict['etag'] = patient_update_dto.etag + 1
 
     if patient_update_dto.note is not None:
         patient_update_dict['note'] = patient_update_dto.note
@@ -161,98 +164,109 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> (L
     return parsing_errors, patient_update_dict
 
 
-def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
+def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> (Recipient, bool):
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     parsing_errors = []
     if txm_event_db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to.')
 
-    delete_parsing_errors_for_patient(recipient_id=old_recipient_model.id,
-                                      txm_event_id=old_recipient_model.txm_event_id)
     updated_parsing_errors, recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto)
     updated_parsing_errors = parsing_errors_to_models(parsing_errors=updated_parsing_errors,
                                                       recipient_id=old_recipient_model.id,
                                                       txm_event_id=old_recipient_model.txm_event_id)
-    parsing_errors = parsing_errors + updated_parsing_errors
-    if recipient_update_dto.acceptable_blood_groups:
-        acceptable_blood_models = [
-            RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient_update_dto.db_id) for blood
-            in
-            recipient_update_dto.acceptable_blood_groups]
-        RecipientAcceptableBloodModel.query.filter(
-            RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
-        db.session.add_all(acceptable_blood_models)
 
-    if recipient_update_dto.hla_antibodies or recipient_update_dto.cutoff:
-        # not the best approach: in case cutoff was different per antibody before it will be unified now, but
-        # but good for the moment
-        if recipient_update_dto.cutoff is not None:
-            recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
-            new_cutoff = recipient_update_dto.cutoff
-        else:
-            new_cutoff = old_recipient_model.recipient_cutoff
+    someone_is_overriding_patient = False
+    if recipient_update_dict['etag'] - 1 == old_recipient_model.etag:
+        delete_parsing_errors_for_patient(recipient_id=old_recipient_model.id,
+                                          txm_event_id=old_recipient_model.txm_event_id)
 
-        # hla_antibodies_raw will be updated
-        # - with new hla antibodies and new cutoff (if update hla antibodies are specified)
-        # - or with old hla antibodies from db and new cutoff (if only cutoff is specified)
-        hla_antibodies_raw_source = recipient_update_dto.hla_antibodies.hla_antibodies_list \
-            if recipient_update_dto.hla_antibodies is not None \
-            else old_recipient_model.hla_antibodies_raw
-        new_hla_antibody_raw_models = [
-            HLAAntibodyRawModel(
-                recipient_id=recipient_update_dto.db_id,
-                raw_code=hla_antibody.raw_code,
-                cutoff=new_cutoff,
-                mfi=hla_antibody.mfi,
-            ) for hla_antibody in hla_antibodies_raw_source
-        ]
-
-        # Change hla_antibodies_raw for a given patient in db
-        HLAAntibodyRawModel.query.filter(
-            HLAAntibodyRawModel.recipient_id == recipient_update_dto.db_id
-        ).delete()
-        db.session.add_all(new_hla_antibody_raw_models)
-
-        # Change parsed hla_antibodies for a given patient in db
-        antibody_parsing_errors, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_error_list(
-            new_hla_antibody_raw_models,
-        )
-        updated_parsing_errors = parsing_errors_to_models(parsing_errors=antibody_parsing_errors,
-                                                          recipient_id=old_recipient_model.id,
-                                                          txm_event_id=old_recipient_model.txm_event_id)
         parsing_errors = parsing_errors + updated_parsing_errors
-        recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
+        if recipient_update_dto.acceptable_blood_groups:
+            acceptable_blood_models = [
+                RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient_update_dto.db_id) for blood
+                in
+                recipient_update_dto.acceptable_blood_groups]
+            RecipientAcceptableBloodModel.query.filter(
+                RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
+            db.session.add_all(acceptable_blood_models)
 
-    db.session.add_all(parsing_errors)
-    if recipient_update_dto.recipient_requirements:
-        recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
-            recipient_update_dto.recipient_requirements)
-    recipient_update_dict['waiting_since'] = parse_date_to_datetime(recipient_update_dto.waiting_since)
-    recipient_update_dict['previous_transplants'] = recipient_update_dto.previous_transplants
+        if recipient_update_dto.hla_antibodies or recipient_update_dto.cutoff:
+            # not the best approach: in case cutoff was different per antibody before it will be unified now, but
+            # but good for the moment
+            if recipient_update_dto.cutoff is not None:
+                recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
+                new_cutoff = recipient_update_dto.cutoff
+            else:
+                new_cutoff = old_recipient_model.recipient_cutoff
 
-    RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
-    db.session.commit()
-    return get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id))
+            # hla_antibodies_raw will be updated
+            # - with new hla antibodies and new cutoff (if update hla antibodies are specified)
+            # - or with old hla antibodies from db and new cutoff (if only cutoff is specified)
+            hla_antibodies_raw_source = recipient_update_dto.hla_antibodies.hla_antibodies_list \
+                if recipient_update_dto.hla_antibodies is not None \
+                else old_recipient_model.hla_antibodies_raw
+            new_hla_antibody_raw_models = [
+                HLAAntibodyRawModel(
+                    recipient_id=recipient_update_dto.db_id,
+                    raw_code=hla_antibody.raw_code,
+                    cutoff=new_cutoff,
+                    mfi=hla_antibody.mfi,
+                ) for hla_antibody in hla_antibodies_raw_source
+            ]
+
+            # Change hla_antibodies_raw for a given patient in db
+            HLAAntibodyRawModel.query.filter(
+                HLAAntibodyRawModel.recipient_id == recipient_update_dto.db_id
+            ).delete()
+            db.session.add_all(new_hla_antibody_raw_models)
+
+            # Change parsed hla_antibodies for a given patient in db
+            antibody_parsing_errors, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_error_list(
+                new_hla_antibody_raw_models,
+            )
+            updated_parsing_errors = parsing_errors_to_models(parsing_errors=antibody_parsing_errors,
+                                                              recipient_id=old_recipient_model.id,
+                                                              txm_event_id=old_recipient_model.txm_event_id)
+            parsing_errors = parsing_errors + updated_parsing_errors
+            recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
+
+        db.session.add_all(parsing_errors)
+        if recipient_update_dto.recipient_requirements:
+            recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
+                recipient_update_dto.recipient_requirements)
+        recipient_update_dict['waiting_since'] = parse_date_to_datetime(recipient_update_dto.waiting_since)
+        recipient_update_dict['previous_transplants'] = recipient_update_dto.previous_transplants
+
+        RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
+        db.session.commit()
+    else:
+        someone_is_overriding_patient = True
+    return get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id)), someone_is_overriding_patient
 
 
-def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
+def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> (Donor, bool):
     old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
     if txm_event_db_id != old_donor_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient the user has no access to')
 
-    delete_parsing_errors_for_patient(donor_id=old_donor_model.id,
-                                      txm_event_id=old_donor_model.txm_event_id)
     parsing_errors, donor_update_dict = _create_patient_update_dict_base(donor_update_dto)
     parsing_errors = parsing_errors_to_models(parsing_errors=parsing_errors,
                                               donor_id=old_donor_model.id,
                                               txm_event_id=old_donor_model.txm_event_id)
 
-    db.session.add_all(parsing_errors)
-    if donor_update_dto.active is not None:
-        donor_update_dict['active'] = donor_update_dto.active
-    DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
-    db.session.commit()
-    return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
+    someone_is_overriding_patient = False
+    if donor_update_dict['etag'] - 1 == old_donor_model.etag:
+        delete_parsing_errors_for_patient(donor_id=old_donor_model.id,
+                                          txm_event_id=old_donor_model.txm_event_id)
+
+        db.session.add_all(parsing_errors)
+        if donor_update_dto.active is not None:
+            donor_update_dict['active'] = donor_update_dto.active
+        DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
+        db.session.commit()
+    else:
+        someone_is_overriding_patient = True
+    return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id)), someone_is_overriding_patient
 
 
 def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
@@ -265,7 +279,6 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         patients_changed_antibodies=0,
         parsing_errors=[],
     )
-    new_parsing_errors = []
     # Clear parsing errors table
     delete_parsing_errors_for_txm_event_id(txm_event_id)
 
@@ -361,7 +374,9 @@ def _get_base_patient_from_patient_model(patient_model: Union[DonorModel, Recipi
             year_of_birth=patient_model.yob,
             sex=patient_model.sex,
             note=patient_model.note
-        ))
+        ),
+        etag=patient_model.etag
+    )
 
 
 def get_donor_recipient_pair(donor_id: int, txm_event_id: int) -> Tuple[Donor, Optional[Recipient]]:

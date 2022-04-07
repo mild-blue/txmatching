@@ -51,6 +51,7 @@ export const parseDate = (data: string): Date => {
 export const parseUpdatedRecipient = (data: UpdatedRecipientGenerated): UpdatedRecipient => {
   return {
     recipient: parseRecipient(data.recipient),
-    parsingErrors: data.parsing_errors.map(parseParsingError)
+    parsingErrors: data.parsing_errors.map(parseParsingError),
+    overridingError: data.overriding_error
   };
 };

@@ -14,6 +14,7 @@ import { RecipientGenerated } from './recipientGenerated';
 
 
 export interface UpdatedRecipientGenerated { 
+    overriding_error: boolean;
     parsing_errors: Array<ParsingErrorGenerated>;
     recipient: RecipientGenerated;
 }

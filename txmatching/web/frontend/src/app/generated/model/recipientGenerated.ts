@@ -24,6 +24,10 @@ export interface RecipientGenerated {
      * Database id of the patient
      */
     db_id: number;
+    /**
+     * Tag of the patient
+     */
+    etag: number;
     hla_antibodies: HlaAntibodiesGenerated;
     /**
      * Internal medical id of the patient

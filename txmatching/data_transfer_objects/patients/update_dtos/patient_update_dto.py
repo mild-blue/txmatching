@@ -13,6 +13,7 @@ class PatientUpdateDTO:
     # pylint: disable=too-many-instance-attributes
     # It is reasonable to have many attributes here
     db_id: int
+    etag: int
     blood_group: Optional[BloodGroup] = None
     hla_typing: Optional[HLATypingUpdateDTO] = None
     sex: Optional[Sex] = None

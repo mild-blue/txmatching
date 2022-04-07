@@ -26,6 +26,7 @@ class Patient(PersistentlyHashable):
     db_id: int
     medical_id: str
     parameters: PatientParameters
+    etag: int
 
     def is_recipient(self) -> bool:
         return isinstance(self, Recipient)
