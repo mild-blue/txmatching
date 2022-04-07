@@ -18,6 +18,10 @@ export interface UserRegistrationGenerated {
      */
     allowed_countries: Array<CountryCodeGenerated>;
     /**
+     * Countries that the user has access to.
+     */
+    allowed_txm_events: Array<string>;
+    /**
      * Email/username used for authentication.
      */
     email: string;

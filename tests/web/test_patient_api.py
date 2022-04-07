@@ -16,7 +16,6 @@ from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.hla_crossmatch import AntibodyMatch
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
@@ -193,10 +192,20 @@ class TestPatientService(DbTests):
                               f'{PATIENT_NAMESPACE}/pairs',
                               headers=self.auth_headers, json=json_data)
 
+            res_ = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/configs/default',
+                             headers=self.auth_headers)
+
         self.assertEqual(200, res.status_code)
+        self.assertEqual(200, res_.status_code)
+
+        self.assertEqual(0, len(res_.json['donors'][0]['all_messages']['warnings']))
+        self.assertEqual(3, len(res_.json['donors'][0]['all_messages']['errors']))
+        self.assertEqual(0, len(res_.json['recipients'][0]['all_messages']['warnings']))
+        self.assertEqual(4, len(res_.json['recipients'][0]['all_messages']['errors']))
 
         errors = ParsingErrorModel.query.all()
-        self.assertEqual(9, len(errors))
+        self.assertEqual(7, len(errors))
         self.assertEqual('TEST', errors[3].hla_code_or_group)
         self.assertEqual(
             ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
@@ -259,13 +268,15 @@ class TestPatientService(DbTests):
                 'db_id': donor_db_id,
                 'blood_group': 'A',
                 'hla_typing': {
-                    'hla_types_list': []
+                    'hla_types_list': [{'raw_code': 'A*01:02'},
+                                         {'raw_code': 'B7'},
+                                         {'raw_code': 'DR11'}]
                 },
                 'sex': 'M',
                 'height': 200,
                 'weight': 100,
                 'year_of_birth': 1990,
-                'active': True
+                'active': True,
             }
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/configs/default/donor',
@@ -275,9 +286,9 @@ class TestPatientService(DbTests):
 
         # Check that update was working
         txm_event = get_txm_event_complete(txm_event_db_id)
-        donor = txm_event.active_donors_dict[donor_db_id]
+        donor = txm_event.active_and_valid_donors_dict[donor_db_id]
         self.assertEqual(donor.parameters.blood_group, BloodGroup.A)
-        self.assertEqual(donor.parameters.hla_typing, create_hla_typing([]))
+        self.assertEqual(donor.parameters.hla_typing, create_hla_typing(['A*01:02', 'B7', 'DR11']))
         self.assertEqual(donor.parameters.sex, Sex.M)
         self.assertEqual(donor.parameters.height, 200)
         self.assertEqual(donor.parameters.weight, 100)
@@ -348,7 +359,7 @@ class TestPatientService(DbTests):
 
         # Check that update was working
         txm_event = get_txm_event_complete(txm_event_db_id)
-        recipient = txm_event.active_recipients_dict[recipient_db_id]
+        recipient = next(recipient for recipient in txm_event.all_recipients if recipient.db_id == recipient_db_id)
         self.assertEqual(recipient.parameters.blood_group, BloodGroup.A)
         self.assertEqual(recipient.parameters.hla_typing, create_hla_typing([]))
         self.assertEqual(recipient.parameters.sex, Sex.M)

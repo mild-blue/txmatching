@@ -1,5 +1,12 @@
-import { BloodGroupEnumGenerated, DonorGenerated, PatientParametersGenerated, RecipientGenerated, SexEnumGenerated } from '../generated';
-import { BloodGroup, Patient, PatientParameters, Sex } from '../model';
+import {
+  AllMessagesGenerated,
+  BloodGroupEnumGenerated,
+  DonorGenerated,
+  PatientParametersGenerated,
+  RecipientGenerated,
+  SexEnumGenerated
+} from '../generated';
+import { AllMessages, BloodGroup, Patient, PatientParameters, Sex } from '../model';
 import { ListItem } from '../components/list-item/list-item.interface';
 import { parseAntigens } from '@app/parsers/hla.parsers';
 
@@ -40,4 +47,26 @@ export const parseBloodGroup = (data: BloodGroupEnumGenerated): BloodGroup => {
     case BloodGroupEnumGenerated._0: return BloodGroup.ZERO;
     default: throw new Error(`Parsing blood group ${data} not implemented`);
   }
+};
+
+export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined): AllMessages => {
+  const allMessagesParsed: AllMessages = {
+    errors: [],
+    warnings: [],
+    infos: []
+  };
+
+  if (allMessages?.errors) {
+    allMessagesParsed.errors = allMessages.errors;
+  }
+
+  if (allMessages?.warnings) {
+    allMessagesParsed.warnings = allMessages.warnings;
+  }
+
+  if (allMessages?.infos) {
+    allMessagesParsed.infos = allMessages.infos;
+  }
+
+  return allMessagesParsed;
 };

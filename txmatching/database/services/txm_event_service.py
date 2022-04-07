@@ -58,14 +58,20 @@ def delete_txm_event(txm_event_id: int):
 
 def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int, country_code: Country):
     # Remove parsing errors for patients that will be deleted
-    medical_ids = [patient_model.medical_id for patient_model in (
+    donor_ids = [patient_model.id for patient_model in (
             DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
-                                         DonorModel.country == country_code)).all() +
+                                         DonorModel.country == country_code)).all()
+    )]
+    for donor_id in donor_ids:
+        delete_parsing_errors_for_patient(donor_id=donor_id, txm_event_id=txm_event_db_id)
+
+    recipient_ids = [patient_model.id for patient_model in (
             RecipientModel.query.filter(and_(RecipientModel.txm_event_id == txm_event_db_id,
                                              RecipientModel.country == country_code)).all()
     )]
-    for medical_id in medical_ids:
-        delete_parsing_errors_for_patient(medical_id, txm_event_id=txm_event_db_id)
+    for recipient_id in recipient_ids:
+        delete_parsing_errors_for_patient(recipient_id=recipient_id, txm_event_id=txm_event_db_id)
+
 
     DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
                                  DonorModel.country == country_code)).delete()

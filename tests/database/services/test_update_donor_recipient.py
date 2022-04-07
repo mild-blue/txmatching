@@ -1,4 +1,5 @@
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import (
     HLAAntibodiesUpdateDTO, HLAAntibodyUpdateDTO)
 from txmatching.data_transfer_objects.patients.update_dtos.donor_update_dto import \
@@ -106,8 +107,8 @@ class TestUpdateDonorRecipient(DbTests):
         original_donor_model = DonorModel.query.get(donor_db_id)
         original_txm_event = get_txm_event_complete(txm_event_db_id)
         self.assertEqual(True, original_donor_model.active)
-        self.assertIn(original_donor_model.id, original_txm_event.active_donors_dict.keys())
-        self.assertIn(original_donor_model.recipient_id, original_txm_event.active_recipients_dict.keys())
+        self.assertIn(original_donor_model.id, original_txm_event.active_and_valid_donors_dict.keys())
+        self.assertIn(original_donor_model.recipient_id, original_txm_event.active_and_valid_recipients_dict.keys())
 
         update_donor(DonorUpdateDTO(
             active=False,
@@ -116,5 +117,5 @@ class TestUpdateDonorRecipient(DbTests):
         new_txm_event = get_txm_event_complete(txm_event_db_id)
 
         self.assertEqual(False, DonorModel.query.get(donor_db_id).active)
-        self.assertNotIn(donor_db_id, new_txm_event.active_donors_dict.keys())
-        self.assertNotIn(original_donor_model.recipient_id, new_txm_event.active_recipients_dict.keys())
+        self.assertNotIn(donor_db_id, new_txm_event.active_and_valid_donors_dict.keys())
+        self.assertNotIn(original_donor_model.recipient_id, new_txm_event.active_and_valid_recipients_dict.keys())

@@ -1,6 +1,6 @@
 import { RecipientGenerated, RecipientRequirementsGenerated, UpdatedRecipientGenerated } from '../generated';
 import { Recipient, RecipientRequirements, UpdatedRecipient } from '../model';
-import { parseBloodGroup, parsePatient } from './patient.parsers';
+import { parseBloodGroup, parsePatient, parseAllMessages } from './patient.parsers';
 import { parseAntibodies } from './hla.parsers';
 import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
@@ -25,7 +25,8 @@ export const parseRecipient = (data: RecipientGenerated): Recipient => {
     //  we expect undefined from BE but we sometimes get null instead
     previousTransplants: data.previous_transplants !== null ? data.previous_transplants : undefined,
     recipientRequirements: data.recipient_requirements && parseRecipientRequirements(data.recipient_requirements),
-    relatedDonorDbId: data.related_donor_db_id
+    relatedDonorDbId: data.related_donor_db_id,
+    all_messages: parseAllMessages(data.all_messages)
   };
 };
 

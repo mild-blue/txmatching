@@ -2,6 +2,21 @@ basePath: /
 consumes:
 - application/json
 definitions:
+    AllMessages:
+        properties:
+            errors:
+                items:
+                    type: string
+                type: array
+            infos:
+                items:
+                    type: string
+                type: array
+            warnings:
+                items:
+                    type: string
+                type: array
+        type: object
     AntibodiesPerGroup:
         properties:
             hla_antibody_list:
@@ -491,6 +506,8 @@ definitions:
             active:
                 description: Whether the user shall be used in pairing calculation
                 type: boolean
+            all_messages:
+                $ref: '#/definitions/AllMessages'
             compatible_blood_with_related_recipient:
                 description: Indicator whether Donor and related recipients have compatible
                     blood groups
@@ -577,6 +594,10 @@ definitions:
                 type: string
             parameters:
                 $ref: '#/definitions/PatientParameters'
+            parsing_errors:
+                items:
+                    $ref: '#/definitions/ParsingError'
+                type: array
             related_recipient_db_id:
                 description: Database id of the related recipient
                 type: integer
@@ -1010,6 +1031,24 @@ definitions:
         type: object
     ParsingError:
         properties:
+            donor_id:
+                type: integer
+            hla_code_or_group:
+                type: string
+            message:
+                type: string
+            parsing_issue_detail:
+                type: string
+            recipient_id:
+                type: integer
+            txm_event_id:
+                type: integer
+        required:
+        - message
+        - parsing_issue_detail
+        type: object
+    ParsingErrorPublic:
+        properties:
             hla_code_or_group:
                 type: string
             medical_id:
@@ -1018,8 +1057,8 @@ definitions:
                 type: string
             parsing_issue_detail:
                 type: string
-            txm_event_id:
-                type: integer
+            txm_event_name:
+                type: string
         required:
         - message
         - parsing_issue_detail
@@ -1094,7 +1133,7 @@ definitions:
             parsing_errors:
                 description: Errors and warnings that occurred in HLA codes parsing
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingErrorPublic'
                 type: array
             recipients_uploaded:
                 description: Number of recipients successfully loaded into the application.
@@ -1145,6 +1184,8 @@ definitions:
                 items:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
+            all_messages:
+                $ref: '#/definitions/AllMessages'
             db_id: *id009
             hla_antibodies:
                 $ref: '#/definitions/HlaAntibodies'
@@ -1154,6 +1195,10 @@ definitions:
             medical_id: *id010
             parameters:
                 $ref: '#/definitions/PatientParameters'
+            parsing_errors:
+                items:
+                    $ref: '#/definitions/ParsingError'
+                type: array
             previous_transplants:
                 type: integer
             recipient_cutoff:
@@ -1471,6 +1516,14 @@ definitions:
                 items:
                     $ref: '#/definitions/CountryCode'
                 type: array
+            allowed_txm_events:
+                description: Countries that the user has access to.
+                example:
+                - test
+                items:
+                    description: Name of TXM event
+                    type: string
+                type: array
             email:
                 description: Email/username used for authentication.
                 type: string
@@ -1497,11 +1550,59 @@ definitions:
                 type: string
         required:
         - allowed_countries
+        - allowed_txm_events
         - email
         - password
         - require_second_factor
         - role
         - second_factor
+        type: object
+    UserRegistrationOut:
+        properties:
+            allowed_countries:
+                description: Countries that the user has access to.
+                example:
+                - AUT
+                - CZE
+                items:
+                    $ref: '#/definitions/CountryCode'
+                type: array
+            allowed_txm_events:
+                description: Countries that the user has access to.
+                example:
+                - test
+                items:
+                    description: Name of TXM event
+                    type: string
+                type: array
+            email:
+                description: Email/username used for authentication.
+                type: string
+            password_reset_token:
+                description: token to reset password
+                example: long_string_token
+                type: string
+            password_reset_token_message:
+                description: detailed description how to reset password including
+                    url
+                example: 'To reset password go tu url: www.reset.password/token'
+                type: string
+            role:
+                description: User's role.
+                enum:
+                - ADMIN
+                - VIEWER
+                - EDITOR
+                - SERVICE
+                example: ADMIN
+                type: string
+        required:
+        - allowed_countries
+        - allowed_txm_events
+        - email
+        - password_reset_token
+        - password_reset_token_message
+        - role
         type: object
     Version:
         properties:
@@ -2519,9 +2620,9 @@ paths:
                     $ref: '#/definitions/UserRegistration'
             responses:
                 '200':
-                    description: Whether the user was registered successfully.
+                    description: Detailed info about the registered user.
                     schema:
-                        $ref: '#/definitions/Success'
+                        $ref: '#/definitions/UserRegistrationOut'
                 '400':
                     description: Wrong data format.
                     schema:
@@ -2665,6 +2766,11 @@ responses:
         description: value_error
     WrongTokenUsedException:
         description: wrong_used_token_exception
+securityDefinitions:
+    bearer:
+        in: header
+        name: Authorization
+        type: apiKey
 swagger: '2.0'
 tags:
 -   name: public

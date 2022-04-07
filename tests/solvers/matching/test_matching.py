@@ -21,7 +21,8 @@ def _create_recipient(recipient_id: int, donor: Donor) -> Recipient:
                          hla_typing=HLATyping(hla_per_groups=[], hla_types_raw_list=[])
                      ),
                      acceptable_blood_groups=list(),
-                     hla_antibodies=create_antibodies([])
+                     hla_antibodies=create_antibodies([]),
+                     parsing_errors=[]
                      )
 
 
@@ -34,7 +35,8 @@ class TestMatching(TestCase):
         self._donors = [
             Donor(donor_index, f'D-{donor_index}',
                   parameters=PatientParameters(blood_group=BloodGroup.A, country_code=Country.CZE,
-                                               hla_typing=HLATyping(hla_per_groups=[], hla_types_raw_list=[])))
+                                               hla_typing=HLATyping(hla_per_groups=[], hla_types_raw_list=[])),
+                                               parsing_errors=[])
             for donor_index in range(10)]
         self._recipients = [_create_recipient(10 + donor_index, donor)
                             for donor_index, donor in enumerate(self._donors)]

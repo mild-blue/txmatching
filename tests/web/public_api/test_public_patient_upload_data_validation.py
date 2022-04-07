@@ -39,8 +39,8 @@ class TestMatchingApi(DbTests):
         self._check_response(res, 200)
         txm_event = get_txm_event_complete(txm_event.db_id)
         self.assertEqual(txm_event.name, txm_event.name)
-        self.assertEqual(3, len(txm_event.active_recipients_dict))
-        self.assertEqual(4, len(txm_event.active_donors_dict))
+        self.assertEqual(3, len(txm_event.all_recipients))
+        self.assertEqual(4, len(txm_event.all_donors))
         self.assertEqual(3, res.json['recipients_uploaded'])
         self.assertEqual(4, res.json['donors_uploaded'])
         self.assertCountEqual(
@@ -49,14 +49,13 @@ class TestMatchingApi(DbTests):
                 'B*01:01N', 'BW4',
                 'Group A', 'Group A',
                 'Group B', 'Group B', 'Group B', 'Group B', 'Group B', 'Group B', 'Group B',
-                'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1',
-                'Antibodies', 'Antibodies'
+                'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1'
             ],
             [error['hla_code_or_group'] for error in res.json['parsing_errors']]
         )
         self.assertEqual(1, len(UploadedDataModel.query.all()))
         self.assertSetEqual({BloodGroup.ZERO, BloodGroup.A},
-                            set(blood for blood in txm_event.active_recipients_dict[1].acceptable_blood_groups))
+                            set(blood for blood in txm_event.all_recipients[0].acceptable_blood_groups))
         self.assertListEqual(
             create_hla_typing(
                 [
@@ -64,14 +63,12 @@ class TestMatchingApi(DbTests):
                     'B*01:01N', 'Invalid'
                 ]
             ).hla_per_groups,
-            txm_event.active_donors_dict[1].parameters.hla_typing.hla_per_groups
+            txm_event.all_donors[0].parameters.hla_typing.hla_per_groups
         )
-        self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_split_or_broad_codes(txm_event.active_donors_dict[1]))
-        self.assertSetEqual({'A9'}, _get_hla_antibodies_split_or_broad_codes(txm_event.active_recipients_dict[1]))
-        self.assertEqual('D1', txm_event.active_donors_dict[1].medical_id)
-        self.assertEqual('TEST_INTERNAL_MEDICAL_ID', txm_event.active_donors_dict[1].internal_medical_id)
-        # three errors from the real processing and 2 from get_hla_typing above
-        self._check_expected_errors_in_db(26)
+        self.assertSetEqual({'A1', 'A23'}, _get_hla_typing_split_or_broad_codes(txm_event.all_donors[0]))
+        self.assertSetEqual({'A9'}, _get_hla_antibodies_split_or_broad_codes(txm_event.all_recipients[0]))
+        self.assertEqual('D1', txm_event.all_donors[0].medical_id)
+        self.assertEqual('TEST_INTERNAL_MEDICAL_ID', txm_event.all_donors[0].internal_medical_id)
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         txm_event_name = 'invalid_name'
@@ -125,7 +122,7 @@ class TestMatchingApi(DbTests):
         self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A'], 
                               [error['hla_code_or_group'] for error in res.json['parsing_errors']])
         txm_event = get_txm_event_complete(txm_event.db_id)
-        recipient = txm_event.active_recipients_dict[1]
+        recipient = txm_event.all_recipients[0]
         expected_antibodies = {
             HLACode('DPA1*01:03', 'DPA1', 'DPA1'),
             HLACode('DPB1*04:02', 'DP4', 'DP4'),
@@ -136,7 +133,7 @@ class TestMatchingApi(DbTests):
                                                   hla_group.hla_antibody_list})
         expected_typing = {'DQA1', 'A1', 'DQ6', 'B7'}
         self.assertSetEqual(expected_typing, _get_hla_typing_split_or_broad_codes(recipient))
-        donor = txm_event.active_donors_dict[1]
+        donor = txm_event.all_donors[0]
         expected_typing = {'B7', 'DQA1', 'DQ6'}
         self.assertSetEqual(expected_typing, _get_hla_typing_split_or_broad_codes(donor))
         self._check_expected_errors_in_db(3)
@@ -149,7 +146,7 @@ class TestMatchingApi(DbTests):
         self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A', 'Antibodies'], 
                               [error['hla_code_or_group'] for error in res.json['parsing_errors']])
         txm_event = get_txm_event_complete(txm_event.db_id)
-        recipient = txm_event.active_recipients_dict[1]
+        recipient = txm_event.all_recipients[0]
         expected_antibodies = {'DQA6', 'DQ8', 'DQA5', 'DQ2', 'DQ7'}
         self.assertSetEqual(expected_antibodies, _get_hla_antibodies_split_or_broad_codes(recipient))
         expected_antibodies_over_cutoff = {'DQA6', 'DQ8'}
@@ -162,7 +159,7 @@ class TestMatchingApi(DbTests):
                                                 recipients_json=SPECIAL_RECIPIENTS_EXCEPTIONAL_HLA_CODES)
         self._check_response(res, 200)
         txm_event = get_txm_event_complete(txm_event.db_id)
-        recipient = txm_event.active_recipients_dict[1]
+        recipient = txm_event.all_recipients[0]
         expected_antibodies = {'DR9', 'CW6', 'B82', 'CW4'}
         self.assertSetEqual(expected_antibodies, _get_hla_antibodies_split_or_broad_codes(recipient))
 

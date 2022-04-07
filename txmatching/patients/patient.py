@@ -3,6 +3,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 
+from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
@@ -40,6 +41,7 @@ class Patient(PersistentlyHashable):
 
 @dataclass
 class Donor(Patient, PersistentlyHashable):
+    parsing_errors: Optional[List[ParsingError]] = None
     related_recipient_db_id: Optional[RecipientDbId] = None
     donor_type: DonorType = DonorType.DONOR
     active: bool = True
@@ -48,6 +50,8 @@ class Donor(Patient, PersistentlyHashable):
     def update_persistent_hash(self, hash_: HashType):
         super().update_persistent_hash(hash_)
         update_persistent_hash(hash_, Donor)
+        # TODO this is not hashable:
+        # update_persistent_hash(hash_, sorted(self.parsing_errors))
         update_persistent_hash(hash_, self.related_recipient_db_id)
         update_persistent_hash(hash_, self.donor_type)
         update_persistent_hash(hash_, self.active)
@@ -81,6 +85,7 @@ class Recipient(Patient, PersistentlyHashable):
     related_donor_db_id: DonorDbId
     acceptable_blood_groups: List[BloodGroup]
     hla_antibodies: HLAAntibodies
+    parsing_errors: Optional[List[ParsingError]] = None
     recipient_cutoff: Optional[int] = None
     recipient_requirements: RecipientRequirements = RecipientRequirements()
     waiting_since: Optional[datetime] = None
@@ -96,6 +101,8 @@ class Recipient(Patient, PersistentlyHashable):
         update_persistent_hash(hash_, Recipient)
         update_persistent_hash(hash_, self.related_donor_db_id)
         update_persistent_hash(hash_, sorted(self.acceptable_blood_groups))
+        # TODO this is not hashable:
+        # update_persistent_hash(hash_, sorted(self.parsing_errors))
         update_persistent_hash(hash_, self.recipient_cutoff)
         update_persistent_hash(hash_, self.hla_antibodies)
         update_persistent_hash(hash_, self.recipient_requirements)
@@ -115,8 +122,8 @@ class TxmEventBase:
 class TxmEvent(TxmEventBase):
     all_donors: List[Donor]
     all_recipients: List[Recipient]
-    active_donors_dict: Dict[DonorDbId, Donor]
-    active_recipients_dict: Dict[RecipientDbId, Recipient]
+    active_and_valid_donors_dict: Dict[DonorDbId, Donor]
+    active_and_valid_recipients_dict: Dict[RecipientDbId, Recipient]
 
     # pylint: disable=too-many-arguments
     # I think it is reasonable to have multiple arguments here
@@ -125,9 +132,10 @@ class TxmEvent(TxmEventBase):
         super().__init__(db_id=db_id, name=name, default_config_id=default_config_id, state=state)
         self.all_donors = all_donors
         self.all_recipients = all_recipients
-        self.active_donors_dict = {donor.db_id: donor for donor in self.all_donors if donor.active}
-        self.active_recipients_dict = {recipient.db_id: recipient for recipient in self.all_recipients if
-                                       recipient.related_donor_db_id in self.active_donors_dict}
+        (
+            self.active_and_valid_donors_dict,
+            self.active_and_valid_recipients_dict,
+        ) = _filter_patients_that_dont_have_parsing_errors(all_donors, all_recipients)
 
 
 def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
@@ -144,3 +152,41 @@ def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
                    mfi=0,
                    cutoff=DEFAULT_CUTOFF
                )).cutoff
+
+
+def _filter_patients_that_dont_have_parsing_errors(
+    donors: List[Donor], recipients: List[Recipient]
+    ) -> (Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]):
+    exclude_donors_ids = set()
+    exclude_recipients_ids = set()
+
+    for patient in donors:
+        if not _parsing_error_list_is_empty(patient.parsing_errors):
+            exclude_donors_ids.add(patient.db_id)
+            if patient.related_recipient_db_id is not None:
+                exclude_recipients_ids.add(patient.related_recipient_db_id)
+
+    for patient in recipients:
+        if not _parsing_error_list_is_empty(patient.parsing_errors):
+            if patient.db_id not in exclude_recipients_ids:
+                exclude_donors_ids.add(patient.related_donor_db_id)
+                exclude_recipients_ids.add(patient.db_id)
+
+    return_donors = {
+        patient.db_id: patient
+        for patient in donors
+        if patient.db_id not in exclude_donors_ids and patient.active
+    }
+    return_recipients = {
+        patient.db_id: patient
+        for patient in recipients
+        if patient.db_id not in exclude_recipients_ids and patient.related_donor_db_id in return_donors
+    }
+
+    return return_donors, return_recipients
+
+
+def _parsing_error_list_is_empty(parsing_errors: List[ParsingError]) -> bool:
+    if parsing_errors is not None and len(parsing_errors) > 0:
+        return False
+    return True

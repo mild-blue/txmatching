@@ -6,8 +6,6 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_type)
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.database.services.txm_event_service import create_txm_event
-from txmatching.database.sql_alchemy_schema import ParsingErrorModel
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAPerGroup
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES, HLAGroup
@@ -17,16 +15,13 @@ from txmatching.utils.hla_system.hla_table import \
     PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS
 from txmatching.utils.hla_system.hla_transformations.get_mfi_from_multiple_hla_codes import \
     get_mfi_from_multiple_hla_codes
-from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
-    ERROR_PROCESSING_RESULTS, OK_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS, ParsingIssueDetail)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations import (
     parse_hla_raw_code_with_details, preprocess_hla_code_in)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
-    basic_group_is_empty,
-    group_exceedes_max_number_of_hla_types,
-    parse_hla_raw_code_and_add_parsing_error_to_db_session)
-from txmatching.utils.hla_system.hla_transformations.parsing_error import \
-    ParsingInfo
+    basic_group_is_empty, group_exceedes_max_number_of_hla_types)
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
+    ERROR_PROCESSING_RESULTS, OK_PROCESSING_RESULTS,
+    WARNING_PROCESSING_RESULTS, ParsingIssueDetail)
 from txmatching.utils.hla_system.rel_dna_ser_parsing import parse_rel_dna_ser
 
 codes = {
@@ -139,18 +134,6 @@ class TestCodeParser(DbTests):
 
         self.assertEqual(expected, raw_codes_with_wrong_number_per_group)
 
-    def test_parsing_with_db_storing(self):
-        txm_event_db_id = create_txm_event('test_event').db_id
-        parsing_info = ParsingInfo(medical_id='TEST_MEDICAL_ID', txm_event_id=txm_event_db_id)
-        for code, _ in codes.items():
-            parse_hla_raw_code_and_add_parsing_error_to_db_session(code, parsing_info)
-        errors = ParsingErrorModel.query.all()
-        self.assertEqual(13, len(errors))
-        self.assertSetEqual(
-            {('TEST_MEDICAL_ID', txm_event_db_id)},
-            {(error.medical_id, error.txm_event_id) for error in errors}
-        )
-
     def test_parse_hla_ser(self):
         parsing_result = parse_rel_dna_ser(get_absolute_path('tests/utils/hla_system/rel_dna_ser_test.txt'))
 
@@ -183,33 +166,24 @@ class TestCodeParser(DbTests):
 
     def test_mfi_extraction(self):
         # When one value extremely low, calculate average only from such value.
-        self.assertEqual(0, len(ParsingErrorModel.query.all()))
-        self.assertEqual(1, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test'))
-        self.assertEqual(1, len(ParsingErrorModel.query.all()))
-        self.assertEqual(1000, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test'))
-        self.assertEqual(2, len(ParsingErrorModel.query.all()))
-        self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test'))
+        self.assertEqual(1, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test')[1])
+        self.assertEqual(1000, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test')[1])
+        self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test')[1])
 
         # When multiple values low, calculate the average only from those values.
-        self.assertEqual(900, get_mfi_from_multiple_hla_codes([1000, 900, 800, 19000, 20000, 18000], 2000, 'test'))
+        self.assertEqual(900, get_mfi_from_multiple_hla_codes([1000, 900, 800, 19000, 20000, 18000], 2000, 'test')[1])
 
         # When similarly high MFIs calculate the average
-        self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000], 2000, 'test'))
-        self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000], 2000, 'test'))
-        self.assertEqual(15000, get_mfi_from_multiple_hla_codes([20000, 10000], 2000, 'test'))
+        self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000], 2000, 'test')[1])
+        self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000], 2000, 'test')[1])
+        self.assertEqual(15000, get_mfi_from_multiple_hla_codes([20000, 10000], 2000, 'test')[1])
 
         # When the lowest MFI is significantly lower than the other values, but there are not MFIs close to such lowest
         # value, average of values lower then overall average is calculated. This might not be optimal in some cases,
         # as the one below (one might maybe drop the hla code. But the algorithm is better safe than sorry.)
         # This case is reported in logger and will be investigated on per instance basis.
-        self.assertEqual(2, len(ParsingErrorModel.query.all()))
-        self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test'))
-        self.assertEqual(3, len(ParsingErrorModel.query.all()))
+        self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test')[1])
 
-        self.assertEqual(
-            {ParsingIssueDetail.MFI_PROBLEM},
-            {error.parsing_issue_detail for error in ParsingErrorModel.query.all()}
-        )
         # Checks that we truly group by high res codes. In this case both DQA1*01:01 and DQA1*01:02 are DQA1 in split.
         # DQA1*01:01 is dropped whereas DQA1*01:02 is kept.
         self.assertSetEqual({HLACode('DQA1*01:02', 'DQA1', 'DQA1')},
@@ -264,28 +238,28 @@ class TestCodeParser(DbTests):
         self.assertSetEqual({1}, split_counts)
 
     def test_parsing_errors_exactly_in_one_severity_category(self):
-        
+
         for processing_result in ParsingIssueDetail:
             self.assertTrue(
-            (processing_result in OK_PROCESSING_RESULTS or 
-             processing_result in WARNING_PROCESSING_RESULTS or
-             processing_result in ERROR_PROCESSING_RESULTS)
+                (processing_result in OK_PROCESSING_RESULTS or
+                 processing_result in WARNING_PROCESSING_RESULTS or
+                 processing_result in ERROR_PROCESSING_RESULTS)
             )
 
         for processing_result in OK_PROCESSING_RESULTS:
             self.assertTrue(
-             (processing_result not in WARNING_PROCESSING_RESULTS and
-             processing_result not in ERROR_PROCESSING_RESULTS) 
+                (processing_result not in WARNING_PROCESSING_RESULTS and
+                 processing_result not in ERROR_PROCESSING_RESULTS)
             )
 
         for processing_result in WARNING_PROCESSING_RESULTS:
             self.assertTrue(
-            (processing_result not in OK_PROCESSING_RESULTS and 
-             processing_result not in ERROR_PROCESSING_RESULTS)
+                (processing_result not in OK_PROCESSING_RESULTS and
+                 processing_result not in ERROR_PROCESSING_RESULTS)
             )
 
         for processing_result in ERROR_PROCESSING_RESULTS:
             self.assertTrue(
-            (processing_result not in OK_PROCESSING_RESULTS and 
-              processing_result not in WARNING_PROCESSING_RESULTS)
+                (processing_result not in OK_PROCESSING_RESULTS and
+                 processing_result not in WARNING_PROCESSING_RESULTS)
             )

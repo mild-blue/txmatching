@@ -2,10 +2,9 @@ from typing import List
 
 import numpy as np
 
+from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
-from txmatching.utils.hla_system.hla_transformations.parsing_error import (
-    ParsingInfo, add_parsing_error_to_db_session)
 
 RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI = 1
 
@@ -16,8 +15,7 @@ RELATIVE_CLOSENESS_TO_MINIMUM = 1 / 2
 
 def get_mfi_from_multiple_hla_codes(mfis: List[int],
                                     cutoff: int,
-                                    raw_code: str,
-                                    parsing_info: ParsingInfo = None) -> int:
+                                    raw_code: str) -> (List[ParsingError], int):
     """
     Takes list of MFIs of the same hla code and estimates the MFI for the code.
     It is based on discussions with immunologists. If variance is low, take average, if variance is high, take average
@@ -37,6 +35,8 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
     mfis = np.array(mfis)
     max_mfi = np.max(mfis)
     min_mfi = np.min(mfis)
+
+    parsing_errors = []
 
     if min_mfi < 0:
         raise AssertionError(f'MFI has to be always >=0. The data shall be validated on input. Obtained MFI={min_mfi}.')
@@ -67,35 +67,41 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
             relevant_mean = np.mean(max(mfis_under_mean, mfis_close_to_minimum, key=len))
 
         if RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW * cutoff < relevant_mean < cutoff:
-            add_parsing_error_to_db_session(
-                raw_code, ParsingIssueDetail.MFI_PROBLEM,
-                f'Dropping {raw_code} antibody: '
-                f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
-                f'To be consulted with immunologist, because the antibody is dropped even though it has some high MFI '
-                f'values.',
-                parsing_info
+            parsing_errors.append(
+                ParsingError(
+                    hla_code_or_group=raw_code,
+                    parsing_issue_detail=ParsingIssueDetail.MFI_PROBLEM,
+                    message=f'Dropping {raw_code} antibody: '
+                    f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
+                    f'To be consulted with immunologist, because the antibody is dropped even though it has some high MFI '
+                    f'values.'
+                )
             )
 
         elif relevant_mean > cutoff > min_mfi:
-            add_parsing_error_to_db_session(
-                raw_code, ParsingIssueDetail.MFI_PROBLEM,
-                f'Not dropping {raw_code} antibody: '
-                f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
-                f'To be consulted with immunologist, because the antibody is NOT dropped even though there are some MFI'
-                f' values below cutoff.',
-                parsing_info
+            parsing_errors.append(
+                ParsingError(
+                    hla_code_or_group=raw_code,
+                    parsing_issue_detail=ParsingIssueDetail.MFI_PROBLEM,
+                    message=f'Not dropping {raw_code} antibody: '
+                    f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
+                    f'To be consulted with immunologist, because the antibody is NOT dropped even though there are some MFI'
+                    f' values below cutoff.'
+                )
             )
 
         elif relevant_mean < cutoff and only_one_number_used:
-            add_parsing_error_to_db_session(
-                raw_code, ParsingIssueDetail.MFI_PROBLEM,
-                f'Dropping {raw_code} antibody: '
-                f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
-                f'To be consulted with immunologist, because the antibody is dropped even though only one MFI value was'
-                f' identified as relevant for the MFI calculation and therefore the final calculated mean is less '
-                f'relevant.',
-                parsing_info
+            parsing_errors.append(
+                ParsingError(
+                    hla_code_or_group=raw_code,
+                    parsing_issue_detail=ParsingIssueDetail.MFI_PROBLEM,
+                    message=f'Dropping {raw_code} antibody: '
+                    f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
+                    f'To be consulted with immunologist, because the antibody is dropped even though only one MFI value was'
+                    f' identified as relevant for the MFI calculation and therefore the final calculated mean is less '
+                    f'relevant.'
+                )
             )
 
-        return int(relevant_mean)
-    return int(np.mean(mfis))
+        return (parsing_errors, int(relevant_mean))
+    return (parsing_errors, int(np.mean(mfis)))

@@ -15,7 +15,7 @@ does not support Windows.
 
 ### Prepare Frontend
 In order to build Frontend for the app one must run `make build-fe`.
-If it does not work, you might have some dependencies missing. 
+If it does not work, you might have some dependencies missing.
 For details see [README.md](txmatching/web/frontend/README.md).
 
 One must do that every time when something was changed in the FE code in order to have up to date FE.
@@ -64,7 +64,7 @@ After that simply run `make setup-small-non-empty-db`
 This runs postgres database in docker that has already some data inside.
 
 ### Run the app
- Simply run `make run`. This should start the app at localhost:8080. To log in use credentials `admin@example.com` and 
+ Simply run `make run`. This should start the app at localhost:8080. To log in use credentials `admin@example.com` and
  password `admin`
 
 ## Swagger
@@ -78,6 +78,9 @@ We also automatically generate TypeScript files that are used by FE. These files
 using `openapi-generator-cli` tool. To install this tool, please refer to [README.md](txmatching/web/frontend/README.md).
 
 You can automatically generate both swagger file and TS files by running `make generate-swagger-all`.
+
+You should be able to create user with some rights to some events. Also you should be able to create an txm event
+with duplicate patients from another event via the swagger endpoints.
 
 ## Development
 
@@ -123,6 +126,3 @@ To obtain configuration in the code, one should call `get_application_configurat
 To run tests simply run them either in IDE or via `make check`
 
 This runs unit tests and also linter.
-
-
-

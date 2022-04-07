@@ -13,7 +13,7 @@ from txmatching.auth.service.service_auth_check import allow_service_role
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     PatientUploadSuccessJson, UploadPatientsJson)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
-    PatientUploadDTOOut
+    PatientUploadPublicDTOOut
 from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
 from txmatching.database.services.patient_upload_service import (
@@ -56,10 +56,10 @@ class TxmEventUploadPatients(Resource):
         # save the original request to the database
         save_original_data(patient_upload_dto.txm_event_name, current_user_id, request.json)
         # perform update operation
-        replace_or_add_patients_from_one_country(patient_upload_dto)
+        donors, recipients = replace_or_add_patients_from_one_country(patient_upload_dto)
         # Get parsing errors for uploaded patients
-        parsing_errors = get_patients_errors_from_upload_dto(patient_upload_dto)
-        return response_ok(PatientUploadDTOOut(
+        parsing_errors = get_patients_errors_from_upload_dto(donors, recipients, txm_event_db_id)
+        return response_ok(PatientUploadPublicDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),
             donors_uploaded=len(patient_upload_dto.donors),
             parsing_errors=parsing_errors

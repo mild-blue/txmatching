@@ -397,9 +397,9 @@
                         }
                     },
                     "200": {
-                        "description": "Whether the user was registered successfully.",
+                        "description": "Detailed info about the registered user.",
                         "schema": {
-                            "$ref": "#/definitions/Success"
+                            "$ref": "#/definitions/UserRegistrationOut"
                         }
                     }
                 },
@@ -538,6 +538,13 @@
     "consumes": [
         "application/json"
     ],
+    "securityDefinitions": {
+        "bearer": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Authorization"
+        }
+    },
     "tags": [
         {
             "name": "public"
@@ -960,7 +967,7 @@
             },
             "type": "object"
         },
-        "ParsingError": {
+        "ParsingErrorPublic": {
             "required": [
                 "message",
                 "parsing_issue_detail"
@@ -978,8 +985,8 @@
                 "medical_id": {
                     "type": "string"
                 },
-                "txm_event_id": {
-                    "type": "integer"
+                "txm_event_name": {
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -1020,7 +1027,7 @@
                     "type": "array",
                     "description": "Errors and warnings that occurred in HLA codes parsing",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingErrorPublic"
                     }
                 }
             },
@@ -1246,6 +1253,7 @@
         "UserRegistration": {
             "required": [
                 "allowed_countries",
+                "allowed_txm_events",
                 "email",
                 "password",
                 "require_second_factor",
@@ -1292,6 +1300,77 @@
                     "items": {
                         "$ref": "#/definitions/CountryCode"
                     }
+                },
+                "allowed_txm_events": {
+                    "type": "array",
+                    "description": "Countries that the user has access to.",
+                    "example": [
+                        "test"
+                    ],
+                    "items": {
+                        "type": "string",
+                        "description": "Name of TXM event"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "UserRegistrationOut": {
+            "required": [
+                "allowed_countries",
+                "allowed_txm_events",
+                "email",
+                "password_reset_token",
+                "password_reset_token_message",
+                "role"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "description": "Email/username used for authentication."
+                },
+                "role": {
+                    "type": "string",
+                    "description": "User's role.",
+                    "example": "ADMIN",
+                    "enum": [
+                        "ADMIN",
+                        "VIEWER",
+                        "EDITOR",
+                        "SERVICE"
+                    ]
+                },
+                "allowed_countries": {
+                    "type": "array",
+                    "description": "Countries that the user has access to.",
+                    "example": [
+                        "AUT",
+                        "CZE"
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/CountryCode"
+                    }
+                },
+                "allowed_txm_events": {
+                    "type": "array",
+                    "description": "Countries that the user has access to.",
+                    "example": [
+                        "test"
+                    ],
+                    "items": {
+                        "type": "string",
+                        "description": "Name of TXM event"
+                    }
+                },
+                "password_reset_token": {
+                    "type": "string",
+                    "description": "token to reset password",
+                    "example": "long_string_token"
+                },
+                "password_reset_token_message": {
+                    "type": "string",
+                    "description": "detailed description how to reset password including url",
+                    "example": "To reset password go tu url: www.reset.password/token"
                 }
             },
             "type": "object"

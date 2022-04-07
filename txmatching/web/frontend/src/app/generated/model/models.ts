@@ -1,3 +1,4 @@
+export * from './allMessagesGenerated';
 export * from './antibodiesPerGroupGenerated';
 export * from './antibodyMatchGenerated';
 export * from './antigenMatchGenerated';
@@ -37,6 +38,7 @@ export * from './matchingGenerated';
 export * from './newTxmEventGenerated';
 export * from './otpLoginGenerated';
 export * from './parsingErrorGenerated';
+export * from './parsingErrorPublicGenerated';
 export * from './passwordChangeGenerated';
 export * from './patientModelToUpdateGenerated';
 export * from './patientParametersGenerated';
@@ -67,4 +69,5 @@ export * from './updatedRecipientGenerated';
 export * from './uploadPatientsGenerated';
 export * from './userLoginGenerated';
 export * from './userRegistrationGenerated';
+export * from './userRegistrationOutGenerated';
 export * from './versionGenerated';

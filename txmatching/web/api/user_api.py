@@ -7,43 +7,35 @@ from flask_restx import Resource, fields
 
 from txmatching.auth.auth_check import require_role
 from txmatching.auth.auth_management import (change_password, get_reset_token,
-                                             register, reset_password)
+                                             get_user_id_for_email, register,
+                                             reset_password)
 from txmatching.auth.data_types import UserRole
 from txmatching.auth.login_flow import (credentials_login, otp_login,
                                         refresh_token, resend_otp)
 from txmatching.auth.user.topt_auth_check import allow_otp_request
-from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
 from txmatching.data_transfer_objects.shared_dto import SuccessDTOOut
 from txmatching.data_transfer_objects.shared_swagger import SuccessJsonOut
-from txmatching.utils.country_enum import Country
+from txmatching.data_transfer_objects.users.user_dto import (
+    UserRegistrationDtoIn, UserRegistrationDtoOut)
+from txmatching.data_transfer_objects.users.user_swagger import (
+    LoginInputJson, LoginSuccessJson, OtpInJson, PasswordChangeInJson,
+    RegistrationJson, RegistrationOutJson, ResetRequestJson)
 from txmatching.web.web_utils.namespaces import user_api
-from txmatching.web.web_utils.route_utils import response_ok
+from txmatching.web.web_utils.route_utils import request_body, response_ok
 
 logger = logging.getLogger(__name__)
-
-LoginSuccessResponse = user_api.model('LoginSuccessResponse', {
-    'auth_token': fields.String(required=True),
-})
-
-ResetRequestResponse = user_api.model('ResetRequestResponse', {
-    'token': fields.String(required=True)
-})
 
 
 @user_api.route('/login', methods=['POST'])
 class LoginApi(Resource):
-    login_input_model = user_api.model('UserLogin', {
-        'email': fields.String(required=True, description='Email of the user to login.'),
-        'password': fields.String(required=True, description='User\'s password.')
-    })
 
-    @user_api.request_body(login_input_model,
+    @user_api.request_body(LoginInputJson,
                            description='Endpoint to be used for login of users. Returns JWT. This JWT serves two'
                                        ' purposes: in the case of '
                                        'normal accounts it can be used to obtain OTP at the /otp endpoint; in the case '
                                        'of service accounts it can be directly used to access '
                                        '/public/patient-upload endpoint')
-    @user_api.response_ok(LoginSuccessResponse,
+    @user_api.response_ok(LoginSuccessJson,
                           description='Login successful. JWT generated. User must attach the token to every request '
                                       'in the "Authorization" header with the prefix "Bearer". Example: '
                                       '"Authorization: Bearer some_token", where some_token is the token received '
@@ -57,13 +49,10 @@ class LoginApi(Resource):
 
 @user_api.route('/otp', methods=['POST', 'PUT'])
 class OtpLoginApi(Resource):
-    otp_input_model = user_api.model('OtpLogin', {
-        'otp': fields.String(required=True, description='OTP for this login.'),
-    })
 
     @user_api.doc(security='bearer')
-    @user_api.request_body(otp_input_model)
-    @user_api.response_ok(LoginSuccessResponse, 'OTP validation was successful. JWT generated.')
+    @user_api.request_body(OtpInJson)
+    @user_api.response_ok(LoginSuccessJson, 'OTP validation was successful. JWT generated.')
     @user_api.response_errors()
     @user_api.response_error_sms_gate()
     @allow_otp_request()
@@ -86,7 +75,7 @@ class OtpLoginApi(Resource):
 class RefreshTokenApi(Resource):
 
     @user_api.require_user_login()
-    @user_api.response_ok(LoginSuccessResponse, description='Token successfully refreshed.')
+    @user_api.response_ok(LoginSuccessJson, description='Token successfully refreshed.')
     @user_api.response_errors()
     def get(self):
         return response_ok(_respond_token(refresh_token()))
@@ -94,13 +83,9 @@ class RefreshTokenApi(Resource):
 
 @user_api.route('/change-password', methods=['PUT'])
 class PasswordChangeApi(Resource):
-    input = user_api.model('PasswordChange', {
-        'current_password': fields.String(required=True, description='Current password.'),
-        'new_password': fields.String(required=True, description='New password.')
-    })
 
     @user_api.require_user_login()
-    @user_api.request_body(input)
+    @user_api.request_body(PasswordChangeInJson)
     @user_api.response_ok(SuccessJsonOut, description='Whether the password was changed successfully.')
     @user_api.response_errors()
     def put(self):
@@ -113,11 +98,11 @@ class PasswordChangeApi(Resource):
 class RequestReset(Resource):
 
     @user_api.require_user_login()
-    @user_api.response_ok(ResetRequestResponse, description='Returns reset token.')
+    @user_api.response_ok(ResetRequestJson, description='Returns reset token.')
     @user_api.response_errors()
     @require_role(UserRole.ADMIN)
-    def get(self, email):
-        reset_token = get_reset_token(email)
+    def get(self, email: str):
+        reset_token = get_reset_token(get_user_id_for_email(email))
         return response_ok({'token': reset_token})
 
 
@@ -144,36 +129,26 @@ class ResetPassword(Resource):
 
 @user_api.route('/register', methods=['POST'])
 class RegistrationApi(Resource):
-    registration_model = user_api.model('UserRegistration', dict(
-        email=fields.String(required=True, description='Email/username used for authentication.'),
-        password=fields.String(required=True, description='User\'s password.'),
-        role=fields.String(required=True, enum=[role.name for role in UserRole], description='User\'s role.'),
-        require_second_factor=fields.Boolean(required=True, example=True,
-                                             description='Whether to require second factor for the user'),
-        second_factor=fields.String(required=True,
-                                    description='2FA: Phone number for user account in standard format (see example), '
-                                                'IP address for SERVICE account.',
-                                    example='+420657123987'),
-        allowed_countries=fields.List(required=True,
-                                      description='Countries that the user has access to.',
-                                      cls_or_instance=fields.Nested(CountryCodeJson),
-                                      example=['AUT', 'CZE']),
-    ))
 
     @user_api.require_user_login()
-    @user_api.request_body(registration_model)
-    @user_api.response_ok(SuccessJsonOut, description='Whether the user was registered successfully.')
+    @user_api.request_body(RegistrationJson)
+    @user_api.response_ok(RegistrationOutJson, description='Detailed info about the registered user.')
     @user_api.response_errors()
     @require_role(UserRole.ADMIN)
     def post(self):
-        post_data = request.get_json()
-        register(email=post_data['email'],
-                 password=post_data['password'],
-                 role=UserRole(post_data['role']),
-                 second_factor=post_data['second_factor'],
-                 allowed_countries=[Country(country_value) for country_value in post_data['allowed_countries']],
-                 require_second_factor=post_data['require_second_factor'])
-        return response_ok(SuccessDTOOut(success=True))
+        registration_dto = request_body(UserRegistrationDtoIn)
+        token = register(registration_dto)
+        password_reset_token_message = f'To reset password for the new user with email {str} go to:' \
+                                       f'{request.root_path}/#/reset-password/{token}'
+        return response_ok(UserRegistrationDtoOut(
+            role=registration_dto.role,
+            email=registration_dto.email,
+            password_reset_token_message=password_reset_token_message,
+            password_reset_token=token,
+            allowed_countries=registration_dto.allowed_countries,
+            allowed_txm_events=registration_dto.allowed_txm_events
+        )
+        )
 
 
 def _respond_token(token: str) -> dict:

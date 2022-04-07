@@ -10,6 +10,8 @@ from flask_restx.apidoc import ui_for
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from werkzeug.middleware.proxy_fix import ProxyFix
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 from txmatching.auth.crypto import bcrypt
 from txmatching.configuration.app_configuration.application_configuration import (
@@ -50,6 +52,13 @@ SWAGGER_PUBLIC = 'swagger_public.json'
 PATH_TO_SWAGGER_JSON = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER}')
 PATH_TO_SWAGGER_YAML = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER_YAML}')
 PATH_TO_PUBLIC_SWAGGER_JSON = get_absolute_path(f'{SWAGGER_FOLDER_PATH}{SWAGGER_PUBLIC}')
+AUTHORIZATIONS = {
+    'bearer': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization'
+    }
+}
 
 
 class ApiWithProvidedSpecsUrl(Api):
@@ -126,6 +135,25 @@ def create_app() -> Flask:
     # For flask.flash (gives feedback when uploading files)
     app.secret_key = 'secret key'
 
+    def init_sentry(application_configuration: ApplicationConfiguration):
+        dsn = application_configuration.sentry_dsn
+        if dsn:
+            sentry_sdk.init(
+                dsn=dsn,
+                integrations=[FlaskIntegration()],
+
+                # Set traces_sample_rate to 1.0 to capture 100%
+                # of transactions for performance monitoring.
+                # We recommend adjusting this value in production.
+                traces_sample_rate=1.0,
+
+                # By default the SDK will try to use the SENTRY_RELEASE
+                # environment variable, or infer a git commit
+                # SHA as release, however you may want to set
+                # something more human-readable.
+                # release="myapp@1.0.0",
+            )
+
     def load_local_development_config():
         config_file = 'txmatching.web.local_config'
         if importing.find_spec(config_file):
@@ -152,24 +180,19 @@ def create_app() -> Flask:
         app.config['ERROR_INCLUDE_MESSAGE'] = False
 
         # Set up Swagger and API
-        authorizations = {
-            'bearer': {
-                'type': 'apiKey',
-                'in': 'header',
-                'name': 'Authorization'
-            }
-        }
 
         full_swagger = application_configuration.environment != ApplicationEnvironment.PRODUCTION
         if full_swagger:
             specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER}'
         else:
-            specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER_PUBLIC}'
+            # only limited swagger when we're running in the production
+            # specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER_PUBLIC}'
+            # for the moment we show the full swagger always as not everything is possible to do via FE.
 
-        # only limited swagger when we're running in the production
+            specs_url = f'/{SWAGGER_FOLDER}/{SWAGGER}'
 
         api = ApiWithProvidedSpecsUrl(
-            authorizations=authorizations,
+            authorizations=AUTHORIZATIONS,
             version=VERSION,
             title=SWAGGER_TITLE,
             specs_url=specs_url
@@ -237,6 +260,7 @@ def create_app() -> Flask:
     with app.app_context():
         load_local_development_config()
         application_config = get_application_configuration()
+        init_sentry(application_config)
         # use configuration for app
         configure_db(application_config)
         configure_encryption()
@@ -259,7 +283,6 @@ def add_public_namespaces(api: Api):
 
 
 def add_all_namespaces(api: Api):
-
     add_public_namespaces(api)
     api.add_namespace(matching_api,
                       path=f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/<int:txm_event_id>/{MATCHING_NAMESPACE}')

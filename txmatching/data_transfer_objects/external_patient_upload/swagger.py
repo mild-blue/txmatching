@@ -4,7 +4,7 @@ from txmatching.data_transfer_objects.base_patient_swagger import (
     NewDonor, NewPatient, NewRecipient)
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
 from txmatching.data_transfer_objects.hla.parsing_error_swagger import \
-    ParsingErrorJson
+    ParsingErrorPublicJson
 from txmatching.web.web_utils.namespaces import public_api
 
 PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
@@ -13,7 +13,7 @@ PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
     'donors_uploaded': fields.Integer(required=True,
                                       description='Number of donors successfully loaded into the application.'),
     'parsing_errors': fields.List(required=True,
-                                  cls_or_instance=fields.Nested(ParsingErrorJson),
+                                  cls_or_instance=fields.Nested(ParsingErrorPublicJson),
                                   description='Errors and warnings that occurred in HLA codes parsing'),
 })
 

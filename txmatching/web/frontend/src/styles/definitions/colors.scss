@@ -49,3 +49,18 @@ $code-color--matching: $success;
 $code-bg--bad-matching: $danger-lighter;
 $code-border-color--bad-matching: $danger;
 $code-color--bad-matching: $danger;
+
+//warning
+$warning-icon: #ffc82e;
+$warning-text: #4a3300;
+$warning-bg: #fdf5e4;
+
+//error
+$error-icon: #e12828;
+$error-text: #5a0000;
+$error-bg: #fde4e4;
+
+//info
+$info-icon: #2e82ff;
+$info-text: #001b51;
+$info-bg: #e4ecfd;

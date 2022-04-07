@@ -2,6 +2,7 @@ export interface ParsingError {
   hlaCodeOrGroup?: string;
   ParsingIssueDetail: string;
   message: string;
-  medicalId?: string;
+  donorId?: number;
+  recipientId?: number;
   eventId?: number;
 }
