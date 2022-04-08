@@ -50,23 +50,9 @@ export const parseBloodGroup = (data: BloodGroupEnumGenerated): BloodGroup => {
 };
 
 export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined): AllMessages => {
-  const allMessagesParsed: AllMessages = {
-    errors: [],
-    warnings: [],
-    infos: []
+  return {
+    error: allMessages?.errors ?? [],
+    warning: allMessages?.warnings ?? [],
+    info: allMessages?.infos ?? []
   };
-
-  if (allMessages?.errors) {
-    allMessagesParsed.errors = allMessages.errors;
-  }
-
-  if (allMessages?.warnings) {
-    allMessagesParsed.warnings = allMessages.warnings;
-  }
-
-  if (allMessages?.infos) {
-    allMessagesParsed.infos = allMessages.infos;
-  }
-
-  return allMessagesParsed;
 };
