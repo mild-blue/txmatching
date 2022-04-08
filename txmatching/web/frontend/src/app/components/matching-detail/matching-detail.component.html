@@ -6,6 +6,9 @@
     <div *ngFor="let transplant of round.transplants"
          id="transplant-{{transplant.index}}"
          class="transplant-holder">
+      <div class="matching-detail-warnings">
+        <app-warning [data]="testData" warningType="warnings"></app-warning>
+      </div>
       <app-matching-transplant [donor]="transplant.d"
                                [recipient]="transplant.r"
                                [score]="transplant.score"

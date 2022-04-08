@@ -24,6 +24,11 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
 
   public donorTypes: typeof DonorType = DonorType;
 
+  public testData: string[] =
+    ['Cupcake ipsum dolor sit amet gummi bears.',
+      'Cotton candy tootsie roll donut gummies tart.',
+      'Gummi bears gummi bears croissant wafer tiramisu dessert sweet dessert.'];
+
   constructor(private _patientsService: PatientService,
               private _uiInteractionsService: UiInteractionsService) {
     super();
