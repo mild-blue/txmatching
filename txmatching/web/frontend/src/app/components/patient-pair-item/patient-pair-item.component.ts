@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ListItemAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { PatientPair } from '@app/model/PatientPair';
-import { countAllMessages, findMostSevereMessageType } from '@app/helpers/messages';
+import { countAllMessages, findMostSevereMessageType, WarningType } from '@app/helpers/messages';
 
 @Component({
   selector: 'app-patient-pair-item',
@@ -13,7 +13,7 @@ export class PatientPairItemComponent extends ListItemAbstractComponent implemen
   @Input() item?: PatientPair;
 
   public allMessagesCount: number = 0;
-  public mostSevereMessageType: 'error' | 'warning' | 'info' = 'info';
+  public mostSevereMessageType: WarningType = 'info';
 
   constructor() {
     super();

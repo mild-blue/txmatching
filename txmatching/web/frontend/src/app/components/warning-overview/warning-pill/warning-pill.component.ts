@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { WarningType } from '@app/helpers/messages';
 
 @Component({
   selector: 'app-warning-pill',
@@ -7,7 +8,7 @@ import { Component, Input } from '@angular/core';
 })
 export class WarningPillComponent{
 
-  @Input() warningType: 'warning' | 'error' | 'info' = 'info';
+  @Input() warningType: WarningType = 'info';
   @Input() count: number = 0;
   @Input() tooltip?: string;
   @Input() generalWarning?: boolean = false;

@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { WarningType } from '@app/helpers/messages';
 
 @Component({
   selector: 'app-warning',
@@ -6,7 +7,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./warning.component.scss']
 })
 export class WarningComponent{
-  @Input() warningType: 'warning' | 'error' | 'info' = 'info';
+  @Input() warningType: WarningType = 'info';
   @Input() data?: string[];
 
   constructor() { }

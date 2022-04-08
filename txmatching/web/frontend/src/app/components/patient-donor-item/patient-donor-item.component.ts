@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Donor } from '@app/model/Donor';
-import { countAllMessages, findMostSevereMessageType } from '@app/helpers/messages';
+import { countAllMessages, findMostSevereMessageType, WarningType } from '@app/helpers/messages';
 
 @Component({
   selector: 'app-patient-donor-item',
@@ -12,7 +12,7 @@ export class PatientDonorItemComponent implements OnInit{
   @Input() item?: Donor;
 
   public allMessagesCount: number = 0;
-  public mostSevereMessageType: 'error' | 'warning' | 'info' = 'info';
+  public mostSevereMessageType: WarningType = 'info';
 
   constructor() {}
 

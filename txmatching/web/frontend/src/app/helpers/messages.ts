@@ -8,7 +8,7 @@ export const countAllMessages = (data: Donor | Recipient | undefined): number =>
   return data.all_messages.warning.length + data.all_messages.error.length + data.all_messages.info.length;
 };
 
-export const findMostSevereMessageType = (donor: Donor | undefined, recipient: Recipient | undefined = undefined): 'error' | 'warning' | 'info' => {
+export const findMostSevereMessageType = (donor: Donor | undefined, recipient: Recipient | undefined = undefined): WarningType => {
   if (donor?.all_messages.error.length || recipient?.all_messages.error.length) {
     return 'error';
   }
@@ -19,3 +19,5 @@ export const findMostSevereMessageType = (donor: Donor | undefined, recipient: R
 
   return 'info';
 };
+
+export type WarningType = 'error' | 'warning' | 'info';
