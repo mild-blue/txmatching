@@ -584,7 +584,7 @@ definitions:
             donor_type:
                 $ref: '#/definitions/DonorType'
             etag: &id004
-                description: Tag of the patient
+                description: Number of updates of a patient
                 example: 1
                 type: integer
             internal_medical_id:
@@ -1455,21 +1455,16 @@ definitions:
         properties:
             donor:
                 $ref: '#/definitions/Donor'
-            overriding_error:
-                type: boolean
             parsing_errors:
                 items:
                     $ref: '#/definitions/ParsingError'
                 type: array
         required:
         - donor
-        - overriding_error
         - parsing_errors
         type: object
     UpdatedRecipient:
         properties:
-            overriding_error:
-                type: boolean
             parsing_errors:
                 items:
                     $ref: '#/definitions/ParsingError'
@@ -1477,7 +1472,6 @@ definitions:
             recipient:
                 $ref: '#/definitions/Recipient'
         required:
-        - overriding_error
         - parsing_errors
         - recipient
         type: object
@@ -2179,6 +2173,10 @@ paths:
                 '403':
                     description: Access denied. You do not have rights to access this
                         endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '406':
+                    description: Overriding patient
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':

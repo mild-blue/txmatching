@@ -35,7 +35,6 @@ export const parseDonorType = (data: DonorTypeGenerated): DonorType => {
 export const parseUpdatedDonor = (data: UpdatedDonorGenerated): UpdatedDonor => {
   return {
     donor: parseDonor(data.donor),
-    parsingErrors: data.parsing_errors.map(parseParsingError),
-    overridingError: data.overriding_error
+    parsingErrors: data.parsing_errors.map(parseParsingError)
   };
 };

@@ -768,6 +768,12 @@
             ],
             "put": {
                 "responses": {
+                    "406": {
+                        "description": "Overriding patient",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
                     "500": {
                         "description": "Unexpected error, see contents for details.",
                         "schema": {
@@ -2296,7 +2302,7 @@
                 },
                 "etag": {
                     "type": "integer",
-                    "description": "Tag of the patient",
+                    "description": "Number of updates of a patient",
                     "example": 1
                 },
                 "active": {
@@ -3168,7 +3174,7 @@
                 },
                 "etag": {
                     "type": "integer",
-                    "description": "Tag of the patient",
+                    "description": "Number of updates of a patient",
                     "example": 1
                 },
                 "hla_typing": {
@@ -3324,7 +3330,7 @@
                 },
                 "etag": {
                     "type": "integer",
-                    "description": "Tag of the patient",
+                    "description": "Number of updates of a patient",
                     "example": 1
                 },
                 "acceptable_blood_groups": {
@@ -3860,7 +3866,6 @@
         "UpdatedDonor": {
             "required": [
                 "donor",
-                "overriding_error",
                 "parsing_errors"
             ],
             "properties": {
@@ -3872,16 +3877,12 @@
                     "items": {
                         "$ref": "#/definitions/ParsingError"
                     }
-                },
-                "overriding_error": {
-                    "type": "boolean"
                 }
             },
             "type": "object"
         },
         "UpdatedRecipient": {
             "required": [
-                "overriding_error",
                 "parsing_errors",
                 "recipient"
             ],
@@ -3894,9 +3895,6 @@
                     "items": {
                         "$ref": "#/definitions/ParsingError"
                     }
-                },
-                "overriding_error": {
-                    "type": "boolean"
                 }
             },
             "type": "object"

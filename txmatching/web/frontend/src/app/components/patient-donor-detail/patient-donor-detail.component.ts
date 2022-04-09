@@ -10,6 +10,8 @@ import { AlertService } from '@app/services/alert/alert.service';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { EventService } from '@app/services/event/event.service';
 import { getErrorMessage } from '@app/helpers/error';
+import { UpdatedDonor } from '@app/model/Donor';
+
 
 @Component({
   selector: 'app-patient-detail-donor',
@@ -29,6 +31,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   public deleteLoading: boolean = false;
   public deleteSuccess: boolean = false;
   public deleteIcon = faTrash;
+  public donor_e?: Promise<UpdatedDonor>;
 
   constructor(private _patientService: PatientService,
               private _logger: LoggerService,
@@ -69,11 +72,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
         Object.assign(this.item, updatedDonor.donor);
       }
 
-      if (updatedDonor.overridingError){
-        this._alertService.infoPatientIsBeingOverriden();
-      }
-
-      if (updatedDonor.parsingErrors.length > 0 && !updatedDonor.overridingError) {
+      if (updatedDonor.parsingErrors.length > 0) {
         this._alertService.infoWithParsingErrors(
           'Donor was updated but some parsing errors and warnings occurred. ' +
           'You can modify the patient to fix the issues or contact us if the issues are not clear on info@mild.blue or +420 723 927 536.',
@@ -88,6 +87,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     .catch((e) => {
       this._alertService.error(`Error saving donor: "${getErrorMessage(e)}"`);
       this._logger.error(`Error saving donor: "${getErrorMessage(e)}"`);
+      this._alertService.infoPatientIsBeingOverriden();
     })
     .finally(() => this.loading = false);
   }

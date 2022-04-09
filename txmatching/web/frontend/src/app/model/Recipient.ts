@@ -25,5 +25,4 @@ export interface RecipientRequirements {
 export interface UpdatedRecipient {
   recipient: Recipient;
   parsingErrors: ParsingError[];
-  overridingError: boolean;
 }

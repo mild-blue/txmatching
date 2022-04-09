@@ -36,7 +36,7 @@ export interface DonorGenerated {
     detailed_score_with_related_recipient?: Array<DetailedScoreForGroupGenerated>;
     donor_type: DonorTypeGenerated;
     /**
-     * Tag of the patient
+     * Number of updates of a patient
      */
     etag: number;
     /**

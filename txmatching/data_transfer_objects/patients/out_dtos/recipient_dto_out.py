@@ -14,4 +14,3 @@ class RecipientDTOOut(Recipient):
 class UpdatedRecipientDTOOut:
     recipient: RecipientDTOOut
     parsing_errors: List[ParsingError]
-    overriding_error: bool

@@ -16,6 +16,10 @@ def response_ok(data, code=200):
     return make_response(jsonify(data), code)
 
 
+def overriding_error(code=406):
+    return make_response('', code)
+
+
 def request_body(data_class: Type[T]) -> T:
     return from_dict(
         data_class=data_class,

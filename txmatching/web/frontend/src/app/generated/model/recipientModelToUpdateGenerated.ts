@@ -25,7 +25,7 @@ export interface RecipientModelToUpdateGenerated {
      */
     db_id: number;
     /**
-     * Tag of the patient
+     * Number of updates of a patient
      */
     etag: number;
     /**

@@ -53,11 +53,7 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
       this._logger.log('Updated recipient received from BE', [updatedRecipient]);
       Object.assign(this.item, updatedRecipient.recipient);
 
-      if (updatedRecipient.overridingError){
-        this._alertService.infoPatientIsBeingOverriden();
-      }
-
-      if (updatedRecipient.parsingErrors.length > 0 && !updatedRecipient.overridingError) {
+      if (updatedRecipient.parsingErrors.length > 0) {
         this._alertService.infoWithParsingErrors(
           'Recipient was updated but some parsing errors and warnings occurred. ' +
           'You can modify the patient to fix the issues or contact us if the issues are not clear on info@mild.blue or +420 723 927 536.',

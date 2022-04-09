@@ -47,7 +47,10 @@ export class AlertService {
   }
 
   public infoPatientIsBeingOverriden(): void {
-    this.warn(`Problem with saving the patient: Someone updated this patient in the meantime.`);
+    this.warn(
+    `The patient can't be saved, someone edited this patient in the meantime. ` +
+    `You have to reload the patient first. The changes will be lost.`
+    );
   }
 
   public alert(alert: Alert): void {

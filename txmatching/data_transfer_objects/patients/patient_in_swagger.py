@@ -69,13 +69,11 @@ PatientsJson = patient_api.model('Patients', {
 UpdatedDonorJsonOut = patient_api.model('UpdatedDonor', {
     'donor': fields.Nested(required=True, model=DonorJson),
     'parsing_errors': fields.List(required=True, cls_or_instance=fields.Nested(ParsingErrorJson)),
-    'overriding_error': fields.Boolean(required=True)
 })
 
 UpdatedRecipientJsonOut = patient_api.model('UpdatedRecipient', {
     'recipient': fields.Nested(required=True, model=RecipientJson),
     'parsing_errors': fields.List(required=True, cls_or_instance=fields.Nested(ParsingErrorJson)),
-    'overriding_error': fields.Boolean(required=True)
 })
 
 PatientToUpdateJson = patient_api.model('PatientModelToUpdate', PatientToUpdate)
