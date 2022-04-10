@@ -1290,6 +1290,18 @@ definitions:
             type: object
     RecipientRequirements:
         properties:
+            max_donor_age:
+                type: integer
+            max_donor_height:
+                type: integer
+            max_donor_weight:
+                type: number
+            min_donor_age:
+                type: integer
+            min_donor_height:
+                type: integer
+            min_donor_weight:
+                type: number
             require_better_match_in_compatibility_index:
                 type: boolean
             require_better_match_in_compatibility_index_or_blood_group:
@@ -1389,6 +1401,8 @@ definitions:
                 type: string
             score:
                 type: number
+            transplant_messages:
+                $ref: '#/definitions/TransplantWarning'
         required:
         - compatible_blood
         - detailed_score_per_group
@@ -1397,6 +1411,13 @@ definitions:
         - max_score
         - recipient
         - score
+        type: object
+    TransplantWarning:
+        properties:
+            all_messages:
+                $ref: '#/definitions/AllMessages'
+            message_global:
+                type: string
         type: object
     TxmEvent:
         properties:

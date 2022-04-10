@@ -3533,6 +3533,24 @@
                 },
                 "require_compatible_blood_group": {
                     "type": "boolean"
+                },
+                "max_donor_weight": {
+                    "type": "number"
+                },
+                "min_donor_weight": {
+                    "type": "number"
+                },
+                "max_donor_height": {
+                    "type": "integer"
+                },
+                "min_donor_height": {
+                    "type": "integer"
+                },
+                "max_donor_age": {
+                    "type": "integer"
+                },
+                "min_donor_age": {
+                    "type": "integer"
                 }
             },
             "type": "object"
@@ -3769,6 +3787,20 @@
                     "items": {
                         "$ref": "#/definitions/DetailedScoreForGroup"
                     }
+                },
+                "transplant_messages": {
+                    "$ref": "#/definitions/TransplantWarning"
+                }
+            },
+            "type": "object"
+        },
+        "TransplantWarning": {
+            "properties": {
+                "message_global": {
+                    "type": "string"
+                },
+                "all_messages": {
+                    "$ref": "#/definitions/AllMessages"
                 }
             },
             "type": "object"
