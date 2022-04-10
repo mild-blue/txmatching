@@ -63,7 +63,6 @@ def get_test_donors():
                 ),
                 sex=Sex.M,
                 height=180,
-                weight=70,
                 year_of_birth=1985,
                 note='donor note 2'
             ),
@@ -99,7 +98,11 @@ def get_test_recipients():
             acceptable_blood_groups=[],
             recipient_cutoff=None,
             hla_antibodies=create_antibodies([]),
-            recipient_requirements=RecipientRequirements(),
+            recipient_requirements=RecipientRequirements(
+                max_donor_weight=50.5,
+                max_donor_age=10,
+                max_donor_height=150
+            ),
             waiting_since=None,
             previous_transplants=None,
             parsing_errors=[]
@@ -128,7 +131,11 @@ def get_test_recipients():
             acceptable_blood_groups=[],
             recipient_cutoff=None,
             hla_antibodies=create_antibodies([]),
-            recipient_requirements=RecipientRequirements(),
+            recipient_requirements=RecipientRequirements(
+                min_donor_weight=100,
+                min_donor_age=45,
+                min_donor_height=190
+            ),
             waiting_since=None,
             previous_transplants=None,
             parsing_errors=[]

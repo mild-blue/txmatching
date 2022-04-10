@@ -12,7 +12,7 @@ class TestPersistentHash(unittest.TestCase):
     def _assert_hash(self, value, expected_hash_digest):
         hash_ = initialize_persistent_hash()
         update_persistent_hash(hash_, value)
-        self.assertEqual(hash_.hexdigest(), expected_hash_digest)
+        self.assertEqual(expected_hash_digest, hash_.hexdigest())
 
     def test_hashing(self):
         self._assert_hash('foo', '56c527b4cc0b522b127062dec3201194')
@@ -29,8 +29,8 @@ class TestPersistentHash(unittest.TestCase):
             self._assert_hash({'a': 'b'}, 'e4625008dde72175d331df31f62572e9')
         self._assert_hash(None, '6af5817033462a81dfdff478e27e824d')
         self._assert_hash(create_hla_type('A9'), 'b81f11cc22faf6f2dc6259676d9c87ed')
-        self._assert_hash(get_test_donors(), 'e5ccc5da231213e03d5c8a052f83ab1e')
-        self._assert_hash(get_test_recipients(), 'd8ad62ecbd76d13c265f163a74c58f79')
+        self._assert_hash(get_test_donors(), '5d00efd538cfa210244c9e47bc9532b9')
+        self._assert_hash(get_test_recipients(), '7f327353e2e7ae406535b53c3e46b4f3')
 
     def test_functions_update_persistent_hash(self):
         value = create_hla_type('A9')

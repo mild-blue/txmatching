@@ -208,7 +208,7 @@ def get_transplant_messages(
             detailed_messages.append(TransplantWarningDetail.MIN_AGE)
 
     return TransplantWarnings(
-        message_global="There were several issues with this transplant, see detail.",
+        message_global='There were several issues with this transplant, see detail.',
         all_messages={
             'infos': [],
             'warnings': detailed_messages,

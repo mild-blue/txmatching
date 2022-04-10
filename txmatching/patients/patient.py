@@ -83,6 +83,12 @@ class RecipientRequirements(PersistentlyHashable):
         update_persistent_hash(hash_, bool(self.require_better_match_in_compatibility_index_or_blood_group))
         update_persistent_hash(hash_, bool(self.require_better_match_in_compatibility_index))
         update_persistent_hash(hash_, bool(self.require_compatible_blood_group))
+        update_persistent_hash(hash_, self.max_donor_weight)
+        update_persistent_hash(hash_, self.min_donor_weight)
+        update_persistent_hash(hash_, self.max_donor_height)
+        update_persistent_hash(hash_, self.min_donor_height)
+        update_persistent_hash(hash_, self.max_donor_age)
+        update_persistent_hash(hash_, self.min_donor_age)
 
 
 # pylint: disable=too-many-instance-attributes
