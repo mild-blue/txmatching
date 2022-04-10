@@ -61,7 +61,6 @@ from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import patient_api
 from txmatching.web.web_utils.route_utils import (request_arg_flag,
                                                   request_body, response_ok, overriding_error)
-from flask import jsonify, make_response, request
 
 logger = logging.getLogger(__name__)
 
@@ -160,6 +159,7 @@ class AlterRecipient(Resource):
     @patient_api.request_body(RecipientToUpdateJson)
     @patient_api.response_ok(UpdatedRecipientJsonOut, description='Updated recipient.')
     @patient_api.response_errors()
+    @patient_api.overriding_error()
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
@@ -173,11 +173,12 @@ class AlterRecipient(Resource):
                 UpdatedRecipientDTOOut(
                     recipient=recipient_to_recipient_dto_out(updated_recipient),
                     parsing_errors=get_parsing_errors_for_patients(recipient_ids=[updated_recipient.db_id],
-                                                                txm_event_id=txm_event_id)
+                                                                   txm_event_id=txm_event_id)
                 )
             )
         else:
             return overriding_error()
+
 
 @patient_api.route('/configs/<config_id>/donor', methods=['PUT'])
 class AlterDonor(Resource):
@@ -201,7 +202,6 @@ class AlterDonor(Resource):
         scorer = scorer_from_configuration(configuration_parameters)
         updated_donor, someone_is_overriding_patient = update_donor(donor_update_dto, txm_event_id)
 
-
         if not someone_is_overriding_patient:
             return response_ok(
                 UpdatedDonorDTOOut(
@@ -212,7 +212,7 @@ class AlterDonor(Resource):
                         scorer
                     ),
                     parsing_errors=get_parsing_errors_for_patients(donor_ids=[updated_donor.db_id],
-                                                                txm_event_id=txm_event_id)
+                                                                   txm_event_id=txm_event_id)
                 )
             )
         else:

@@ -968,6 +968,12 @@
             ],
             "put": {
                 "responses": {
+                    "406": {
+                        "description": "Overriding patient",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
                     "500": {
                         "description": "Unexpected error, see contents for details.",
                         "schema": {

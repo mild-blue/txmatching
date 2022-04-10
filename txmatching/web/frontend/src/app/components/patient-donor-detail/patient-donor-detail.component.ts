@@ -11,7 +11,6 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { EventService } from '@app/services/event/event.service';
 import { getErrorMessage } from '@app/helpers/error';
 
-
 @Component({
   selector: 'app-patient-detail-donor',
   templateUrl: './patient-donor-detail.component.html',

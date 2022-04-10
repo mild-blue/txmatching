@@ -175,7 +175,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
                                                       recipient_id=old_recipient_model.id,
                                                       txm_event_id=old_recipient_model.txm_event_id)
 
-    someone_is_overriding_patient = False
     if recipient_update_dict['etag'] - 1 == old_recipient_model.etag:
         delete_parsing_errors_for_patient(recipient_id=old_recipient_model.id,
                                           txm_event_id=old_recipient_model.txm_event_id)
@@ -239,9 +238,10 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
 
         RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
         db.session.commit()
+        return get_recipient_from_recipient_model(
+            RecipientModel.query.get(recipient_update_dto.db_id)), False
     else:
-        someone_is_overriding_patient = True
-    return get_recipient_from_recipient_model(RecipientModel.query.get(recipient_update_dto.db_id)), someone_is_overriding_patient
+        return None, True
 
 
 def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> (Donor, bool):
@@ -254,7 +254,6 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> (Don
                                               donor_id=old_donor_model.id,
                                               txm_event_id=old_donor_model.txm_event_id)
 
-    someone_is_overriding_patient = False
     if donor_update_dict['etag'] - 1 == old_donor_model.etag:
         delete_parsing_errors_for_patient(donor_id=old_donor_model.id,
                                           txm_event_id=old_donor_model.txm_event_id)
@@ -264,9 +263,9 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> (Don
             donor_update_dict['active'] = donor_update_dto.active
         DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
         db.session.commit()
+        return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id)), False
     else:
-        someone_is_overriding_patient = True
-    return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id)), someone_is_overriding_patient
+        return None, True
 
 
 def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
