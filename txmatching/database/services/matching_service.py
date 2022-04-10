@@ -188,21 +188,24 @@ def get_transplant_messages(
 ) -> TransplantWarnings:
     detailed_messages = []
 
-    if recipient_requirements.max_donor_weight and donor_parameters.weight > recipient_requirements.max_donor_weight:
-        detailed_messages.append(TransplantWarningDetail.MAX_WEIGHT)
-    elif recipient_requirements.min_donor_weight and donor_parameters.weight < recipient_requirements.min_donor_weight:
-        detailed_messages.append(TransplantWarningDetail.MIN_WEIGHT)
+    if donor_parameters.weight:
+        if recipient_requirements.max_donor_weight and donor_parameters.weight > recipient_requirements.max_donor_weight:
+            detailed_messages.append(TransplantWarningDetail.MAX_WEIGHT)
+        elif recipient_requirements.min_donor_weight and donor_parameters.weight < recipient_requirements.min_donor_weight:
+            detailed_messages.append(TransplantWarningDetail.MIN_WEIGHT)
 
-    if recipient_requirements.max_donor_height and donor_parameters.height > recipient_requirements.max_donor_height:
-        detailed_messages.append(TransplantWarningDetail.MAX_HEIGHT)
-    elif recipient_requirements.min_donor_height and donor_parameters.height < recipient_requirements.min_donor_height:
-        detailed_messages.append(TransplantWarningDetail.MIN_HEIGHT)
+    if donor_parameters.height:
+        if recipient_requirements.max_donor_height and donor_parameters.height > recipient_requirements.max_donor_height:
+            detailed_messages.append(TransplantWarningDetail.MAX_HEIGHT)
+        elif recipient_requirements.min_donor_height and donor_parameters.height < recipient_requirements.min_donor_height:
+            detailed_messages.append(TransplantWarningDetail.MIN_HEIGHT)
 
-    donor_age = date.today().year - donor_parameters.year_of_birth
-    if recipient_requirements.max_donor_age and donor_age > recipient_requirements.max_donor_age:
-        detailed_messages.append(TransplantWarningDetail.MAX_AGE)
-    elif recipient_requirements.min_donor_age and donor_age < recipient_requirements.min_donor_age:
-        detailed_messages.append(TransplantWarningDetail.MIN_AGE)
+    if donor_parameters.year_of_birth:
+        donor_age = date.today().year - donor_parameters.year_of_birth
+        if recipient_requirements.max_donor_age and donor_age > recipient_requirements.max_donor_age:
+            detailed_messages.append(TransplantWarningDetail.MAX_AGE)
+        elif recipient_requirements.min_donor_age and donor_age < recipient_requirements.min_donor_age:
+            detailed_messages.append(TransplantWarningDetail.MIN_AGE)
 
     return TransplantWarnings(
         message_global="There were several issues with this transplant, see detail.",
