@@ -10,7 +10,6 @@ import { AlertService } from '@app/services/alert/alert.service';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { EventService } from '@app/services/event/event.service';
 import { getErrorMessage } from '@app/helpers/error';
-import { UpdatedDonor } from '@app/model/Donor';
 
 
 @Component({
@@ -31,7 +30,6 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   public deleteLoading: boolean = false;
   public deleteSuccess: boolean = false;
   public deleteIcon = faTrash;
-  public donor_e?: Promise<UpdatedDonor>;
 
   constructor(private _patientService: PatientService,
               private _logger: LoggerService,
