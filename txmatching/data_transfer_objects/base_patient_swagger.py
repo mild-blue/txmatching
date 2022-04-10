@@ -57,7 +57,13 @@ PatientParametersJson = patient_api.model('PatientParameters', {
 RecipientRequirements = patient_api.model('RecipientRequirements', {
     'require_better_match_in_compatibility_index': fields.Boolean(required=True),
     'require_better_match_in_compatibility_index_or_blood_group': fields.Boolean(required=True),
-    'require_compatible_blood_group': fields.Boolean(required=True)
+    'require_compatible_blood_group': fields.Boolean(required=True),
+    'max_donor_weight': fields.Float(required=False),
+    'min_donor_weight': fields.Float(required=False),
+    'max_donor_height': fields.Integer(required=False),
+    'min_donor_height': fields.Integer(required=False),
+    'max_donor_age': fields.Integer(required=False),
+    'min_donor_age': fields.Integer(required=False)
 })
 
 HLAAntibodyJsonIn = public_api.model('HLAAntibodyIn', {
