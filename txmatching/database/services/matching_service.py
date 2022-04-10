@@ -1,6 +1,7 @@
 import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
+from datetime import date
 
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CalculatedMatchingsDTO, MatchingDTO, RoundDTO, TransplantDTOOut)
@@ -13,7 +14,8 @@ from txmatching.database.services.config_service import \
 from txmatching.database.services.scorer_service import (
     matchings_model_from_dict, score_matrix_from_dict)
 from txmatching.database.sql_alchemy_schema import PairingResultModel
-from txmatching.patients.patient import Donor, Recipient, TxmEvent
+from txmatching.patients.patient import Donor, Recipient, TxmEvent, RecipientRequirements
+from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
@@ -24,6 +26,7 @@ from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index)
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
+from txmatching.utils.transplantation_warning import TransplantWarningDetail, TransplantWarnings
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +155,11 @@ def create_calculated_matchings_dto(
             has_crossmatch=has_crossmatch,
             donor=pair.donor.medical_id,
             recipient=pair.recipient.medical_id,
-            detailed_score_per_group=detailed_scores
+            detailed_score_per_group=detailed_scores,
+            transplant_messages=get_transplant_messages(
+                pair.donor.parameters,
+                pair.recipient.recipient_requirements
+            )
         )
 
     return CalculatedMatchingsDTO(
@@ -173,3 +180,34 @@ def create_calculated_matchings_dto(
         show_not_all_matchings_found=latest_matchings_detailed.show_not_all_matchings_found,
         config_id=configuration_db_id
     )
+
+
+def get_transplant_messages(
+        donor_parameters: PatientParameters,
+        recipient_requirements: RecipientRequirements
+) -> TransplantWarnings:
+    detailed_messages = []
+
+    if recipient_requirements.max_donor_weight and donor_parameters.weight > recipient_requirements.max_donor_weight:
+        detailed_messages.append(TransplantWarningDetail.MAX_WEIGHT)
+    elif recipient_requirements.min_donor_weight and donor_parameters.weight < recipient_requirements.min_donor_weight:
+        detailed_messages.append(TransplantWarningDetail.MIN_WEIGHT)
+
+    if recipient_requirements.max_donor_height and donor_parameters.height > recipient_requirements.max_donor_height:
+        detailed_messages.append(TransplantWarningDetail.MAX_HEIGHT)
+    elif recipient_requirements.min_donor_height and donor_parameters.height < recipient_requirements.min_donor_height:
+        detailed_messages.append(TransplantWarningDetail.MIN_HEIGHT)
+
+    donor_age = date.today().year - donor_parameters.year_of_birth
+    if recipient_requirements.max_donor_age and donor_age > recipient_requirements.max_donor_age:
+        detailed_messages.append(TransplantWarningDetail.MAX_AGE)
+    elif recipient_requirements.min_donor_age and donor_age < recipient_requirements.min_donor_age:
+        detailed_messages.append(TransplantWarningDetail.MIN_AGE)
+
+    return TransplantWarnings(
+        message_global="There were several issues with this transplant, see detail.",
+        all_messages={
+            'infos': [],
+            'warnings': detailed_messages,
+            'errors': []
+        }) if detailed_messages else None
