@@ -24,7 +24,7 @@ export const parseDonor = (data: DonorGenerated): Donor => {
     scoreWithRelatedRecipient: data.score_with_related_recipient,
     maxScoreWithRelatedRecipient: data.max_score_with_related_recipient,
     detailedScoreWithRelatedRecipient: data.detailed_score_with_related_recipient?.map(parseDetailedScorePerGroup) ?? [],
-    all_messages: parseAllMessages(data.all_messages)
+    allMessages: parseAllMessages(data.all_messages)
   };
 };
 

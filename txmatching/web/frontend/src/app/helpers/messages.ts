@@ -1,19 +1,19 @@
 import { Donor, Recipient } from '@app/model';
 
 export const countAllMessages = (data: Donor | Recipient | undefined): number => {
-  if (!data?.all_messages) {
+  if (!data?.allMessages) {
     return 0;
   }
 
-  return data.all_messages.warning.length + data.all_messages.error.length + data.all_messages.info.length;
+  return data.allMessages.warning.length + data.allMessages.error.length + data.allMessages.info.length;
 };
 
 export const findMostSevereMessageType = (donor: Donor | undefined, recipient: Recipient | undefined = undefined): WarningType => {
-  if (donor?.all_messages.error.length || recipient?.all_messages.error.length) {
+  if (donor?.allMessages.error.length || recipient?.allMessages.error.length) {
     return 'error';
   }
 
-  if (donor?.all_messages.warning.length || recipient?.all_messages.warning.length) {
+  if (donor?.allMessages.warning.length || recipient?.allMessages.warning.length) {
     return 'warning';
   }
 
