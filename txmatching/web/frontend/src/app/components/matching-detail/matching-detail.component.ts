@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { Matching } from '@app/model/Matching';
 import { Subscription } from 'rxjs';
@@ -14,7 +14,7 @@ import { DonorType } from '@app/model/enums/DonorType';
   templateUrl: './matching-detail.component.html',
   styleUrls: ['./matching-detail.component.scss']
 })
-export class MatchingDetailComponent extends ListItemDetailAbstractComponent implements OnDestroy {
+export class MatchingDetailComponent extends ListItemDetailAbstractComponent implements OnDestroy, OnInit {
 
   private _activeTransplantSubscription: Subscription = new Subscription();
 
@@ -38,6 +38,10 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
         this._scrollToTransplant(id);
       }
     });
+  }
+
+  ngOnInit() {
+    console.log(this.item);
   }
 
   ngOnDestroy(): void {
