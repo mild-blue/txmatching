@@ -9,4 +9,14 @@ export interface Transplant extends PatientPair {
   donor: string;
   recipient: string;
   detailedScorePerGroup: DetailedScorePerGroup[];
+  transplantMessages: TransplantMessages;
+}
+
+export interface TransplantMessages {
+  messageGlobal: string;
+  allMessages: {
+    error: string[];
+    warning: string[];
+    info: string[];
+  }
 }

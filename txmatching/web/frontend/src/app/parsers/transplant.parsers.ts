@@ -1,5 +1,5 @@
-import { TransplantGenerated } from '../generated';
-import { PatientList, Transplant } from '../model';
+import { TransplantGenerated, TransplantWarningGenerated } from '../generated';
+import { PatientList, Transplant, TransplantMessages } from '../model';
 import { parseDetailedScorePerGroup } from './hla.parsers';
 import { getPatientPair } from './patientPair.parsers';
 import { ListItem } from '@app/components/list-item/list-item.interface';
@@ -26,6 +26,29 @@ export const parseTransplant = (data: TransplantGenerated, patients: PatientList
     hasCrossmatch: data.has_crossmatch,
     donor: data.donor,
     recipient: data.recipient,
-    detailedScorePerGroup: detailed_score_per_group
+    detailedScorePerGroup: detailed_score_per_group,
+    transplantMessages: parseTransplantMessages(data.transplant_messages)
+  };
+};
+
+const parseTransplantMessages = (data: TransplantWarningGenerated | undefined): TransplantMessages => {
+  if (!data) {
+    return {
+      messageGlobal: '',
+      allMessages: {
+        error: [],
+        warning: [],
+        info: []
+      }
+    };
+  }
+
+  return {
+    messageGlobal: data.message_global ?? '',
+    allMessages: {
+      error: data.all_messages?.errors ?? [],
+      warning: data.all_messages?.warnings ?? [],
+      info: data.all_messages?.infos ?? []
+    }
   };
 };

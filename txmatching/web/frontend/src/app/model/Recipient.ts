@@ -18,8 +18,12 @@ export interface RecipientRequirements {
   requireBetterMatchInCompatibilityIndex: boolean;
   requireBetterMatchInCompatibilityIndexOrBloodGroup: boolean;
   requireCompatibleBloodGroup: boolean;
-
-  [key: string]: boolean;
+  maxDonorAge: number;
+  maxDonorHeight: number;
+  maxDonorWeight: number;
+  minDonorAge: number;
+  minDonorHeight: number;
+  minDonorWeight: number;
 }
 
 export interface UpdatedRecipient {
