@@ -23,6 +23,7 @@ class Country(str, Enum):
     AZE = 'AZE'
     BDI = 'BDI'
     BEL = 'BEL'
+    BEL2 = 'BEL2'
     BEN = 'BEN'
     BES = 'BES'
     BFA = 'BFA'
