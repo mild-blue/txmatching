@@ -22,7 +22,7 @@ export interface PatientParameters {
 }
 
 export interface AllMessages {
-  errors: string[];
-  warnings: string[];
-  infos: string[];
+  error: string[];
+  warning: string[];
+  info: string[];
 }

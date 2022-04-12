@@ -1,19 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { WarningType } from '@app/helpers/messages';
 
 @Component({
   selector: 'app-warning',
   templateUrl: './warning.component.html',
   styleUrls: ['./warning.component.scss']
 })
-export class WarningComponent implements OnInit{
-  @Input() warningType: 'warnings' | 'errors' | 'infos' = 'infos';
+export class WarningComponent{
+  @Input() warningType: WarningType = 'info';
   @Input() data?: string[];
 
-  public matIcon: string = '';
-
   constructor() { }
-
-  ngOnInit() {
-    this.matIcon = this.warningType.slice(0, -1);
-  }
 }

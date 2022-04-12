@@ -11,7 +11,7 @@ export interface Recipient extends Patient {
   hlaAntibodies: Antibodies;
   recipientRequirements?: RecipientRequirements;
   relatedDonorDbId: number;
-  all_messages: AllMessages;
+  allMessages: AllMessages;
 }
 
 export interface RecipientRequirements {

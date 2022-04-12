@@ -1,6 +1,6 @@
 <div class="warning-card {{warningType}}" *ngIf="data && data.length">
   <div class="warning-card-heading">
-    <mat-icon [inline]="true" [matTooltip]="warningType">{{matIcon}}</mat-icon>
+    <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
     <h2 [ngClass]="warningType">{{warningType}}</h2>
   </div>
   <div class="warning-card-body">

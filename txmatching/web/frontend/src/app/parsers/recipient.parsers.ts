@@ -26,7 +26,7 @@ export const parseRecipient = (data: RecipientGenerated): Recipient => {
     previousTransplants: data.previous_transplants !== null ? data.previous_transplants : undefined,
     recipientRequirements: data.recipient_requirements && parseRecipientRequirements(data.recipient_requirements),
     relatedDonorDbId: data.related_donor_db_id,
-    all_messages: parseAllMessages(data.all_messages)
+    allMessages: parseAllMessages(data.all_messages)
   };
 };
 
