@@ -59,6 +59,7 @@ export * from './sexEnumGenerated';
 export * from './solverGenerated';
 export * from './successGenerated';
 export * from './transplantGenerated';
+export * from './transplantWarningGenerated';
 export * from './txmEventExportGenerated';
 export * from './txmEventGenerated';
 export * from './txmEventStateGenerated';

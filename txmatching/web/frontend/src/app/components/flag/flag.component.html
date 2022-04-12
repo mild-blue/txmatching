@@ -1,3 +1,3 @@
-<div *ngIf="countryCode" class="flag" [matTooltip]="countryCode">
+<div *ngIf="countryParts" class="flag" [matTooltip]="countryParts[0]" [matBadge]="countryParts[1]" matBadgeSize="small">
   <img [src]="image" alt="flag"/>
 </div>

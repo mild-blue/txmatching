@@ -12,6 +12,12 @@
 
 
 export interface RecipientRequirementsGenerated { 
+    max_donor_age?: number;
+    max_donor_height?: number;
+    max_donor_weight?: number;
+    min_donor_age?: number;
+    min_donor_height?: number;
+    min_donor_weight?: number;
     require_better_match_in_compatibility_index: boolean;
     require_better_match_in_compatibility_index_or_blood_group: boolean;
     require_compatible_blood_group: boolean;
