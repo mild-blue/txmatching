@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
 from datetime import date
+from typing import Dict, List, Optional, Tuple
 
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CalculatedMatchingsDTO, MatchingDTO, RoundDTO, TransplantDTOOut)
@@ -14,7 +14,8 @@ from txmatching.database.services.config_service import \
 from txmatching.database.services.scorer_service import (
     matchings_model_from_dict, score_matrix_from_dict)
 from txmatching.database.sql_alchemy_schema import PairingResultModel
-from txmatching.patients.patient import Donor, Recipient, TxmEvent, RecipientRequirements
+from txmatching.patients.patient import (Donor, Recipient,
+                                         RecipientRequirements, TxmEvent)
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
@@ -24,9 +25,11 @@ from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.enums import AntibodyMatchTypes
 from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index)
+from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
-from txmatching.utils.transplantation_warning import TransplantWarningDetail, TransplantWarnings
+from txmatching.utils.transplantation_warning import (TransplantWarningDetail,
+                                                      TransplantWarnings)
 
 logger = logging.getLogger(__name__)
 
@@ -158,7 +161,8 @@ def create_calculated_matchings_dto(
             detailed_score_per_group=detailed_scores,
             transplant_messages=get_transplant_messages(
                 pair.donor.parameters,
-                pair.recipient.recipient_requirements
+                pair.recipient.recipient_requirements,
+                detailed_scores
             )
         )
 
@@ -184,7 +188,8 @@ def create_calculated_matchings_dto(
 
 def get_transplant_messages(
         donor_parameters: PatientParameters,
-        recipient_requirements: RecipientRequirements
+        recipient_requirements: RecipientRequirements,
+        detailed_scores: List[DetailedScoreForHLAGroup]
 ) -> TransplantWarnings:
     detailed_messages = []
 
@@ -206,6 +211,15 @@ def get_transplant_messages(
             detailed_messages.append(TransplantWarningDetail.MAX_AGE)
         elif recipient_requirements.min_donor_age and donor_age < recipient_requirements.min_donor_age:
             detailed_messages.append(TransplantWarningDetail.MIN_AGE)
+
+    possible_crossmatches = [antibody_match for detailed_score in detailed_scores
+                             for antibody_match in detailed_score.antibody_matches
+                             if antibody_match.match_type != AntibodyMatchTypes.NONE]
+    for possible_crossmatch in possible_crossmatches:
+        if possible_crossmatch.match_type == AntibodyMatchTypes.BROAD:
+            detailed_messages.append(TransplantWarningDetail.BROAD_CROSSMATCH)
+        elif possible_crossmatch.match_type == AntibodyMatchTypes.BROAD:
+            detailed_messages.append(TransplantWarningDetail.SPLIT_CROSSMATCH)
 
     return TransplantWarnings(
         message_global='There were several issues with this transplant, see detail.',
