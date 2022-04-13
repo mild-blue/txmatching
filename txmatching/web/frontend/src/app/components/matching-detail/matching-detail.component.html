@@ -6,8 +6,10 @@
     <div *ngFor="let transplant of round.transplants"
          id="transplant-{{transplant.index}}"
          class="transplant-holder">
-      <div class="matching-detail-warnings">
-        <app-warning [data]="transplant.transplantMessages.allMessages.warning" warningType="warnings"></app-warning>
+      <div *ngIf="countAllMessages(transplant.transplantMessages)" class="matching-detail-warnings">
+        <ng-container *ngFor="let data of transplant.transplantMessages.allMessages | keyvalue">
+          <app-warning [data]="data.value" [warningType]="data.key"></app-warning>
+        </ng-container>
       </div>
       <app-matching-transplant [donor]="transplant.d"
                                [recipient]="transplant.r"

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
 import { Matching } from '@app/model/Matching';
 import { Subscription } from 'rxjs';
@@ -8,13 +8,14 @@ import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteracti
 import { Configuration } from '@app/model/Configuration';
 import { PatientList } from '@app/model/PatientList';
 import { DonorType } from '@app/model/enums/DonorType';
+import { countAllMessages } from '@app/helpers/messages';
 
 @Component({
   selector: 'app-matching-detail',
   templateUrl: './matching-detail.component.html',
   styleUrls: ['./matching-detail.component.scss']
 })
-export class MatchingDetailComponent extends ListItemDetailAbstractComponent implements OnDestroy, OnInit {
+export class MatchingDetailComponent extends ListItemDetailAbstractComponent implements OnDestroy {
 
   private _activeTransplantSubscription: Subscription = new Subscription();
 
@@ -23,6 +24,7 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
   @Input() configuration?: Configuration;
 
   public donorTypes: typeof DonorType = DonorType;
+  public allMessagesCount: number = 0;
 
   public testData: string[] =
     ['Cupcake ipsum dolor sit amet gummi bears.',
@@ -40,13 +42,11 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
     });
   }
 
-  ngOnInit() {
-    console.log(this.item);
-  }
-
   ngOnDestroy(): void {
     this._activeTransplantSubscription.unsubscribe();
   }
+
+  countAllMessages = countAllMessages;
 
   private _scrollToTransplant(id: number): void {
     const scrollable = document.querySelector(`.${scrollableDetailClass}`);

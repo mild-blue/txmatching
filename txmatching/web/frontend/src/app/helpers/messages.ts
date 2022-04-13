@@ -1,6 +1,6 @@
-import { Donor, Recipient } from '@app/model';
+import { Donor, Recipient, TransplantMessages } from '@app/model';
 
-export const countAllMessages = (data: Donor | Recipient | undefined): number => {
+export const countAllMessages = (data: Donor | Recipient | TransplantMessages | undefined): number => {
   if (!data?.allMessages) {
     return 0;
   }
