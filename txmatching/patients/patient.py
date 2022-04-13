@@ -175,16 +175,15 @@ def _filter_patients_that_dont_have_parsing_errors(
     exclude_recipients_ids = set()
 
     for patient in donors:
-        if not _parsing_error_list_contains_errors(patient.parsing_errors):
+        if _parsing_error_list_contains_errors(patient.parsing_errors):
             exclude_donors_ids.add(patient.db_id)
             if patient.related_recipient_db_id is not None:
                 exclude_recipients_ids.add(patient.related_recipient_db_id)
 
     for patient in recipients:
-        if not _parsing_error_list_contains_errors(patient.parsing_errors):
-            if patient.db_id not in exclude_recipients_ids:
-                exclude_donors_ids.add(patient.related_donor_db_id)
-                exclude_recipients_ids.add(patient.db_id)
+        if _parsing_error_list_contains_errors(patient.parsing_errors):
+            exclude_donors_ids.add(patient.related_donor_db_id)
+            exclude_recipients_ids.add(patient.db_id)
 
     return_donors = {
         patient.db_id: patient
@@ -202,8 +201,8 @@ def _filter_patients_that_dont_have_parsing_errors(
 
 def _parsing_error_list_contains_errors(parsing_issues: Optional[List[ParsingError]]) -> bool:
     if parsing_issues is None:
-        return True
+        return False
     for parsing_issue in parsing_issues:
         if parsing_issue.parsing_issue_detail in ERROR_PROCESSING_RESULTS:
-            return False
-    return True
+            return True
+    return False
