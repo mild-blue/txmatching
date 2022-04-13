@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional, Dict
+from typing import List, Optional
 
 from txmatching.patients.patient_types import MedicalId
 from txmatching.utils.country_enum import Country

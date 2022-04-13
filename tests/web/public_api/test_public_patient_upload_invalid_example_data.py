@@ -1,7 +1,7 @@
 from txmatching.patients.patient import DonorType
 from txmatching.utils.enums import Sex
 
-DONORS = [
+DONORS_WITH_ERRORS = [
     {
         'medical_id': 'D1',
         'internal_medical_id': 'TEST_INTERNAL_MEDICAL_ID',
@@ -53,7 +53,7 @@ DONORS = [
     },
 ]
 
-RECIPIENTS = [
+RECIPIENTS_WITH_ERRORS = [
     {
         'acceptable_blood_groups': [
             'A', '0'

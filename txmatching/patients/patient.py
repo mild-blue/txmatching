@@ -9,6 +9,8 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import TxmEventState
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ERROR_PROCESSING_RESULTS
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
@@ -167,22 +169,21 @@ def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
 
 
 def _filter_patients_that_dont_have_parsing_errors(
-    donors: List[Donor], recipients: List[Recipient]
-    ) -> (Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]):
+        donors: List[Donor], recipients: List[Recipient]
+) -> (Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]):
     exclude_donors_ids = set()
     exclude_recipients_ids = set()
 
     for patient in donors:
-        if not _parsing_error_list_is_empty(patient.parsing_errors):
+        if _parsing_error_list_contains_errors(patient.parsing_errors):
             exclude_donors_ids.add(patient.db_id)
             if patient.related_recipient_db_id is not None:
                 exclude_recipients_ids.add(patient.related_recipient_db_id)
 
     for patient in recipients:
-        if not _parsing_error_list_is_empty(patient.parsing_errors):
-            if patient.db_id not in exclude_recipients_ids:
-                exclude_donors_ids.add(patient.related_donor_db_id)
-                exclude_recipients_ids.add(patient.db_id)
+        if _parsing_error_list_contains_errors(patient.parsing_errors):
+            exclude_donors_ids.add(patient.related_donor_db_id)
+            exclude_recipients_ids.add(patient.db_id)
 
     return_donors = {
         patient.db_id: patient
@@ -198,7 +199,10 @@ def _filter_patients_that_dont_have_parsing_errors(
     return return_donors, return_recipients
 
 
-def _parsing_error_list_is_empty(parsing_errors: List[ParsingError]) -> bool:
-    if parsing_errors is not None and len(parsing_errors) > 0:
+def _parsing_error_list_contains_errors(parsing_issues: Optional[List[ParsingError]]) -> bool:
+    if parsing_issues is None:
         return False
-    return True
+    for parsing_issue in parsing_issues:
+        if parsing_issue.parsing_issue_detail in ERROR_PROCESSING_RESULTS:
+            return True
+    return False
