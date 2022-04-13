@@ -6,7 +6,8 @@
     <app-patient-pair
       [donor]="donor"
       [recipient]="recipient"
-      [showWarning]="hasCrossmatch"
+      [showWarning]="globalMessage"
+      [hasCrossmatch]="hasCrossmatch"
       [style]="isBloodCompatible ? patientPairStyles.Compatible : patientPairStyles.Incompatible"
     ></app-patient-pair>
 

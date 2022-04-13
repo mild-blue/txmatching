@@ -12,7 +12,8 @@ export class PatientPairComponent {
 
   @Input() donor?: Donor;
   @Input() recipient?: Recipient;
-  @Input() showWarning: boolean = false;
+  @Input() showWarning: string = '';
+  @Input() hasCrossmatch: boolean = false;
   @Input() style: PatientPairStyle = PatientPairStyle.Default;
 
   constructor() {

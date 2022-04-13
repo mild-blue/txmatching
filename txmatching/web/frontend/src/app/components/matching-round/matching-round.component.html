@@ -12,7 +12,8 @@
 
       <div class="content">
         <app-patient-pair [donor]="transplant.d" [recipient]="transplant.r"
-                          [showWarning]="transplant.hasCrossmatch"></app-patient-pair>
+                          [hasCrossmatch]="transplant.hasCrossmatch"
+                          [showWarning]="transplant.transplantMessages.messageGlobal"></app-patient-pair>
       </div>
 
       <app-score-indicator *ngIf="configuration && !configuration.use_binary_scoring"
