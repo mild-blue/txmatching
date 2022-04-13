@@ -5,5 +5,4 @@ export interface Round {
   index: string;
   donorType: DonorType;
   transplants: Transplant[];
-  hasCrossmatch: boolean;
 }

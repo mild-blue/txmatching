@@ -34,13 +34,25 @@ export const parseRecipientRequirements = (data: RecipientRequirementsGenerated)
   const {
     require_better_match_in_compatibility_index,
     require_better_match_in_compatibility_index_or_blood_group,
-    require_compatible_blood_group
+    require_compatible_blood_group,
+    max_donor_age,
+    max_donor_height,
+    max_donor_weight,
+    min_donor_age,
+    min_donor_height,
+    min_donor_weight
   } = data;
 
   return {
     requireBetterMatchInCompatibilityIndex: require_better_match_in_compatibility_index,
     requireBetterMatchInCompatibilityIndexOrBloodGroup: require_better_match_in_compatibility_index_or_blood_group,
-    requireCompatibleBloodGroup: require_compatible_blood_group
+    requireCompatibleBloodGroup: require_compatible_blood_group,
+    maxDonorAge: max_donor_age ?? 0,
+    maxDonorHeight: max_donor_height ?? 0,
+    maxDonorWeight: max_donor_weight ?? 0,
+    minDonorAge: min_donor_age ?? 0,
+    minDonorHeight: min_donor_height ?? 0,
+    minDonorWeight: min_donor_weight ?? 0
   };
 };
 

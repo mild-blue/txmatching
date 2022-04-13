@@ -12,7 +12,13 @@ export class RecipientEditable extends PatientEditable {
   recipientRequirements: RecipientRequirements = {
     requireBetterMatchInCompatibilityIndex: false,
     requireBetterMatchInCompatibilityIndexOrBloodGroup: false,
-    requireCompatibleBloodGroup: false
+    requireCompatibleBloodGroup: false,
+    maxDonorAge: 0,
+    maxDonorHeight: 0,
+    maxDonorWeight: 0,
+    minDonorAge: 0,
+    minDonorHeight: 0,
+    minDonorWeight: 0
   };
 
   initializeFromPatient(recipient: Recipient) {
