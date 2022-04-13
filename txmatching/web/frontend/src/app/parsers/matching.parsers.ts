@@ -36,8 +36,7 @@ export const parseMatching = (data: MatchingGenerated, patients: PatientList, li
     score: data.score,
     countOfTransplants: data.count_of_transplants,
     rounds,
-    countries: data.countries.map(parseMatchingCountry),
-    hasCrossmatch: rounds.some(round => round.hasCrossmatch)
+    countries: data.countries.map(parseMatchingCountry)
   };
 };
 
