@@ -33,6 +33,7 @@ export enum CountryCodeGenerated {
     Aze = 'AZE',
     Bdi = 'BDI',
     Bel = 'BEL',
+    Bel2 = 'BEL_2',
     Ben = 'BEN',
     Bes = 'BES',
     Bfa = 'BFA',

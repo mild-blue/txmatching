@@ -1,7 +1,7 @@
 <div *ngIf="count" class="warning-pill {{warningType}}">
-  <mat-icon [inline]="true" [matTooltip]="tooltip || warningType">{{matIcon}}</mat-icon>
+  <mat-icon [inline]="true" [matTooltip]="tooltip || warningType">{{warningType}}</mat-icon>
   <p *ngIf="count">{{count}}</p>
 </div>
 <div *ngIf="generalWarning" class="general-warning {{warningType}}">
-  <mat-icon [inline]="true" [matTooltip]="tooltip || warningType">{{matIcon}}</mat-icon>
+  <mat-icon [inline]="true" [matTooltip]="tooltip || warningType">{{warningType}}</mat-icon>
 </div>

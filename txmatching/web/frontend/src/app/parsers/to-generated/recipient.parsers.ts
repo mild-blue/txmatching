@@ -22,7 +22,13 @@ export const fromRecipientEditableToUpdateGenerated = (recipient: RecipientEdita
     recipient_requirements: {
       require_better_match_in_compatibility_index: recipient.recipientRequirements.requireBetterMatchInCompatibilityIndex,
       require_better_match_in_compatibility_index_or_blood_group: recipient.recipientRequirements.requireBetterMatchInCompatibilityIndexOrBloodGroup,
-      require_compatible_blood_group: recipient.recipientRequirements.requireCompatibleBloodGroup
+      require_compatible_blood_group: recipient.recipientRequirements.requireCompatibleBloodGroup,
+      max_donor_age: recipient.recipientRequirements.maxDonorAge,
+      min_donor_age: recipient.recipientRequirements.minDonorAge,
+      max_donor_weight: recipient.recipientRequirements.maxDonorWeight,
+      min_donor_weight: recipient.recipientRequirements.minDonorWeight,
+      max_donor_height: recipient.recipientRequirements.maxDonorHeight,
+      min_donor_height: recipient.recipientRequirements.minDonorHeight
     }
   };
 };

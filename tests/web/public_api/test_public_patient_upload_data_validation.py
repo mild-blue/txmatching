@@ -5,8 +5,8 @@ from flask import Response
 
 from tests.test_utilities.hla_preparation_utils import create_hla_typing
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from tests.web.public_api.test_public_patient_upload_example_data import (
-    DONORS, RECIPIENTS,
+from tests.web.public_api.test_public_patient_upload_invalid_example_data import (
+    DONORS_WITH_ERRORS, RECIPIENTS_WITH_ERRORS,
     SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_EXISTING_RECIPIENT_ID,
     SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_MISSING_RECIPIENT_ID,
     SPECIAL_DONORS_DUPLICATED_RECIPIENT_MEDICAL_IDS,
@@ -15,6 +15,8 @@ from tests.web.public_api.test_public_patient_upload_example_data import (
     SPECIAL_RECIPIENTS_MULTIPLE_SAME_HLA_CODES,
     SPECIAL_RECIPIENTS_SPECIAL_HLA_CODES,
     SPECIAL_RECIPIENTS_WAITING_SINCE_DATE_INVALID)
+from tests.web.public_api.test_public_patient_upload_valid_example_data import (
+    DONORS, RECIPIENTS)
 from txmatching.auth.crypto.password_crypto import encode_password
 from txmatching.auth.data_types import UserRole
 from txmatching.database.db import db
@@ -36,6 +38,16 @@ class TestMatchingApi(DbTests):
 
     def test_txm_event_patient_successful_upload(self):
         res, txm_event = self._txm_event_upload(donors_json=DONORS, recipients_json=RECIPIENTS)
+        self._check_response(res, 200)
+        txm_event = get_txm_event_complete(txm_event.db_id)
+        self.assertEqual(txm_event.name, txm_event.name)
+        self.assertEqual(3, len(txm_event.active_and_valid_recipients_dict))
+        self.assertEqual(4, len(txm_event.active_and_valid_donors_dict))
+        self.assertEqual(3, res.json['recipients_uploaded'])
+        self.assertEqual(4, res.json['donors_uploaded'])
+
+    def test_txm_event_patient_successful_upload_invalid_data(self):
+        res, txm_event = self._txm_event_upload(donors_json=DONORS_WITH_ERRORS, recipients_json=RECIPIENTS_WITH_ERRORS)
         self._check_response(res, 200)
         txm_event = get_txm_event_complete(txm_event.db_id)
         self.assertEqual(txm_event.name, txm_event.name)
@@ -72,15 +84,15 @@ class TestMatchingApi(DbTests):
 
     def test_txm_event_patient_failed_upload_invalid_txm_event_name(self):
         txm_event_name = 'invalid_name'
-        res, _ = self._txm_event_upload(donors_json=DONORS,
-                                        recipients_json=RECIPIENTS,
+        res, _ = self._txm_event_upload(donors_json=DONORS_WITH_ERRORS,
+                                        recipients_json=RECIPIENTS_WITH_ERRORS,
                                         txm_event_name=txm_event_name)
         self._check_response(res, 400,
                              error_message=f'No TXM event with name "{txm_event_name}" found.')
 
     def test_txm_event_patient_failed_upload_invalid_waiting_since_date(self):
 
-        res, _ = self._txm_event_upload(donors_json=DONORS,
+        res, _ = self._txm_event_upload(donors_json=DONORS_WITH_ERRORS,
                                         recipients_json=SPECIAL_RECIPIENTS_WAITING_SINCE_DATE_INVALID)
         self._check_response(res, 400,
                              error_message='Invalid date "2020-13-06". It must be in format "YYYY-MM-DD", e.g., '
@@ -90,20 +102,20 @@ class TestMatchingApi(DbTests):
 
         # Case 1 - recipient, DONOR type expected
         res, _ = self._txm_event_upload(donors_json=SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_EXISTING_RECIPIENT_ID,
-                                        recipients_json=RECIPIENTS)
+                                        recipients_json=RECIPIENTS_WITH_ERRORS)
         self._check_response(res, 400,
                              error_message='When recipient is set, donor type must be "DONOR" but was NON_DIRECTED.')
 
         # Case 2 - None recipient, BRIDGING_DONOR or NON_DIRECTED type expected (related_recipient_medical_id not set)
         res, _ = self._txm_event_upload(donors_json=SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_MISSING_RECIPIENT_ID,
-                                        recipients_json=RECIPIENTS)
+                                        recipients_json=RECIPIENTS_WITH_ERRORS)
         self._check_response(res, 400,
                              error_message='When recipient is not set, donor type must be "BRIDGING_DONOR" or'
                                            ' "NON_DIRECTED" but was "DONOR".')
 
     def test_txm_event_patient_failed_upload_invalid_related_medical_id_in_donor(self):
         res, _ = self._txm_event_upload(donors_json=SPECIAL_DONORS_INVALID_RECIPIENT_MEDICAL_ID,
-                                        recipients_json=RECIPIENTS)
+                                        recipients_json=RECIPIENTS_WITH_ERRORS)
         self._check_response(res, 400,
                              error_message='Donor (medical id "D1") has related recipient (medical id "invalid_id"),'
                                            ' which was not found among recipients.')
@@ -111,7 +123,7 @@ class TestMatchingApi(DbTests):
     def test_txm_event_patient_failed_upload_duplicate_related_recipient_medical_id_in_donors(self):
 
         res, _ = self._txm_event_upload(donors_json=SPECIAL_DONORS_DUPLICATED_RECIPIENT_MEDICAL_IDS,
-                                        recipients_json=RECIPIENTS)
+                                        recipients_json=RECIPIENTS_WITH_ERRORS)
         self._check_response(res, 400, error_message='Duplicate recipient medical ids found: [\'R1\'].')
 
     def test_txm_event_patient_successful_upload_special_hla_typing(self):
@@ -119,7 +131,7 @@ class TestMatchingApi(DbTests):
                                                 recipients_json=SPECIAL_RECIPIENTS_SPECIAL_HLA_CODES)
 
         self._check_response(res, 200)
-        self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A'], 
+        self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A'],
                               [error['hla_code_or_group'] for error in res.json['parsing_errors']])
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.all_recipients[0]
@@ -143,7 +155,7 @@ class TestMatchingApi(DbTests):
                                                 recipients_json=SPECIAL_RECIPIENTS_MULTIPLE_SAME_HLA_CODES)
 
         self._check_response(res, 200)
-        self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A', 'Antibodies'], 
+        self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A', 'Antibodies'],
                               [error['hla_code_or_group'] for error in res.json['parsing_errors']])
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.all_recipients[0]

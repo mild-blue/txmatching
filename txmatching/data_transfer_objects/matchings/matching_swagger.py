@@ -73,11 +73,21 @@ DetailedScoreForGroupJson = matching_api.model('DetailedScoreForGroup', {
     'antibody_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatchJson))
 })
 
+ErrorMessagesJson = matching_api.model('AllMessages', {
+    'infos': fields.List(fields.String),
+    'warnings': fields.List(fields.String),
+    'errors': fields.List(fields.String)
+})
+
+TransplantWarningsJson = matching_api.model('TransplantWarning', {
+    'message_global': fields.String(),
+    'all_messages': fields.Nested(ErrorMessagesJson)
+})
+
 TransplantJson = matching_api.model('Transplant', {
     'score': fields.Float(required=True),
     'max_score': fields.Float(required=True),
     'compatible_blood': fields.Boolean(required=True),
-    'has_crossmatch': fields.Boolean(required=True),
     'donor': fields.String(required=True),
     'recipient': fields.String(required=True),
     # Unfortunately is raw as we want to have the model general it is not clear how many different hla_groups will
@@ -86,7 +96,8 @@ TransplantJson = matching_api.model('Transplant', {
         required=True,
         description=DESCRIPTION_DETAILED_SCORE,
         example=EXAMPLE_DETAILED_SCORE,
-        cls_or_instance=fields.Nested(DetailedScoreForGroupJson))
+        cls_or_instance=fields.Nested(DetailedScoreForGroupJson)),
+    'transplant_messages': fields.Nested(TransplantWarningsJson)
 })
 
 CountryInRoundJson = matching_api.model('Country', {

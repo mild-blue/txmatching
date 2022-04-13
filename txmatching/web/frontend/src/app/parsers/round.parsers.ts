@@ -1,4 +1,4 @@
-import { CalculatedMatchingsGenerated, RoundGenerated } from '../generated';
+import { RoundGenerated } from '../generated';
 import { DonorType, PatientList, Round, Transplant } from '../model';
 import { parseTransplant } from './transplant.parsers';
 
@@ -8,13 +8,11 @@ export const parseRound = (data: RoundGenerated, patients: PatientList, mIndex: 
   ) ?? [];
   const donorType = _getRoundDonorType(transplants);
   const index = _getRoundIndex(donorType, rIndex);
-  const hasCrossmatch = transplants.some(transplant => transplant.hasCrossmatch);
 
   return {
     index,
     donorType,
-    transplants,
-    hasCrossmatch
+    transplants
   };
 };
 

@@ -8,6 +8,7 @@ import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteracti
 import { Configuration } from '@app/model/Configuration';
 import { PatientList } from '@app/model/PatientList';
 import { DonorType } from '@app/model/enums/DonorType';
+import { countAllMessages } from '@app/helpers/messages';
 
 @Component({
   selector: 'app-matching-detail',
@@ -23,6 +24,9 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
   @Input() configuration?: Configuration;
 
   public donorTypes: typeof DonorType = DonorType;
+  public allMessagesCount: number = 0;
+
+  countAllMessages = countAllMessages;
 
   constructor(private _patientsService: PatientService,
               private _uiInteractionsService: UiInteractionsService) {
@@ -38,6 +42,7 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
   ngOnDestroy(): void {
     this._activeTransplantSubscription.unsubscribe();
   }
+
 
   private _scrollToTransplant(id: number): void {
     const scrollable = document.querySelector(`.${scrollableDetailClass}`);

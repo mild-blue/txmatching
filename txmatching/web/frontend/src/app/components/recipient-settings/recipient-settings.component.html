@@ -114,6 +114,49 @@
       <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.requireBetterMatchInCompatibilityIndexOrBloodGroup">
         Require new donor having better CI match than original donor or blood group match
       </mat-slide-toggle>
+      <mat-slide-toggle #maxAge [checked]="!!recipient.recipientRequirements.maxDonorAge" [(ngModel)]="recipient.recipientRequirements.maxDonorAge">
+        Set maximal donor age
+      </mat-slide-toggle>
+      <app-simple-number *ngIf="maxAge.checked" #maxDonorAge="ngModel" (input)="formatNumber(maxDonorAge, 0)"
+                         label="Maximal donor age"
+                         [value]="recipient.recipientRequirements.maxDonorAge" [(ngModel)]="recipient.recipientRequirements.maxDonorAge"
+                         name="maxDonorAge" ngDefaultControl></app-simple-number>
+      <mat-slide-toggle #minAge [checked]="!!recipient.recipientRequirements.minDonorAge" [(ngModel)]="recipient.recipientRequirements.minDonorAge">
+        Set minimal donor age
+      </mat-slide-toggle>
+      <app-simple-number *ngIf="minAge.checked" #minDonorAge="ngModel" (input)="formatNumber(minDonorAge, 0)"
+                         label="Minimal donor age"
+                         [value]="recipient.recipientRequirements.minDonorAge" [(ngModel)]="recipient.recipientRequirements.minDonorAge"
+                         name="minDonorAge" ngDefaultControl></app-simple-number>
+      <mat-slide-toggle #maxHeight [checked]="!!recipient.recipientRequirements.maxDonorHeight" [(ngModel)]="recipient.recipientRequirements.maxDonorHeight">
+        Set maximal donor height
+      </mat-slide-toggle>
+      <app-simple-number *ngIf="maxHeight.checked" #maxDonorHeight="ngModel" (input)="formatNumber(maxDonorHeight, 0)"
+                         label="Maximal donor height"
+                         [value]="recipient.recipientRequirements.maxDonorHeight" [(ngModel)]="recipient.recipientRequirements.maxDonorHeight"
+                         name="maxDonorHeight" ngDefaultControl></app-simple-number>
+
+      <mat-slide-toggle #minHeight [checked]="!!recipient.recipientRequirements.minDonorHeight" [(ngModel)]="recipient.recipientRequirements.minDonorHeight">
+        Set minimal donor height
+      </mat-slide-toggle>
+      <app-simple-number *ngIf="minHeight.checked" #minDonorHeight="ngModel" (input)="formatNumber(minDonorHeight, 0)"
+                         label="Minimal donor height"
+                         [value]="recipient.recipientRequirements.minDonorHeight" [(ngModel)]="recipient.recipientRequirements.minDonorHeight"
+                         name="minDonorHeight" ngDefaultControl></app-simple-number>
+      <mat-slide-toggle #maxWeigh [checked]="!!recipient.recipientRequirements.maxDonorWeight" [(ngModel)]="recipient.recipientRequirements.maxDonorWeight">
+        Set maximal donor weigh
+      </mat-slide-toggle>
+      <app-simple-number *ngIf="maxWeigh.checked" #maxDonorWeight="ngModel" (input)="formatNumber(maxDonorWeight, 0)"
+                         label="Maximal donor weight"
+                         [value]="recipient.recipientRequirements.maxDonorWeight" [(ngModel)]="recipient.recipientRequirements.maxDonorWeight"
+                         name="maxDonorWeight" ngDefaultControl></app-simple-number>
+      <mat-slide-toggle #minWeigh [checked]="!!recipient.recipientRequirements.minDonorWeight" [(ngModel)]="recipient.recipientRequirements.minDonorWeight">
+        Set minimal donor weigh
+      </mat-slide-toggle>
+      <app-simple-number *ngIf="minWeigh.checked" #minDonorWeight="ngModel" (input)="formatNumber(minDonorWeight, 0)"
+                         label="Minimal donor weigh"
+                         [value]="recipient.recipientRequirements.minDonorWeight" [(ngModel)]="recipient.recipientRequirements.minDonorWeight"
+                         name="minDonorWeight" ngDefaultControl></app-simple-number>
     </div>
   </ng-container>
 </ng-container>

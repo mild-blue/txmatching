@@ -6,13 +6,18 @@
     <div *ngFor="let transplant of round.transplants"
          id="transplant-{{transplant.index}}"
          class="transplant-holder">
+      <div *ngIf="countAllMessages(transplant.transplantMessages)" class="matching-detail-warnings">
+        <ng-container *ngFor="let data of transplant.transplantMessages.allMessages | keyvalue">
+          <app-warning [data]="data.value" [warningType]="data.key"></app-warning>
+        </ng-container>
+      </div>
       <app-matching-transplant [donor]="transplant.d"
                                [recipient]="transplant.r"
                                [score]="transplant.score"
                                [maxScore]="transplant.maxScore"
                                [isBloodCompatible]="transplant.compatibleBlood"
-                               [hasCrossmatch]="transplant.hasCrossmatch"
                                [detailedScorePerGroup]="transplant.detailedScorePerGroup"
+                               [globalMessage]="transplant.transplantMessages.messageGlobal"
                                [configuration]="configuration"></app-matching-transplant>
     </div>
   </div>

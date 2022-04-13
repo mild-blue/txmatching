@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Donor, Recipient } from '@app/model';
+import { countAllMessages } from '@app/helpers/messages';
 
 @Component({
   selector: 'app-warning-overview',
@@ -18,15 +19,7 @@ export class WarningOverviewComponent implements OnInit{
   constructor() {}
 
   ngOnInit() {
-    this.allDonorMessagesCount = this.countAllMessages(this.donor);
-    this.allRecipientMessagesCount = this.countAllMessages(this.recipient);
-  }
-
-  countAllMessages(data: Donor | Recipient | undefined): number {
-    if (!data?.all_messages) {
-      return 0;
-    }
-
-    return data.all_messages.warnings.length + data.all_messages.errors.length + data.all_messages.infos.length;
+    this.allDonorMessagesCount = countAllMessages(this.donor);
+    this.allRecipientMessagesCount = countAllMessages(this.recipient);
   }
 }

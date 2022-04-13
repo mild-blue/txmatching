@@ -11,15 +11,19 @@ export interface Recipient extends Patient {
   hlaAntibodies: Antibodies;
   recipientRequirements?: RecipientRequirements;
   relatedDonorDbId: number;
-  all_messages: AllMessages;
+  allMessages: AllMessages;
 }
 
 export interface RecipientRequirements {
   requireBetterMatchInCompatibilityIndex: boolean;
   requireBetterMatchInCompatibilityIndexOrBloodGroup: boolean;
   requireCompatibleBloodGroup: boolean;
-
-  [key: string]: boolean;
+  maxDonorAge: number;
+  maxDonorHeight: number;
+  maxDonorWeight: number;
+  minDonorAge: number;
+  minDonorHeight: number;
+  minDonorWeight: number;
 }
 
 export interface UpdatedRecipient {

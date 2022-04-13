@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Donor } from '@app/model/Donor';
-import { Recipient } from '@app/model';
+import { countAllMessages, findMostSevereMessageType, WarningType } from '@app/helpers/messages';
 
 @Component({
   selector: 'app-patient-donor-item',
@@ -12,32 +12,12 @@ export class PatientDonorItemComponent implements OnInit{
   @Input() item?: Donor;
 
   public allMessagesCount: number = 0;
-  public mostSevereMessageType: 'errors' | 'warnings' | 'infos' = 'infos';
+  public mostSevereMessageType: WarningType = 'info';
 
   constructor() {}
 
   ngOnInit() {
-    this.allMessagesCount = this.countAllMessages(this.item);
-    this.mostSevereMessageType = this.findMostSevereMessageType(this.item);
-  }
-
-  countAllMessages(data: Donor | Recipient | undefined): number {
-    if (!data?.all_messages) {
-      return 0;
-    }
-
-    return data.all_messages.warnings.length + data.all_messages.errors.length + data.all_messages.infos.length;
-  }
-
-  findMostSevereMessageType(donor: Donor | undefined): 'errors' | 'warnings' | 'infos' {
-    if (donor?.all_messages.errors.length) {
-      return 'errors';
-    }
-
-    if (donor?.all_messages.warnings.length) {
-      return 'warnings';
-    }
-
-    return 'infos';
+    this.allMessagesCount = countAllMessages(this.item);
+    this.mostSevereMessageType = findMostSevereMessageType(this.item);
   }
 }

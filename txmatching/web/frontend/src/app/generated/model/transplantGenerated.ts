@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { TransplantWarningGenerated } from './transplantWarningGenerated';
 import { DetailedScoreForGroupGenerated } from './detailedScoreForGroupGenerated';
 
 
@@ -19,9 +20,9 @@ export interface TransplantGenerated {
      */
     detailed_score_per_group: Array<DetailedScoreForGroupGenerated>;
     donor: string;
-    has_crossmatch: boolean;
     max_score: number;
     recipient: string;
     score: number;
+    transplant_messages?: TransplantWarningGenerated;
 }
 

@@ -2001,6 +2001,7 @@
                 "AZE",
                 "BDI",
                 "BEL",
+                "BEL_2",
                 "BEN",
                 "BES",
                 "BFA",
@@ -3563,6 +3564,24 @@
                 },
                 "require_compatible_blood_group": {
                     "type": "boolean"
+                },
+                "max_donor_weight": {
+                    "type": "number"
+                },
+                "min_donor_weight": {
+                    "type": "number"
+                },
+                "max_donor_height": {
+                    "type": "integer"
+                },
+                "min_donor_height": {
+                    "type": "integer"
+                },
+                "max_donor_age": {
+                    "type": "integer"
+                },
+                "min_donor_age": {
+                    "type": "integer"
                 }
             },
             "type": "object"
@@ -3666,7 +3685,6 @@
                 "compatible_blood",
                 "detailed_score_per_group",
                 "donor",
-                "has_crossmatch",
                 "max_score",
                 "recipient",
                 "score"
@@ -3679,9 +3697,6 @@
                     "type": "number"
                 },
                 "compatible_blood": {
-                    "type": "boolean"
-                },
-                "has_crossmatch": {
                     "type": "boolean"
                 },
                 "donor": {
@@ -3799,6 +3814,20 @@
                     "items": {
                         "$ref": "#/definitions/DetailedScoreForGroup"
                     }
+                },
+                "transplant_messages": {
+                    "$ref": "#/definitions/TransplantWarning"
+                }
+            },
+            "type": "object"
+        },
+        "TransplantWarning": {
+            "properties": {
+                "message_global": {
+                    "type": "string"
+                },
+                "all_messages": {
+                    "$ref": "#/definitions/AllMessages"
                 }
             },
             "type": "object"

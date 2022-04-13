@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from datetime import date
 from typing import Dict, List, Optional, Tuple
 
 from txmatching.data_transfer_objects.matchings.matching_dto import (
@@ -13,7 +14,9 @@ from txmatching.database.services.config_service import \
 from txmatching.database.services.scorer_service import (
     matchings_model_from_dict, score_matrix_from_dict)
 from txmatching.database.sql_alchemy_schema import PairingResultModel
-from txmatching.patients.patient import Donor, Recipient, TxmEvent
+from txmatching.patients.patient import (Donor, Recipient,
+                                         RecipientRequirements, TxmEvent)
+from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
@@ -22,8 +25,11 @@ from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.enums import AntibodyMatchTypes
 from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index)
+from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatchForHLAGroup, get_crossmatched_antibodies)
+from txmatching.utils.transplantation_warning import (TransplantWarningDetail,
+                                                      TransplantWarnings)
 
 logger = logging.getLogger(__name__)
 
@@ -140,19 +146,20 @@ def create_calculated_matchings_dto(
             latest_matchings_detailed.antibody_matches_tuples[
                 (pair.donor.db_id, pair.recipient.db_id)]
         )
-        has_crossmatch = len([antibody_match for detailed_score in detailed_scores
-                              for antibody_match in detailed_score.antibody_matches
-                              if antibody_match.match_type != AntibodyMatchTypes.NONE]) > 0
 
         return TransplantDTOOut(
             score=latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
             max_score=latest_matchings_detailed.max_transplant_score,
             compatible_blood=latest_matchings_detailed.blood_compatibility_tuples[
                 (pair.donor.db_id, pair.recipient.db_id)],
-            has_crossmatch=has_crossmatch,
             donor=pair.donor.medical_id,
             recipient=pair.recipient.medical_id,
-            detailed_score_per_group=detailed_scores
+            detailed_score_per_group=detailed_scores,
+            transplant_messages=get_transplant_messages(
+                pair.donor.parameters,
+                pair.recipient.recipient_requirements,
+                detailed_scores
+            )
         )
 
     return CalculatedMatchingsDTO(
@@ -173,3 +180,47 @@ def create_calculated_matchings_dto(
         show_not_all_matchings_found=latest_matchings_detailed.show_not_all_matchings_found,
         config_id=configuration_db_id
     )
+
+
+def get_transplant_messages(
+        donor_parameters: PatientParameters,
+        recipient_requirements: RecipientRequirements,
+        detailed_scores: List[DetailedScoreForHLAGroup]
+) -> TransplantWarnings:
+    detailed_messages = []
+
+    if donor_parameters.weight:
+        if recipient_requirements.max_donor_weight and donor_parameters.weight > recipient_requirements.max_donor_weight:
+            detailed_messages.append(TransplantWarningDetail.MAX_WEIGHT)
+        elif recipient_requirements.min_donor_weight and donor_parameters.weight < recipient_requirements.min_donor_weight:
+            detailed_messages.append(TransplantWarningDetail.MIN_WEIGHT)
+
+    if donor_parameters.height:
+        if recipient_requirements.max_donor_height and donor_parameters.height > recipient_requirements.max_donor_height:
+            detailed_messages.append(TransplantWarningDetail.MAX_HEIGHT)
+        elif recipient_requirements.min_donor_height and donor_parameters.height < recipient_requirements.min_donor_height:
+            detailed_messages.append(TransplantWarningDetail.MIN_HEIGHT)
+
+    if donor_parameters.year_of_birth:
+        donor_age = date.today().year - donor_parameters.year_of_birth
+        if recipient_requirements.max_donor_age and donor_age > recipient_requirements.max_donor_age:
+            detailed_messages.append(TransplantWarningDetail.MAX_AGE)
+        elif recipient_requirements.min_donor_age and donor_age < recipient_requirements.min_donor_age:
+            detailed_messages.append(TransplantWarningDetail.MIN_AGE)
+
+    possible_crossmatches = [antibody_match for detailed_score in detailed_scores
+                             for antibody_match in detailed_score.antibody_matches
+                             if antibody_match.match_type != AntibodyMatchTypes.NONE]
+    for possible_crossmatch in possible_crossmatches:
+        if possible_crossmatch.match_type == AntibodyMatchTypes.BROAD:
+            detailed_messages.append(TransplantWarningDetail.BROAD_CROSSMATCH)
+        elif possible_crossmatch.match_type == AntibodyMatchTypes.SPLIT:
+            detailed_messages.append(TransplantWarningDetail.SPLIT_CROSSMATCH)
+
+    return TransplantWarnings(
+        message_global='There were several issues with this transplant, see detail.',
+        all_messages={
+            'infos': [],
+            'warnings': detailed_messages,
+            'errors': []
+        }) if detailed_messages else None

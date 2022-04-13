@@ -340,18 +340,31 @@ def show_recipient_requirements_info_filter(requirements: Optional[RecipientRequ
     return requirements is not None and (
             requirements.require_compatible_blood_group or
             requirements.require_better_match_in_compatibility_index or
-            requirements.require_better_match_in_compatibility_index_or_blood_group
+            requirements.require_better_match_in_compatibility_index_or_blood_group or
+            requirements.max_donor_weight is not None or
+            requirements.min_donor_weight is not None or
+            requirements.max_donor_height is not None or
+            requirements.min_donor_height is not None or
+            requirements.max_donor_age is not None or
+            requirements.min_donor_age is not None
     )
 
 
 def recipient_requirements_info_filter(requirements: Optional[RecipientRequirements]) -> str:
     if requirements is None:
-        return 'NO/NO/NO'
+        return 'NO/NO/NO/-/-/-/-/-/-'
 
     return '/'.join([
         'YES' if requirements.require_compatible_blood_group else 'NO',
         'YES' if requirements.require_better_match_in_compatibility_index else 'NO',
-        'YES' if requirements.require_better_match_in_compatibility_index_or_blood_group else 'NO'
+        'YES' if requirements.require_better_match_in_compatibility_index_or_blood_group else 'NO',
+        str(requirements.max_donor_weight) if requirements.max_donor_weight is not None else '-',
+        str(requirements.min_donor_weight) if requirements.min_donor_weight is not None else '-',
+        str(requirements.max_donor_height) if requirements.max_donor_height is not None else '-',
+        str(requirements.min_donor_height) if requirements.min_donor_height is not None else '-',
+        str(requirements.max_donor_age) if requirements.max_donor_age is not None else '-',
+        str(requirements.min_donor_age) if requirements.min_donor_age is not None else '-',
+
     ])
 
 

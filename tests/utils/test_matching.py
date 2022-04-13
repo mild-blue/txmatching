@@ -4,6 +4,8 @@ from tests.test_utilities.create_dataclasses import (get_test_donors,
                                                      get_test_raw_codes,
                                                      get_test_recipients)
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.database.services.matching_service import \
+    get_transplant_messages
 from txmatching.patients.patient import Patient
 from txmatching.scorers.matching import get_count_of_transplants
 from txmatching.scorers.split_hla_additive_scorer import \
@@ -15,6 +17,7 @@ from txmatching.solvers.matching.transplant_sequence import TransplantSequence
 from txmatching.utils.enums import HLAGroup, MatchType
 from txmatching.utils.hla_system.compatibility_index import \
     get_detailed_compatibility_index
+from txmatching.utils.transplantation_warning import TransplantWarningDetail
 
 
 def calculate_compatibility_index_for_group(donor: Patient, recipient: Patient, hla_group: HLAGroup) -> float:
@@ -136,3 +139,39 @@ class TestMatching(DbTests):
 
         result = get_count_of_transplants(matching)
         self.assertEqual(4, result)
+
+    def test_transplant_errors(self):
+        donors = get_test_donors()
+        recipients = get_test_recipients()
+        transplant_messages = get_transplant_messages(
+            donor_parameters=donors[0].parameters,
+            recipient_requirements=recipients[0].recipient_requirements,
+            detailed_scores=[])
+        self.assertEqual('There were several issues with this transplant, see detail.',
+                         transplant_messages.message_global)
+        self.assertEqual([
+            TransplantWarningDetail.MAX_WEIGHT,
+            TransplantWarningDetail.MAX_HEIGHT,
+            TransplantWarningDetail.MAX_AGE
+        ], transplant_messages.all_messages['warnings'])
+        self.assertEqual([], transplant_messages.all_messages['infos'])
+        self.assertEqual([], transplant_messages.all_messages['errors'])
+
+        transplant_messages = get_transplant_messages(
+            donor_parameters=donors[0].parameters,
+            recipient_requirements=recipients[1].recipient_requirements,
+            detailed_scores=[])
+        self.assertEqual([
+            TransplantWarningDetail.MIN_WEIGHT,
+            TransplantWarningDetail.MIN_HEIGHT,
+            TransplantWarningDetail.MIN_AGE
+        ], transplant_messages.all_messages['warnings'])
+
+        transplant_messages = get_transplant_messages(
+            donor_parameters=donors[1].parameters,
+            recipient_requirements=recipients[1].recipient_requirements,
+            detailed_scores=[])
+        self.assertEqual([
+            TransplantWarningDetail.MIN_HEIGHT,
+            TransplantWarningDetail.MIN_AGE
+        ], transplant_messages.all_messages['warnings'])

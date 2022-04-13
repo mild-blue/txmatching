@@ -14,7 +14,6 @@ export interface Matching extends ListItem {
   countOfTransplants: number;
   rounds: Round[];
   countries: MatchingCountry[];
-  hasCrossmatch: boolean;
 }
 
 export interface MatchingCountry {
