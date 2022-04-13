@@ -218,7 +218,7 @@ def get_transplant_messages(
     for possible_crossmatch in possible_crossmatches:
         if possible_crossmatch.match_type == AntibodyMatchTypes.BROAD:
             detailed_messages.append(TransplantWarningDetail.BROAD_CROSSMATCH)
-        elif possible_crossmatch.match_type == AntibodyMatchTypes.BROAD:
+        elif possible_crossmatch.match_type == AntibodyMatchTypes.SPLIT:
             detailed_messages.append(TransplantWarningDetail.SPLIT_CROSSMATCH)
 
     return TransplantWarnings(
