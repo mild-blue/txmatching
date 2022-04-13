@@ -31,23 +31,12 @@ export const parseTransplant = (data: TransplantGenerated, patients: PatientList
 };
 
 const parseTransplantMessages = (data: TransplantWarningGenerated | undefined): TransplantMessages => {
-  if (!data) {
-    return {
-      messageGlobal: '',
-      allMessages: {
-        error: [],
-        warning: [],
-        info: []
-      }
-    };
-  }
-
   return {
-    messageGlobal: data.message_global ?? '',
+    messageGlobal: data?.message_global ?? '',
     allMessages: {
-      error: data.all_messages?.errors ?? [],
-      warning: data.all_messages?.warnings ?? [],
-      info: data.all_messages?.infos ?? []
+      error: data?.all_messages?.errors ?? [],
+      warning: data?.all_messages?.warnings ?? [],
+      info: data?.all_messages?.infos ?? []
     }
   };
 };

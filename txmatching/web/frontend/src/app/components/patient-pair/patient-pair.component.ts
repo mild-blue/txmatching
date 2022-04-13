@@ -12,7 +12,7 @@ export class PatientPairComponent {
 
   @Input() donor?: Donor;
   @Input() recipient?: Recipient;
-  @Input() showWarning: string = '';
+  @Input() warningText: string = '';
   @Input() hasCrossmatch: boolean = false;
   @Input() style: PatientPairStyle = PatientPairStyle.Default;
 

@@ -1,7 +1,7 @@
 <div *ngIf="donor" class="patient-pair patient-pair-{{style}}">
 
-  <div *ngIf="showWarning" class="warning-pill-list">
-    <app-warning-pill [generalWarning]="true" [tooltip]="showWarning" warningType="error"></app-warning-pill>
+  <div *ngIf="warningText" class="warning-pill-list">
+    <app-warning-pill [generalWarning]="true" [tooltip]="warningText" warningType="error"></app-warning-pill>
   </div>
 
   <ng-container *ngIf="recipient; then template_pair; else template_donor"></ng-container>

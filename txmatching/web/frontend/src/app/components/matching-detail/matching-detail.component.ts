@@ -26,6 +26,8 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
   public donorTypes: typeof DonorType = DonorType;
   public allMessagesCount: number = 0;
 
+  countAllMessages = countAllMessages;
+
   constructor(private _patientsService: PatientService,
               private _uiInteractionsService: UiInteractionsService) {
     super();
@@ -41,7 +43,6 @@ export class MatchingDetailComponent extends ListItemDetailAbstractComponent imp
     this._activeTransplantSubscription.unsubscribe();
   }
 
-  countAllMessages = countAllMessages;
 
   private _scrollToTransplant(id: number): void {
     const scrollable = document.querySelector(`.${scrollableDetailClass}`);
