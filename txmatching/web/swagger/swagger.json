@@ -3655,7 +3655,6 @@
                 "compatible_blood",
                 "detailed_score_per_group",
                 "donor",
-                "has_crossmatch",
                 "max_score",
                 "recipient",
                 "score"
@@ -3668,9 +3667,6 @@
                     "type": "number"
                 },
                 "compatible_blood": {
-                    "type": "boolean"
-                },
-                "has_crossmatch": {
                     "type": "boolean"
                 },
                 "donor": {

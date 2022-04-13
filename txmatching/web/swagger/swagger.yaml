@@ -1394,8 +1394,6 @@ definitions:
                 type: array
             donor:
                 type: string
-            has_crossmatch:
-                type: boolean
             max_score:
                 type: number
             recipient:
@@ -1408,7 +1406,6 @@ definitions:
         - compatible_blood
         - detailed_score_per_group
         - donor
-        - has_crossmatch
         - max_score
         - recipient
         - score

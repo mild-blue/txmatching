@@ -146,16 +146,12 @@ def create_calculated_matchings_dto(
             latest_matchings_detailed.antibody_matches_tuples[
                 (pair.donor.db_id, pair.recipient.db_id)]
         )
-        has_crossmatch = len([antibody_match for detailed_score in detailed_scores
-                              for antibody_match in detailed_score.antibody_matches
-                              if antibody_match.match_type != AntibodyMatchTypes.NONE]) > 0
 
         return TransplantDTOOut(
             score=latest_matchings_detailed.scores_tuples[(pair.donor.db_id, pair.recipient.db_id)],
             max_score=latest_matchings_detailed.max_transplant_score,
             compatible_blood=latest_matchings_detailed.blood_compatibility_tuples[
                 (pair.donor.db_id, pair.recipient.db_id)],
-            has_crossmatch=has_crossmatch,
             donor=pair.donor.medical_id,
             recipient=pair.recipient.medical_id,
             detailed_score_per_group=detailed_scores,
