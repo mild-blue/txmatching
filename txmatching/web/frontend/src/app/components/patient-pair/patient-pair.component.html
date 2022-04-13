@@ -3,9 +3,6 @@
   <div *ngIf="showWarning" class="warning-pill-list">
     <app-warning-pill [generalWarning]="true" [tooltip]="showWarning" warningType="error"></app-warning-pill>
   </div>
-  <div *ngIf="hasCrossmatch" class="warning-pill-list">
-    <app-warning-pill [generalWarning]="true" tooltip="Transplant contains a possible crossmatch." warningType="error"></app-warning-pill>
-  </div>
 
   <ng-container *ngIf="recipient; then template_pair; else template_donor"></ng-container>
 
