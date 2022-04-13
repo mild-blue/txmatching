@@ -66,8 +66,9 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
       this.success = true;
     })
     .catch((e) => {
-      this._alertService.error(`Error saving recipient: "${getErrorMessage(e)}"`);
-      this._logger.error(`Error saving recipient: "${getErrorMessage(e)}"`);
+      // TODO distinguish between overriding error and other errors
+      // this._alertService.error(`Error saving recipient: "${getErrorMessage(e)}"`);
+      // this._logger.error(`Error saving recipient: "${getErrorMessage(e)}"`);
       this._alertService.infoPatientIsBeingOverriden();
     })
     .finally(() => this.loading = false);
