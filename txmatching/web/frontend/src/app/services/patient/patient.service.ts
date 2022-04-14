@@ -105,11 +105,24 @@ export class PatientService {
     ).toPromise();
   }
 
-  public async deleteDonor(txmEventId: number, donorDbId: number): Promise<void> {
+  public deleteDonor(txmEventId: number, donorDbId: number): Observable<void> {
     this._logger.log(`Deleting donor ${donorDbId}`);
-    await this._http.delete(
-      `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs/${donorDbId}`
-    ).pipe(first()).toPromise();
-    this._deletedDonorDbIdSubject.next(donorDbId);
+    return new Observable(observer => {
+      this._http.delete(
+        `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs/${donorDbId}`
+      ).pipe(first()).subscribe({
+          next: () => {
+            observer.next();
+          },
+          error: () => {
+            this._logger.error('Error deleting donor');
+          },
+          complete: () => {
+            this._deletedDonorDbIdSubject.next(donorDbId);
+            observer.complete();
+          }
+        }
+      );
+    });
   }
 }

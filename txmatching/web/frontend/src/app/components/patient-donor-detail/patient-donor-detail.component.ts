@@ -118,15 +118,14 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
     this.deleteLoading = true;
     this.deleteSuccess = false;
-    this._patientService.deleteDonor(this.defaultTxmEvent.id, this.item.dbId)
-    .then(() => {
-      this.deleteSuccess = true;
-    })
-    .catch(() => {
-      this._logger.error('Error deleting donor');
-    })
-    .finally(() => {
-      this.deleteLoading = false;
-    });
+    this._patientService.deleteDonor(this.defaultTxmEvent.id, this.item.dbId).subscribe({
+        next: () => {
+          this.deleteSuccess = true;
+        },
+        complete: () => {
+          this.deleteLoading = false;
+        }
+      }
+    );
   }
 }
