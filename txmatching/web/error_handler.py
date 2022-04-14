@@ -11,7 +11,7 @@ from txmatching.auth.exceptions import (
     CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
     GuardException, InvalidArgumentException, InvalidAuthCallException,
     InvalidEmailException, InvalidIpAddressAccessException,
-    InvalidJWTException, InvalidOtpException, InvalidTokenException,
+    InvalidJWTException, InvalidOtpException, InvalidTokenException, OverridingException,
     NotFoundException, SolverAlreadyRunningException,
     TooComplicatedDataForAllSolutionsSolver, UnauthorizedException,
     UserUpdateException, WrongTokenUsedException)
@@ -70,9 +70,9 @@ def _user_auth_handlers(api: Api):
         """could_not_send_otp"""
         _log_exception(error)
         return {
-                   'error': 'SMS service unavailable.',
-                   'message': 'It was not possible to reach the SMS gate. Please contact support.'
-               }, 503
+            'error': 'SMS service unavailable.',
+            'message': 'It was not possible to reach the SMS gate. Please contact support.'
+        }, 503
 
     @api.errorhandler(InvalidIpAddressAccessException)
     def handle_invalid_ip_exception(error: InvalidIpAddressAccessException):
@@ -177,6 +177,12 @@ def _user_auth_handlers(api: Api):
         _log_warning(error)
         return {'error': 'Access denied', 'message': str(error.description)}, error.code
 
+    @api.errorhandler(OverridingException)
+    def handle_not_acceptable_exception(error: OverridingException):
+        """not_acceptable_exception"""
+        _log_warning(error)
+        return {'error': 'Not acceptable.', 'message': str(error)}, 406
+
 
 def _default_error_handlers(api: Api):
     """
@@ -192,27 +198,27 @@ def _default_error_handlers(api: Api):
         """http_exception"""
         _log_exception(error)
         return {
-                   'error': error.name,
-                   'message': strip_on_prod(str(error))
-               }, _get_code_from_error_else_500(error)
+            'error': error.name,
+            'message': strip_on_prod(str(error))
+        }, _get_code_from_error_else_500(error)
 
     @api.errorhandler(Exception)
     def handle_default_exception_error(error: Exception):
         """default_exception_error"""
         _log_exception(error)
         return {
-                   'error': 'Internal server error',
-                   'message': strip_on_prod(str(error))
-               }, _get_code_from_error_else_500(error)
+            'error': 'Internal server error',
+            'message': strip_on_prod(str(error))
+        }, _get_code_from_error_else_500(error)
 
     @api.errorhandler
     def handle_default_error(error):
         """default_error"""
         _log_exception(error)
         return {
-                   'error': error.name,
-                   'message': strip_on_prod(error.description)
-               }, _get_code_from_error_else_500(error)
+            'error': error.name,
+            'message': strip_on_prod(error.description)
+        }, _get_code_from_error_else_500(error)
 
 
 def _log_exception(ex: Exception):

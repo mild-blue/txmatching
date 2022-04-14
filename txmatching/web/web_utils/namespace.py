@@ -107,10 +107,6 @@ class Namespace(flask_restx.Namespace):
         return self.response(code=503, model=model, description='It was not possible to reach the SMS gate, '
                                                                 'thus the one time password could not be send.')
 
-    def overriding_error(self):
-        model = self._create_fail_response_model()
-        return self.response(code=406, model=model, description='Overriding patient')
-
     def response_errors(self):
         model = self._create_fail_response_model()
         return Namespace._combine_decorators([
