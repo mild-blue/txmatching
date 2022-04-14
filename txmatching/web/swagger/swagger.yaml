@@ -2194,10 +2194,6 @@ paths:
                         endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
-                '406':
-                    description: Overriding patient
-                    schema:
-                        $ref: '#/definitions/FailResponse'
                 '500':
                     description: Unexpected error, see contents for details.
                     schema:
@@ -2317,10 +2313,6 @@ paths:
                 '403':
                     description: Access denied. You do not have rights to access this
                         endpoint.
-                    schema:
-                        $ref: '#/definitions/FailResponse'
-                '406':
-                    description: Overriding patient
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
@@ -2788,6 +2780,8 @@ responses:
         description: When any error occurs on mask
     NotFoundException:
         description: not_found_exception
+    OverridingException:
+        description: not_acceptable_exception
     ParseError:
         description: When a mask can't be parsed
     SolverAlreadyRunningException:

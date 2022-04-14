@@ -768,12 +768,6 @@
             ],
             "put": {
                 "responses": {
-                    "406": {
-                        "description": "Overriding patient",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
                     "500": {
                         "description": "Unexpected error, see contents for details.",
                         "schema": {
@@ -968,12 +962,6 @@
             ],
             "put": {
                 "responses": {
-                    "406": {
-                        "description": "Overriding patient",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
                     "500": {
                         "description": "Unexpected error, see contents for details.",
                         "schema": {
@@ -4194,6 +4182,9 @@
         },
         "NotFoundException": {
             "description": "not_found_exception"
+        },
+        "OverridingException": {
+            "description": "not_acceptable_exception"
         },
         "ParseError": {
             "description": "When a mask can't be parsed"
