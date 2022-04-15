@@ -82,10 +82,8 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
       this.success = true;
     })
     .catch((e) => {
-      // TODO distinguish between overriding error and other errors
-      // this._alertService.error(`Error saving donor: "${getErrorMessage(e)}"`);
-      // this._logger.error(`Error saving donor: "${getErrorMessage(e)}"`);
-      this._alertService.infoPatientIsBeingOverriden();
+      this._alertService.error(`Error saving donor: "${getErrorMessage(e)}"`);
+      this._logger.error(`Error saving donor: "${getErrorMessage(e)}"`);
     })
     .finally(() => this.loading = false);
   }

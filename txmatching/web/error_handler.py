@@ -181,7 +181,8 @@ def _user_auth_handlers(api: Api):
     def handle_not_acceptable_exception(error: OverridingException):
         """not_acceptable_exception"""
         _log_warning(error)
-        return {'error': 'Not acceptable.', 'message': str(error)}, 406
+        return {'error': 'The patient can\'t be saved, someone edited this patient in the meantime. ' +
+                'You have to reload the patient first. The changes will be lost.', 'message': str(error)}, 406
 
 
 def _default_error_handlers(api: Api):

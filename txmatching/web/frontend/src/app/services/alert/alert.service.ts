@@ -46,13 +46,6 @@ export class AlertService {
     this.info(`${message}<br><br>${parsingErrorsStr}`);
   }
 
-  public infoPatientIsBeingOverriden(): void {
-    this.warn(
-    `The patient can't be saved, someone edited this patient in the meantime. ` +
-    `You have to reload the patient first. The changes will be lost.`
-    );
-  }
-
   public alert(alert: Alert): void {
     alert.id = alert.id || this._defaultId;
     this._subject.next(alert);
