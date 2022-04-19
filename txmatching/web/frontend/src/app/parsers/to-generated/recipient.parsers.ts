@@ -3,9 +3,9 @@ import { fromBloodGroup, fromDateToString, fromPatientEditableToUpdateGenerated,
 import { RecipientEditable } from '../../model/RecipientEditable';
 
 /* Used for updating recipient */
-export const fromRecipientEditableToUpdateGenerated = (recipient: RecipientEditable, recipientId: number, recipientEtag: number): RecipientModelToUpdateGenerated => {
+export const fromRecipientEditableToUpdateGenerated = (recipient: RecipientEditable, recipientId: number, recipientUpdateId: number): RecipientModelToUpdateGenerated => {
   return {
-    ...fromPatientEditableToUpdateGenerated(recipient, recipientId, recipientEtag),
+    ...fromPatientEditableToUpdateGenerated(recipient, recipientId, recipientUpdateId),
     acceptable_blood_groups: recipient.acceptableBloodGroups.map(fromBloodGroup),
     hla_antibodies: {
       hla_antibodies_list: recipient.antibodies.map(

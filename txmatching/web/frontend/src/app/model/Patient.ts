@@ -8,7 +8,7 @@ export interface Patient extends ListItem {
   dbId: number;
   medicalId: string;
   parameters: PatientParameters;
-  etag: number;
+  updateId: number;
 }
 
 export interface PatientParameters {

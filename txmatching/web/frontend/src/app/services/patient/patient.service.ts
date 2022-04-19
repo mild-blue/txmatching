@@ -53,11 +53,11 @@ export class PatientService {
     ).toPromise();
   }
 
-  public async saveDonor(txmEventId: number, donorId: number, donorEtag: number, donorEditable: DonorEditable, configId: number | undefined): Promise<UpdatedDonor> {
+  public async saveDonor(txmEventId: number, donorId: number, donorUpdateId: number, donorEditable: DonorEditable, configId: number | undefined): Promise<UpdatedDonor> {
     const configIdStr = configId !== undefined ? configId.toString() : 'default';
 
     this._logger.log(`Saving donor ${donorId}`, [donorEditable]);
-    const payload: DonorModelToUpdateGenerated = fromDonorEditableToUpdateGenerated(donorEditable, donorId, donorEtag);
+    const payload: DonorModelToUpdateGenerated = fromDonorEditableToUpdateGenerated(donorEditable, donorId, donorUpdateId);
     this._logger.log('Sending payload', [payload]);
 
     // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
@@ -71,9 +71,9 @@ export class PatientService {
     ).toPromise();
   }
 
-  public async saveRecipient(txmEventId: number, recipientId: number, recipientEtag: number, recipientEditable: RecipientEditable): Promise<UpdatedRecipient> {
+  public async saveRecipient(txmEventId: number, recipientId: number, recipientUpdateId: number, recipientEditable: RecipientEditable): Promise<UpdatedRecipient> {
     this._logger.log(`Saving recipient ${recipientId}`, [recipientEditable]);
-    const payload: RecipientModelToUpdateGenerated = fromRecipientEditableToUpdateGenerated(recipientEditable, recipientId, recipientEtag);
+    const payload: RecipientModelToUpdateGenerated = fromRecipientEditableToUpdateGenerated(recipientEditable, recipientId, recipientUpdateId);
     this._logger.log('Sending payload', [payload]);
 
     // TODO: use observables https://github.com/mild-blue/txmatching/issues/674

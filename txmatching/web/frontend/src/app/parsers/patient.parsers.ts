@@ -16,7 +16,7 @@ export const parsePatient = (data: DonorGenerated | RecipientGenerated, listItem
     dbId: data.db_id,
     medicalId: data.medical_id,
     parameters: parsePatientParameters(data.parameters),
-    etag: data.etag
+    updateId: data.etag
   };
 };
 

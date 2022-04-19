@@ -48,7 +48,7 @@ export class PatientRecipientDetailComponent extends ListItemDetailAbstractCompo
 
     this.loading = true;
     this.success = false;
-    this._patientService.saveRecipient(this.defaultTxmEvent.id, this.item.dbId, this.item.etag, this.recipientEditable)
+    this._patientService.saveRecipient(this.defaultTxmEvent.id, this.item.dbId, this.item.updateId, this.recipientEditable)
     .then((updatedRecipient) => {
       this._logger.log('Updated recipient received from BE', [updatedRecipient]);
       Object.assign(this.item, updatedRecipient.recipient);

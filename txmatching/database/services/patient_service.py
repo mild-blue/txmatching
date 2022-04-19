@@ -167,106 +167,104 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     parsing_errors = []
     if txm_event_db_id != old_recipient_model.txm_event_id:
-        raise InvalidArgumentException('Trying to update patient the user has no access to.')
+        raise InvalidArgumentException('Trying to update patient from a different txm event.')
 
     updated_parsing_errors, recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto)
     updated_parsing_errors = parsing_errors_to_models(parsing_errors=updated_parsing_errors,
                                                       recipient_id=old_recipient_model.id,
                                                       txm_event_id=old_recipient_model.txm_event_id)
 
-    if old_recipient_model.etag == recipient_update_dict['etag'] - 1:
-        delete_parsing_errors_for_patient(recipient_id=old_recipient_model.id,
-                                          txm_event_id=old_recipient_model.txm_event_id)
+    if old_recipient_model.etag != recipient_update_dict['etag'] - 1:
+        raise OverridingException('The patient can\'t be saved, someone edited this patient in the meantime.')
 
+    delete_parsing_errors_for_patient(recipient_id=old_recipient_model.id,
+                                        txm_event_id=old_recipient_model.txm_event_id)
+
+    parsing_errors = parsing_errors + updated_parsing_errors
+    if recipient_update_dto.acceptable_blood_groups:
+        acceptable_blood_models = [
+            RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient_update_dto.db_id) for blood
+            in
+            recipient_update_dto.acceptable_blood_groups]
+        RecipientAcceptableBloodModel.query.filter(
+            RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
+        db.session.add_all(acceptable_blood_models)
+
+    if recipient_update_dto.hla_antibodies or recipient_update_dto.cutoff:
+        # not the best approach: in case cutoff was different per antibody before it will be unified now, but
+        # but good for the moment
+        if recipient_update_dto.cutoff is not None:
+            recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
+            new_cutoff = recipient_update_dto.cutoff
+        else:
+            new_cutoff = old_recipient_model.recipient_cutoff
+
+        # hla_antibodies_raw will be updated
+        # - with new hla antibodies and new cutoff (if update hla antibodies are specified)
+        # - or with old hla antibodies from db and new cutoff (if only cutoff is specified)
+        hla_antibodies_raw_source = recipient_update_dto.hla_antibodies.hla_antibodies_list \
+            if recipient_update_dto.hla_antibodies is not None \
+            else old_recipient_model.hla_antibodies_raw
+        new_hla_antibody_raw_models = [
+            HLAAntibodyRawModel(
+                recipient_id=recipient_update_dto.db_id,
+                raw_code=hla_antibody.raw_code,
+                cutoff=new_cutoff,
+                mfi=hla_antibody.mfi,
+            ) for hla_antibody in hla_antibodies_raw_source
+        ]
+
+        # Change hla_antibodies_raw for a given patient in db
+        HLAAntibodyRawModel.query.filter(
+            HLAAntibodyRawModel.recipient_id == recipient_update_dto.db_id
+        ).delete()
+        db.session.add_all(new_hla_antibody_raw_models)
+
+        # Change parsed hla_antibodies for a given patient in db
+        antibody_parsing_errors, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_error_list(
+            new_hla_antibody_raw_models,
+        )
+        updated_parsing_errors = parsing_errors_to_models(parsing_errors=antibody_parsing_errors,
+                                                            recipient_id=old_recipient_model.id,
+                                                            txm_event_id=old_recipient_model.txm_event_id)
         parsing_errors = parsing_errors + updated_parsing_errors
-        if recipient_update_dto.acceptable_blood_groups:
-            acceptable_blood_models = [
-                RecipientAcceptableBloodModel(blood_type=blood, recipient_id=recipient_update_dto.db_id) for blood
-                in
-                recipient_update_dto.acceptable_blood_groups]
-            RecipientAcceptableBloodModel.query.filter(
-                RecipientAcceptableBloodModel.recipient_id == recipient_update_dto.db_id).delete()
-            db.session.add_all(acceptable_blood_models)
+        recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
 
-        if recipient_update_dto.hla_antibodies or recipient_update_dto.cutoff:
-            # not the best approach: in case cutoff was different per antibody before it will be unified now, but
-            # but good for the moment
-            if recipient_update_dto.cutoff is not None:
-                recipient_update_dict['recipient_cutoff'] = recipient_update_dto.cutoff
-                new_cutoff = recipient_update_dto.cutoff
-            else:
-                new_cutoff = old_recipient_model.recipient_cutoff
+    db.session.add_all(parsing_errors)
+    if recipient_update_dto.recipient_requirements:
+        recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
+            recipient_update_dto.recipient_requirements)
+    recipient_update_dict['waiting_since'] = parse_date_to_datetime(recipient_update_dto.waiting_since)
+    recipient_update_dict['previous_transplants'] = recipient_update_dto.previous_transplants
 
-            # hla_antibodies_raw will be updated
-            # - with new hla antibodies and new cutoff (if update hla antibodies are specified)
-            # - or with old hla antibodies from db and new cutoff (if only cutoff is specified)
-            hla_antibodies_raw_source = recipient_update_dto.hla_antibodies.hla_antibodies_list \
-                if recipient_update_dto.hla_antibodies is not None \
-                else old_recipient_model.hla_antibodies_raw
-            new_hla_antibody_raw_models = [
-                HLAAntibodyRawModel(
-                    recipient_id=recipient_update_dto.db_id,
-                    raw_code=hla_antibody.raw_code,
-                    cutoff=new_cutoff,
-                    mfi=hla_antibody.mfi,
-                ) for hla_antibody in hla_antibodies_raw_source
-            ]
-
-            # Change hla_antibodies_raw for a given patient in db
-            HLAAntibodyRawModel.query.filter(
-                HLAAntibodyRawModel.recipient_id == recipient_update_dto.db_id
-            ).delete()
-            db.session.add_all(new_hla_antibody_raw_models)
-
-            # Change parsed hla_antibodies for a given patient in db
-            antibody_parsing_errors, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_error_list(
-                new_hla_antibody_raw_models,
-            )
-            updated_parsing_errors = parsing_errors_to_models(parsing_errors=antibody_parsing_errors,
-                                                              recipient_id=old_recipient_model.id,
-                                                              txm_event_id=old_recipient_model.txm_event_id)
-            parsing_errors = parsing_errors + updated_parsing_errors
-            recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
-
-        db.session.add_all(parsing_errors)
-        if recipient_update_dto.recipient_requirements:
-            recipient_update_dict['recipient_requirements'] = dataclasses.asdict(
-                recipient_update_dto.recipient_requirements)
-        recipient_update_dict['waiting_since'] = parse_date_to_datetime(recipient_update_dto.waiting_since)
-        recipient_update_dict['previous_transplants'] = recipient_update_dto.previous_transplants
-
-        RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
-        db.session.commit()
-        return get_recipient_from_recipient_model(
-            RecipientModel.query.get(recipient_update_dto.db_id))
-    else:
-        raise OverridingException(
-            'The patient can\'t be saved, someone edited this patient in the meantime.')
+    RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
+    db.session.commit()
+    return get_recipient_from_recipient_model(
+        RecipientModel.query.get(recipient_update_dto.db_id))
 
 
 def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Donor:
     old_donor_model = DonorModel.query.get(donor_update_dto.db_id)
     if txm_event_db_id != old_donor_model.txm_event_id:
-        raise InvalidArgumentException('Trying to update patient the user has no access to')
+        raise InvalidArgumentException('Trying to update patient from a different txm event.')
 
     parsing_errors, donor_update_dict = _create_patient_update_dict_base(donor_update_dto)
     parsing_errors = parsing_errors_to_models(parsing_errors=parsing_errors,
                                               donor_id=old_donor_model.id,
                                               txm_event_id=old_donor_model.txm_event_id)
 
-    if old_donor_model.etag == donor_update_dict['etag'] - 1:
-        delete_parsing_errors_for_patient(donor_id=old_donor_model.id,
-                                          txm_event_id=old_donor_model.txm_event_id)
+    if old_donor_model.etag != donor_update_dict['etag'] - 1:
+        raise OverridingException('The patient can\'t be saved, someone edited this patient in the meantime.')
 
-        db.session.add_all(parsing_errors)
-        if donor_update_dto.active is not None:
-            donor_update_dict['active'] = donor_update_dto.active
-        DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
-        db.session.commit()
-        return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
-    else:
-        raise OverridingException(
-            'The patient can\'t be saved, someone edited this patient in the meantime.')
+    delete_parsing_errors_for_patient(donor_id=old_donor_model.id,
+                                        txm_event_id=old_donor_model.txm_event_id)
+
+    db.session.add_all(parsing_errors)
+    if donor_update_dto.active is not None:
+        donor_update_dict['active'] = donor_update_dto.active
+    DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
+    db.session.commit()
+    return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
 
 
 def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(

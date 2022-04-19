@@ -3,10 +3,10 @@ import { BloodGroup, Sex } from '@app/model';
 import { PatientEditable } from '@app/model/PatientEditable';
 
 /* Used for editing patient */
-export const fromPatientEditableToUpdateGenerated = (patient: PatientEditable, patientId: number, patientEtag: number): PatientModelToUpdateGenerated => {
+export const fromPatientEditableToUpdateGenerated = (patient: PatientEditable, patientId: number, patientUpdateId: number): PatientModelToUpdateGenerated => {
   return {
     db_id: patientId,
-    etag: patientEtag,
+    etag: patientUpdateId,
     blood_group: fromBloodGroup(patient.bloodGroup),
     hla_typing: {
       hla_types_list: patient.antigens.map(antigenEditable => ({ raw_code: antigenEditable.rawCode }))
