@@ -4,9 +4,9 @@ import { fromBloodGroup, fromPatientEditableToUpdateGenerated, fromSex } from '.
 import { DonorType } from '@app/model';
 
 /* Used for updating donor */
-export const fromDonorEditableToUpdateGenerated = ( donor: DonorEditable, donorId: number ): DonorModelToUpdateGenerated => {
+export const fromDonorEditableToUpdateGenerated = ( donor: DonorEditable, donorId: number, donorUpdateId: number ): DonorModelToUpdateGenerated => {
   return {
-    ...fromPatientEditableToUpdateGenerated(donor, donorId),
+    ...fromPatientEditableToUpdateGenerated(donor, donorId, donorUpdateId),
     active: donor.active
   };
 };

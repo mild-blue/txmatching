@@ -16,6 +16,7 @@ def _create_recipient(recipient_id: int, donor: Donor) -> Recipient:
     return Recipient(recipient_id,
                      f'R-{recipient_id}',
                      related_donor_db_id=donor.db_id,
+                     etag=1,
                      parameters=PatientParameters(
                          country_code=Country.CZE, blood_group=BloodGroup.A,
                          hla_typing=HLATyping(hla_per_groups=[], hla_types_raw_list=[])
@@ -33,7 +34,7 @@ def _inner_elements_to_frozenset(iterable: Iterable) -> Set[FrozenSet]:
 class TestMatching(TestCase):
     def setUp(self) -> None:
         self._donors = [
-            Donor(donor_index, f'D-{donor_index}',
+            Donor(donor_index, f'D-{donor_index}', etag=1,
                   parameters=PatientParameters(blood_group=BloodGroup.A, country_code=Country.CZE,
                                                hla_typing=HLATyping(hla_per_groups=[], hla_types_raw_list=[])),
                                                parsing_errors=[])

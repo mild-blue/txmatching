@@ -58,7 +58,7 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
     this.loading = true;
     this.success = false;
     this._patientService.saveDonor(
-      this.defaultTxmEvent.id, this.item.dbId,
+      this.defaultTxmEvent.id, this.item.dbId, this.item.updateId,
       this.donorEditable, this._eventService.getConfigId()
     )
     .then((updatedDonor) => {

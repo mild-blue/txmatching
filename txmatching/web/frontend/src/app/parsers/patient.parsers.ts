@@ -15,12 +15,13 @@ export const parsePatient = (data: DonorGenerated | RecipientGenerated, listItem
     ...listItem,
     dbId: data.db_id,
     medicalId: data.medical_id,
-    parameters: parsePatientParameters(data.parameters)
+    parameters: parsePatientParameters(data.parameters),
+    updateId: data.etag
   };
 };
 
 
-export const parsePatientParameters = ( data: PatientParametersGenerated ): PatientParameters => {
+export const parsePatientParameters = (data: PatientParametersGenerated): PatientParameters => {
   return {
     bloodGroup: parseBloodGroup(data.blood_group),
     hlaTyping: parseAntigens(data.hla_typing),
@@ -40,12 +41,17 @@ export const parsePatientSexType = (data: SexEnumGenerated | undefined): Sex | u
 
 
 export const parseBloodGroup = (data: BloodGroupEnumGenerated): BloodGroup => {
-  switch(data) {
-    case BloodGroupEnumGenerated.A: return BloodGroup.A;
-    case BloodGroupEnumGenerated.B: return BloodGroup.B;
-    case BloodGroupEnumGenerated.Ab: return BloodGroup.AB;
-    case BloodGroupEnumGenerated._0: return BloodGroup.ZERO;
-    default: throw new Error(`Parsing blood group ${data} not implemented`);
+  switch (data) {
+    case BloodGroupEnumGenerated.A:
+      return BloodGroup.A;
+    case BloodGroupEnumGenerated.B:
+      return BloodGroup.B;
+    case BloodGroupEnumGenerated.Ab:
+      return BloodGroup.AB;
+    case BloodGroupEnumGenerated._0:
+      return BloodGroup.ZERO;
+    default:
+      throw new Error(`Parsing blood group ${data} not implemented`);
   }
 };
 

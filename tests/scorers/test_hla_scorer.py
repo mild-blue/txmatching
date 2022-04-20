@@ -126,6 +126,7 @@ def _create_donor(hla_typing: List[str]):
         db_id=-1,
         medical_id='original_donor',
         related_recipient_db_id=1,
+        etag=1,
         parameters=PatientParameters(
             blood_group=BloodGroup.A,
             country_code=Country.CZE,
@@ -143,6 +144,7 @@ def _create_recipient(hla_typing: List[str]):
         acceptable_blood_groups=[],
         related_donor_db_id=1,
         medical_id='recipient',
+        etag=1,
         parameters=PatientParameters(
             blood_group=BloodGroup.A,
             country_code=Country.CZE,

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
@@ -28,6 +28,7 @@ class Patient(PersistentlyHashable):
     db_id: int
     medical_id: str
     parameters: PatientParameters
+    etag: int
 
     def is_recipient(self) -> bool:
         return isinstance(self, Recipient)
@@ -170,7 +171,7 @@ def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
 
 def _filter_patients_that_dont_have_parsing_errors(
         donors: List[Donor], recipients: List[Recipient]
-) -> (Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]):
+) -> Tuple[Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]]:
     exclude_donors_ids = set()
     exclude_recipients_ids = set()
 

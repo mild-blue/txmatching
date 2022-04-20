@@ -10,7 +10,9 @@ from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
+                                                    DonorModel,
                                                     ParsingErrorModel,
+                                                    RecipientModel,
                                                     UploadedFileModel)
 from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.blood_groups import BloodGroup
@@ -193,8 +195,8 @@ class TestPatientService(DbTests):
                               headers=self.auth_headers, json=json_data)
 
             res_ = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                             f'{PATIENT_NAMESPACE}/configs/default',
-                             headers=self.auth_headers)
+                              f'{PATIENT_NAMESPACE}/configs/default',
+                              headers=self.auth_headers)
 
         self.assertEqual(200, res.status_code)
         self.assertEqual(200, res_.status_code)
@@ -261,16 +263,18 @@ class TestPatientService(DbTests):
         txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         donor_db_id = 10
+        etag = DonorModel.query.get(donor_db_id).etag
 
         # 1. update patient
         with self.app.test_client() as client:
             json_data = {
                 'db_id': donor_db_id,
+                'etag': etag,
                 'blood_group': 'A',
                 'hla_typing': {
                     'hla_types_list': [{'raw_code': 'A*01:02'},
-                                         {'raw_code': 'B7'},
-                                         {'raw_code': 'DR11'}]
+                                       {'raw_code': 'B7'},
+                                       {'raw_code': 'DR11'}]
                 },
                 'sex': 'M',
                 'height': 200,
@@ -294,11 +298,13 @@ class TestPatientService(DbTests):
         self.assertEqual(donor.parameters.weight, 100)
         self.assertEqual(donor.parameters.year_of_birth, 1990)
         self.assertEqual(donor.active, True)
+        etag = DonorModel.query.get(donor_db_id).etag
 
         # 2. update with unspecified values
         with self.app.test_client() as client:
             json_data = {
                 'db_id': donor_db_id,
+                'etag': etag,
                 'blood_group': 'B',
                 'hla_typing': {
                     'hla_types_list': []
@@ -327,11 +333,12 @@ class TestPatientService(DbTests):
         txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         recipient_db_id = 10
-
+        etag = RecipientModel.query.get(recipient_db_id).etag
         # 1. update patient
         with self.app.test_client() as client:
             json_data = {
                 'db_id': recipient_db_id,
+                'etag': etag,
                 'blood_group': 'A',
                 'hla_typing': {
                     'hla_types_list': []
@@ -373,10 +380,12 @@ class TestPatientService(DbTests):
         self.assertEqual(recipient.recipient_requirements, RecipientRequirements(True, True, True))
         self.assertEqual(recipient.recipient_cutoff, 42)
 
+        etag = RecipientModel.query.get(recipient_db_id).etag
         # 2. update with unspecified values
         with self.app.test_client() as client:
             json_data = {
                 'db_id': recipient_db_id,
+                'etag': etag,
                 'blood_group': 'B',
                 'hla_typing': {
                     'hla_types_list': []
@@ -416,15 +425,19 @@ class TestPatientService(DbTests):
 
     def test_save_recipient(self):
         txm_event_db_id = self.fill_db_with_patients_and_results()
+        recipient_db_id = 1
+        etag = RecipientModel.query.get(recipient_db_id).etag
         recipient_update_dict = {
-            'db_id': 1,
+            'db_id': recipient_db_id,
             'acceptable_blood_groups': ['A', 'AB'],
+            'etag': etag
         }
         with self.app.test_client() as client:
-            self.assertIsNotNone(ConfigModel.query.get(1))
+            self.assertIsNotNone(ConfigModel.query.get(recipient_db_id))
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{PATIENT_NAMESPACE}/recipient',
                              headers=self.auth_headers,
                              json=recipient_update_dict).json
+            self.assertIsNotNone(ConfigModel.query.get(recipient_db_id))
             self.assertEqual(['A', 'AB'], res['recipient']['acceptable_blood_groups'])
             self.assertEqual([], res['parsing_errors'])
             recipients = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -433,7 +446,78 @@ class TestPatientService(DbTests):
             self.assertEqual(recipient_update_dict['acceptable_blood_groups'], recipients[0]['acceptable_blood_groups'])
 
             # Config is not deleted
-            self.assertIsNotNone(ConfigModel.query.get(1))
+            self.assertIsNotNone(ConfigModel.query.get(recipient_db_id))
+
+    def test_overriding_donor(self):
+        txm_event_db_id = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        donor_db_id = 10
+        etag = DonorModel.query.get(donor_db_id).etag
+
+        # 1. update patient
+        with self.app.test_client() as client:
+            json_data = {
+                'db_id': donor_db_id,
+                'etag': etag,
+                'blood_group': 'A',
+                'hla_typing': {
+                    'hla_types_list': [{'raw_code': 'A*01:02'},
+                                       {'raw_code': 'B7'},
+                                       {'raw_code': 'DR11'}]
+                },
+                'sex': 'M',
+                'height': 200,
+                'weight': 100,
+                'year_of_birth': 1990,
+                'active': True,
+            }
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/configs/default/donor',
+                             headers=self.auth_headers, json=json_data)
+            self.assertEqual(200, res.status_code)
+
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/configs/default/donor',
+                             headers=self.auth_headers, json=json_data)
+            self.assertEqual(406, res.status_code)
+
+    def test_overriding_recipient(self):
+        txm_event_db_id = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        recipient_db_id = 10
+        etag = RecipientModel.query.get(recipient_db_id).etag
+        # 1. update patient
+        with self.app.test_client() as client:
+            json_data = {
+                'db_id': recipient_db_id,
+                'etag': etag,
+                'blood_group': 'A',
+                'hla_typing': {
+                    'hla_types_list': []
+                },
+                'sex': 'M',
+                'height': 200,
+                'weight': 100,
+                'year_of_birth': 1990,
+                'acceptable_blood_groups': ['A', 'B', 'AB'],
+                'hla_antibodies': {
+                    'hla_antibodies_list': []
+                },
+                'recipient_requirements': {
+                    'require_better_match_in_compatibility_index': True,
+                    'require_better_match_in_compatibility_index_or_blood_group': True,
+                    'require_compatible_blood_group': True
+                },
+                'cutoff': 42
+            }
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/recipient',
+                             headers=self.auth_headers, json=json_data)
+            self.assertEqual(200, res.status_code)
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/recipient',
+                             headers=self.auth_headers, json=json_data)
+            self.assertEqual(406, res.status_code)
 
     def test_sorted_antibodies(self):
         txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
@@ -458,7 +542,7 @@ class TestPatientService(DbTests):
                     'hla_typing': [],
                     'recipient_cutoff': 2000,
                     'hla_antibodies':
-                        [{'mfi': i[1], 'name':i[0], 'cutoff':i[2]} for i in reversed(antibodies)]
+                        [{'mfi': i[1], 'name': i[0], 'cutoff': i[2]} for i in reversed(antibodies)]
                 },
                 'country_code': 'CZE'
             }

@@ -121,6 +121,12 @@ class UnauthorizedException(BaseTxmException):
     """
 
 
+class OverridingException(BaseTxmException):
+    """
+    Raised if user tries to override a patient.
+    """
+
+
 def require_auth_condition(condition: bool, message: Optional[str] = None):
     """
     Raises InvalidAuthCallException with message if condition is false.

@@ -27,6 +27,7 @@ def get_test_donors():
         Donor(
             db_id=1,
             medical_id='1',
+            etag=1,
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
@@ -51,6 +52,7 @@ def get_test_donors():
         Donor(
             db_id=2,
             medical_id='2',
+            etag=1,
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
@@ -78,6 +80,7 @@ def get_test_recipients():
         Recipient(
             db_id=3,
             medical_id='3',
+            etag=1,
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
@@ -110,6 +113,7 @@ def get_test_recipients():
         Recipient(
             db_id=4,
             medical_id='4',
+            etag=1,
             parameters=PatientParameters(
                 blood_group=BloodGroup.A,
                 country_code=Country.CZE,
