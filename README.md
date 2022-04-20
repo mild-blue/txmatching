@@ -10,7 +10,7 @@ It consists of backend written in Python and an Angular frontend.
 
 ## How to quickly run the app locally without docker
 
-The project can run only on MacOS or Linux as we are using [graph-tool](https://graph-tool.skewed.de/) package that
+The project can run only on MacOS (not M1 chip) or Linux as we are using [graph-tool](https://graph-tool.skewed.de/) package that
 does not support Windows.
 
 ### Prepare Frontend

@@ -19,6 +19,7 @@ conda-export:
 conda-update:
 	conda env update --file conda.yml --prune --name $(CONDA_ENV)
 
+# this actually does not work as make command, just copy paste it and run `conda activate txmatching`
 conda-activate:
 	conda activate $(CONDA_ENV)
 
