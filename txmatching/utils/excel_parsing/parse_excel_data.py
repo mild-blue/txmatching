@@ -33,6 +33,7 @@ EXPLANATION_FILE_STILL_SAVED = 'If you believe the file is in correct format or 
 
 class ExcelSource(str, Enum):
     IKEM = 'IKEM'
+    BEL_2 = 'BEL_2'
 
 
 # pylint: disable=too-many-instance-attributes
@@ -60,6 +61,16 @@ EXCEL_COLUMNS_MAPS = {
         'TYPIZATION RECIPIENT',
         'RECIPIENT',
         'luminex  cut-off (2000 MFI) varianta 2',
+    ),
+    ExcelSource.BEL_2: ExcelColumnsMap(
+        'DONOR',
+        'BLOOD GROUP donor',
+        'TYPIZATION DONOR',
+        'BLOOD GROUP recipient',
+        'Acceptable blood group',
+        'TYPIZATION RECIPIENT',
+        'RECIPIENT',
+        'Unacceptable Antigens',
     )
 }
 
@@ -89,10 +100,13 @@ def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, in
 
 
 def _parse_hla(hla_codes_str: str) -> List[str]:
-    if 'neg' in hla_codes_str.lower():
+    if not isinstance(hla_codes_str, str):
+        return []
+    if 'neg' in str(hla_codes_str).lower():
         return []
     # remove codes in brackets, they are only in detail all the split codes for broade in front of the bracket
     hla_codes_str = re.sub(r'\(.*?\)', '', hla_codes_str)
+    hla_codes_str = re.sub(r'\n', '', hla_codes_str)
     hla_codes = re.split('[,. ()]+', hla_codes_str)
     hla_codes = [code.upper() for code in hla_codes if len(code) > 0]
 
