@@ -36,5 +36,7 @@ def country_code_from_id(patient_id: str) -> Country:
 
         elif patient_id.startswith('W-'):
             return Country.AUT
+    if patient_id.startswith('BE_'):
+        return Country.BEL_2
 
     raise ValueError(f'Could not assign country code to {patient_id}')
