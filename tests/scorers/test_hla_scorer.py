@@ -142,7 +142,7 @@ def _create_recipient(hla_typing: List[str]):
     return Recipient(
         db_id=1,
         acceptable_blood_groups=[],
-        related_donor_db_id=1,
+        related_donors_db_ids=[1],
         medical_id='recipient',
         etag=1,
         parameters=PatientParameters(

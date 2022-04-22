@@ -28,8 +28,12 @@ class Matching:
         # Construct graph with vertices indexed by transplants
         # Edges tell us which transplant will come next
         vertices = list(range(len(matching_pairs)))
-        edges = {recipient_index: donor_ids.index(recipient.related_donor_db_id) for recipient_index, recipient
-                 in enumerate(recipients) if recipient.related_donor_db_id in donor_ids}
+        edges = {}
+        # todo ako zistim aktivnych? asi toje jedno
+        for recipient_index, recipient in enumerate(recipients):
+            for related_donor_id in recipient.related_donors_db_ids:
+                if related_donor_id in donor_ids:
+                    edges[recipient_index] = donor_ids.index(related_donor_id)
         reverse_edges = {dest_vertex: source_vertex for source_vertex, dest_vertex in edges.items()}
 
         unprocessed_vertices = set(vertices)
@@ -76,13 +80,13 @@ class Matching:
     def get_donors_for_country_count(self, country_code: str, blood_group: Optional[BloodGroup] = None):
         return len([pair.donor.parameters.country_code for pair in self.matching_pairs if
                     pair.donor.parameters.country_code == country_code and (
-                            blood_group is None or pair.donor.parameters.blood_group == blood_group
+                        blood_group is None or pair.donor.parameters.blood_group == blood_group
                     )])
 
     def get_recipients_for_country_count(self, country_code: str, blood_group: Optional[BloodGroup] = None):
         return len([pair.recipient.parameters.country_code for pair in self.matching_pairs if
                     pair.recipient.parameters.country_code == country_code and (
-                            blood_group is None or pair.donor.parameters.blood_group == blood_group
+                        blood_group is None or pair.donor.parameters.blood_group == blood_group
                     )])
 
     def get_count_of_donors_with_blood_group_for_recipients_from_country(self, country_code: str,
@@ -142,8 +146,8 @@ class Matching:
 
     def get_blood_group_zero_debt_for_country(self, country):
         return self.get_donors_for_country_count(country, BloodGroup.ZERO) - \
-               self.get_count_of_donors_with_blood_group_for_recipients_from_country(country,
-                                                                                     BloodGroup.ZERO)
+            self.get_count_of_donors_with_blood_group_for_recipients_from_country(country,
+                                                                                  BloodGroup.ZERO)
 
     @property
     def max_blood_group_zero_debt_from_matching(self) -> int:

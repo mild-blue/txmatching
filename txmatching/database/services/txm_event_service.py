@@ -59,15 +59,15 @@ def delete_txm_event(txm_event_id: int):
 def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int, country_code: Country):
     # Remove parsing errors for patients that will be deleted
     donor_ids = [patient_model.id for patient_model in (
-            DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
-                                         DonorModel.country == country_code)).all()
+        DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
+                                     DonorModel.country == country_code)).all()
     )]
     for donor_id in donor_ids:
         delete_parsing_errors_for_patient(donor_id=donor_id, txm_event_id=txm_event_db_id)
 
     recipient_ids = [patient_model.id for patient_model in (
-            RecipientModel.query.filter(and_(RecipientModel.txm_event_id == txm_event_db_id,
-                                             RecipientModel.country == country_code)).all()
+        RecipientModel.query.filter(and_(RecipientModel.txm_event_id == txm_event_db_id,
+                                         RecipientModel.country == country_code)).all()
     )]
     for recipient_id in recipient_ids:
         delete_parsing_errors_for_patient(recipient_id=recipient_id, txm_event_id=txm_event_db_id)
@@ -168,7 +168,7 @@ def _get_txm_event_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEv
     all_donors = sorted([get_donor_from_donor_model(donor_model) for donor_model in txm_event_model.donors],
                         key=lambda donor: donor.db_id)
     logger.debug('Prepared Donors')
-    all_recipients = sorted([get_recipient_from_recipient_model(donor.recipient, donor.id)
+    all_recipients = sorted([get_recipient_from_recipient_model(donor.recipient)
                              for donor in txm_event_model.donors if donor.recipient is not None],
                             key=lambda recipient: recipient.db_id)
     logger.debug('Prepared Recipients')

@@ -10,7 +10,7 @@ export interface Recipient extends Patient {
   previousTransplants?: number;
   hlaAntibodies: Antibodies;
   recipientRequirements?: RecipientRequirements;
-  relatedDonorDbId: number;
+  relatedDonorDbId: Array<number>;
   allMessages: AllMessages;
 }
 

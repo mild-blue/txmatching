@@ -28,7 +28,7 @@ export class LoginComponent {
               private _versionService: VersionService) {
     this._initInfoText();
     this.loginForm = this._formBuilder.group({
-      email: ['', [Validators.required]], // todo: add Validators.email when relevant
+      email: ['', [Validators.required]], // TODO: add Validators.email when relevant
       password: ['', Validators.required]
     });
   }
