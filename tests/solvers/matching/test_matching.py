@@ -15,7 +15,7 @@ from txmatching.utils.country_enum import Country
 def _create_recipient(recipient_id: int, donor: Donor) -> Recipient:
     return Recipient(recipient_id,
                      f'R-{recipient_id}',
-                     related_donor_db_id=donor.db_id,
+                     related_donors_db_ids=[donor.db_id],
                      etag=1,
                      parameters=PatientParameters(
                          country_code=Country.CZE, blood_group=BloodGroup.A,

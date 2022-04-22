@@ -49,7 +49,7 @@ def recipient_to_recipient_dto_out(recipient: Recipient) -> RecipientDTOOut:
         etag=recipient.etag,
         acceptable_blood_groups=recipient.acceptable_blood_groups,
         hla_antibodies=recipient.hla_antibodies,
-        related_donor_db_id=recipient.related_donor_db_id,
+        related_donors_db_ids=recipient.related_donors_db_ids,
         parsing_errors=recipient.parsing_errors,
         recipient_cutoff=recipient.recipient_cutoff,
         recipient_requirements=recipient.recipient_requirements,

@@ -1,7 +1,7 @@
 import collections
 import dataclasses
 import logging
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import dacite
 
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
-                             txm_event_db_id: int) -> (List[DonorModel], List[RecipientModel]):
+                             txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
 
@@ -80,7 +80,7 @@ def get_patients_errors_from_pair_dto(donors: List[DonorModel], recipients: List
 
 
 def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn
-                                             ) -> (List[DonorModel], List[RecipientModel]):
+                                             ) -> Tuple[List[DonorModel], List[RecipientModel]]:
     txm_event_db_id = get_txm_event_db_id_by_name(patient_upload_dto.txm_event_name)
     if not patient_upload_dto.add_to_existing_patients:
         remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id,
@@ -235,14 +235,7 @@ def _add_patients_from_one_country(
         recipients: List[RecipientUploadDTO],
         country_code: Country,
         txm_event_db_id: int
-) -> (List[DonorModel], List[RecipientModel]):
-    related_recipient_medical_ids = [donor.related_recipient_medical_id for donor in donors
-                                     if donor.related_recipient_medical_id is not None]
-
-    duplicate_ids = [item for item, count in collections.Counter(related_recipient_medical_ids).items() if count > 1]
-    if len(duplicate_ids) > 0:
-        raise InvalidArgumentException(f'Duplicate recipient medical ids found: {duplicate_ids}.')
-
+) -> Tuple[List[DonorModel], List[RecipientModel]]:
     txm_event = get_txm_event_complete(txm_event_db_id)
 
     check_existing_ids_for_duplicates(txm_event, donors, recipients)

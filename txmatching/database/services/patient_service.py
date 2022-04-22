@@ -57,17 +57,16 @@ def get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
                  )
 
 
-def get_recipient_from_recipient_model(recipient_model: RecipientModel,
-                                       related_donor_db_id: Optional[int] = None) -> Recipient:
-    if not related_donor_db_id:
-        related_donor_db_id = DonorModel.query.filter(DonorModel.recipient_id == recipient_model.id).one().id
+def get_recipient_from_recipient_model(recipient_model: RecipientModel) -> Recipient:
+    related_donors_db_ids = [donor.id for donor in DonorModel.query.filter(
+        DonorModel.recipient_id == recipient_model.id).all()]
     base_patient = _get_base_patient_from_patient_model(recipient_model)
 
     recipient = Recipient(base_patient.db_id,
                           base_patient.medical_id,
                           parameters=base_patient.parameters,
                           etag=base_patient.etag,
-                          related_donor_db_id=related_donor_db_id,
+                          related_donors_db_ids=related_donors_db_ids,
                           hla_antibodies=get_hla_antibodies_from_recipient_model(recipient_model),
                           # TODO: https://github.com/mild-blue/txmatching/issues/477 represent blood as enum,
                           #       this conversion is not working properly now

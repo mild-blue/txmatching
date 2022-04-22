@@ -97,7 +97,7 @@ class RecipientRequirements(PersistentlyHashable):
 # pylint: disable=too-many-instance-attributes
 @dataclass
 class Recipient(Patient, PersistentlyHashable):
-    related_donor_db_id: DonorDbId
+    related_donors_db_ids: List[DonorDbId]
     acceptable_blood_groups: List[BloodGroup]
     hla_antibodies: HLAAntibodies
     parsing_errors: Optional[List[ParsingError]] = None
@@ -114,7 +114,7 @@ class Recipient(Patient, PersistentlyHashable):
     def update_persistent_hash(self, hash_: HashType):
         super().update_persistent_hash(hash_)
         update_persistent_hash(hash_, Recipient)
-        update_persistent_hash(hash_, self.related_donor_db_id)
+        update_persistent_hash(hash_, sorted(self.related_donors_db_ids))
         update_persistent_hash(hash_, sorted(self.acceptable_blood_groups))
         # TODO this is not hashable:
         # update_persistent_hash(hash_, sorted(self.parsing_errors))
@@ -178,12 +178,11 @@ def _filter_patients_that_dont_have_parsing_errors(
     for patient in donors:
         if _parsing_error_list_contains_errors(patient.parsing_errors):
             exclude_donors_ids.add(patient.db_id)
-            if patient.related_recipient_db_id is not None:
-                exclude_recipients_ids.add(patient.related_recipient_db_id)
 
     for patient in recipients:
         if _parsing_error_list_contains_errors(patient.parsing_errors):
-            exclude_donors_ids.add(patient.related_donor_db_id)
+            for donor_id in patient.related_donors_db_ids:
+                exclude_donors_ids.add(donor_id)
             exclude_recipients_ids.add(patient.db_id)
 
     return_donors = {
@@ -194,10 +193,17 @@ def _filter_patients_that_dont_have_parsing_errors(
     return_recipients = {
         patient.db_id: patient
         for patient in recipients
-        if patient.db_id not in exclude_recipients_ids and patient.related_donor_db_id in return_donors
+        if patient.db_id not in exclude_recipients_ids and _recipient_has_at_least_one_active_donor(patient.related_donors_db_ids, return_donors)
     }
 
     return return_donors, return_recipients
+
+
+def _recipient_has_at_least_one_active_donor(related_donors_db_ids: List[int], return_donors: Dict[DonorDbId, Donor]) -> bool:
+    for donor_db_id in related_donors_db_ids:
+        if donor_db_id in return_donors:
+            return True
+    return False
 
 
 def _parsing_error_list_contains_errors(parsing_issues: Optional[List[ParsingError]]) -> bool:

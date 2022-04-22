@@ -1214,7 +1214,7 @@ definitions:
                 type: integer
             recipient_requirements:
                 $ref: '#/definitions/RecipientRequirements'
-            related_donor_db_id:
+            related_donors_db_ids:
                 description: Database id of the related donor
                 type: integer
             waiting_since:
@@ -1226,7 +1226,7 @@ definitions:
         - hla_antibodies
         - medical_id
         - parameters
-        - related_donor_db_id
+        - related_donors_db_ids
         type: object
     RecipientInput:
         properties:
