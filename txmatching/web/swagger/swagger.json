@@ -553,6 +553,11 @@
                         }
                     }
                 ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
                 "tags": [
                     "txm-event"
                 ]

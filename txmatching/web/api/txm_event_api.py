@@ -94,7 +94,7 @@ class TxmDefaultEventApi(Resource):
 # noinspection PyUnresolvedReferences
 @txm_event_api.route('/<int:txm_event_id>', methods=['PUT'])
 class TxmEventUpdateApi(Resource):
-
+    @txm_event_api.require_user_login()
     @txm_event_api.request_body(TxmEventUpdateJsonIn, 'TXM event parameters that should be updated.')
     @txm_event_api.response_ok(TxmEventJsonOut, description='Returns the updated TXM event.')
     @txm_event_api.response_errors()
@@ -138,6 +138,7 @@ class TxmEventDeleteApi(Resource):
 # noinspection PyUnresolvedReferences
 @txm_event_api.route('/<int:txm_event_id>/export', methods=['POST'])
 class TxmExportEventApi(Resource):
+    @txm_event_api.require_user_login()
     @require_role(UserRole.ADMIN)
     @txm_event_api.response_ok(UploadPatientsJson, description='Exported patients DTO, Ready to be uploaded to'
                                                                'some other event')
