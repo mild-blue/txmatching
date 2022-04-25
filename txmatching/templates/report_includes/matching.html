@@ -38,7 +38,9 @@
                   <!-- countries stats -->
                   {% for country in matching.countries %}
                     <li>
-                      {{ flag_component( country['country_code'].value ) }}
+                      <div class="flag">
+                        <img src="assets/countries/{{ country['country_code'].value }}.png"/>
+                      </div>
                       <strong>
                         {{ country['donor_count'] }}/{{ country['recipient_count'] }}
                       </strong>
