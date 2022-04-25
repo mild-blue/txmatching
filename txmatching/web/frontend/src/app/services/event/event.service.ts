@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
-import { first, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { TxmEvent, TxmEvents } from '@app/model/Event';
 import { TxmEventGenerated, TxmEventsGenerated } from '@app/generated';
 import { parseTxmEvent, parseTxmEvents } from '@app/parsers/event.parsers';
 import { AuthService } from '@app/services/auth/auth.service';
-import { Observable, Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ import { Observable, Subscription } from 'rxjs';
 export class EventService {
 
   private _txmEvents?: Promise<TxmEvents>;
-  private _defaultTxmEvent?: Observable<TxmEvent>;
+  private _defaultTxmEvent?: Promise<TxmEvent>;
   private _userSubscription: Subscription;
   // TODO: move elsewhere https://github.com/mild-blue/txmatching/issues/481
   private _configId?: number;
@@ -38,53 +38,37 @@ export class EventService {
 
   public async getEvents(): Promise<TxmEvents> {
     if(!this._txmEvents) {
-      // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-      // @ts-ignore
-      this._txmEvents = this._http.get<TxmEventsGenerated>(
+      this._txmEvents = firstValueFrom(this._http.get<TxmEventsGenerated>(
         `${environment.apiUrl}/txm-event`
       ).pipe(
-        first(),
         map(parseTxmEvents)
-      ).toPromise();
+      ));
     }
-    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-    // @ts-ignore
     return this._txmEvents;
   }
 
-  public getDefaultEvent(): Promise<TxmEvent> {
+  public async getDefaultEvent(): Promise<TxmEvent> {
     if(!this._defaultTxmEvent) {
-      // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-      // @ts-ignore
-      this._defaultTxmEvent = this._http.get<TxmEvent>(
+      this._defaultTxmEvent = firstValueFrom(this._http.get<TxmEvent>(
         `${environment.apiUrl}/txm-event/default`
       ).pipe(
-        first(),
         map(parseTxmEvent)
-      ).toPromise();
+      ));
     }
-    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-    // @ts-ignore
     return this._defaultTxmEvent;
   }
 
-  public setDefaultEvent(eventId: number): Promise<TxmEvent> {
-    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-    // @ts-ignore
-    this._defaultTxmEvent = this._http.put<TxmEventGenerated>(
+  public async setDefaultEvent(eventId: number): Promise<TxmEvent> {
+    this._defaultTxmEvent = firstValueFrom(this._http.put<TxmEventGenerated>(
       `${environment.apiUrl}/txm-event/default`,
       {
         id: eventId
       }
     ).pipe(
-      first(),
       map(parseTxmEvent)
-    ).toPromise();
+    ));
 
     this._configId = undefined;
-
-    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-    // @ts-ignore
     return this._defaultTxmEvent;
   }
 

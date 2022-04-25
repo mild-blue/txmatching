@@ -3,11 +3,12 @@ import { Configuration } from '@app/model/Configuration';
 import { environment } from '@environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { CalculatedMatchings } from '@app/model/Matching';
-import { first, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { CalculatedMatchingsGenerated, ConfigurationGenerated } from '@app/generated';
 import { parseCalculatedMatchings } from '@app/parsers/matching.parsers';
 import { PatientList } from '@app/model';
 import { fromConfiguration } from '@app/parsers/to-generated/configuration.parsers';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -19,14 +20,11 @@ export class MatchingService {
 
   public async calculate(txmEventId: number, config: Configuration, patients: PatientList): Promise<CalculatedMatchings> {
     const payload: ConfigurationGenerated = fromConfiguration(config);
-    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-    // @ts-ignore
-    return this._http.post<CalculatedMatchingsGenerated>(
+    return firstValueFrom(this._http.post<CalculatedMatchingsGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/matching/calculate-for-config`,
       payload
     ).pipe(
-      first(),
       map(_ => parseCalculatedMatchings(_, patients))
-    ).toPromise();
+    ));
   }
 }
