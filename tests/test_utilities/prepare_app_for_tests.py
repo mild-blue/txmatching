@@ -61,7 +61,7 @@ class DbTests(unittest.TestCase):
 
         self.app = Flask(__name__)
         self.app.config['ENVIRONMENT'] = 'DEVELOPMENT'
-        self.app.config['USE_2FA'] = 'TRUE'
+        self.app.config['USE_2FA'] = 'true'
         self.app.config['SMS_SERVICE_URL'] = 'url'
         self.app.config['SMS_SERVICE_SENDER'] = 'sender'
         self.app.config['SMS_SERVICE_LOGIN'] = 'login'

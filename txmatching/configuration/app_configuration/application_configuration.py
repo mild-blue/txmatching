@@ -64,7 +64,7 @@ def _build_application_configuration() -> ApplicationConfiguration:
     """
     logger.debug('Building configuration.')
     environment = ApplicationEnvironment(_get_prop('ENVIRONMENT'))
-    use_2fa = _get_prop('USE_2FA', default='TRUE') == 'TRUE'
+    use_2fa = _get_prop('USE_2FA', default='true').lower() in {'true', 't'}
     code_version = _get_version()
 
     config = ApplicationConfiguration(
