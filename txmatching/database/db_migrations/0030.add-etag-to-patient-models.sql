@@ -4,7 +4,7 @@
 --
 
 ALTER TABLE donor
-    ADD COLUMN etag bigint not null;
+    ADD COLUMN etag BIGINT NOT NULL DEFAULT 1;
 
 ALTER TABLE recipient
-    ADD COLUMN etag bigint not null;
+    ADD COLUMN etag BIGINT NOT NULL DEFAULT 1;
