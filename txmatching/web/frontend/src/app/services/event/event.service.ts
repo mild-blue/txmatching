@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
-import { first, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { TxmEvent, TxmEvents } from '@app/model/Event';
@@ -41,33 +41,30 @@ export class EventService {
       this._txmEvents = firstValueFrom(this._http.get<TxmEventsGenerated>(
         `${environment.apiUrl}/txm-event`
       ).pipe(
-        first(),
         map(parseTxmEvents)
       ));
     }
     return this._txmEvents;
   }
 
-  public getDefaultEvent(): Promise<TxmEvent> {
+  public async getDefaultEvent(): Promise<TxmEvent> {
     if(!this._defaultTxmEvent) {
       this._defaultTxmEvent = firstValueFrom(this._http.get<TxmEvent>(
         `${environment.apiUrl}/txm-event/default`
       ).pipe(
-        first(),
         map(parseTxmEvent)
       ));
     }
     return this._defaultTxmEvent;
   }
 
-  public setDefaultEvent(eventId: number): Promise<TxmEvent> {
+  public async setDefaultEvent(eventId: number): Promise<TxmEvent> {
     this._defaultTxmEvent = firstValueFrom(this._http.put<TxmEventGenerated>(
       `${environment.apiUrl}/txm-event/default`,
       {
         id: eventId
       }
     ).pipe(
-      first(),
       map(parseTxmEvent)
     ));
 

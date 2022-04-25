@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Configuration } from '@app/model/Configuration';
-import { first, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { parseConfiguration } from '@app/parsers/configuration.parsers';
 import { ConfigurationGenerated, IdentifierGenerated, SuccessGenerated } from '@app/generated';
 import { firstValueFrom } from 'rxjs';
@@ -20,7 +20,6 @@ export class ConfigurationService {
     return firstValueFrom(this._http.get<ConfigurationGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/configuration/${configIdStr}`
     ).pipe(
-      first(),
       map(parseConfiguration)
     ));
   }
@@ -33,7 +32,6 @@ export class ConfigurationService {
       `${environment.apiUrl}/txm-event/${txmEventId}/configuration/set-default`,
       payload
     ).pipe(
-      first(),
       map(_ => _.success)
     ));
   }
