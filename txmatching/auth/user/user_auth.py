@@ -10,6 +10,8 @@ from txmatching.auth.user.sms_service import send_sms
 from txmatching.auth.user.totp import (OTP_VALIDITY_MINUTES,
                                        generate_otp_for_user,
                                        verify_otp_for_user)
+from txmatching.configuration.app_configuration.application_configuration import \
+    get_application_configuration
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 logger = logging.getLogger(__name__)
@@ -38,7 +40,7 @@ def user_login_flow(user: AppUserModel, jwt_expiration_days: int) -> BearerToken
     """
     require_auth_condition(user.role != UserRole.SERVICE, f'{user.role} used for user login flow!')
 
-    if user.require_2fa:
+    if user.require_2fa and get_application_configuration().use_2fa:
         generate_and_send_otp(user)
         token = BearerTokenRequest(
             user_id=user.id,
@@ -100,4 +102,7 @@ def refresh_user_token(token: DecodedBearerToken, jwt_expiration_days: int) -> B
 def _send_sms_otp(otp: str, user: AppUserModel):
     require_auth_condition(user.phone_number is not None, f'No phone number for user {user.email}')
     require_auth_condition(bool(otp), 'Empty OTP!')
+    require_auth_condition(get_application_configuration().use_2fa and user.require_2fa, 'Two factor authentication'
+                                                                                         'is not enabled for the'
+                                                                                         'user or for the app')
     send_sms(user.phone_number, message_body=f'{otp} - use this code for TXMatching login.')

@@ -35,7 +35,7 @@ TxmEventsJson = txm_event_api.model('TxmEvents', {
     )),
 })
 
-TxmEventUpdateJsonIn = txm_event_api.model('TxmEventUpdate', {
+TxmEventUpdateJsonIn = txm_event_api.model('TxmEventUpdateIn', {
     'state': fields.Nested(TxmEventStateJson, required=False),
 })
 

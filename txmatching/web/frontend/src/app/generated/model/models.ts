@@ -63,7 +63,7 @@ export * from './transplantWarningGenerated';
 export * from './txmEventExportGenerated';
 export * from './txmEventGenerated';
 export * from './txmEventStateGenerated';
-export * from './txmEventUpdateGenerated';
+export * from './txmEventUpdateInGenerated';
 export * from './txmEventsGenerated';
 export * from './updatedDonorGenerated';
 export * from './updatedRecipientGenerated';
