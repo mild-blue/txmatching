@@ -38,7 +38,12 @@
                   {% for country in matching.countries %}
                     <li>
                       <div class="flag">
-                        <img src="assets/countries/{{ country['country_code'].value }}.png"/>
+                        <img src="assets/countries/{{ country['country_code'].split('_')[0].value }}.png"/>
+                        <div class="flag-badge">
+                          <p>
+                            {{ country['country_code'].split('_')[1].value }}
+                          </p>
+                        </div>
                       </div>
                       <strong>
                         {{ country['donor_count'] }}/{{ country['recipient_count'] }}
