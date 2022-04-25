@@ -3,7 +3,7 @@ import { Configuration } from '@app/model/Configuration';
 import { environment } from '@environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { CalculatedMatchings } from '@app/model/Matching';
-import { first, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { CalculatedMatchingsGenerated, ConfigurationGenerated } from '@app/generated';
 import { parseCalculatedMatchings } from '@app/parsers/matching.parsers';
 import { PatientList } from '@app/model';
@@ -24,7 +24,6 @@ export class MatchingService {
       `${environment.apiUrl}/txm-event/${txmEventId}/matching/calculate-for-config`,
       payload
     ).pipe(
-      first(),
       map(_ => parseCalculatedMatchings(_, patients))
     ));
   }

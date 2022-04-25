@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
-import { filter, first, map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { PatientList } from '@app/model/PatientList';
 import { UpdatedDonor } from '@app/model/Donor';
@@ -16,7 +16,7 @@ import {
   UpdatedRecipientGenerated
 } from '@app/generated';
 import { parsePatientList, parseUpdatedDonor, parseUpdatedRecipient } from '@app/parsers';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { DonorEditable } from '@app/model/DonorEditable';
 import { RecipientEditable } from '@app/model/RecipientEditable';
 import { fromDonorEditableToUpdateGenerated } from '@app/parsers/to-generated/donor.parsers';
@@ -43,14 +43,11 @@ export class PatientService {
   public async getPatients(txmEventId: number, configId: number | undefined, includeAntibodiesRaw: boolean): Promise<PatientList> {
     const configIdStr = configId !== undefined ? configId.toString() : 'default';
 
-    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-    // @ts-ignore
-    return this._http.get<PatientsGenerated>(
+    return firstValueFrom(this._http.get<PatientsGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}${includeAntibodiesRaw ? '?include-antibodies-raw' : ''}`
     ).pipe(
-      first(),
       map(parsePatientList)
-    ).toPromise();
+    ));
   }
 
   public async saveDonor(txmEventId: number, donorId: number, donorUpdateId: number, donorEditable: DonorEditable, configId: number | undefined): Promise<UpdatedDonor> {
@@ -60,15 +57,12 @@ export class PatientService {
     const payload: DonorModelToUpdateGenerated = fromDonorEditableToUpdateGenerated(donorEditable, donorId, donorUpdateId);
     this._logger.log('Sending payload', [payload]);
 
-    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-    // @ts-ignore
-    return this._http.put<UpdatedDonorGenerated>(
+    return firstValueFrom(this._http.put<UpdatedDonorGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/configs/${configIdStr}/donor`,
       payload
     ).pipe(
-      first(),
       map(parseUpdatedDonor)
-    ).toPromise();
+    ));
   }
 
   public async saveRecipient(txmEventId: number, recipientId: number, recipientUpdateId: number, recipientEditable: RecipientEditable): Promise<UpdatedRecipient> {
@@ -76,15 +70,12 @@ export class PatientService {
     const payload: RecipientModelToUpdateGenerated = fromRecipientEditableToUpdateGenerated(recipientEditable, recipientId, recipientUpdateId);
     this._logger.log('Sending payload', [payload]);
 
-    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-    // @ts-ignore
-    return this._http.put<UpdatedRecipientGenerated>(
+    return firstValueFrom(this._http.put<UpdatedRecipientGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/recipient`,
       payload
     ).pipe(
-      first(),
       map(parseUpdatedRecipient)
-    ).toPromise();
+    ));
   }
 
   public async addNewPair(txmEventId: number, donor: DonorEditable, recipient: RecipientEditable): Promise<ParsingError[]> {
@@ -94,35 +85,19 @@ export class PatientService {
       donor, recipient
     );
 
-    // TODO: use observables https://github.com/mild-blue/txmatching/issues/674
-    // @ts-ignore
-    return this._http.post<PatientUploadSuccessResponseGenerated>(
+    return firstValueFrom(this._http.post<PatientUploadSuccessResponseGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs`,
       payload
     ).pipe(
-      first(),
       map(_ => _.parsing_errors.map(parseParsingError))
-    ).toPromise();
+    ));
   }
 
-  public deleteDonor(txmEventId: number, donorDbId: number): Observable<void> {
+  public async deleteDonor(txmEventId: number, donorDbId: number): Promise<void> {
     this._logger.log(`Deleting donor ${donorDbId}`);
-    return new Observable(observer => {
-      this._http.delete(
-        `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs/${donorDbId}`
-      ).pipe(first()).subscribe({
-          next: () => {
-            observer.next();
-          },
-          error: () => {
-            this._logger.error('Error deleting donor');
-          },
-          complete: () => {
-            this._deletedDonorDbIdSubject.next(donorDbId);
-            observer.complete();
-          }
-        }
-      );
-    });
+    await firstValueFrom(this._http.delete(
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs/${donorDbId}`
+    ));
+    this._deletedDonorDbIdSubject.next(donorDbId);
   }
 }
