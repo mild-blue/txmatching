@@ -1,4 +1,5 @@
 {% from 'report_includes/transplant_component.macro.html' import transplant_component %}
+{% from 'report_includes/flag.html' import flag_component %}
 
 <div class="box pb-0">
   <h1 class="mb-0">Selected matching detail</h1>
@@ -37,16 +38,7 @@
                   <!-- countries stats -->
                   {% for country in matching.countries %}
                     <li>
-                      <div class="flag">
-                        <img src="assets/countries/{{ country['country_code'].value.split('_')[0] }}.png"/>
-                          {% if '_' in country['country_code'] %}
-                              <div class="flag-badge">
-                                  <p>
-                                    {{ country['country_code'].value.split('_')[1] }}
-                                  </p>
-                              </div>
-                          {% endif %}
-                      </div>
+                      {{ flag_component( country['country_code'].value ) }}
                       <strong>
                         {{ country['donor_count'] }}/{{ country['recipient_count'] }}
                       </strong>

@@ -1,0 +1,12 @@
+{% macro transplant_component(
+  country
+) %}
+
+<div class="flag">
+  <img src="assets/countries/{{ country.split('_')[0] }}.png" />
+  {% if '_' in country %}
+    <span class="flag-badge">
+      {{ country.split('_')[1] }}
+    </span>
+  {% endif %}
+</div>
