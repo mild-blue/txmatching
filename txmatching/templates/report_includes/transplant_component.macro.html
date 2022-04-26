@@ -1,5 +1,5 @@
 {% from 'report_includes/macros.html' import antigen_class, antibody_class %}
-{% from 'report_includes/flag.html' import flag_component %}
+{% from 'report_includes/flag_component.html' import flag_component %}
 
 {% macro transplant_component(
     score,
@@ -23,9 +23,7 @@
                 <div class="warning-icon">!</div>
               {% endif %}
               <div class="patient">
-                <div class="flag">
-                  <img src="assets/countries/{{ donor.parameters.country_code.value }}.png"/>
-                </div>
+                {{ flag_component(donor.parameters.country_code.value) }}
                 {{ donor.medical_id }}
               </div>
 
