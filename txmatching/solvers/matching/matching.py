@@ -29,7 +29,6 @@ class Matching:
         # Edges tell us which transplant will come next
         vertices = list(range(len(matching_pairs)))
         edges = {}
-        # todo ako zistim aktivnych? asi toje jedno
         for recipient_index, recipient in enumerate(recipients):
             for related_donor_id in recipient.related_donors_db_ids:
                 if related_donor_id in donor_ids:

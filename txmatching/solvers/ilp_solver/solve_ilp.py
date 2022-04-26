@@ -38,6 +38,7 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
 
     _add_constraints_removing_solution(ilp_model, data_and_configuration, [], mapping)
 
+    all_solution_sets = set()
     for _ in range(matchings_to_search_for):
         number_of_times_dynamic_constraint_added = 0
         while True:
@@ -58,11 +59,20 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
                         'Unable to find solution complying with required length of cycles and sequences.'
                         f'Number of added dynamic constraints reached a threshold of'
                         f' {data_and_configuration.configuration.max_number_of_dynamic_constrains_ilp_solver}')
-
+        # todo: here it should repeat the loop if duplicate was found, not ignore it
         if status == Status.OPTIMAL:
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
-            yield Solution(solution_edges)
-            some_solution_yielded = True
+            one_solution = []
+            for solution in solution_edges:
+                recipient = data_and_configuration.donor_to_recipient_related[
+                    data_and_configuration.donor_enum_to_id[solution[1]]]
+                one_solution.append((solution[0], recipient))
+            one_solution = tuple(sorted(one_solution))
+            if not one_solution in all_solution_sets:
+                all_solution_sets.add(one_solution)
+                yield Solution(solution_edges)
+                some_solution_yielded = True
+
             if (data_and_configuration.graph.edges - set(solution_edges)) == set():
                 break
             _add_constraints_removing_solution(ilp_model, data_and_configuration, solution_edges, mapping)
@@ -84,6 +94,11 @@ def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSo
         ilp_model.add_constr(
             mip.xsum([mapping.edge_to_var[edge] for edge in data_and_configuration.graph.out_edges(node)]) ==
             mapping.node_to_out_var[node])
+
+    # Total outflow and inflow of one recipient should be at most 1.
+    for donors_node_ids in data_and_configuration.recipient_to_donors_enum_dict.values():
+        ilp_model.add_constr(mip.xsum([mapping.node_to_out_var[node] for node in donors_node_ids]) <= 1)
+        ilp_model.add_constr(mip.xsum([mapping.node_to_in_var[node] for node in donors_node_ids]) <= 1)
 
     # Donor-patient pair flows.
     for node in data_and_configuration.regular_donors:

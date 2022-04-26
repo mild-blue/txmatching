@@ -168,9 +168,15 @@ def _get_txm_event_from_txm_event_model(txm_event_model: TxmEventModel) -> TxmEv
     all_donors = sorted([get_donor_from_donor_model(donor_model) for donor_model in txm_event_model.donors],
                         key=lambda donor: donor.db_id)
     logger.debug('Prepared Donors')
-    all_recipients = sorted([get_recipient_from_recipient_model(donor.recipient)
-                             for donor in txm_event_model.donors if donor.recipient is not None],
-                            key=lambda recipient: recipient.db_id)
+
+    all_recipients = []
+    recipient_db_ids = []
+    for donor in txm_event_model.donors:
+        if donor.recipient is not None and donor.recipient.id not in recipient_db_ids:
+            all_recipients.append(get_recipient_from_recipient_model(donor.recipient))
+            recipient_db_ids.append(donor.recipient.id)
+    all_recipients = sorted(all_recipients, key=lambda recipient: recipient.db_id)
+
     logger.debug('Prepared Recipients')
     logger.debug('Prepared TXM event')
     return TxmEvent(db_id=txm_event_model.id,

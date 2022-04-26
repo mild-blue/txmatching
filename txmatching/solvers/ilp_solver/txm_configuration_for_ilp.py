@@ -19,6 +19,9 @@ class DataAndConfigurationForILPSolver:
     configuration: ConfigParameters
     country_codes_dict: Dict[int, Country]
     required_patients: List[int]
+    donor_enum_to_id: Dict[int, int]
+    recipient_to_donors_enum_dict: Dict[int, List[int]]
+    donor_to_recipient_related: Dict[int, int]
     graph: nx.Graph
 
     def __init__(self, active_and_valid_donors_dict: Dict[DonorDbId, Donor],
@@ -28,6 +31,22 @@ class DataAndConfigurationForILPSolver:
         self.configuration = config_parameters
         self.non_directed_donors = [i for i, donor in enumerate(active_and_valid_donors_dict.values()) if
                                     donor.donor_type != DonorType.DONOR]
+
+        self.donor_enum_to_id = {i: donor.db_id for i, donor in enumerate(active_and_valid_donors_dict.values()) if
+                                 donor.donor_type == DonorType.DONOR}
+
+        donor_id_to_enum = {donor.db_id: i for i, donor in enumerate(active_and_valid_donors_dict.values()) if
+                            donor.donor_type == DonorType.DONOR}
+        self.recipient_to_donors_enum_dict = {}
+        for recipient_db_id, recipient in active_and_valid_recipients_dict.items():
+            donors_list = [donor_id_to_enum[donor_db_id] for donor_db_id in recipient.related_donors_db_ids if
+                           donor_db_id in active_and_valid_donors_dict and donor_db_id in donor_id_to_enum]
+            self.recipient_to_donors_enum_dict[recipient_db_id] = donors_list
+
+        self.donor_to_recipient_related = {}
+        for donor_db_id, donor in active_and_valid_donors_dict.items():
+            self.donor_to_recipient_related[donor_db_id] = donor.related_recipient_db_id
+
         self.graph = self._create_graph(config_parameters, active_and_valid_donors_dict,
                                         active_and_valid_recipients_dict)
 
@@ -71,7 +90,7 @@ class DataAndConfigurationForILPSolver:
         ])
         return graph
 
-    @ staticmethod
+    @staticmethod
     def _get_donor_score_matrix(config_parameters: ConfigParameters,
                                 active_and_valid_donors_dict: Dict[DonorDbId, Donor],
                                 active_and_valid_recipients_dict: Dict[RecipientDbId, Recipient]) -> ScoreMatrix:
