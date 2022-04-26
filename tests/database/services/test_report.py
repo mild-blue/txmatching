@@ -1,6 +1,7 @@
 import datetime
 import difflib
 import os
+import shutil
 import sys
 
 from local_testing_utilities.generate_patients import \
@@ -18,7 +19,7 @@ from txmatching.database.services.txm_event_service import (
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 SAMPLE_MATCHING_ID = 1
-REPORT_DATETIME_LINE = 556
+REPORT_DATETIME_LINE = 569
 
 
 def generate_report_for_test():
@@ -67,8 +68,8 @@ class TestReport(DbTests):
         with open(result_html_full_path, 'r', encoding='utf-8') as file_r:
             html_r = file_r.readlines()
 
-        if date_and_time in html_r[REPORT_DATETIME_LINE - 1]:
-            html_r[REPORT_DATETIME_LINE - 1] = html_s[REPORT_DATETIME_LINE - 1]
+        if date_and_time in html_r[REPORT_DATETIME_LINE]:
+            html_r[REPORT_DATETIME_LINE] = html_s[REPORT_DATETIME_LINE]
         # else: you may have forgotten to change HTML_DATETIME_LINE
         #       when you changed the report template
 

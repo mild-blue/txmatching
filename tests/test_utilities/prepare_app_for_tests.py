@@ -132,7 +132,7 @@ class DbTests(unittest.TestCase):
             store_user_in_context(user_id, user_role)
 
     def _load_local_development_config(self):
-        config_file = 'txmatching.web.local_config'
+        config_file = 'tests.test_utilities.test_config'
         if importing.find_spec(config_file):
             self.app.config.from_object(config_file)
 
