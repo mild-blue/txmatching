@@ -3,6 +3,7 @@ import random
 from unittest import TestCase, mock
 from uuid import uuid4
 
+from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.data_types import (BearerTokenRequest, DecodedBearerToken,
                                         TokenType, UserRole)
 from txmatching.auth.exceptions import (InvalidAuthCallException,
@@ -15,7 +16,7 @@ from txmatching.auth.user.user_auth import (
 from txmatching.database.sql_alchemy_schema import AppUserModel
 
 
-class TestUserAuth(TestCase):
+class TestUserAuth(DbTests):
 
     def test_user_login_flow_service(self):
         usr = AppUserModel(email='', pass_hash='', role=UserRole.SERVICE, second_factor_material='')

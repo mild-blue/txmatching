@@ -1,4 +1,5 @@
 {% from 'report_includes/macros.html' import antigen_class, antibody_class %}
+{% from 'report_includes/flag_component.html' import flag_component %}
 
 {% macro transplant_component(
     score,
@@ -22,18 +23,14 @@
                 <div class="warning-icon">!</div>
               {% endif %}
               <div class="patient">
-                <div class="flag">
-                  <img src="assets/countries/{{ donor.parameters.country_code.value }}.png"/>
-                </div>
+                {{ flag_component(donor.parameters.country_code.value) }}
                 {{ donor.medical_id }}
               </div>
 
               {% if recipient %}
                 <div class="icon-right"> ></div>
                 <div class="patient">
-                  <div class="flag">
-                    <img src="assets/countries/{{ recipient.parameters.country_code.value }}.png"/>
-                  </div>
+                  {{ flag_component( recipient.parameters.country_code.value ) }}
                   {{ recipient.medical_id }}
                 </div>
 
@@ -65,9 +62,7 @@
         <td>
           <div class="center-holder">
             <div class="patient">
-              <div class="flag">
-                <img src="assets/countries/{{ donor.parameters.country_code.value }}.png"/>
-              </div>
+              {{ flag_component( donor.parameters.country_code.value ) }}
               {{ donor.medical_id }}
             </div>
           </div>
@@ -92,9 +87,7 @@
           {% if recipient %}
             <div class="center-holder">
               <div class="patient">
-                <div class="flag">
-                  <img src="assets/countries/{{ recipient.parameters.country_code.value }}.png"/>
-                </div>
+                {{ flag_component( recipient.parameters.country_code.value ) }}
                 {{ recipient.medical_id }}
               </div>
             </div>

@@ -1,4 +1,5 @@
 {% from 'report_includes/macros.html' import antigen_class, antibody_class %}
+{% from 'report_includes/flag_component.html' import flag_component %}
 
 <div class="box">
   <h1 class="mb-0">Matchings summaries</h1>
@@ -22,9 +23,7 @@
         <!-- countries stats -->
         {% for country in matching.countries %}
           <li>
-            <div class="flag">
-              <img src="assets/countries/{{ country['country_code'].value }}.png"/>
-            </div>
+            {{ flag_component( country['country_code'].value ) }}
             <strong>
               {{ country['donor_count'] }}/{{ country['recipient_count'] }}
             </strong>
@@ -56,17 +55,13 @@
                         <div class="warning-icon">!</div>
                       {% endif %}
                       <div class="patient">
-                        <div class="flag">
-                          <img src="assets/countries/{{ (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value }}.png"/>
-                        </div>
-                        {{ transplant.donor }}
+                          {{ flag_component( (transplant.donor|patient_by_medical_id_filter(all_donors)).parameters.country_code.value ) }}
+                          {{ transplant.donor }}
                       </div>
                       <div class="icon-right"> ></div>
                       <div class="patient">
-                        <div class="flag">
-                          <img src="assets/countries/{{ (transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value }}.png"/>
-                        </div>
-                        {{ transplant.recipient }}
+                          {{ flag_component((transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value) }}
+                          {{ transplant.recipient }}
                       </div>
                     </div>
                   </div>

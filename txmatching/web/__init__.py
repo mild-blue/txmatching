@@ -4,14 +4,14 @@ import time
 from importlib import util as importing
 from typing import List, Tuple
 
+import sentry_sdk
 from flask import Flask, request, send_from_directory
 from flask_restx import Api
 from flask_restx.apidoc import ui_for
+from sentry_sdk.integrations.flask import FlaskIntegration
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from werkzeug.middleware.proxy_fix import ProxyFix
-import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
 
 from txmatching.auth.crypto import bcrypt
 from txmatching.configuration.app_configuration.application_configuration import (
@@ -155,7 +155,7 @@ def create_app() -> Flask:
             )
 
     def load_local_development_config():
-        config_file = 'txmatching.web.local_config'
+        config_file = 'txmatching.local_config'
         if importing.find_spec(config_file):
             app.config.from_object(config_file)
             app.config['IS_LOCAL_DEV'] = True
