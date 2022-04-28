@@ -3354,8 +3354,11 @@
                     "$ref": "#/definitions/HlaAntibodies"
                 },
                 "related_donors_db_ids": {
-                    "type": "integer",
-                    "description": "Database id of the related donor"
+                    "type": "array",
+                    "description": "Database id of the related donor",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "recipient_requirements": {
                     "$ref": "#/definitions/RecipientRequirements"

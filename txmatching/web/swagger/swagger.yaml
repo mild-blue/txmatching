@@ -1216,7 +1216,9 @@ definitions:
                 $ref: '#/definitions/RecipientRequirements'
             related_donors_db_ids:
                 description: Database id of the related donor
-                type: integer
+                items:
+                    type: integer
+                type: array
             waiting_since:
                 format: date-time
                 type: string
