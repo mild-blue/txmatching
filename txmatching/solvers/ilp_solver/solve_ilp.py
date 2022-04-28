@@ -97,7 +97,6 @@ def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSo
 
     # Total outflow and inflow of one recipient should be at most 1.
     for donors_node_ids in data_and_configuration.recipient_to_donors_enum_dict.values():
-        ilp_model.add_constr(mip.xsum([mapping.node_to_out_var[node] for node in donors_node_ids]) <= 1)
         ilp_model.add_constr(mip.xsum([mapping.node_to_in_var[node] for node in donors_node_ids]) <= 1)
 
     # Donor-patient pair flows.
