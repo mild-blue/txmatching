@@ -16,7 +16,8 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
     RecipientUploadDTO
 from txmatching.database.db import db
 from txmatching.database.services.patient_service import (
-    delete_donor_recipient_pair, get_all_patients_persistent_hash, get_patients_persistent_hash,
+    delete_donor_recipient_pair, get_all_patients_persistent_hash,
+    get_patients_persistent_hash,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event)
 from txmatching.database.services.patient_upload_service import \
     replace_or_add_patients_from_one_country
@@ -193,7 +194,7 @@ class TestPatientService(DbTests):
             all_recipients=get_test_recipients()
         )
         hash_1 = get_patients_persistent_hash(txm_event_1)
-        self.assertEqual(4801276342034003774, hash_1)
+        self.assertEqual(9100441963031536076, hash_1)
 
         # changing event db id or event name does not change the hash
         txm_event_2 = TxmEvent(

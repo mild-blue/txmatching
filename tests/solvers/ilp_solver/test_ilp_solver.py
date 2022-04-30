@@ -1,13 +1,14 @@
-from local_testing_utilities.generate_patients import store_generated_patients_from_folder, SMALL_DATA_FOLDER, \
-    SMALL_DATA_FOLDER_MULTIPLE_DONORS, GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER_WITH_ROUND, \
-    SMALL_DATA_FOLDER_WITH_NO_SOLUTION
+from local_testing_utilities.generate_patients import (
+    GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
+    SMALL_DATA_FOLDER_MULTIPLE_DONORS, SMALL_DATA_FOLDER_WITH_NO_SOLUTION,
+    SMALL_DATA_FOLDER_WITH_ROUND, store_generated_patients_from_folder)
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import (
     ConfigParameters, ManualDonorRecipientScore)
-from txmatching.database.services.txm_event_service import \
-    get_txm_event_complete, get_txm_event_db_id_by_name
+from txmatching.database.services.txm_event_service import (
+    get_txm_event_complete, get_txm_event_db_id_by_name)
 from txmatching.patients.patient import Donor
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
@@ -257,6 +258,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                 recipient_of_donor_ids.add(matching_pair.donor.related_recipient_db_id)
         # there are more than 10 possibilities, so it should find 10
         self.assertEqual(len(solutions.calculated_matchings_list), 10)
+
 
 def _set_donor_blood_group(donor: Donor) -> Donor:
     if donor.db_id % 2 == 0:
