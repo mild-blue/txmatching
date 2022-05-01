@@ -1,7 +1,7 @@
 import logging
 import tempfile
 from os import close, dup, dup2
-from typing import Iterable, Tuple
+from typing import Iterable, List, Tuple
 
 import mip
 
@@ -38,7 +38,6 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
 
     _add_constraints_removing_solution(ilp_model, data_and_configuration, [], mapping)
 
-    all_solution_sets = set()
     for _ in range(matchings_to_search_for):
         number_of_times_dynamic_constraint_added = 0
         while True:
@@ -59,19 +58,10 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
                         'Unable to find solution complying with required length of cycles and sequences.'
                         f'Number of added dynamic constraints reached a threshold of'
                         f' {data_and_configuration.configuration.max_number_of_dynamic_constrains_ilp_solver}')
-        # todo: here it should repeat the loop if duplicate was found, not ignore it
         if status == Status.OPTIMAL:
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
-            one_solution = []
-            for solution in solution_edges:
-                recipient = data_and_configuration.donor_to_recipient_related[
-                    data_and_configuration.donor_enum_to_id[solution[1]]]
-                one_solution.append((solution[0], recipient))
-            one_solution = tuple(sorted(one_solution))
-            if not one_solution in all_solution_sets:
-                all_solution_sets.add(one_solution)
-                yield Solution(solution_edges)
-                some_solution_yielded = True
+            yield Solution(solution_edges)
+            some_solution_yielded = True
 
             if (data_and_configuration.graph.edges - set(solution_edges)) == set():
                 break
@@ -210,4 +200,62 @@ def _add_constraints_removing_solution(ilp_model: mip.Model,
     missing = {(from_node, to_node) for (from_node, to_node) in data_and_configuration.graph.edges if
                (from_node, to_node) not in sol_edges_set}
 
-    ilp_model.add_constr(mip.xsum([mapping.edge_to_var[edge] for edge in missing]) >= 0.5)
+    # convert solution_edges to set where there are donors represented as their recipients or as negative number
+    recipient_to_recipient_solution_edges = set()
+    donoring_counterpart_ids = {}
+    for donor_to_recipient in solution_edges:
+        # if the donor is non-directed, it evaluates to -1
+        if donor_to_recipient[0] in data_and_configuration.donor_enum_to_id and data_and_configuration.donor_enum_to_id[
+            donor_to_recipient[0]] in data_and_configuration.donor_to_recipient_related:
+            recipient_of_donating_donor = data_and_configuration.donor_to_recipient_related[
+                data_and_configuration.donor_enum_to_id[donor_to_recipient[0]]]
+        else:
+            recipient_of_donating_donor = -1
+        # bridging donors
+        if donor_to_recipient[1] in data_and_configuration.donor_enum_to_id and data_and_configuration.donor_enum_to_id[
+            donor_to_recipient[1]] in data_and_configuration.donor_to_recipient_related:
+            recipient_of_recieving_donor = data_and_configuration.donor_to_recipient_related[
+                data_and_configuration.donor_enum_to_id[donor_to_recipient[1]]]
+        else:
+            recipient_of_recieving_donor = -2
+        donoring_counterpart_ids[recipient_of_donating_donor] = 1
+        recipient_to_recipient_solution_edges.add((recipient_of_donating_donor, recipient_of_recieving_donor))
+
+    # note all the donors at the end of the chain to be excluded (there might be several chains)
+    donors_to_exclude = []
+    for recipient_to_recipient in recipient_to_recipient_solution_edges:
+        if recipient_to_recipient[1] not in donoring_counterpart_ids and len(
+                data_and_configuration.recipient_to_donors_enum_dict[recipient_to_recipient[1]]) > 1:
+            donors_to_exclude.append(data_and_configuration.recipient_to_donors_enum_dict[recipient_to_recipient[1]])
+    if len(donors_to_exclude) == 0:
+        ilp_model.add_constr(mip.xsum([mapping.edge_to_var[edge] for edge in missing]) >= 0.5)
+        return
+
+    # create all possible combinations to exclude
+    solution_edges_list = list(sol_edges_set)
+    permutations = _generate_all_permutations_of_solution(donors_to_exclude)
+    for permutation in permutations:
+        value_to_index_dict = {}
+        for index, donor_list in enumerate(donors_to_exclude):
+            for donor in donor_list:
+                value_to_index_dict[donor] = index
+
+        for index, solution_edge in enumerate(solution_edges_list):
+            if solution_edge[1] in value_to_index_dict:
+                solution_edges_list[index] = (solution_edge[0], permutation[value_to_index_dict[solution_edge[1]]])
+
+        sol_edges_set = set(solution_edges_list)
+        missing = {(from_node, to_node) for (from_node, to_node) in data_and_configuration.graph.edges if
+                   (from_node, to_node) not in sol_edges_set}
+        ilp_model.add_constr(mip.xsum([mapping.edge_to_var[edge] for edge in missing]) >= 0.5)
+
+
+def _generate_all_permutations_of_solution(donors_to_exclude: List[List[int]]) -> List[List[int]]:
+    if donors_to_exclude == []:
+        return [[]]
+    permutations = []
+    others = _generate_all_permutations_of_solution(donors_to_exclude[1:])
+    for donor in donors_to_exclude[0]:
+        for other in others:
+            permutations.append([donor] + other)
+    return permutations

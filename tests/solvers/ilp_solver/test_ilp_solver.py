@@ -253,10 +253,28 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             for matching_pair in solution.matching_pairs:
                 self.assertTrue(matching_pair.recipient.db_id not in recipient_ids)
                 recipient_ids.add(matching_pair.recipient.db_id)
-                self.assertTrue(matching_pair.donor.related_recipient_db_id not in recipient_of_donor_ids)
-                recipient_of_donor_ids.add(matching_pair.donor.related_recipient_db_id)
+                if matching_pair.donor.related_recipient_db_id is not None:
+                    self.assertTrue(matching_pair.donor.related_recipient_db_id not in recipient_of_donor_ids)
+                    recipient_of_donor_ids.add(matching_pair.donor.related_recipient_db_id)
         # there are more than 10 possibilities, so it should find 10
         self.assertEqual(len(solutions.calculated_matchings_list), 10)
+
+    def test_solver_with_multiple_donors_per_recipient_no_duplicates(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_MULTIPLE_DONORS)
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+        solutions = solve_from_configuration(
+            ConfigParameters(solver_constructor_name=Solver.ILPSolver, max_number_of_matchings=10), txm_event)
+        all_solution_sets = set()
+        for solution in solutions.calculated_matchings_list:
+            one_solution = []
+            for matching_pair in solution.matching_pairs:
+                donor_recipient_pair = (matching_pair.donor.db_id, matching_pair.recipient.db_id)
+                one_solution.append(donor_recipient_pair)
+            one_solution = tuple(sorted(one_solution))
+            self.assertTrue(one_solution not in all_solution_sets)
+            if not one_solution in all_solution_sets:
+                all_solution_sets.add(one_solution)
+
 
 def _set_donor_blood_group(donor: Donor) -> Donor:
     if donor.db_id % 2 == 0:

@@ -61,7 +61,7 @@ class TestHlaScorer(DbTests):
             original_donor = _create_donor([])
 
             self.assertEqual(2, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                   original_donor=original_donor))
+                                                                   original_donors=[original_donor]))
 
     def test_match_in_broad(self):
         # 22 vs 25
@@ -71,13 +71,13 @@ class TestHlaScorer(DbTests):
             original_donor = _create_donor([])
 
             self.assertEqual(6, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                   original_donor=original_donor))
+                                                                   original_donors=[original_donor]))
             donor = _create_donor(['A25', 'A26'])
             recipient = _create_recipient(['A1', 'A26'])
             original_donor = _create_donor([])
 
             self.assertEqual(2, self.split_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                   original_donor=original_donor))
+                                                                   original_donors=[original_donor]))
 
     def test_codes_with_letters(self):
         with self.app.test_client():
@@ -112,13 +112,13 @@ class TestHlaScorer(DbTests):
     def _test_all_scorers(self, donor, recipient, scores):
         original_donor = _create_donor([])
         self.assertEqual(scores[0], self.split_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                       original_donor=original_donor))
+                                                                       original_donors=[original_donor]))
         self.assertEqual(scores[1], self.high_res_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                          original_donor=original_donor))
+                                                                          original_donors=[original_donor]))
 
         self.assertEqual(scores[2],
                          self.high_res_other_hla_types_scorer.score_transplant(donor=donor, recipient=recipient,
-                                                                               original_donor=original_donor))
+                                                                               original_donors=[original_donor]))
 
 
 def _create_donor(hla_typing: List[str]):
