@@ -183,3 +183,31 @@ class TestMatchingApi(DbTests):
 
             self.assertEqual(403, res.status_code)
             self.assertEqual('application/json', res.content_type)
+
+
+    def test_txm_event_copy(self):
+        txm_name_from = 'test'
+        txm_name_to = 'test2'
+
+        self.fill_db_with_patients_and_results(txm_event_name=txm_name_from)
+        self.fill_db_with_patients_and_results(txm_event_name=txm_name_to)
+        
+        txm_event_model_from = TxmEventModel.query.filter(TxmEventModel.name == txm_name_from).first()
+        txm_event_model_to = TxmEventModel.query.filter(TxmEventModel.name == txm_name_to).first()
+
+        donors = txm_event_model_from.donors[0,1]
+        donor_ids = ','.join([str(donor.id) for donor in donors])
+
+        self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name_from).first()) 
+        self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name_to).first()) 
+
+        self.login_with_role(UserRole.ADMIN)
+        
+        with self.app.test_client() as client:
+            res = client.put(
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_model_from.id}/copy?txm_event_id_to={txm_event_model_to.id}?donor_ids={donor_ids}',
+                headers=self.auth_headers
+            )
+
+            self.assertEqual(200, res.status_code)
+            self.assertEqual('application/json', res.content_type)

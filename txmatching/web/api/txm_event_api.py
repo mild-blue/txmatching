@@ -3,6 +3,7 @@
 import logging
 
 from flask_restx import Resource
+from flask import request
 
 from txmatching.auth.auth_check import require_role, require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
@@ -15,7 +16,7 @@ from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
     TxmEventsDTOOut
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     TxmDefaultEventJsonIn, TxmEventExportJsonIn, TxmEventJsonIn,
-    TxmEventJsonOut, TxmEventsJson, TxmEventUpdateJsonIn)
+    TxmEventJsonOut, TxmEventsJson, TxmEventUpdateJsonIn, TxmEventCopyJsonIn)
 from txmatching.database.services.txm_event_service import (
     convert_txm_event_base_to_dto, create_txm_event, delete_txm_event,
     get_allowed_txm_event_ids_for_current_user, get_txm_event_base,
@@ -23,6 +24,9 @@ from txmatching.database.services.txm_event_service import (
     update_default_txm_event_id_for_current_user)
 from txmatching.utils.export.export_txm_event import \
     get_patients_upload_json_from_txm_event_for_country
+from txmatching.utils.copy_patients_from_event_to_event import \
+    get_patients_from_event, load_patients_to_event
+
 from txmatching.web.web_utils.namespaces import txm_event_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
@@ -141,18 +145,60 @@ class TxmExportEventApi(Resource):
     @txm_event_api.require_user_login()
     @require_role(UserRole.ADMIN)
     @txm_event_api.response_ok(UploadPatientsJson, description='Exported patients DTO, Ready to be uploaded to'
-                                                               'some other event')
+                                                               'some other event') 
     @txm_event_api.response_errors()
-    @txm_event_api.request_body(
+    @txm_event_api.request_body( 
         TxmEventExportJsonIn,
         description='Export patients from provided country and TXM event. Make the file ready to be'
                     'uploaded again with already new txm event name ready.'
     )
     def post(self, txm_event_id: int) -> str:
-        export_dto = request_body(TxmEventExportDTOIn)
+        export_dto = request_body(TxmEventExportDTOIn) 
         txm_event_json = get_patients_upload_json_from_txm_event_for_country(
             txm_event_id=txm_event_id,
             country_code=export_dto.country,
             txm_event_name=export_dto.new_txm_event_name
         )
         return response_ok(txm_event_json)
+
+
+@txm_event_api.route('/<int:txm_event_id_from>/copy', methods=['PUT'])
+class TxmCopyPatientsBetweenEventsApi(Resource):
+    @require_role(UserRole.ADMIN)
+    @txm_event_api.doc(
+        params={
+            'txm_event_id_from': {
+                'description': 'Id of the TXM event to be copied from.',
+                'type': int,
+                'required': True,
+            },
+            'txm_event_id_to': {
+                'description': 'Id of the TXM event to be copied to.',
+                'type': int,
+                'required': True,
+            },
+            'donor_ids': {
+                'description': 'Ids of the donors to be copied.',
+                'type': list,
+                'required': True,
+            }
+        },
+        security='bearer',
+        description='Endpoint that lets an ADMIN copy patients from one event to another.'
+    )
+    @txm_event_api.response_ok(list, description='Returns ids of copied patients')
+    @txm_event_api.response_errors()
+    @txm_event_api.request_body(TxmEventCopyJsonIn, description='Copy patients from one event to the other')
+    def put(self, txm_event_id_from: int) -> list: # txm_event_id_to: int, donor_ids: list
+        txm_event_id_to = request.args['txm_event_id_to']
+        donor_ids = request.args['donor_ids']
+        donor_ids = donor_ids.split(',')
+        donor_ids = [int(donor_id) for donor_id in donor_ids]
+
+        patients_dto = get_patients_from_event(txm_event_id_from, donor_ids)
+        load_patients_to_event(txm_event_id_to, patients_dto)
+        
+
+
+    
+
