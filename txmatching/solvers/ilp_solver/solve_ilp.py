@@ -1,6 +1,6 @@
+import itertools
 import logging
 import tempfile
-import itertools
 from os import close, dup, dup2
 from typing import Iterable, List, Tuple
 
