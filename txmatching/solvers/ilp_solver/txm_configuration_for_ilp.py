@@ -32,8 +32,7 @@ class DataAndConfigurationForILPSolver:
         self.non_directed_donors = [i for i, donor in enumerate(active_and_valid_donors_dict.values()) if
                                     donor.donor_type != DonorType.DONOR]
 
-        self.donor_enum_to_id = {i: donor.db_id for i, donor in enumerate(active_and_valid_donors_dict.values()) if
-                                 donor.donor_type == DonorType.DONOR}
+        self.donor_enum_to_id = {i: donor.db_id for i, donor in enumerate(active_and_valid_donors_dict.values())}
 
         donor_id_to_enum = {donor.db_id: i for i, donor in enumerate(active_and_valid_donors_dict.values()) if
                             donor.donor_type == DonorType.DONOR}
