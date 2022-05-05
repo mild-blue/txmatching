@@ -40,14 +40,15 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "email": {{new_user_email}},
+  "email": "{{new_user_email}}",
   "password": "supersecretpasswordthatwillbechangedanyway",
-  "role": "EDITOR",
-  "second_factor": {{second_factor}},
+  "role": "ADMIN",
+  "second_factor": "{{second_factor}}",
   "allowed_countries": [
-    "BEL"
+    "BEL", "CZE", "AUT","ISR"
   ],
-  "require_second_factor": true
+  "require_second_factor": true,
+  "allowed_txm_events": []
 }
 
 ###
