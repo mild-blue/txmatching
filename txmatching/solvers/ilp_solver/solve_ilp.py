@@ -205,8 +205,7 @@ def _add_constraints_removing_solution_return_missing_set(ilp_model: mip.Model,
         all_donors_of_recipient = data_and_configuration.recipient_to_donors_enum_dict[
             recipient_at_the_end_of_chain]
         for donor_enum in all_donors_of_recipient:
-            if (solution_edge[0], donor_enum) in edges_in_alternative_solution:
-                edges_in_alternative_solution.remove((solution_edge[0], donor_enum))
+            edges_in_alternative_solution.discard((solution_edge[0], donor_enum))
 
     ilp_model.add_constr(mip.xsum([mapping.edge_to_var[edge] for edge in edges_in_alternative_solution]) >= 0.5)
     return edges_in_alternative_solution
