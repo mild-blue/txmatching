@@ -35,6 +35,9 @@ NON_DIRECTED_PROBABILITY = 0.9
 GENERATED_TXM_EVENT_NAME = 'high_res_example_data'
 LARGE_DATA_FOLDER = get_absolute_path(f'tests/resources/{GENERATED_TXM_EVENT_NAME}/')
 SMALL_DATA_FOLDER = get_absolute_path('tests/resources/high_res_example_small_data/')
+SMALL_DATA_FOLDER_MULTIPLE_DONORS = get_absolute_path('tests/resources/high_res_example_small_data_multiple_donors/')
+SMALL_DATA_FOLDER_MULTIPLE_DONORS_V2 = \
+    get_absolute_path('tests/resources/high_res_example_small_data_multiple_donors_v2/')
 SMALL_DATA_FOLDER_WITH_ROUND = get_absolute_path('tests/resources/high_res_example_small_data_with_round/')
 SMALL_DATA_FOLDER_WITH_NO_SOLUTION = get_absolute_path('tests/resources/high_res_example_small_data_with_no_solution/')
 

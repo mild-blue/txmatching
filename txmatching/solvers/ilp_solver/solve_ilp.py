@@ -36,7 +36,7 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
                                   data_and_configuration.configuration.max_matchings_in_ilp_solver)
     some_solution_yielded = False
 
-    _add_constraints_removing_solution(ilp_model, data_and_configuration, [], mapping)
+    _add_constraints_removing_solution_return_missing_set(ilp_model, data_and_configuration, [], mapping)
 
     for _ in range(matchings_to_search_for):
         number_of_times_dynamic_constraint_added = 0
@@ -63,9 +63,10 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
             yield Solution(solution_edges)
             some_solution_yielded = True
-            if (data_and_configuration.graph.edges - set(solution_edges)) == set():
-                break
-            _add_constraints_removing_solution(ilp_model, data_and_configuration, solution_edges, mapping)
+            missing = _add_constraints_removing_solution_return_missing_set(ilp_model, data_and_configuration,
+                                                                            solution_edges, mapping)
+            if missing == set():
+                return
         else:
             break
 
@@ -84,6 +85,10 @@ def _add_static_constraints(data_and_configuration: DataAndConfigurationForILPSo
         ilp_model.add_constr(
             mip.xsum([mapping.edge_to_var[edge] for edge in data_and_configuration.graph.out_edges(node)]) ==
             mapping.node_to_out_var[node])
+
+    # Total outflow and inflow of one recipient should be at most 1.
+    for donors_node_ids in data_and_configuration.recipient_to_donors_enum_dict.values():
+        ilp_model.add_constr(mip.xsum([mapping.node_to_in_var[node] for node in donors_node_ids]) <= 1)
 
     # Donor-patient pair flows.
     for node in data_and_configuration.regular_donors:
@@ -187,13 +192,30 @@ def _solve_with_logging(ilp_model: mip.Model):
                 logger.debug(line.decode('utf8'))
 
 
-def _add_constraints_removing_solution(ilp_model: mip.Model,
-                                       data_and_configuration: DataAndConfigurationForILPSolver,
-                                       solution_edges: Iterable[Tuple[int, int]],
-                                       mapping: VariableMapping
-                                       ):
-    sol_edges_set = set(solution_edges)
-    missing = {(from_node, to_node) for (from_node, to_node) in data_and_configuration.graph.edges if
-               (from_node, to_node) not in sol_edges_set}
+def _add_constraints_removing_solution_return_missing_set(ilp_model: mip.Model,
+                                                          data_and_configuration: DataAndConfigurationForILPSolver,
+                                                          solution_edges: Iterable[Tuple[int, int]],
+                                                          mapping: VariableMapping
+                                                          ) -> set():
+    edges_in_alternative_solution = set(data_and_configuration.graph.edges) - set(solution_edges)
 
-    ilp_model.add_constr(mip.xsum([mapping.edge_to_var[edge] for edge in missing]) >= 0.5)
+    end_of_chain_edges = _find_all_end_of_chain_edges(solution_edges)
+    for solution_edge in end_of_chain_edges:
+        recipient_at_the_end_of_chain = data_and_configuration.donor_enum_to_related_recipient[solution_edge[1]]
+        all_donors_of_recipient = data_and_configuration.recipient_to_donors_enum_dict[
+            recipient_at_the_end_of_chain]
+        for donor_enum in all_donors_of_recipient:
+            if (solution_edge[0], donor_enum) in edges_in_alternative_solution:
+                edges_in_alternative_solution.remove((solution_edge[0], donor_enum))
+
+    ilp_model.add_constr(mip.xsum([mapping.edge_to_var[edge] for edge in edges_in_alternative_solution]) >= 0.5)
+    return edges_in_alternative_solution
+
+
+def _find_all_end_of_chain_edges(solution_edges: Iterable[Tuple[int, int]]) -> set():
+    set_of_donors = set({solution_edge[0] for solution_edge in solution_edges})
+
+    end_of_chain_edges = set(
+        {solution_edge for solution_edge in solution_edges if solution_edge[1] not in set_of_donors})
+
+    return end_of_chain_edges

@@ -49,7 +49,7 @@ RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **Etag, **{
     'internal_medical_id': fields.String(required=False, description='Internal medical id of the patient'),
     'parameters': fields.Nested(required=True, model=PatientParametersJson),
     'hla_antibodies': fields.Nested(required=True, model=HLAAntibodies),
-    'related_donor_db_id': fields.Integer(required=True, description='Database id of the related donor'),
+    'related_donors_db_ids': fields.List(required=True, cls_or_instance=fields.Integer, description='Database id of the related donor'),
     'recipient_requirements': fields.Nested(RecipientRequirements),
     'waiting_since': fields.DateTime(required=False),
     'previous_transplants': fields.Integer(required=False),
