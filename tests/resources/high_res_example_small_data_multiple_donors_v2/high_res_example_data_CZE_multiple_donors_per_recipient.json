@@ -1,0 +1,53 @@
+{
+  "country": "CZE",
+  "txm_event_name": "high_res_example_data",
+  "donors": [
+    {
+      "medical_id": "DONOR_WITH_FRIEND_1",
+      "blood_group": "A",
+      "hla_typing": [
+        "A1",
+        "B7",
+        "DR7"
+      ],
+      "donor_type": "DONOR",
+      "related_recipient_medical_id": "RECIPIENT_WITH_2_DONORS"
+    },
+    {
+      "medical_id": "DONOR_WITH_FRIEND_2",
+      "blood_group": "A",
+      "hla_typing": [
+        "A1",
+        "B7",
+        "DR7"
+      ],
+      "donor_type": "DONOR",
+      "related_recipient_medical_id": "RECIPIENT_WITH_2_DONORS"
+    },
+    {
+      "medical_id": "DONOR_SINGLE",
+      "blood_group": "A",
+      "hla_typing": [
+        "A1",
+        "B7",
+        "DR7"
+      ],
+      "donor_type": "BRIDGING_DONOR"
+    }
+  ],
+  "recipients": [
+    {
+      "acceptable_blood_groups": [],
+      "medical_id": "RECIPIENT_WITH_2_DONORS",
+      "blood_group": "A",
+      "hla_typing": [
+        "A1",
+        "B7",
+        "DR7"
+      ],
+      "hla_antibodies": []
+    }
+
+  ],
+  "add_to_existing_patients": false
+}

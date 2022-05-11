@@ -120,12 +120,6 @@ class TestMatchingApi(DbTests):
                              error_message='Donor (medical id "D1") has related recipient (medical id "invalid_id"),'
                                            ' which was not found among recipients.')
 
-    def test_txm_event_patient_failed_upload_duplicate_related_recipient_medical_id_in_donors(self):
-
-        res, _ = self._txm_event_upload(donors_json=SPECIAL_DONORS_DUPLICATED_RECIPIENT_MEDICAL_IDS,
-                                        recipients_json=RECIPIENTS_WITH_ERRORS)
-        self._check_response(res, 400, error_message='Duplicate recipient medical ids found: [\'R1\'].')
-
     def test_txm_event_patient_successful_upload_special_hla_typing(self):
         res, txm_event = self._txm_event_upload(donors_json=SPECIAL_DONORS_SPECIAL_HLA_CODES,
                                                 recipients_json=SPECIAL_RECIPIENTS_SPECIAL_HLA_CODES)

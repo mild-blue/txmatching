@@ -45,7 +45,7 @@ export interface RecipientGenerated {
     /**
      * Database id of the related donor
      */
-    related_donor_db_id: number;
+    related_donors_db_ids: Array<number>;
     waiting_since?: string;
 }
 

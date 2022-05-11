@@ -25,7 +25,7 @@ export const parseRecipient = (data: RecipientGenerated): Recipient => {
     //  we expect undefined from BE but we sometimes get null instead
     previousTransplants: data.previous_transplants !== null ? data.previous_transplants : undefined,
     recipientRequirements: data.recipient_requirements && parseRecipientRequirements(data.recipient_requirements),
-    relatedDonorDbId: data.related_donor_db_id,
+    relatedDonorDbIds: data.related_donors_db_ids,
     allMessages: parseAllMessages(data.all_messages)
   };
 };

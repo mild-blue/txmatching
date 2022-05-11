@@ -97,7 +97,7 @@ def get_test_recipients():
                 year_of_birth=1985,
                 note='recipient note 1'
             ),
-            related_donor_db_id=1,
+            related_donors_db_ids=[1],
             acceptable_blood_groups=[],
             recipient_cutoff=None,
             hla_antibodies=create_antibodies([]),
@@ -131,7 +131,7 @@ def get_test_recipients():
                 year_of_birth=1985,
                 note='recipient note 2'
             ),
-            related_donor_db_id=1,
+            related_donors_db_ids=[1],
             acceptable_blood_groups=[],
             recipient_cutoff=None,
             hla_antibodies=create_antibodies([]),
