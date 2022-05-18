@@ -187,20 +187,18 @@ class TestMatchingApi(DbTests):
 
     def test_txm_event_copy(self):
         txm_name_from = 'test'
-        txm_name_to = 'test2'
+        txm_name_to = 'test_copy'
 
         self.fill_db_with_patients_and_results(txm_event_name=txm_name_from)
         self.fill_db_with_patients_and_results(txm_event_name=txm_name_to)
         
         txm_event_model_from = TxmEventModel.query.filter(TxmEventModel.name == txm_name_from).first()
         txm_event_model_to = TxmEventModel.query.filter(TxmEventModel.name == txm_name_to).first()
-
-        donors = txm_event_model_from.donors[0,1]
+        donors =  txm_event_model_from.donors.all()[:2]    
         donor_ids = ','.join([str(donor.id) for donor in donors])
 
         self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name_from).first()) 
         self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name_to).first()) 
-
         self.login_with_role(UserRole.ADMIN)
         
         with self.app.test_client() as client:

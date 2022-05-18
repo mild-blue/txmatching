@@ -1,5 +1,3 @@
-# from typing import Optional
-
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import DonorRecipientPairDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
@@ -12,14 +10,9 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
 from txmatching.database.services.patient_upload_service import add_donor_recipient_pair
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-# from txmatching.patients.patient import Donor, TxmEvent
-# from txmatching.utils.country_enum import Country
-
-
 
 def get_patients_from_event(txm_event_id_from: int, donor_ids: list) -> PatientUploadDTOIn:
-    txm_event_from = get_txm_event_complete(txm_event_id_from, load_antibodies_raw=True)
-    
+    txm_event_from = get_txm_event_complete(txm_event_id_from, load_antibodies_raw=True)  
     donors = []
     related_recipients_ids = []
 
@@ -63,7 +56,7 @@ def get_patients_from_event(txm_event_id_from: int, donor_ids: list) -> PatientU
             internal_medical_id=None))
 
     return PatientUploadDTOIn(
-        country=donors[0].country, 
+        country=donors[0].country,
         txm_event_name=txm_event_from.name,
         donors=donors,
         recipients=recipients,
@@ -84,8 +77,5 @@ def load_patients_to_event(txm_event_id_to: int, patient_dto: PatientUploadDTOIn
             recipient=rel_recipient
         )
         pair = add_donor_recipient_pair(donor_recipient_pair, txm_event_id_to)
-        donor_ids.append(pair[0].id) 
-        
+        donor_ids.append(pair[0].id)      
     return donor_ids
-    
-    
