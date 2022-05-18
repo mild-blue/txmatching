@@ -24,7 +24,7 @@ from txmatching.database.services.txm_event_service import (
     update_default_txm_event_id_for_current_user)
 from txmatching.utils.export.export_txm_event import \
     get_patients_upload_json_from_txm_event_for_country
-from txmatching.utils.copy_patients_from_event_to_event import \
+from txmatching.utils.copy.copy_patients_from_event_to_event import \
     get_patients_from_event, load_patients_to_event
 
 from txmatching.web.web_utils.namespaces import txm_event_api
