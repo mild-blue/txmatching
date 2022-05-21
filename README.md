@@ -8,10 +8,10 @@ This is a tool that allows kidney pair donation centre to find the best possible
 
 It consists of backend written in Python and an Angular frontend.
 
-## How to quickly run the app locally without docker
+## How to run the app locally 
 
 The project can run only on MacOS (not M1 chip) or Linux as we are using [graph-tool](https://graph-tool.skewed.de/) package that
-does not support Windows.
+does not support Windows. WSL, unfortunately, won't help. To run the app in Windows you need Docker. Just use `docker compose up` command.
 
 ### Prepare Frontend
 In order to build Frontend for the app one must run `make build-fe`.
@@ -126,3 +126,5 @@ To obtain configuration in the code, one should call `get_application_configurat
 To run tests simply run them either in IDE or via `make check`
 
 This runs unit tests and also linter.
+---
+To run unittests use `make test` command. `make check` command should run linter and unittests.
