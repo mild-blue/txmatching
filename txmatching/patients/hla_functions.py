@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES = 20
 
 
-def split_hla_types_to_groups(hla_types: List[HLAType]) -> (List[ParsingIssue], List[HLAPerGroup]):
+def split_hla_types_to_groups(hla_types: List[HLAType]) -> Tuple[List[ParsingIssue], List[HLAPerGroup]]:
     parsing_issues, hla_types_in_groups = _split_hla_types_to_groups(hla_types)
     return (parsing_issues, [HLAPerGroup(hla_group,
                                          sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
@@ -55,7 +55,7 @@ def split_hla_types_to_groups_other(
 
 def create_hla_antibodies_per_groups_from_hla_antibodies(
         hla_antibodies: List[HLAAntibody],
-) -> (List[ParsingIssue], List[AntibodiesPerGroup]):
+) -> Tuple[List[ParsingIssue], List[AntibodiesPerGroup]]:
     antibodies_parsing_issues, hla_antibodies_joined = _join_duplicate_antibodies(hla_antibodies)
     antibodies_per_groups_parsing_issues, hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_joined)
 
@@ -63,7 +63,8 @@ def create_hla_antibodies_per_groups_from_hla_antibodies(
     return (parsing_issues, hla_antibodies_per_groups)
 
 
-def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> (List[ParsingIssue], List[AntibodiesPerGroup]):
+def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> Tuple[
+    List[ParsingIssue], List[AntibodiesPerGroup]]:
     parsing_issues, hla_antibodies_in_groups = _split_hla_types_to_groups(hla_antibodies)
     return (parsing_issues, [AntibodiesPerGroup(hla_group,
                                                 sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
@@ -73,7 +74,7 @@ def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> (List[Pars
 
 def _join_duplicate_antibodies(
         hla_antibodies: List[HLAAntibody]
-) -> (List[ParsingIssue], List[HLAAntibody]):
+) -> Tuple[List[ParsingIssue], List[HLAAntibody]]:
     def _group_key(hla_antibody: HLAAntibody) -> str:
         return hla_antibody.raw_code
 
@@ -123,8 +124,8 @@ def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
         raise AssertionError(f'Broad or high res should be provided: {hla_type.code}')
 
 
-def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> (List[ParsingIssue], Dict[HLAGroup,
-                                                                                           List[HLACodeAlias]]):
+def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[ParsingIssue], Dict[HLAGroup,
+                                                                                                List[HLACodeAlias]]]:
     parsing_issues = []
     hla_types_in_groups = {}
     for hla_group in GENE_HLA_GROUPS_WITH_OTHER:
