@@ -102,11 +102,11 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
         this._alertService.success('Patients were successfully added');
       } else {
         this._alertService.infoWithParsingIssues(
-          'Patients were added but some parsing errors or warnings occurred. ' +
+          'Patients were added but some parsing issues or warnings occurred. ' +
           'You can modify the patient to fix the issues or contact us if the issues are not clear on info@mild.blue or +420 723 927 536.',
           parsingIssues
         );
-        this._logger.log('Parsing errors', parsingIssues);
+        this._logger.log('Parsing issues', parsingIssues);
       }
 
       this.togglePatientPopup();

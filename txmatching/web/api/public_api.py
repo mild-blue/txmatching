@@ -17,7 +17,7 @@ from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
 from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
     PatientUploadDTOIn
 from txmatching.database.services.patient_upload_service import (
-    get_patients_errors_from_upload_dto,
+    get_patients_parsing_issues_from_upload_dto,
     replace_or_add_patients_from_one_country)
 from txmatching.database.services.txm_event_service import (
     get_txm_event_db_id_by_name, save_original_data)
@@ -57,8 +57,8 @@ class TxmEventUploadPatients(Resource):
         save_original_data(patient_upload_dto.txm_event_name, current_user_id, request.json)
         # perform update operation
         donors, recipients = replace_or_add_patients_from_one_country(patient_upload_dto)
-        # Get parsing errors for uploaded patients
-        parsing_issues = get_patients_errors_from_upload_dto(donors, recipients, txm_event_db_id)
+        # Get parsing issues for uploaded patients
+        parsing_issues = get_patients_parsing_issues_from_upload_dto(donors, recipients, txm_event_db_id)
         return response_ok(PatientUploadPublicDTOOut(
             recipients_uploaded=len(patient_upload_dto.recipients),
             donors_uploaded=len(patient_upload_dto.donors),

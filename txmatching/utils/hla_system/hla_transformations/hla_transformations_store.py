@@ -31,7 +31,7 @@ def parse_hla_raw_code_and_return_parsing_issue_list(
         hla_raw_code: str
 ) -> Tuple[List[ParsingIssue], Optional[HLACode]]:
     """
-    Method to store information about error during parsing HLA code.
+    Method to store information about issues during parsing HLA code.
     This method is partially redundant to parse_hla_raw_code so in case of update, update it too.
     It must be in separated file with little redundancy caused by cyclic import:
     txmatching.database.sql_alchemy_schema -> txmatching.patients.patient ->

@@ -48,7 +48,7 @@ from txmatching.database.services.patient_service import (
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
     update_donor, update_recipient)
 from txmatching.database.services.patient_upload_service import (
-    add_donor_recipient_pair, get_patients_errors_from_pair_dto,
+    add_donor_recipient_pair, get_patients_parsing_issues_from_pair_dto,
     replace_or_add_patients_from_excel)
 from txmatching.database.services.txm_event_service import (
     get_txm_event_base, get_txm_event_complete)
@@ -110,7 +110,7 @@ class DonorRecipientPairs(Resource):
 
         donors, recipients = add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
 
-        parsing_issues = get_patients_errors_from_pair_dto(donors, recipients, txm_event_id)
+        parsing_issues = get_patients_parsing_issues_from_pair_dto(donors, recipients, txm_event_id)
 
         return response_ok(PatientUploadPublicDTOOut(
             donors_uploaded=1,

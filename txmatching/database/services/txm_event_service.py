@@ -57,7 +57,7 @@ def delete_txm_event(txm_event_id: int):
 
 
 def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int, country_code: Country):
-    # Remove parsing errors for patients that will be deleted
+    # Remove parsing issues for patients that will be deleted
     donor_ids = [patient_model.id for patient_model in (
         DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
                                      DonorModel.country == country_code)).all()

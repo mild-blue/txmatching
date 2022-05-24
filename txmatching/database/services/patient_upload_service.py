@@ -57,7 +57,7 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
     return donors, recipients
 
 
-def get_patients_errors_from_upload_dto(donors: List[DonorModel], recipients: List[RecipientModel],
+def get_patients_parsing_issues_from_upload_dto(donors: List[DonorModel], recipients: List[RecipientModel],
                                         txm_event_db_id: int) -> List[ParsingIssuePublicDTO]:
     donor_ids = [patient.id for patient in donors]
     recipient_ids = [patient.id for patient in recipients]
@@ -67,7 +67,7 @@ def get_patients_errors_from_upload_dto(donors: List[DonorModel], recipients: Li
     return [parsing_issue_to_dto(parsing_issue, txm_event) for parsing_issue in parsing_issues]
 
 
-def get_patients_errors_from_pair_dto(donors: List[DonorModel], recipients: List[RecipientModel],
+def get_patients_parsing_issues_from_pair_dto(donors: List[DonorModel], recipients: List[RecipientModel],
                                       txm_event_db_id: int) -> List[ParsingIssuePublicDTO]:
     donor_ids = [donors[0].id]
     recipient_ids = []

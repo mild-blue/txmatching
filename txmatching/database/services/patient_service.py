@@ -276,7 +276,7 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         patients_changed_antibodies=0,
         parsing_issues=[],
     )
-    # Clear parsing errors table
+    # Clear parsing issues table
     delete_parsing_issues_for_txm_event_id(txm_event_id)
 
     # Get donors and recipients

@@ -26,14 +26,14 @@ def _get_donor_or_recipient_medical_id(parsing_issue: ParsingIssue, txm_event) -
                        recipient.db_id == parsing_issue.recipient_id]
     else:
         logger.error('None was returned as medical id of patient, because neither donor id'
-                     'nor recipient id was provided for the parsing error. This should never happen,'
-                     'it probably means that some wrong formatting of parsing error was used.')
+                     'nor recipient id was provided for the parsing issue. This should never happen,'
+                     'it probably means that some wrong formatting of parsing issue was used.')
         return None
 
     if len(medical_ids) == 1:
         return medical_ids[0]
     else:
-        logger.error('None was returned as medical id of patient in parsing error object this should never'
+        logger.error('None was returned as medical id of patient in parsing issue object this should never'
                      ' happen as there should always be exactly one recipient or donor with given medical id for'
                      ' txm event. If this happens it likely means wrong txm event was provided')
         return None

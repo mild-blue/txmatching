@@ -71,11 +71,11 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
       if (updatedDonor.parsingIssues.length > 0) {
         this._alertService.infoWithParsingIssues(
-          'Donor was updated but some parsing errors and warnings occurred. ' +
+          'Donor was updated but some parsing issues and warnings occurred. ' +
           'You can modify the patient to fix the issues or contact us if the issues are not clear on info@mild.blue or +420 723 927 536.',
           updatedDonor.parsingIssues
         );
-        this._logger.log('Parsing errors', updatedDonor.parsingIssues);
+        this._logger.log('Parsing issues', updatedDonor.parsingIssues);
       }
 
       this._initDonorEditable();
