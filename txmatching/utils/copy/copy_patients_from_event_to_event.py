@@ -51,7 +51,6 @@ def get_patients_from_event(txm_event_id_from: int, donor_ids: list) -> PatientU
             weight=recipient.parameters.weight,
             year_of_birth=recipient.parameters.year_of_birth,
             note = recipient.parameters.note,
-            waiting_since=recipient.parameters.waiting_since,
             previous_transplants=recipient.parameters.previous_transplants,
             internal_medical_id=None))
 

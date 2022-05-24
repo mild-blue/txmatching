@@ -26,3 +26,10 @@ class TxmEventUpdateDTOIn:
 class TxmEventExportDTOIn:
     country: Country
     new_txm_event_name: str
+
+
+@dataclass
+class TxmEventCopyDTOIn:
+    txm_event_id_from: int
+    txm_event_id_to: int
+    donor_ids: list
