@@ -9,7 +9,6 @@ from tests.web.public_api.test_public_patient_upload_invalid_example_data import
     DONORS_WITH_ERRORS, RECIPIENTS_WITH_ERRORS,
     SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_EXISTING_RECIPIENT_ID,
     SPECIAL_DONORS_DONOR_TYPE_NOT_COMPATIBLE_WITH_MISSING_RECIPIENT_ID,
-    SPECIAL_DONORS_DUPLICATED_RECIPIENT_MEDICAL_IDS,
     SPECIAL_DONORS_INVALID_RECIPIENT_MEDICAL_ID,
     SPECIAL_DONORS_SPECIAL_HLA_CODES, SPECIAL_RECIPIENTS_EXCEPTIONAL_HLA_CODES,
     SPECIAL_RECIPIENTS_MULTIPLE_SAME_HLA_CODES,
@@ -24,7 +23,7 @@ from txmatching.database.services.app_user_management import persist_user
 from txmatching.database.services.txm_event_service import (
     get_newest_txm_event_db_id, get_txm_event_complete)
 from txmatching.database.sql_alchemy_schema import (AppUserModel,
-                                                    ParsingErrorModel,
+                                                    ParsingIssueModel,
                                                     TxmEventModel,
                                                     UploadedDataModel)
 from txmatching.patients.hla_code import HLACode
@@ -63,7 +62,7 @@ class TestMatchingApi(DbTests):
                 'Group B', 'Group B', 'Group B', 'Group B', 'Group B', 'Group B', 'Group B',
                 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1', 'Group DRB1'
             ],
-            [error['hla_code_or_group'] for error in res.json['parsing_errors']]
+            [error['hla_code_or_group'] for error in res.json['parsing_issues']]
         )
         self.assertEqual(1, len(UploadedDataModel.query.all()))
         self.assertSetEqual({BloodGroup.ZERO, BloodGroup.A},
@@ -126,7 +125,7 @@ class TestMatchingApi(DbTests):
 
         self._check_response(res, 200)
         self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A'],
-                              [error['hla_code_or_group'] for error in res.json['parsing_errors']])
+                              [error['hla_code_or_group'] for error in res.json['parsing_issues']])
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.all_recipients[0]
         expected_antibodies = {
@@ -142,7 +141,7 @@ class TestMatchingApi(DbTests):
         donor = txm_event.all_donors[0]
         expected_typing = {'B7', 'DQA1', 'DQ6'}
         self.assertSetEqual(expected_typing, _get_hla_typing_split_or_broad_codes(donor))
-        self._check_expected_errors_in_db(3)
+        self._check_expected_issues_in_db(3)
 
     def test_txm_event_patient_successful_upload_multiple_same_hla_types(self):
         res, txm_event = self._txm_event_upload(donors_json=SPECIAL_DONORS_SPECIAL_HLA_CODES,
@@ -150,7 +149,7 @@ class TestMatchingApi(DbTests):
 
         self._check_response(res, 200)
         self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A', 'Antibodies'],
-                              [error['hla_code_or_group'] for error in res.json['parsing_errors']])
+                              [error['hla_code_or_group'] for error in res.json['parsing_issues']])
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.all_recipients[0]
         expected_antibodies = {'DQA6', 'DQ8', 'DQA5', 'DQ2', 'DQ7'}
@@ -158,7 +157,7 @@ class TestMatchingApi(DbTests):
         expected_antibodies_over_cutoff = {'DQA6', 'DQ8'}
         self.assertSetEqual(expected_antibodies_over_cutoff,
                             _get_hla_antibodies_over_cutoff_split_or_broad_codes(recipient))
-        self._check_expected_errors_in_db(4)
+        self._check_expected_issues_in_db(4)
 
     def test_txm_event_patient_successful_upload_exceptional_hla_types(self):
         res, txm_event = self._txm_event_upload(donors_json=SPECIAL_DONORS_SPECIAL_HLA_CODES,
@@ -249,9 +248,9 @@ class TestMatchingApi(DbTests):
         if error_message:
             self.assertEqual(error_message, res.json['message'])
 
-    def _check_expected_errors_in_db(self, expected_count: int):
-        errors = ParsingErrorModel.query.all()
-        self.assertEqual(expected_count, len(errors))
+    def _check_expected_issues_in_db(self, expected_count: int):
+        issues = ParsingIssueModel.query.all()
+        self.assertEqual(expected_count, len(issues))
 
 
 def _get_split_or_broad(code: HLACode) -> str:

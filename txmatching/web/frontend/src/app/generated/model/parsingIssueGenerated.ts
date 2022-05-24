@@ -11,7 +11,7 @@
  */
 
 
-export interface ParsingErrorGenerated { 
+export interface ParsingIssueGenerated { 
     donor_id?: number;
     hla_code_or_group?: string;
     message: string;

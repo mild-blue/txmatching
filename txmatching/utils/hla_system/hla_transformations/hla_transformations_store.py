@@ -1,9 +1,9 @@
 import itertools
 import logging
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
@@ -27,9 +27,9 @@ logger = logging.getLogger(__name__)
 MAX_ANTIGENS_PER_GROUP = 2
 
 
-def parse_hla_raw_code_and_return_parsing_error_list(
+def parse_hla_raw_code_and_return_parsing_issue_list(
         hla_raw_code: str
-) -> (List[ParsingError], Optional[HLACode]):
+) -> Tuple[List[ParsingIssue], Optional[HLACode]]:
     """
     Method to store information about error during parsing HLA code.
     This method is partially redundant to parse_hla_raw_code so in case of update, update it too.
@@ -39,22 +39,22 @@ def parse_hla_raw_code_and_return_parsing_error_list(
     :param hla_raw_code: HLA raw code
     :return:
     """
-    parsing_errors = []
-    parsing_result = parse_hla_raw_code_with_details(hla_raw_code)
-    if not parsing_result.maybe_hla_code or parsing_result.result_detail not in OK_PROCESSING_RESULTS:
-        parsing_errors.append(
-            ParsingError(
+    parsing_issues = []
+    parsing_issue = parse_hla_raw_code_with_details(hla_raw_code)
+    if not parsing_issue.maybe_hla_code or parsing_issue.result_detail not in OK_PROCESSING_RESULTS:
+        parsing_issues.append(
+            ParsingIssue(
                 hla_code_or_group=hla_raw_code,
-                parsing_issue_detail=parsing_result.result_detail,
-                message=parsing_result.result_detail.value,
+                parsing_issue_detail=parsing_issue.result_detail,
+                message=parsing_issue.result_detail.value,
             )
         )
-    return parsing_errors, parsing_result.maybe_hla_code
+    return parsing_issues, parsing_issue.maybe_hla_code
 
 
-def parse_hla_antibodies_raw_and_return_parsing_error_list(
+def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         hla_antibodies_raw: List[HLAAntibodyRawModel]
-) -> (List[ParsingError], HLAAntibodiesDTO):
+) -> Tuple[List[ParsingIssue], HLAAntibodiesDTO]:
     # 1. preprocess raw codes (their count can increase)
     @dataclass
     class HLAAntibodyPreprocessedDTO:
@@ -62,7 +62,7 @@ def parse_hla_antibodies_raw_and_return_parsing_error_list(
         mfi: int
         cutoff: int
 
-    parsing_errors = []
+    parsing_issues = []
 
     hla_antibodies_preprocessed = [
         HLAAntibodyPreprocessedDTO(preprocessed_raw_code, hla_antibody_raw.mfi, hla_antibody_raw.cutoff)
@@ -81,8 +81,8 @@ def parse_hla_antibodies_raw_and_return_parsing_error_list(
         # Antibodies with the same raw code does need to have the same cutoff
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
         if len(cutoffs) > 1:
-            parsing_errors.append(
-                ParsingError(
+            parsing_issues.append(
+                ParsingIssue(
                     hla_code_or_group=raw_code,
                     parsing_issue_detail=ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
                     message=ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.value,
@@ -92,7 +92,7 @@ def parse_hla_antibodies_raw_and_return_parsing_error_list(
 
         # Parse antibodies and keep only valid ones
         for hla_antibody in antibody_group:
-            antibody_parsing_errors, code = parse_hla_raw_code_and_return_parsing_error_list(hla_antibody.raw_code)
+            antibody_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(hla_antibody.raw_code)
             if code is not None:
                 hla_antibodies_parsed.append(
                     HLAAntibody(
@@ -102,20 +102,20 @@ def parse_hla_antibodies_raw_and_return_parsing_error_list(
                         cutoff=hla_antibody.cutoff,
                     )
                 )
-            parsing_errors = parsing_errors + antibody_parsing_errors
+            parsing_issues = parsing_issues + antibody_parsing_issues
 
     # 3. validate antibodies
     if all_samples_are_positive_in_high_res(hla_antibodies_parsed):
-        parsing_errors.append(
-            ParsingError(
+        parsing_issues.append(
+            ParsingIssue(
                 hla_code_or_group='Antibodies',
                 parsing_issue_detail=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES,
                 message=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES.value,
             )
         )
     if number_of_antigens_is_insufficient_in_high_res(hla_antibodies_parsed):
-        parsing_errors.append(
-            ParsingError(
+        parsing_issues.append(
+            ParsingIssue(
                 hla_code_or_group='Antibodies',
                 parsing_issue_detail=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
                 message=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES.value,
@@ -123,21 +123,21 @@ def parse_hla_antibodies_raw_and_return_parsing_error_list(
         )
 
     # 4. split antibodies to groups (and join duplicates)
-    antibodies_per_groups_parsing_errors, hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(
+    antibodies_per_groups_parsing_issues, hla_antibodies_per_groups = create_hla_antibodies_per_groups_from_hla_antibodies(
         hla_antibodies_parsed
     )
 
-    parsing_errors = parsing_errors + antibodies_per_groups_parsing_errors
+    parsing_issues = parsing_issues + antibodies_per_groups_parsing_issues
 
-    return (parsing_errors, HLAAntibodiesDTO(
+    return (parsing_issues, HLAAntibodiesDTO(
         hla_antibodies_per_groups=hla_antibodies_per_groups
     ))
 
 
-def parse_hla_typing_raw_and_return_parsing_error_list(
+def parse_hla_typing_raw_and_return_parsing_issue_list(
         hla_typing_raw: HLATypingRawDTO,
-) -> (List[ParsingError], HLATypingDTO):
-    parsing_errors = []
+) -> Tuple[List[ParsingIssue], HLATypingDTO]:
+    parsing_issues = []
     # 1. preprocess raw codes (their count can increase)
     raw_codes_preprocessed = [
         raw_code_preprocessed
@@ -148,7 +148,7 @@ def parse_hla_typing_raw_and_return_parsing_error_list(
     # 2. parse preprocessed codes and keep only valid ones
     hla_types_parsed = []
     for raw_code in raw_codes_preprocessed:
-        raw_codes_parsing_errors, code = parse_hla_raw_code_and_return_parsing_error_list(raw_code)
+        raw_codes_parsing_issues, code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code)
         if code is not None:
             hla_types_parsed.append(
                 HLAType(
@@ -156,12 +156,12 @@ def parse_hla_typing_raw_and_return_parsing_error_list(
                     code=code
                 )
             )
-        parsing_errors = parsing_errors + raw_codes_parsing_errors
+        parsing_issues = parsing_issues + raw_codes_parsing_issues
 
     # 3. split hla_types_parsed to the groups
-    hla_per_groups_parsing_errors, hla_per_groups = split_hla_types_to_groups(hla_types_parsed)
+    hla_per_groups_parsing_issues, hla_per_groups = split_hla_types_to_groups(hla_types_parsed)
 
-    parsing_errors = parsing_errors + hla_per_groups_parsing_errors
+    parsing_issues = parsing_issues + hla_per_groups_parsing_issues
 
     invalid_hla_groups = []
 
@@ -170,22 +170,22 @@ def parse_hla_typing_raw_and_return_parsing_error_list(
         if group.hla_group != HLAGroup.Other and group_exceedes_max_number_of_hla_types(group.hla_types):
             invalid_hla_groups.append(group.hla_group.name)
             group_name = 'Group ' + group.hla_group.name
-            parsing_errors.append(
-                ParsingError(
+            parsing_issues.append(
+                ParsingIssue(
                     hla_code_or_group=group_name,
                     parsing_issue_detail=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
                     message=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value
                 )
             )
         if group.hla_group == HLAGroup.Other:
-            codes_per_group_parsing_errors, hla_codes_per_group_other = split_hla_types_to_groups_other(group.hla_types)
-            parsing_errors = parsing_errors + codes_per_group_parsing_errors
+            codes_per_group_parsing_issues, hla_codes_per_group_other = split_hla_types_to_groups_other(group.hla_types)
+            parsing_issues = parsing_issues + codes_per_group_parsing_issues
             for hla_group in HLA_GROUPS_OTHER:
                 if group_exceedes_max_number_of_hla_types(hla_codes_per_group_other[hla_group]):
                     invalid_hla_groups.append(hla_group.name)
                     group_name = 'Group ' + hla_group.name
-                    parsing_errors.append(
-                        ParsingError(
+                    parsing_issues.append(
+                        ParsingIssue(
                             hla_code_or_group=group_name,
                             parsing_issue_detail=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
                             message=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value
@@ -198,15 +198,15 @@ def parse_hla_typing_raw_and_return_parsing_error_list(
         if group.hla_group != HLAGroup.Other and basic_group_is_empty(group.hla_types):
             invalid_hla_groups.append(group.hla_group.name)
             group_name = 'Group ' + group.hla_group.name
-            parsing_errors.append(
-                ParsingError(
+            parsing_issues.append(
+                ParsingIssue(
                     hla_code_or_group=group_name,
                     parsing_issue_detail=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                     message=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value
                 )
             )
 
-    return (parsing_errors, HLATypingDTO(
+    return (parsing_issues, HLATypingDTO(
         hla_per_groups=[
             HLAPerGroup(
                 hla_group=group.hla_group,

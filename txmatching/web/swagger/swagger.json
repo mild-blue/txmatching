@@ -2445,10 +2445,10 @@
                         "$ref": "#/definitions/DetailedScoreForGroup"
                     }
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 },
                 "all_messages": {
@@ -3066,7 +3066,7 @@
             },
             "type": "object"
         },
-        "ParsingError": {
+        "ParsingIssue": {
             "required": [
                 "message",
                 "parsing_issue_detail"
@@ -3093,7 +3093,7 @@
             },
             "type": "object"
         },
-        "ParsingErrorPublic": {
+        "ParsingIssuePublic": {
             "required": [
                 "message",
                 "parsing_issue_detail"
@@ -3239,7 +3239,7 @@
         "PatientUploadSuccessResponse": {
             "required": [
                 "donors_uploaded",
-                "parsing_errors",
+                "parsing_issues",
                 "recipients_uploaded"
             ],
             "properties": {
@@ -3251,11 +3251,11 @@
                     "type": "integer",
                     "description": "Number of donors successfully loaded into the application."
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "description": "Errors and warnings that occurred in HLA codes parsing",
                     "items": {
-                        "$ref": "#/definitions/ParsingErrorPublic"
+                        "$ref": "#/definitions/ParsingIssuePublic"
                     }
                 }
             },
@@ -3280,7 +3280,7 @@
         },
         "PatientsRecomputeParsingSuccess": {
             "required": [
-                "parsing_errors",
+                "parsing_issues",
                 "patients_changed_antibodies",
                 "patients_changed_antigens",
                 "patients_checked_antibodies",
@@ -3299,10 +3299,10 @@
                 "patients_changed_antibodies": {
                     "type": "integer"
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 }
             },
@@ -3373,10 +3373,10 @@
                 "recipient_cutoff": {
                     "type": "integer"
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 },
                 "all_messages": {
@@ -3897,16 +3897,16 @@
         "UpdatedDonor": {
             "required": [
                 "donor",
-                "parsing_errors"
+                "parsing_issues"
             ],
             "properties": {
                 "donor": {
                     "$ref": "#/definitions/Donor"
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 }
             },
@@ -3914,17 +3914,17 @@
         },
         "UpdatedRecipient": {
             "required": [
-                "parsing_errors",
+                "parsing_issues",
                 "recipient"
             ],
             "properties": {
                 "recipient": {
                     "$ref": "#/definitions/Recipient"
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 }
             },

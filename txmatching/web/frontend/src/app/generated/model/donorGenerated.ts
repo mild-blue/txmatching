@@ -10,10 +10,10 @@
  * Do not edit the class manually.
  */
 import { PatientParametersGenerated } from './patientParametersGenerated';
-import { ParsingErrorGenerated } from './parsingErrorGenerated';
 import { DonorTypeGenerated } from './donorTypeGenerated';
 import { DetailedScoreForGroupGenerated } from './detailedScoreForGroupGenerated';
 import { AllMessagesGenerated } from './allMessagesGenerated';
+import { ParsingIssueGenerated } from './parsingIssueGenerated';
 
 
 export interface DonorGenerated { 
@@ -52,7 +52,7 @@ export interface DonorGenerated {
      */
     medical_id: string;
     parameters: PatientParametersGenerated;
-    parsing_errors?: Array<ParsingErrorGenerated>;
+    parsing_issues?: Array<ParsingIssueGenerated>;
     /**
      * Database id of the related recipient
      */

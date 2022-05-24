@@ -100,7 +100,7 @@ class RecipientModel(db.Model):
     hla_antibodies = Column(JSON, unique=False, nullable=False)
     hla_antibodies_raw = relationship('HLAAntibodyRawModel', backref='recipient', passive_deletes=True,
                                       lazy='selectin')  # type: List[HLAAntibodyRawModel]
-    parsing_errors = relationship('ParsingErrorModel', backref='recipient', passive_deletes=True)
+    parsing_issues = relationship('ParsingIssueModel', backref='recipient', passive_deletes=True)
     etag = Column(BigInteger, unique=False, nullable=False)
     UniqueConstraint('medical_id', 'txm_event_id')
 
@@ -134,7 +134,7 @@ class DonorModel(db.Model):
     recipient = relationship('RecipientModel', backref=backref('donor', uselist=False),
                              passive_deletes=True,
                              lazy='joined')
-    parsing_errors = relationship('ParsingErrorModel', backref='donor', passive_deletes=True)
+    parsing_issues = relationship('ParsingIssueModel', backref='donor', passive_deletes=True)
     etag = Column(BigInteger, unique=False, nullable=False)
     UniqueConstraint('medical_id', 'txm_event_id')
 
@@ -224,8 +224,8 @@ class UploadedDataModel(db.Model):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 
-class ParsingErrorModel(db.Model):
-    __tablename__ = 'parsing_error'
+class ParsingIssueModel(db.Model):
+    __tablename__ = 'parsing_issue'
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)

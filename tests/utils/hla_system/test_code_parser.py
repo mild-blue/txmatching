@@ -237,7 +237,7 @@ class TestCodeParser(DbTests):
 
         self.assertSetEqual({1}, split_counts)
 
-    def test_parsing_errors_exactly_in_one_severity_category(self):
+    def test_parsing_issues_exactly_in_one_severity_category(self):
 
         for processing_result in ParsingIssueDetail:
             self.assertTrue(

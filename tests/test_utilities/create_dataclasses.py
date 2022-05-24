@@ -47,7 +47,7 @@ def get_test_donors():
             ),
             related_recipient_db_id=None,
             donor_type=DonorType.DONOR,
-            parsing_errors=[]
+            parsing_issues=[]
         ),
         Donor(
             db_id=2,
@@ -70,7 +70,7 @@ def get_test_donors():
             ),
             related_recipient_db_id=None,
             donor_type=DonorType.DONOR,
-            parsing_errors=[]
+            parsing_issues=[]
         )
     ]
 
@@ -108,7 +108,7 @@ def get_test_recipients():
             ),
             waiting_since=None,
             previous_transplants=None,
-            parsing_errors=[]
+            parsing_issues=[]
         ),
         Recipient(
             db_id=4,
@@ -142,7 +142,7 @@ def get_test_recipients():
             ),
             waiting_since=None,
             previous_transplants=None,
-            parsing_errors=[]
+            parsing_issues=[]
         ),
     ]
 

@@ -55,8 +55,8 @@ from txmatching.database.services.txm_event_service import (
 from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
-from txmatching.utils.hla_system.hla_transformations.parsing_error import \
-    get_parsing_errors_for_patients
+from txmatching.utils.hla_system.hla_transformations.parsing_issue import \
+    get_parsing_issues_for_patients
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import patient_api
 from txmatching.web.web_utils.route_utils import (request_arg_flag,
@@ -110,12 +110,12 @@ class DonorRecipientPairs(Resource):
 
         donors, recipients = add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
 
-        parsing_errors = get_patients_errors_from_pair_dto(donors, recipients, txm_event_id)
+        parsing_issues = get_patients_errors_from_pair_dto(donors, recipients, txm_event_id)
 
         return response_ok(PatientUploadPublicDTOOut(
             donors_uploaded=1,
             recipients_uploaded=1 if donor_recipient_pair_dto_in.recipient else 0,
-            parsing_errors=parsing_errors
+            parsing_issues=parsing_issues
         ))
 
 
@@ -170,7 +170,7 @@ class AlterRecipient(Resource):
         return response_ok(
             UpdatedRecipientDTOOut(
                 recipient=recipient_to_recipient_dto_out(updated_recipient),
-                parsing_errors=get_parsing_errors_for_patients(recipient_ids=[updated_recipient.db_id], txm_event_id=txm_event_id)
+                parsing_issues=get_parsing_issues_for_patients(recipient_ids=[updated_recipient.db_id], txm_event_id=txm_event_id)
             )
         )
 
@@ -204,7 +204,7 @@ class AlterDonor(Resource):
                     configuration_parameters,
                     scorer
                 ),
-                parsing_errors=get_parsing_errors_for_patients(donor_ids=[updated_donor.db_id], txm_event_id=txm_event_id)
+                parsing_issues=get_parsing_issues_for_patients(donor_ids=[updated_donor.db_id], txm_event_id=txm_event_id)
             )
         )
 
@@ -253,7 +253,7 @@ class AddPatientsFile(Resource):
         return response_ok(PatientUploadPublicDTOOut(
             recipients_uploaded=sum(len(parsed_data_country.recipients) for parsed_data_country in parsed_data),
             donors_uploaded=sum(len(parsed_data_country.donors) for parsed_data_country in parsed_data),
-            parsing_errors=[]  # TODO: https://github.com/mild-blue/txmatching/issues/619
+            parsing_issues=[]
         ))
 
 

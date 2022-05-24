@@ -22,8 +22,8 @@ import { RecipientEditable } from '@app/model/RecipientEditable';
 import { fromDonorEditableToUpdateGenerated } from '@app/parsers/to-generated/donor.parsers';
 import { fromRecipientEditableToUpdateGenerated } from '@app/parsers/to-generated/recipient.parsers';
 import { fromPatientsEditableToInGenerated } from '@app/parsers/to-generated/patientPair.parsers';
-import { ParsingError } from '@app/model/ParsingError';
-import { parseParsingError } from '@app/parsers/parsingError.parsers';
+import { ParsingIssue } from '@app/model/ParsingIssue';
+import { parseParsingIssue } from '@app/parsers/parsingIssue.parsers';
 
 @Injectable({
   providedIn: 'root'
@@ -78,7 +78,7 @@ export class PatientService {
     ));
   }
 
-  public async addNewPair(txmEventId: number, donor: DonorEditable, recipient: RecipientEditable): Promise<ParsingError[]> {
+  public async addNewPair(txmEventId: number, donor: DonorEditable, recipient: RecipientEditable): Promise<ParsingIssue[]> {
     this._logger.log('Adding new pair', [donor, recipient]);
 
     const payload: DonorModelPairInGenerated = fromPatientsEditableToInGenerated(
@@ -89,7 +89,7 @@ export class PatientService {
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs`,
       payload
     ).pipe(
-      map(_ => _.parsing_errors.map(parseParsingError))
+      map(_ => _.parsing_issues.map(parseParsingIssue))
     ));
   }
 

@@ -8,7 +8,7 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
 
 
 @dataclass
-class ParsingErrorPublicDTO:
+class ParsingIssuePublicDTO:
     hla_code_or_group: Optional[str]
     parsing_issue_detail: str
     message: str
@@ -17,7 +17,7 @@ class ParsingErrorPublicDTO:
 
 
 @dataclass
-class ParsingError(PersistentlyHashable):
+class ParsingIssue(PersistentlyHashable):
     hla_code_or_group: Optional[str]
     parsing_issue_detail: ParsingIssueDetail
     message: str
@@ -26,7 +26,7 @@ class ParsingError(PersistentlyHashable):
     recipient_id: Optional[int] = None
 
     def update_persistent_hash(self, hash_: HashType):
-        update_persistent_hash(hash_, ParsingError)
+        update_persistent_hash(hash_, ParsingIssue)
         update_persistent_hash(hash_, self.hla_code_or_group)
         update_persistent_hash(hash_, self.parsing_issue_detail.name)
         update_persistent_hash(hash_, self.message)

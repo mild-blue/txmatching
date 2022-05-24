@@ -11,7 +11,7 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
                                                     DonorModel,
-                                                    ParsingErrorModel,
+                                                    ParsingIssueModel,
                                                     RecipientModel,
                                                     UploadedFileModel)
 from txmatching.patients.patient import DonorType, RecipientRequirements
@@ -206,7 +206,7 @@ class TestPatientService(DbTests):
         self.assertEqual(0, len(res_.json['recipients'][0]['all_messages']['warnings']))
         self.assertEqual(4, len(res_.json['recipients'][0]['all_messages']['errors']))
 
-        errors = ParsingErrorModel.query.all()
+        errors = ParsingIssueModel.query.all()
         self.assertEqual(7, len(errors))
         self.assertEqual('TEST', errors[3].hla_code_or_group)
         self.assertEqual(
@@ -439,7 +439,7 @@ class TestPatientService(DbTests):
                              json=recipient_update_dict).json
             self.assertIsNotNone(ConfigModel.query.get(recipient_db_id))
             self.assertEqual(['A', 'AB'], res['recipient']['acceptable_blood_groups'])
-            self.assertEqual([], res['parsing_errors'])
+            self.assertEqual([], res['parsing_issues'])
             recipients = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                                     f'{PATIENT_NAMESPACE}/configs/default',
                                     headers=self.auth_headers).json['recipients']

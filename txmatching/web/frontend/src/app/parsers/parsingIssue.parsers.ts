@@ -1,7 +1,7 @@
-import { ParsingErrorGenerated } from '../generated';
-import { ParsingError } from '../model/ParsingError';
+import { ParsingIssueGenerated } from '../generated';
+import { ParsingIssue } from '../model/ParsingIssue';
 
-export const parseParsingError = (data: ParsingErrorGenerated): ParsingError => {
+export const parseParsingIssue = (data: ParsingIssueGenerated): ParsingIssue => {
   return {
     hlaCodeOrGroup: data.hla_code_or_group,
     ParsingIssueDetail: data.parsing_issue_detail,

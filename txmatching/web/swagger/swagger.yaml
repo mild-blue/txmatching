@@ -599,9 +599,9 @@ definitions:
                 type: string
             parameters:
                 $ref: '#/definitions/PatientParameters'
-            parsing_errors:
+            parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingIssue'
                 type: array
             related_recipient_db_id:
                 description: Database id of the related recipient
@@ -1035,7 +1035,7 @@ definitions:
         required:
         - otp
         type: object
-    ParsingError:
+    ParsingIssue:
         properties:
             donor_id:
                 type: integer
@@ -1053,7 +1053,7 @@ definitions:
         - message
         - parsing_issue_detail
         type: object
-    ParsingErrorPublic:
+    ParsingIssuePublic:
         properties:
             hla_code_or_group:
                 type: string
@@ -1138,17 +1138,17 @@ definitions:
             donors_uploaded:
                 description: Number of donors successfully loaded into the application.
                 type: integer
-            parsing_errors:
+            parsing_issues:
                 description: Errors and warnings that occurred in HLA codes parsing
                 items:
-                    $ref: '#/definitions/ParsingErrorPublic'
+                    $ref: '#/definitions/ParsingIssuePublic'
                 type: array
             recipients_uploaded:
                 description: Number of recipients successfully loaded into the application.
                 type: integer
         required:
         - donors_uploaded
-        - parsing_errors
+        - parsing_issues
         - recipients_uploaded
         type: object
     Patients:
@@ -1164,9 +1164,9 @@ definitions:
         type: object
     PatientsRecomputeParsingSuccess:
         properties:
-            parsing_errors:
+            parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingIssue'
                 type: array
             patients_changed_antibodies:
                 type: integer
@@ -1177,7 +1177,7 @@ definitions:
             patients_checked_antigens:
                 type: integer
         required:
-        - parsing_errors
+        - parsing_issues
         - patients_changed_antibodies
         - patients_changed_antigens
         - patients_checked_antibodies
@@ -1204,9 +1204,9 @@ definitions:
             medical_id: *id011
             parameters:
                 $ref: '#/definitions/PatientParameters'
-            parsing_errors:
+            parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingIssue'
                 type: array
             previous_transplants:
                 type: integer
@@ -1476,24 +1476,24 @@ definitions:
         properties:
             donor:
                 $ref: '#/definitions/Donor'
-            parsing_errors:
+            parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingIssue'
                 type: array
         required:
         - donor
-        - parsing_errors
+        - parsing_issues
         type: object
     UpdatedRecipient:
         properties:
-            parsing_errors:
+            parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingIssue'
                 type: array
             recipient:
                 $ref: '#/definitions/Recipient'
         required:
-        - parsing_errors
+        - parsing_issues
         - recipient
         type: object
     UploadPatients:
