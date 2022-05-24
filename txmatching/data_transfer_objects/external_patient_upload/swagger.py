@@ -20,7 +20,7 @@ PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
 DonorJsonIn = public_api.model('DonorInput', {**NewPatient, **NewDonor})
 
 RecipientJsonIn = public_api.model('RecipientInput', {**NewPatient, **NewRecipient})
-
+ 
 UploadPatientsJson = public_api.model(
     'UploadPatients',
     {
@@ -39,5 +39,12 @@ UploadPatientsJson = public_api.model(
                                                                ' to the patients already in the system. If *false* the'
                                                                ' data in the system will be overwritten by the'
                                                                ' currently uploaded data.')
+    }
+)
+
+CopyPatientsJson = public_api.model(
+    'CopyPatients',
+    {
+        'new_donor_ids': fields.List(required=True, cls_or_instance=fields.Integer)
     }
 )
