@@ -150,7 +150,7 @@ class TxmEvent(TxmEventBase):
         (
             self.active_and_valid_donors_dict,
             self.active_and_valid_recipients_dict,
-        ) = _filter_patients_that_dont_have_parsing_issues(all_donors, all_recipients)
+        ) = _filter_patients_that_dont_have_parsing_errors(all_donors, all_recipients)
 
 
 def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
@@ -169,7 +169,7 @@ def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
                )).cutoff
 
 
-def _filter_patients_that_dont_have_parsing_issues(
+def _filter_patients_that_dont_have_parsing_errors(
         donors: List[Donor], recipients: List[Recipient]
 ) -> Tuple[Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]]:
     exclude_donors_ids = set()
