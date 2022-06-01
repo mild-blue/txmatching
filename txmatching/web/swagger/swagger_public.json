@@ -1378,6 +1378,7 @@
         },
         "Version": {
             "required": [
+                "colour_scheme",
                 "environment",
                 "version"
             ],
@@ -1385,6 +1386,16 @@
                 "version": {
                     "type": "string",
                     "description": "Version of the running code."
+                },
+                "colour_scheme": {
+                    "type": "string",
+                    "description": "Colour scheme to use.",
+                    "example": "PRODUCTION",
+                    "enum": [
+                        "PRODUCTION",
+                        "STAGING",
+                        "DEVELOPMENT"
+                    ]
                 },
                 "environment": {
                     "type": "string",

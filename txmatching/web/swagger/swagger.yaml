@@ -1636,6 +1636,14 @@ definitions:
         type: object
     Version:
         properties:
+            colour_scheme:
+                description: Colour scheme to use.
+                enum:
+                - PRODUCTION
+                - STAGING
+                - DEVELOPMENT
+                example: PRODUCTION
+                type: string
             environment:
                 description: Environment the code was build for.
                 enum:
@@ -1648,6 +1656,7 @@ definitions:
                 description: Version of the running code.
                 type: string
         required:
+        - colour_scheme
         - environment
         - version
         type: object

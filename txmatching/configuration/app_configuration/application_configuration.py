@@ -20,6 +20,15 @@ class ApplicationEnvironment(str, Enum):
     DEVELOPMENT = 'DEVELOPMENT'
 
 
+class ApplicationColourScheme(str, Enum):
+    """
+    Enum representing the colour scheme to use.
+    """
+    PRODUCTION = 'PRODUCTION'
+    STAGING = 'STAGING'
+    DEVELOPMENT = 'DEVELOPMENT'
+
+
 @dataclass(frozen=True)
 class ApplicationConfiguration:
     """
@@ -30,6 +39,7 @@ class ApplicationConfiguration:
 
     code_version: str
     environment: ApplicationEnvironment
+    colour_scheme: ApplicationColourScheme
     # Postgres configuration
     postgres_user: str
     postgres_password: str
@@ -64,12 +74,14 @@ def _build_application_configuration() -> ApplicationConfiguration:
     """
     logger.debug('Building configuration.')
     environment = ApplicationEnvironment(_get_prop('ENVIRONMENT'))
+    colour_scheme = ApplicationColourScheme(_get_prop('COLOUR_SCHEME'))
     use_2fa = _get_prop('USE_2FA', default='true').lower() in {'true', 't'}
     code_version = _get_version()
 
     config = ApplicationConfiguration(
         code_version=code_version,
         environment=environment,
+        colour_scheme=colour_scheme,
         postgres_user=_get_prop('POSTGRES_USER'),
         postgres_password=_get_prop('POSTGRES_PASSWORD'),
         postgres_db=_get_prop('POSTGRES_DB'),

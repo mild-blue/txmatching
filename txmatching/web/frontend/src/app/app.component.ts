@@ -39,7 +39,7 @@ export class AppComponent implements OnDestroy {
 
   setTheme() {
     let currentTheme = theme[development];
-    this._versionService.initEnvironment().pipe(
+    this._versionService.initColourScheme().pipe(
       first(),
       finalize(() => {
         Object.keys(currentTheme).forEach(key =>
@@ -66,8 +66,8 @@ export class AppComponent implements OnDestroy {
         this.isThemeSet = true;
       })
     ).subscribe(
-      (environment: string) => {
-        currentTheme = theme[environment];
+      (colour_scheme: string) => {
+        currentTheme = theme[colour_scheme];
       },
       (error: string) => {
         this._logger.error('Could not set theme.', [error]);

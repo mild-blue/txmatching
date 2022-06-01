@@ -1,7 +1,7 @@
 import unittest
 
 from txmatching.configuration.app_configuration.application_configuration import \
-    ApplicationEnvironment
+    ApplicationColourScheme, ApplicationEnvironment
 
 
 class TestEnums(unittest.TestCase):
@@ -9,3 +9,6 @@ class TestEnums(unittest.TestCase):
         self.assertEqual(ApplicationEnvironment.PRODUCTION, ApplicationEnvironment('PRODUCTION'))
         with self.assertRaises(ValueError):
             ApplicationEnvironment('TEST')
+        self.assertEqual(ApplicationColourScheme.PRODUCTION, ApplicationColourScheme('PRODUCTION'))
+        with self.assertRaises(ValueError):
+            ApplicationColourScheme('TEST')

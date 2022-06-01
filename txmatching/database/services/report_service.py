@@ -15,7 +15,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from txmatching.auth.exceptions import NotFoundException
 from txmatching.configuration.app_configuration.application_configuration import (
-    ApplicationEnvironment, get_application_configuration)
+    ApplicationColourScheme, get_application_configuration)
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.data_transfer_objects.matchings.matching_dto import (
     CountryDTO, RoundDTO)
@@ -86,7 +86,7 @@ def generate_html_report(
                                                                configuration_db_id)
 
     configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
-                                                                       configuration_db_id=configuration_db_id)
+                                                                                  configuration_db_id=configuration_db_id)
 
     patients_dto = to_lists_for_fe(txm_event, configuration_parameters)
 
@@ -302,7 +302,7 @@ def _prune_old_reports():
 
 def _get_theme() -> Tuple[str, str]:
     conf = get_application_configuration()
-    return (LOGO_MILD_BLUE, COLOR_MILD_BLUE) if conf.environment == ApplicationEnvironment.STAGING \
+    return (LOGO_MILD_BLUE, COLOR_MILD_BLUE) if conf.colour_scheme == ApplicationColourScheme.STAGING \
         else (LOGO_IKEM, COLOR_IKEM)
 
 
