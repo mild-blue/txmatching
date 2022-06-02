@@ -4,4 +4,3 @@ export enum ColourScheme {
     DEVELOPMENT = 'DEVELOPMENT',
     UNKNOWN = 'UNKNOWN'
   }
-  

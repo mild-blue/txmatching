@@ -53,4 +53,4 @@ class Version(Resource):
         conf = get_application_configuration()
         logger.debug(f'Application version: {conf.code_version} in environment {conf.environment}.')
         return jsonify(
-            {'version': conf.code_version, 'colour_sheme': conf.colour_scheme, 'environment': conf.environment})
+            {'version': conf.code_version, 'colour_scheme': conf.colour_scheme, 'environment': conf.environment})

@@ -32,7 +32,6 @@ export class VersionService {
   }
 
   public initColourScheme(): Observable<string> {
-    // todo
     return this._http.get<VersionGenerated>(
       `${environment.apiUrl}/service/version`
     ).pipe(
