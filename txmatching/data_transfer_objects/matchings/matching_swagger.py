@@ -73,7 +73,7 @@ DetailedScoreForGroupJson = matching_api.model('DetailedScoreForGroup', {
     'antibody_matches': fields.List(required=True, cls_or_instance=fields.Nested(AntibodyMatchJson))
 })
 
-ErrorMessagesJson = matching_api.model('AllMessages', {
+ParsingIssueMessagesJson = matching_api.model('AllMessages', {
     'infos': fields.List(fields.String),
     'warnings': fields.List(fields.String),
     'errors': fields.List(fields.String)
@@ -81,7 +81,7 @@ ErrorMessagesJson = matching_api.model('AllMessages', {
 
 TransplantWarningsJson = matching_api.model('TransplantWarning', {
     'message_global': fields.String(),
-    'all_messages': fields.Nested(ErrorMessagesJson)
+    'all_messages': fields.Nested(ParsingIssueMessagesJson)
 })
 
 TransplantJson = matching_api.model('Transplant', {

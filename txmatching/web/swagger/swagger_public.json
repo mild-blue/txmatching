@@ -968,7 +968,7 @@
             },
             "type": "object"
         },
-        "ParsingErrorPublic": {
+        "ParsingIssuePublic": {
             "required": [
                 "message",
                 "parsing_issue_detail"
@@ -1012,7 +1012,7 @@
         "PatientUploadSuccessResponse": {
             "required": [
                 "donors_uploaded",
-                "parsing_errors",
+                "parsing_issues",
                 "recipients_uploaded"
             ],
             "properties": {
@@ -1024,11 +1024,11 @@
                     "type": "integer",
                     "description": "Number of donors successfully loaded into the application."
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "description": "Errors and warnings that occurred in HLA codes parsing",
                     "items": {
-                        "$ref": "#/definitions/ParsingErrorPublic"
+                        "$ref": "#/definitions/ParsingIssuePublic"
                     }
                 }
             },

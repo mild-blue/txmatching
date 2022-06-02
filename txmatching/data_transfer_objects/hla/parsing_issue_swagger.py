@@ -2,7 +2,7 @@ from flask_restx import fields
 
 from txmatching.web.web_utils.namespaces import public_api
 
-ParsingErrorPublicJson = public_api.model('ParsingErrorPublic', {
+ParsingIssuePublicJson = public_api.model('ParsingIssuePublic', {
     'hla_code_or_group': fields.String(required=False),
     'parsing_issue_detail': fields.String(required=True),
     'message': fields.String(required=True),
@@ -11,7 +11,7 @@ ParsingErrorPublicJson = public_api.model('ParsingErrorPublic', {
     'txm_event_name': fields.String(required=False),
 })
 
-ParsingErrorJson = public_api.model('ParsingError', {
+ParsingIssueJson = public_api.model('ParsingIssue', {
     'hla_code_or_group': fields.String(required=False),
     'parsing_issue_detail': fields.String(required=True),
     'message': fields.String(required=True),

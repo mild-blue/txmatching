@@ -1,7 +1,7 @@
 from typing import Dict, List, Union
 
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
@@ -50,13 +50,13 @@ def recipient_to_recipient_dto_out(recipient: Recipient) -> RecipientDTOOut:
         acceptable_blood_groups=recipient.acceptable_blood_groups,
         hla_antibodies=recipient.hla_antibodies,
         related_donors_db_ids=recipient.related_donors_db_ids,
-        parsing_errors=recipient.parsing_errors,
+        parsing_issues=recipient.parsing_issues,
         recipient_cutoff=recipient.recipient_cutoff,
         recipient_requirements=recipient.recipient_requirements,
         waiting_since=recipient.waiting_since,
         previous_transplants=recipient.previous_transplants,
         internal_medical_id=recipient.internal_medical_id,
-        all_messages=get_messages(recipient.parsing_errors)
+        all_messages=get_messages(recipient.parsing_issues)
     )
 
 
@@ -72,8 +72,8 @@ def donor_to_donor_dto_out(donor: Donor,
                             related_recipient_db_id=donor.related_recipient_db_id,
                             active=donor.active,
                             internal_medical_id=donor.internal_medical_id,
-                            parsing_errors=donor.parsing_errors,
-                            all_messages=get_messages(donor.parsing_errors)
+                            parsing_issues=donor.parsing_issues,
+                            all_messages=get_messages(donor.parsing_issues)
                             )
     if donor.related_recipient_db_id:
         related_recipient = next(recipient for recipient in all_recipients if
@@ -134,14 +134,14 @@ def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityI
     return detailed_scores
 
 
-def get_messages(parsing_errors: List[ParsingError]) -> Dict[str, List[str]]:
+def get_messages(parsing_issues: List[ParsingIssue]) -> Dict[str, List[str]]:
     return {
         'infos': [],
         'warnings': [
-            warning.hla_code_or_group + ': ' + warning.message for warning in parsing_errors
+            warning.hla_code_or_group + ': ' + warning.message for warning in parsing_issues
             if warning.parsing_issue_detail in WARNING_PROCESSING_RESULTS
         ],
         'errors': [
-            error.hla_code_or_group + ': ' + error.message for error in parsing_errors
+            error.hla_code_or_group + ': ' + error.message for error in parsing_issues
             if error.parsing_issue_detail in ERROR_PROCESSING_RESULTS]
     }

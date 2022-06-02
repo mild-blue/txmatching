@@ -76,6 +76,6 @@ def _get_donors_for_score_matrix(score_matrix: np.array) -> List[Donor]:
             db_id=1,
             medical_id='test',
             etag=1,
-            parsing_errors=[]
+            parsing_issues=[]
         ))
     return donors

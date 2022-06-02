@@ -9,12 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ParsingErrorGenerated } from './parsingErrorGenerated';
+import { ParsingIssueGenerated } from './parsingIssueGenerated';
 import { RecipientGenerated } from './recipientGenerated';
 
 
 export interface UpdatedRecipientGenerated { 
-    parsing_errors: Array<ParsingErrorGenerated>;
+    parsing_issues: Array<ParsingIssueGenerated>;
     recipient: RecipientGenerated;
 }
 

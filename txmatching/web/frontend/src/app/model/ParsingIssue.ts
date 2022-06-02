@@ -1,4 +1,4 @@
-export interface ParsingError {
+export interface ParsingIssue {
   hlaCodeOrGroup?: string;
   ParsingIssueDetail: string;
   message: string;

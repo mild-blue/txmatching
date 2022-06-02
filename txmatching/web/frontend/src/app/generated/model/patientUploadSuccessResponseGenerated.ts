@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ParsingErrorPublicGenerated } from './parsingErrorPublicGenerated';
+import { ParsingIssuePublicGenerated } from './parsingIssuePublicGenerated';
 
 
 export interface PatientUploadSuccessResponseGenerated { 
@@ -20,7 +20,7 @@ export interface PatientUploadSuccessResponseGenerated {
     /**
      * Errors and warnings that occurred in HLA codes parsing
      */
-    parsing_errors: Array<ParsingErrorPublicGenerated>;
+    parsing_issues: Array<ParsingIssuePublicGenerated>;
     /**
      * Number of recipients successfully loaded into the application.
      */

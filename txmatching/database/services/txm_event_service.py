@@ -21,8 +21,8 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
 from txmatching.patients.patient import TxmEvent, TxmEventBase
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import TxmEventState
-from txmatching.utils.hla_system.hla_transformations.parsing_error import \
-    delete_parsing_errors_for_patient
+from txmatching.utils.hla_system.hla_transformations.parsing_issue import \
+    delete_parsing_issues_for_patient
 from txmatching.utils.logged_user import get_current_user, get_current_user_id
 
 logger = logging.getLogger(__name__)
@@ -57,20 +57,20 @@ def delete_txm_event(txm_event_id: int):
 
 
 def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int, country_code: Country):
-    # Remove parsing errors for patients that will be deleted
+    # Remove parsing issues for patients that will be deleted
     donor_ids = [patient_model.id for patient_model in (
         DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
                                      DonorModel.country == country_code)).all()
     )]
     for donor_id in donor_ids:
-        delete_parsing_errors_for_patient(donor_id=donor_id, txm_event_id=txm_event_db_id)
+        delete_parsing_issues_for_patient(donor_id=donor_id, txm_event_id=txm_event_db_id)
 
     recipient_ids = [patient_model.id for patient_model in (
         RecipientModel.query.filter(and_(RecipientModel.txm_event_id == txm_event_db_id,
                                          RecipientModel.country == country_code)).all()
     )]
     for recipient_id in recipient_ids:
-        delete_parsing_errors_for_patient(recipient_id=recipient_id, txm_event_id=txm_event_db_id)
+        delete_parsing_issues_for_patient(recipient_id=recipient_id, txm_event_id=txm_event_db_id)
 
 
     DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,

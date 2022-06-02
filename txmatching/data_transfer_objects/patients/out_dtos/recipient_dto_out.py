@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional, Dict
 
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.patients.patient import Recipient
 
 
@@ -13,4 +13,4 @@ class RecipientDTOOut(Recipient):
 @dataclass
 class UpdatedRecipientDTOOut:
     recipient: RecipientDTOOut
-    parsing_errors: List[ParsingError]
+    parsing_issues: List[ParsingIssue]

@@ -11,8 +11,8 @@
  */
 import { RecipientRequirementsGenerated } from './recipientRequirementsGenerated';
 import { PatientParametersGenerated } from './patientParametersGenerated';
-import { ParsingErrorGenerated } from './parsingErrorGenerated';
 import { AllMessagesGenerated } from './allMessagesGenerated';
+import { ParsingIssueGenerated } from './parsingIssueGenerated';
 import { BloodGroupEnumGenerated } from './bloodGroupEnumGenerated';
 import { HlaAntibodiesGenerated } from './hlaAntibodiesGenerated';
 
@@ -38,7 +38,7 @@ export interface RecipientGenerated {
      */
     medical_id: string;
     parameters: PatientParametersGenerated;
-    parsing_errors?: Array<ParsingErrorGenerated>;
+    parsing_issues?: Array<ParsingIssueGenerated>;
     previous_transplants?: number;
     recipient_cutoff?: number;
     recipient_requirements?: RecipientRequirementsGenerated;

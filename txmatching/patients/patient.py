@@ -3,7 +3,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
 
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
 from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
@@ -44,7 +44,7 @@ class Patient(PersistentlyHashable):
 
 @dataclass
 class Donor(Patient, PersistentlyHashable):
-    parsing_errors: Optional[List[ParsingError]] = None
+    parsing_issues: Optional[List[ParsingIssue]] = None
     related_recipient_db_id: Optional[RecipientDbId] = None
     donor_type: DonorType = DonorType.DONOR
     active: bool = True
@@ -54,7 +54,7 @@ class Donor(Patient, PersistentlyHashable):
         super().update_persistent_hash(hash_)
         update_persistent_hash(hash_, Donor)
         # TODO this is not hashable:
-        # update_persistent_hash(hash_, sorted(self.parsing_errors))
+        # update_persistent_hash(hash_, sorted(self.parsing_issues))
         update_persistent_hash(hash_, self.related_recipient_db_id)
         update_persistent_hash(hash_, self.donor_type)
         update_persistent_hash(hash_, self.active)
@@ -100,7 +100,7 @@ class Recipient(Patient, PersistentlyHashable):
     related_donors_db_ids: List[DonorDbId]
     acceptable_blood_groups: List[BloodGroup]
     hla_antibodies: HLAAntibodies
-    parsing_errors: Optional[List[ParsingError]] = None
+    parsing_issues: Optional[List[ParsingIssue]] = None
     recipient_cutoff: Optional[int] = None
     recipient_requirements: RecipientRequirements = RecipientRequirements()
     waiting_since: Optional[datetime] = None
@@ -117,7 +117,7 @@ class Recipient(Patient, PersistentlyHashable):
         update_persistent_hash(hash_, sorted(self.related_donors_db_ids))
         update_persistent_hash(hash_, sorted(self.acceptable_blood_groups))
         # TODO this is not hashable:
-        # update_persistent_hash(hash_, sorted(self.parsing_errors))
+        # update_persistent_hash(hash_, sorted(self.parsing_issues))
         update_persistent_hash(hash_, self.recipient_cutoff)
         update_persistent_hash(hash_, self.hla_antibodies)
         update_persistent_hash(hash_, self.recipient_requirements)
@@ -176,11 +176,11 @@ def _filter_patients_that_dont_have_parsing_errors(
     exclude_recipients_ids = set()
 
     for patient in donors:
-        if _parsing_error_list_contains_errors(patient.parsing_errors):
+        if _parsing_issue_list_contains_errors(patient.parsing_issues):
             exclude_donors_ids.add(patient.db_id)
 
     for patient in recipients:
-        if _parsing_error_list_contains_errors(patient.parsing_errors):
+        if _parsing_issue_list_contains_errors(patient.parsing_issues):
             for donor_id in patient.related_donors_db_ids:
                 exclude_donors_ids.add(donor_id)
             exclude_recipients_ids.add(patient.db_id)
@@ -206,7 +206,7 @@ def _recipient_has_at_least_one_active_donor(related_donors_db_ids: List[int], r
     return False
 
 
-def _parsing_error_list_contains_errors(parsing_issues: Optional[List[ParsingError]]) -> bool:
+def _parsing_issue_list_contains_errors(parsing_issues: Optional[List[ParsingIssue]]) -> bool:
     if parsing_issues is None:
         return False
     for parsing_issue in parsing_issues:
