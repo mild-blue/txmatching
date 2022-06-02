@@ -1,6 +1,5 @@
 export enum ColourScheme {
-    PRODUCTION = 'PRODUCTION',
-    STAGING = 'STAGING',
-    DEVELOPMENT = 'DEVELOPMENT',
+    IKEM = 'IKEM',
+    MILD_BLUE = 'MILD_BLUE',
     UNKNOWN = 'UNKNOWN'
   }

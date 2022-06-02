@@ -6,7 +6,7 @@ import { finalize, first } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert/alert.service';
 import { User } from '@app/model/User';
 import { VersionService } from '@app/services/version/version.service';
-import { staging } from '@app/model/Theme';
+import { EnvironmentType } from '@app/model/enums/EnvironmentType';
 import { UserTokenType } from '@app/model/enums/UserTokenType';
 
 @Component({
@@ -35,7 +35,7 @@ export class LoginComponent {
 
   private _initInfoText(): void {
     const environment = this._versionService.getEnvironment();
-    if (environment === staging) {
+    if (environment === EnvironmentType.STAGING) {
       this.showInfoText = true;
     }
   }

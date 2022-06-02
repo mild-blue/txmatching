@@ -24,9 +24,8 @@ class ApplicationColourScheme(str, Enum):
     """
     Enum representing the colour scheme to use.
     """
-    PRODUCTION = 'PRODUCTION'
-    STAGING = 'STAGING'
-    DEVELOPMENT = 'DEVELOPMENT'
+    IKEM = 'IKEM'
+    MILD_BLUE = 'MILD_BLUE'
 
 
 @dataclass(frozen=True)

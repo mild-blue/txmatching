@@ -302,7 +302,7 @@ def _prune_old_reports():
 
 def _get_theme() -> Tuple[str, str]:
     conf = get_application_configuration()
-    return (LOGO_MILD_BLUE, COLOR_MILD_BLUE) if conf.colour_scheme == ApplicationColourScheme.STAGING \
+    return (LOGO_MILD_BLUE, COLOR_MILD_BLUE) if conf.colour_scheme == ApplicationColourScheme.MILD_BLUE \
         else (LOGO_IKEM, COLOR_IKEM)
 
 

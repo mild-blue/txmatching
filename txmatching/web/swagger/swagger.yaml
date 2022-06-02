@@ -1639,10 +1639,9 @@ definitions:
             colour_scheme:
                 description: Colour scheme to use.
                 enum:
-                - PRODUCTION
-                - STAGING
-                - DEVELOPMENT
-                example: PRODUCTION
+                - IKEM
+                - MILD_BLUE
+                example: IKEM
                 type: string
             environment:
                 description: Environment the code was build for.

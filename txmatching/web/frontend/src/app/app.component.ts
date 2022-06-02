@@ -5,7 +5,7 @@ import { LoggerService } from '@app/services/logger/logger.service';
 import { User } from '@app/model/User';
 import { Router } from '@angular/router';
 import { VersionService } from './services/version/version.service';
-import { development, theme } from './model/Theme';
+import { ikem, theme } from './model/Theme';
 import { finalize, first } from 'rxjs/operators';
 
 @Component({
@@ -38,7 +38,7 @@ export class AppComponent implements OnDestroy {
   }
 
   setTheme() {
-    let currentTheme = theme[development];
+    let currentTheme = theme[ikem];
     this._versionService.initColourScheme().pipe(
       first(),
       finalize(() => {

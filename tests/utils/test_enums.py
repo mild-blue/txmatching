@@ -9,6 +9,6 @@ class TestEnums(unittest.TestCase):
         self.assertEqual(ApplicationEnvironment.PRODUCTION, ApplicationEnvironment('PRODUCTION'))
         with self.assertRaises(ValueError):
             ApplicationEnvironment('TEST')
-        self.assertEqual(ApplicationColourScheme.PRODUCTION, ApplicationColourScheme('PRODUCTION'))
+        self.assertEqual(ApplicationColourScheme.IKEM, ApplicationColourScheme('IKEM'))
         with self.assertRaises(ValueError):
             ApplicationColourScheme('TEST')

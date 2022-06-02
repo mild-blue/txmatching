@@ -4122,11 +4122,10 @@
                 "colour_scheme": {
                     "type": "string",
                     "description": "Colour scheme to use.",
-                    "example": "PRODUCTION",
+                    "example": "IKEM",
                     "enum": [
-                        "PRODUCTION",
-                        "STAGING",
-                        "DEVELOPMENT"
+                        "IKEM",
+                        "MILD_BLUE"
                     ]
                 },
                 "environment": {

@@ -26,9 +26,8 @@ export interface VersionGenerated {
     version: string;
 }
 export enum VersionGeneratedColourSchemeEnum {
-    Production = 'PRODUCTION',
-    Staging = 'STAGING',
-    Development = 'DEVELOPMENT'
+    Ikem = 'IKEM',
+    MildBlue = 'MILD_BLUE'
 };
 export enum VersionGeneratedEnvironmentEnum {
     Production = 'PRODUCTION',
