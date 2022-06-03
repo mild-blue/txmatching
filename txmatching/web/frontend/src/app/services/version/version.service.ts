@@ -31,6 +31,22 @@ export class VersionService {
     );
   }
 
+  public initColourScheme(): Observable<string> {
+    return this._http.get<VersionGenerated>(
+      `${environment.apiUrl}/service/version`
+    ).pipe(
+      map(parseVersion),
+      map((version: Version) => {
+        this._version = version;
+        return version.colour_scheme;
+      })
+    );
+  }
+
+  public getColourScheme(): string {
+    return this._version?.colour_scheme || '';
+  }
+
   public getEnvironment(): string {
     return this._version?.environment || '';
   }

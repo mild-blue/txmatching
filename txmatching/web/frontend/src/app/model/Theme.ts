@@ -1,6 +1,5 @@
-export const production = 'PRODUCTION';
-export const staging = 'STAGING';
-export const development = 'DEVELOPMENT';
+export const ikem = 'IKEM';
+export const mild_blue = 'MILD_BLUE';
 
 interface ThemeDefinition {
   [key: string]: string;
@@ -10,7 +9,7 @@ interface ThemesType {
   [key: string]: ThemeDefinition;
 }
 
-const ikemTheme: ThemeDefinition = {
+const IKEMTheme: ThemeDefinition = {
   'primary-color': '#e2001a',
   'logo-background-image': 'url("../../../assets/img/logo_ikem.svg")',
   'logo-background-size': 'contain',
@@ -23,7 +22,7 @@ const ikemTheme: ThemeDefinition = {
 };
 
 
-const stagingTheme: ThemeDefinition = {
+const MildBlueTheme: ThemeDefinition = {
   'primary-color': '#2D4496',
   'logo-background-image': 'url("../../../assets/img/logo_mild_blue.svg")',
   'logo-background-size': 'contain',
@@ -36,7 +35,6 @@ const stagingTheme: ThemeDefinition = {
 };
 
 export const theme: ThemesType = {
-  PRODUCTION: ikemTheme,
-  STAGING: stagingTheme,
-  DEVELOPMENT: ikemTheme
+  IKEM: IKEMTheme,
+  MILD_BLUE: MildBlueTheme,
 };

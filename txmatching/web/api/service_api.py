@@ -6,8 +6,9 @@ from flask import jsonify
 from flask_restx import Resource, fields
 from sqlalchemy.exc import OperationalError
 
-from txmatching.configuration.app_configuration.application_configuration import (
-    ApplicationEnvironment, get_application_configuration)
+from txmatching.configuration.app_configuration.application_configuration import (ApplicationColourScheme,
+                                                                                  ApplicationEnvironment,
+                                                                                  get_application_configuration)
 from txmatching.database.db import db
 from txmatching.web.web_utils.namespaces import service_api
 from txmatching.web.web_utils.route_utils import response_ok
@@ -38,6 +39,9 @@ class Status(Resource):
 class Version(Resource):
     version_model = service_api.model('Version', {
         'version': fields.String(required=True, description='Version of the running code.'),
+        'colour_scheme': fields.String(required=True,
+                                       enum=[cs.value for cs in ApplicationColourScheme],
+                                       description='Colour scheme to use.'),
         'environment': fields.String(required=True,
                                      enum=[env.value for env in ApplicationEnvironment],
                                      description='Environment the code was build for.')
@@ -48,4 +52,5 @@ class Version(Resource):
     def get(self):
         conf = get_application_configuration()
         logger.debug(f'Application version: {conf.code_version} in environment {conf.environment}.')
-        return jsonify({'version': conf.code_version, 'environment': conf.environment})
+        return jsonify(
+            {'version': conf.code_version, 'colour_scheme': conf.colour_scheme, 'environment': conf.environment})
