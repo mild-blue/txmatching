@@ -214,6 +214,62 @@
                 ]
             }
         },
+        "/v1/txm-event/copy": {
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Patients were successfully copied. List of new patients ids: ",
+                        "schema": {
+                            "$ref": "#/definitions/CopyPatients"
+                        }
+                    }
+                },
+                "description": "Copy list of patients from one event to the other",
+                "operationId": "put_txm_copy_patients_between_events_api",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/TxmEventCopy"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "txm-event"
+                ]
+            }
+        },
         "/v1/txm-event/default": {
             "get": {
                 "responses": {
@@ -2097,6 +2153,20 @@
                 "max_matchings_in_ilp_solver": {
                     "type": "integer",
                     "example": 20
+                }
+            },
+            "type": "object"
+        },
+        "CopyPatients": {
+            "required": [
+                "new_donor_ids"
+            ],
+            "properties": {
+                "new_donor_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             },
             "type": "object"
@@ -4047,6 +4117,28 @@
                 },
                 "state": {
                     "$ref": "#/definitions/TxmEventState"
+                }
+            },
+            "type": "object"
+        },
+        "TxmEventCopy": {
+            "required": [
+                "donor_ids",
+                "txm_event_id_from",
+                "txm_event_id_to"
+            ],
+            "properties": {
+                "txm_event_id_from": {
+                    "type": "integer"
+                },
+                "txm_event_id_to": {
+                    "type": "integer"
+                },
+                "donor_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             },
             "type": "object"

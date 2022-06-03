@@ -25,9 +25,7 @@ from txmatching.database.services.txm_event_service import (
     update_default_txm_event_id_for_current_user)
 from txmatching.utils.export.export_txm_event import \
     get_patients_upload_json_from_txm_event_for_country
-from txmatching.utils.copy.copy_patients_from_event_to_event import \
-    get_patients_from_event, load_patients_to_event
-
+from txmatching.utils.copy.copy_patients_from_event_to_event import copy_patients_between_events
 from txmatching.web.web_utils.namespaces import txm_event_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
@@ -146,7 +144,7 @@ class TxmExportEventApi(Resource):
     @txm_event_api.require_user_login()
     @require_role(UserRole.ADMIN)
     @txm_event_api.response_ok(UploadPatientsJson, description='Exported patients DTO, Ready to be uploaded to'
-                                                               'some other event')  # ask patients from the server
+                                                               'some other event')  
     @txm_event_api.response_errors()
     @txm_event_api.request_body( 
         TxmEventExportJsonIn,
@@ -162,8 +160,6 @@ class TxmExportEventApi(Resource):
         )
         return response_ok(txm_event_json)
 
-#  ----------------------------------------------------------------------------------------------------------------------
-
 '''
 in all our other endpoint we use json objects to send data to the api, not the url path itself. 
 '''
@@ -172,29 +168,8 @@ in all our other endpoint we use json objects to send data to the api, not the u
 class TxmCopyPatientsBetweenEventsApi(Resource):
     @txm_event_api.require_user_login()
     @require_role(UserRole.ADMIN)
-    @txm_event_api.doc(
-        params={
-            'txm_event_id_from': {
-                'description': 'Id of the TXM event to be copied from.',
-                'type': int,
-                'required': True,
-            },
-            'txm_event_id_to': {
-                'description': 'Id of the TXM event to be copied to.',
-                'type': int,
-                'required': True,
-            },
-            'donor_ids': {
-                'description': 'Ids of the donors to be copied.',
-                'type': list,
-                'required': True,
-            }
-        },
-        security='bearer',
-        description='Endpoint that lets an ADMIN copy patients from one event to another.'
-    )
     @txm_event_api.response_ok(
-        CopyPatientsJson, 
+        CopyPatientsJson,
         description="Patients were successfully copied. List of new patients ids: ")
     @txm_event_api.response_errors()
     @txm_event_api.request_body(
@@ -203,15 +178,11 @@ class TxmCopyPatientsBetweenEventsApi(Resource):
     )
     def put(self) -> str:
         copy_dto = request_body(TxmEventCopyDTOIn)
-        donor_ids = copy_dto.donor_ids
-        donor_ids = [int(donor_id) for donor_id in donor_ids] 
+        donor_ids = [int(donor_id) for donor_id in copy_dto.donor_ids] 
 
-        patients_dto = get_patients_from_event(copy_dto.txm_event_id_from, donor_ids)
-        new_patients_ids = load_patients_to_event(copy_dto.txm_event_id_to, patients_dto)
+        new_patients_ids = copy_patients_between_events(
+                            txm_event_id_from = copy_dto.txm_event_id_from, 
+                            txm_event_id_to = copy_dto.txm_event_id_to, 
+                            donor_ids = donor_ids)
 
-        return response_ok(new_patients_ids)                                                                                                    
-
-
-
-    
-
+        return response_ok(new_patients_ids)

@@ -1,14 +1,15 @@
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
-    TxmEventDTOIn, TxmEventUpdateDTOIn)
-from txmatching.database.services.txm_event_service import get_txm_event_base
-from txmatching.database.sql_alchemy_schema import (ConfigModel,
+    TxmEventDTOIn, TxmEventUpdateDTOIn, TxmEventCopyDTOIn)
+from txmatching.database.services.txm_event_service import get_txm_event_base, get_txm_event_complete
+from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     PairingResultModel,
                                                     RecipientModel,
                                                     TxmEventModel)
 from txmatching.utils.enums import TxmEventState
 from txmatching.web import API_VERSION, TXM_EVENT_NAMESPACE
+from local_testing_utilities.utils import create_or_overwrite_txm_event
 
 
 class TestMatchingApi(DbTests):
@@ -185,26 +186,33 @@ class TestMatchingApi(DbTests):
             self.assertEqual('application/json', res.content_type)
 
 
-    def test_txm_event_copy(self):
-        txm_name_from = 'test'
-        txm_name_to = 'test_copy'
-
-        self.fill_db_with_patients_and_results(txm_event_name=txm_name_from)
-        self.fill_db_with_patients_and_results(txm_event_name=txm_name_to)
+    def test_txm_event_copy(self):  
+        txm_event_model_from_db_id = self.fill_db_with_patients() # int
+        txm_event_model_to = create_or_overwrite_txm_event(name='test_copy') # TxmEvent
         
-        txm_event_model_from = TxmEventModel.query.filter(TxmEventModel.name == txm_name_from).first()
-        txm_event_model_to = TxmEventModel.query.filter(TxmEventModel.name == txm_name_to).first()
-        donors =  txm_event_model_from.donors.all()[:2]    
-        donor_ids = ','.join([str(donor.id) for donor in donors])
+        self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.id == txm_event_model_from_db_id).first()) 
+        self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.id == txm_event_model_to.db_id).first()) 
 
-        self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name_from).first()) 
-        self.assertIsNotNone(TxmEventModel.query.filter(TxmEventModel.name == txm_name_to).first()) 
+        donors = TxmEventModel.query.get(txm_event_model_from_db_id).donors # list [DonorModel]
+        donor_ids = []
+
+        for donor in donors:
+            donor_ids.append(donor.id)
+
+        self.assertIsNotNone(donor_ids) # [1,2]
+
         self.login_with_role(UserRole.ADMIN)
         
         with self.app.test_client() as client:
+            json_data = {
+                'txm_event_id_from': txm_event_model_from_db_id,
+                'txm_event_id_to': txm_event_model_to.db_id,
+                'donor_ids': [1,2]
+            }
             res = client.put(
-                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_model_from.id}/copy?txm_event_id_to={txm_event_model_to.id}?donor_ids={donor_ids}',
-                headers=self.auth_headers
+                f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/copy',
+                headers=self.auth_headers,
+                json = json_data
             )
 
             self.assertEqual(200, res.status_code)
