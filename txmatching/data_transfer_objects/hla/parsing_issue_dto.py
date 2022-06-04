@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
@@ -14,6 +15,8 @@ class ParsingIssuePublicDTO:
     message: str
     txm_event_name: Optional[str]
     medical_id: Optional[str]
+    confirmed_by: Optional[int]
+    confirmed_at: Optional[datetime]
 
 
 @dataclass
@@ -24,6 +27,8 @@ class ParsingIssue(PersistentlyHashable):
     txm_event_id: Optional[int] = None
     donor_id: Optional[int] = None
     recipient_id: Optional[int] = None
+    confirmed_by: Optional[int] = None
+    confirmed_at: Optional[datetime] = None
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, ParsingIssue)
@@ -33,3 +38,5 @@ class ParsingIssue(PersistentlyHashable):
         update_persistent_hash(hash_, self.txm_event_id)
         update_persistent_hash(hash_, self.donor_id)
         update_persistent_hash(hash_, self.recipient_id)
+        update_persistent_hash(hash_, self.confirmed_by)
+        update_persistent_hash(hash_, self.confirmed_at)

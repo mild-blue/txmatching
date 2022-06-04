@@ -988,6 +988,13 @@
                 },
                 "txm_event_name": {
                     "type": "string"
+                },
+                "confirmed_at": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "confirmed_by": {
+                    "type": "integer"
                 }
             },
             "type": "object"

@@ -34,7 +34,9 @@ def convert_parsing_issue_models_to_dataclasses(parsing_issue_models: List[Parsi
         message=parsing_issue_model.message,
         donor_id=parsing_issue_model.donor_id,
         recipient_id=parsing_issue_model.recipient_id,
-        txm_event_id=parsing_issue_model.txm_event_id
+        txm_event_id=parsing_issue_model.txm_event_id,
+        confirmed_by=parsing_issue_model.confirmed_by,
+        confirmed_at=parsing_issue_model.confirmed_at
     ) for parsing_issue_model in parsing_issue_models]
 
 
@@ -85,3 +87,5 @@ def delete_parsing_issues_for_txm_event_id(txm_event_id: int):
     ParsingIssueModel.query.filter(
         ParsingIssueModel.txm_event_id == txm_event_id
     ).delete()
+
+# todo

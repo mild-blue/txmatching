@@ -1037,6 +1037,11 @@ definitions:
         type: object
     ParsingIssue:
         properties:
+            confirmed_at:
+                format: date
+                type: string
+            confirmed_by:
+                type: integer
             donor_id:
                 type: integer
             hla_code_or_group:
@@ -1055,6 +1060,11 @@ definitions:
         type: object
     ParsingIssuePublic:
         properties:
+            confirmed_at:
+                format: date
+                type: string
+            confirmed_by:
+                type: integer
             hla_code_or_group:
                 type: string
             medical_id:
@@ -2192,6 +2202,47 @@ paths:
                     description: Updated donor.
                     schema:
                         $ref: '#/definitions/UpdatedDonor'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
+    /v1/txm-event/{txm_event_id}/patients/confirm-warning/{parsing_issue_id}:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        put:
+            description: Confirm a warning.
+            operationId: put_confirm_warning
+            parameters:
+            -   description: Id of the warning to be confirmed
+                in: path
+                name: parsing_issue_id
+                required: true
+                type: integer
+            responses:
+                '200':
+                    description: Issue confirmed successfully.
+                    schema:
+                        $ref: '#/definitions/ParsingIssuePublic'
                 '400':
                     description: Wrong data format.
                     schema:

@@ -244,6 +244,8 @@ class ParsingIssueModel(db.Model):
         onupdate=func.now()
     )
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+    confirmed_at = Column(DateTime(timezone=True), unique=False, nullable=True)
+    confirmed_by = Column(Integer, ForeignKey('app_user.id', ondelete='SET NULL'), unique=False, nullable=True)
 
 
 class UploadedFileModel(db.Model):

@@ -833,6 +833,69 @@
                 ]
             }
         },
+        "/v1/txm-event/{txm_event_id}/patients/confirm-warning/{parsing_issue_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Issue confirmed successfully.",
+                        "schema": {
+                            "$ref": "#/definitions/ParsingIssuePublic"
+                        }
+                    }
+                },
+                "description": "Confirm a warning.",
+                "operationId": "put_confirm_warning",
+                "parameters": [
+                    {
+                        "name": "parsing_issue_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Id of the warning to be confirmed"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
         "/v1/txm-event/{txm_event_id}/patients/pairs": {
             "parameters": [
                 {
@@ -3089,6 +3152,13 @@
                 },
                 "txm_event_id": {
                     "type": "integer"
+                },
+                "confirmed_at": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "confirmed_by": {
+                    "type": "integer"
                 }
             },
             "type": "object"
@@ -3113,6 +3183,13 @@
                 },
                 "txm_event_name": {
                     "type": "string"
+                },
+                "confirmed_at": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "confirmed_by": {
+                    "type": "integer"
                 }
             },
             "type": "object"

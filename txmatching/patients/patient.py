@@ -10,7 +10,7 @@ from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import TxmEventState
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
-    ERROR_PROCESSING_RESULTS
+    ERROR_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
@@ -176,11 +176,13 @@ def _filter_patients_that_dont_have_parsing_errors(
     exclude_recipients_ids = set()
 
     for patient in donors:
-        if _parsing_issue_list_contains_errors(patient.parsing_issues):
+        if _parsing_issue_list_contains_errors(
+                patient.parsing_issues) or _parsing_issue_list_contains_unapproved_warnings(patient.parsing_issues):
             exclude_donors_ids.add(patient.db_id)
 
     for patient in recipients:
-        if _parsing_issue_list_contains_errors(patient.parsing_issues):
+        if _parsing_issue_list_contains_errors(
+                patient.parsing_issues) or _parsing_issue_list_contains_unapproved_warnings(patient.parsing_issues):
             for donor_id in patient.related_donors_db_ids:
                 exclude_donors_ids.add(donor_id)
             exclude_recipients_ids.add(patient.db_id)
@@ -193,13 +195,15 @@ def _filter_patients_that_dont_have_parsing_errors(
     return_recipients = {
         patient.db_id: patient
         for patient in recipients
-        if patient.db_id not in exclude_recipients_ids and _recipient_has_at_least_one_active_donor(patient.related_donors_db_ids, return_donors)
+        if patient.db_id not in exclude_recipients_ids and _recipient_has_at_least_one_active_donor(
+            patient.related_donors_db_ids, return_donors)
     }
 
     return return_donors, return_recipients
 
 
-def _recipient_has_at_least_one_active_donor(related_donors_db_ids: List[int], return_donors: Dict[DonorDbId, Donor]) -> bool:
+def _recipient_has_at_least_one_active_donor(related_donors_db_ids: List[int],
+                                             return_donors: Dict[DonorDbId, Donor]) -> bool:
     for donor_db_id in related_donors_db_ids:
         if donor_db_id in return_donors:
             return True
@@ -211,5 +215,14 @@ def _parsing_issue_list_contains_errors(parsing_issues: Optional[List[ParsingIss
         return False
     for parsing_issue in parsing_issues:
         if parsing_issue.parsing_issue_detail in ERROR_PROCESSING_RESULTS:
+            return True
+    return False
+
+
+def _parsing_issue_list_contains_unapproved_warnings(parsing_issues: Optional[List[ParsingIssue]]) -> bool:
+    if parsing_issues is None:
+        return False
+    for parsing_issue in parsing_issues:
+        if parsing_issue.parsing_issue_detail in WARNING_PROCESSING_RESULTS and parsing_issue.confirmed_by is None:
             return True
     return False
