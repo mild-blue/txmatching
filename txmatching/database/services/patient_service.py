@@ -19,6 +19,10 @@ from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto im
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
 from txmatching.database.db import db
+from txmatching.database.services.parsing_issue_service import (
+    convert_parsing_issue_models_to_dataclasses,
+    delete_parsing_issues_for_patient, delete_parsing_issues_for_txm_event_id,
+    get_parsing_issues_for_txm_event_id, parsing_issues_to_models)
 from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
@@ -31,10 +35,6 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_return_parsing_issue_list,
     parse_hla_typing_raw_and_return_parsing_issue_list)
-from txmatching.database.services.parsing_issue_service import (
-    convert_parsing_issue_models_to_dataclasses,
-    delete_parsing_issues_for_patient, delete_parsing_issues_for_txm_event_id,
-    get_parsing_issues_for_txm_event_id, parsing_issues_to_models)
 from txmatching.utils.persistent_hash import (get_hash_digest,
                                               initialize_persistent_hash,
                                               update_persistent_hash)

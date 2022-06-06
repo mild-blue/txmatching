@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 from typing import List
 
@@ -10,8 +9,6 @@ from txmatching.data_transfer_objects.patients.utils import parsing_issue_to_dto
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ParsingIssueModel
 from txmatching.patients.patient import TxmEvent
-
-logger = logging.getLogger(__name__)
 
 
 def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int, txm_event: TxmEvent) -> ParsingIssuePublicDTO:

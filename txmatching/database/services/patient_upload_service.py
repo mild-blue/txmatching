@@ -20,6 +20,8 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
 from txmatching.data_transfer_objects.patients.utils import \
     parsing_issue_to_dto
 from txmatching.database.db import db
+from txmatching.database.services.parsing_issue_service import (
+    get_parsing_issues_for_patients, parsing_issues_to_models)
 from txmatching.database.services.parsing_utils import (
     check_existing_ids_for_duplicates, parse_date_to_datetime)
 from txmatching.database.services.patient_service import \
@@ -36,8 +38,6 @@ from txmatching.utils.country_enum import Country
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_return_parsing_issue_list,
     parse_hla_typing_raw_and_return_parsing_issue_list)
-from txmatching.database.services.parsing_issue_service import (
-    get_parsing_issues_for_patients, parsing_issues_to_models)
 
 logger = logging.getLogger(__name__)
 

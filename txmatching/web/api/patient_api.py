@@ -44,6 +44,8 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     PatientsRecomputeParsingSuccessJson
 from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
+from txmatching.database.services.parsing_issue_service import (
+    confirm_a_parsing_issue, get_parsing_issues_for_patients)
 from txmatching.database.services.patient_service import (
     delete_donor_recipient_pair, get_donor_recipient_pair,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
@@ -51,15 +53,11 @@ from txmatching.database.services.patient_service import (
 from txmatching.database.services.patient_upload_service import (
     add_donor_recipient_pair, get_patients_parsing_issues_from_pair_dto,
     replace_or_add_patients_from_excel)
-from txmatching.database.services.parsing_issue_service import \
-    confirm_a_parsing_issue
 from txmatching.database.services.txm_event_service import (
     get_txm_event_base, get_txm_event_complete)
 from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
-from txmatching.database.services.parsing_issue_service import \
-    get_parsing_issues_for_patients
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import patient_api
 from txmatching.web.web_utils.route_utils import (request_arg_flag,
