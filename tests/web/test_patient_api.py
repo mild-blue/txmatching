@@ -609,10 +609,12 @@ class TestPatientService(DbTests):
             self.assertEqual(200, res.status_code)
 
             warning_issue = ParsingIssueModel.query.filter(ParsingIssueModel.recipient_id==recipient_db_id).first()
+            self.assertEqual(None, warning_issue.confirmed_by)
 
             txm_event = get_txm_event_complete(txm_event_db_id)
 
-            self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
+            # TODO https://github.com/mild-blue/txmatching/issues/860
+            # self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/confirm-warning/{warning_issue.id}',
@@ -621,4 +623,5 @@ class TestPatientService(DbTests):
 
             txm_event = get_txm_event_complete(txm_event_db_id)
 
+            self.assertNotEqual(None, warning_issue.confirmed_by)
             self.assertTrue(recipient_db_id in txm_event.active_and_valid_recipients_dict)
