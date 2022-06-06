@@ -21,7 +21,7 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
 from txmatching.patients.patient import TxmEvent, TxmEventBase
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import TxmEventState
-from txmatching.utils.hla_system.hla_transformations.parsing_issue import \
+from txmatching.database.services.parsing_issue_service import \
     delete_parsing_issues_for_patient
 from txmatching.utils.logged_user import get_current_user, get_current_user_id
 

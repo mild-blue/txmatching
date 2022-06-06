@@ -2,11 +2,10 @@ import dataclasses
 import logging
 from enum import Enum
 from typing import List, Optional, Tuple, Union
-from datetime import datetime
 
 import dacite
 from txmatching.auth.exceptions import InvalidArgumentException, OverridingException
-from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue, ParsingIssuePublicDTO
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
@@ -19,12 +18,10 @@ from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto im
     PatientUpdateDTO
 from txmatching.data_transfer_objects.patients.update_dtos.recipient_update_dto import \
     RecipientUpdateDTO
-from txmatching.data_transfer_objects.patients.utils import \
-    parsing_issue_to_dto
 from txmatching.database.db import db
 from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, HLAAntibodyRawModel, ParsingIssueModel, RecipientAcceptableBloodModel,
+    DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
     RecipientModel)
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibodyRaw,
                                            HLATypeRaw, HLATyping)
@@ -34,7 +31,7 @@ from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_return_parsing_issue_list,
     parse_hla_typing_raw_and_return_parsing_issue_list)
-from txmatching.utils.hla_system.hla_transformations.parsing_issue import (
+from txmatching.database.services.parsing_issue_service import (
     convert_parsing_issue_models_to_dataclasses,
     delete_parsing_issues_for_patient, delete_parsing_issues_for_txm_event_id,
     get_parsing_issues_for_txm_event_id, parsing_issues_to_models)
@@ -405,14 +402,3 @@ def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
         RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
 
     db.session.commit()
-
-
-def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int, txm_event: TxmEvent) -> ParsingIssuePublicDTO:
-    parsing_issue = ParsingIssueModel.query.get(parsing_issue_id)
-
-    if parsing_issue is None or parsing_issue.txm_event_id != txm_event.db_id:
-        raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} not found in txm event {txm_event.db_id}')
-    # todo
-    parsing_issue.confirmed_by = user_id
-    parsing_issue.confirmed_at = datetime.now()
-    return parsing_issue_to_dto(parsing_issue, txm_event)

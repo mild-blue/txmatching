@@ -36,7 +36,7 @@ from txmatching.utils.country_enum import Country
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
     parse_hla_antibodies_raw_and_return_parsing_issue_list,
     parse_hla_typing_raw_and_return_parsing_issue_list)
-from txmatching.utils.hla_system.hla_transformations.parsing_issue import (
+from txmatching.database.services.parsing_issue_service import (
     get_parsing_issues_for_patients, parsing_issues_to_models)
 
 logger = logging.getLogger(__name__)
