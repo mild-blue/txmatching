@@ -180,7 +180,7 @@ class TestCrossmatch(unittest.TestCase):
                                    [AntibodyMatch(create_antibody('A*23:01', 2100, 2000), AntibodyMatchTypes.HIGH_RES)])
         # positive split crossmatch
         self._assert_matches_equal('A*23:01', [create_antibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000), AntibodyMatchTypes.SPLIT)])
+                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000), AntibodyMatchTypes.HIGH_RES)])
         # negative split crossmatch
         self._assert_matches_equal('A*23:01', [create_antibody('A*24:02', 2100, 2000)], True,
                                    [AntibodyMatch(create_antibody('A*24:02', 2100, 2000), AntibodyMatchTypes.NONE)])
@@ -207,7 +207,7 @@ class TestCrossmatch(unittest.TestCase):
         # positive split crossmatch
         self._assert_matches_equal('A*23:01',
                                    [create_antibody('A23', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A23', 2100, 2000), AntibodyMatchTypes.SPLIT)])
+                                   [AntibodyMatch(create_antibody('A23', 2100, 2000), AntibodyMatchTypes.HIGH_RES)])
         # negative high res crossmatch
         self._assert_matches_equal('A*23:01',
                                    [create_antibody('A*23:01', 1900, 2000),
@@ -235,14 +235,14 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A23',
                                    [create_antibody('A*23:01', 2100, 2000),
                                     create_antibody('A*23:04', 2200, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2100, 2000), AntibodyMatchTypes.SPLIT),
-                                    AntibodyMatch(create_antibody('A*23:04', 2200, 2000), AntibodyMatchTypes.SPLIT)])
+                                   [AntibodyMatch(create_antibody('A*23:01', 2100, 2000), AntibodyMatchTypes.HIGH_RES),
+                                    AntibodyMatch(create_antibody('A*23:04', 2200, 2000), AntibodyMatchTypes.HIGH_RES)])
         # first matching antibody with mfi1 > cutoff, second with mfi2 < mfi1
         self._assert_matches_equal('A23',
                                    [create_antibody('A*23:01', 2200, 2000),
                                     create_antibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2200, 2000), AntibodyMatchTypes.SPLIT),
-                                    AntibodyMatch(create_antibody('A*23:04', 2100, 2000), AntibodyMatchTypes.SPLIT)])
+                                   [AntibodyMatch(create_antibody('A*23:01', 2200, 2000), AntibodyMatchTypes.HIGH_RES),
+                                    AntibodyMatch(create_antibody('A*23:04', 2100, 2000), AntibodyMatchTypes.HIGH_RES)])
         # first matching antibody with mfi < cutoff, second with mfi < cutoff
         self._assert_matches_equal('A23',
                                    [create_antibody('A*23:01', 1900, 2000),
@@ -272,12 +272,12 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A9',
                                    [create_antibody('A9', 1900, 2000),
                                     create_antibody('A9', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A9', 2000, 2000), AntibodyMatchTypes.BROAD)])
+                                   [AntibodyMatch(create_antibody('A9', 2000, 2000), AntibodyMatchTypes.HIGH_RES)])
         # first matching antibody with mfi1 > cutoff, second with mfi2 > mfi1
         self._assert_matches_equal('A9',
                                    [create_antibody('A9', 2100, 2000),
                                     create_antibody('A9', 2200, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A9', 2150, 2000), AntibodyMatchTypes.BROAD)])
+                                   [AntibodyMatch(create_antibody('A9', 2150, 2000), AntibodyMatchTypes.HIGH_RES)])
 
     def test_crossmatch_level(self):
         self.assertFalse(AntibodyMatchTypes.NONE.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_BROAD))
