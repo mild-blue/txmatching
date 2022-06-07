@@ -78,7 +78,7 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                        if antibody.code.split == hla_type.code.split]
                 if len(matching_antibodies) > 0:
                     antibodies_over_cutoff = _get_antibodies_over_cutoff(matching_antibodies)
-                    if len(matching_antibodies) == len(antibodies_over_cutoff):
+                    if set(matching_antibodies) == set(antibodies_over_cutoff):
                         for antibody_over_cutoff in antibodies_over_cutoff:
                             positive_matches.add(AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES))
                     else:
@@ -92,7 +92,7 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                         or hla_type.code.split is None)]
             if len(matching_antibodies) > 0:
                 antibodies_over_cutoff = _get_antibodies_over_cutoff(matching_antibodies)
-                if len(matching_antibodies) == len(antibodies_over_cutoff):
+                if set(matching_antibodies) == set(antibodies_over_cutoff):
                     for antibody_over_cutoff in antibodies_over_cutoff:
                         positive_matches.add(AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES))
                 else:
