@@ -123,9 +123,5 @@ To obtain configuration in the code, one should call `get_application_configurat
  from [application_configuration.py](txmatching/configuration/app_configuration/application_configuration.py).
 
 ### Testing
-To run tests simply run them either in IDE or via `make check`
-
-This runs unit tests and also linter.
----
 To run unittests use `make test` command. 
-`make check` command should run linter and unittests altogether.
+`make check` command runs linter and unittests altogether.

@@ -13,7 +13,7 @@ from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
     TxmDefaultEventDTOIn, TxmEventDTOIn, TxmEventExportDTOIn,
     TxmEventUpdateDTOIn, TxmEventCopyDTOIn)
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
-    TxmEventsDTOOut
+    TxmEventsDTOOut, TxmEventCopyPatientsDTOOut
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     TxmDefaultEventJsonIn, TxmEventExportJsonIn, TxmEventJsonIn,
     TxmEventJsonOut, TxmEventsJson, TxmEventUpdateJsonIn, TxmEventCopyJsonIn,
@@ -28,6 +28,8 @@ from txmatching.utils.export.export_txm_event import \
 from txmatching.utils.copy.copy_patients_from_event_to_event import copy_patients_between_events
 from txmatching.web.web_utils.namespaces import txm_event_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
+
+from typing import List
 
 logger = logging.getLogger(__name__)
 
@@ -160,9 +162,6 @@ class TxmExportEventApi(Resource):
         )
         return response_ok(txm_event_json)
 
-'''
-in all our other endpoint we use json objects to send data to the api, not the url path itself. 
-'''
 
 @txm_event_api.route('/copy', methods=['PUT'])
 class TxmCopyPatientsBetweenEventsApi(Resource):
@@ -176,13 +175,15 @@ class TxmCopyPatientsBetweenEventsApi(Resource):
         TxmEventCopyJsonIn,
         description='Copy list of patients from one event to the other'
     )
-    def put(self) -> str:
+    def put(self)->str:
         copy_dto = request_body(TxmEventCopyDTOIn)
         donor_ids = [int(donor_id) for donor_id in copy_dto.donor_ids] 
 
-        new_patients_ids = copy_patients_between_events(
+        new_donor_ids = copy_patients_between_events(
                             txm_event_id_from = copy_dto.txm_event_id_from, 
                             txm_event_id_to = copy_dto.txm_event_id_to, 
-                            donor_ids = donor_ids)
+                            donor_ids = donor_ids) # type: CopyPatientsJson
 
-        return response_ok(new_patients_ids)
+        return response_ok(TxmEventCopyPatientsDTOOut(
+            new_donor_ids=new_donor_ids
+        ))
