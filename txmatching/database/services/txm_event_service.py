@@ -11,6 +11,8 @@ from txmatching.auth.exceptions import (InvalidArgumentException,
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
     TxmEventDTOOut
 from txmatching.database.db import db
+from txmatching.database.services.parsing_issue_service import \
+    delete_parsing_issues_for_patient
 from txmatching.database.services.patient_service import (
     get_donor_from_donor_model, get_recipient_from_recipient_model)
 from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
@@ -21,8 +23,6 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
 from txmatching.patients.patient import TxmEvent, TxmEventBase
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import TxmEventState
-from txmatching.utils.hla_system.hla_transformations.parsing_issue import \
-    delete_parsing_issues_for_patient
 from txmatching.utils.logged_user import get_current_user, get_current_user_id
 
 logger = logging.getLogger(__name__)

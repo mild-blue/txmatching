@@ -14,7 +14,9 @@ def parsing_issue_to_dto(parsing_issue: ParsingIssue, txm_event: TxmEvent) -> Pa
         parsing_issue_detail=parsing_issue.parsing_issue_detail,
         message=parsing_issue.message,
         txm_event_name=txm_event.name,
-        medical_id=_get_donor_or_recipient_medical_id(parsing_issue, txm_event)
+        medical_id=_get_donor_or_recipient_medical_id(parsing_issue, txm_event),
+        confirmed_at=parsing_issue.confirmed_at,
+        confirmed_by=parsing_issue.confirmed_by
     )
 
 

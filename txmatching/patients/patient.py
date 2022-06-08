@@ -193,13 +193,15 @@ def _filter_patients_that_dont_have_parsing_errors(
     return_recipients = {
         patient.db_id: patient
         for patient in recipients
-        if patient.db_id not in exclude_recipients_ids and _recipient_has_at_least_one_active_donor(patient.related_donors_db_ids, return_donors)
+        if patient.db_id not in exclude_recipients_ids and _recipient_has_at_least_one_active_donor(
+            patient.related_donors_db_ids, return_donors)
     }
 
     return return_donors, return_recipients
 
 
-def _recipient_has_at_least_one_active_donor(related_donors_db_ids: List[int], return_donors: Dict[DonorDbId, Donor]) -> bool:
+def _recipient_has_at_least_one_active_donor(related_donors_db_ids: List[int],
+                                             return_donors: Dict[DonorDbId, Donor]) -> bool:
     for donor_db_id in related_donors_db_ids:
         if donor_db_id in return_donors:
             return True

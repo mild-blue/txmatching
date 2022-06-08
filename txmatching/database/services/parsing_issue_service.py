@@ -1,10 +1,25 @@
+from datetime import datetime
 from typing import List
 
 from sqlalchemy import and_
 
-from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
+from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue, ParsingIssuePublicDTO
+from txmatching.data_transfer_objects.patients.utils import parsing_issue_to_dto
+from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ParsingIssueModel
+from txmatching.patients.patient import TxmEvent
 
+
+def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int, txm_event: TxmEvent) -> ParsingIssuePublicDTO:
+    parsing_issue = ParsingIssueModel.query.get(parsing_issue_id)
+
+    if parsing_issue is None or parsing_issue.txm_event_id != txm_event.db_id:
+        raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} not found in txm event {txm_event.db_id}')
+    parsing_issue.confirmed_by = user_id
+    parsing_issue.confirmed_at = datetime.now()
+    db.session.commit()
+    return parsing_issue_to_dto(parsing_issue, txm_event)
 
 def parsing_issues_to_models(
         parsing_issues: List[ParsingIssue], donor_id: int = None, recipient_id: int = None, txm_event_id: int = None
@@ -34,7 +49,9 @@ def convert_parsing_issue_models_to_dataclasses(parsing_issue_models: List[Parsi
         message=parsing_issue_model.message,
         donor_id=parsing_issue_model.donor_id,
         recipient_id=parsing_issue_model.recipient_id,
-        txm_event_id=parsing_issue_model.txm_event_id
+        txm_event_id=parsing_issue_model.txm_event_id,
+        confirmed_by=parsing_issue_model.confirmed_by,
+        confirmed_at=parsing_issue_model.confirmed_at
     ) for parsing_issue_model in parsing_issue_models]
 
 
