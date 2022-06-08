@@ -186,7 +186,7 @@ class TestMatchingApi(DbTests):
             self.assertEqual('application/json', res.content_type)
 
 
-    def test_txm_event_copy(self):  
+    def test_txm_event_copy_patients_between_events(self):  
         txm_event_model_from_db_id = self.fill_db_with_patients() # int
         txm_event_model_to = create_or_overwrite_txm_event(name='test_copy') # TxmEvent
         
@@ -199,20 +199,19 @@ class TestMatchingApi(DbTests):
         for donor in donors:
             donor_ids.append(donor.id)
 
-        self.assertIsNotNone(donor_ids) # [1,2]
+        self.assertIsNotNone(donor_ids) 
 
         self.login_with_role(UserRole.ADMIN)
         
         with self.app.test_client() as client:
-            json_data = {
-                'txm_event_id_from': txm_event_model_from_db_id,
-                'txm_event_id_to': txm_event_model_to.db_id,
-                'donor_ids': [1,2]
-            }
             res = client.put(
                 f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/copy',
                 headers=self.auth_headers,
-                json = json_data
+                json = TxmEventCopyDTOIn(
+                    txm_event_id_from=txm_event_model_from_db_id,
+                    txm_event_id_to=txm_event_model_to.db_id,
+                    donor_ids=donor_ids
+                ).__dict__
             )
 
             self.assertEqual(200, res.status_code)

@@ -16,9 +16,11 @@ from txmatching.database.sql_alchemy_schema import (AppUserModel, DonorModel,
                                                     TxmEventModel,
                                                     UploadedDataModel,
                                                     UserToAllowedEvent)
+from typing import List
 
+from txmatching.data_transfer_objects.external_patient_upload.swagger import CopyPatientsJson
 
-def copy_patients_between_events(txm_event_id_from: int, txm_event_id_to:int, donor_ids: list) -> list:
+def copy_patients_between_events(txm_event_id_from: int, txm_event_id_to:int, donor_ids: list) -> List[int]:
     txm_event_from = get_txm_event_complete(txm_event_id_from, load_antibodies_raw=True)
     new_donor_ids = []
 
@@ -69,4 +71,5 @@ def copy_patients_between_events(txm_event_id_from: int, txm_event_id_to:int, do
         copied_donor = add_donor_recipient_pair(donor_recipient_pair, txm_event_id_to)
 
         new_donor_ids.append(copied_donor[0][0].id)
+    
     return new_donor_ids
