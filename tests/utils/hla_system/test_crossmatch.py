@@ -316,8 +316,12 @@ class TestCrossmatch(unittest.TestCase):
 
         self._assert_positive_crossmatch('A9', high_res_antibodies_all_positive, True, HLACrossmatchLevel.NONE)
 
-        self._assert_negative_crossmatch('A23', high_res_antibodies_not_all_positive, True,
+        self._assert_negative_crossmatch('A23',
+                                         [create_antibody('A*23:01', 1900, 2000),
+                                          create_antibody('A*23:04', 2100, 2000)], True,
                                          HLACrossmatchLevel.SPLIT_AND_BROAD)
 
-        self._assert_positive_crossmatch('A23', high_res_antibodies_all_positive, True,
+        self._assert_positive_crossmatch('A23',
+                                         [create_antibody('A*23:01', 2100, 2000),
+                                          create_antibody('A*23:04', 2100, 2000)], True,
                                          HLACrossmatchLevel.SPLIT_AND_BROAD)
