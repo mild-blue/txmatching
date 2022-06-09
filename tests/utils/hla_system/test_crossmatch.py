@@ -301,32 +301,23 @@ class TestCrossmatch(unittest.TestCase):
         self.assertTrue(AntibodyMatchTypes.BROAD.is_positive_for_level(HLACrossmatchLevel.NONE))
 
     def test_virtual_crossmatch_if_all_antibodies_positive_in_high_res(self):
-        self._assert_negative_crossmatch('A9',
-                                         [create_antibody('A*24:02', 1900, 2000),
-                                          create_antibody('A*23:01', 2100, 2000),
-                                          create_antibody('A*23:04', 2100, 2000)], True, HLACrossmatchLevel.BROAD)
+        high_res_antibodies_all_positive = [create_antibody('A*24:02', 2100, 2000),
+                                            create_antibody('A*23:01', 2100, 2000),
+                                            create_antibody('A*23:04', 2100, 2000)]
+        high_res_antibodies_not_all_positive = [create_antibody('A*24:02', 1900, 2000),
+                                                create_antibody('A*23:01', 2100, 2000),
+                                                create_antibody('A*23:04', 2100, 2000)]
 
-        self._assert_positive_crossmatch('A9',
-                                         [create_antibody('A*24:02', 2100, 2000),
-                                          create_antibody('A*23:01', 2100, 2000),
-                                          create_antibody('A*23:04', 2100, 2000)], True, HLACrossmatchLevel.BROAD)
+        self._assert_negative_crossmatch('A9', high_res_antibodies_not_all_positive, True, HLACrossmatchLevel.BROAD)
 
-        self._assert_positive_crossmatch('A9',
-                                         [create_antibody('A*24:02', 1900, 2000),
-                                          create_antibody('A*23:01', 2100, 2000),
-                                          create_antibody('A*23:04', 2100, 2000)], True, HLACrossmatchLevel.NONE)
+        self._assert_positive_crossmatch('A9', high_res_antibodies_all_positive, True, HLACrossmatchLevel.BROAD)
 
-        self._assert_positive_crossmatch('A9',
-                                         [create_antibody('A*24:02', 2100, 2000),
-                                          create_antibody('A*23:01', 2100, 2000),
-                                          create_antibody('A*23:04', 2100, 2000)], True, HLACrossmatchLevel.NONE)
+        self._assert_positive_crossmatch('A9', high_res_antibodies_not_all_positive, True, HLACrossmatchLevel.NONE)
 
-        self._assert_negative_crossmatch('A23',
-                                         [create_antibody('A*23:01', 1900, 2000),
-                                          create_antibody('A*23:04', 2100, 2000)], True,
+        self._assert_positive_crossmatch('A9', high_res_antibodies_all_positive, True, HLACrossmatchLevel.NONE)
+
+        self._assert_negative_crossmatch('A23', high_res_antibodies_not_all_positive, True,
                                          HLACrossmatchLevel.SPLIT_AND_BROAD)
 
-        self._assert_positive_crossmatch('A23',
-                                         [create_antibody('A*23:01', 2100, 2000),
-                                          create_antibody('A*23:04', 2100, 2000)], True,
+        self._assert_positive_crossmatch('A23', high_res_antibodies_all_positive, True,
                                          HLACrossmatchLevel.SPLIT_AND_BROAD)
