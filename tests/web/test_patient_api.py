@@ -1,5 +1,7 @@
 import os
 
+from sqlalchemy import and_
+
 from local_testing_utilities.populate_db import (EDITOR_WITH_ONLY_ONE_COUNTRY,
                                                  PATIENT_DATA_OBFUSCATED)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
@@ -18,8 +20,7 @@ from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
-    ParsingIssueDetail
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import ParsingIssueDetail
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
 
 
@@ -584,6 +585,8 @@ class TestPatientService(DbTests):
                 'blood_group': 'A',
                 'hla_typing': {
                     'hla_types_list': [{'raw_code': 'A*01:02'},
+                                       {'raw_code': 'A*01:02'},
+                                       {'raw_code': 'A*01:02'},
                                        {'raw_code': 'BW4'},
                                        {'raw_code': 'B7'},
                                        {'raw_code': 'DR11'}]
@@ -608,12 +611,16 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers, json=json_data)
             self.assertEqual(200, res.status_code)
 
-            warning_issue = ParsingIssueModel.query.filter(ParsingIssueModel.recipient_id==recipient_db_id).first()
-            self.assertEqual(None, warning_issue.confirmed_by)
+            warning_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
+                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
+            error_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
+                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP)).first()
 
-            txm_event = get_txm_event_complete(txm_event_db_id)
+            self.assertEqual(None, warning_issue.confirmed_by)
+            self.assertEqual(None, error_issue.confirmed_by)
 
             # TODO https://github.com/mild-blue/txmatching/issues/860
+            # txm_event = get_txm_event_complete(txm_event_db_id)
             # self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -621,7 +628,11 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers, json=json_data)
             self.assertEqual(200, res.status_code)
 
-            txm_event = get_txm_event_complete(txm_event_db_id)
-
             self.assertNotEqual(None, warning_issue.confirmed_by)
-            self.assertTrue(recipient_db_id in txm_event.active_and_valid_recipients_dict)
+
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/confirm-warning/{error_issue.id}',
+                             headers=self.auth_headers, json=json_data)
+            self.assertEqual(500, res.status_code)
+
+            self.assertEqual(None, error_issue.confirmed_by)
