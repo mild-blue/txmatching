@@ -633,6 +633,6 @@ class TestPatientService(DbTests):
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/confirm-warning/{error_issue.id}',
                              headers=self.auth_headers, json=json_data)
-            self.assertEqual(500, res.status_code)
+            self.assertEqual(400, res.status_code)
 
             self.assertEqual(None, error_issue.confirmed_by)
