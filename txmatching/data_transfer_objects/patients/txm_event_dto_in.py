@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List
 
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import TxmEventState
@@ -29,7 +29,7 @@ class TxmEventExportDTOIn:
 
 
 @dataclass
-class TxmEventCopyDTOIn:
+class TxmEventCopyPatientsDTOIn:
     txm_event_id_from: int
     txm_event_id_to: int
-    donor_ids: list
+    donor_ids: List[int]

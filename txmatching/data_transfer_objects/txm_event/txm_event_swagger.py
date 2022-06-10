@@ -44,7 +44,7 @@ TxmEventExportJsonIn = txm_event_api.model('TxmEventExport', {
     'new_txm_event_name': fields.String(required=True)
 })
 
-TxmEventCopyJsonIn = txm_event_api.model('TxmEventCopy', {
+TxmEventCopyPatientsJsonIn = txm_event_api.model('TxmEventCopy', {
     'txm_event_id_from': fields.Integer(required=True),
     'txm_event_id_to': fields.Integer(required=True),
     'donor_ids': fields.List(required=True, cls_or_instance=fields.Integer),

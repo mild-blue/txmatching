@@ -8,31 +8,29 @@ from flask import request
 from txmatching.auth.auth_check import require_role, require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
-    UploadPatientsJson, CopyPatientsJson
+    CopyPatientsJsonOut, UploadPatientsJson
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
     TxmDefaultEventDTOIn, TxmEventDTOIn, TxmEventExportDTOIn,
-    TxmEventUpdateDTOIn, TxmEventCopyDTOIn)
+    TxmEventUpdateDTOIn, TxmEventCopyPatientsDTOIn)
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
     TxmEventsDTOOut, TxmEventCopyPatientsDTOOut
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
-    TxmDefaultEventJsonIn, TxmEventExportJsonIn, TxmEventJsonIn,
-    TxmEventJsonOut, TxmEventsJson, TxmEventUpdateJsonIn, TxmEventCopyJsonIn,
+    TxmDefaultEventJsonIn, TxmEventCopyPatientsJsonIn, TxmEventExportJsonIn,
+    TxmEventJsonIn, TxmEventJsonOut, TxmEventUpdateJsonIn, TxmEventsJson
     )
 from txmatching.database.services.txm_event_service import (
     convert_txm_event_base_to_dto, create_txm_event, delete_txm_event,
     get_allowed_txm_event_ids_for_current_user, get_txm_event_base,
     get_txm_event_id_for_current_user, set_txm_event_state,
     update_default_txm_event_id_for_current_user)
+from txmatching.utils.copy.copy_patients_from_event_to_event import copy_patients_between_events
 from txmatching.utils.export.export_txm_event import \
     get_patients_upload_json_from_txm_event_for_country
-from txmatching.utils.copy.copy_patients_from_event_to_event import copy_patients_between_events
 from txmatching.web.web_utils.namespaces import txm_event_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
-from typing import List
 
 logger = logging.getLogger(__name__)
-
 
 @txm_event_api.route('', methods=['POST', 'GET'])
 class TxmEventApi(Resource):
@@ -146,15 +144,15 @@ class TxmExportEventApi(Resource):
     @txm_event_api.require_user_login()
     @require_role(UserRole.ADMIN)
     @txm_event_api.response_ok(UploadPatientsJson, description='Exported patients DTO, Ready to be uploaded to'
-                                                               'some other event')  
+                                                               'some other event')
     @txm_event_api.response_errors()
-    @txm_event_api.request_body( 
+    @txm_event_api.request_body(
         TxmEventExportJsonIn,
         description='Export patients from provided country and TXM event. Make the file ready to be'
                     'uploaded again with already new txm event name ready.'
     ) # where to export
     def post(self, txm_event_id: int) -> str:
-        export_dto = request_body(TxmEventExportDTOIn) 
+        export_dto = request_body(TxmEventExportDTOIn)
         txm_event_json = get_patients_upload_json_from_txm_event_for_country(
             txm_event_id=txm_event_id,
             country_code=export_dto.country,
@@ -168,21 +166,20 @@ class TxmCopyPatientsBetweenEventsApi(Resource):
     @txm_event_api.require_user_login()
     @require_role(UserRole.ADMIN)
     @txm_event_api.response_ok(
-        CopyPatientsJson,
+        CopyPatientsJsonOut,
         description="Patients were successfully copied. List of new patients ids: ")
     @txm_event_api.response_errors()
     @txm_event_api.request_body(
-        TxmEventCopyJsonIn,
+        TxmEventCopyPatientsJsonIn,
         description='Copy list of patients from one event to the other'
     )
     def put(self)->str:
-        copy_dto = request_body(TxmEventCopyDTOIn)
-        donor_ids = [int(donor_id) for donor_id in copy_dto.donor_ids] 
+        copy_dto = request_body(TxmEventCopyPatientsDTOIn)
 
         new_donor_ids = copy_patients_between_events(
-                            txm_event_id_from = copy_dto.txm_event_id_from, 
-                            txm_event_id_to = copy_dto.txm_event_id_to, 
-                            donor_ids = donor_ids) # type: CopyPatientsJson
+                            txm_event_id_from = copy_dto.txm_event_id_from,
+                            txm_event_id_to = copy_dto.txm_event_id_to,
+                            donor_ids = copy_dto.donor_ids) # type: CopyPatientsJsonOut
 
         return response_ok(TxmEventCopyPatientsDTOOut(
             new_donor_ids=new_donor_ids
