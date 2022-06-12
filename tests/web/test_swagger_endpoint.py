@@ -44,8 +44,6 @@ class TestSwaggerEndpoints(DbTests):
                 # TODO: Fix swagger test https://github.com/mild-blue/swagger-unittest/issues/5
                 f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/recipient': [400],
                 f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/confirm-warning/{{parsing_issue_id}}': [
-                    400],
-                f'{API_VERSION[1:]}/{TXM_EVENT_NAMESPACE}/{{txm_event_id}}/{PATIENT_NAMESPACE}/confirm-warning/{{parsing_issue_id}}': [
                     500]
             },
             # TODO: this should not be here, not sure why this is suddenly needed.
