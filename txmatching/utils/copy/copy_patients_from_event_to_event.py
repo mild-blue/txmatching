@@ -2,10 +2,6 @@ from typing import List
 
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
-# from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
-#     HLAAntibodiesUploadDTO
-# from txmatching.data_transfer_objects.patients.upload_dtos.patient_upload_dto_in import \
-#     PatientUploadDTOIn
 from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
