@@ -23,7 +23,8 @@ from txmatching.database.services.txm_event_service import (
     get_allowed_txm_event_ids_for_current_user, get_txm_event_base,
     get_txm_event_id_for_current_user, set_txm_event_state,
     update_default_txm_event_id_for_current_user)
-from txmatching.utils.copy.copy_patients_from_event_to_event import copy_patients_between_events
+from txmatching.database.services.patient_upload_service import copy_patients_between_events
+# from txmatching.utils.copy.copy_patients_from_event_to_event import copy_patients_between_events
 from txmatching.utils.export.export_txm_event import \
     get_patients_upload_json_from_txm_event_for_country
 from txmatching.web.web_utils.namespaces import txm_event_api
