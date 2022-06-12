@@ -625,14 +625,14 @@ class TestPatientService(DbTests):
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/confirm-warning/{warning_issue.id}',
-                             headers=self.auth_headers, json=json_data)
+                             headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 
             self.assertNotEqual(None, warning_issue.confirmed_by)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/confirm-warning/{error_issue.id}',
-                             headers=self.auth_headers, json=json_data)
+                             headers=self.auth_headers)
             self.assertEqual(400, res.status_code)
 
             self.assertEqual(None, error_issue.confirmed_by)
