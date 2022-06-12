@@ -8,7 +8,7 @@ from txmatching.utils.enums import HLAGroup
 class TestCodeParser(DbTests):
 
     def _assert_split_to_groups(self, hla_type: HLAType, expected_group: HLAGroup):
-        parsing_errors, hla_per_groups = split_hla_types_to_groups([hla_type])
+        hla_per_groups = split_hla_types_to_groups([hla_type])[1]
 
         self.assertEqual(4, len(hla_per_groups))
         group_found = False

@@ -5,7 +5,7 @@ import { parseAntibodies } from './hla.parsers';
 import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
 import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
-import { parseParsingError } from '@app/parsers/parsingError.parsers';
+import { parseParsingIssue } from '@app/parsers/parsingIssue.parsers';
 
 export const parseRecipient = (data: RecipientGenerated): Recipient => {
   const recipientListItem: ListItem = {
@@ -25,7 +25,7 @@ export const parseRecipient = (data: RecipientGenerated): Recipient => {
     //  we expect undefined from BE but we sometimes get null instead
     previousTransplants: data.previous_transplants !== null ? data.previous_transplants : undefined,
     recipientRequirements: data.recipient_requirements && parseRecipientRequirements(data.recipient_requirements),
-    relatedDonorDbId: data.related_donor_db_id,
+    relatedDonorDbIds: data.related_donors_db_ids,
     allMessages: parseAllMessages(data.all_messages)
   };
 };
@@ -63,6 +63,6 @@ export const parseDate = (data: string): Date => {
 export const parseUpdatedRecipient = (data: UpdatedRecipientGenerated): UpdatedRecipient => {
   return {
     recipient: parseRecipient(data.recipient),
-    parsingErrors: data.parsing_errors.map(parseParsingError)
+    parsingIssues: data.parsing_issues.map(parseParsingIssue)
   };
 };

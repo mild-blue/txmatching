@@ -5,7 +5,7 @@ import { LoggerService } from '@app/services/logger/logger.service';
 import { User } from '@app/model/User';
 import { Router } from '@angular/router';
 import { VersionService } from './services/version/version.service';
-import { development, theme } from './model/Theme';
+import { ikem, theme } from './model/Theme';
 import { finalize, first } from 'rxjs/operators';
 
 @Component({
@@ -38,8 +38,8 @@ export class AppComponent implements OnDestroy {
   }
 
   setTheme() {
-    let currentTheme = theme[development];
-    this._versionService.initEnvironment().pipe(
+    let currentTheme = theme[ikem];
+    this._versionService.initColourScheme().pipe(
       first(),
       finalize(() => {
         Object.keys(currentTheme).forEach(key =>
@@ -66,8 +66,8 @@ export class AppComponent implements OnDestroy {
         this.isThemeSet = true;
       })
     ).subscribe(
-      (environment: string) => {
-        currentTheme = theme[environment];
+      (colour_scheme: string) => {
+        currentTheme = theme[colour_scheme];
       },
       (error: string) => {
         this._logger.error('Could not set theme.', [error]);

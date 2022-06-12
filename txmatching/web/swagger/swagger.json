@@ -889,6 +889,69 @@
                 ]
             }
         },
+        "/v1/txm-event/{txm_event_id}/patients/confirm-warning/{parsing_issue_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Issue confirmed successfully.",
+                        "schema": {
+                            "$ref": "#/definitions/ParsingIssuePublic"
+                        }
+                    }
+                },
+                "description": "Confirm a warning.",
+                "operationId": "put_confirm_warning",
+                "parameters": [
+                    {
+                        "name": "parsing_issue_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Id of the warning to be confirmed"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
         "/v1/txm-event/{txm_event_id}/patients/pairs": {
             "parameters": [
                 {
@@ -2515,10 +2578,10 @@
                         "$ref": "#/definitions/DetailedScoreForGroup"
                     }
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 },
                 "all_messages": {
@@ -3136,7 +3199,7 @@
             },
             "type": "object"
         },
-        "ParsingError": {
+        "ParsingIssue": {
             "required": [
                 "message",
                 "parsing_issue_detail"
@@ -3159,11 +3222,18 @@
                 },
                 "txm_event_id": {
                     "type": "integer"
+                },
+                "confirmed_at": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "confirmed_by": {
+                    "type": "integer"
                 }
             },
             "type": "object"
         },
-        "ParsingErrorPublic": {
+        "ParsingIssuePublic": {
             "required": [
                 "message",
                 "parsing_issue_detail"
@@ -3183,6 +3253,13 @@
                 },
                 "txm_event_name": {
                     "type": "string"
+                },
+                "confirmed_at": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "confirmed_by": {
+                    "type": "integer"
                 }
             },
             "type": "object"
@@ -3309,7 +3386,7 @@
         "PatientUploadSuccessResponse": {
             "required": [
                 "donors_uploaded",
-                "parsing_errors",
+                "parsing_issues",
                 "recipients_uploaded"
             ],
             "properties": {
@@ -3321,11 +3398,11 @@
                     "type": "integer",
                     "description": "Number of donors successfully loaded into the application."
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "description": "Errors and warnings that occurred in HLA codes parsing",
                     "items": {
-                        "$ref": "#/definitions/ParsingErrorPublic"
+                        "$ref": "#/definitions/ParsingIssuePublic"
                     }
                 }
             },
@@ -3350,7 +3427,7 @@
         },
         "PatientsRecomputeParsingSuccess": {
             "required": [
-                "parsing_errors",
+                "parsing_issues",
                 "patients_changed_antibodies",
                 "patients_changed_antigens",
                 "patients_checked_antibodies",
@@ -3369,10 +3446,10 @@
                 "patients_changed_antibodies": {
                     "type": "integer"
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 }
             },
@@ -3385,7 +3462,7 @@
                 "hla_antibodies",
                 "medical_id",
                 "parameters",
-                "related_donor_db_id"
+                "related_donors_db_ids"
             ],
             "properties": {
                 "db_id": {
@@ -3423,9 +3500,12 @@
                 "hla_antibodies": {
                     "$ref": "#/definitions/HlaAntibodies"
                 },
-                "related_donor_db_id": {
-                    "type": "integer",
-                    "description": "Database id of the related donor"
+                "related_donors_db_ids": {
+                    "type": "array",
+                    "description": "Database id of the related donor",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "recipient_requirements": {
                     "$ref": "#/definitions/RecipientRequirements"
@@ -3440,10 +3520,10 @@
                 "recipient_cutoff": {
                     "type": "integer"
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 },
                 "all_messages": {
@@ -3986,16 +4066,16 @@
         "UpdatedDonor": {
             "required": [
                 "donor",
-                "parsing_errors"
+                "parsing_issues"
             ],
             "properties": {
                 "donor": {
                     "$ref": "#/definitions/Donor"
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 }
             },
@@ -4003,17 +4083,17 @@
         },
         "UpdatedRecipient": {
             "required": [
-                "parsing_errors",
+                "parsing_issues",
                 "recipient"
             ],
             "properties": {
                 "recipient": {
                     "$ref": "#/definitions/Recipient"
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingError"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 }
             },
@@ -4199,6 +4279,7 @@
         },
         "Version": {
             "required": [
+                "colour_scheme",
                 "environment",
                 "version"
             ],
@@ -4206,6 +4287,15 @@
                 "version": {
                     "type": "string",
                     "description": "Version of the running code."
+                },
+                "colour_scheme": {
+                    "type": "string",
+                    "description": "Colour scheme to use.",
+                    "example": "IKEM",
+                    "enum": [
+                        "IKEM",
+                        "MILD_BLUE"
+                    ]
                 },
                 "environment": {
                     "type": "string",

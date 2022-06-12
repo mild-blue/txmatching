@@ -13,6 +13,10 @@
 
 export interface VersionGenerated { 
     /**
+     * Colour scheme to use.
+     */
+    colour_scheme: VersionGeneratedColourSchemeEnum;
+    /**
      * Environment the code was build for.
      */
     environment: VersionGeneratedEnvironmentEnum;
@@ -21,6 +25,10 @@ export interface VersionGenerated {
      */
     version: string;
 }
+export enum VersionGeneratedColourSchemeEnum {
+    Ikem = 'IKEM',
+    MildBlue = 'MILD_BLUE'
+};
 export enum VersionGeneratedEnvironmentEnum {
     Production = 'PRODUCTION',
     Staging = 'STAGING',

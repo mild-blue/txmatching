@@ -968,7 +968,7 @@
             },
             "type": "object"
         },
-        "ParsingErrorPublic": {
+        "ParsingIssuePublic": {
             "required": [
                 "message",
                 "parsing_issue_detail"
@@ -988,6 +988,13 @@
                 },
                 "txm_event_name": {
                     "type": "string"
+                },
+                "confirmed_at": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "confirmed_by": {
+                    "type": "integer"
                 }
             },
             "type": "object"
@@ -1012,7 +1019,7 @@
         "PatientUploadSuccessResponse": {
             "required": [
                 "donors_uploaded",
-                "parsing_errors",
+                "parsing_issues",
                 "recipients_uploaded"
             ],
             "properties": {
@@ -1024,11 +1031,11 @@
                     "type": "integer",
                     "description": "Number of donors successfully loaded into the application."
                 },
-                "parsing_errors": {
+                "parsing_issues": {
                     "type": "array",
                     "description": "Errors and warnings that occurred in HLA codes parsing",
                     "items": {
-                        "$ref": "#/definitions/ParsingErrorPublic"
+                        "$ref": "#/definitions/ParsingIssuePublic"
                     }
                 }
             },
@@ -1378,6 +1385,7 @@
         },
         "Version": {
             "required": [
+                "colour_scheme",
                 "environment",
                 "version"
             ],
@@ -1385,6 +1393,15 @@
                 "version": {
                     "type": "string",
                     "description": "Version of the running code."
+                },
+                "colour_scheme": {
+                    "type": "string",
+                    "description": "Colour scheme to use.",
+                    "example": "IKEM",
+                    "enum": [
+                        "IKEM",
+                        "MILD_BLUE"
+                    ]
                 },
                 "environment": {
                     "type": "string",

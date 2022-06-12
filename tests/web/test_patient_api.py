@@ -11,7 +11,7 @@ from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel,
                                                     DonorModel,
-                                                    ParsingErrorModel,
+                                                    ParsingIssueModel,
                                                     RecipientModel,
                                                     UploadedFileModel)
 from txmatching.patients.patient import DonorType, RecipientRequirements
@@ -206,12 +206,12 @@ class TestPatientService(DbTests):
         self.assertEqual(0, len(res_.json['recipients'][0]['all_messages']['warnings']))
         self.assertEqual(4, len(res_.json['recipients'][0]['all_messages']['errors']))
 
-        errors = ParsingErrorModel.query.all()
-        self.assertEqual(7, len(errors))
-        self.assertEqual('TEST', errors[3].hla_code_or_group)
+        parsing_issues = ParsingIssueModel.query.all()
+        self.assertEqual(7, len(parsing_issues))
+        self.assertEqual('TEST', parsing_issues[3].hla_code_or_group)
         self.assertEqual(
             ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
-            errors[3].parsing_issue_detail
+            parsing_issues[3].parsing_issue_detail
         )
 
     def test_donor_recipient_pair_deletion(self):
@@ -439,7 +439,7 @@ class TestPatientService(DbTests):
                              json=recipient_update_dict).json
             self.assertIsNotNone(ConfigModel.query.get(recipient_db_id))
             self.assertEqual(['A', 'AB'], res['recipient']['acceptable_blood_groups'])
-            self.assertEqual([], res['parsing_errors'])
+            self.assertEqual([], res['parsing_issues'])
             recipients = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                                     f'{PATIENT_NAMESPACE}/configs/default',
                                     headers=self.auth_headers).json['recipients']
@@ -570,3 +570,58 @@ class TestPatientService(DbTests):
                 for antibody in detailed_score_for_group['antibody_matches']:
                     antibodies_raw_codes.append(antibody['hla_antibody']['raw_code'])
             self.assertEqual(antibodies_raw_codes, expected_antibody_raw_codes)
+
+    def test_approving_warning_issue(self):
+        txm_event_db_id = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        recipient_db_id = 10
+        etag = RecipientModel.query.get(recipient_db_id).etag
+
+        with self.app.test_client() as client:
+            json_data = {
+                'db_id': recipient_db_id,
+                'etag': etag,
+                'blood_group': 'A',
+                'hla_typing': {
+                    'hla_types_list': [{'raw_code': 'A*01:02'},
+                                       {'raw_code': 'BW4'},
+                                       {'raw_code': 'B7'},
+                                       {'raw_code': 'DR11'}]
+                },
+                'sex': 'M',
+                'height': 200,
+                'weight': 100,
+                'year_of_birth': 1990,
+                'acceptable_blood_groups': ['A', 'B', 'AB'],
+                'hla_antibodies': {
+                    'hla_antibodies_list': []
+                },
+                'recipient_requirements': {
+                    'require_better_match_in_compatibility_index': True,
+                    'require_better_match_in_compatibility_index_or_blood_group': True,
+                    'require_compatible_blood_group': True
+                },
+                'cutoff': 42
+            }
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/recipient',
+                             headers=self.auth_headers, json=json_data)
+            self.assertEqual(200, res.status_code)
+
+            warning_issue = ParsingIssueModel.query.filter(ParsingIssueModel.recipient_id==recipient_db_id).first()
+            self.assertEqual(None, warning_issue.confirmed_by)
+
+            txm_event = get_txm_event_complete(txm_event_db_id)
+
+            # TODO https://github.com/mild-blue/txmatching/issues/860
+            # self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
+
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/confirm-warning/{warning_issue.id}',
+                             headers=self.auth_headers, json=json_data)
+            self.assertEqual(200, res.status_code)
+
+            txm_event = get_txm_event_complete(txm_event_db_id)
+
+            self.assertNotEqual(None, warning_issue.confirmed_by)
+            self.assertTrue(recipient_db_id in txm_event.active_and_valid_recipients_dict)

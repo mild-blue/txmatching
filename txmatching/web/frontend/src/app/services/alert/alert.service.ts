@@ -3,7 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { Alert } from '@app/model/Alert';
 import { filter } from 'rxjs/operators';
 import { AlertType } from '@app/model/enums/AlertType';
-import { ParsingError } from '@app/model/ParsingError';
+import { ParsingIssue } from '@app/model/ParsingIssue';
 
 @Injectable({
   providedIn: 'root'
@@ -33,17 +33,17 @@ export class AlertService {
     this.alert(new Alert({ type: AlertType.Warning, message, actionLabel, action, fadeAutomatically }));
   }
 
-  public infoWithParsingErrors(message: string, parsingErrors: ParsingError[]): void {
-    const parsingErrorsStr = parsingErrors.map(
-      (parsingError) => {
-        if (parsingError.hlaCodeOrGroup != null) {
-          return `<strong>${parsingError.hlaCodeOrGroup}</strong>: ${parsingError.message}`;
+  public infoWithParsingIssues(message: string, parsingIssues: ParsingIssue[]): void {
+    const parsingIssuesStr = parsingIssues.map(
+      (parsingIssue) => {
+        if (parsingIssue.hlaCodeOrGroup != null) {
+          return `<strong>${parsingIssue.hlaCodeOrGroup}</strong>: ${parsingIssue.message}`;
         } else {
-          return `${parsingError.message}`;
+          return `${parsingIssue.message}`;
         }
       }
     ).join('<br>');
-    this.info(`${message}<br><br>${parsingErrorsStr}`);
+    this.info(`${message}<br><br>${parsingIssuesStr}`);
   }
 
   public alert(alert: Alert): void {

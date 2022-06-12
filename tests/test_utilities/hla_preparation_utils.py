@@ -7,9 +7,9 @@ from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibody,
                                            HLAAntibodyRaw, HLAType, HLATypeRaw,
                                            HLATyping)
 from txmatching.utils.hla_system.hla_transformations.hla_transformations_store import (
-    parse_hla_antibodies_raw_and_return_parsing_error_list,
-    parse_hla_raw_code_and_return_parsing_error_list,
-    parse_hla_typing_raw_and_return_parsing_error_list)
+    parse_hla_antibodies_raw_and_return_parsing_issue_list,
+    parse_hla_raw_code_and_return_parsing_issue_list,
+    parse_hla_typing_raw_and_return_parsing_issue_list)
 
 
 def create_hla_typing(hla_types_list: List[str]) -> HLATyping:
@@ -17,7 +17,7 @@ def create_hla_typing(hla_types_list: List[str]) -> HLATyping:
     typing_dto = HLATypingRawDTO(
         hla_types_list=raw_type_list
     )
-    parsing_errors, parsed_typing_dto = parse_hla_typing_raw_and_return_parsing_error_list(hla_typing_raw=typing_dto)
+    parsed_typing_dto = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw=typing_dto)[1]
     return HLATyping(
         hla_types_raw_list=raw_type_list,
         hla_per_groups=parsed_typing_dto.hla_per_groups
@@ -25,7 +25,7 @@ def create_hla_typing(hla_types_list: List[str]) -> HLATyping:
 
 
 def create_hla_type(raw_code: str) -> HLAType:
-    parsing_errors, code = parse_hla_raw_code_and_return_parsing_error_list(raw_code)
+    code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code)[1]
     return HLAType(
         raw_code=raw_code,
         code=code
@@ -42,7 +42,7 @@ def create_antibodies(hla_antibodies_list: List[HLAAntibody]) -> HLAAntibodies:
         raw_code=hla_antibody.raw_code,
         mfi=hla_antibody.mfi,
         cutoff=hla_antibody.cutoff) for hla_antibody in hla_antibodies_list]
-    parsing_errors, dto = parse_hla_antibodies_raw_and_return_parsing_error_list(raw_antibodies_model)
+    dto = parse_hla_antibodies_raw_and_return_parsing_issue_list(raw_antibodies_model)[1]
 
     return HLAAntibodies(
         hla_antibodies_raw_list=raw_antibodies,
@@ -51,7 +51,7 @@ def create_antibodies(hla_antibodies_list: List[HLAAntibody]) -> HLAAntibodies:
 
 
 def create_antibody(raw_code, mfi, cutoff) -> HLAAntibody:
-    parsing_errors, code = parse_hla_raw_code_and_return_parsing_error_list(raw_code)
+    code = parse_hla_raw_code_and_return_parsing_issue_list(raw_code)[1]
     return HLAAntibody(
         raw_code=raw_code,
         code=code,

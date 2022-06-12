@@ -6,7 +6,7 @@ import { finalize, first } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert/alert.service';
 import { User } from '@app/model/User';
 import { VersionService } from '@app/services/version/version.service';
-import { staging } from '@app/model/Theme';
+import { EnvironmentType } from '@app/model/enums/EnvironmentType';
 import { UserTokenType } from '@app/model/enums/UserTokenType';
 
 @Component({
@@ -28,14 +28,14 @@ export class LoginComponent {
               private _versionService: VersionService) {
     this._initInfoText();
     this.loginForm = this._formBuilder.group({
-      email: ['', [Validators.required]], // todo: add Validators.email when relevant
+      email: ['', [Validators.required]], // TODO: add Validators.email when relevant
       password: ['', Validators.required]
     });
   }
 
   private _initInfoText(): void {
     const environment = this._versionService.getEnvironment();
-    if (environment === staging) {
+    if (environment === EnvironmentType.STAGING) {
       this.showInfoText = true;
     }
   }
