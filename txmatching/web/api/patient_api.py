@@ -22,6 +22,7 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
     PatientUploadSuccessJson
+from txmatching.data_transfer_objects.hla.parsing_issue_swagger import ParsingIssuePublicJson
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import (
     donor_to_donor_dto_out, recipient_to_recipient_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
@@ -43,20 +44,20 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
     PatientsRecomputeParsingSuccessJson
 from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
+from txmatching.database.services.parsing_issue_service import (
+    confirm_a_parsing_issue, get_parsing_issues_for_patients)
 from txmatching.database.services.patient_service import (
     delete_donor_recipient_pair, get_donor_recipient_pair,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
     update_donor, update_recipient)
 from txmatching.database.services.patient_upload_service import (
-    add_donor_recipient_pair, get_patients_errors_from_pair_dto,
+    add_donor_recipient_pair, get_patients_parsing_issues_from_pair_dto,
     replace_or_add_patients_from_excel)
 from txmatching.database.services.txm_event_service import (
     get_txm_event_base, get_txm_event_complete)
 from txmatching.database.services.upload_service import save_uploaded_file
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.excel_parsing.parse_excel_data import parse_excel_data
-from txmatching.utils.hla_system.hla_transformations.parsing_error import \
-    get_parsing_errors_for_patients
 from txmatching.utils.logged_user import get_current_user_id
 from txmatching.web.web_utils.namespaces import patient_api
 from txmatching.web.web_utils.route_utils import (request_arg_flag,
@@ -110,12 +111,12 @@ class DonorRecipientPairs(Resource):
 
         donors, recipients = add_donor_recipient_pair(donor_recipient_pair_dto_in, txm_event_id)
 
-        parsing_errors = get_patients_errors_from_pair_dto(donors, recipients, txm_event_id)
+        parsing_issues = get_patients_parsing_issues_from_pair_dto(donors, recipients, txm_event_id)
 
         return response_ok(PatientUploadPublicDTOOut(
             donors_uploaded=1,
             recipients_uploaded=1 if donor_recipient_pair_dto_in.recipient else 0,
-            parsing_errors=parsing_errors
+            parsing_issues=parsing_issues
         ))
 
 
@@ -137,6 +138,7 @@ class DonorRecipientPair(Resource):
         description='Returns status code representing result of donor recipient pair object deletion.'
     )
     @patient_api.response_errors()
+    @patient_api.require_user_login()
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     def delete(self, txm_event_id: int, donor_db_id: int):
@@ -170,7 +172,7 @@ class AlterRecipient(Resource):
         return response_ok(
             UpdatedRecipientDTOOut(
                 recipient=recipient_to_recipient_dto_out(updated_recipient),
-                parsing_errors=get_parsing_errors_for_patients(recipient_ids=[updated_recipient.db_id], txm_event_id=txm_event_id)
+                parsing_issues=get_parsing_issues_for_patients(recipient_ids=[updated_recipient.db_id], txm_event_id=txm_event_id)
             )
         )
 
@@ -204,7 +206,7 @@ class AlterDonor(Resource):
                     configuration_parameters,
                     scorer
                 ),
-                parsing_errors=get_parsing_errors_for_patients(donor_ids=[updated_donor.db_id], txm_event_id=txm_event_id)
+                parsing_issues=get_parsing_issues_for_patients(donor_ids=[updated_donor.db_id], txm_event_id=txm_event_id)
             )
         )
 
@@ -253,7 +255,7 @@ class AddPatientsFile(Resource):
         return response_ok(PatientUploadPublicDTOOut(
             recipients_uploaded=sum(len(parsed_data_country.recipients) for parsed_data_country in parsed_data),
             donors_uploaded=sum(len(parsed_data_country.donors) for parsed_data_country in parsed_data),
-            parsing_errors=[]  # TODO: https://github.com/mild-blue/txmatching/issues/619
+            parsing_issues=[]
         ))
 
 
@@ -270,4 +272,30 @@ class RecomputeParsing(Resource):
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):
         result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id)
+        return response_ok(result)
+
+@patient_api.route('/confirm-warning/<int:parsing_issue_id>', methods=['PUT'])
+class ConfirmWarning(Resource):
+    @patient_api.doc(
+        params={
+            'parsing_issue_id': {
+                'description': 'Id of the warning to be confirmed',
+                'type': int,
+                'required': True,
+                'in': 'path'
+            }
+        },
+        security='bearer',
+        description='Confirm a warning.'
+    )
+    @patient_api.response_ok(ParsingIssuePublicJson, description='Issue confirmed successfully.')
+    @patient_api.response_errors()
+    @patient_api.require_user_login()
+    @require_user_edit_patients_access()
+    @require_valid_txm_event_id()
+    @require_role(UserRole.ADMIN)
+    def put(self, txm_event_id: int, parsing_issue_id: int):
+        user_id = get_current_user_id()
+        txm_event = get_txm_event_complete(txm_event_id)
+        result = confirm_a_parsing_issue(user_id, parsing_issue_id, txm_event)
         return response_ok(result)

@@ -8,7 +8,9 @@ PARSE_HLA_CODE_EXCEPTIONS = {
     # Based on email communication with Mater Roder from 12.7.2021
     'C*07:18': 'CW7',
     # Based on email communication with Mater Roder from 11.1.2022
-    'A*26:12': 'A26'
+    'A*26:12': 'A26',
+    # Based on email communication with Mater Roder from 8.6.2022
+    'A*32:03': 'A32'
 }
 
 PARSE_HLA_CODE_EXCEPTIONS_MULTIPLE_SEROLOGICAL_CODES = {

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional, Dict
 
-from txmatching.data_transfer_objects.hla.parsing_error_dto import ParsingError
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.patients.patient import Donor
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 
@@ -18,4 +18,4 @@ class DonorDTOOut(Donor):
 @dataclass
 class UpdatedDonorDTOOut:
     donor: DonorDTOOut
-    parsing_errors: List[ParsingError]
+    parsing_issues: List[ParsingIssue]

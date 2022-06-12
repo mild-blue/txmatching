@@ -20,5 +20,6 @@ export { AntibodyMatchType } from '@app/model/enums/AntibodyMatchType';
 export { Sex } from '@app/model/enums/Sex';
 export { UserRole } from '@app/model/enums/UserRole';
 export { UserTokenType } from '@app/model/enums/UserTokenType';
+export { ColourScheme } from '@app/model/enums/ColourScheme';
 export { EnvironmentType } from '@app/model/enums/EnvironmentType';
 export { AntibodyEditable } from '@app/model/HlaEditable';

@@ -9,8 +9,8 @@ from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     DonorJsonIn, RecipientJsonIn)
 from txmatching.data_transfer_objects.hla.hla_swagger import HLAAntibodies
-from txmatching.data_transfer_objects.hla.parsing_error_swagger import \
-    ParsingErrorJson
+from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
+    ParsingIssueJson
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
     DetailedScoreForGroupJson)
@@ -36,9 +36,9 @@ DonorJson = patient_api.model('Donor', {**DbId, **MedicalId, **Etag, **{
         description=DESCRIPTION_DETAILED_SCORE,
         example=EXAMPLE_DETAILED_SCORE,
         cls_or_instance=fields.Nested(DetailedScoreForGroupJson)),
-    'parsing_errors': fields.List(
+    'parsing_issues': fields.List(
         required=False,
-        cls_or_instance=fields.Nested(ParsingErrorJson)
+        cls_or_instance=fields.Nested(ParsingIssueJson)
     ),
     'all_messages': fields.Nested(required=False, model=AllMessagesJson)
 }})
@@ -49,14 +49,14 @@ RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **Etag, **{
     'internal_medical_id': fields.String(required=False, description='Internal medical id of the patient'),
     'parameters': fields.Nested(required=True, model=PatientParametersJson),
     'hla_antibodies': fields.Nested(required=True, model=HLAAntibodies),
-    'related_donor_db_id': fields.Integer(required=True, description='Database id of the related donor'),
+    'related_donors_db_ids': fields.List(required=True, cls_or_instance=fields.Integer, description='Database id of the related donor'),
     'recipient_requirements': fields.Nested(RecipientRequirements),
     'waiting_since': fields.DateTime(required=False),
     'previous_transplants': fields.Integer(required=False),
     'recipient_cutoff': fields.Integer(required=False),
-    'parsing_errors': fields.List(
+    'parsing_issues': fields.List(
         required=False,
-        cls_or_instance=fields.Nested(ParsingErrorJson)
+        cls_or_instance=fields.Nested(ParsingIssueJson)
     ),
     'all_messages': fields.Nested(required=False, model=AllMessagesJson)
 }})
@@ -68,12 +68,12 @@ PatientsJson = patient_api.model('Patients', {
 
 UpdatedDonorJsonOut = patient_api.model('UpdatedDonor', {
     'donor': fields.Nested(required=True, model=DonorJson),
-    'parsing_errors': fields.List(required=True, cls_or_instance=fields.Nested(ParsingErrorJson)),
+    'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssueJson)),
 })
 
 UpdatedRecipientJsonOut = patient_api.model('UpdatedRecipient', {
     'recipient': fields.Nested(required=True, model=RecipientJson),
-    'parsing_errors': fields.List(required=True, cls_or_instance=fields.Nested(ParsingErrorJson)),
+    'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssueJson)),
 })
 
 PatientToUpdateJson = patient_api.model('PatientModelToUpdate', PatientToUpdate)

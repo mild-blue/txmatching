@@ -15,7 +15,7 @@ from txmatching.utils.country_enum import Country
 def _create_recipient(recipient_id: int, donor: Donor) -> Recipient:
     return Recipient(recipient_id,
                      f'R-{recipient_id}',
-                     related_donor_db_id=donor.db_id,
+                     related_donors_db_ids=[donor.db_id],
                      etag=1,
                      parameters=PatientParameters(
                          country_code=Country.CZE, blood_group=BloodGroup.A,
@@ -23,7 +23,7 @@ def _create_recipient(recipient_id: int, donor: Donor) -> Recipient:
                      ),
                      acceptable_blood_groups=list(),
                      hla_antibodies=create_antibodies([]),
-                     parsing_errors=[]
+                     parsing_issues=[]
                      )
 
 
@@ -37,7 +37,7 @@ class TestMatching(TestCase):
             Donor(donor_index, f'D-{donor_index}', etag=1,
                   parameters=PatientParameters(blood_group=BloodGroup.A, country_code=Country.CZE,
                                                hla_typing=HLATyping(hla_per_groups=[], hla_types_raw_list=[])),
-                                               parsing_errors=[])
+                                               parsing_issues=[])
             for donor_index in range(10)]
         self._recipients = [_create_recipient(10 + donor_index, donor)
                             for donor_index, donor in enumerate(self._donors)]

@@ -22,14 +22,15 @@ class AdditiveScorer(ScorerBase):
         else:
             self._manual_donor_recipient_scores = {}
 
-    def score_transplant(self, donor: Donor, recipient: Recipient, original_donor: Optional[Donor]) -> float:
+    def score_transplant(self, donor: Donor, recipient: Recipient, original_donors: Optional[List[Donor]]) -> float:
         manual_score = self._manual_donor_recipient_scores.get((donor.db_id, recipient.db_id))
         if manual_score is None:
-            return self.score_transplant_calculated(donor, recipient, original_donor)
+            return self.score_transplant_calculated(donor, recipient, original_donors)
         else:
             return manual_score
 
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Optional[Donor]) -> float:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient,
+                                    original_donors: Optional[List[Donor]]) -> float:
         raise NotImplementedError('Has to be overridden')
 
     def score(self, matching: Matching, donors_dict: Dict[DonorDbId, Donor],
@@ -40,8 +41,10 @@ class AdditiveScorer(ScorerBase):
         total_score = 0
         for transplant in matching.get_donor_recipient_pairs():
             donor, recipient = transplant
+            original_donors = [donors_dict[donor_db_id] for donor_db_id in recipient.related_donors_db_ids if
+                               donor_db_id in donors_dict]
             total_score += self.score_transplant(donor=donor, recipient=recipient,
-                                                 original_donor=donors_dict[recipient.related_donor_db_id])
+                                                 original_donors=original_donors)
 
         return total_score
 
@@ -50,9 +53,10 @@ class AdditiveScorer(ScorerBase):
                          donors_dict: Dict[DonorDbId, Donor]) -> ScoreMatrix:
         score_matrix = np.array([
             [
-                self.score_transplant_including_original_tuple(donor,
-                                                               recipient,
-                                                               donors_dict[recipient.related_donor_db_id])
+                self.score_transplant_including_original_tuple(donor=donor, recipient=recipient,
+                                                               original_donors=[donors_dict[donor_db_id] for donor_db_id
+                                                                                in recipient.related_donors_db_ids if
+                                                                                donor_db_id in donors_dict])
                 for recipient in recipients_dict.values()
             ]
             for donor in donors_dict.values()])
@@ -60,11 +64,11 @@ class AdditiveScorer(ScorerBase):
         return score_matrix
 
     def score_transplant_including_original_tuple(self, donor: Donor, recipient: Recipient,
-                                                  original_donor: Donor) -> float:
-        if recipient.related_donor_db_id == donor.db_id:
+                                                  original_donors: List[Donor]) -> float:
+        if donor.db_id in recipient.related_donors_db_ids:
             score = ORIGINAL_DONOR_RECIPIENT_SCORE
         else:
-            score = self.score_transplant(donor, recipient, original_donor)
+            score = self.score_transplant(donor, recipient, original_donors)
         return score
 
     @classmethod

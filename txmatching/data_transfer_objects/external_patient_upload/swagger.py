@@ -3,8 +3,8 @@ from flask_restx import fields
 from txmatching.data_transfer_objects.base_patient_swagger import (
     NewDonor, NewPatient, NewRecipient)
 from txmatching.data_transfer_objects.enums_swagger import CountryCodeJson
-from txmatching.data_transfer_objects.hla.parsing_error_swagger import \
-    ParsingErrorPublicJson
+from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
+    ParsingIssuePublicJson
 from txmatching.web.web_utils.namespaces import public_api
 
 PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
@@ -12,8 +12,8 @@ PatientUploadSuccessJson = public_api.model('PatientUploadSuccessResponse', {
                                           description='Number of recipients successfully loaded into the application.'),
     'donors_uploaded': fields.Integer(required=True,
                                       description='Number of donors successfully loaded into the application.'),
-    'parsing_errors': fields.List(required=True,
-                                  cls_or_instance=fields.Nested(ParsingErrorPublicJson),
+    'parsing_issues': fields.List(required=True,
+                                  cls_or_instance=fields.Nested(ParsingIssuePublicJson),
                                   description='Errors and warnings that occurred in HLA codes parsing'),
 })
 

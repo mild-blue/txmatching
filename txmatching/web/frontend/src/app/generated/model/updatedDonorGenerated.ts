@@ -10,11 +10,11 @@
  * Do not edit the class manually.
  */
 import { DonorGenerated } from './donorGenerated';
-import { ParsingErrorGenerated } from './parsingErrorGenerated';
+import { ParsingIssueGenerated } from './parsingIssueGenerated';
 
 
 export interface UpdatedDonorGenerated { 
     donor: DonorGenerated;
-    parsing_errors: Array<ParsingErrorGenerated>;
+    parsing_issues: Array<ParsingIssueGenerated>;
 }
 

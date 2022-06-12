@@ -608,9 +608,9 @@ definitions:
                 type: string
             parameters:
                 $ref: '#/definitions/PatientParameters'
-            parsing_errors:
+            parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingIssue'
                 type: array
             related_recipient_db_id:
                 description: Database id of the related recipient
@@ -1044,8 +1044,13 @@ definitions:
         required:
         - otp
         type: object
-    ParsingError:
+    ParsingIssue:
         properties:
+            confirmed_at:
+                format: date
+                type: string
+            confirmed_by:
+                type: integer
             donor_id:
                 type: integer
             hla_code_or_group:
@@ -1062,8 +1067,13 @@ definitions:
         - message
         - parsing_issue_detail
         type: object
-    ParsingErrorPublic:
+    ParsingIssuePublic:
         properties:
+            confirmed_at:
+                format: date
+                type: string
+            confirmed_by:
+                type: integer
             hla_code_or_group:
                 type: string
             medical_id:
@@ -1147,17 +1157,17 @@ definitions:
             donors_uploaded:
                 description: Number of donors successfully loaded into the application.
                 type: integer
-            parsing_errors:
+            parsing_issues:
                 description: Errors and warnings that occurred in HLA codes parsing
                 items:
-                    $ref: '#/definitions/ParsingErrorPublic'
+                    $ref: '#/definitions/ParsingIssuePublic'
                 type: array
             recipients_uploaded:
                 description: Number of recipients successfully loaded into the application.
                 type: integer
         required:
         - donors_uploaded
-        - parsing_errors
+        - parsing_issues
         - recipients_uploaded
         type: object
     Patients:
@@ -1173,9 +1183,9 @@ definitions:
         type: object
     PatientsRecomputeParsingSuccess:
         properties:
-            parsing_errors:
+            parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingIssue'
                 type: array
             patients_changed_antibodies:
                 type: integer
@@ -1186,7 +1196,7 @@ definitions:
             patients_checked_antigens:
                 type: integer
         required:
-        - parsing_errors
+        - parsing_issues
         - patients_changed_antibodies
         - patients_changed_antigens
         - patients_checked_antibodies
@@ -1213,9 +1223,9 @@ definitions:
             medical_id: *id011
             parameters:
                 $ref: '#/definitions/PatientParameters'
-            parsing_errors:
+            parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingIssue'
                 type: array
             previous_transplants:
                 type: integer
@@ -1223,9 +1233,11 @@ definitions:
                 type: integer
             recipient_requirements:
                 $ref: '#/definitions/RecipientRequirements'
-            related_donor_db_id:
+            related_donors_db_ids:
                 description: Database id of the related donor
-                type: integer
+                items:
+                    type: integer
+                type: array
             waiting_since:
                 format: date-time
                 type: string
@@ -1235,7 +1247,7 @@ definitions:
         - hla_antibodies
         - medical_id
         - parameters
-        - related_donor_db_id
+        - related_donors_db_ids
         type: object
     RecipientInput:
         properties:
@@ -1498,24 +1510,24 @@ definitions:
         properties:
             donor:
                 $ref: '#/definitions/Donor'
-            parsing_errors:
+            parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingIssue'
                 type: array
         required:
         - donor
-        - parsing_errors
+        - parsing_issues
         type: object
     UpdatedRecipient:
         properties:
-            parsing_errors:
+            parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingError'
+                    $ref: '#/definitions/ParsingIssue'
                 type: array
             recipient:
                 $ref: '#/definitions/Recipient'
         required:
-        - parsing_errors
+        - parsing_issues
         - recipient
         type: object
     UploadPatients:
@@ -1658,6 +1670,13 @@ definitions:
         type: object
     Version:
         properties:
+            colour_scheme:
+                description: Colour scheme to use.
+                enum:
+                - IKEM
+                - MILD_BLUE
+                example: IKEM
+                type: string
             environment:
                 description: Environment the code was build for.
                 enum:
@@ -1670,6 +1689,7 @@ definitions:
                 description: Version of the running code.
                 type: string
         required:
+        - colour_scheme
         - environment
         - version
         type: object
@@ -2243,6 +2263,47 @@ paths:
                     description: Updated donor.
                     schema:
                         $ref: '#/definitions/UpdatedDonor'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
+    /v1/txm-event/{txm_event_id}/patients/confirm-warning/{parsing_issue_id}:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        put:
+            description: Confirm a warning.
+            operationId: put_confirm_warning
+            parameters:
+            -   description: Id of the warning to be confirmed
+                in: path
+                name: parsing_issue_id
+                required: true
+                type: integer
+            responses:
+                '200':
+                    description: Issue confirmed successfully.
+                    schema:
+                        $ref: '#/definitions/ParsingIssuePublic'
                 '400':
                     description: Wrong data format.
                     schema:

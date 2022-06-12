@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Optional
+from typing import List, Optional
 
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
@@ -34,21 +34,22 @@ class HLAAdditiveScorer(AdditiveScorer, ABC):
         # pylint: disable=too-many-return-statements
 
     # it seems that it is reasonable to want many return statements here as it is still well readable
-    def score_transplant_calculated(self, donor: Donor, recipient: Recipient, original_donor: Optional[Donor]) -> float:
+    def score_transplant_calculated(self, donor: Donor, recipient: Recipient,
+                                    original_donors: Optional[List[Donor]]) -> float:
         donor_recipient_ci = compatibility_index(
             donor.parameters.hla_typing,
             recipient.parameters.hla_typing,
             ci_configuration=self.ci_configuration
         )
-        if original_donor:
-            related_donor_recipient_ci = compatibility_index(original_donor.parameters.hla_typing,
-                                                             recipient.parameters.hla_typing,
-                                                             ci_configuration=self.ci_configuration)
+        if original_donors:
+            all_related_donors_recipient_ci = [
+                compatibility_index(original_donor.parameters.hla_typing, recipient.parameters.hla_typing,
+                                    ci_configuration=self.ci_configuration) for original_donor in original_donors]
+            best_related_donor_recipient_ci = max(all_related_donors_recipient_ci)
         else:
-            related_donor_recipient_ci = 0.0
+            best_related_donor_recipient_ci = 0.0
 
         # We can't do exchanges between some countries
-
         if ForbiddenCountryCombination(donor.parameters.country_code, recipient.parameters.country_code) \
                 in self._configuration.forbidden_country_combinations:
             return TRANSPLANT_IMPOSSIBLE_SCORE
@@ -73,7 +74,7 @@ class HLAAdditiveScorer(AdditiveScorer, ABC):
 
         if better_match_in_ci_or_br and (
                 not blood_groups_compatible(donor.parameters.blood_group, recipient.parameters.blood_group)
-                and donor_recipient_ci <= related_donor_recipient_ci):
+                and donor_recipient_ci <= best_related_donor_recipient_ci):
             return TRANSPLANT_IMPOSSIBLE_SCORE
         require_compatible_blood_group = self._get_setting_from_config_or_recipient(recipient,
                                                                                     'require_compatible_blood_group')
@@ -87,7 +88,7 @@ class HLAAdditiveScorer(AdditiveScorer, ABC):
 
         # If required, the compatibility index between donor and recipient must be higher than
         # between recipient and the donor related to him
-        if better_match_in_ci and donor_recipient_ci <= related_donor_recipient_ci:
+        if better_match_in_ci and donor_recipient_ci <= best_related_donor_recipient_ci:
             return TRANSPLANT_IMPOSSIBLE_SCORE
 
         if self._configuration.use_binary_scoring:

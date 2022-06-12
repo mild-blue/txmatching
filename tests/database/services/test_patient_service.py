@@ -184,7 +184,7 @@ class TestPatientService(DbTests):
 
         # Validate that patients hash has changed
         txm_event_new = get_txm_event_complete(txm_event.db_id)
-        self.assertNotEqual(original_patients_hash, get_all_patients_persistent_hash(txm_event_new)) # here todo
+        self.assertNotEqual(original_patients_hash, get_all_patients_persistent_hash(txm_event_new))
 
     def test_get_patients_hash(self):
         txm_event_1 = TxmEvent(
@@ -193,7 +193,7 @@ class TestPatientService(DbTests):
             all_recipients=get_test_recipients()
         )
         hash_1 = get_patients_persistent_hash(txm_event_1)
-        self.assertEqual(4801276342034003774, hash_1)
+        self.assertEqual(9100441963031536076, hash_1)
 
         # changing event db id or event name does not change the hash
         txm_event_2 = TxmEvent(

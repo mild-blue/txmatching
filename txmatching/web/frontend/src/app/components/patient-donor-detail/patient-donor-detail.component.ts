@@ -69,13 +69,13 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
         Object.assign(this.item, updatedDonor.donor);
       }
 
-      if (updatedDonor.parsingErrors.length > 0) {
-        this._alertService.infoWithParsingErrors(
-          'Donor was updated but some parsing errors and warnings occurred. ' +
+      if (updatedDonor.parsingIssues.length > 0) {
+        this._alertService.infoWithParsingIssues(
+          'Donor was updated but some parsing issues and warnings occurred. ' +
           'You can modify the patient to fix the issues or contact us if the issues are not clear on info@mild.blue or +420 723 927 536.',
-          updatedDonor.parsingErrors
+          updatedDonor.parsingIssues
         );
-        this._logger.log('Parsing errors', updatedDonor.parsingErrors);
+        this._logger.log('Parsing issues', updatedDonor.parsingIssues);
       }
 
       this._initDonorEditable();

@@ -19,7 +19,7 @@ import { TxmEventStateGenerated } from '@app/generated';
 import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
 import { DonorType } from '@app/model/enums/DonorType';
 import { ReportService } from '@app/services/report/report.service';
-import { ParsingError } from '@app/model/ParsingError';
+import { ParsingIssue } from '@app/model/ParsingIssue';
 import { getErrorMessage } from '@app/helpers/error';
 
 @Component({
@@ -96,17 +96,17 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     }
 
     try {
-      const parsingErrors: ParsingError[] = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
+      const parsingIssues: ParsingIssue[] = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
 
-      if (parsingErrors.length === 0) {
+      if (parsingIssues.length === 0) {
         this._alertService.success('Patients were successfully added');
       } else {
-        this._alertService.infoWithParsingErrors(
-          'Patients were added but some parsing errors or warnings occurred. ' +
+        this._alertService.infoWithParsingIssues(
+          'Patients were added but some parsing issues or warnings occurred. ' +
           'You can modify the patient to fix the issues or contact us if the issues are not clear on info@mild.blue or +420 723 927 536.',
-          parsingErrors
+          parsingIssues
         );
-        this._logger.log('Parsing errors', parsingErrors);
+        this._logger.log('Parsing issues', parsingIssues);
       }
 
       this.togglePatientPopup();
