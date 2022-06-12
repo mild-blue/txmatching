@@ -1,4 +1,5 @@
 export * from './allMessagesGenerated';
+export * from './allTransplantMessagesGenerated';
 export * from './antibodiesPerGroupGenerated';
 export * from './antibodyMatchGenerated';
 export * from './antigenMatchGenerated';
@@ -38,6 +39,7 @@ export * from './manualRecipientDonorScoreGenerated';
 export * from './matchingGenerated';
 export * from './newTxmEventGenerated';
 export * from './otpLoginGenerated';
+export * from './parsingIssueConfirmationGenerated';
 export * from './parsingIssueGenerated';
 export * from './parsingIssuePublicGenerated';
 export * from './passwordChangeGenerated';

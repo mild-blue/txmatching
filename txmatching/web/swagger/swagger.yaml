@@ -6,6 +6,21 @@ definitions:
         properties:
             errors:
                 items:
+                    $ref: '#/definitions/ParsingIssueConfirmation'
+                type: array
+            infos:
+                items:
+                    $ref: '#/definitions/ParsingIssueConfirmation'
+                type: array
+            warnings:
+                items:
+                    $ref: '#/definitions/ParsingIssueConfirmation'
+                type: array
+        type: object
+    AllTransplantMessages:
+        properties:
+            errors:
+                items:
                     type: string
                 type: array
             infos:
@@ -1067,6 +1082,32 @@ definitions:
         - message
         - parsing_issue_detail
         type: object
+    ParsingIssueConfirmation:
+        properties:
+            confirmed_at:
+                format: date
+                type: string
+            confirmed_by:
+                type: integer
+            db_id:
+                type: integer
+            donor_id:
+                type: integer
+            hla_code_or_group:
+                type: string
+            message:
+                type: string
+            parsing_issue_detail:
+                type: string
+            recipient_id:
+                type: integer
+            txm_event_id:
+                type: integer
+        required:
+        - db_id
+        - message
+        - parsing_issue_detail
+        type: object
     ParsingIssuePublic:
         properties:
             confirmed_at:
@@ -1443,7 +1484,7 @@ definitions:
     TransplantWarning:
         properties:
             all_messages:
-                $ref: '#/definitions/AllMessages'
+                $ref: '#/definitions/AllTransplantMessages'
             message_global:
                 type: string
         type: object

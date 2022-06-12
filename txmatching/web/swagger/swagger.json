@@ -1809,6 +1809,29 @@
                 "infos": {
                     "type": "array",
                     "items": {
+                        "$ref": "#/definitions/ParsingIssueConfirmation"
+                    }
+                },
+                "warnings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ParsingIssueConfirmation"
+                    }
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ParsingIssueConfirmation"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "AllTransplantMessages": {
+            "properties": {
+                "infos": {
+                    "type": "array",
+                    "items": {
                         "type": "string"
                     }
                 },
@@ -3233,6 +3256,44 @@
             },
             "type": "object"
         },
+        "ParsingIssueConfirmation": {
+            "required": [
+                "db_id",
+                "message",
+                "parsing_issue_detail"
+            ],
+            "properties": {
+                "db_id": {
+                    "type": "integer"
+                },
+                "hla_code_or_group": {
+                    "type": "string"
+                },
+                "parsing_issue_detail": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "confirmed_at": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "confirmed_by": {
+                    "type": "integer"
+                },
+                "txm_event_id": {
+                    "type": "integer"
+                },
+                "donor_id": {
+                    "type": "integer"
+                },
+                "recipient_id": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        },
         "ParsingIssuePublic": {
             "required": [
                 "message",
@@ -3970,7 +4031,7 @@
                     "type": "string"
                 },
                 "all_messages": {
-                    "$ref": "#/definitions/AllMessages"
+                    "$ref": "#/definitions/AllTransplantMessages"
                 }
             },
             "type": "object"
