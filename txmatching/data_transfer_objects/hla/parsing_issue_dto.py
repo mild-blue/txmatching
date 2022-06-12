@@ -40,3 +40,16 @@ class ParsingIssue(PersistentlyHashable):
         update_persistent_hash(hash_, self.recipient_id)
         update_persistent_hash(hash_, self.confirmed_by)
         update_persistent_hash(hash_, self.confirmed_at)
+
+
+@dataclass
+class ParsingIssueConfirmationDTO:
+    db_id: int
+    hla_code_or_group: Optional[str]
+    parsing_issue_detail: str
+    message: str
+    confirmed_by: Optional[int]
+    confirmed_at: Optional[datetime]
+    txm_event_id: Optional[int] = None
+    donor_id: Optional[int] = None
+    recipient_id: Optional[int] = None

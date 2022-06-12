@@ -24,3 +24,16 @@ ParsingIssueJson = public_api.model('ParsingIssue', {
     'confirmed_at': fields.Date(required=False),
     'confirmed_by': fields.Integer(required=False)
 })
+
+ParsingIssueConfirmationJson = public_api.model('ParsingIssueConfirmation', {
+    'db_id': fields.Integer(required=True),
+    'hla_code_or_group': fields.String(required=False),
+    'parsing_issue_detail': fields.String(required=True),
+    'message': fields.String(required=True),
+    # TODO: make all fields required https://github.com/mild-blue/txmatching/issues/621
+    'confirmed_at': fields.Date(required=False),
+    'confirmed_by': fields.Integer(required=False),
+    'txm_event_id': fields.Integer(required=False),
+    'donor_id': fields.Integer(required=None),
+    'recipient_id': fields.Integer(required=None)
+})
