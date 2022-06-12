@@ -1,7 +1,5 @@
 from typing import Dict, List, Union
 
-from numpy import rec
-
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
