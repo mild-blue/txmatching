@@ -56,9 +56,9 @@ export const parseBloodGroup = (data: BloodGroupEnumGenerated): BloodGroup => {
 };
 
 export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined): AllMessages => {
-  let errors : string[] = [];
-  let warnings : string[] = [];
-  let infos : string[] = [];
+  let errors: string[] = [];
+  let warnings: string[] = [];
+  let infos: string[] = [];
 
   allMessages?.errors?.forEach((error) => {
     errors.push(error.hla_code_or_group + ": " + error.message)
