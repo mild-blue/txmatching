@@ -1,6 +1,7 @@
 from typing import Dict, List, Union
 
 from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueConfirmationDTO
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
@@ -21,7 +22,7 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
 
 
 def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters) \
-        -> Dict[str, Union[List[DonorDTOOut], List[Recipient]]]:
+        -> Dict[str, Union[List[DonorDTOOut], List[RecipientDTOOut]]]:
     scorer = scorer_from_configuration(configuration_parameters)
     return {
         'donors': sorted([
@@ -135,8 +136,8 @@ def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityI
     return detailed_scores
 
 
-def get_messages(txm_event_id: int, recipient_id: int = None, donor_id: int = None) -> Dict[str, List[str]]:
-
+def get_messages(txm_event_id: int, recipient_id: int = None, donor_id: int = None) -> Dict[
+    str, List[ParsingIssueConfirmationDTO]]:
     if donor_id is not None:
         donor_id = [donor_id]
     if recipient_id is not None:

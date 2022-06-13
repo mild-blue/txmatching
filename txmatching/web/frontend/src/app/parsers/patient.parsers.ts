@@ -65,11 +65,11 @@ export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined):
   });
 
   allMessages?.warnings?.forEach((warning) => {
-    errors.push(warning.hla_code_or_group + ": " + warning.message)
+    warnings.push(warning.hla_code_or_group + ": " + warning.message)
   });
 
   allMessages?.infos?.forEach((info) => {
-    errors.push(info.hla_code_or_group + ": " + info.message)
+    infos.push(info.hla_code_or_group + ": " + info.message)
   });
 
   return {
