@@ -15,11 +15,11 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
 def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int, txm_event: TxmEvent) -> ParsingIssuePublicDTO:
     parsing_issue = ParsingIssueModel.query.get(parsing_issue_id)
 
-    if parsing_issue.parsing_issue_detail not in WARNING_PROCESSING_RESULTS:
-        raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} is not a warning')
-
     if parsing_issue is None or parsing_issue.txm_event_id != txm_event.db_id:
         raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} not found in txm event {txm_event.db_id}')
+
+    if parsing_issue.parsing_issue_detail not in WARNING_PROCESSING_RESULTS:
+        raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} is not a warning')
 
     parsing_issue.confirmed_by = user_id
     parsing_issue.confirmed_at = datetime.now()
