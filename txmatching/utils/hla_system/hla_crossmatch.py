@@ -77,8 +77,13 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                 matching_antibodies = [antibody for antibody in antibodies
                                        if antibody.code.split == hla_type.code.split]
                 if len(matching_antibodies) > 0:
-                    for antibody_over_cutoff in _get_antibodies_over_cutoff(matching_antibodies):
-                        positive_matches.add(AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.SPLIT))
+                    antibodies_over_cutoff = _get_antibodies_over_cutoff(matching_antibodies)
+                    if set(matching_antibodies) == set(antibodies_over_cutoff):
+                        for antibody_over_cutoff in antibodies_over_cutoff:
+                            positive_matches.add(AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES))
+                    else:
+                        for antibody_over_cutoff in antibodies_over_cutoff:
+                            positive_matches.add(AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.SPLIT))
                     continue
             # check broad crossmatch
             matching_antibodies = [antibody for antibody in antibodies
@@ -86,8 +91,13 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                    and (antibody.code.split is None
                                         or hla_type.code.split is None)]
             if len(matching_antibodies) > 0:
-                for antibody_over_cutoff in _get_antibodies_over_cutoff(matching_antibodies):
-                    positive_matches.add(AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.BROAD))
+                antibodies_over_cutoff = _get_antibodies_over_cutoff(matching_antibodies)
+                if set(matching_antibodies) == set(antibodies_over_cutoff):
+                    for antibody_over_cutoff in antibodies_over_cutoff:
+                        positive_matches.add(AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES))
+                else:
+                    for antibody_over_cutoff in antibodies_over_cutoff:
+                        positive_matches.add(AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.BROAD))
 
         # Construct antibody matches set
         antibody_matches_set = set()
