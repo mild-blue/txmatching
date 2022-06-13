@@ -6,11 +6,13 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
     RecipientUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
     DonorRecipientPairDTO
-from txmatching.patients.patient import Donor, TxmEvent
-from txmatching.database.services.patient_upload_service import add_donor_recipient_pair
+from txmatching.database.services.patient_upload_service import \
+    add_donor_recipient_pair
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.data_transfer_objects.patients.utils import donor_to_donor_upload_dto, recipient_to_recipient_upload_dto
+from txmatching.data_transfer_objects.patients.utils import \
+    donor_to_donor_upload_dto, recipient_to_recipient_upload_dto
+from txmatching.patients.patient import Donor, TxmEvent
 
 
 def copy_patients_between_events(txm_event_id_from: int, txm_event_id_to:int, donor_ids: list) -> List[int]:

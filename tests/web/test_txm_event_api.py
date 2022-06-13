@@ -216,5 +216,6 @@ class TestMatchingApi(DbTests):
 
             for donor_id in res.json['new_donor_ids']:
                 self.assertIsNotNone(DonorModel.query.get(donor_id))
+
             self.assertEqual(200, res.status_code)
             self.assertEqual('application/json', res.content_type)

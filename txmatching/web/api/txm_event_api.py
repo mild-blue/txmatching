@@ -13,7 +13,7 @@ from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
     TxmDefaultEventDTOIn, TxmEventDTOIn, TxmEventExportDTOIn,
     TxmEventUpdateDTOIn, TxmEventCopyPatientsDTOIn)
 from txmatching.data_transfer_objects.patients.txm_event_dto_out import \
-    TxmEventsDTOOut, TxmEventCopyPatientsDTOOut
+   TxmEventCopyPatientsDTOOut, TxmEventsDTOOut
 from txmatching.data_transfer_objects.txm_event.txm_event_swagger import (
     TxmDefaultEventJsonIn, TxmEventCopyPatientsJsonIn, TxmEventExportJsonIn,
     TxmEventJsonIn, TxmEventJsonOut, TxmEventUpdateJsonIn, TxmEventsJson
