@@ -9,6 +9,7 @@ from txmatching.data_transfer_objects.patients.utils import parsing_issue_to_dto
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ParsingIssueModel
 from txmatching.patients.patient import TxmEvent
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import WARNING_PROCESSING_RESULTS
 
 
 def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int, txm_event: TxmEvent) -> ParsingIssuePublicDTO:
@@ -16,6 +17,10 @@ def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int, txm_event: TxmE
 
     if parsing_issue is None or parsing_issue.txm_event_id != txm_event.db_id:
         raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} not found in txm event {txm_event.db_id}')
+
+    if parsing_issue.parsing_issue_detail not in WARNING_PROCESSING_RESULTS:
+        raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} is not a warning')
+
     parsing_issue.confirmed_by = user_id
     parsing_issue.confirmed_at = datetime.now()
     db.session.commit()
