@@ -9,12 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ParsingIssueConfirmationGenerated } from './parsingIssueConfirmationGenerated';
 
 
-export interface AllMessagesGenerated { 
-    errors?: Array<ParsingIssueConfirmationGenerated>;
-    infos?: Array<ParsingIssueConfirmationGenerated>;
-    warnings?: Array<ParsingIssueConfirmationGenerated>;
+export interface AllTransplantMessagesGenerated { 
+    errors?: Array<string>;
+    infos?: Array<string>;
+    warnings?: Array<string>;
 }
 

@@ -45,7 +45,7 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
 from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.parsing_issue_service import (
-    confirm_a_parsing_issue, get_parsing_issues_for_patients)
+    confirm_a_parsing_issue, get_parsing_issues_confirmation_dto_for_patients)
 from txmatching.database.services.patient_service import (
     delete_donor_recipient_pair, get_donor_recipient_pair,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
@@ -171,8 +171,9 @@ class AlterRecipient(Resource):
 
         return response_ok(
             UpdatedRecipientDTOOut(
-                recipient=recipient_to_recipient_dto_out(updated_recipient),
-                parsing_issues=get_parsing_issues_for_patients(recipient_ids=[updated_recipient.db_id], txm_event_id=txm_event_id)
+                recipient=recipient_to_recipient_dto_out(updated_recipient, txm_event_id),
+                parsing_issues=get_parsing_issues_confirmation_dto_for_patients(recipient_ids=[updated_recipient.db_id],
+                                                                                txm_event_id=txm_event_id)
             )
         )
 
@@ -194,7 +195,7 @@ class AlterDonor(Resource):
         txm_event = get_txm_event_complete(txm_event_id)
         all_recipients = txm_event.all_recipients
         configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event=txm_event,
-                                                                           configuration_db_id=config_id)
+                                                                                      configuration_db_id=config_id)
         scorer = scorer_from_configuration(configuration_parameters)
         updated_donor = update_donor(donor_update_dto, txm_event_id)
 
@@ -204,9 +205,11 @@ class AlterDonor(Resource):
                     updated_donor,
                     all_recipients,
                     configuration_parameters,
-                    scorer
+                    scorer,
+                    txm_event_id
                 ),
-                parsing_issues=get_parsing_issues_for_patients(donor_ids=[updated_donor.db_id], txm_event_id=txm_event_id)
+                parsing_issues=get_parsing_issues_confirmation_dto_for_patients(donor_ids=[updated_donor.db_id],
+                                                                                txm_event_id=txm_event_id)
             )
         )
 
@@ -273,6 +276,7 @@ class RecomputeParsing(Resource):
     def post(self, txm_event_id: int):
         result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id)
         return response_ok(result)
+
 
 @patient_api.route('/confirm-warning/<int:parsing_issue_id>', methods=['PUT'])
 class ConfirmWarning(Resource):

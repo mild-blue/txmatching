@@ -56,9 +56,25 @@ export const parseBloodGroup = (data: BloodGroupEnumGenerated): BloodGroup => {
 };
 
 export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined): AllMessages => {
+  let errors: string[] = [];
+  let warnings: string[] = [];
+  let infos: string[] = [];
+
+  allMessages?.errors?.forEach((error) => {
+    errors.push(error.hla_code_or_group + ": " + error.message)
+  });
+
+  allMessages?.warnings?.forEach((warning) => {
+    warnings.push(warning.hla_code_or_group + ": " + warning.message)
+  });
+
+  allMessages?.infos?.forEach((info) => {
+    infos.push(info.hla_code_or_group + ": " + info.message)
+  });
+
   return {
-    error: allMessages?.errors ?? [],
-    warning: allMessages?.warnings ?? [],
-    info: allMessages?.infos ?? []
+    error: errors,
+    warning: warnings,
+    info: infos
   };
 };

@@ -1,11 +1,12 @@
 from typing import Dict, List, Union
 
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueConfirmationDTO
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
     RecipientDTOOut
+from txmatching.database.services.parsing_issue_service import get_parsing_issues_confirmation_dto_for_patients
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
@@ -21,17 +22,17 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
 
 
 def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParameters) \
-        -> Dict[str, Union[List[DonorDTOOut], List[Recipient]]]:
+        -> Dict[str, Union[List[DonorDTOOut], List[RecipientDTOOut]]]:
     scorer = scorer_from_configuration(configuration_parameters)
     return {
         'donors': sorted([
             donor_to_donor_dto_out(
-                donor, txm_event.all_recipients, configuration_parameters, scorer
+                donor, txm_event.all_recipients, configuration_parameters, scorer, txm_event.db_id
             ) for donor in txm_event.all_donors],
             key=_patient_order_for_fe),
         'recipients': sorted([
             recipient_to_recipient_dto_out(
-                recipient
+                recipient, txm_event.db_id
             ) for recipient in txm_event.all_recipients],
             key=_patient_order_for_fe)
     }
@@ -41,7 +42,7 @@ def _patient_order_for_fe(patient: Union[DonorDTOOut, Recipient]) -> str:
     return f'{patient.parameters.country_code.value}_{patient.medical_id}'
 
 
-def recipient_to_recipient_dto_out(recipient: Recipient) -> RecipientDTOOut:
+def recipient_to_recipient_dto_out(recipient: Recipient, txm_event_id: int) -> RecipientDTOOut:
     return RecipientDTOOut(
         db_id=recipient.db_id,
         medical_id=recipient.medical_id,
@@ -56,14 +57,15 @@ def recipient_to_recipient_dto_out(recipient: Recipient) -> RecipientDTOOut:
         waiting_since=recipient.waiting_since,
         previous_transplants=recipient.previous_transplants,
         internal_medical_id=recipient.internal_medical_id,
-        all_messages=get_messages(recipient.parsing_issues)
+        all_messages=get_messages(recipient_id=recipient.db_id, txm_event_id=txm_event_id)
     )
 
 
 def donor_to_donor_dto_out(donor: Donor,
                            all_recipients: List[Recipient],
                            config_parameters: ConfigParameters,
-                           scorer: AdditiveScorer) -> DonorDTOOut:
+                           scorer: AdditiveScorer,
+                           txm_event_id: int) -> DonorDTOOut:
     donor_dto = DonorDTOOut(db_id=donor.db_id,
                             medical_id=donor.medical_id,
                             parameters=donor.parameters,
@@ -73,7 +75,7 @@ def donor_to_donor_dto_out(donor: Donor,
                             active=donor.active,
                             internal_medical_id=donor.internal_medical_id,
                             parsing_issues=donor.parsing_issues,
-                            all_messages=get_messages(donor.parsing_issues)
+                            all_messages=get_messages(donor_id=donor.db_id, txm_event_id=txm_event_id)
                             )
     if donor.related_recipient_db_id:
         related_recipient = next(recipient for recipient in all_recipients if
@@ -134,14 +136,22 @@ def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityI
     return detailed_scores
 
 
-def get_messages(parsing_issues: List[ParsingIssue]) -> Dict[str, List[str]]:
+def get_messages(txm_event_id: int, recipient_id: int = None, donor_id: int = None) -> Dict[
+    str, List[ParsingIssueConfirmationDTO]]:
+    if donor_id is not None:
+        donor_id = [donor_id]
+    if recipient_id is not None:
+        recipient_id = [recipient_id]
+
+    parsing_issues_confirmation = get_parsing_issues_confirmation_dto_for_patients(txm_event_id, donor_id, recipient_id)
+
     return {
         'infos': [],
         'warnings': [
-            warning.hla_code_or_group + ': ' + warning.message for warning in parsing_issues
+            warning for warning in parsing_issues_confirmation
             if warning.parsing_issue_detail in WARNING_PROCESSING_RESULTS
         ],
         'errors': [
-            error.hla_code_or_group + ': ' + error.message for error in parsing_issues
+            error for error in parsing_issues_confirmation
             if error.parsing_issue_detail in ERROR_PROCESSING_RESULTS]
     }

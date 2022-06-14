@@ -9,11 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AllMessagesGenerated } from './allMessagesGenerated';
+import { AllTransplantMessagesGenerated } from './allTransplantMessagesGenerated';
 
 
 export interface TransplantWarningGenerated { 
-    all_messages?: AllMessagesGenerated;
+    all_messages?: AllTransplantMessagesGenerated;
     message_global?: string;
 }
 

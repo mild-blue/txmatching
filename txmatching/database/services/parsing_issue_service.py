@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import and_
 
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue, ParsingIssuePublicDTO
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue, ParsingIssueConfirmationDTO, ParsingIssuePublicDTO
 from txmatching.data_transfer_objects.patients.utils import parsing_issue_to_dto
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ParsingIssueModel
@@ -55,6 +55,20 @@ def convert_parsing_issue_models_to_dataclasses(parsing_issue_models: List[Parsi
     ) for parsing_issue_model in parsing_issue_models]
 
 
+def convert_parsing_issue_models_to_confirmation_dto(parsing_issue_models: List[ParsingIssueModel]) -> List[ParsingIssueConfirmationDTO]:
+    return [ParsingIssueConfirmationDTO(
+        db_id=parsing_issue_model.id,
+        hla_code_or_group=parsing_issue_model.hla_code_or_group,
+        parsing_issue_detail=parsing_issue_model.parsing_issue_detail,
+        message=parsing_issue_model.message,
+        donor_id=parsing_issue_model.donor_id,
+        recipient_id=parsing_issue_model.recipient_id,
+        txm_event_id=parsing_issue_model.txm_event_id,
+        confirmed_by=parsing_issue_model.confirmed_by,
+        confirmed_at=parsing_issue_model.confirmed_at
+    ) for parsing_issue_model in parsing_issue_models]
+
+
 def get_parsing_issues_for_txm_event_id(txm_event_id: int) -> List[ParsingIssue]:
     return convert_parsing_issue_models_to_dataclasses(
         ParsingIssueModel.query.filter(
@@ -79,6 +93,24 @@ def get_parsing_issues_for_patients(txm_event_id: int, donor_ids: List[int] = No
     ).all()
 
     return convert_parsing_issue_models_to_dataclasses(parsing_issues)
+
+
+def get_parsing_issues_confirmation_dto_for_patients(txm_event_id: int, donor_ids: List[int] = None,
+                                    recipient_ids: List[int] = None) -> List[ParsingIssueConfirmationDTO]:
+    if donor_ids is None:
+        donor_ids = []
+    if recipient_ids is None:
+        recipient_ids = []
+
+    parsing_issues = ParsingIssueModel.query.filter(
+        and_(ParsingIssueModel.donor_id.in_(donor_ids),
+             ParsingIssueModel.txm_event_id == txm_event_id)
+    ).all() + ParsingIssueModel.query.filter(
+        and_(ParsingIssueModel.recipient_id.in_(recipient_ids),
+             ParsingIssueModel.txm_event_id == txm_event_id)
+    ).all()
+
+    return convert_parsing_issue_models_to_confirmation_dto(parsing_issues)
 
 
 def delete_parsing_issues_for_patient(
