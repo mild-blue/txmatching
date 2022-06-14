@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import List, Optional
 
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import TxmEventState

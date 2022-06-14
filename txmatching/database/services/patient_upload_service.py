@@ -41,6 +41,7 @@ from txmatching.utils.hla_system.hla_transformations.hla_transformations_store i
 
 logger = logging.getLogger(__name__)
 
+
 def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
                              txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
     if donor_recipient_pair_dto.recipient:
@@ -57,7 +58,7 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
 
 
 def get_patients_parsing_issues_from_upload_dto(donors: List[DonorModel], recipients: List[RecipientModel],
-                                        txm_event_db_id: int) -> List[ParsingIssuePublicDTO]:
+                                                txm_event_db_id: int) -> List[ParsingIssuePublicDTO]:
     donor_ids = [patient.id for patient in donors]
     recipient_ids = [patient.id for patient in recipients]
     parsing_issues = get_parsing_issues_for_patients(txm_event_db_id, donor_ids, recipient_ids)
@@ -67,7 +68,7 @@ def get_patients_parsing_issues_from_upload_dto(donors: List[DonorModel], recipi
 
 
 def get_patients_parsing_issues_from_pair_dto(donors: List[DonorModel], recipients: List[RecipientModel],
-                                      txm_event_db_id: int) -> List[ParsingIssuePublicDTO]:
+                                              txm_event_db_id: int) -> List[ParsingIssuePublicDTO]:
     donor_ids = [donors[0].id]
     recipient_ids = []
     if len(recipients) > 0:
