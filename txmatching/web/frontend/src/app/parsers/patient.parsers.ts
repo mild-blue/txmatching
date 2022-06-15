@@ -71,7 +71,7 @@ export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined):
     warnings.push(parseParsingIssueConfirmation(warning));
   });
 
-  warnings.sort((warningA) => (warningA.confirmed_by === null) ? -1 : 1);
+  warnings.sort((warning) => (warning.confirmed_by === null) ? -1 : 1);
 
   allMessages?.infos?.forEach((info) => {
     infos.push(parseParsingIssueConfirmation(info));
