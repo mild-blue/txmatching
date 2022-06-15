@@ -28,11 +28,11 @@
 
   &.confirm {
     margin: 0;
-    background-color: $warning;
+    background-color: $warning-icon;
     color: $warning-text;
 
     &:hover {
-      background-color: darken($warning, 10%);
+      background-color: darken($warning-icon, 10%);
     }
 
     mat-icon {
