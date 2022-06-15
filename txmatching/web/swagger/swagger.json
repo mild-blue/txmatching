@@ -3205,12 +3205,12 @@
                 "message": {
                     "type": "string"
                 },
+                "confirmed_by": {
+                    "type": "integer"
+                },
                 "confirmed_at": {
                     "type": "string",
                     "format": "date"
-                },
-                "confirmed_by": {
-                    "type": "integer"
                 },
                 "txm_event_id": {
                     "type": "integer"

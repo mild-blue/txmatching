@@ -21,8 +21,13 @@ def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int, txm_event: TxmE
     if parsing_issue.parsing_issue_detail not in WARNING_PROCESSING_RESULTS:
         raise InvalidArgumentException(f'Parsing issue {parsing_issue_id} is not a warning')
 
-    parsing_issue.confirmed_by = user_id
-    parsing_issue.confirmed_at = datetime.now()
+    if parsing_issue.confirmed_by is None:
+        parsing_issue.confirmed_by = user_id
+        parsing_issue.confirmed_at = datetime.now()
+    else:
+        parsing_issue.confirmed_by = None
+        parsing_issue.confirmed_at = None
+
     db.session.commit()
     return parsing_issue_model_to_confirmation_dto(parsing_issue, txm_event)
 

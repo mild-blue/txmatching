@@ -44,21 +44,16 @@ export class PatientService {
   }
 
   public async confirmWarning(txmEventId: number, warningId: number): Promise<ParsingIssueConfirmation> {
-    // todo toto ma vraciat parsing issue confirmation
     this._logger.log(`Confirming warning ${warningId}`);
-    let returnObject: ParsingIssueConfirmation =  await firstValueFrom(this._http.post(
+
+    return firstValueFrom(this._http.put<ParsingIssueConfirmation>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/confirm-warning/${warningId}`,
       {}
+    ).pipe(
+      map(parseParsingIssueConfirmation)
     ));
-    // // or
-    // return this._http.post(
-    //   `${environment.apiUrl}/txm-event/${txmEventId}/patients/confirm-warning/${warningId}`,
-    //   {}
-    // ).pipe{
-    //   map(parseParsingIssueConfirmation);
-    // }
   }
-
+ 
   public async getPatients(txmEventId: number, configId: number | undefined, includeAntibodiesRaw: boolean): Promise<PatientList> {
     const configIdStr = configId !== undefined ? configId.toString() : 'default';
 
