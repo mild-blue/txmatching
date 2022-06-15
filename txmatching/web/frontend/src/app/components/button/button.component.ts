@@ -12,7 +12,7 @@ export class ButtonComponent {
   @Input() disabled: boolean = false;
   @Input() success: boolean = false;
   @Input() size: 'sm' | '' = '';
-  @Input() variant: 'primary' | 'success' | 'danger' = 'primary';
+  @Input() variant: 'primary' | 'success' | 'danger' | 'confirm' | 'unconfirm' = 'primary';
   @Input() type: 'submit' | 'button' | 'reset' = 'button';
 
   public icon = faSpinner;

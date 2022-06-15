@@ -2283,7 +2283,7 @@ paths:
                 '200':
                     description: Issue confirmed successfully.
                     schema:
-                        $ref: '#/definitions/ParsingIssuePublic'
+                        $ref: '#/definitions/ParsingIssueConfirmation'
                 '400':
                     description: Wrong data format.
                     schema:

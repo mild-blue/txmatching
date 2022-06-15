@@ -24,6 +24,9 @@ import { fromRecipientEditableToUpdateGenerated } from '@app/parsers/to-generate
 import { fromPatientsEditableToInGenerated } from '@app/parsers/to-generated/patientPair.parsers';
 import { ParsingIssue } from '@app/model/ParsingIssue';
 import { parseParsingIssue } from '@app/parsers/parsingIssue.parsers';
+import { parseParsingIssueConfirmation } from '@app/parsers/parsingIssueConfirmation.parsers';
+import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
+import { ParsingIssueConfirmationComponent } from '@app/components/parsing-issue-confirmation/parsing-issue-confirmation.compontent';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +41,22 @@ export class PatientService {
 
   public onDeleteDonor(): Observable<number> {
     return this._deletedDonorDbIdSubject.asObservable().pipe(filter(dbId => dbId !== -1));
+  }
+
+  public async confirmWarning(txmEventId: number, warningId: number): Promise<ParsingIssueConfirmation> {
+    // todo toto ma vraciat parsing issue confirmation
+    this._logger.log(`Confirming warning ${warningId}`);
+    let returnObject: ParsingIssueConfirmation =  await firstValueFrom(this._http.post(
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/confirm-warning/${warningId}`,
+      {}
+    ));
+    // // or
+    // return this._http.post(
+    //   `${environment.apiUrl}/txm-event/${txmEventId}/patients/confirm-warning/${warningId}`,
+    //   {}
+    // ).pipe{
+    //   map(parseParsingIssueConfirmation);
+    // }
   }
 
   public async getPatients(txmEventId: number, configId: number | undefined, includeAntibodiesRaw: boolean): Promise<PatientList> {

@@ -2,6 +2,7 @@ import {
   AllMessagesGenerated,
   BloodGroupEnumGenerated,
   DonorGenerated,
+  ParsingIssueConfirmationGenerated,
   PatientParametersGenerated,
   RecipientGenerated,
   SexEnumGenerated
@@ -9,6 +10,8 @@ import {
 import { AllMessages, BloodGroup, Patient, PatientParameters, Sex } from '../model';
 import { ListItem } from '../components/list-item/list-item.interface';
 import { parseAntigens } from '@app/parsers/hla.parsers';
+import { parseParsingIssueConfirmation } from './parsingIssueConfirmation.parsers';
+import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
 
 export const parsePatient = (data: DonorGenerated | RecipientGenerated, listItem: ListItem): Patient => {
   return {
@@ -56,20 +59,20 @@ export const parseBloodGroup = (data: BloodGroupEnumGenerated): BloodGroup => {
 };
 
 export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined): AllMessages => {
-  let errors: string[] = [];
-  let warnings: string[] = [];
-  let infos: string[] = [];
+  let errors: ParsingIssueConfirmation[] = [];
+  let warnings: ParsingIssueConfirmation[] = [];
+  let infos: ParsingIssueConfirmation[] = [];
 
   allMessages?.errors?.forEach((error) => {
-    errors.push(error.hla_code_or_group + ": " + error.message)
+    errors.push(parseParsingIssueConfirmation(error));
   });
 
   allMessages?.warnings?.forEach((warning) => {
-    warnings.push(warning.hla_code_or_group + ": " + warning.message)
+    warnings.push(parseParsingIssueConfirmation(warning));
   });
 
   allMessages?.infos?.forEach((info) => {
-    infos.push(info.hla_code_or_group + ": " + info.message)
+    infos.push(parseParsingIssueConfirmation(info));
   });
 
   return {

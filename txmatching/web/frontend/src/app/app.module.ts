@@ -89,6 +89,8 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
 import { WarningComponent } from './components/warning/warning.component';
 import { WarningOverviewComponent } from './components/warning-overview/warning-overview.component';
 import { WarningPillComponent } from './components/warning-overview/warning-pill/warning-pill.component';
+import { ParsingIssueConfirmationComponent } from './components/parsing-issue-confirmation/parsing-issue-confirmation.compontent';
+import { ParsingIssueConfirmationWarningComponent } from './components/parsing-issue-confirmation-warning/parsing-issue-confirmation-warning.component';
 
 @NgModule({
   declarations: [
@@ -160,7 +162,9 @@ import { WarningPillComponent } from './components/warning-overview/warning-pill
     ResetPasswordComponent,
     WarningComponent,
     WarningOverviewComponent,
-    WarningPillComponent
+    WarningPillComponent,
+    ParsingIssueConfirmationComponent,
+    ParsingIssueConfirmationWarningComponent
   ],
   imports: [
     BrowserModule,
