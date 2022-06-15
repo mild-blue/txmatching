@@ -927,7 +927,7 @@
                     "200": {
                         "description": "Issue confirmed successfully.",
                         "schema": {
-                            "$ref": "#/definitions/ParsingIssuePublic"
+                            "$ref": "#/definitions/ParsingIssueConfirmation"
                         }
                     }
                 },

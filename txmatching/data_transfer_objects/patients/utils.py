@@ -2,13 +2,14 @@ import logging
 from typing import Optional
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
-    ParsingIssue, ParsingIssuePublicDTO)
+    ParsingIssue, ParsingIssueConfirmationDTO, ParsingIssuePublicDTO)
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto import \
     RecipientUploadDTO
+from txmatching.database.sql_alchemy_schema import ParsingIssueModel
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,21 @@ def parsing_issue_to_dto(parsing_issue: ParsingIssue, txm_event: TxmEvent) -> Pa
         medical_id=_get_donor_or_recipient_medical_id(parsing_issue, txm_event),
         confirmed_at=parsing_issue.confirmed_at,
         confirmed_by=parsing_issue.confirmed_by
+    )
+
+
+def parsing_issue_model_to_confirmation_dto(parsing_issue: ParsingIssueModel,
+                                            txm_event: TxmEvent) -> ParsingIssueConfirmationDTO:
+    return ParsingIssueConfirmationDTO(
+        db_id=parsing_issue.id,
+        hla_code_or_group=parsing_issue.hla_code_or_group,
+        parsing_issue_detail=parsing_issue.parsing_issue_detail,
+        message=parsing_issue.message,
+        txm_event_id=txm_event.db_id,
+        confirmed_at=parsing_issue.confirmed_at,
+        confirmed_by=parsing_issue.confirmed_by,
+        donor_id=parsing_issue.donor_id,
+        recipient_id=parsing_issue.recipient_id
     )
 
 

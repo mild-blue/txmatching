@@ -22,7 +22,7 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
     PatientUploadSuccessJson
-from txmatching.data_transfer_objects.hla.parsing_issue_swagger import ParsingIssuePublicJson
+from txmatching.data_transfer_objects.hla.parsing_issue_swagger import ParsingIssueConfirmationJson
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import (
     donor_to_donor_dto_out, recipient_to_recipient_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
@@ -292,7 +292,7 @@ class ConfirmWarning(Resource):
         security='bearer',
         description='Confirm a warning.'
     )
-    @patient_api.response_ok(ParsingIssuePublicJson, description='Issue confirmed successfully.')
+    @patient_api.response_ok(ParsingIssueConfirmationJson, description='Issue confirmed successfully.')
     @patient_api.response_errors()
     @patient_api.require_user_login()
     @require_user_edit_patients_access()

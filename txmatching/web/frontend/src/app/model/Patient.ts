@@ -1,5 +1,6 @@
 import { ListItem } from '@app/components/list-item/list-item.interface';
 import { Antigens } from '@app/model/Hla';
+import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
 import { Sex } from '@app/model/enums/Sex';
 import { CountryCodeGenerated } from '@app/generated';
 import { BloodGroup } from '@app/model/enums/BloodGroup';
@@ -23,6 +24,12 @@ export interface PatientParameters {
 }
 
 export interface AllMessages {
+  error: Array<ParsingIssueConfirmation>;
+  warning: Array<ParsingIssueConfirmation>;
+  info: Array<ParsingIssueConfirmation>;
+}
+
+export interface AllTransplantMessages {
   error: string[];
   warning: string[];
   info: string[];

@@ -26,6 +26,32 @@
     }
   }
 
+  &.confirm {
+    margin: 0;
+    background-color: $warning;
+    color: $warning-text;
+
+    &:hover {
+      background-color: darken($warning, 10%);
+    }
+
+    mat-icon {
+      color: $warning-text;
+    }
+  }
+
+  &.unconfirm {
+    margin: 0;
+    padding: 0;
+    background-color: $white;
+    color: $warning-text;
+    height: 40px;
+
+    mat-icon {
+      color: $warning-text;
+    }
+  }
+
   &.success {
     background-color: $success;
 

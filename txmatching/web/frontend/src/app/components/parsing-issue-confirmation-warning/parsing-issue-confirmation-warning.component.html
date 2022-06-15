@@ -1,0 +1,29 @@
+<div class="warning-card-unconfirmed" *ngIf="data && data.confirmedBy === null">
+  <div class="warning-card-unconfirmed-content">
+    <div class="warning-card-unconfirmed-heading">
+      <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
+      <h2>Unconfirmed warning</h2>
+    </div>
+    <div class="warning-card-unconfirmed-body">
+      <p>{{data.hlaCodeOrGroup}}: {{data.message}}</p>
+    </div>
+  </div>
+  <div class="button-wrapper">
+    <app-button variant="confirm" (click)="confirmAction()">Confirm
+      <mat-icon>done</mat-icon>
+    </app-button>
+  </div>
+</div>
+
+<div class="warning-card-confirmed" *ngIf="data && data.confirmedBy">
+  <div class="warning-card-confirmed-body">
+    <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
+    <p>{{data.hlaCodeOrGroup}}: {{data.message}}</p>
+  </div>
+  <div class="button-wrapper">
+    <app-button variant="unconfirm" (click)="confirmAction()">Unconfirm
+      <mat-icon>close</mat-icon>
+    </app-button>
+  </div>
+</div>
+<!-- todo ide toto napisat nejak krajsie? -->
