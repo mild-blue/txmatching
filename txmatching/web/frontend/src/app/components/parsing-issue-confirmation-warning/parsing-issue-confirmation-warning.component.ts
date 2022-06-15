@@ -38,16 +38,15 @@ export class ParsingIssueConfirmationWarningComponent{
 
     this.confirmationLoading = true;
     this.updateSuccess = false;
-    this._patientService.confirmWarning(this.defaultTxmEvent.id, this.data.dbId)
-    // .then(res => {
-    //   this.data = res;
-    // })
-    // .catch(() => {
-    //   this._logger.error('Error confirming warning');
-    // })
-    // .finally(() => {
-    //   this.confirmationLoading = false;
-    // });
+    this._patientService.confirmWarning(this.defaultTxmEvent.id, this.data.db_id)
+    .then(res => {
+      this.data = res;
+    })
+    .catch(() => {
+      this._logger.error('Error confirming warning');
+    })
+    .finally(() => {
+      this.confirmationLoading = false;
+    });
   }
 }
-// todo

@@ -12,6 +12,7 @@ export * from './Theme';
 export * from './Transplant';
 export * from './User';
 export * from './Version';
+export * from './ParsingIssueConfirmation'
 export { BloodGroup } from '@app/model/enums/BloodGroup';
 export { AlertType } from '@app/model/enums/AlertType';
 export { DonorType } from '@app/model/enums/DonorType';

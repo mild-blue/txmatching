@@ -1,11 +1,11 @@
-<div class="warning-card-unconfirmed" *ngIf="data && data.confirmedBy === null">
+<div class="warning-card-unconfirmed" *ngIf="data && data.confirmed_by === null">
   <div class="warning-card-unconfirmed-content">
     <div class="warning-card-unconfirmed-heading">
       <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
       <h2>Unconfirmed warning</h2>
     </div>
     <div class="warning-card-unconfirmed-body">
-      <p>{{data.hlaCodeOrGroup}}: {{data.message}}</p>
+      <p>{{data.hla_code_or_group}}: {{data.message}}</p>
     </div>
   </div>
   <div class="button-wrapper">
@@ -15,10 +15,10 @@
   </div>
 </div>
 
-<div class="warning-card-confirmed" *ngIf="data && data.confirmedBy">
+<div class="warning-card-confirmed" *ngIf="data && data.confirmed_by">
   <div class="warning-card-confirmed-body">
     <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
-    <p>{{data.hlaCodeOrGroup}}: {{data.message}}</p>
+    <p>{{data.hla_code_or_group}}: {{data.message}}</p>
   </div>
   <div class="button-wrapper">
     <app-button variant="unconfirm" (click)="confirmAction()">Unconfirm
