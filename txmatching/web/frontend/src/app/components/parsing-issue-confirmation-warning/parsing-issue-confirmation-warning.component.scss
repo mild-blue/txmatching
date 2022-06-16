@@ -1,16 +1,13 @@
 @import "../../../styles/variables";
 
-.warning-card-unconfirmed {
+.warning-card {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: start;
   gap: 0.5rem;
-  background-color: $warning-bg;
   color: $warning-text;
   border-radius: 2.5rem;
-  filter: drop-shadow(0 3.2px 7.2px rgba(0, 0, 0, .1));
-  padding: 1.5rem 1.875rem;
   margin: 1rem 0;
 
   div {
@@ -22,6 +19,12 @@
       height: 100%;
     }
   }
+}
+
+.warning-card-unconfirmed {
+  background-color: $warning-bg;
+  filter: drop-shadow(0 3.2px 7.2px rgba(0, 0, 0, 0.1));
+  padding: 1.5rem 1.875rem;
 
   &-content {
     display: flex;
@@ -68,29 +71,10 @@
 }
 
 .warning-card-confirmed {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: start;
-  gap: 0.5rem;
-  color: $warning-text;
-  border-radius: 2.5rem;
   border-width: 2px;
   border-style: solid;
   border-color: $warning-icon;
   padding: 0.5rem 1.875rem;
-  margin: 1rem 0;
-
-  div {
-    display: flex;
-    justify-content: center;
-    margin-top: auto;
-    margin-bottom: auto;
-
-    p {
-      height: 100%;
-    }
-  }
 
   &-body {
     flex-direction: row;
@@ -105,11 +89,4 @@
       margin: 0.3rem 0;
     }
   }
-
-  .button-wrapper {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    margin: auto 0;
-  }  
 }
