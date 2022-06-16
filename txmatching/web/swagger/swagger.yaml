@@ -2460,6 +2460,47 @@ paths:
                         $ref: '#/definitions/FailResponse'
             tags:
             - patients
+    /v1/txm-event/{txm_event_id}/patients/unconfirm-warning/{parsing_issue_id}:
+        parameters:
+        -   in: path
+            name: txm_event_id
+            required: true
+            type: integer
+        put:
+            description: Unconfirm a warning.
+            operationId: put_unconfirm_warning
+            parameters:
+            -   description: Id of the warning to be unconfirmed
+                in: path
+                name: parsing_issue_id
+                required: true
+                type: integer
+            responses:
+                '200':
+                    description: Issue unconfirmed successfully.
+                    schema:
+                        $ref: '#/definitions/ParsingIssueConfirmation'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - patients
     /v1/txm-event/{txm_event_id}/reports/configs/{config_id}/matchings/{matching_id}/pdf:
         parameters:
         -   in: path
