@@ -45,7 +45,7 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
 from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.parsing_issue_service import (
-    confirm_a_parsing_issue, get_parsing_issues_confirmation_dto_for_patients)
+    confirm_a_parsing_issue, get_parsing_issues_confirmation_dto_for_patients, unconfirm_a_parsing_issue)
 from txmatching.database.services.patient_service import (
     delete_donor_recipient_pair, get_donor_recipient_pair,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
@@ -302,4 +302,30 @@ class ConfirmWarning(Resource):
         user_id = get_current_user_id()
         txm_event = get_txm_event_complete(txm_event_id)
         result = confirm_a_parsing_issue(user_id, parsing_issue_id, txm_event)
+        return response_ok(result)
+
+
+@patient_api.route('/unconfirm-warning/<int:parsing_issue_id>', methods=['PUT'])
+class UnconfirmWarning(Resource):
+    @patient_api.doc(
+        params={
+            'parsing_issue_id': {
+                'description': 'Id of the warning to be unconfirmed',
+                'type': int,
+                'required': True,
+                'in': 'path'
+            }
+        },
+        security='bearer',
+        description='Unconfirm a warning.'
+    )
+    @patient_api.response_ok(ParsingIssueConfirmationJson, description='Issue unconfirmed successfully.')
+    @patient_api.response_errors()
+    @patient_api.require_user_login()
+    @require_user_edit_patients_access()
+    @require_valid_txm_event_id()
+    @require_role(UserRole.ADMIN)
+    def put(self, txm_event_id: int, parsing_issue_id: int):
+        txm_event = get_txm_event_complete(txm_event_id)
+        result = unconfirm_a_parsing_issue(parsing_issue_id, txm_event)
         return response_ok(result)
