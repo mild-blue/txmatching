@@ -4,8 +4,8 @@ import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
 import { PatientService } from '@app/services/patient/patient.service';
 import { LoggerService } from '@app/services/logger/logger.service';
 import { AlertService } from '@app/services/alert/alert.service';
-import { EventService } from '@app/services/event/event.service';
 import { TxmEvent } from '@app/model/Event';
+import { getErrorMessage } from '@app/helpers/error';
 
 @Component({
   selector: 'parsing-issue-confirmation-warning',
@@ -16,13 +16,14 @@ export class ParsingIssueConfirmationWarningComponent{
   warningType: WarningType = 'warning';
   @Input() data?: ParsingIssueConfirmation;
   @Input() defaultTxmEvent?: TxmEvent;
-  public updateSuccess: boolean = false;
-  public confirmationLoading: boolean = false;
+  public confirmSuccess: boolean = false;
+  public confirmLoading: boolean = false;
+  public unconfirmSuccess: boolean = false;
+  public unconfirmLoading: boolean = false;
 
   constructor(private _patientService: PatientService,
       private _logger: LoggerService,
-      private _alertService: AlertService,
-      private _eventService: EventService) {
+      private _alertService: AlertService) {
   }
 
   public confirmAction(): void {
@@ -36,17 +37,46 @@ export class ParsingIssueConfirmationWarningComponent{
       return;
     }
 
-    this.confirmationLoading = true;
-    this.updateSuccess = false;
+    this.confirmLoading = true;
+    this.confirmSuccess = false;
     this._patientService.confirmWarning(this.defaultTxmEvent.id, this.data.db_id)
     .then(res => {
       this.data = res;
+      this.confirmSuccess = true;
     })
-    .catch(() => {
-      this._logger.error('Error confirming warning');
+    .catch((e) => {
+      this._logger.error(`Error confirming warning: "${getErrorMessage(e)}"`);
+      this._alertService.error(`Error confirming warning: "${getErrorMessage(e)}"`);
     })
     .finally(() => {
-      this.confirmationLoading = false;
+      this.confirmLoading = false;
+    });
+  }
+
+  public unconfirmAction(): void {
+    if (!this.data){
+      this._logger.error('unconfirmAction failed because data not set');
+      return;
+    }
+
+    if (!this.defaultTxmEvent) {
+      this._logger.error('unconfirmAction failed because defaultTxmEvent not set');
+      return;
+    }
+
+    this.unconfirmLoading = true;
+    this.unconfirmSuccess = false;
+    this._patientService.unconfirmWarning(this.defaultTxmEvent.id, this.data.db_id)
+    .then(res => {
+      this.data = res;
+      this.unconfirmSuccess = true;
+    })
+    .catch((e) => {
+      this._logger.error(`Error unconfirming warning: "${getErrorMessage(e)}"`);
+      this._alertService.error(`Error unconfirming warning: "${getErrorMessage(e)}"`);
+    })
+    .finally(() => {
+      this.unconfirmLoading = false;
     });
   }
 }

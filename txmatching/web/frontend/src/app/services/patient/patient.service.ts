@@ -53,7 +53,18 @@ export class PatientService {
       map(parseParsingIssueConfirmation)
     ));
   }
- 
+
+  public async unconfirmWarning(txmEventId: number, warningId: number): Promise<ParsingIssueConfirmation> {
+    this._logger.log(`Unonfirming warning ${warningId}`);
+
+    return firstValueFrom(this._http.put<ParsingIssueConfirmation>(
+      `${environment.apiUrl}/txm-event/${txmEventId}/patients/unconfirm-warning/${warningId}`,
+      {}
+    ).pipe(
+      map(parseParsingIssueConfirmation)
+    ));
+  }
+
   public async getPatients(txmEventId: number, configId: number | undefined, includeAntibodiesRaw: boolean): Promise<PatientList> {
     const configIdStr = configId !== undefined ? configId.toString() : 'default';
 
