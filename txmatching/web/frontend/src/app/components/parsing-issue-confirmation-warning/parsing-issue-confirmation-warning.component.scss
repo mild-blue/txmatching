@@ -23,7 +23,7 @@
 
 .warning-card-unconfirmed {
   background-color: $warning-bg;
-  filter: drop-shadow(0 3.2px 7.2px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 0.2rem 0.45rem rgba(0, 0, 0, 0.1));
   padding: 1.5rem 1.875rem;
 
   &-content {
@@ -71,7 +71,7 @@
 }
 
 .warning-card-confirmed {
-  border-width: 2px;
+  border-width: 0.125rem;
   border-style: solid;
   border-color: $warning-icon;
   padding: 0.5rem 1.875rem;
@@ -81,7 +81,7 @@
     align-items: start;
 
     mat-icon {
-      margin: 7px;
+      margin: 0.438rem;
       color: $warning-icon;
     }
 
