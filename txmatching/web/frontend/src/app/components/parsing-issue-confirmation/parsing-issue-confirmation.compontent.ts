@@ -15,10 +15,14 @@ export class ParsingIssueConfirmationComponent{
 
   constructor() { }
 
-  sortBy(){
-    if (this.warningType === 'warning'){
-      // todo sort najrpv by confirmation potom id (?)
-      this.data?.sort((warning) => (warning.confirmed_by === null || warning.confirmed_by === undefined) ? -1 : 1);
+  sortBy(parsingIssueConfirmation: ParsingIssueConfirmation){
+    if (this.warningType === 'warning' && this.data){
+      for (let i = 0; i < this.data.length; i++) {
+        if (this.data[i].db_id === parsingIssueConfirmation.db_id){
+        this.data[i] = parsingIssueConfirmation;
+        }
+      }
+      this.data?.sort((warning) => (warning.confirmed_by === null || warning.confirmed_by === undefined) !! ? -1 : 1);
       console.log(this.data)
     }
   }
