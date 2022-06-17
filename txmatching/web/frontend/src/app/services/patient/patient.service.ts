@@ -26,7 +26,6 @@ import { ParsingIssue } from '@app/model/ParsingIssue';
 import { parseParsingIssue } from '@app/parsers/parsingIssue.parsers';
 import { parseParsingIssueConfirmation } from '@app/parsers/parsingIssueConfirmation.parsers';
 import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
-import { ParsingIssueConfirmationComponent } from '@app/components/parsing-issue-confirmation/parsing-issue-confirmation.compontent';
 
 @Injectable({
   providedIn: 'root'

@@ -1,23 +1,23 @@
 <div class="warning-card" [ngClass]="data.confirmed_by === null ? 'warning-card-unconfirmed' : 'warning-card-confirmed'" *ngIf="data">
   <div class="warning-card-unconfirmed-content" *ngIf="data.confirmed_by === null">
-     <div class="warning-card-unconfirmed-heading">
-        <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
-        <h2>Unconfirmed warning</h2>
-     </div>
-     <div class="warning-card-unconfirmed-body">
-        <p>{{data.hla_code_or_group}}: {{data.message}}</p>
-     </div>
+    <div class="warning-card-unconfirmed-heading">
+      <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
+      <h2>Unconfirmed warning</h2>
+    </div>
+    <div class="warning-card-unconfirmed-body">
+      <p>{{data.hla_code_or_group}}: {{data.message}}</p>
+    </div>
   </div>
   <div class="warning-card-confirmed-body" *ngIf="data.confirmed_by !== null">
-     <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
-     <p>{{data.hla_code_or_group}}: {{data.message}}</p>
+    <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
+    <p>{{data.hla_code_or_group}}: {{data.message}}</p>
   </div>
   <div class="button-wrapper">
-     <app-button variant="confirm" *ngIf="data.confirmed_by === null" (click)="confirmAction()">
-     <mat-icon>done</mat-icon>
-     </app-button>
-     <app-button variant="unconfirm" *ngIf="data.confirmed_by !== null" (click)="unconfirmAction()">
-     <mat-icon>undo</mat-icon>
-     </app-button>
+    <app-button variant="confirm" [disabled]="loading" [success]="!loading && success" *ngIf="data.confirmed_by === null" (click)="confirmAction(true)">
+      <mat-icon>done</mat-icon>
+    </app-button>
+    <app-button variant="unconfirm" [disabled]="loading" [success]="!loading && success" *ngIf="data.confirmed_by !== null" (click)="confirmAction(false)">
+      <mat-icon>undo</mat-icon>
+    </app-button>
   </div>
 </div>

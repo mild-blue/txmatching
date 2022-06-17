@@ -8,5 +8,5 @@
   </div>
 </div>
 <ng-container *ngIf="data && data.length && warningType === 'warning'">
-  <parsing-issue-confirmation-warning (sortBy)="sortBy($event)" *ngFor="let item of data" [data]="item" [defaultTxmEvent]="defaultTxmEvent"></parsing-issue-confirmation-warning>
+  <app-parsing-issue-confirmation-warning (sortBy)="sortBy($event)" *ngFor="let item of data" [data]="item" [defaultTxmEvent]="defaultTxmEvent"></app-parsing-issue-confirmation-warning>
 </ng-container>

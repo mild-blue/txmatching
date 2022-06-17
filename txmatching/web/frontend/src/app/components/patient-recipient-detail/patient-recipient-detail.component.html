@@ -1,8 +1,8 @@
 <div *ngIf="item" class="detail-recipient">
   <ng-container *ngIf="item.allMessages">
-    <parsing-issue-confirmation *ngFor="let data of item.allMessages | keyvalue" [data]="data.value" 
+    <app-parsing-issue-confirmation *ngFor="let data of item.allMessages | keyvalue" [data]="data.value" 
                                                                                  [warningType]="data.key" 
-                                                                                 [defaultTxmEvent]="defaultTxmEvent"></parsing-issue-confirmation>
+                                                                                 [defaultTxmEvent]="defaultTxmEvent"></app-parsing-issue-confirmation>
   </ng-container>
 
   <div class="detail__header">

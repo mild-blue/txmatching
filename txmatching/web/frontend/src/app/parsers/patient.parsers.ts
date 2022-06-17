@@ -2,7 +2,6 @@ import {
   AllMessagesGenerated,
   BloodGroupEnumGenerated,
   DonorGenerated,
-  ParsingIssueConfirmationGenerated,
   PatientParametersGenerated,
   RecipientGenerated,
   SexEnumGenerated
@@ -59,9 +58,9 @@ export const parseBloodGroup = (data: BloodGroupEnumGenerated): BloodGroup => {
 };
 
 export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined): AllMessages => {
-  let errors: ParsingIssueConfirmation[] = [];
-  let warnings: ParsingIssueConfirmation[] = [];
-  let infos: ParsingIssueConfirmation[] = [];
+  const errors: ParsingIssueConfirmation[] = [];
+  const warnings: ParsingIssueConfirmation[] = [];
+  const infos: ParsingIssueConfirmation[] = [];
 
   allMessages?.errors?.forEach((error) => {
     errors.push(parseParsingIssueConfirmation(error));
@@ -71,7 +70,7 @@ export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined):
     warnings.push(parseParsingIssueConfirmation(warning));
   });
 
-  warnings.sort((warning) => (warning.confirmed_by === null) ? -1 : 1);
+  warnings.sort((warning) => (!warning.confirmed_by) ? -1 : 1);
 
   allMessages?.infos?.forEach((info) => {
     infos.push(parseParsingIssueConfirmation(info));
