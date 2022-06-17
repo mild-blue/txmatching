@@ -24,9 +24,9 @@ export interface PatientParameters {
 }
 
 export interface AllMessages {
-  error: Array<ParsingIssueConfirmation>;
-  warning: Array<ParsingIssueConfirmation>;
-  info: Array<ParsingIssueConfirmation>;
+  error: ParsingIssueConfirmation[];
+  warning: ParsingIssueConfirmation[];
+  info: ParsingIssueConfirmation[];
 }
 
 export interface AllTransplantMessages {
