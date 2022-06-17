@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, EventEmitter,  OnInit, Output } from '@angular/core';
 import { WarningType } from '@app/helpers/messages';
 import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
 import { PatientService } from '@app/services/patient/patient.service';
@@ -21,6 +21,8 @@ export class ParsingIssueConfirmationWarningComponent{
   public unconfirmSuccess: boolean = false;
   public unconfirmLoading: boolean = false;
 
+  @Output("sortBy") sortBy: EventEmitter<any> = new EventEmitter();
+
   constructor(private _patientService: PatientService,
       private _logger: LoggerService,
       private _alertService: AlertService) {
@@ -41,8 +43,12 @@ export class ParsingIssueConfirmationWarningComponent{
     this.confirmSuccess = false;
     this._patientService.confirmWarning(this.defaultTxmEvent.id, this.data.db_id)
     .then(res => {
+      if (this.data){
+        this.data.confirmed_by = 0;
+      }
       this.data = res;
       this.confirmSuccess = true;
+      this.sortBy.emit();
     })
     .catch((e) => {
       this._logger.error(`Error confirming warning: "${getErrorMessage(e)}"`);
@@ -68,8 +74,12 @@ export class ParsingIssueConfirmationWarningComponent{
     this.unconfirmSuccess = false;
     this._patientService.unconfirmWarning(this.defaultTxmEvent.id, this.data.db_id)
     .then(res => {
+      if (this.data){
+        this.data.confirmed_by = undefined;
+      }
       this.data = res;
       this.unconfirmSuccess = true;
+      this.sortBy.emit();
     })
     .catch((e) => {
       this._logger.error(`Error unconfirming warning: "${getErrorMessage(e)}"`);

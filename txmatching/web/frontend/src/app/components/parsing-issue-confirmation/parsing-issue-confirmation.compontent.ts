@@ -14,4 +14,12 @@ export class ParsingIssueConfirmationComponent{
   @Input() defaultTxmEvent?: TxmEvent;
 
   constructor() { }
+
+  sortBy(){
+    if (this.warningType === 'warning'){
+      // todo sort najrpv by confirmation potom id (?)
+      this.data?.sort((warning) => (warning.confirmed_by === null || warning.confirmed_by === undefined) ? -1 : 1);
+      console.log(this.data)
+    }
+  }
 }
