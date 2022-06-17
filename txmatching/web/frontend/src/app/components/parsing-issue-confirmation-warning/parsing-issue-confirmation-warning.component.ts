@@ -1,4 +1,4 @@
-import { Component, Input, EventEmitter,  OnInit, Output } from '@angular/core';
+import { Component, Input, EventEmitter, Output } from '@angular/core';
 import { WarningType } from '@app/helpers/messages';
 import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
 import { PatientService } from '@app/services/patient/patient.service';
@@ -12,7 +12,7 @@ import { getErrorMessage } from '@app/helpers/error';
   templateUrl: './parsing-issue-confirmation-warning.component.html',
   styleUrls: ['./parsing-issue-confirmation-warning.component.scss']
 })
-export class ParsingIssueConfirmationWarningComponent{
+export class ParsingIssueConfirmationWarningComponent {
   warningType: WarningType = 'warning';
   @Input() data?: ParsingIssueConfirmation;
   @Input() defaultTxmEvent?: TxmEvent;
@@ -22,12 +22,12 @@ export class ParsingIssueConfirmationWarningComponent{
   @Output() sortBy: EventEmitter<ParsingIssueConfirmation> = new EventEmitter();
 
   constructor(private _patientService: PatientService,
-      private _logger: LoggerService,
-      private _alertService: AlertService) {
+              private _logger: LoggerService,
+              private _alertService: AlertService) {
   }
 
   public confirmAction(confirm: boolean): void {
-    if (!this.data){
+    if (!this.data) {
       this._logger.error('confirmAction failed because data not set');
       return;
     }
@@ -37,35 +37,22 @@ export class ParsingIssueConfirmationWarningComponent{
       return;
     }
 
-    if(confirm){
-      this.loading = true;
+    const confirmationService = (confirm) ?
+      this._patientService.confirmWarning(this.defaultTxmEvent.id, this.data.db_id) :
+      this._patientService.unconfirmWarning(this.defaultTxmEvent.id, this.data.db_id);
+
+    this.loading = true;
+
+    confirmationService.then(res => {
+      this.data = res;
+      this.sortBy.emit(this.data);
+      this.success = true;
+    })
+    .catch((e) => {
+      this._logger.error(`Error confirming warning: "${getErrorMessage(e)}"`);
+      this._alertService.error(`Error confirming warning: "${getErrorMessage(e)}"`);
       this.success = false;
-      this._patientService.confirmWarning(this.defaultTxmEvent.id, this.data.db_id)
-      .then(res => {
-        this.data = res;
-        this.sortBy.emit(this.data);
-        this.success = true;
-      })
-      .catch((e) => {
-        this._logger.error(`Error confirming warning: "${getErrorMessage(e)}"`);
-        this._alertService.error(`Error confirming warning: "${getErrorMessage(e)}"`);
-      })
-      .finally(() => this.loading = false);
-    }
-    else {
-      this.loading = true;
-      this.success = false;
-      this._patientService.unconfirmWarning(this.defaultTxmEvent.id, this.data.db_id)
-      .then(res => {
-        this.data = res;
-        this.sortBy.emit(this.data);
-        this.success = true;
-      })
-      .catch((e) => {
-        this._logger.error(`Error unconfirming warning: "${getErrorMessage(e)}"`);
-        this._alertService.error(`Error unconfirming warning: "${getErrorMessage(e)}"`);
-      })
-      .finally(() => this.loading = false);
-    }
+    })
+    .finally(() => this.loading = false);
   }
 }
