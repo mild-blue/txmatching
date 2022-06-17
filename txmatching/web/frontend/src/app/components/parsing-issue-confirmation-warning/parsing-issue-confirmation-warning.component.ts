@@ -21,7 +21,8 @@ export class ParsingIssueConfirmationWarningComponent{
   public unconfirmSuccess: boolean = false;
   public unconfirmLoading: boolean = false;
 
-  @Output("sortBy") sortBy: EventEmitter<any> = new EventEmitter();
+
+  @Output("sortBy") sortBy: EventEmitter<ParsingIssueConfirmation> = new EventEmitter();
 
   constructor(private _patientService: PatientService,
       private _logger: LoggerService,
@@ -48,7 +49,7 @@ export class ParsingIssueConfirmationWarningComponent{
       }
       this.data = res;
       this.confirmSuccess = true;
-      this.sortBy.emit();
+      this.sortBy.emit(this.data);
     })
     .catch((e) => {
       this._logger.error(`Error confirming warning: "${getErrorMessage(e)}"`);
@@ -79,7 +80,7 @@ export class ParsingIssueConfirmationWarningComponent{
       }
       this.data = res;
       this.unconfirmSuccess = true;
-      this.sortBy.emit();
+      this.sortBy.emit(this.data);
     })
     .catch((e) => {
       this._logger.error(`Error unconfirming warning: "${getErrorMessage(e)}"`);

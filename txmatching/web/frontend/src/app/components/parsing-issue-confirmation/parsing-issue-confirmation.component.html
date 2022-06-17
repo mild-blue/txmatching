@@ -1,13 +1,12 @@
 <div class="error-and-info-card {{warningType}}" *ngIf="data && data.length && warningType !== 'warning'">
   <div class="error-and-info-card-heading">
-    <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
-    <h2 [ngClass]="warningType">{{warningType}}</h2>
+     <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
+     <h2 [ngClass]="warningType">{{warningType}}</h2>
   </div>
   <div class="error-and-info-card-body">
-    <p *ngFor="let item of data">{{item.hla_code_or_group}}: {{item.message}}</p>
+     <p *ngFor="let item of data">{{item.hla_code_or_group}}: {{item.message}}</p>
   </div>
 </div>
-
 <ng-container *ngIf="data && data.length && warningType === 'warning'">
-  <parsing-issue-confirmation-warning (sortBy)="sortBy()" *ngFor="let item of data" [data]="item" [defaultTxmEvent]="defaultTxmEvent"></parsing-issue-confirmation-warning>
+  <parsing-issue-confirmation-warning (sortBy)="sortBy($event)" *ngFor="let item of data" [data]="item" [defaultTxmEvent]="defaultTxmEvent"></parsing-issue-confirmation-warning>
 </ng-container>
