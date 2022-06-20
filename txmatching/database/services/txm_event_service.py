@@ -98,7 +98,7 @@ def get_txm_event_id_for_current_user() -> int:
         if event_id is not None:
             return event_id
         else:
-            raise ValueError('User has not access to any TXM event.')
+            raise UnauthorizedException('User does not have access to any TXM event.')
 
 
 def update_default_txm_event_id_for_current_user(event_id: int):

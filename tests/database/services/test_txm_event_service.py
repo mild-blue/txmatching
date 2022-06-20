@@ -120,7 +120,7 @@ class TestTxmEventService(DbTests):
 
         # Error is raised when trying to get default event
         self.assertEqual(viewer_user.default_txm_event_id, txm_event_2.db_id)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(UnauthorizedException):
             get_txm_event_id_for_current_user()
 
         # Default event is changed to null in db
