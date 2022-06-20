@@ -132,7 +132,7 @@ def _user_auth_handlers(api: Api):
     def handle_unauthorized_exception(error: UnauthorizedException):
         """unauthorized_exception"""
         _log_warning(error)
-        return {'error': 'Not authorized.', 'message': str(error)}, 403
+        return {'error': error.message, 'message': str(error)}, 403
 
     @api.errorhandler(TooComplicatedDataForAllSolutionsSolver)
     def handle_too_complicated_data_for_solver_exception(error: TooComplicatedDataForAllSolutionsSolver):
@@ -146,12 +146,11 @@ def _user_auth_handlers(api: Api):
         """too complicated data for solver _exception"""
         _log_warning(error)
         return {'error': 'There are too many possible solutions for the provided set of patients and the '
-                         'algorithm cannot find the optimal solution with the provided threshold for cycle and '
-                         'sequence length. This often happens when there are too many patients without antibodies. '
-                         'This is often the case when crossmatch level is set to high resolution but all data is in '
-                         'split resolution. '
-                         'Please change configuration or contact administrators on info@mild.blue'
-                         ' or +420 723 927 536.', 'message': str(error)}, 400
+                         'algorithm cannot find the optimal solution. This often happens when there are too many patients'
+                         ' without antibodies. This is usually the case when crossmatch level is set to high resolution but'
+                         ' all data is in split resolution. '
+                         'Try increasing the number of dynamic constraints, or max sequence and cycle length, or contact'
+                         ' administrators on info@mild.blue or +420 723 927 536.', 'message': str(error)}, 400
 
     @api.errorhandler(DaciteError)
     def handle_dacite_exception(error: DaciteError):

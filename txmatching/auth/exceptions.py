@@ -122,7 +122,9 @@ class UnauthorizedException(BaseTxmException):
     """
     Raised if user tries to access resource he has no access to.
     """
-
+    def __init__(self, message: str = 'Not authorized.'):
+        self.message = message
+        super().__init__(self.message)
 
 class OverridingException(BaseTxmException):
     """
