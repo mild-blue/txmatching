@@ -191,31 +191,37 @@ def get_transplant_messages(
 
     if donor_parameters.weight:
         if recipient_requirements.max_donor_weight and donor_parameters.weight > recipient_requirements.max_donor_weight:
-            detailed_messages.append(TransplantWarningDetail.MAX_WEIGHT)
+            detailed_messages.append(TransplantWarningDetail.MAX_WEIGHT(recipient_requirements.max_donor_weight))
         elif recipient_requirements.min_donor_weight and donor_parameters.weight < recipient_requirements.min_donor_weight:
-            detailed_messages.append(TransplantWarningDetail.MIN_WEIGHT)
+            detailed_messages.append(TransplantWarningDetail.MIN_WEIGHT(recipient_requirements.min_donor_weight))
 
     if donor_parameters.height:
         if recipient_requirements.max_donor_height and donor_parameters.height > recipient_requirements.max_donor_height:
-            detailed_messages.append(TransplantWarningDetail.MAX_HEIGHT)
+            detailed_messages.append(TransplantWarningDetail.MAX_HEIGHT(recipient_requirements.max_donor_height))
         elif recipient_requirements.min_donor_height and donor_parameters.height < recipient_requirements.min_donor_height:
-            detailed_messages.append(TransplantWarningDetail.MIN_HEIGHT)
+            detailed_messages.append(TransplantWarningDetail.MIN_HEIGHT(recipient_requirements.min_donor_height))
 
     if donor_parameters.year_of_birth:
         donor_age = date.today().year - donor_parameters.year_of_birth
         if recipient_requirements.max_donor_age and donor_age > recipient_requirements.max_donor_age:
-            detailed_messages.append(TransplantWarningDetail.MAX_AGE)
+            detailed_messages.append(TransplantWarningDetail.MAX_AGE(recipient_requirements.max_donor_age))
         elif recipient_requirements.min_donor_age and donor_age < recipient_requirements.min_donor_age:
-            detailed_messages.append(TransplantWarningDetail.MIN_AGE)
+            detailed_messages.append(TransplantWarningDetail.MIN_AGE(recipient_requirements.min_donor_age))
 
     possible_crossmatches = [antibody_match for detailed_score in detailed_scores
                              for antibody_match in detailed_score.antibody_matches
                              if antibody_match.match_type != AntibodyMatchTypes.NONE]
-    for possible_crossmatch in possible_crossmatches:
-        if possible_crossmatch.match_type == AntibodyMatchTypes.BROAD:
-            detailed_messages.append(TransplantWarningDetail.BROAD_CROSSMATCH)
-        elif possible_crossmatch.match_type == AntibodyMatchTypes.SPLIT:
-            detailed_messages.append(TransplantWarningDetail.SPLIT_CROSSMATCH)
+
+    broad_crossmatches = {possible_crossmatch.hla_antibody.raw_code for possible_crossmatch in possible_crossmatches
+                          if possible_crossmatch.match_type == AntibodyMatchTypes.BROAD}
+    split_crossmatches = {possible_crossmatch.hla_antibody.raw_code for possible_crossmatch in possible_crossmatches
+                          if possible_crossmatch.match_type == AntibodyMatchTypes.SPLIT}
+
+    if broad_crossmatches != set():
+        detailed_messages.append(TransplantWarningDetail.BROAD_CROSSMATCH(broad_crossmatches))
+
+    if split_crossmatches != set():
+        detailed_messages.append(TransplantWarningDetail.SPLIT_CROSSMATCH(split_crossmatches))
 
     return TransplantWarnings(
         message_global='There were several issues with this transplant, see detail.',

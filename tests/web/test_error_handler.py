@@ -79,7 +79,7 @@ class TestErrorHandler(DbTests):
             side_effect=InvalidArgumentException,
             status_code=400,
             error='Invalid argument.',
-            message=''
+            message='Invalid argument.'
         )
 
     def test_handle_dacite_exception(self):

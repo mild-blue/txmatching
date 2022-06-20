@@ -28,16 +28,20 @@ export class RecipientSettingsComponent implements OnInit {
     }
   }
 
-  public formatNumber(inputValue: NgModel, minValue: number = 1, maxValue?: number): void {
+  public formatNumber(inputValue: NgModel): void {
     if (!this.recipient) {
       return;
     }
 
-    const newValue = formatNumberForPatient(inputValue, this.recipient, minValue, maxValue);
+    const newValue = formatNumberForPatient(inputValue, this.recipient);
 
-    switch(inputValue.name) {
-      case 'antibodiesCutoff': this.recipient.antibodiesCutoff = newValue; break;
-      case 'previousTransplants': this.recipient.previousTransplants = newValue; break;
+    switch (inputValue.name) {
+      case 'antibodiesCutoff':
+        this.recipient.antibodiesCutoff = newValue;
+        break;
+      case 'previousTransplants':
+        this.recipient.previousTransplants = newValue;
+        break;
     }
   }
 }

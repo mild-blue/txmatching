@@ -28,11 +28,11 @@ export class DonorSettingsComponent implements OnInit {
     }
   }
 
-  public formatNumber(inputValue: NgModel, minValue: number = 1, maxValue?: number): void {
+  public formatNumber(inputValue: NgModel): void {
     if (!this.donor) {
       return;
     }
 
-    formatNumberForPatient(inputValue, this.donor, minValue, maxValue);
+    formatNumberForPatient(inputValue, this.donor);
   }
 }
