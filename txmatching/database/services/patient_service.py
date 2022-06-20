@@ -165,6 +165,10 @@ def _create_patient_update_dict_base(patient_update_dto: PatientUpdateDTO) -> Tu
 def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: int) -> Recipient:
     old_recipient_model = RecipientModel.query.get(recipient_update_dto.db_id)
     parsing_issues = []
+
+    if recipient_update_dto.recipient_requirements:
+        _check_if_recipient_requirements_are_valid(recipient_update_dto.recipient_requirements)
+
     if txm_event_db_id != old_recipient_model.txm_event_id:
         raise InvalidArgumentException('Trying to update patient from a different txm event.')
 
@@ -177,7 +181,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         raise OverridingException('The patient can\'t be updated, someone edited this patient in the meantime.')
 
     delete_parsing_issues_for_patient(recipient_id=old_recipient_model.id,
-                                        txm_event_id=old_recipient_model.txm_event_id)
+                                      txm_event_id=old_recipient_model.txm_event_id)
 
     parsing_issues = parsing_issues + updated_parsing_issues
     if recipient_update_dto.acceptable_blood_groups:
@@ -224,8 +228,8 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
             new_hla_antibody_raw_models,
         )
         updated_parsing_issues = parsing_issues_to_models(parsing_issues=antibody_parsing_issues,
-                                                            recipient_id=old_recipient_model.id,
-                                                            txm_event_id=old_recipient_model.txm_event_id)
+                                                          recipient_id=old_recipient_model.id,
+                                                          txm_event_id=old_recipient_model.txm_event_id)
         parsing_issues = parsing_issues + updated_parsing_issues
         recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
 
@@ -256,7 +260,7 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
         raise OverridingException('The patient can\'t be saved, someone edited this patient in the meantime.')
 
     delete_parsing_issues_for_patient(donor_id=old_donor_model.id,
-                                        txm_event_id=old_donor_model.txm_event_id)
+                                      txm_event_id=old_donor_model.txm_event_id)
 
     db.session.add_all(parsing_issues)
     if donor_update_dto.active is not None:
@@ -402,3 +406,20 @@ def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
         RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
 
     db.session.commit()
+
+
+def _check_if_recipient_requirements_are_valid(recipient_requirements: RecipientRequirements):
+    if (recipient_requirements.min_donor_age and recipient_requirements.max_donor_age and
+        recipient_requirements.min_donor_age > recipient_requirements.max_donor_age):
+        raise InvalidArgumentException(f'Maximal required age {recipient_requirements.max_donor_age} is smaller than '
+                                       f'minimal required age {recipient_requirements.min_donor_age}.')
+
+    if (recipient_requirements.min_donor_height and recipient_requirements.max_donor_height and
+        recipient_requirements.min_donor_height > recipient_requirements.max_donor_height):
+        raise InvalidArgumentException(f'Maximal required height {recipient_requirements.max_donor_height} is smaller '
+                                       f'than minimal required height {recipient_requirements.min_donor_height}.')
+
+    if (recipient_requirements.min_donor_weight and recipient_requirements.max_donor_weight and
+        recipient_requirements.min_donor_weight > recipient_requirements.max_donor_weight):
+        raise InvalidArgumentException(f'Maximal required weight {recipient_requirements.max_donor_weight} is smaller '
+                                       f'than minimal required weight {recipient_requirements.min_donor_weight}.')

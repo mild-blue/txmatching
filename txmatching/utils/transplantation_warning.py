@@ -5,20 +5,33 @@ from typing import Dict, List
 
 class TransplantWarningDetail(str, Enum):
     # donor weight
-    MAX_WEIGHT = 'The donor is heavier than the maximum allowable weight of the donor specified in the recipient requirements.'
-    MIN_WEIGHT = 'The donor is lighter than the minimum allowable weight of the donor specified in the recipient requirements.'
+    MAX_WEIGHT = lambda max_weight: (
+        f'The donor is heavier than {max_weight}kg, that is the maximum allowable weight of'
+        ' the donor specified in the recipient requirements.')
+    MIN_WEIGHT = lambda min_weight: (
+        f'The donor is lighter than {min_weight}kg, that is the minimum allowable weight of'
+        ' the donor specified in the recipient requirements.')
 
     # donor height
-    MAX_HEIGHT = 'The donor is taller than the maximum allowable height of the donor specified in the recipient requirements.'
-    MIN_HEIGHT = 'The donor is smaller than the minimum allowable height of the donor specified in the recipient requirements.'
+    MAX_HEIGHT = lambda max_height: (f'The donor is taller than {max_height}cm, that is the maximum allowable height of'
+                                     ' the donor specified in the recipient requirements.')
+    MIN_HEIGHT = lambda min_height: (
+        f'The donor is smaller than {min_height}cm, that is the minimum allowable height of'
+        ' the donor specified in the recipient requirements.')
 
     # donor age
-    MAX_AGE = 'The donor is older than the maximum allowable age of the donor specified in the recipient requirements.'
-    MIN_AGE = 'The donor is younger than the minimum allowable age of the donor specified in the recipient requirements.'
+    MAX_AGE = lambda max_age: (f'The donor is older than {max_age} years, that is the maximum allowable age of the donor'
+                               ' specified in the recipient requirements.')
+    MIN_AGE = lambda min_age: (f'The donor is younger than {min_age} years, that is the minimum allowable age of the donor'
+                               ' specified in the recipient requirements.')
 
     # possible crossmatch
-    BROAD_CROSSMATCH = 'There is a possible crossmatch on broad level. The tranplant should be confirmed with immunologist first'
-    SPLIT_CROSSMATCH = 'There is a possible crossmatch on split level. The tranplant should be confirmed with immunologist first'
+    BROAD_CROSSMATCH = lambda antibodies: (
+        f'There is a possible crossmatch on broad level for antibodies: {antibodies}.'
+        ' The tranplant should be confirmed with immunologist first')
+    SPLIT_CROSSMATCH = lambda antibodies: (
+        f'There is a possible crossmatch on split level for antibodies: {antibodies}.'
+        ' The tranplant should be confirmed with immunologist first')
 
 
 @dataclass

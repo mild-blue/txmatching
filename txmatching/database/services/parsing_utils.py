@@ -28,7 +28,9 @@ def check_existing_ids_for_duplicates(txm_event: TxmEvent, donors: List[DonorUpl
     new_recipient_ids = {recipient.medical_id for recipient in recipients}
     current_recipient_ids = {recipient.medical_id for recipient in txm_event.all_recipients}
     recipient_duplicate_ids = new_recipient_ids.intersection(current_recipient_ids)
-    if donor_duplicate_ids or recipient_duplicate_ids:
-        raise InvalidArgumentException(f'There were the same patients in current data and in the data for upload:'
-                                       f' duplicate donor ids: {donor_duplicate_ids};'
-                                       f' duplicate recipient ids {recipient_duplicate_ids}')
+    if donor_duplicate_ids:
+        raise InvalidArgumentException(f'There were the same donors in current data and in the data for upload:'
+                                       f' {donor_duplicate_ids}')
+    if recipient_duplicate_ids:
+        raise InvalidArgumentException(f'There were the same donors in current data and in the data for upload:'
+                                       f' {recipient_duplicate_ids}')
