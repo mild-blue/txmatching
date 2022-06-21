@@ -20,6 +20,7 @@ class DataAndConfigurationForILPSolver:
     country_codes_dict: Dict[int, Country]
     required_patients: List[int]
     recipient_to_donors_enum_dict: Dict[int, List[int]]
+    active_and_valid_recipients_list: List[Recipient]
     donor_enum_to_related_recipient: Dict[int, int]
     graph: nx.Graph
 
@@ -59,6 +60,8 @@ class DataAndConfigurationForILPSolver:
                                    enumerate(active_and_valid_donors_dict.values())}
         self.blood_groups_dict = {i: donor.parameters.blood_group for i, donor in
                                   enumerate(active_and_valid_donors_dict.values())}
+
+        self.active_and_valid_recipients_list = active_and_valid_recipients_dict.values()
 
     def _create_graph(self,
                       config_parameters: ConfigParameters,
