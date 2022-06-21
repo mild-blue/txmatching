@@ -214,7 +214,7 @@ SPECIAL_RECIPIENTS_WAITING_SINCE_DATE_INVALID = [
         'sex': Sex.F,
         'height': 150,
         'weight': 65,
-        'year_of_birth': 21,
+        'year_of_birth': 1989,
         'waiting_since': '2020-13-06',
         'previous_transplants': 0
     }
