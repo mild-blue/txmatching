@@ -1,6 +1,6 @@
 import { PatientPair } from '@app/model/PatientPair';
 import { DetailedScorePerGroup } from '@app/model/Hla';
-import { AllMessages } from '@app/model/Patient';
+import { AllTransplantMessages } from '@app/model/Patient';
 
 export interface Transplant extends PatientPair {
   score: number;
@@ -14,5 +14,5 @@ export interface Transplant extends PatientPair {
 
 export interface TransplantMessages {
   messageGlobal: string;
-  allMessages: AllMessages;
+  allMessages: AllTransplantMessages;
 }

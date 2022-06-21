@@ -1,6 +1,6 @@
 @import "../../../styles/variables";
 
-.warning-card {
+.error-and-info-card {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -59,15 +59,6 @@
   }
 }
 
-.warning {
-  background-color: $warning-bg;
-  color: $warning-text;
-
-  mat-icon {
-    color: $warning-icon;
-  }
-}
-
 .info {
   background-color: $info-bg;
   color: $info-text;
@@ -76,4 +67,3 @@
     color: $info-icon;
   }
 }
-

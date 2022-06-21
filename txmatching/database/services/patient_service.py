@@ -174,7 +174,7 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
                                                       txm_event_id=old_recipient_model.txm_event_id)
 
     if old_recipient_model.etag != recipient_update_dict['etag'] - 1:
-        raise OverridingException('The patient can\'t be saved, someone edited this patient in the meantime.')
+        raise OverridingException('The patient can\'t be updated, someone edited this patient in the meantime.')
 
     delete_parsing_issues_for_patient(recipient_id=old_recipient_model.id,
                                         txm_event_id=old_recipient_model.txm_event_id)

@@ -871,7 +871,7 @@
                     "200": {
                         "description": "Issue confirmed successfully.",
                         "schema": {
-                            "$ref": "#/definitions/ParsingIssuePublic"
+                            "$ref": "#/definitions/ParsingIssueConfirmation"
                         }
                     }
                 },
@@ -1126,6 +1126,69 @@
                 },
                 "description": "Endpoint that lets an ADMIN recompute parsed antigens and antibodies for all patients in the given txm event.",
                 "operationId": "post_recompute_parsing",
+                "tags": [
+                    "patients"
+                ]
+            }
+        },
+        "/v1/txm-event/{txm_event_id}/patients/unconfirm-warning/{parsing_issue_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "put": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Issue unconfirmed successfully.",
+                        "schema": {
+                            "$ref": "#/definitions/ParsingIssueConfirmation"
+                        }
+                    }
+                },
+                "description": "Unconfirm a warning.",
+                "operationId": "put_unconfirm_warning",
+                "parameters": [
+                    {
+                        "name": "parsing_issue_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Id of the warning to be unconfirmed"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
                 "tags": [
                     "patients"
                 ]
@@ -3205,12 +3268,12 @@
                 "message": {
                     "type": "string"
                 },
+                "confirmed_by": {
+                    "type": "integer"
+                },
                 "confirmed_at": {
                     "type": "string",
                     "format": "date"
-                },
-                "confirmed_by": {
-                    "type": "integer"
                 },
                 "txm_event_id": {
                     "type": "integer"

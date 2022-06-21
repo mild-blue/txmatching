@@ -1,0 +1,92 @@
+@import "../../../styles/variables";
+
+.warning-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: start;
+  gap: 0.5rem;
+  color: $warning-text;
+  border-radius: 2.5rem;
+  margin: 1rem 0;
+
+  div {
+    display: flex;
+    margin-top: auto;
+    margin-bottom: auto;
+
+    p {
+      height: 100%;
+    }
+  }
+}
+
+.warning-card-unconfirmed {
+  background-color: $warning-bg;
+  filter: drop-shadow(0 0.2rem 0.45rem rgba(0, 0, 0, 0.1));
+  padding: 1.5rem 1.875rem;
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    gap: 0.5rem;
+  }
+
+  &-heading {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+    height: 100%;
+    font-size: 2rem;
+
+    mat-icon {
+      color: $warning-icon;
+    }
+
+    p {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    h2 {
+      text-transform: capitalize;
+      margin: 0;
+      font-size: 1.2rem;
+    }
+  }
+
+  &-body {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+
+    p {
+      margin: 0.3rem 0;
+    }
+  }
+}
+
+.warning-card-confirmed {
+  border-width: 0.125rem;
+  border-style: solid;
+  border-color: $warning-icon;
+  padding: 0.5rem 1.875rem;
+
+  &-body {
+    flex-direction: row;
+    align-items: start;
+
+    mat-icon {
+      margin: 0.438rem;
+      color: $warning-icon;
+    }
+
+    p {
+      margin: 0.3rem 0;
+    }
+  }
+}

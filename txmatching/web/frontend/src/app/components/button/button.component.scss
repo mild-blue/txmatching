@@ -2,7 +2,7 @@
 @import '../../../styles/animations';
 
 .button {
-  min-width: 120px;
+  min-width: 7.5rem;
   margin: $item-gap auto 0;
   font-weight: 600;
 
@@ -23,6 +23,36 @@
 
     &:hover {
       filter: brightness(90%);
+    }
+  }
+
+  &.confirm {
+    margin: 0;
+    background-color: $warning-icon;
+    color: $warning-text;
+    min-width: 3.125rem;
+
+    &:hover {
+      background-color: darken($warning-icon, 10%);
+    }
+
+    mat-icon {
+      color: $warning-text;
+    }
+  }
+
+  &.unconfirm {
+    margin: 0;
+    background-color: $white;
+    color: $warning-text;
+    min-width: 3.125rem;
+
+    &:hover {
+      background-color: darken($white, 5%);
+    }
+
+    mat-icon {
+      color: $warning-text;
     }
   }
 
@@ -71,8 +101,10 @@
     }
   }
 
-  ::ng-deep mat-icon {
-    margin-left: 10px;
+  &:not(.confirm) &:not(.unconfirm) {
+    ::ng-deep mat-icon {
+      margin-left: 0.625rem;
+    }
   }
 
   &[disabled] {
