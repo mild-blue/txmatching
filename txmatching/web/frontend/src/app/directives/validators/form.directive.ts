@@ -74,7 +74,7 @@ export function formatNumberForPatient(
   } else {
     newValue = +inputValue.value;
   }
-  // todo simplify
+
   switch (inputValue.name) {
     case 'height':
       patient.height = newValue;

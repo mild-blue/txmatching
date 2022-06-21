@@ -33,10 +33,7 @@ export class RecipientSettingsComponent {
     }
 
     const newValue = formatNumberForPatient(inputValue, this.recipient);
-    // todo simplify
-    if(inputValue.name in this.recipient){
-      this.recipient[inputValue.name] = formatNumberForPatient(inputValue, this.recipient);
-    }
+
     switch (inputValue.name) {
       case 'antibodiesCutoff':
         this.recipient.antibodiesCutoff = newValue;
