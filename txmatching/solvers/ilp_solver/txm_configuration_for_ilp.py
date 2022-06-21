@@ -21,6 +21,7 @@ class DataAndConfigurationForILPSolver:
     required_patients: List[int]
     recipient_to_donors_enum_dict: Dict[int, List[int]]
     active_and_valid_recipients_list: List[Recipient]
+    active_and_valid_donors_list: List[Donor]
     donor_enum_to_related_recipient: Dict[int, int]
     graph: nx.Graph
 
@@ -62,6 +63,7 @@ class DataAndConfigurationForILPSolver:
                                   enumerate(active_and_valid_donors_dict.values())}
 
         self.active_and_valid_recipients_list = active_and_valid_recipients_dict.values()
+        self.active_and_valid_donors_list = active_and_valid_donors_dict.values()
 
     def _create_graph(self,
                       config_parameters: ConfigParameters,
