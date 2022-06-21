@@ -1,12 +1,13 @@
 import logging
 import tempfile
 from os import close, dup, dup2
-from typing import Iterable, Tuple
+from typing import Iterable, List, Tuple
 
 import mip
 
 from txmatching.auth.exceptions import \
     CannotFindShortEnoughRoundsOrPathsInILPSolver
+from txmatching.patients.patient import Recipient
 from txmatching.solvers.ilp_solver.generate_dynamic_constraints import \
     add_dynamic_constraints
 from txmatching.solvers.ilp_solver.ilp_dataclasses import (
@@ -54,10 +55,9 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
             if number_of_times_dynamic_constraint_added > \
                     data_and_configuration.configuration.max_number_of_dynamic_constrains_ilp_solver:
                 if not some_solution_yielded:
-                    raise CannotFindShortEnoughRoundsOrPathsInILPSolver(
-                        'Unable to find solution complying with required length of cycles and sequences.'
-                        f'Number of added dynamic constraints reached a threshold of'
-                        f' {data_and_configuration.configuration.max_number_of_dynamic_constrains_ilp_solver}')
+                    # todo 1. zcheknout tu condition, kterou zminuju tzn. ze maji nastaveny split crossmatch type ale pritom vsichni pacienti maji jen split resolution. V tomto pripade jim rict at nastavi broad nebo none. A tim tu zpravu skoncit
+                    _is_majority_of_recipients_missing_antibodies(data_and_configuration.active_and_valid_recipients_list)
+                    raise CannotFindShortEnoughRoundsOrPathsInILPSolver("todo generic error msg bod 3")
 
         if status == Status.OPTIMAL:
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
@@ -218,3 +218,12 @@ def _find_all_end_of_chain_edges(solution_edges: Iterable[Tuple[int, int]]) -> s
         {solution_edge for solution_edge in solution_edges if solution_edge[1] not in set_of_donors})
 
     return end_of_chain_edges
+
+def _is_majority_of_recipients_missing_antibodies(recipient_list: List[Recipient]):
+    number_of_recipients = len(recipient_list)
+    recipients_without_antibodies = 0
+    for recipient in recipient_list:
+        if len(recipient.hla_antibodies.hla_antibodies_raw_list) == 0:
+            recipients_without_antibodies = recipients_without_antibodies + 1
+            if recipients_without_antibodies > number_of_recipients / 2:
+                raise CannotFindShortEnoughRoundsOrPathsInILPSolver("todo sem daj ze nemaju antibodies a ten treti bod")

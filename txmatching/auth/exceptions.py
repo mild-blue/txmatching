@@ -110,7 +110,9 @@ class CannotFindShortEnoughRoundsOrPathsInILPSolver(BaseTxmException):
     Raised if there are too many possible paths and rounds longer than the threshold. And by adding dynamic constraints
     we are not able to narrow the length of the paths down enough.
     """
-
+    def __init__(self, message: str = 'todo'):
+        self.message = message
+        super().__init__(self.message)
 
 class SolverAlreadyRunningException(BaseTxmException):
     """
