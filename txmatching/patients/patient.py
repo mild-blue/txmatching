@@ -183,7 +183,6 @@ def is_weight_valid(patient: str, weight: Kilograms):
 
 def is_year_of_birth_valid(patient: str, year_of_birth: Centimeters):
     if year_of_birth < 1900 or year_of_birth > THIS_YEAR:
-        # todo
         raise InvalidArgumentException(f'Invalid {patient} year of birth {year_of_birth}')
 
 
