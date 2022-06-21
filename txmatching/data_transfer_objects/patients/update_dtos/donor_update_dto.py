@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date
 from typing import Optional
 
 from txmatching.auth.exceptions import InvalidArgumentException
@@ -17,5 +18,5 @@ class DonorUpdateDTO(PatientUpdateDTO):
         if self.weight and self.weight < 0:
             raise InvalidArgumentException(f'Invalid donor weight {self.weight}kg.')
 
-        if self.year_of_birth and self.year_of_birth < 0:
+        if self.year_of_birth and (self.year_of_birth < 1900 or self.year_of_birth > date.today().year):
             raise InvalidArgumentException(f'Invalid donor year of birth {self.year_of_birth}')
