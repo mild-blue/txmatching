@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from datetime import date
 from typing import List, Optional
 
-from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.patients.patient import is_height_valid, is_weight_valid, is_year_of_birth_valid
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
@@ -24,11 +23,11 @@ class DonorUploadDTO:
     internal_medical_id: Optional[str] = None
 
     def __post_init__(self):
-        if self.height and self.height < 0:
-            raise InvalidArgumentException(f'Invalid donor height {self.height}cm.')
+        if self.height:
+            is_height_valid("donor", self.height)
 
-        if self.year_of_birth and (self.year_of_birth < 1900 or self.year_of_birth > date.today().year):
-            raise InvalidArgumentException(f'Invalid donor year of birth {self.year_of_birth}')
+        if self.weight:
+            is_weight_valid("donor", self.weight)
 
-        if self.weight and self.weight < 0:
-            raise InvalidArgumentException(f'Invalid donor weight {self.weight}kg.')
+        if self.year_of_birth:
+            is_year_of_birth_valid("donor", self.year_of_birth)

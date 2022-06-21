@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from datetime import date
 from typing import List, Optional
 
-from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
     HLAAntibodiesUploadDTO
+from txmatching.patients.patient import (is_height_valid, is_number_of_previous_transplants_valid,
+    is_weight_valid, is_year_of_birth_valid)
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
@@ -28,15 +28,14 @@ class RecipientUploadDTO:
     internal_medical_id: Optional[str] = None
 
     def __post_init__(self):
-        if self.height and self.height < 0:
-            raise InvalidArgumentException(f'Invalid recipient height {self.height}cm.')
+        if self.height:
+            is_height_valid("recipient", self.height)
 
-        if self.weight and self.weight < 0:
-            raise InvalidArgumentException(f'Invalid recipient weight {self.weight}kg.')
+        if self.weight:
+            is_weight_valid("recipient", self.weight)
 
-        if self.year_of_birth and (self.year_of_birth < 1900 or self.year_of_birth > date.today().year):
-            raise InvalidArgumentException(f'Invalid recipient year of birth {self.year_of_birth}')
+        if self.year_of_birth:
+            is_year_of_birth_valid("recipient", self.year_of_birth)
 
-        if self.previous_transplants and self.previous_transplants < 0:
-            raise InvalidArgumentException(
-                f'Invalid recipient number of previous transplants {self.previous_transplants}.')
+        if self.previous_transplants:
+            is_number_of_previous_transplants_valid(self.previous_transplants)
