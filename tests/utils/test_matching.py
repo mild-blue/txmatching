@@ -150,9 +150,9 @@ class TestMatching(DbTests):
         self.assertEqual('There were several issues with this transplant, see detail.',
                          transplant_messages.message_global)
         self.assertEqual([
-            TransplantWarningDetail.MAX_WEIGHT,
-            TransplantWarningDetail.MAX_HEIGHT,
-            TransplantWarningDetail.MAX_AGE
+            TransplantWarningDetail.MAX_WEIGHT(recipients[0].recipient_requirements.max_donor_weight),
+            TransplantWarningDetail.MAX_HEIGHT(recipients[0].recipient_requirements.max_donor_height),
+            TransplantWarningDetail.MAX_AGE(recipients[0].recipient_requirements.max_donor_age)
         ], transplant_messages.all_messages['warnings'])
         self.assertEqual([], transplant_messages.all_messages['infos'])
         self.assertEqual([], transplant_messages.all_messages['errors'])
@@ -162,9 +162,9 @@ class TestMatching(DbTests):
             recipient_requirements=recipients[1].recipient_requirements,
             detailed_scores=[])
         self.assertEqual([
-            TransplantWarningDetail.MIN_WEIGHT,
-            TransplantWarningDetail.MIN_HEIGHT,
-            TransplantWarningDetail.MIN_AGE
+            TransplantWarningDetail.MIN_WEIGHT(recipients[1].recipient_requirements.min_donor_weight),
+            TransplantWarningDetail.MIN_HEIGHT(recipients[1].recipient_requirements.min_donor_height),
+            TransplantWarningDetail.MIN_AGE(recipients[1].recipient_requirements.min_donor_age)
         ], transplant_messages.all_messages['warnings'])
 
         transplant_messages = get_transplant_messages(
@@ -172,6 +172,6 @@ class TestMatching(DbTests):
             recipient_requirements=recipients[1].recipient_requirements,
             detailed_scores=[])
         self.assertEqual([
-            TransplantWarningDetail.MIN_HEIGHT,
-            TransplantWarningDetail.MIN_AGE
+            TransplantWarningDetail.MIN_HEIGHT(recipients[1].recipient_requirements.min_donor_height),
+            TransplantWarningDetail.MIN_AGE(recipients[1].recipient_requirements.min_donor_age)
         ], transplant_messages.all_messages['warnings'])

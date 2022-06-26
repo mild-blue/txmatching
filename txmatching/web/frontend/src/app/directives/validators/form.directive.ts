@@ -24,7 +24,7 @@ export function mustMatchValidator(controlName: string, matchingControlName: str
     } else {
       matchingControl.setErrors(null);
     }
-  }
+  };
 }
 
 export function patientNameValidator(patients: Patient[]): ValidatorFn {
@@ -63,28 +63,28 @@ export function countryFullTextSearch(countries: string[], searchPhrase: string)
 }
 
 export function formatYearOfBirthForPatient(inputValue: NgModel, patient: PatientEditable): void {
-  formatNumberForPatient(inputValue, patient, 1, new Date().getFullYear());
+  formatNumberForPatient(inputValue, patient);
 }
 
 export function formatNumberForPatient(
-  inputValue: NgModel, patient: PatientEditable, minValue: number, maxValue?: number
-): number | undefined {
+  inputValue: NgModel, patient: PatientEditable): number | undefined {
   let newValue: number | undefined;
-  if(!inputValue.value) {
+  if (!inputValue.value) {
     newValue = undefined;
   } else {
     newValue = +inputValue.value;
-    if (newValue < minValue) {
-      newValue = undefined;
-    } else if (maxValue !== undefined && newValue > maxValue) {
-      newValue = undefined;
-    }
   }
 
-  switch(inputValue.name) {
-    case 'height': patient.height = newValue; break;
-    case 'weight': patient.weight = newValue; break;
-    case 'yearOfBirth': patient.yearOfBirth = newValue; break;
+  switch (inputValue.name) {
+    case 'height':
+      patient.height = newValue;
+      break;
+    case 'weight':
+      patient.weight = newValue;
+      break;
+    case 'yearOfBirth':
+      patient.yearOfBirth = newValue;
+      break;
   }
 
   inputValue.update.emit(newValue);

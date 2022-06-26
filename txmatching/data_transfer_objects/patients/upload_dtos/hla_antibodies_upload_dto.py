@@ -1,6 +1,8 @@
 import logging
 from dataclasses import dataclass
 
+from txmatching.auth.exceptions import InvalidArgumentException
+
 logger = logging.getLogger(__name__)
 
 
@@ -12,5 +14,6 @@ class HLAAntibodiesUploadDTO:
 
     def __post_init__(self):
         if self.mfi < 0:
-            self.mfi = 0
-            logger.warning('MFI should not be negative, setting to 0.')
+            raise InvalidArgumentException('Some antibodies have negative MFI value.')
+        if self.cutoff < 0:
+            raise InvalidArgumentException('Some antibodies have negative cutoff value.')
