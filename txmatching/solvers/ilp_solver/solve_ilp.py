@@ -257,4 +257,4 @@ def _is_split_crossmatch_and_nothing_high_res(hla_crossmatch_level: HLACrossmatc
                         return
         raise CannotFindShortEnoughRoundsOrPathsInILPSolver(
             "Split and broad crossmatch is set, but all the patients have only split or broad resolution. " +
-            "Change the allowed crossmatch type to broad, or none.")  # todo
+            "Change the allowed crossmatch type to broad, or none.")
