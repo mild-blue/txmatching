@@ -285,7 +285,7 @@ def _get_ci_for_recipient_donor_types_in_group(
     return DetailedCompatibilityIndexForHLAGroup(
         hla_group=hla_group,
         donor_matches=sorted(donor_matches, key=lambda donor_match: donor_match.hla_type.code.display_code),
-        recipient_matches=sorted(recipient_matches, key=lambda donor_match: donor_match.hla_type.code.display_code),
+        recipient_matches=sorted(recipient_matches, key=lambda recipient_match: recipient_match.hla_type.code.display_code),
         group_compatibility_index=group_compatibility_index
     )
 
