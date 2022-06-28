@@ -10,8 +10,7 @@ It consists of backend written in Python and an Angular frontend.
 
 ## How to run the app locally 
 
-The project can run only on MacOS (not M1 chip) or Linux as we are using [graph-tool](https://graph-tool.skewed.de/) package that
-does not support Windows. WSL, unfortunately, won't help. To run the app in Windows you need Docker. Just use `docker compose up` command.
+The project runs on MacOs (not M1 chip), Linux and Windows. To run on Windows you need Docker and WSL2 as we are using [graph-tool](https://graph-tool.skewed.de/) package that does not support Windows. 
 
 ### Prepare Frontend
 In order to build Frontend for the app one must run `make build-fe`.
@@ -73,7 +72,7 @@ How to use it and some useful info [here on doc](https://flask-restx.readthedocs
 
 The swagger is also in the project. It is generated in `txmatching/web/swagger.yaml`. We always test that it is up to date
 and in case any changes are made, one needs to regenerated it using `local_testing_utilities/generate-swagger.py` by 
-srunning `make generate-swagger-file` command.
+running `make generate-swagger-file` command.
 
 We also automatically generate TypeScript files that are used by FE. These files are generated from the swagger file
 using `openapi-generator-cli` tool. To install this tool, please refer to [README.md](txmatching/web/frontend/README.md).
@@ -124,5 +123,4 @@ To obtain configuration in the code, one should call `get_application_configurat
  from [application_configuration.py](txmatching/configuration/app_configuration/application_configuration.py).
 
 ### Testing
-To run unittests use `make test` command. 
-`make check` command runs linter and unittests altogether.
+To run unittests use `make test` command. `make check` command runs linter and unittests altogether.

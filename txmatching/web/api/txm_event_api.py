@@ -180,7 +180,7 @@ class TxmCopyPatientsBetweenEventsApi(Resource):
         new_donor_ids = copy_patients_between_events(
             txm_event_id_from=copy_dto.txm_event_id_from,
             txm_event_id_to=copy_dto.txm_event_id_to,
-            donor_ids=copy_dto.donor_ids)  # type: CopyPatientsJsonOut
+            donor_ids=copy_dto.donor_ids)
 
         return response_ok(TxmEventCopyPatientsDTOOut(
             new_donor_ids=new_donor_ids
