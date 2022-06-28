@@ -1,12 +1,13 @@
 import logging
 import tempfile
 from os import close, dup, dup2
-from typing import Iterable, Tuple
+from typing import Iterable, List, Tuple
 
 import mip
 
 from txmatching.auth.exceptions import \
     CannotFindShortEnoughRoundsOrPathsInILPSolver
+from txmatching.patients.patient import Donor, Recipient
 from txmatching.solvers.ilp_solver.generate_dynamic_constraints import \
     add_dynamic_constraints
 from txmatching.solvers.ilp_solver.ilp_dataclasses import (
@@ -17,6 +18,7 @@ from txmatching.solvers.ilp_solver.solution import Solution, Status
 from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
     DataAndConfigurationForILPSolver
 from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.enums import HLACrossmatchLevel
 
 logger = logging.getLogger(__name__)
 
@@ -54,10 +56,12 @@ def solve_ilp(data_and_configuration: DataAndConfigurationForILPSolver,
             if number_of_times_dynamic_constraint_added > \
                     data_and_configuration.configuration.max_number_of_dynamic_constrains_ilp_solver:
                 if not some_solution_yielded:
-                    raise CannotFindShortEnoughRoundsOrPathsInILPSolver(
-                        'Unable to find solution complying with required length of cycles and sequences.'
-                        f'Number of added dynamic constraints reached a threshold of'
-                        f' {data_and_configuration.configuration.max_number_of_dynamic_constrains_ilp_solver}')
+                    _is_split_crossmatch_and_nothing_high_res(data_and_configuration.configuration.hla_crossmatch_level,
+                                                              data_and_configuration.active_and_valid_donors_list,
+                                                              data_and_configuration.active_and_valid_recipients_list)
+                    _is_majority_of_recipients_missing_antibodies(
+                        data_and_configuration.active_and_valid_recipients_list)
+                    raise CannotFindShortEnoughRoundsOrPathsInILPSolver
 
         if status == Status.OPTIMAL:
             solution_edges = [edge for edge, var in mapping.edge_to_var.items() if mip_var_to_bool(var)]
@@ -218,3 +222,39 @@ def _find_all_end_of_chain_edges(solution_edges: Iterable[Tuple[int, int]]) -> s
         {solution_edge for solution_edge in solution_edges if solution_edge[1] not in set_of_donors})
 
     return end_of_chain_edges
+
+
+def _is_majority_of_recipients_missing_antibodies(recipient_list: List[Recipient]):
+    number_of_recipients = len(recipient_list)
+    recipients_without_antibodies = 0
+    for recipient in recipient_list:
+        hla_antibodies_count = sum([len(hla_antibody_per_group.hla_antibody_list) for hla_antibody_per_group in
+                                    recipient.hla_antibodies.hla_antibodies_per_groups])
+        if hla_antibodies_count == 0:
+            recipients_without_antibodies = recipients_without_antibodies + 1
+            if recipients_without_antibodies > number_of_recipients / 2:
+                raise CannotFindShortEnoughRoundsOrPathsInILPSolver(
+                    "Majority of recipients don't have any antibodies. Check, if this is correct. " +
+                    CannotFindShortEnoughRoundsOrPathsInILPSolver.default_message)
+
+
+def _is_split_crossmatch_and_nothing_high_res(hla_crossmatch_level: HLACrossmatchLevel, donors: List[Donor],
+                                              recipients: List[Recipient]):
+    if hla_crossmatch_level is HLACrossmatchLevel.SPLIT_AND_BROAD:
+        for donor in donors:
+            for hla_per_group in donor.parameters.hla_typing.hla_per_groups:
+                for hla_type in hla_per_group.hla_types:
+                    if hla_type.code.high_res is not None:
+                        return
+        for recipient in recipients:
+            for hla_per_group in recipient.parameters.hla_typing.hla_per_groups:
+                for hla_type in hla_per_group.hla_types:
+                    if hla_type.code.high_res is not None:
+                        return
+            for antibodies_per_group in recipient.hla_antibodies.hla_antibodies_per_groups:
+                for antibody_per_group in antibodies_per_group.hla_antibody_list:
+                    if antibody_per_group.code.high_res is not None:
+                        return
+        raise CannotFindShortEnoughRoundsOrPathsInILPSolver(
+            "Split and broad crossmatch is set, but all the patients have only split or broad resolution. " +
+            "Change the allowed crossmatch type to broad, or none.")
