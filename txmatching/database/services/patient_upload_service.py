@@ -44,6 +44,16 @@ logger = logging.getLogger(__name__)
 
 def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
                              txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
+    donors, recipients = add_donor_recipient_pair_uncommitted(
+        donor_recipient_pair_dto,
+        txm_event_db_id)
+
+    db.session.commit()
+    return donors, recipients
+
+
+def add_donor_recipient_pair_uncommitted(donor_recipient_pair_dto: DonorRecipientPairDTO,
+                                         txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
 
@@ -53,7 +63,6 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
         country_code=donor_recipient_pair_dto.country_code,
         txm_event_db_id=txm_event_db_id
     )
-    db.session.commit()
     return donors, recipients
 
 

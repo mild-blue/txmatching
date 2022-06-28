@@ -186,13 +186,13 @@ class TestMatchingApi(DbTests):
             self.assertEqual('application/json', res.content_type)
 
     def test_txm_event_copy_patients_between_events(self):
-        txm_event_model_from_db_id = self.fill_db_with_patients()  # int
-        txm_event_model_to = create_or_overwrite_txm_event(name='test_copy')  # TxmEvent
+        txm_event_model_from_db_id = self.fill_db_with_patients()
+        txm_event_model_to = create_or_overwrite_txm_event(name='test_copy')
 
         self.assertIsNotNone(TxmEventModel.query.get(txm_event_model_from_db_id))
         self.assertIsNotNone(TxmEventModel.query.get(txm_event_model_to.db_id))
 
-        donors = TxmEventModel.query.get(txm_event_model_from_db_id).donors  # list [DonorModel]
+        donors = TxmEventModel.query.get(txm_event_model_from_db_id).donors
         donor_ids = []
 
         for donor in donors:
@@ -212,6 +212,7 @@ class TestMatchingApi(DbTests):
             )
 
             self.assertIsNotNone(res.json['new_donor_ids'])
+            self.assertEqual(len(donor_ids), len(res.json['new_donor_ids']))
 
             for donor_id in res.json['new_donor_ids']:
                 self.assertIsNotNone(DonorModel.query.get(donor_id))
