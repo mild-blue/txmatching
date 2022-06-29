@@ -32,7 +32,7 @@ class TransplantWarningDetail(str, Enum):
     SPLIT_CROSSMATCH = lambda antibodies: (
         f'There is a possible crossmatch on split level for antibodies: {antibodies}.'
         ' The tranplant should be confirmed with immunologist first')
-
+    # todo: should I add warning messages also for missing antibodies and missing typization?
 
 @dataclass
 class TransplantWarnings:

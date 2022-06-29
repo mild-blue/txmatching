@@ -212,6 +212,7 @@ def get_transplant_messages(
                              for antibody_match in detailed_score.antibody_matches
                              if antibody_match.match_type != AntibodyMatchTypes.NONE]
 
+    # todo
     broad_crossmatches = {possible_crossmatch.hla_antibody.raw_code for possible_crossmatch in possible_crossmatches
                           if possible_crossmatch.match_type == AntibodyMatchTypes.BROAD}
     split_crossmatches = {possible_crossmatch.hla_antibody.raw_code for possible_crossmatch in possible_crossmatches

@@ -65,11 +65,11 @@ class TestSaveAndGetConfiguration(DbTests):
                                    {'antibody_matches': [{'hla_antibody': {'raw_code': 'DQ5', 'mfi': 8000,
                                                                            'cutoff': 2000,
                                                                            'code': self._get_split('DQ5', 'DQ1')},
-                                                          'match_type': 'NONE'},
+                                                          'match_type': 'UNDECIDABLE'},
                                                          {'hla_antibody': {'raw_code': 'DQ6', 'mfi': 8000,
                                                                            'cutoff': 2000,
                                                                            'code': self._get_split('DQ6', 'DQ1')},
-                                                          'match_type': 'NONE'}],
+                                                          'match_type': 'UNDECIDABLE'}],
                                     'hla_group': 'Other'}]
 
         expected_score = [

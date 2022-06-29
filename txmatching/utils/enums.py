@@ -135,12 +135,19 @@ class AntibodyMatchTypes(str, Enum):
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
+    # when antibodies are in high res, but typization isn't, and we don't have antibodies in broad/split
+    ANTIBODIES_MISSING = 'ANTIBODIES_MISSING'
+    # when we have antibodies for a group that patient doesn't have typization for
+    UNDECIDABLE = 'UNDECIDABLE'
+    HIGH_RES_WITH_SPLIT = 'HIGH_RES_WITH_SPLIT'
+    HIGH_RES_WITH_BROAD = 'HIGH_RES_WITH_BROAD'
 
     def is_positive_for_level(self, crossmatch_level: HLACrossmatchLevel) -> bool:
         return (
                 crossmatch_level == HLACrossmatchLevel.NONE and
-                self in [self.BROAD, self.SPLIT, self.HIGH_RES] or
-                crossmatch_level == HLACrossmatchLevel.BROAD and self in [self.SPLIT, self.HIGH_RES] or
+                self in [self.BROAD, self.SPLIT, self.HIGH_RES, self.HIGH_RES_WITH_SPLIT, self.HIGH_RES_WITH_BROAD] or
+                crossmatch_level == HLACrossmatchLevel.BROAD and self in [self.SPLIT, self.HIGH_RES,
+                                                                          self.HIGH_RES_WITH_SPLIT] or
                 crossmatch_level == HLACrossmatchLevel.SPLIT_AND_BROAD and self == self.HIGH_RES
         )
 
