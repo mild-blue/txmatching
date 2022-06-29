@@ -148,7 +148,8 @@ class AntibodyMatchTypes(str, Enum):
                 self in [self.BROAD, self.SPLIT, self.HIGH_RES, self.HIGH_RES_WITH_SPLIT, self.HIGH_RES_WITH_BROAD] or
                 crossmatch_level == HLACrossmatchLevel.BROAD and self in [self.SPLIT, self.HIGH_RES,
                                                                           self.HIGH_RES_WITH_SPLIT] or
-                crossmatch_level == HLACrossmatchLevel.SPLIT_AND_BROAD and self == self.HIGH_RES
+                crossmatch_level == HLACrossmatchLevel.SPLIT_AND_BROAD and self in [self.HIGH_RES,
+                                                                                    self.HIGH_RES_WITH_SPLIT]
         )
 
 

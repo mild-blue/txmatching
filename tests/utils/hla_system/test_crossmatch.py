@@ -326,7 +326,7 @@ class TestCrossmatch(unittest.TestCase):
                                           create_antibody('A*23:04', 2100, 2000)], True,
                                          HLACrossmatchLevel.SPLIT_AND_BROAD)
 
-        self._assert_negative_crossmatch('A23',
+        self._assert_positive_crossmatch('A23',
                                          [create_antibody('A*23:01', 2100, 2000),
                                           create_antibody('A*23:04', 2100, 2000)], True,
                                          HLACrossmatchLevel.SPLIT_AND_BROAD)

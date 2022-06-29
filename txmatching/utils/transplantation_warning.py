@@ -32,7 +32,12 @@ class TransplantWarningDetail(str, Enum):
     SPLIT_CROSSMATCH = lambda antibodies: (
         f'There is a possible crossmatch on split level for antibodies: {antibodies}.'
         ' The tranplant should be confirmed with immunologist first')
-    # todo: should I add warning messages also for missing antibodies and missing typization?
+    UNDECIDABLE = lambda antibodies: (
+        f'Found antibodies for a group that donor does not have typization for: {antibodies}.'
+        ' The tranplant should be confirmed with immunologist first')
+    ANTIBODIES_MISSING = lambda antibodies: (
+        'There are antibodies in high res, but typization is not, but we do not have antibodies in broad '
+        f'or split: {antibodies}. The tranplant should be confirmed with immunologist first')
 
 @dataclass
 class TransplantWarnings:
