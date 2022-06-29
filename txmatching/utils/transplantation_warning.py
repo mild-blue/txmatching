@@ -36,7 +36,7 @@ class TransplantWarningDetail(str, Enum):
         f'Found antibodies for a group that donor does not have typization for: {antibodies}.'
         ' The tranplant should be confirmed with immunologist first')
     ANTIBODIES_MISSING = lambda antibodies: (
-        'There are antibodies in high res, but typization is not, but we do not have antibodies in broad '
+        'There are antibodies in high res, but typization is not in high res, and we do not have antibodies in broad '
         f'or split: {antibodies}. The tranplant should be confirmed with immunologist first')
 
 @dataclass
