@@ -91,6 +91,7 @@ import { WarningOverviewComponent } from './components/warning-overview/warning-
 import { WarningPillComponent } from './components/warning-overview/warning-pill/warning-pill.component';
 import { ParsingIssueConfirmationComponent } from './components/parsing-issue-confirmation/parsing-issue-confirmation.compontent';
 import { ParsingIssueConfirmationWarningComponent } from './components/parsing-issue-confirmation-warning/parsing-issue-confirmation-warning.component';
+import { IncompatibilityPillComponent } from './components/incompatibility-pill/incompatibility-pill.component';
 
 @NgModule({
   declarations: [
@@ -164,7 +165,8 @@ import { ParsingIssueConfirmationWarningComponent } from './components/parsing-i
     WarningOverviewComponent,
     WarningPillComponent,
     ParsingIssueConfirmationComponent,
-    ParsingIssueConfirmationWarningComponent
+    ParsingIssueConfirmationWarningComponent,
+    IncompatibilityPillComponent
   ],
   imports: [
     BrowserModule,
