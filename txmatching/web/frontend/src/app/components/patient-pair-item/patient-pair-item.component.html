@@ -1,4 +1,4 @@
 <div *ngIf="item" class="patient-pair-item">
   <app-warning-pill *ngIf="allMessagesCount" [count]="allMessagesCount" [warningType]="mostSevereMessageType"></app-warning-pill>
-  <app-patient-pair [donor]="item.d" [recipient]="item.r"></app-patient-pair>
+  <app-patient-pair [donor]="item.d" [recipient]="item.r" [isBloodCompatible]="true"></app-patient-pair>
 </div>
