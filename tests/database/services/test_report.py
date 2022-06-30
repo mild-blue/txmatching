@@ -19,7 +19,7 @@ from txmatching.database.services.txm_event_service import (
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 SAMPLE_MATCHING_ID = 1
-REPORT_DATETIME_LINE = 607
+REPORT_DATETIME_LINE = 585
 
 
 def generate_report_for_test():
@@ -56,8 +56,8 @@ class TestReport(DbTests):
         # a new sample report and run test,
         # then don't forget to comment lines back
 
-        # file_full_path = generate_report_for_test()
-        # shutil.move(file_full_path, sample_html_full_path)
+        file_full_path = generate_report_for_test()
+        shutil.move(file_full_path, sample_html_full_path)
 
         result_html_full_path = generate_report_for_test()
 
