@@ -19,7 +19,7 @@ from txmatching.database.services.txm_event_service import (
 from txmatching.utils.get_absolute_path import get_absolute_path
 
 SAMPLE_MATCHING_ID = 1
-REPORT_DATETIME_LINE = 569
+REPORT_DATETIME_LINE = 607
 
 
 def generate_report_for_test():
