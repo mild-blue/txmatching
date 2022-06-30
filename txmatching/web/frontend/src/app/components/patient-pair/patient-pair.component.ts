@@ -14,6 +14,7 @@ export class PatientPairComponent {
   @Input() recipient?: Recipient;
   @Input() warningText: string = '';
   @Input() hasCrossmatch: boolean = false;
+  @Input() isBloodCompatible: boolean = true;
   @Input() style: PatientPairStyle = PatientPairStyle.Default;
 
   constructor() {
