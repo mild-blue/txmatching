@@ -41,3 +41,10 @@ UploadPatientsJson = public_api.model(
                                                                ' currently uploaded data.')
     }
 )
+
+CopyPatientsJsonOut = public_api.model(
+    'CopyPatients',
+    {
+        'new_donor_ids': fields.List(required=True, cls_or_instance=fields.Integer)
+    }
+)

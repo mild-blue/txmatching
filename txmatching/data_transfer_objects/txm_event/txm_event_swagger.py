@@ -43,3 +43,9 @@ TxmEventExportJsonIn = txm_event_api.model('TxmEventExport', {
     'country': fields.Nested(CountryCodeJson, required=True),
     'new_txm_event_name': fields.String(required=True)
 })
+
+TxmEventCopyPatientsJsonIn = txm_event_api.model('TxmEventCopy', {
+    'txm_event_id_from': fields.Integer(required=True),
+    'txm_event_id_to': fields.Integer(required=True),
+    'donor_ids': fields.List(required=True, cls_or_instance=fields.Integer),
+})

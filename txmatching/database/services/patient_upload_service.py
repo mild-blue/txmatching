@@ -44,6 +44,16 @@ logger = logging.getLogger(__name__)
 
 def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
                              txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
+    donors, recipients = add_donor_recipient_pair_uncommitted(
+        donor_recipient_pair_dto,
+        txm_event_db_id)
+
+    db.session.commit()
+    return donors, recipients
+
+
+def add_donor_recipient_pair_uncommitted(donor_recipient_pair_dto: DonorRecipientPairDTO,
+                                         txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
 
@@ -53,12 +63,11 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
         country_code=donor_recipient_pair_dto.country_code,
         txm_event_db_id=txm_event_db_id
     )
-    db.session.commit()
     return donors, recipients
 
 
 def get_patients_parsing_issues_from_upload_dto(donors: List[DonorModel], recipients: List[RecipientModel],
-                                        txm_event_db_id: int) -> List[ParsingIssuePublicDTO]:
+                                                txm_event_db_id: int) -> List[ParsingIssuePublicDTO]:
     donor_ids = [patient.id for patient in donors]
     recipient_ids = [patient.id for patient in recipients]
     parsing_issues = get_parsing_issues_for_patients(txm_event_db_id, donor_ids, recipient_ids)
@@ -68,7 +77,7 @@ def get_patients_parsing_issues_from_upload_dto(donors: List[DonorModel], recipi
 
 
 def get_patients_parsing_issues_from_pair_dto(donors: List[DonorModel], recipients: List[RecipientModel],
-                                      txm_event_db_id: int) -> List[ParsingIssuePublicDTO]:
+                                              txm_event_db_id: int) -> List[ParsingIssuePublicDTO]:
     donor_ids = [donors[0].id]
     recipient_ids = []
     if len(recipients) > 0:

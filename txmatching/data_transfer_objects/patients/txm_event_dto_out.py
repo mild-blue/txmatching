@@ -17,3 +17,8 @@ class TxmEventDTOOut:
 @dataclass
 class TxmEventsDTOOut:
     events: List[TxmEventDTOOut]
+
+
+@dataclass
+class TxmEventCopyPatientsDTOOut:
+    new_donor_ids: List[int]

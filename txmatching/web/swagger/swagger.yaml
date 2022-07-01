@@ -211,6 +211,15 @@ definitions:
         - use_binary_scoring
         - use_high_resolution
         type: object
+    CopyPatients:
+        properties:
+            new_donor_ids:
+                items:
+                    type: integer
+                type: array
+        required:
+        - new_donor_ids
+        type: object
     Country:
         properties:
             country_code:
@@ -1494,6 +1503,21 @@ definitions:
         - name
         - state
         type: object
+    TxmEventCopy:
+        properties:
+            donor_ids:
+                items:
+                    type: integer
+                type: array
+            txm_event_id_from:
+                type: integer
+            txm_event_id_to:
+                type: integer
+        required:
+        - donor_ids
+        - txm_event_id_from
+        - txm_event_id_to
+        type: object
     TxmEventExport:
         properties:
             country:
@@ -1847,6 +1871,43 @@ paths:
                         $ref: '#/definitions/FailResponse'
                 '409':
                     description: Non-unique patients provided.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - txm-event
+    /v1/txm-event/copy:
+        put:
+            description: Copy list of patients from one event to the other
+            operationId: put_txm_copy_patients_between_events_api
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/TxmEventCopy'
+            responses:
+                '200':
+                    description: 'Patients were successfully copied. List of new patients
+                        ids: '
+                    schema:
+                        $ref: '#/definitions/CopyPatients'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
