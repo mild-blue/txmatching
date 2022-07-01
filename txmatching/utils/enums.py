@@ -38,7 +38,6 @@ class Scorer(str, Enum):
 
 
 class Solver(str, Enum):
-    AllSolutionsSolver = 'AllSolutionsSolver'
     ILPSolver = 'ILPSolver'
 
 

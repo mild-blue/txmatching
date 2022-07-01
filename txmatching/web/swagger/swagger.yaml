@@ -1440,7 +1440,6 @@ definitions:
         type: string
     Solver:
         enum:
-        - AllSolutionsSolver
         - ILPSolver
         type: string
     Success:
@@ -2991,8 +2990,6 @@ responses:
         description: When a mask can't be parsed
     SolverAlreadyRunningException:
         description: Solver already running
-    TooComplicatedDataForAllSolutionsSolver:
-        description: too complicated data for solver _exception
     UnauthorizedException:
         description: unauthorized_exception
     UserUpdateException:

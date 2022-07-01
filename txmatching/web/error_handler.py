@@ -13,8 +13,7 @@ from txmatching.auth.exceptions import (
     InvalidEmailException, InvalidIpAddressAccessException,
     InvalidJWTException, InvalidOtpException, InvalidTokenException, OverridingException,
     NotFoundException, SolverAlreadyRunningException,
-    TooComplicatedDataForAllSolutionsSolver, UnauthorizedException,
-    UserUpdateException, WrongTokenUsedException)
+    UnauthorizedException, UserUpdateException, WrongTokenUsedException)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 
@@ -133,13 +132,6 @@ def _user_auth_handlers(api: Api):
         """unauthorized_exception"""
         _log_warning(error)
         return {'error': error.message, 'message': str(error)}, 403
-
-    @api.errorhandler(TooComplicatedDataForAllSolutionsSolver)
-    def handle_too_complicated_data_for_solver_exception(error: TooComplicatedDataForAllSolutionsSolver):
-        """too complicated data for solver _exception"""
-        _log_warning(error)
-        return {'error': 'The solution for this combination of patients and configuration '
-                         'is too complicated for AllSolutionsSolver, please use ILPSolver.', 'message': str(error)}, 400
 
     @api.errorhandler(CannotFindShortEnoughRoundsOrPathsInILPSolver)
     def handle_too_complicated_data_for_ilp_solver_exception(error: CannotFindShortEnoughRoundsOrPathsInILPSolver):

@@ -4,12 +4,10 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
-from txmatching.solvers.all_solutions_solver.all_solutions_solver import \
-    AllSolutionsSolver
 from txmatching.solvers.ilp_solver.ilp_solver import ILPSolver
 from txmatching.solvers.solver_base import SolverBase
 
-SUPPORTED_SOLVERS = [AllSolutionsSolver, ILPSolver]
+SUPPORTED_SOLVERS = [ILPSolver]
 
 
 def solver_from_configuration(config_parameters: ConfigParameters,

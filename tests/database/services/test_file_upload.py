@@ -91,7 +91,7 @@ class TestUpdateDonorRecipient(DbTests):
         self.assertEqual(7, len(app_users))
 
         all_matchings = list(solve_from_configuration(ConfigParameters(
-            solver_constructor_name=Solver.AllSolutionsSolver,
+            solver_constructor_name=Solver.ILPSolver,
             max_cycle_length=100,
             max_sequence_length=100,
             max_number_of_distinct_countries_in_round=100,
@@ -101,7 +101,7 @@ class TestUpdateDonorRecipient(DbTests):
             hla_crossmatch_level=HLACrossmatchLevel.NONE,
         ),
             txm_event).calculated_matchings_list)
-        self.assertEqual(961, len(all_matchings))
+        self.assertEqual(20, len(all_matchings))
 
         self.maxDiff = None
 

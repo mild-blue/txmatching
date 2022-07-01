@@ -1,9 +1,13 @@
+from dataclasses import dataclass
 from typing import Iterable
 
 import numpy as np
 
-from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only import \
-    DonorRecipientPairIdxOnly
+
+@dataclass
+class DonorRecipientPairIdxOnly:
+    donor_idx: int
+    recipient_idx: int
 
 
 def get_score_for_idx_pairs(score_matrix_array: np.array,

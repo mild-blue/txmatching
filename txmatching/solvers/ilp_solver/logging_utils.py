@@ -1,3 +1,4 @@
+# this is not used anywhere too
 class LoggerWriter:
     def __init__(self, logfct):
         self.logfct = logfct

@@ -16,7 +16,7 @@ class TestConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
         configuration_parameters_expected = ConfigParameters(
-            solver_constructor_name=Solver.AllSolutionsSolver,
+            solver_constructor_name=Solver.ILPSolver,
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
         configuration_actual = save_config_parameters_to_db(configuration_parameters_expected, txm_event.db_id, 1)
 
@@ -26,7 +26,7 @@ class TestConfiguration(DbTests):
         txm_event_db_id = self.fill_db_with_patients_and_results()
         txm_event = get_txm_event_complete(txm_event_db_id)
         configuration_parameters_expected = ConfigParameters(
-            solver_constructor_name=Solver.AllSolutionsSolver,
+            solver_constructor_name=Solver.ILPSolver,
             forbidden_country_combinations=[ForbiddenCountryCombination(Country.CZE, Country.AUT)])
         self.assertNotEqual(ConfigParameters(), configuration_parameters_expected)
         configuration = save_config_parameters_to_db(configuration_parameters_expected, txm_event.db_id, 1)
@@ -44,7 +44,7 @@ class TestConfiguration(DbTests):
         self.fill_db_with_patients_and_results()
 
         dto_dict = {'scorer_constructor_name': 'SplitScorer',
-                    'solver_constructor_name': 'AllSolutionsSolver',
+                    'solver_constructor_name': 'ILPSolver',
                     'minimum_total_score': 0.0,
                     'enforce_compatible_blood_group': False,
                     'forbidden_country_combinations': [{'donor_country': 'AUT', 'recipient_country': 'ISR'}],

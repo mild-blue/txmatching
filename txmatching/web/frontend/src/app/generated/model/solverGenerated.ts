@@ -12,7 +12,6 @@
 
 
 export enum SolverGenerated {
-    AllSolutionsSolver = 'AllSolutionsSolver',
     IlpSolver = 'ILPSolver'
 };
 

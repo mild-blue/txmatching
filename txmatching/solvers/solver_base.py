@@ -6,10 +6,8 @@ from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.score_matrix import ScoreMatrix
-from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only import \
-    DonorRecipientPairIdxOnly
-from txmatching.solvers.all_solutions_solver.scoring_utils import \
-    get_score_for_idx_pairs
+from txmatching.solvers.ilp_solver.donor_recipient_pair_idx_only import \
+    DonorRecipientPairIdxOnly, get_score_for_idx_pairs
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 

@@ -99,12 +99,6 @@ class InvalidArgumentException(BaseTxmException):
         super().__init__(self.message)
 
 
-class TooComplicatedDataForAllSolutionsSolver(BaseTxmException):
-    """
-    Raised if invalid argument received.
-    """
-
-
 class CannotFindShortEnoughRoundsOrPathsInILPSolver(BaseTxmException):
     """
     Raised if there are too many possible paths and rounds longer than the threshold. And by adding dynamic constraints

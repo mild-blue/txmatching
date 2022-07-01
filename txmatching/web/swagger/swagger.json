@@ -3931,7 +3931,6 @@
         },
         "Solver": {
             "enum": [
-                "AllSolutionsSolver",
                 "ILPSolver"
             ],
             "type": "string"
@@ -4501,9 +4500,6 @@
         },
         "SolverAlreadyRunningException": {
             "description": "Solver already running"
-        },
-        "TooComplicatedDataForAllSolutionsSolver": {
-            "description": "too complicated data for solver _exception"
         },
         "UnauthorizedException": {
             "description": "unauthorized_exception"
