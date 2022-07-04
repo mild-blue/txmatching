@@ -63,6 +63,9 @@
                           {{ flag_component((transplant.recipient|patient_by_medical_id_filter(all_recipients)).parameters.country_code.value) }}
                           {{ transplant.recipient }}
                       </div>
+                      {% if not transplant.compatible_blood %}
+                        <div class="incompatibility-pill">AB0i</div>
+                      {% endif %}
                     </div>
                   </div>
                   {# 3 patient pairs in a row #}
