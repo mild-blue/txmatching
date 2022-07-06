@@ -10,7 +10,7 @@ It consists of backend written in Python and an Angular frontend.
 
 ## How to run the app locally 
 
-The project runs on MacOs (not M1 chip), Linux and Windows. To run on Windows you need Docker and WSL2 as we are using [graph-tool](https://graph-tool.skewed.de/) package that does not support Windows. 
+The project runs on MacOs (not M1 chip), Linux and Windows. To run on Windows you need Docker and WSL2 as we are using [gunicorn](https://gunicorn.org/) which does not run on Windows. 
 
 ### Prepare Frontend
 In order to build Frontend for the app one must run `make build-fe`.
@@ -85,8 +85,7 @@ with duplicate patients from another event via the swagger endpoints.
 ## Development
 
 ### Dependencies Management
-We are using `conda` for managing dependencies as [graph-tool](https://graph-tool.skewed.de/)
-can be installed just from the `conda-forge` repository.
+We are using `conda` for managing dependencies.
 
 #### Adding New dependencies
 To add new package put `<package>` to `conda.yml` and execute `make conda-update`.
