@@ -19,6 +19,7 @@ class ParsingIssuePublicDTO:
     confirmed_at: Optional[datetime]
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class ParsingIssue(PersistentlyHashable):
     hla_code_or_group: Optional[str]
@@ -42,6 +43,7 @@ class ParsingIssue(PersistentlyHashable):
         update_persistent_hash(hash_, self.confirmed_at)
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class ParsingIssueConfirmationDTO:
     db_id: int

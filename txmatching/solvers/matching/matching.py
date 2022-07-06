@@ -20,6 +20,7 @@ class Matching:
     """
     matching_pairs: FrozenSet[DonorRecipientPair]
 
+    # pylint: disable=too-many-locals
     def __post_init__(self):
         matching_pairs = list(self.matching_pairs)
         recipients = [pair.recipient for pair in matching_pairs]

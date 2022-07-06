@@ -6,6 +6,7 @@ from txmatching.data_transfer_objects.patients.update_dtos.patient_update_dto im
 from txmatching.patients.patient import is_height_valid, is_weight_valid, is_year_of_birth_valid
 
 
+# pylint: disable=duplicate-code
 @dataclass
 class DonorUpdateDTO(PatientUpdateDTO):
     active: Optional[bool] = None

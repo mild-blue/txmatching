@@ -10,6 +10,7 @@ from txmatching.patients.patient import (is_height_valid, is_number_of_previous_
 
 
 # pylint: disable=too-many-instance-attributes
+# pylint: disable=duplicate-code
 @dataclass
 class RecipientUpdateDTO(PatientUpdateDTO):
     acceptable_blood_groups: Optional[List[str]] = None

@@ -18,6 +18,7 @@ def run_with_solver_lock(block: Callable[[], T]) -> T:
     it raises SolverAlreadyRunningException.
     """
     # pylint: disable=global-statement
+    # pylint: disable=global-variable-not-assigned
     global _solver_running_lock, _solver_running
     try:
         # check whether another solver is running
