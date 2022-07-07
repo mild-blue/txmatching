@@ -19,6 +19,7 @@ class RecipientUpdateDTO(PatientUpdateDTO):
     waiting_since: Optional[str] = None
     previous_transplants: Optional[int] = None
 
+    #pylint: disable=duplicate-code
     def __post_init__(self):
         if self.height:
             is_height_valid("recipient", self.height)

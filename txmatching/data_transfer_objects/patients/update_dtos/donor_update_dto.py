@@ -10,6 +10,7 @@ from txmatching.patients.patient import is_height_valid, is_weight_valid, is_yea
 class DonorUpdateDTO(PatientUpdateDTO):
     active: Optional[bool] = None
 
+    #pylint: disable=duplicate-code
     def __post_init__(self):
         if self.height:
             is_height_valid("donor", self.height)

@@ -51,6 +51,7 @@ def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody]) -> List[HLAAntibo
 
 # Many branches make sense here
 # pylint: disable=too-many-branches
+# pylint: disable=too-many-nested-blocks
 def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
                                 use_high_resolution: bool) -> List[AntibodyMatchForHLAGroup]:

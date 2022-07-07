@@ -12,6 +12,7 @@ from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.country_enum import Country
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass(init=False)
 class DataAndConfigurationForILPSolver:
     non_directed_donors: Iterable[int]
