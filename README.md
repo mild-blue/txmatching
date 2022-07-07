@@ -145,3 +145,6 @@ It might take some time (minute or two) before Authentik is ready.
 14. From providers select TXM
 15. Scroll down and click on Create
 16. Done
+
+You can test it by going to http://localhost:9000/application/o/authorize/?client_id=f5c6b6a72ff4f7bbdde383a26bdac192b2200707&response_type=code&redirect_uri=http://localhost:8080/v1/user/authentik-login&scope=null  
+In the future middleware should redirect you there.

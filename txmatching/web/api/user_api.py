@@ -23,6 +23,7 @@ from txmatching.data_transfer_objects.users.user_swagger import (
     RegistrationJson, RegistrationOutJson, ResetRequestJson)
 from txmatching.web.web_utils.namespaces import user_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok, response_bad_request
+from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
 
 logger = logging.getLogger(__name__)
 
@@ -160,21 +161,25 @@ def _respond_token(token: str) -> dict:
 class AuthentikLogin(Resource):
     def get(self):
         code = request.args.get('code')
+        application_config = get_application_configuration()
         if code is None:
             return response_bad_request({'error': 'No code provided'})
 
         data = {
-            "client_id": "f5c6b6a72ff4f7bbdde383a26bdac192b2200707",
-            "client_secret": "37e841e70b842a0d1237b3f7753b5d7461307562568b5add7edcfa6630d578fdffb7ff4d5c0f845d10f8f82bc1d80cec62cb397fd48795a5b1bee6090e0fa409",
+            "client_id": application_config.authentic_client_id,
+            "client_secret": application_config.authentic_client_secret,
             "code": code,
-            "redirect_uri": "http://localhost:8080/v1/user/authentik-login",
+            "redirect_uri": application_config.authentic_client_redirect_uri,
             "grant_type": "authorization_code"
         }
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        authentik_res = requests.post('http://host.docker.internal:9000/application/o/token/', data=data, headers=headers)
+        authentik_res = requests.post('http://host.docker.internal:9000/application/o/token/',
+                                      data=data, headers=headers)
         authentik_res = authentik_res.json()
 
         response = response_ok(authentik_res)
         response.set_cookie("access_token", value=authentik_res["access_token"])
         response.set_cookie("refresh_token", value=authentik_res["refresh_token"])
+
+        # todo redirect to homepage instead of showing access token after testing is finished
         return response
