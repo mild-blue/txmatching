@@ -1,4 +1,5 @@
 import logging
+import re
 from dataclasses import dataclass
 from datetime import date
 from typing import Dict, List, Optional, Tuple
@@ -22,7 +23,7 @@ from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 from txmatching.utils.blood_groups import blood_groups_compatible
-from txmatching.utils.enums import AntibodyMatchTypes
+from txmatching.utils.enums import AntibodyMatchTypes, HLA_GROUPS_OTHER, HLA_GROUPS_PROPERTIES, HLAGroup
 from txmatching.utils.hla_system.compatibility_index import (
     DetailedCompatibilityIndexForHLAGroup, get_detailed_compatibility_index)
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
@@ -219,20 +220,15 @@ def get_transplant_messages(
                           if possible_crossmatch.match_type in [AntibodyMatchTypes.SPLIT,
                                                                 AntibodyMatchTypes.HIGH_RES_WITH_SPLIT]}
 
-    missing_antibodies = {possible_crossmatch.hla_antibody.raw_code for possible_crossmatch in possible_crossmatches
-                          if possible_crossmatch.match_type == AntibodyMatchTypes.ANTIBODIES_MISSING}
-    undecidable_crossmatches = {possible_crossmatch.hla_antibody.raw_code for possible_crossmatch in
-                                possible_crossmatches
-                                if possible_crossmatch.match_type == AntibodyMatchTypes.UNDECIDABLE}
+    undecidable_crossmatches = {_group_from_raw_code(possible_crossmatch.hla_antibody.raw_code) for possible_crossmatch
+                                in possible_crossmatches if
+                                possible_crossmatch.match_type == AntibodyMatchTypes.UNDECIDABLE}
 
     if broad_crossmatches != set():
         detailed_messages.append(TransplantWarningDetail.BROAD_CROSSMATCH(broad_crossmatches))
 
     if split_crossmatches != set():
         detailed_messages.append(TransplantWarningDetail.SPLIT_CROSSMATCH(split_crossmatches))
-
-    if missing_antibodies != set():
-        detailed_messages.append(TransplantWarningDetail.ANTIBODIES_MISSING(missing_antibodies))
 
     if undecidable_crossmatches != set():
         detailed_messages.append(TransplantWarningDetail.UNDECIDABLE(undecidable_crossmatches))
@@ -244,3 +240,14 @@ def get_transplant_messages(
             'warnings': detailed_messages,
             'errors': []
         }) if detailed_messages else None
+
+
+def _group_from_raw_code(raw_code: str) -> str:
+    for hla_group in HLA_GROUPS_OTHER:
+        if _is_raw_code_in_group(raw_code, hla_group):
+            return hla_group.name
+
+
+def _is_raw_code_in_group(raw_code: str, hla_group: HLAGroup) -> bool:
+    return bool(re.match(HLA_GROUPS_PROPERTIES[hla_group].split_code_regex, raw_code)) or bool(
+        re.match(HLA_GROUPS_PROPERTIES[hla_group].high_res_code_regex, raw_code))

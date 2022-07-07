@@ -60,7 +60,6 @@ definitions:
                 - BROAD
                 - HIGH_RES
                 - NONE
-                - ANTIBODIES_MISSING
                 - UNDECIDABLE
                 - HIGH_RES_WITH_SPLIT
                 - HIGH_RES_WITH_BROAD

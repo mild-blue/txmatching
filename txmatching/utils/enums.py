@@ -135,8 +135,6 @@ class AntibodyMatchTypes(str, Enum):
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
-    # when antibodies are in high res, but typization isn't, and we don't have antibodies in broad/split
-    ANTIBODIES_MISSING = 'ANTIBODIES_MISSING'
     # when we have antibodies for a group that patient doesn't have typization for
     UNDECIDABLE = 'UNDECIDABLE'
     HIGH_RES_WITH_SPLIT = 'HIGH_RES_WITH_SPLIT'

@@ -86,11 +86,6 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
             if hla_type.code.split is not None:
                 matching_antibodies = [antibody for antibody in antibodies
                                        if antibody.code.split == hla_type.code.split]
-                antibodies_without_split = [antibody for antibody in antibodies
-                                       if not antibody.code.split]
-                for antibody_without_split in antibodies_without_split:
-                    positive_matches.add(
-                                AntibodyMatch(antibody_without_split, AntibodyMatchTypes.ANTIBODIES_MISSING))
                 if len(matching_antibodies) > 0:
                     antibodies_over_cutoff = _get_antibodies_over_cutoff(matching_antibodies)
                     antibodies_with_high_res = _get_antibodies_with_high_res(matching_antibodies)
@@ -107,11 +102,6 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                    if antibody.code.broad == hla_type.code.broad
                                    and (antibody.code.split is None
                                         or hla_type.code.split is None)]
-            antibodies_without_broad = [antibody for antibody in antibodies
-                                       if not antibody.code.broad]
-            for antibody_without_broad in antibodies_without_broad:
-                positive_matches.add(
-                            AntibodyMatch(antibody_without_broad, AntibodyMatchTypes.ANTIBODIES_MISSING))
             if len(matching_antibodies) > 0:
                 antibodies_over_cutoff = _get_antibodies_over_cutoff(matching_antibodies)
                 antibodies_with_high_res = _get_antibodies_with_high_res(matching_antibodies)
@@ -134,8 +124,6 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                 antibody_matches_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.BROAD))
             elif AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE) in positive_matches:
                 antibody_matches_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
-            elif AntibodyMatch(antibody, AntibodyMatchTypes.ANTIBODIES_MISSING) in positive_matches:
-                antibody_matches_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.ANTIBODIES_MISSING))
             elif AntibodyMatch(antibody, AntibodyMatchTypes.HIGH_RES_WITH_BROAD) in positive_matches:
                 antibody_matches_set.add(AntibodyMatch(antibody, AntibodyMatchTypes.HIGH_RES_WITH_BROAD))
             elif AntibodyMatch(antibody, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT) in positive_matches:
