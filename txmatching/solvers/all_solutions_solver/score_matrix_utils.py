@@ -9,7 +9,7 @@ from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
-from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only import \
+from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
 from txmatching.solvers.all_solutions_solver.scoring_utils import \
     get_score_for_idx_pairs

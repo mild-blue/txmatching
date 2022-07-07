@@ -6,7 +6,7 @@ from graph_tool import topology
 
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor
-from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only import \
+from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
 from txmatching.solvers.all_solutions_solver.score_matrix_utils import (
     Path, construct_path_intersection_graph, find_all_cycles,
