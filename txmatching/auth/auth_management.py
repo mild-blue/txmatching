@@ -99,7 +99,6 @@ def _create_serializer(secret_key: str) -> Serializer:
     return Serializer(secret_key, salt=b'mild-blue-txm')
 
 
-# pylint: disable=too-many-arguments
 def register(registration_dto: UserRegistrationDtoIn) -> str:
     """
     Registers new user entity.

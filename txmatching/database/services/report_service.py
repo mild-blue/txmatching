@@ -53,7 +53,6 @@ class ReportConfiguration:
     include_patients_section: bool
 
 
-# pylint: disable=too-many-locals
 def generate_html_report(
         txm_event: TxmEvent,
         configuration_db_id: int,
@@ -144,7 +143,6 @@ def generate_html_report(
     return TMP_DIR, html_file_name
 
 
-# pylint: disable=too-many-arguments
 def generate_pdf_report(
         txm_event: TxmEvent,
         configuration_db_id: int,
@@ -187,7 +185,6 @@ def generate_pdf_report(
 def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut], List[Recipient]]]) -> BytesIO:
     @dataclass
     class PatientPair:
-        # pylint: disable=too-many-instance-attributes
         donor_medical_id: str
         donor_internal_medical_id: str
         donor_country: str
@@ -262,11 +259,9 @@ def export_patients_to_xlsx_file(patients_dto: Dict[str, Union[List[DonorDTOOut]
     df_with_patients = pd.DataFrame(patient_pairs)
 
     # Save to xls file and set some formatting
-    # pylint: disable=abstract-class-instantiated
     buffer = BytesIO()
     writer = pd.ExcelWriter(buffer, engine='xlsxwriter')
     df_with_patients.to_excel(writer, sheet_name='Patients', index=False)
-    # pylint: disable=no-member
     workbook = writer.book
     worksheet = writer.sheets['Patients']
     # wrap text in the cells

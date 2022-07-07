@@ -20,7 +20,6 @@ _PATH_ARGS_ORDER = {
 }
 
 
-# pylint: disable=too-few-public-methods
 # these classes are useful as wrappers to run the generators
 class SwaggerGenApp:
     def __init__(self):
