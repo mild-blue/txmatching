@@ -1,6 +1,7 @@
 # pylint: disable=no-self-use
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 import logging
+import requests
 
 from flask import request
 from flask_restx import Resource, fields
@@ -21,7 +22,7 @@ from txmatching.data_transfer_objects.users.user_swagger import (
     LoginInputJson, LoginSuccessJson, OtpInJson, PasswordChangeInJson,
     RegistrationJson, RegistrationOutJson, ResetRequestJson)
 from txmatching.web.web_utils.namespaces import user_api
-from txmatching.web.web_utils.route_utils import request_body, response_ok
+from txmatching.web.web_utils.route_utils import request_body, response_ok, response_bad_request
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +72,7 @@ class OtpLoginApi(Resource):
         return response_ok(SuccessDTOOut(success=True))
 
 
-@user_api.route('/refresh-token', methods=['GET'])
+@user_api.route('/refresh-tokenl', methods=['GET'])
 class RefreshTokenApi(Resource):
 
     @user_api.require_user_login()
@@ -153,3 +154,27 @@ class RegistrationApi(Resource):
 
 def _respond_token(token: str) -> dict:
     return {'auth_token': token}
+
+
+@user_api.route('/authentik-login', methods=['GET'])
+class AuthentikLogin(Resource):
+    def get(self):
+        code = request.args.get('code')
+        if code is None:
+            return response_bad_request({'error': 'No code provided'})
+
+        data = {
+            "client_id": "f5c6b6a72ff4f7bbdde383a26bdac192b2200707",
+            "client_secret": "37e841e70b842a0d1237b3f7753b5d7461307562568b5add7edcfa6630d578fdffb7ff4d5c0f845d10f8f82bc1d80cec62cb397fd48795a5b1bee6090e0fa409",
+            "code": code,
+            "redirect_uri": "http://localhost:8080/v1/user/authentik-login",
+            "grant_type": "authorization_code"
+        }
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        authentik_res = requests.post('http://host.docker.internal:9000/application/o/token/', data=data, headers=headers)
+        authentik_res = authentik_res.json()
+
+        response = response_ok(authentik_res)
+        response.set_cookie("access_token", value=authentik_res["access_token"])
+        response.set_cookie("refresh_token", value=authentik_res["refresh_token"])
+        return response
