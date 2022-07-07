@@ -57,8 +57,8 @@ jobs:
         # activate it for the step
         run: |
           conda activate txmatching
-          pylint txmatching
-          pylint local_testing_utilities
+          pylint txmatching --rcfile=.pylintrc
+          pylint local_testing_utilities --rcfile=.pylintrc
 
       - name: Execute tests
         shell: bash -l {0}
