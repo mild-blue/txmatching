@@ -51,13 +51,18 @@ jobs:
           conda activate txmatching
           conda list
 
-      - name: Run Linter
+      - name: Run Linter txmatching
         shell: bash -l {0}
         # conda activate txmatching must be called again in order to
         # activate it for the step
         run: |
           conda activate txmatching
           pylint txmatching --rcfile=.pylintrc
+
+      - name: Run Linter local_testing_utilities
+        shell: bash -l {0}
+        run: |
+          conda activate txmatching
           pylint local_testing_utilities --rcfile=.pylintrc
 
       - name: Execute tests
