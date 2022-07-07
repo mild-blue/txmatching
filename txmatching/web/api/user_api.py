@@ -73,7 +73,7 @@ class OtpLoginApi(Resource):
         return response_ok(SuccessDTOOut(success=True))
 
 
-@user_api.route('/refresh-tokenl', methods=['GET'])
+@user_api.route('/refresh-token', methods=['GET'])
 class RefreshTokenApi(Resource):
 
     @user_api.require_user_login()
