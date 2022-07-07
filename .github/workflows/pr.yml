@@ -58,11 +58,6 @@ jobs:
         run: |
           conda activate txmatching
           pylint txmatching
-
-      - name: Run Linter local_testing_utilities
-        shell: bash -l {0}
-        run: |
-          conda activate txmatching
           pylint local_testing_utilities
 
       - name: Execute tests
