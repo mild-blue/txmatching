@@ -36,6 +36,11 @@ class SwaggerGenApp:
         self.app.config['ENVIRONMENT'] = 'PRODUCTION'
         self.app.config['COLOUR_SCHEME'] = 'IKEM'
         self.app.config['USE_2FA'] = 'FALSE'
+        self.app.config['AUTHENTIC_CLIENT_ID'] = 'f5c6b6a72ff4f7bbdde383a26bdac192b2200707'
+        self.app.config['AUTHENTIC_CLIENT_SECRET'] = '37e841e70b842a0d1237b3f7753b5d7461307562568b5add7edcfa66' \
+                                                     '30d578fdffb7ff4d5c0f845d10f8f82bc1d80cec62cb397fd48795a5b1b' \
+                                                     'ee6090e0fa409'
+        self.app.config['AUTHENTIC_REDIRECT_URI'] = 'http://localhost:8080/v1/user/authentik-login'
         self.api.authorizations = AUTHORIZATIONS
         self.app.app_context().push()
         add_all_namespaces(self.api)
@@ -56,6 +61,11 @@ class PublicSwaggerGenApp:
         self.app.config['ENVIRONMENT'] = 'PRODUCTION'
         self.app.config['COLOUR_SCHEME'] = 'IKEM'
         self.app.config['USE_2FA'] = 'FALSE'
+        self.app.config['AUTHENTIC_CLIENT_ID'] = 'f5c6b6a72ff4f7bbdde383a26bdac192b2200707'
+        self.app.config['AUTHENTIC_CLIENT_SECRET'] = '37e841e70b842a0d1237b3f7753b5d7461307562568b5add7edcfa66' \
+                                                     '30d578fdffb7ff4d5c0f845d10f8f82bc1d80cec62cb397fd48795a5b1b' \
+                                                     'ee6090e0fa409'
+        self.app.config['AUTHENTIC_REDIRECT_URI'] = 'http://localhost:8080/v1/user/authentik-login'
         self.api.authorizations = AUTHORIZATIONS
         self.app.app_context().push()
         add_public_namespaces(self.api)

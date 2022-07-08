@@ -108,6 +108,19 @@
                 ]
             }
         },
+        "/v1/user/authentik-login": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "operationId": "get_authentik_login",
+                "tags": [
+                    "user"
+                ]
+            }
+        },
         "/v1/user/change-password": {
             "put": {
                 "responses": {

@@ -2665,6 +2665,14 @@ paths:
             -   bearer: []
             tags:
             - reports
+    /v1/user/authentik-login:
+        get:
+            operationId: get_authentik_login
+            responses:
+                '200':
+                    description: Success
+            tags:
+            - user
     /v1/user/change-password:
         put:
             operationId: put_password_change_api
