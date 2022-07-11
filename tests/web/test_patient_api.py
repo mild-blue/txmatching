@@ -187,7 +187,7 @@ class TestPatientService(DbTests):
                             'mfi': 2000,
                             'name': 'test',
                             'cutoff': 2000
-                        }],
+                    }],
                 },
                 'country_code': 'CZE'
             }
@@ -612,16 +612,16 @@ class TestPatientService(DbTests):
             self.assertEqual(200, res.status_code)
 
             warning_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
-                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
+                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
             error_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
-                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP)).first()
+                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP)).first()
 
             self.assertEqual(None, warning_issue.confirmed_by)
             self.assertEqual(None, error_issue.confirmed_by)
 
             # TODO https://github.com/mild-blue/txmatching/issues/860
-            # txm_event = get_txm_event_complete(txm_event_db_id)
-            # self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
+            txm_event = get_txm_event_complete(txm_event_db_id)
+            self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/confirm-warning/{warning_issue.id}',
@@ -682,7 +682,7 @@ class TestPatientService(DbTests):
             self.assertEqual(200, res.status_code)
 
             warning_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
-                    ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
+                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
             self.assertEqual(None, warning_issue.confirmed_by)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'

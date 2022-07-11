@@ -5,8 +5,10 @@ from typing import Dict, List, Optional, Tuple
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
+# from txmatching.database.sql_alchemy_schema import ParsingIssueModel
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
-from txmatching.patients.patient_parameters import Centimeters, Kilograms, PatientParameters
+from txmatching.patients.patient_parameters import (Centimeters, Kilograms,
+                                                    PatientParameters)
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import TxmEventState
@@ -139,8 +141,8 @@ class TxmEventBase:
 class TxmEvent(TxmEventBase):
     all_donors: List[Donor]
     all_recipients: List[Recipient]
-    active_and_valid_donors_dict: Dict[DonorDbId, Donor]
-    active_and_valid_recipients_dict: Dict[RecipientDbId, Recipient]
+    active_and_valid_donors_dict: Dict[DonorDbId, Donor]  # ones to calculate
+    active_and_valid_recipients_dict: Dict[RecipientDbId, Recipient]  # ones to calculate
 
     # pylint: disable=too-many-arguments
     # I think it is reasonable to have multiple arguments here
@@ -152,7 +154,10 @@ class TxmEvent(TxmEventBase):
         (
             self.active_and_valid_donors_dict,
             self.active_and_valid_recipients_dict,
-        ) = _filter_patients_that_dont_have_parsing_errors(all_donors, all_recipients)
+        ) = _filter_patients_that_dont_have_parsing_errors_or_they_are_confirmed(all_donors, all_recipients)
+
+        # here has to be checked if the donor with issue is confirmed
+        # if it is confirmed, the donor stays in the list if not, it is removed
 
 
 def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
@@ -192,7 +197,7 @@ def is_number_of_previous_transplants_valid(previous_transplants: int):
             f'Invalid recipient number of previous transplants {previous_transplants}.')
 
 
-def _filter_patients_that_dont_have_parsing_errors(
+def _filter_patients_that_dont_have_parsing_errors_or_they_are_confirmed(
         donors: List[Donor], recipients: List[Recipient]
 ) -> Tuple[Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]]:
     exclude_donors_ids = set()
@@ -200,13 +205,19 @@ def _filter_patients_that_dont_have_parsing_errors(
 
     for patient in donors:
         if _parsing_issue_list_contains_errors(patient.parsing_issues):
-            exclude_donors_ids.add(patient.db_id)
+            for issue in patient.parsing_issues:
+                if issue.confirmed_at is None:
+                    exclude_donors_ids.add(patient.db_id)
+                    break
 
     for patient in recipients:
         if _parsing_issue_list_contains_errors(patient.parsing_issues):
-            for donor_id in patient.related_donors_db_ids:
-                exclude_donors_ids.add(donor_id)
-            exclude_recipients_ids.add(patient.db_id)
+            for issue in patient.parsing_issues:
+                if issue.confirmed_at is None:
+                    for donor_id in patient.related_donors_db_ids:
+                        exclude_donors_ids.add(donor_id)
+                    exclude_recipients_ids.add(patient.db_id)
+                    break
 
     return_donors = {
         patient.db_id: patient
