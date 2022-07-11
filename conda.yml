@@ -24,7 +24,7 @@ dependencies:
   - python=3.10.5
   - requests=2.26.0
   - responses=0.13.3
-  - scipy=1.7.3 
+  - scipy=1.7.3
   - sentry-sdk[flask]==1.6.0
   - sqlalchemy=1.4.32
   - Werkzeug=2.0.3
