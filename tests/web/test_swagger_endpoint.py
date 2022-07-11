@@ -16,7 +16,7 @@ class TestSwaggerEndpoints(DbTests):
             'get': {
                 f'{API_VERSION[1:]}/{SERVICE_NAMESPACE}/status': [200],
                 f'{API_VERSION[1:]}/{SERVICE_NAMESPACE}/version': [200],
-                f'{API_VERSION[1:]}/{USER_NAMESPACE}/authentik': [400],
+                f'{API_VERSION[1:]}/{USER_NAMESPACE}/authentik-login': [400],
             },
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/reset-password': [403]
@@ -32,7 +32,7 @@ class TestSwaggerEndpoints(DbTests):
         )
         special_status_code_for_paths = {
             'get': {
-                f'{API_VERSION[1:]}/{USER_NAMESPACE}/authentik': [400]
+                f'{API_VERSION[1:]}/{USER_NAMESPACE}/authentik-login': [400]
             },
             'post': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/login': [401],

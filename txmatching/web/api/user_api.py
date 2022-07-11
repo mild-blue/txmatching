@@ -1,8 +1,8 @@
 # pylint: disable=no-self-use
 # Can not, the methods here need self due to the annotations. They are used for generating swagger which needs class.
 import logging
-import requests
 
+import requests
 from flask import request
 from flask_restx import Resource, fields
 
@@ -14,6 +14,8 @@ from txmatching.auth.data_types import UserRole
 from txmatching.auth.login_flow import (credentials_login, otp_login,
                                         refresh_token, resend_otp)
 from txmatching.auth.user.topt_auth_check import allow_otp_request
+from txmatching.configuration.app_configuration.application_configuration import \
+    get_application_configuration
 from txmatching.data_transfer_objects.shared_dto import SuccessDTOOut
 from txmatching.data_transfer_objects.shared_swagger import SuccessJsonOut
 from txmatching.data_transfer_objects.users.user_dto import (
@@ -22,8 +24,9 @@ from txmatching.data_transfer_objects.users.user_swagger import (
     LoginInputJson, LoginSuccessJson, OtpInJson, PasswordChangeInJson,
     RegistrationJson, RegistrationOutJson, ResetRequestJson)
 from txmatching.web.web_utils.namespaces import user_api
-from txmatching.web.web_utils.route_utils import request_body, response_ok, response_bad_request
-from txmatching.configuration.app_configuration.application_configuration import get_application_configuration
+from txmatching.web.web_utils.route_utils import (request_body,
+                                                  response_bad_request,
+                                                  response_ok)
 
 logger = logging.getLogger(__name__)
 
@@ -159,6 +162,7 @@ def _respond_token(token: str) -> dict:
 
 @user_api.route('/authentik-login', methods=['GET'])
 class AuthentikLogin(Resource):
+    @user_api.response_errors()
     def get(self):
         code = request.args.get('code')
         application_config = get_application_configuration()
@@ -166,11 +170,11 @@ class AuthentikLogin(Resource):
             return response_bad_request({'error': 'No code provided'})
 
         data = {
-            "client_id": application_config.authentic_client_id,
-            "client_secret": application_config.authentic_client_secret,
-            "code": code,
-            "redirect_uri": application_config.authentic_client_redirect_uri,
-            "grant_type": "authorization_code"
+            'client_id': application_config.authentic_client_id,
+            'client_secret': application_config.authentic_client_secret,
+            'code': code,
+            'redirect_uri': application_config.authentic_client_redirect_uri,
+            'grant_type': 'authorization_code'
         }
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         authentik_res = requests.post('http://host.docker.internal:9000/application/o/token/',
@@ -178,8 +182,8 @@ class AuthentikLogin(Resource):
         authentik_res = authentik_res.json()
 
         response = response_ok(authentik_res)
-        response.set_cookie("access_token", value=authentik_res["access_token"])
-        response.set_cookie("refresh_token", value=authentik_res["refresh_token"])
+        response.set_cookie('access_token', value=authentik_res['access_token'])
+        response.set_cookie('refresh_token', value=authentik_res['refresh_token'])
 
         # todo redirect to homepage instead of showing access token after testing is finished
         # https://github.com/mild-blue/txmatching/issues/907
