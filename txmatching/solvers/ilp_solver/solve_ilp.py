@@ -7,7 +7,7 @@ import mip
 
 from txmatching.auth.exceptions import \
     CannotFindShortEnoughRoundsOrPathsInILPSolver
-from txmatching.patients.patient import Donor, Recipient
+from txmatching.patients.patient import Recipient
 from txmatching.solvers.ilp_solver.generate_dynamic_constraints import \
     add_dynamic_constraints
 from txmatching.solvers.ilp_solver.ilp_dataclasses import (
@@ -18,7 +18,6 @@ from txmatching.solvers.ilp_solver.solution import Solution, Status
 from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
     DataAndConfigurationForILPSolver
 from txmatching.utils.blood_groups import BloodGroup
-from txmatching.utils.enums import HLACrossmatchLevel
 
 logger = logging.getLogger(__name__)
 

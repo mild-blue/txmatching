@@ -42,6 +42,7 @@ class HLACode:
         for hla_group in GENE_HLA_GROUPS_WITH_OTHER_DETAILED:
             if self._is_raw_code_in_group(hla_group):
                 return hla_group
+        return None
 
     def _is_raw_code_in_group(self, hla_group: HLAGroup) -> bool:
         if self.broad is not None:

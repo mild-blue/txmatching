@@ -4,7 +4,6 @@ from typing import Optional
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
     ParsingIssue, ParsingIssueConfirmationDTO, ParsingIssuePublicDTO)
 from txmatching.database.sql_alchemy_schema import ParsingIssueModel
-from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \

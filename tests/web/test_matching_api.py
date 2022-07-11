@@ -70,7 +70,7 @@ class TestSaveAndGetConfiguration(DbTests):
                                     'hla_group': 'B'},
                                    {'antibody_matches': [],
                                     'hla_group': 'DRB1'},
-                                  {'antibody_matches': [{'hla_antibody': {'raw_code': 'DQ5', 'mfi': 8000,
+                                   {'antibody_matches': [{'hla_antibody': {'raw_code': 'DQ5', 'mfi': 8000,
                                                                            'cutoff': 2000,
                                                                            'code': self._get_split('DQ5', 'DQ1')},
                                                           'match_type': 'UNDECIDABLE'},
