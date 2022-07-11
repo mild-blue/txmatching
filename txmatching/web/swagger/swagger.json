@@ -3055,6 +3055,21 @@
                 },
                 "broad": {
                     "type": "string"
+                },
+                "group": {
+                    "type": "string",
+                    "example": "A",
+                    "enum": [
+                        "A",
+                        "B",
+                        "DRB1",
+                        "CW",
+                        "DPA",
+                        "DPB",
+                        "DQA",
+                        "DQB",
+                        "OTHER_DR"
+                    ]
                 }
             },
             "type": "object"

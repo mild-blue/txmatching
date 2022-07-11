@@ -297,12 +297,12 @@ class TestCrossmatch(unittest.TestCase):
         self.assertTrue(AntibodyMatchTypes.HIGH_RES.is_positive_for_level(HLACrossmatchLevel.BROAD))
         self.assertTrue(AntibodyMatchTypes.HIGH_RES.is_positive_for_level(HLACrossmatchLevel.NONE))
 
-        self.assertFalse(AntibodyMatchTypes.SPLIT.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_BROAD))
+        self.assertTrue(AntibodyMatchTypes.SPLIT.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_BROAD))
         self.assertTrue(AntibodyMatchTypes.SPLIT.is_positive_for_level(HLACrossmatchLevel.BROAD))
         self.assertTrue(AntibodyMatchTypes.SPLIT.is_positive_for_level(HLACrossmatchLevel.NONE))
 
-        self.assertFalse(AntibodyMatchTypes.BROAD.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_BROAD))
-        self.assertFalse(AntibodyMatchTypes.BROAD.is_positive_for_level(HLACrossmatchLevel.BROAD))
+        self.assertTrue(AntibodyMatchTypes.BROAD.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_BROAD))
+        self.assertTrue(AntibodyMatchTypes.BROAD.is_positive_for_level(HLACrossmatchLevel.BROAD))
         self.assertTrue(AntibodyMatchTypes.BROAD.is_positive_for_level(HLACrossmatchLevel.NONE))
 
     def test_virtual_crossmatch_if_all_antibodies_positive_in_high_res(self):
@@ -313,7 +313,7 @@ class TestCrossmatch(unittest.TestCase):
                                                 create_antibody('A*23:01', 2100, 2000),
                                                 create_antibody('A*23:04', 2100, 2000)]
 
-        self._assert_negative_crossmatch('A9', high_res_antibodies_not_all_positive, True, HLACrossmatchLevel.BROAD)
+        self._assert_positive_crossmatch('A9', high_res_antibodies_not_all_positive, True, HLACrossmatchLevel.BROAD)
 
         self._assert_negative_crossmatch('A9', high_res_antibodies_all_positive, True, HLACrossmatchLevel.BROAD)
 
@@ -321,12 +321,12 @@ class TestCrossmatch(unittest.TestCase):
 
         self._assert_positive_crossmatch('A9', high_res_antibodies_all_positive, True, HLACrossmatchLevel.NONE)
 
-        self._assert_negative_crossmatch('A23',
+        self._assert_positive_crossmatch('A23',
                                          [create_antibody('A*23:01', 1900, 2000),
                                           create_antibody('A*23:04', 2100, 2000)], True,
                                          HLACrossmatchLevel.SPLIT_AND_BROAD)
 
-        self._assert_positive_crossmatch('A23',
+        self._assert_negative_crossmatch('A23',
                                          [create_antibody('A*23:01', 2100, 2000),
                                           create_antibody('A*23:04', 2100, 2000)], True,
                                          HLACrossmatchLevel.SPLIT_AND_BROAD)

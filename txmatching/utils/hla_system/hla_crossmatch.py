@@ -67,7 +67,7 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
         positive_matches = set()  # type: Set[AntibodyMatch]
 
         # check for missing typization group
-        if hla_per_group.hla_types == []:
+        if len(hla_per_group.hla_types) == 0:
             for antibody in antibodies:
                 positive_matches.add(
                         AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))

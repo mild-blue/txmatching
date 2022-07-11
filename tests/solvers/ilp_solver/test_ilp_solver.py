@@ -1,13 +1,11 @@
 from local_testing_utilities.generate_patients import (
-    GENERATED_TXM_EVENT_NAME, LARGE_DATA_FOLDER, SMALL_DATA_FOLDER,
+    GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
     SMALL_DATA_FOLDER_MULTIPLE_DONORS, SMALL_DATA_FOLDER_MULTIPLE_DONORS_V2,
     SMALL_DATA_FOLDER_WITH_NO_SOLUTION, SMALL_DATA_FOLDER_WITH_ROUND,
     store_generated_patients_from_folder)
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.test_utilities.prepare_app_for_tests import DbTests
-from txmatching.auth.exceptions import \
-    CannotFindShortEnoughRoundsOrPathsInILPSolver
 from txmatching.configuration.config_parameters import (
     ConfigParameters, ManualDonorRecipientScore)
 from txmatching.database.services.txm_event_service import (
@@ -285,42 +283,6 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         solutions = solve_from_configuration(
             ConfigParameters(solver_constructor_name=Solver.ILPSolver, max_number_of_matchings=10), txm_event)
         self.assertEqual(1, len(solutions.calculated_matchings_list))
-
-    def test_solver_too_many_solutions(self):
-        store_generated_patients_from_folder(LARGE_DATA_FOLDER)
-        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
-
-        for donor in txm_event.all_donors:
-            for hla_per_group in donor.parameters.hla_typing.hla_per_groups:
-                for hla_type in hla_per_group.hla_types:
-                    if hla_type.code.split is None:
-                        hla_type.code.split = hla_type.code.high_res
-                    hla_type.code.high_res = None
-        for recipient in txm_event.all_recipients:
-            for hla_per_group in recipient.parameters.hla_typing.hla_per_groups:
-                for hla_type in hla_per_group.hla_types:
-                    if hla_type.code.split is None:
-                        hla_type.code.split = hla_type.code.high_res
-                    hla_type.code.high_res = None
-            for antibodies_per_group in recipient.hla_antibodies.hla_antibodies_per_groups:
-                for antibody_per_group in antibodies_per_group.hla_antibody_list:
-                    if antibody_per_group.code.split is None:
-                        antibody_per_group.code.split = None
-                    antibody_per_group.code.high_res = None
-
-        config_parameters = ConfigParameters(
-            solver_constructor_name=Solver.ILPSolver,
-            use_high_resolution=True,
-            max_number_of_matchings=1,
-            max_cycle_length=1,
-            max_number_of_dynamic_constrains_ilp_solver=1,
-            hla_crossmatch_level=HLACrossmatchLevel.SPLIT_AND_BROAD)
-
-        with self.assertRaisesRegex(CannotFindShortEnoughRoundsOrPathsInILPSolver,
-                                    "Split and broad crossmatch is set, but all the patients have only split or broad" +
-                                    " resolution. Change the allowed crossmatch type to broad, or none."):
-            solve_from_configuration(config_parameters, txm_event)
-
 
 def _set_donor_blood_group(donor: Donor) -> Donor:
     if donor.db_id % 2 == 0:

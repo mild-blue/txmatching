@@ -883,6 +883,19 @@ definitions:
         properties:
             broad:
                 type: string
+            group:
+                enum:
+                - A
+                - B
+                - DRB1
+                - CW
+                - DPA
+                - DPB
+                - DQA
+                - DQB
+                - OTHER_DR
+                example: A
+                type: string
             high_res:
                 type: string
             split:
