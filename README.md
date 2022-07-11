@@ -139,7 +139,7 @@ It might take some time (minute or two) before Authentik is ready.
 1. Click on Applications / Providers
 2. Click Create
 3. Select OAuth2/OpenID Provider
-4. Input TXM as name
+4. Input TXM as name (can be anything, its used only as a label in authentic)
 5. Client ID: `copy from env.`
 6. Client Secret: `copy from env.`
 7. Redirect URI: `http://localhost:8080/v1/user/authentik-login`
@@ -147,7 +147,7 @@ It might take some time (minute or two) before Authentik is ready.
 #### Create app
 1. Click on Applications
 2. Create new application
-3. Set name as TXM and slug as txm
+3. Set name as TXM and slug as txm (can be anything, its used only as a label in authentic)
 4. From providers select TXM (provider you created in previous steps)
 5. Scroll down and click on Create
 
