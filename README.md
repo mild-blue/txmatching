@@ -136,8 +136,8 @@ It might take some time (minute or two) before Authentik is ready.
 5. Click Create
 6. Select OAuth2/OpenID Provider
 7. Input TXM as name
-8. Client ID: `f5c6b6a72ff4f7bbdde383a26bdac192b2200707`
-9. Client Secret: `37e841e70b842a0d1237b3f7753b5d7461307562568b5add7edcfa6630d578fdffb7ff4d5c0f845d10f8f82bc1d80cec62cb397fd48795a5b1bee6090e0fa409`
+8. Client ID: `copy from env.`
+9. Client Secret: `copy from env.`
 10. Redirect URI: `http://localhost:8080/v1/user/authentik-login`
 11. Click on Applications
 12. Create new application
