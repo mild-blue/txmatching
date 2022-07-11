@@ -129,22 +129,27 @@ To run unittests use `make test` command. `make check` command runs linter and u
 We are using Authentik for authentication. You can find more information about it [here](https://goauthentik.io/docs).
 After you run `make docker-build` you must setup Authentik. You will do this only once. 
 It might take some time (minute or two) before Authentik is ready.
+
+#### Create account and login
 1. Go to http://localhost:9000/if/flow/initial-setup/
 2. Pick email and password
 3. Go to Admin interface
-4. Click on Applications / Providers
-5. Click Create
-6. Select OAuth2/OpenID Provider
-7. Input TXM as name
-8. Client ID: `copy from env.`
-9. Client Secret: `copy from env.`
-10. Redirect URI: `http://localhost:8080/v1/user/authentik-login`
-11. Click on Applications
-12. Create new application
-13. Set name as TXM and slug as txm
-14. From providers select TXM
-15. Scroll down and click on Create
-16. Done
+
+#### Create provider
+1. Click on Applications / Providers
+2. Click Create
+3. Select OAuth2/OpenID Provider
+4. Input TXM as name
+5. Client ID: `copy from env.`
+6. Client Secret: `copy from env.`
+7. Redirect URI: `http://localhost:8080/v1/user/authentik-login`
+
+#### Create app
+1. Click on Applications
+2. Create new application
+3. Set name as TXM and slug as txm
+4. From providers select TXM (provider you created in previous steps)
+5. Scroll down and click on Create
 
 You can test it by going to http://localhost:9000/application/o/authorize/?client_id=f5c6b6a72ff4f7bbdde383a26bdac192b2200707&response_type=code&redirect_uri=http://localhost:8080/v1/user/authentik-login&scope=null  
 In the future middleware should redirect you there.
