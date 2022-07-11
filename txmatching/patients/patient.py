@@ -5,7 +5,6 @@ from typing import Dict, List, Optional, Tuple
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
-# from txmatching.database.sql_alchemy_schema import ParsingIssueModel
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
 from txmatching.patients.patient_parameters import (Centimeters, Kilograms,
                                                     PatientParameters)
@@ -154,7 +153,7 @@ class TxmEvent(TxmEventBase):
         (
             self.active_and_valid_donors_dict,
             self.active_and_valid_recipients_dict,
-        ) = _filter_patients_that_dont_have_parsing_errors_or_they_are_confirmed(all_donors, all_recipients)
+        ) = _filter_patients_that_dont_have_parsing_errors_and_have_confirmed_warnings(all_donors, all_recipients)
 
         # here has to be checked if the donor with issue is confirmed
         # if it is confirmed, the donor stays in the list if not, it is removed
@@ -197,7 +196,7 @@ def is_number_of_previous_transplants_valid(previous_transplants: int):
             f'Invalid recipient number of previous transplants {previous_transplants}.')
 
 
-def _filter_patients_that_dont_have_parsing_errors_or_they_are_confirmed(
+def _filter_patients_that_dont_have_parsing_errors_and_have_confirmed_warnings(
         donors: List[Donor], recipients: List[Recipient]
 ) -> Tuple[Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]]:
     exclude_donors_ids = set()
