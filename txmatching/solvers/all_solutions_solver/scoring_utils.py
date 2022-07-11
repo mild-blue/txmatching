@@ -2,7 +2,7 @@ from typing import Iterable
 
 import numpy as np
 
-from txmatching.solvers.all_solutions_solver.donor_recipient_pair_idx_only import \
+from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
 
 
