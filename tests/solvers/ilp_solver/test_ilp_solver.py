@@ -5,7 +5,9 @@ from local_testing_utilities.generate_patients import (
     store_generated_patients_from_folder)
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
+from tests.solvers.prepare_txm_event_with_many_solutions import prepare_txm_event_with_too_many_solutions
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.auth.exceptions import CannotFindShortEnoughRoundsOrPathsInILPSolver
 from txmatching.configuration.config_parameters import (
     ConfigParameters, ManualDonorRecipientScore)
 from txmatching.database.services.txm_event_service import (
@@ -283,6 +285,30 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         solutions = solve_from_configuration(
             ConfigParameters(solver_constructor_name=Solver.ILPSolver, max_number_of_matchings=10), txm_event)
         self.assertEqual(1, len(solutions.calculated_matchings_list))
+
+    def test_solver_too_low_dynamic_constraints_bound(self):
+        txm_event = prepare_txm_event_with_too_many_solutions()
+
+        config_parameters = ConfigParameters(
+            solver_constructor_name=Solver.ILPSolver,
+            use_high_resolution=True,
+            max_cycle_length=1,
+            max_sequence_length=1,
+            max_number_of_dynamic_constrains_ilp_solver=1,
+            hla_crossmatch_level=HLACrossmatchLevel.SPLIT_AND_BROAD)
+
+        with self.assertRaises(CannotFindShortEnoughRoundsOrPathsInILPSolver):
+            solve_from_configuration(config_parameters, txm_event)
+
+        config_parameters = ConfigParameters(
+            solver_constructor_name=Solver.ILPSolver,
+            use_high_resolution=True,
+            max_cycle_length=4,
+            max_sequence_length=4,
+            max_number_of_dynamic_constrains_ilp_solver=100,
+            hla_crossmatch_level=HLACrossmatchLevel.SPLIT_AND_BROAD)
+
+        solve_from_configuration(config_parameters, txm_event)
 
 def _set_donor_blood_group(donor: Donor) -> Donor:
     if donor.db_id % 2 == 0:
