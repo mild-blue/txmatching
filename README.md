@@ -127,7 +127,7 @@ To run unittests use `make test` command. `make check` command runs linter and u
 
 ### Authentik
 We are using Authentik for authentication. You can find more information about it [here](https://goauthentik.io/docs).
-After you run `make docker-build` you must setup Authentik. You will do this only once. 
+After you run `docker-compose up` you must setup Authentik. You will do this only once. 
 It might take some time (minute or two) before Authentik is ready.
 
 #### Create account and login

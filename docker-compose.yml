@@ -26,7 +26,7 @@ services:
     volumes:
       - txmatching-postgres:/var/lib/postgresql/data/
 
-  postgresql:
+  authentik-db:
     image: postgres:12-alpine
     restart: unless-stopped
     volumes:
@@ -35,18 +35,20 @@ services:
       - POSTGRES_PASSWORD=${PG_PASS:-Your_password123}
       - POSTGRES_USER=${PG_USER:-admin}
       - POSTGRES_DB=${PG_DB:-authentik}
-  redis:
+
+  authentik-redis:
     image: redis:alpine
     restart: unless-stopped
-  server:
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2022.4.1}
+
+  authentik-server:
+    image: ghcr.io/goauthentik/server:2022.4.1
     restart: unless-stopped
     command: server
     environment:
       AUTHENTIK_SECRET_KEY: DdP75bZYo8eOfHyCUL2bL5dFX5O5WQy6p5afJrASFpk6hlWW3c
       AK_ADMIN_TOKEN: LHDXJc2o55Zed6YP5Wd57CUpSLOr36AOypbhfQW5Fylb8kaFfW
-      AUTHENTIK_REDIS__HOST: redis
-      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-db
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-admin}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-Your_password123}
@@ -58,22 +60,23 @@ services:
     ports:
       - "9000:9000"
       - "9443:9443"
-  worker:
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2022.4.1}
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2022.4.1
     restart: unless-stopped
     command: worker
     environment:
       AUTHENTIK_SECRET_KEY: DdP75bZYo8eOfHyCUL2bL5dFX5O5WQy6p5afJrASFpk6hlWW3c
       AK_ADMIN_TOKEN: LHDXJc2o55Zed6YP5Wd57CUpSLOr36AOypbhfQW5Fylb8kaFfW
-      AUTHENTIK_REDIS__HOST: redis
-      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-db
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-admin}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-Your_password123}
       # AUTHENTIK_ERROR_REPORTING__ENABLED: "true"
-    # This is optional, and can be removed. If you remove this, the following will happen
-    # - The permissions for the /media folders aren't fixed, so make sure they are 1000:1000
-    # - The docker socket can't be accessed anymore
+      # user: root => This is optional, and can be removed. If you remove this, the following will happen
+      # - The permissions for the /media folders aren't fixed, so make sure they are 1000:1000
+      # - The docker socket can't be accessed anymore
     user: root
     volumes:
       - ./certs:/certs
