@@ -620,7 +620,6 @@ class TestPatientService(DbTests):
             self.assertEqual(None, error_issue.confirmed_by)
 
             txm_event = get_txm_event_complete(txm_event_db_id)
-            self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/confirm-warning/{warning_issue.id}',
@@ -640,6 +639,8 @@ class TestPatientService(DbTests):
             self.assertEqual(400, res.status_code)
 
             self.assertEqual(None, error_issue.confirmed_by)
+            self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
+            
 
     def test_unconfirming_warning_issue(self):
         txm_event_db_id = self.fill_db_with_patients(
