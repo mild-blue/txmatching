@@ -60,6 +60,9 @@ services:
     ports:
       - "9000:9000"
       - "9443:9443"
+    depends_on:
+      - authentik-redis
+      - authentik-db
 
   authentik-worker:
     image: ghcr.io/goauthentik/server:2022.4.1
@@ -81,6 +84,9 @@ services:
     volumes:
       - ./certs:/certs
       - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - authentik-redis
+      - authentik-db
 
 volumes:
   txmatching-postgres:
