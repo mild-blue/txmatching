@@ -10,6 +10,7 @@ from txmatching.database.services.pairing_result_service import \
     solve_from_configuration_and_save
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
+from txmatching.patients.hla_code import HLACode
 from txmatching.utils.enums import (HLACrossmatchLevel, HLAGroup, MatchType,
                                     Solver)
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -19,9 +20,16 @@ from txmatching.web import API_VERSION, MATCHING_NAMESPACE, TXM_EVENT_NAMESPACE
 class TestSaveAndGetConfiguration(DbTests):
 
     def _get_split(self, split_code: str, broad_code: str = None):
+        hla_code = HLACode(
+            high_res=None,
+            split=split_code,
+            broad=broad_code if broad_code is not None else split_code,
+        )
         return {
-            'high_res': None, 'split': split_code,
-            'broad': broad_code if broad_code is not None else split_code
+            'high_res': hla_code.high_res, 
+            'split': hla_code.split,
+            'broad': hla_code.broad,
+            'group': hla_code.group
         }
 
     def test_get_matchings(self):
@@ -65,11 +73,11 @@ class TestSaveAndGetConfiguration(DbTests):
                                    {'antibody_matches': [{'hla_antibody': {'raw_code': 'DQ5', 'mfi': 8000,
                                                                            'cutoff': 2000,
                                                                            'code': self._get_split('DQ5', 'DQ1')},
-                                                          'match_type': 'NONE'},
+                                                          'match_type': 'UNDECIDABLE'},
                                                          {'hla_antibody': {'raw_code': 'DQ6', 'mfi': 8000,
                                                                            'cutoff': 2000,
                                                                            'code': self._get_split('DQ6', 'DQ1')},
-                                                          'match_type': 'NONE'}],
+                                                          'match_type': 'UNDECIDABLE'}],
                                     'hla_group': 'Other'}]
 
         expected_score = [

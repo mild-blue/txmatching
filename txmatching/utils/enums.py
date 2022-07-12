@@ -104,6 +104,7 @@ HLA_GROUPS_PROPERTIES = {
 HLA_GROUPS_OTHER = [HLAGroup.CW, HLAGroup.DPA, HLAGroup.DPB, HLAGroup.DQA, HLAGroup.DQB, HLAGroup.OTHER_DR]
 GENE_HLA_GROUPS = [HLAGroup.A, HLAGroup.B, HLAGroup.DRB1]
 GENE_HLA_GROUPS_WITH_OTHER = GENE_HLA_GROUPS + [HLAGroup.Other]
+GENE_HLA_GROUPS_WITH_OTHER_DETAILED = GENE_HLA_GROUPS + HLA_GROUPS_OTHER
 assert set(HLA_GROUPS_OTHER + GENE_HLA_GROUPS + [HLAGroup.Other, HLAGroup.ALL]) == set(HLAGroup)
 
 
@@ -135,13 +136,19 @@ class AntibodyMatchTypes(str, Enum):
     BROAD = 'BROAD'
     HIGH_RES = 'HIGH_RES'
     NONE = 'NONE'
+    # when we have antibodies for a group that patient doesn't have typization for
+    UNDECIDABLE = 'UNDECIDABLE'
+    HIGH_RES_WITH_SPLIT = 'HIGH_RES_WITH_SPLIT'
+    HIGH_RES_WITH_BROAD = 'HIGH_RES_WITH_BROAD'
 
     def is_positive_for_level(self, crossmatch_level: HLACrossmatchLevel) -> bool:
         return (
                 crossmatch_level == HLACrossmatchLevel.NONE and
-                self in [self.BROAD, self.SPLIT, self.HIGH_RES] or
-                crossmatch_level == HLACrossmatchLevel.BROAD and self in [self.SPLIT, self.HIGH_RES] or
-                crossmatch_level == HLACrossmatchLevel.SPLIT_AND_BROAD and self == self.HIGH_RES
+                self in [self.BROAD, self.SPLIT, self.HIGH_RES, self.HIGH_RES_WITH_SPLIT, self.HIGH_RES_WITH_BROAD] or
+                crossmatch_level == HLACrossmatchLevel.BROAD and self in [self.BROAD, self.SPLIT, self.HIGH_RES,
+                                                                          self.HIGH_RES_WITH_SPLIT] or
+                crossmatch_level == HLACrossmatchLevel.SPLIT_AND_BROAD and self in [self.BROAD, self.HIGH_RES,
+                                                                                    self.SPLIT]
         )
 
 

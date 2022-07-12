@@ -20,7 +20,10 @@ export enum AntibodyMatchGeneratedMatchTypeEnum {
     Split = 'SPLIT',
     Broad = 'BROAD',
     HighRes = 'HIGH_RES',
-    None = 'NONE'
+    None = 'NONE',
+    Undecidable = 'UNDECIDABLE',
+    HighResWithSplit = 'HIGH_RES_WITH_SPLIT',
+    HighResWithBroad = 'HIGH_RES_WITH_BROAD'
 };
 
 

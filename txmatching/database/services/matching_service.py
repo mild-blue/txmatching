@@ -213,15 +213,25 @@ def get_transplant_messages(
                              if antibody_match.match_type != AntibodyMatchTypes.NONE]
 
     broad_crossmatches = {possible_crossmatch.hla_antibody.raw_code for possible_crossmatch in possible_crossmatches
-                          if possible_crossmatch.match_type == AntibodyMatchTypes.BROAD}
+                          if possible_crossmatch.match_type in [AntibodyMatchTypes.BROAD,
+                                                                AntibodyMatchTypes.HIGH_RES_WITH_BROAD]}
     split_crossmatches = {possible_crossmatch.hla_antibody.raw_code for possible_crossmatch in possible_crossmatches
-                          if possible_crossmatch.match_type == AntibodyMatchTypes.SPLIT}
+                          if possible_crossmatch.match_type in [AntibodyMatchTypes.SPLIT,
+                                                                AntibodyMatchTypes.HIGH_RES_WITH_SPLIT]}
+
+    undecidable_crossmatches = {possible_crossmatch.hla_antibody.code.group.name for possible_crossmatch
+                                in possible_crossmatches if
+                                possible_crossmatch.match_type == AntibodyMatchTypes.UNDECIDABLE and
+                                possible_crossmatch.hla_antibody.code}
 
     if broad_crossmatches != set():
         detailed_messages.append(TransplantWarningDetail.BROAD_CROSSMATCH(broad_crossmatches))
 
     if split_crossmatches != set():
         detailed_messages.append(TransplantWarningDetail.SPLIT_CROSSMATCH(split_crossmatches))
+
+    if undecidable_crossmatches != set():
+        detailed_messages.append(TransplantWarningDetail.UNDECIDABLE(undecidable_crossmatches))
 
     return TransplantWarnings(
         message_global='There were several issues with this transplant, see detail.',

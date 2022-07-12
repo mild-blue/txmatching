@@ -60,6 +60,9 @@ definitions:
                 - BROAD
                 - HIGH_RES
                 - NONE
+                - UNDECIDABLE
+                - HIGH_RES_WITH_SPLIT
+                - HIGH_RES_WITH_BROAD
                 example: SPLIT
                 type: string
         required:
@@ -879,6 +882,19 @@ definitions:
     HlaCode:
         properties:
             broad:
+                type: string
+            group:
+                enum:
+                - A
+                - B
+                - DRB1
+                - CW
+                - DPA
+                - DPB
+                - DQA
+                - DQB
+                - OTHER_DR
+                example: A
                 type: string
             high_res:
                 type: string
