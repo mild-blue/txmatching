@@ -177,7 +177,7 @@ class AuthentikLogin(Resource):
             'grant_type': 'authorization_code'
         }
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        authentik_res = requests.post('http://172.17.0.1:9000/application/o/token/',
+        authentik_res = requests.post('http://host.docker.internal:9000/application/o/token/',
                                       data=data, headers=headers)
         authentik_res = authentik_res.json()
 

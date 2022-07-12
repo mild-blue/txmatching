@@ -1,4 +1,4 @@
-# Do not forgot to update other docker-compose files, especially in project-configuration repository.
+# Do not forget to update other docker-compose files, especially in project-configuration repository.
 version: '3.8'
 services:
   backend:
@@ -14,6 +14,8 @@ services:
       - db
     volumes:
       - /var/log/txmatching:/logs
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     image: postgres:13
