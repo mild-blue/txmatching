@@ -10,7 +10,9 @@ It consists of backend written in Python and an Angular frontend.
 
 ## How to run the app locally 
 
-The project runs on MacOs (not M1 chip), Linux and Windows. To run on Windows you need Docker and WSL2 as we are using [graph-tool](https://graph-tool.skewed.de/) package that does not support Windows. 
+The project runs on macOS, Linux and Windows. To run on Windows you need Docker and WSL2 as we are using [graph-tool](https://graph-tool.skewed.de/) package that does not support Windows.
+
+To run project on Mac with M-series chips, you will need Docker. Currently, there are unsupported packages like `openssl` that prevent running scripts from this project natively on ARM processors.
 
 ### Prepare Frontend
 In order to build Frontend for the app one must run `make build-fe`.
