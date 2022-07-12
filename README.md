@@ -124,3 +124,32 @@ To obtain configuration in the code, one should call `get_application_configurat
 
 ### Testing
 To run unittests use `make test` command. `make check` command runs linter and unittests altogether.
+
+### Authentik
+We are using Authentik for authentication. You can find more information about it [here](https://goauthentik.io/docs).
+After you run `docker-compose up` you must setup Authentik. You will do this only once. 
+It might take some time (minute or two) before Authentik is ready.
+
+#### Create account and login
+1. Go to http://localhost:9000/if/flow/initial-setup/
+2. Pick email and password
+3. Go to Admin interface
+
+#### Create provider
+1. Click on Applications / Providers
+2. Click Create
+3. Select OAuth2/OpenID Provider
+4. Input TXM as name (can be anything, its used only as a label in authentic)
+5. Client ID: `copy from env.`
+6. Client Secret: `copy from env.`
+7. Redirect URI: `http://localhost:8080/v1/user/authentik-login`
+
+#### Create app
+1. Click on Applications
+2. Create new application
+3. Set name as TXM and slug as txm (can be anything, its used only as a label in authentic)
+4. From providers select TXM (provider you created in previous steps)
+5. Scroll down and click on Create
+
+You can test it by going to http://localhost:9000/application/o/authorize/?client_id=f5c6b6a72ff4f7bbdde383a26bdac192b2200707&response_type=code&redirect_uri=http://localhost:8080/v1/user/authentik-login&scope=null  
+In the future middleware should redirect you there.

@@ -53,7 +53,7 @@ def delete_txm_event(txm_event_id: int):
         TxmEventModel.query.filter(TxmEventModel.id == txm_event_id).delete()
         db.session.commit()
     else:
-        raise InvalidArgumentException(f'No TXM event with id {id} found.')
+        raise InvalidArgumentException(f'No TXM event with id {txm_event_id} found.')
 
 
 def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int, country_code: Country):
