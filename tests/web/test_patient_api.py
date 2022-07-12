@@ -11,8 +11,7 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.database.sql_alchemy_schema import (ConfigModel,
-                                                    DonorModel,
+from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
                                                     ParsingIssueModel,
                                                     RecipientModel,
                                                     UploadedFileModel)
@@ -20,7 +19,8 @@ from txmatching.patients.patient import DonorType, RecipientRequirements
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import ParsingIssueDetail
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
+    ParsingIssueDetail
 from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
 
 
@@ -619,7 +619,6 @@ class TestPatientService(DbTests):
             self.assertEqual(None, warning_issue.confirmed_by)
             self.assertEqual(None, error_issue.confirmed_by)
 
-            # TODO https://github.com/mild-blue/txmatching/issues/860
             txm_event = get_txm_event_complete(txm_event_db_id)
             self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
 

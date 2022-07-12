@@ -11,8 +11,8 @@ from txmatching.patients.patient_parameters import (Centimeters, Kilograms,
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import TxmEventState
-from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
-    ERROR_PROCESSING_RESULTS
+from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import (
+    ERROR_PROCESSING_RESULTS, WARNING_PROCESSING_RESULTS)
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
@@ -155,9 +155,6 @@ class TxmEvent(TxmEventBase):
             self.active_and_valid_recipients_dict,
         ) = _filter_patients_that_dont_have_parsing_errors_and_have_confirmed_warnings(all_donors, all_recipients)
 
-        # here has to be checked if the donor with issue is confirmed
-        # if it is confirmed, the donor stays in the list if not, it is removed
-
 
 def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
     """
@@ -204,6 +201,9 @@ def _filter_patients_that_dont_have_parsing_errors_and_have_confirmed_warnings(
 
     for patient in donors:
         if _parsing_issue_list_contains_errors(patient.parsing_issues):
+            exclude_donors_ids.add(patient.db_id)
+
+        if _parsing_issue_list_contains_warnings(patient.parsing_issues):
             for issue in patient.parsing_issues:
                 if issue.confirmed_at is None:
                     exclude_donors_ids.add(patient.db_id)
@@ -211,6 +211,11 @@ def _filter_patients_that_dont_have_parsing_errors_and_have_confirmed_warnings(
 
     for patient in recipients:
         if _parsing_issue_list_contains_errors(patient.parsing_issues):
+            for donor_id in patient.related_donors_db_ids:
+                exclude_donors_ids.add(donor_id)
+            exclude_recipients_ids.add(patient.db_id)
+
+        if _parsing_issue_list_contains_warnings(patient.parsing_issues):
             for issue in patient.parsing_issues:
                 if issue.confirmed_at is None:
                     for donor_id in patient.related_donors_db_ids:
@@ -246,5 +251,14 @@ def _parsing_issue_list_contains_errors(parsing_issues: Optional[List[ParsingIss
         return False
     for parsing_issue in parsing_issues:
         if parsing_issue.parsing_issue_detail in ERROR_PROCESSING_RESULTS:
+            return True
+    return False
+
+
+def _parsing_issue_list_contains_warnings(parsing_issues: Optional[List[ParsingIssue]]) -> bool:
+    if parsing_issues is None:
+        return False
+    for parsing_issue in parsing_issues:
+        if parsing_issue.parsing_issue_detail in WARNING_PROCESSING_RESULTS:
             return True
     return False
