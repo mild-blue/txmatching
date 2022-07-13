@@ -200,19 +200,15 @@ def _filter_patients_that_dont_have_parsing_errors_and_have_confirmed_warnings(
     exclude_recipients_ids = set()
 
     for patient in donors:
-        if _parsing_issue_list_contains_errors(patient.parsing_issues):
-            exclude_donors_ids.add(patient.db_id)
-
-        if _parsing_issue_list_contains_unconfirmed_warnings(patient.parsing_issues):
+        if (_parsing_issue_list_contains_errors(patient.parsing_issues) or 
+            _parsing_issue_list_contains_unconfirmed_warnings(patient.parsing_issues)):
             exclude_donors_ids.add(patient.db_id)
 
     for patient in recipients:
-        if _parsing_issue_list_contains_errors(patient.parsing_issues):
+        if (_parsing_issue_list_contains_errors(patient.parsing_issues) or 
+            _parsing_issue_list_contains_unconfirmed_warnings(patient.parsing_issues)):
             for donor_id in patient.related_donors_db_ids:
                 exclude_donors_ids.add(donor_id)
-            exclude_recipients_ids.add(patient.db_id)
-
-        if _parsing_issue_list_contains_unconfirmed_warnings(patient.parsing_issues):
             exclude_recipients_ids.add(patient.db_id)
 
     return_donors = {
@@ -251,6 +247,6 @@ def _parsing_issue_list_contains_unconfirmed_warnings(parsing_issues: Optional[L
     if parsing_issues is None:
         return False
     for parsing_issue in parsing_issues:
-        if parsing_issue.parsing_issue_detail in WARNING_PROCESSING_RESULTS and not parsing_issue.confirmed_at:
+        if parsing_issue.parsing_issue_detail in WARNING_PROCESSING_RESULTS and parsing_issue.confirmed_at is None:
             return True
     return False
