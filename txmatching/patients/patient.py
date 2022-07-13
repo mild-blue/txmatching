@@ -193,7 +193,7 @@ def is_number_of_previous_transplants_valid(previous_transplants: int):
             f'Invalid recipient number of previous transplants {previous_transplants}.')
 
 
-def _filter_patients_that_dont_have_parsing_errors_or_have_confirmed_warnings(
+def _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(
         donors: List[Donor], recipients: List[Recipient]
 ) -> Tuple[Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]]:
     exclude_donors_ids = set()
