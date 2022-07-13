@@ -618,7 +618,6 @@ class TestPatientService(DbTests):
             txm_event = get_txm_event_complete(txm_event_db_id)
             self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
 
-
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/confirm-warning/{warning_issue.id}',
                              headers=self.auth_headers)
@@ -634,7 +633,7 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers)
             self.assertEqual(406, res.status_code)
 
-    def  test_confirming_error_issue(self):
+    def test_confirming_error_issue(self):
         txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED))
         recipient_db_id = 10
@@ -686,7 +685,7 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers)
             self.assertEqual(400, res.status_code)
 
-            self.assertEqual(None, error_issue.confirmed_by) 
+            self.assertEqual(None, error_issue.confirmed_by)
 
     def test_unconfirming_warning_issue(self):
         txm_event_db_id = self.fill_db_with_patients(
@@ -730,7 +729,6 @@ class TestPatientService(DbTests):
             warning_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
                 ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
             self.assertEqual(None, warning_issue.confirmed_by)
-
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/confirm-warning/{warning_issue.id}',
