@@ -153,7 +153,7 @@ class TxmEvent(TxmEventBase):
         (
             self.active_and_valid_donors_dict,
             self.active_and_valid_recipients_dict,
-        ) = _filter_patients_that_dont_have_parsing_errors_or_have_confirmed_warnings(all_donors, all_recipients)
+        ) = _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(all_donors, all_recipients)
 
 
 def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
