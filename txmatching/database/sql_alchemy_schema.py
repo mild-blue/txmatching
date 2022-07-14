@@ -234,7 +234,7 @@ class ParsingIssueModel(db.Model):
     message = Column(TEXT, unique=False, nullable=False, default='')
     donor_id = Column(Integer, ForeignKey('donor.id', ondelete='CASCADE'), unique=False, nullable=True)
     recipient_id = Column(Integer, ForeignKey('recipient.id', ondelete='CASCADE'), unique=False, nullable=True)
-    txm_event_id = Column(Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=True)
+    txm_event_id = Column(Integer, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(
         DateTime(timezone=True),
