@@ -399,24 +399,13 @@ def get_donor_recipient_pair(donor_id: int, txm_event_id: int) -> Tuple[Donor, O
 def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
     donor, maybe_recipient = get_donor_recipient_pair(donor_id, txm_event_id)
 
-    if maybe_recipient is None:
-        delete_parsing_issues_for_patient(donor_id=donor_id, txm_event_id=txm_event_id)
-        DonorModel.query.filter(DonorModel.id == donor_id).delete()
+    delete_parsing_issues_for_patient(donor_id=donor_id, txm_event_id=txm_event_id)
+    DonorModel.query.filter(DonorModel.id == donor_id).delete()
 
-        db.session.commit()
-
-        return
-
-    if len(maybe_recipient.related_donors_db_ids) > 1:
-        donor = DonorModel.query.filter(DonorModel.id == donor_id).first()
-        donor.recipient_id = donor.recipient = None
-        donor.donor_type = DonorType.NON_DIRECTED
-    else:
+    if (maybe_recipient is not None and
+        len(maybe_recipient.related_donors_db_ids) == 1):
         delete_parsing_issues_for_patient(recipient_id=maybe_recipient.db_id, txm_event_id=txm_event_id)
         RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
-
-        delete_parsing_issues_for_patient(donor_id=donor_id, txm_event_id=txm_event_id)
-        DonorModel.query.filter(DonorModel.id == donor_id).delete()
 
     db.session.commit()
 
