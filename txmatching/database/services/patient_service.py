@@ -25,7 +25,7 @@ from txmatching.database.services.parsing_issue_service import (
     get_parsing_issues_for_txm_event_id, parsing_issues_to_models)
 from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
-    DonorModel, DonorType, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
+    DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
     RecipientModel)
 from txmatching.patients.hla_model import (HLAAntibodies, HLAAntibodyRaw,
                                            HLATypeRaw, HLATyping)
