@@ -2,7 +2,8 @@ from typing import List, Tuple
 
 import numpy as np
 
-from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
+    ParsingIssueTemp
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 
@@ -18,7 +19,7 @@ MAX_MFI_RATIO_TO_BE_JUST_BELOW_CUTOFF = 7 / 8
 
 def get_mfi_from_multiple_hla_codes(mfis: List[int],
                                     cutoff: int,
-                                    raw_code: str) -> Tuple[List[ParsingIssue], int]:
+                                    raw_code: str) -> Tuple[List[ParsingIssueTemp], int]:
     """
     Takes list of MFIs of the same hla code and estimates the MFI for the code.
     It is based on discussions with immunologists. If variance is low, take average, if variance is high, take average
@@ -42,7 +43,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
     max_mfi = np.max(mfis)
     min_mfi = np.min(mfis)
 
-    parsing_issues = []
+    parsing_issues_temp = []
 
     if min_mfi < 0:
         raise AssertionError(f'MFI has to be always >=0. The data shall be validated on input. Obtained MFI={min_mfi}.')
@@ -77,8 +78,8 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
 
     if RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW * cutoff < relevant_mean < cutoff and \
             max_mfi > cutoff * MAX_MFI_RATIO_TO_BE_JUST_BELOW_CUTOFF:
-        parsing_issues.append(
-            ParsingIssue(
+        parsing_issues_temp.append(
+            ParsingIssueTemp(
                 hla_code_or_group=raw_code,
                 parsing_issue_detail=ParsingIssueDetail.MFI_PROBLEM,
                 message=f'Dropping {raw_code} antibody: '
@@ -89,8 +90,8 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
         )
 
     elif relevant_mean > cutoff > min_mfi:
-        parsing_issues.append(
-            ParsingIssue(
+        parsing_issues_temp.append(
+            ParsingIssueTemp(
                 hla_code_or_group=raw_code,
                 parsing_issue_detail=ParsingIssueDetail.MFI_PROBLEM,
                 message=f'Not dropping {raw_code} antibody: '
@@ -101,8 +102,8 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
         )
 
     elif relevant_mean < cutoff and only_one_number_used and max_mfi > cutoff * MAX_MFI_RATIO_TO_BE_JUST_BELOW_CUTOFF:
-        parsing_issues.append(
-            ParsingIssue(
+        parsing_issues_temp.append(
+            ParsingIssueTemp(
                 hla_code_or_group=raw_code,
                 parsing_issue_detail=ParsingIssueDetail.MFI_PROBLEM,
                 message=f'Dropping {raw_code} antibody: '
@@ -113,4 +114,4 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
             )
         )
 
-    return parsing_issues, relevant_mean
+    return parsing_issues_temp, relevant_mean

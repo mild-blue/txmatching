@@ -613,6 +613,7 @@ class TestPatientService(DbTests):
             warning_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
                 ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
 
+
             self.assertEqual(None, warning_issue.confirmed_by)
 
             txm_event = get_txm_event_complete(txm_event_db_id)

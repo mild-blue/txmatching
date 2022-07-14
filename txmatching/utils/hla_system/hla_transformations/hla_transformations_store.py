@@ -3,7 +3,8 @@ import logging
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
-from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
+    ParsingIssue, ParsingIssueTemp)
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (
@@ -29,7 +30,7 @@ MAX_ANTIGENS_PER_GROUP = 2
 
 def parse_hla_raw_code_and_return_parsing_issue_list(
         hla_raw_code: str
-) -> Tuple[List[ParsingIssue], Optional[HLACode]]:
+) -> Tuple[List[ParsingIssueTemp], Optional[HLACode]]:
     """
     Method to store information about issues during parsing HLA code.
     This method is partially redundant to parse_hla_raw_code so in case of update, update it too.
@@ -43,7 +44,7 @@ def parse_hla_raw_code_and_return_parsing_issue_list(
     parsing_issue = parse_hla_raw_code_with_details(hla_raw_code)
     if not parsing_issue.maybe_hla_code or parsing_issue.result_detail not in OK_PROCESSING_RESULTS:
         parsing_issues.append(
-            ParsingIssue(
+            ParsingIssueTemp(
                 hla_code_or_group=hla_raw_code,
                 parsing_issue_detail=parsing_issue.result_detail,
                 message=parsing_issue.result_detail.value,
@@ -54,7 +55,7 @@ def parse_hla_raw_code_and_return_parsing_issue_list(
 
 def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         hla_antibodies_raw: List[HLAAntibodyRawModel]
-) -> Tuple[List[ParsingIssue], HLAAntibodiesDTO]:
+) -> Tuple[List[ParsingIssueTemp], HLAAntibodiesDTO]:
     # 1. preprocess raw codes (their count can increase)
     @dataclass
     class HLAAntibodyPreprocessedDTO:
@@ -82,7 +83,7 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group}
         if len(cutoffs) > 1:
             parsing_issues.append(
-                ParsingIssue(
+                ParsingIssueTemp(
                     hla_code_or_group=raw_code,
                     parsing_issue_detail=ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
                     message=ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.value,
@@ -107,7 +108,7 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
     # 3. validate antibodies
     if all_samples_are_positive_in_high_res(hla_antibodies_parsed):
         parsing_issues.append(
-            ParsingIssue(
+            ParsingIssueTemp(
                 hla_code_or_group='Antibodies',
                 parsing_issue_detail=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES,
                 message=ParsingIssueDetail.ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES.value,
@@ -115,7 +116,7 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
         )
     if number_of_antigens_is_insufficient_in_high_res(hla_antibodies_parsed):
         parsing_issues.append(
-            ParsingIssue(
+            ParsingIssueTemp(
                 hla_code_or_group='Antibodies',
                 parsing_issue_detail=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES,
                 message=ParsingIssueDetail.INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES.value,
@@ -136,7 +137,7 @@ def parse_hla_antibodies_raw_and_return_parsing_issue_list(
 
 def parse_hla_typing_raw_and_return_parsing_issue_list(
         hla_typing_raw: HLATypingRawDTO,
-) -> Tuple[List[ParsingIssue], HLATypingDTO]:
+) -> Tuple[List[ParsingIssueTemp], HLATypingDTO]:
     parsing_issues = []
     # 1. preprocess raw codes (their count can increase)
     raw_codes_preprocessed = [
@@ -171,7 +172,7 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
             invalid_hla_groups.append(group.hla_group.name)
             group_name = 'Group ' + group.hla_group.name
             parsing_issues.append(
-                ParsingIssue(
+                ParsingIssueTemp(
                     hla_code_or_group=group_name,
                     parsing_issue_detail=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
                     message=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value
@@ -185,7 +186,7 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
                     invalid_hla_groups.append(hla_group.name)
                     group_name = 'Group ' + hla_group.name
                     parsing_issues.append(
-                        ParsingIssue(
+                        ParsingIssueTemp(
                             hla_code_or_group=group_name,
                             parsing_issue_detail=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP,
                             message=ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP.value
@@ -199,7 +200,7 @@ def parse_hla_typing_raw_and_return_parsing_issue_list(
             invalid_hla_groups.append(group.hla_group.name)
             group_name = 'Group ' + group.hla_group.name
             parsing_issues.append(
-                ParsingIssue(
+                ParsingIssueTemp(
                     hla_code_or_group=group_name,
                     parsing_issue_detail=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY,
                     message=ParsingIssueDetail.BASIC_HLA_GROUP_IS_EMPTY.value
