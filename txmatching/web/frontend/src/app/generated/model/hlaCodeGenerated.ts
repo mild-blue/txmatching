@@ -13,7 +13,21 @@
 
 export interface HlaCodeGenerated { 
     broad: string;
+    group?: HlaCodeGeneratedGroupEnum;
     high_res?: string;
     split?: string;
 }
+export enum HlaCodeGeneratedGroupEnum {
+    A = 'A',
+    B = 'B',
+    Drb1 = 'DRB1',
+    Cw = 'CW',
+    Dpa = 'DPA',
+    Dpb = 'DPB',
+    Dqa = 'DQA',
+    Dqb = 'DQB',
+    OtherDr = 'OTHER_DR'
+};
+
+
 

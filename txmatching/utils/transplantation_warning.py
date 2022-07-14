@@ -32,7 +32,9 @@ class TransplantWarningDetail(str, Enum):
     SPLIT_CROSSMATCH = lambda antibodies: (
         f'There is a possible crossmatch on split level for antibodies: {antibodies}.'
         ' The tranplant should be confirmed with immunologist first')
-
+    UNDECIDABLE = lambda groups: (
+        f'Found antibodies for groups that donor does not have typization for: {groups}.'
+        ' The tranplant should be confirmed with immunologist first')
 
 @dataclass
 class TransplantWarnings:

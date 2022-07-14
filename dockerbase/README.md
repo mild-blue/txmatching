@@ -4,7 +4,7 @@ This folder contains two docker images, that are used as a base for the TXMatchi
 
 ## Updating images
 When it is necessary to update the base image, execute `make publish VERSION=<new-version>`
-and then update [Github Actions](../.github/workflows/pr.yml) pipeline and
+from dockerbase directory, then update [Github Actions](../.github/workflows/pr.yml) pipeline and
 [TXM Dockerfile](../Dockerfile) with correct (the new) version.
 Example:
 ```

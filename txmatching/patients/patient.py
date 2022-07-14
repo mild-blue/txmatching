@@ -153,7 +153,7 @@ class TxmEvent(TxmEventBase):
         (
             self.active_and_valid_donors_dict,
             self.active_and_valid_recipients_dict,
-        ) = _filter_patients_that_dont_have_parsing_errors_and_have_confirmed_warnings(all_donors, all_recipients)
+        ) = _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(all_donors, all_recipients)
 
 
 def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
@@ -193,14 +193,16 @@ def is_number_of_previous_transplants_valid(previous_transplants: int):
             f'Invalid recipient number of previous transplants {previous_transplants}.')
 
 
-def _filter_patients_that_dont_have_parsing_errors_and_have_confirmed_warnings(
+
+def _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(
         donors: List[Donor], recipients: List[Recipient]
 ) -> Tuple[Dict[DonorDbId, Donor], Dict[RecipientDbId, Recipient]]:
     exclude_donors_ids = set()
     exclude_recipients_ids = set()
 
     for patient in donors:
-        if _parsing_issue_list_contains_errors(patient.parsing_issues):
+        if (_parsing_issue_list_contains_errors(patient.parsing_issues) or
+                _parsing_issue_list_contains_unconfirmed_warnings(patient.parsing_issues)):
             exclude_donors_ids.add(patient.db_id)
 
         if _parsing_issue_list_contains_warnings(patient.parsing_issues):
@@ -210,7 +212,8 @@ def _filter_patients_that_dont_have_parsing_errors_and_have_confirmed_warnings(
                     break
 
     for patient in recipients:
-        if _parsing_issue_list_contains_errors(patient.parsing_issues):
+        if (_parsing_issue_list_contains_errors(patient.parsing_issues) or
+                _parsing_issue_list_contains_unconfirmed_warnings(patient.parsing_issues)):
             for donor_id in patient.related_donors_db_ids:
                 exclude_donors_ids.add(donor_id)
             exclude_recipients_ids.add(patient.db_id)
@@ -255,10 +258,11 @@ def _parsing_issue_list_contains_errors(parsing_issues: Optional[List[ParsingIss
     return False
 
 
-def _parsing_issue_list_contains_warnings(parsing_issues: Optional[List[ParsingIssue]]) -> bool:
+
+def _parsing_issue_list_contains_unconfirmed_warnings(parsing_issues: Optional[List[ParsingIssue]]) -> bool:
     if parsing_issues is None:
         return False
     for parsing_issue in parsing_issues:
-        if parsing_issue.parsing_issue_detail in WARNING_PROCESSING_RESULTS:
+        if parsing_issue.parsing_issue_detail in WARNING_PROCESSING_RESULTS and parsing_issue.confirmed_at is None:
             return True
     return False

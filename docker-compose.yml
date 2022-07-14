@@ -1,4 +1,4 @@
-# Do not forgot to update other docker-compose files, especially in project-configuration repository.
+# Do not forget to update other docker-compose files, especially in project-configuration repository.
 version: '3.8'
 services:
   backend:
@@ -14,6 +14,8 @@ services:
       - db
     volumes:
       - /var/log/txmatching:/logs
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     image: postgres:13
@@ -24,5 +26,69 @@ services:
     volumes:
       - txmatching-postgres:/var/lib/postgresql/data/
 
+  authentik-db:
+    image: postgres:12-alpine
+    restart: unless-stopped
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${PG_PASS:-Your_password123}
+      - POSTGRES_USER=${PG_USER:-admin}
+      - POSTGRES_DB=${PG_DB:-authentik}
+
+  authentik-redis:
+    image: redis:alpine
+    restart: unless-stopped
+
+  authentik-server:
+    image: ghcr.io/goauthentik/server:2022.4.1
+    restart: unless-stopped
+    command: server
+    environment:
+      AUTHENTIK_SECRET_KEY: DdP75bZYo8eOfHyCUL2bL5dFX5O5WQy6p5afJrASFpk6hlWW3c
+      AK_ADMIN_TOKEN: LHDXJc2o55Zed6YP5Wd57CUpSLOr36AOypbhfQW5Fylb8kaFfW
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-db
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-admin}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-Your_password123}
+      # AUTHENTIK_ERROR_REPORTING__ENABLED: "true"
+      # WORKERS: 2
+    volumes:
+      - ./media:/media
+      - ./custom-templates:/templates
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    depends_on:
+      - authentik-redis
+      - authentik-db
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2022.4.1
+    restart: unless-stopped
+    command: worker
+    environment:
+      AUTHENTIK_SECRET_KEY: DdP75bZYo8eOfHyCUL2bL5dFX5O5WQy6p5afJrASFpk6hlWW3c
+      AK_ADMIN_TOKEN: LHDXJc2o55Zed6YP5Wd57CUpSLOr36AOypbhfQW5Fylb8kaFfW
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-db
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-admin}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-Your_password123}
+      # AUTHENTIK_ERROR_REPORTING__ENABLED: "true"
+      # user: root => This is optional, and can be removed. If you remove this, the following will happen
+      # - The permissions for the /media folders aren't fixed, so make sure they are 1000:1000
+      # - The docker socket can't be accessed anymore
+    user: root
+    volumes:
+      - ./certs:/certs
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - authentik-redis
+      - authentik-db
+
 volumes:
   txmatching-postgres:
+  database:
+    driver: local

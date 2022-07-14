@@ -1,6 +1,6 @@
 from flask_restx import fields
 
-from txmatching.utils.enums import GENE_HLA_GROUPS_WITH_OTHER, HLAGroup
+from txmatching.utils.enums import GENE_HLA_GROUPS_WITH_OTHER, GENE_HLA_GROUPS_WITH_OTHER_DETAILED, HLAGroup
 from txmatching.web.web_utils.namespaces import patient_api
 
 HLA_TYPES_PER_GROUPS_EXAMPLE = [
@@ -47,6 +47,7 @@ HLACode = patient_api.model('HlaCode', {
     'high_res': fields.String(required=False),
     'split': fields.String(required=False),
     'broad': fields.String(required=True),
+    'group': fields.String(required=False, enum=[group.name for group in GENE_HLA_GROUPS_WITH_OTHER_DETAILED]),
 })
 
 HLAType = patient_api.model('HlaType', {

@@ -586,7 +586,6 @@ class TestPatientService(DbTests):
                 'hla_typing': {
                     'hla_types_list': [{'raw_code': 'A*01:02'},
                                        {'raw_code': 'A*01:02'},
-                                       {'raw_code': 'A*01:02'},
                                        {'raw_code': 'BW4'},
                                        {'raw_code': 'B7'},
                                        {'raw_code': 'DR11'}]
@@ -613,11 +612,8 @@ class TestPatientService(DbTests):
 
             warning_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
                 ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.IRRELEVANT_CODE)).first()
-            error_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
-                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP)).first()
 
             self.assertEqual(None, warning_issue.confirmed_by)
-            self.assertEqual(None, error_issue.confirmed_by)
 
             txm_event = get_txm_event_complete(txm_event_db_id)
             self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
@@ -627,12 +623,62 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 
+            txm_event = get_txm_event_complete(txm_event_db_id)
+            self.assertTrue(recipient_db_id in txm_event.active_and_valid_recipients_dict)
+
             self.assertNotEqual(None, warning_issue.confirmed_by)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/confirm-warning/{warning_issue.id}',
                              headers=self.auth_headers)
             self.assertEqual(406, res.status_code)
+
+    def test_confirming_error_issue(self):
+        txm_event_db_id = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
+        recipient_db_id = 10
+        etag = RecipientModel.query.get(recipient_db_id).etag
+
+        with self.app.test_client() as client:
+            json_data = {
+                'db_id': recipient_db_id,
+                'etag': etag,
+                'blood_group': 'A',
+                'hla_typing': {
+                    'hla_types_list': [{'raw_code': 'A*01:02'},
+                                       {'raw_code': 'A*01:02'},
+                                       {'raw_code': 'A*01:02'},
+                                       {'raw_code': 'BW4'},
+                                       {'raw_code': 'B7'},
+                                       {'raw_code': 'DR11'}]
+                },
+                'sex': 'M',
+                'height': 200,
+                'weight': 100,
+                'year_of_birth': 1990,
+                'acceptable_blood_groups': ['A', 'B', 'AB'],
+                'hla_antibodies': {
+                    'hla_antibodies_list': []
+                },
+                'recipient_requirements': {
+                    'require_better_match_in_compatibility_index': True,
+                    'require_better_match_in_compatibility_index_or_blood_group': True,
+                    'require_compatible_blood_group': True
+                },
+                'cutoff': 42
+            }
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{PATIENT_NAMESPACE}/recipient',
+                             headers=self.auth_headers, json=json_data)
+            self.assertEqual(200, res.status_code)
+
+            error_issue = ParsingIssueModel.query.filter(and_(ParsingIssueModel.recipient_id == recipient_db_id), (
+                ParsingIssueModel.parsing_issue_detail == ParsingIssueDetail.MORE_THAN_TWO_HLA_CODES_PER_GROUP)).first()
+
+            self.assertEqual(None, error_issue.confirmed_by)
+
+            txm_event = get_txm_event_complete(txm_event_db_id)
+            self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{PATIENT_NAMESPACE}/confirm-warning/{error_issue.id}',
@@ -689,6 +735,9 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 
+            txm_event = get_txm_event_complete(txm_event_db_id)
+            self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
+
             self.assertNotEqual(None, warning_issue.confirmed_by)
 
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -702,3 +751,5 @@ class TestPatientService(DbTests):
                              f'{PATIENT_NAMESPACE}/unconfirm-warning/{warning_issue.id}',
                              headers=self.auth_headers)
             self.assertEqual(406, res.status_code)
+
+            self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)

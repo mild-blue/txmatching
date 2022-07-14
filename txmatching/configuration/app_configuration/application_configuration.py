@@ -56,6 +56,11 @@ class ApplicationConfiguration:
     sms_service_password: Optional[str]
     sentry_dsn: Optional[str]
 
+    # Authentic configuration
+    authentic_client_id: str
+    authentic_client_secret: str
+    authentic_client_redirect_uri: str
+
 
 def get_application_configuration() -> ApplicationConfiguration:
     """
@@ -93,6 +98,9 @@ def _build_application_configuration() -> ApplicationConfiguration:
         sms_service_login=_get_prop('SMS_SERVICE_LOGIN', optional=not use_2fa),
         sms_service_password=_get_prop('SMS_SERVICE_PASSWORD', optional=not use_2fa),
         sentry_dsn=_get_prop('SENTRY_DSN', optional=True),
+        authentic_client_id=_get_prop('AUTHENTIC_CLIENT_ID'),
+        authentic_client_secret=_get_prop('AUTHENTIC_CLIENT_SECRET'),
+        authentic_client_redirect_uri=_get_prop('AUTHENTIC_REDIRECT_URI'),
     )
     return config
 
