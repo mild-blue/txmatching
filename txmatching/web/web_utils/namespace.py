@@ -30,7 +30,6 @@ class Namespace(flask_restx.Namespace):
     def request_body(self, model, description: str = ''):
         return self._combine_decorators([
             self.doc(description=description),
-            # TODO: validate https://github.com/mild-blue/txmatching/issues/562
             self.expect(model, validate=False)
         ])
 
