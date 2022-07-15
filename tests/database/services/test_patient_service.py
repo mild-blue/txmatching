@@ -238,7 +238,7 @@ class TestPatientService(DbTests):
         hash_5 = get_patients_persistent_hash(txm_event_5)
         self.assertNotEqual(hash_1, hash_5)
 
-    def test_remove_donor_recipient_pair(self):
+    def test_delete_donor_recipient_pair(self):
         # Create txm events and few patients
         txm_event_id = create_or_overwrite_txm_event(name=TXM_EVENT_NAME).db_id
         replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
