@@ -40,8 +40,8 @@ class TestMatchingApi(DbTests):
         self._check_response(res, 200)
         txm_event = get_txm_event_complete(txm_event.db_id)
         self.assertEqual(txm_event.name, txm_event.name)
-        self.assertEqual(3, len(txm_event.active_and_valid_recipients_dict))
-        self.assertEqual(4, len(txm_event.active_and_valid_donors_dict))
+        self.assertEqual(2, len(txm_event.active_and_valid_recipients_dict))
+        self.assertEqual(3, len(txm_event.active_and_valid_donors_dict))
         self.assertEqual(3, res.json['recipients_uploaded'])
         self.assertEqual(4, res.json['donors_uploaded'])
 
