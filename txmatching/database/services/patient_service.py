@@ -397,7 +397,7 @@ def get_donor_recipient_pair(donor_id: int, txm_event_id: int) -> Tuple[Donor, O
 
 
 def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
-    donor, maybe_recipient = get_donor_recipient_pair(donor_id, txm_event_id)
+    _, maybe_recipient = get_donor_recipient_pair(donor_id, txm_event_id)
 
     delete_parsing_issues_for_patient(donor_id=donor_id, txm_event_id=txm_event_id)
     DonorModel.query.filter(DonorModel.id == donor_id).delete()
