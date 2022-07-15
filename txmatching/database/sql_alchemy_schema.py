@@ -228,11 +228,17 @@ class ParsingIssueModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
-    hla_code_or_group = Column(TEXT, unique=False, nullable=True)
+    hla_code_or_group = Column(TEXT, unique=False, nullable=False)
     parsing_issue_detail = Column(Enum(ParsingIssueDetail), unique=False, nullable=False)
     message = Column(TEXT, unique=False, default='')
-    donor_id = Column(INTEGER, ForeignKey('donor.id', ondelete='CASCADE'), unique=False, nullable=True)
-    recipient_id = Column(INTEGER, ForeignKey('recipient.id', ondelete='CASCADE'), unique=False, nullable=True)
+    donor_id = Column(INTEGER, ForeignKey('donor.id', ondelete='CASCADE'), CheckConstraint(
+        'donor_id IS NOT NULL OR recipient_id IS NOT NULL'),
+        unique=False,
+        nullable=True)
+    recipient_id = Column(INTEGER, ForeignKey('recipient.id', ondelete='CASCADE'), CheckConstraint(
+        'donor_id IS NOT NULL OR recipient_id IS NOT NULL'),
+        unique=False,
+        nullable=True)
     txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', ondelete='CASCADE'), unique=False, nullable=False)
     created_at = Column(DATETIME(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(

@@ -3,8 +3,8 @@ import logging
 import re
 from typing import Dict, List, Tuple, Union
 
-from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
-    ParsingIssue, ParsingIssueTemp)
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
+    ParsingIssueTemp
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
                                            HLAPerGroup, HLAType)
 from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,

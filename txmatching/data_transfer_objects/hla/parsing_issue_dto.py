@@ -25,10 +25,10 @@ class ParsingIssue(PersistentlyHashable):
     parsing_issue_detail: ParsingIssueDetail
     message: str
     txm_event_id: int
-    donor_id: int
-    recipient_id: int
     confirmed_by: int
     confirmed_at: datetime
+    donor_id: Optional[int] = None
+    recipient_id: Optional[int] = None
 
     def update_persistent_hash(self, hash_: HashType):
         update_persistent_hash(hash_, ParsingIssue)
@@ -44,14 +44,9 @@ class ParsingIssue(PersistentlyHashable):
 
 @dataclass
 class ParsingIssueTemp:
-    hla_code_or_group: Optional[str]
+    hla_code_or_group: str
     parsing_issue_detail: ParsingIssueDetail
     message: str
-    txm_event_id: Optional[int] = None
-    donor_id: Optional[int] = None
-    recipient_id: Optional[int] = None
-    confirmed_by: Optional[int] = None
-    confirmed_at: Optional[datetime] = None
 
 
 @dataclass

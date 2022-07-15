@@ -3,8 +3,8 @@ import logging
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
-from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
-    ParsingIssue, ParsingIssueTemp)
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
+    ParsingIssueTemp
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import (

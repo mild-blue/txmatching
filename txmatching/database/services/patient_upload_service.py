@@ -6,7 +6,7 @@ import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
-    ParsingIssue, ParsingIssuePublicDTO)
+    ParsingIssue, ParsingIssuePublicDTO, ParsingIssueTemp)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
     HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
@@ -147,7 +147,7 @@ def _recipient_upload_dto_to_recipient_model(
     hla_antibodies_parsing_issues = _parse_and_update_hla_antibodies_in_model(recipient_model)
     parsing_issues = hla_typing_parsing_issues + hla_antibodies_parsing_issues
     parsing_issues = parsing_issues_to_models(
-        parsing_issues=parsing_issues,
+        parsing_issues_temp=parsing_issues,
         txm_event_id=recipient_model.txm_event_id)
     recipient_model.parsing_issues = parsing_issues
     recipient_model.etag = 1
@@ -155,7 +155,7 @@ def _recipient_upload_dto_to_recipient_model(
 
 
 def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipient_model: RecipientModel = None) -> \
-        List[ParsingIssue]:
+        List[ParsingIssueTemp]:
     if donor_model is not None:
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=donor_model.hla_typing_raw)
         parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw)
@@ -167,7 +167,7 @@ def _parse_and_update_hla_typing_in_model(donor_model: DonorModel = None, recipi
     return parsing_issues
 
 
-def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel) -> List[ParsingIssue]:
+def _parse_and_update_hla_antibodies_in_model(recipient_model: RecipientModel) -> List[ParsingIssueTemp]:
     hla_antibodies_raw = recipient_model.hla_antibodies_raw
     parsing_issues, hla_antibodies_parsed = parse_hla_antibodies_raw_and_return_parsing_issue_list(
         hla_antibodies_raw
@@ -231,7 +231,7 @@ def _donor_upload_dto_to_donor_model(
 
     parsing_issues = _parse_and_update_hla_typing_in_model(donor_model=donor_model)
     parsing_issues = parsing_issues_to_models(
-        parsing_issues=parsing_issues,
+        parsing_issues_temp=parsing_issues,
         txm_event_id=donor_model.txm_event_id)
     donor_model.parsing_issues = parsing_issues
     donor_model.etag = 1
