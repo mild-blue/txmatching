@@ -5,5 +5,4 @@
 
 ALTER TABLE parsing_issue ALTER COLUMN txm_event_id SET NOT NULL;
 ALTER TABLE parsing_issue ALTER COLUMN hla_code_or_group SET NOT NULL;
-
-CONSTRAINT parsing_issue CHECK (donor_id IS NOT NULL OR recipient_id IS NOT NULL);
+ALTER TABLE parsing_issue ADD CHECK ((donor_id IS NOT NULL) OR (recipient_id IS NOT NULL));
