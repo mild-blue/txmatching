@@ -15,7 +15,6 @@ from txmatching.utils.hla_system.compatibility_index import CIConfiguration
 
 class AdditiveScorer(ScorerBase):
     def __init__(self, manual_donor_recipient_scores: List[ManualDonorRecipientScore] = None):
-        self._configuration: ConfigParameters = ConfigParameters()
         if manual_donor_recipient_scores is not None:
             self._manual_donor_recipient_scores = {
                 (don_rec_score.donor_db_id, don_rec_score.recipient_db_id): don_rec_score.score
@@ -28,13 +27,14 @@ class AdditiveScorer(ScorerBase):
         if manual_score is None:
             return self.score_transplant_calculated(donor, recipient, original_donors)
         else:
-            if self._configuration.use_binary_scoring:
-                return 1.0
-            else:
-                return manual_score
+            return self.get_score_when_manual_score_set(manual_score)
+
 
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient,
                                     original_donors: Optional[List[Donor]]) -> float:
+        raise NotImplementedError('Has to be overridden')
+
+    def get_score_when_manual_score_set(self, manual_score) -> float:
         raise NotImplementedError('Has to be overridden')
 
     def score(self, matching: Matching, donors_dict: Dict[DonorDbId, Donor],

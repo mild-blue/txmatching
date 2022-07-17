@@ -5,7 +5,8 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.configuration.subclasses import ForbiddenCountryCombination
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.additive_scorer import AdditiveScorer
-from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE
+from txmatching.scorers.scorer_constants import TRANSPLANT_IMPOSSIBLE_SCORE, POSITIVE_SCORE_BINARY_MODE, \
+    NEGATIVE_SCORE_BINARY_MODE
 from txmatching.utils.blood_groups import blood_groups_compatible
 from txmatching.utils.enums import HLA_GROUPS_PROPERTIES
 from txmatching.utils.hla_system.compatibility_index import (
@@ -31,7 +32,15 @@ class HLAAdditiveScorer(AdditiveScorer, ABC):
                     + self._configuration.blood_group_compatibility_bonus
         return max_value
 
-        # pylint: disable=too-many-return-statements
+    # in order to get the correct score in binary mode with manual score set, we should check few conditions
+    def get_score_when_manual_score_set(self, manual_score):
+        if self._configuration.use_binary_scoring:
+            if manual_score >= 0:
+                return POSITIVE_SCORE_BINARY_MODE
+            elif manual_score < 0:
+                return NEGATIVE_SCORE_BINARY_MODE
+        else:
+            return manual_score
 
     # it seems that it is reasonable to want many return statements here as it is still well readable
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient,
