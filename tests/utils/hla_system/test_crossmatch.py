@@ -230,12 +230,14 @@ class TestCrossmatch(unittest.TestCase):
         self._assert_matches_equal('A23',
                                    [create_antibody('A*23:01', 2100, 2000),
                                     create_antibody('A*23:04', 1900, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:01', 2100, 2000), AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)])
+                                   [AntibodyMatch(create_antibody('A*23:01', 2100, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)])
         # first matching antibody with mfi < cutoff, second with mfi > cutoff
         self._assert_matches_equal('A23',
                                    [create_antibody('A*23:01', 1900, 2000),
                                     create_antibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000), AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)])
+                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)])
         # first matching antibody with mfi1 > cutoff, second with mfi2 > mfi1
         self._assert_matches_equal('A23',
                                    [create_antibody('A*23:01', 2100, 2000),
@@ -293,9 +295,11 @@ class TestCrossmatch(unittest.TestCase):
                                    [create_antibody('DPB1*858:01', 2100, 2000),
                                     create_antibody('DPB1*1016:01', 2100, 2000),
                                     create_antibody('DQB1*03:10', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('DPB1*858:01', 2100, 2000), AntibodyMatchTypes.HIGH_RES),
+                                   [AntibodyMatch(create_antibody('DPB1*858:01', 2100, 2000),
+                                                  AntibodyMatchTypes.HIGH_RES),
                                     AntibodyMatch(create_antibody('DPB1*1016:01', 2100, 2000), AntibodyMatchTypes.NONE),
-                                    AntibodyMatch(create_antibody('DQB1*03:10', 2100, 2000), AntibodyMatchTypes.UNDECIDABLE)])
+                                    AntibodyMatch(create_antibody('DQB1*03:10', 2100, 2000),
+                                                  AntibodyMatchTypes.UNDECIDABLE)])
 
     def test_crossmatch_level(self):
         self.assertFalse(AntibodyMatchTypes.NONE.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_BROAD))
