@@ -8,6 +8,8 @@ This is a tool that allows kidney pair donation centre to find the best possible
 
 It consists of backend written in Python and an Angular frontend.
 
+Here is the board containing the next development plan: https://github.com/orgs/mild-blue/projects/13
+
 ## How to run the app locally 
 
 The project runs on macOS, Linux and Windows. To run on Windows you need Docker and WSL2 as we are using [graph-tool](https://graph-tool.skewed.de/) package that does not support Windows.
