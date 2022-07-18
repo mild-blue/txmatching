@@ -288,6 +288,15 @@ class TestCrossmatch(unittest.TestCase):
                                     create_antibody('A9', 2200, 2000)], True,
                                    [AntibodyMatch(create_antibody('A9', 2150, 2000), AntibodyMatchTypes.BROAD)])
 
+        # undecidable match type
+        self._assert_matches_equal('DPB1*858:01',
+                                   [create_antibody('DPB1*858:01', 2100, 2000),
+                                    create_antibody('DPB1*1016:01', 2100, 2000),
+                                    create_antibody('DQB1*03:10', 2100, 2000)], True,
+                                   [AntibodyMatch(create_antibody('DPB1*858:01', 2100, 2000), AntibodyMatchTypes.HIGH_RES),
+                                    AntibodyMatch(create_antibody('DPB1*1016:01', 2100, 2000), AntibodyMatchTypes.NONE),
+                                    AntibodyMatch(create_antibody('DQB1*03:10', 2100, 2000), AntibodyMatchTypes.UNDECIDABLE)])
+
     def test_crossmatch_level(self):
         self.assertFalse(AntibodyMatchTypes.NONE.is_positive_for_level(HLACrossmatchLevel.SPLIT_AND_BROAD))
         self.assertFalse(AntibodyMatchTypes.NONE.is_positive_for_level(HLACrossmatchLevel.BROAD))
