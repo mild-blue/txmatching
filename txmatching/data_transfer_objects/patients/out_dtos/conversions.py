@@ -105,6 +105,7 @@ def donor_to_donor_dto_out(donor: Donor,
             donor_hla_typing=donor.parameters.hla_typing
         )
 
+        donor_dto.compatible_blood_with_related_recipient = True 
         donor_dto.detailed_score_with_related_recipient = [
             DetailedScoreForHLAGroup(
                 recipient_matches=[],
