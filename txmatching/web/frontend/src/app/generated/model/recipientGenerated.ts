@@ -39,6 +39,7 @@ export interface RecipientGenerated {
     medical_id: string;
     parameters: PatientParametersGenerated;
     parsing_issues?: Array<ParsingIssueGenerated>;
+    patient_has_confirmed_warnings?: boolean;
     previous_transplants?: number;
     recipient_cutoff?: number;
     recipient_requirements?: RecipientRequirementsGenerated;
