@@ -59,9 +59,9 @@
   color: $warning-text;
   border-width: 0.125rem;
   border-style: solid;
-  border-color: $warning-icon;
+  border-color: $success;
 
   mat-icon {
-    color: $warning-icon;
+    color: $success;
   }
 }

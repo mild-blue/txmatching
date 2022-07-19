@@ -52,7 +52,7 @@ class Donor(Patient, PersistentlyHashable):
     donor_type: DonorType = DonorType.DONOR
     active: bool = True
     internal_medical_id: Optional[str] = None
-    patient_has_confirmed_warnings: Optional[bool] = None
+    active_and_valid: Optional[bool] = None
 
     def update_persistent_hash(self, hash_: HashType):
         super().update_persistent_hash(hash_)
@@ -62,7 +62,7 @@ class Donor(Patient, PersistentlyHashable):
         update_persistent_hash(hash_, self.related_recipient_db_id)
         update_persistent_hash(hash_, self.donor_type)
         update_persistent_hash(hash_, self.active)
-        update_persistent_hash(hash_, self.patient_has_confirmed_warnings)
+        update_persistent_hash(hash_, self.active_and_valid)
 
 
 @dataclass
@@ -111,7 +111,7 @@ class Recipient(Patient, PersistentlyHashable):
     waiting_since: Optional[datetime] = None
     previous_transplants: Optional[int] = None
     internal_medical_id: Optional[str] = None
-    patient_has_confirmed_warnings: Optional[bool] = None
+    active_and_valid: Optional[bool] = None
 
     def __post_init__(self):
         if self.recipient_cutoff is None:
@@ -129,7 +129,7 @@ class Recipient(Patient, PersistentlyHashable):
         update_persistent_hash(hash_, self.recipient_requirements)
         update_persistent_hash(hash_, self.waiting_since)
         update_persistent_hash(hash_, self.previous_transplants)
-        update_persistent_hash(hash_, self.patient_has_confirmed_warnings)
+        update_persistent_hash(hash_, self.active_and_valid)
 
 
 @dataclass
@@ -158,7 +158,7 @@ class TxmEvent(TxmEventBase):
             self.active_and_valid_donors_dict,
             self.active_and_valid_recipients_dict,
         ) = _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(all_donors, all_recipients)
-
+        # todo reminder update patient lists
 
 def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
     """
@@ -205,12 +205,12 @@ def _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(
 
     for patient in donors:
         if (_parsing_issue_list_contains_errors(patient.parsing_issues) or
-                parsing_issue_list_contains_unconfirmed_warnings(patient.parsing_issues)):
+                _parsing_issue_list_contains_unconfirmed_warnings(patient.parsing_issues)):
             exclude_donors_ids.add(patient.db_id)
 
     for patient in recipients:
         if (_parsing_issue_list_contains_errors(patient.parsing_issues) or
-                parsing_issue_list_contains_unconfirmed_warnings(patient.parsing_issues)):
+                _parsing_issue_list_contains_unconfirmed_warnings(patient.parsing_issues)):
             for donor_id in patient.related_donors_db_ids:
                 exclude_donors_ids.add(donor_id)
             exclude_recipients_ids.add(patient.db_id)
@@ -247,7 +247,7 @@ def _parsing_issue_list_contains_errors(parsing_issues: Optional[List[ParsingIss
     return False
 
 
-def parsing_issue_list_contains_unconfirmed_warnings(parsing_issues: Optional[List[ParsingIssue]]) -> bool:
+def _parsing_issue_list_contains_unconfirmed_warnings(parsing_issues: Optional[List[ParsingIssue]]) -> bool:
     if parsing_issues is None:
         return False
     for parsing_issue in parsing_issues:

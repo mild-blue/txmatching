@@ -9,7 +9,7 @@
         <app-warning-pill *ngFor="let data of donor.allMessages | keyvalue" 
         [count]="data.value.length" 
         [warningType]="data.key"
-        [allWarningsConfirmed]="donor.patientHasConfirmedWarnings"></app-warning-pill>
+        [allWarningsConfirmed]="donorHasConfirmedWarnings"></app-warning-pill>
       </ng-container>
     </div>
   </div>
@@ -23,7 +23,7 @@
         <app-warning-pill *ngFor="let data of recipient.allMessages | keyvalue" 
         [count]="data.value.length"
         [warningType]="data.key"
-        [allWarningsConfirmed]="recipient.patientHasConfirmedWarnings"></app-warning-pill>
+        [allWarningsConfirmed]="recipientHasConfirmedWarnings"></app-warning-pill>
       </ng-container>
     </div>
   </div>

@@ -2561,8 +2561,9 @@
                     "description": "Number of updates of a patient",
                     "example": 1
                 },
-                "patient_has_confirmed_warnings": {
-                    "type": "boolean"
+                "active_and_valid": {
+                    "type": "boolean",
+                    "description": "Patient is active and valid and is included in computation"
                 },
                 "active": {
                     "type": "boolean",
@@ -3659,8 +3660,9 @@
                     "description": "Number of updates of a patient",
                     "example": 1
                 },
-                "patient_has_confirmed_warnings": {
-                    "type": "boolean"
+                "active_and_valid": {
+                    "type": "boolean",
+                    "description": "Patient is active and valid and is included in computation"
                 },
                 "acceptable_blood_groups": {
                     "type": "array",

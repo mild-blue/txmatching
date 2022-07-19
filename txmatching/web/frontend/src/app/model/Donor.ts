@@ -12,7 +12,6 @@ export interface Donor extends Patient {
   maxScoreWithRelatedRecipient?: number;
   detailedScoreWithRelatedRecipient: DetailedScorePerGroup[];
   allMessages: AllMessages;
-  patientHasConfirmedWarnings?: boolean;
 }
 
 export interface UpdatedDonor {
