@@ -53,8 +53,7 @@ def get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
                  related_recipient_db_id=donor_model.recipient_id,
                  active=donor_model.active,
                  internal_medical_id=donor_model.internal_medical_id,
-                 parsing_issues=convert_parsing_issue_models_to_dataclasses(donor_model.parsing_issues),
-                 active_and_valid=donor_model.active_and_valid
+                 parsing_issues=convert_parsing_issue_models_to_dataclasses(donor_model.parsing_issues)
                  )
 
 
@@ -78,8 +77,7 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel) -> Recip
                           waiting_since=recipient_model.waiting_since,
                           previous_transplants=recipient_model.previous_transplants,
                           internal_medical_id=recipient_model.internal_medical_id,
-                          parsing_issues=convert_parsing_issue_models_to_dataclasses(recipient_model.parsing_issues),
-                          active_and_valid=recipient_model.active_and_valid
+                          parsing_issues=convert_parsing_issue_models_to_dataclasses(recipient_model.parsing_issues)
                           )
     return recipient
 
