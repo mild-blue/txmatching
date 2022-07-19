@@ -14,6 +14,7 @@ export class PatientPairItemComponent extends ListItemAbstractComponent implemen
 
   public allMessagesCount: number = 0;
   public mostSevereMessageType: WarningType = 'info';
+  public allWarningsConfirmed?: boolean;
 
   constructor() {
     super();
@@ -22,5 +23,8 @@ export class PatientPairItemComponent extends ListItemAbstractComponent implemen
   ngOnInit() {
     this.allMessagesCount = countAllMessages(this.item?.d) + countAllMessages(this.item?.r);
     this.mostSevereMessageType = findMostSevereMessageType(this.item?.d, this.item?.r);
+    if (this.item?.d?.patientHasConfirmedWarnings == true && this.item?.r?.patientHasConfirmedWarnings == true){
+      this.allWarningsConfirmed = true;
+    }
   }
 }

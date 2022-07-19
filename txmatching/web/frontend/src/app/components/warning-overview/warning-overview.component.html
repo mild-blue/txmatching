@@ -6,7 +6,10 @@
     </div>
     <div class="warning-card-content">
       <ng-container *ngIf="donor.allMessages">
-        <app-warning-pill *ngFor="let data of donor.allMessages | keyvalue" [count]="data.value.length" [warningType]="data.key"></app-warning-pill>
+        <app-warning-pill *ngFor="let data of donor.allMessages | keyvalue" 
+        [count]="data.value.length" 
+        [warningType]="data.key"
+        [allWarningsConfirmed]="donor.patientHasConfirmedWarnings"></app-warning-pill>
       </ng-container>
     </div>
   </div>
@@ -17,7 +20,10 @@
     </div>
     <div class="warning-card-content">
       <ng-container *ngIf="recipient.allMessages">
-        <app-warning-pill *ngFor="let data of recipient.allMessages | keyvalue" [count]="data.value.length" [warningType]="data.key"></app-warning-pill>
+        <app-warning-pill *ngFor="let data of recipient.allMessages | keyvalue" 
+        [count]="data.value.length"
+        [warningType]="data.key"
+        [allWarningsConfirmed]="recipient.patientHasConfirmedWarnings"></app-warning-pill>
       </ng-container>
     </div>
   </div>
