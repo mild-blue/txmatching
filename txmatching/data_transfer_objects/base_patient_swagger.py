@@ -31,6 +31,10 @@ MedicalId = {
     'medical_id': fields.String(required=True, example='D1037', description=MEDICAL_ID_DESCRIPTION),
 }
 
+PatientHasConfirmedWarnings = {
+    'patient_has_confirmed_warnings': fields.Boolean(required=False),
+}
+
 HLAAntibodyToUpdateJson = patient_api.model('HlaAntibodyToUpdate', {
     'raw_code': fields.String(required=True, example='A*01:02'),
     'mfi': fields.Integer(required=True, example=10000),

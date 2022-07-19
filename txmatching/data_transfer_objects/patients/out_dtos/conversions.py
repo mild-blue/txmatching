@@ -57,7 +57,8 @@ def recipient_to_recipient_dto_out(recipient: Recipient, txm_event_id: int) -> R
         waiting_since=recipient.waiting_since,
         previous_transplants=recipient.previous_transplants,
         internal_medical_id=recipient.internal_medical_id,
-        all_messages=get_messages(recipient_id=recipient.db_id, txm_event_id=txm_event_id)
+        all_messages=get_messages(recipient_id=recipient.db_id, txm_event_id=txm_event_id),
+        patient_has_confirmed_warnings=recipient.patient_has_confirmed_warnings
     )
 
 
@@ -75,7 +76,8 @@ def donor_to_donor_dto_out(donor: Donor,
                             active=donor.active,
                             internal_medical_id=donor.internal_medical_id,
                             parsing_issues=donor.parsing_issues,
-                            all_messages=get_messages(donor_id=donor.db_id, txm_event_id=txm_event_id)
+                            all_messages=get_messages(donor_id=donor.db_id, txm_event_id=txm_event_id),
+                            patient_has_confirmed_warnings=donor.patient_has_confirmed_warnings
                             )
     if donor.related_recipient_db_id:
         related_recipient = next(recipient for recipient in all_recipients if

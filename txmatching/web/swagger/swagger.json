@@ -2561,6 +2561,9 @@
                     "description": "Number of updates of a patient",
                     "example": 1
                 },
+                "patient_has_confirmed_warnings": {
+                    "type": "boolean"
+                },
                 "active": {
                     "type": "boolean",
                     "description": "Whether the user shall be used in pairing calculation"
@@ -3655,6 +3658,9 @@
                     "type": "integer",
                     "description": "Number of updates of a patient",
                     "example": 1
+                },
+                "patient_has_confirmed_warnings": {
+                    "type": "boolean"
                 },
                 "acceptable_blood_groups": {
                     "type": "array",
