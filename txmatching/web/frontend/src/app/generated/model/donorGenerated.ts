@@ -53,6 +53,7 @@ export interface DonorGenerated {
     medical_id: string;
     parameters: PatientParametersGenerated;
     parsing_issues?: Array<ParsingIssueGenerated>;
+    patient_has_confirmed_warnings?: boolean;
     /**
      * Database id of the related recipient
      */
