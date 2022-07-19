@@ -3,5 +3,5 @@
 -- depends: 0032.add-confirmation-columns-to-parsing-issue-model
 --
 
-ALTER TABLE donor ADD COLUMN patient_has_confirmed_warnings BOOLEAN default NULL;
-ALTER TABLE recipient ADD COLUMN patient_has_confirmed_warnings BOOLEAN default NULL;
+ALTER TABLE donor ADD COLUMN active_and_valid BOOLEAN default NULL;
+ALTER TABLE recipient ADD COLUMN active_and_valid BOOLEAN default NULL;

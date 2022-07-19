@@ -12,7 +12,6 @@ export interface Recipient extends Patient {
   recipientRequirements?: RecipientRequirements;
   relatedDonorDbIds: Array<number>;
   allMessages: AllMessages;
-  patientHasConfirmedWarnings?: boolean;
 }
 
 export interface RecipientRequirements {

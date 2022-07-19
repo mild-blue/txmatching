@@ -534,6 +534,9 @@ definitions:
             active:
                 description: Whether the user shall be used in pairing calculation
                 type: boolean
+            active_and_valid: &id010
+                description: Patient is active and valid and is included in computation
+                type: boolean
             all_messages:
                 $ref: '#/definitions/AllMessages'
             compatible_blood_with_related_recipient:
@@ -630,8 +633,6 @@ definitions:
                 items:
                     $ref: '#/definitions/ParsingIssue'
                 type: array
-            patient_has_confirmed_warnings: &id012
-                type: boolean
             related_recipient_db_id:
                 description: Database id of the related recipient
                 type: integer
@@ -678,7 +679,7 @@ definitions:
                     be stored and can be seen in patient xlsx export.
                 example: '123456'
                 type: string
-            medical_id: &id011
+            medical_id: &id012
                 description: Medical ID of the patient. This ID is unique thorough
                     the system and can be used for the identification of a specific
                     patient in your system. Typically, this is the patient ID used
@@ -1162,7 +1163,7 @@ definitions:
     PatientModelToUpdate:
         properties:
             blood_group: *id003
-            db_id: &id010
+            db_id: &id011
                 description: Database id of the patient
                 example: 1
                 type: integer
@@ -1270,23 +1271,23 @@ definitions:
                 items:
                     $ref: '#/definitions/BloodGroupEnum'
                 type: array
+            active_and_valid: *id010
             all_messages:
                 $ref: '#/definitions/AllMessages'
-            db_id: *id010
+            db_id: *id011
             etag: *id004
             hla_antibodies:
                 $ref: '#/definitions/HlaAntibodies'
             internal_medical_id:
                 description: Internal medical id of the patient
                 type: string
-            medical_id: *id011
+            medical_id: *id012
             parameters:
                 $ref: '#/definitions/PatientParameters'
             parsing_issues:
                 items:
                     $ref: '#/definitions/ParsingIssue'
                 type: array
-            patient_has_confirmed_warnings: *id012
             previous_transplants:
                 type: integer
             recipient_cutoff:
@@ -1332,7 +1333,7 @@ definitions:
                 type: array
             hla_typing: *id013
             internal_medical_id: *id014
-            medical_id: *id011
+            medical_id: *id012
             note: *id006
             previous_transplants: &id016
                 description: Number of previous kidney transplants.

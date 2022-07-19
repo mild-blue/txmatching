@@ -19,6 +19,10 @@ import { HlaAntibodiesGenerated } from './hlaAntibodiesGenerated';
 
 export interface RecipientGenerated { 
     acceptable_blood_groups?: Array<BloodGroupEnumGenerated>;
+    /**
+     * Patient is active and valid and is included in computation
+     */
+    active_and_valid?: boolean;
     all_messages?: AllMessagesGenerated;
     /**
      * Database id of the patient
@@ -39,7 +43,6 @@ export interface RecipientGenerated {
     medical_id: string;
     parameters: PatientParametersGenerated;
     parsing_issues?: Array<ParsingIssueGenerated>;
-    patient_has_confirmed_warnings?: boolean;
     previous_transplants?: number;
     recipient_cutoff?: number;
     recipient_requirements?: RecipientRequirementsGenerated;

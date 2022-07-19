@@ -54,7 +54,7 @@ def get_donor_from_donor_model(donor_model: DonorModel) -> Donor:
                  active=donor_model.active,
                  internal_medical_id=donor_model.internal_medical_id,
                  parsing_issues=convert_parsing_issue_models_to_dataclasses(donor_model.parsing_issues),
-                 patient_has_confirmed_warnings=donor_model.patient_has_confirmed_warnings
+                 active_and_valid=donor_model.active_and_valid
                  )
 
 
@@ -79,7 +79,7 @@ def get_recipient_from_recipient_model(recipient_model: RecipientModel) -> Recip
                           previous_transplants=recipient_model.previous_transplants,
                           internal_medical_id=recipient_model.internal_medical_id,
                           parsing_issues=convert_parsing_issue_models_to_dataclasses(recipient_model.parsing_issues),
-                          patient_has_confirmed_warnings=recipient_model.patient_has_confirmed_warnings
+                          active_and_valid=recipient_model.active_and_valid
                           )
     return recipient
 
@@ -241,8 +241,6 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
             recipient_update_dto.recipient_requirements)
     recipient_update_dict['waiting_since'] = parse_date_to_datetime(recipient_update_dto.waiting_since)
     recipient_update_dict['previous_transplants'] = recipient_update_dto.previous_transplants
-    if len(parsing_issues) > 0:
-        recipient_update_dict['patient_has_confirmed_warnings'] = False
 
     RecipientModel.query.filter(RecipientModel.id == recipient_update_dto.db_id).update(recipient_update_dict)
     db.session.commit()
@@ -269,9 +267,6 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
     db.session.add_all(parsing_issues)
     if donor_update_dto.active is not None:
         donor_update_dict['active'] = donor_update_dto.active
-    if len(parsing_issues) > 0:
-        donor_update_dict['patient_has_confirmed_warnings'] = False
-
     DonorModel.query.filter(DonorModel.id == donor_update_dto.db_id).update(donor_update_dict)
     db.session.commit()
     return get_donor_from_donor_model(DonorModel.query.get(donor_update_dto.db_id))
@@ -308,11 +303,6 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
                                                           txm_event_id=patient_model.txm_event_id)
         db.session.add_all(new_parsing_issues)
         patient_model.parsing_issues = new_parsing_issues
-        if len(new_parsing_issues) > 0:
-            patient_model.patient_has_confirmed_warnings = False
-        else:
-            patient_model.patient_has_confirmed_warnings = True
-
         new_hla_typing = dataclasses.asdict(hla_typing)
 
         if new_hla_typing != patient_model.hla_typing:
@@ -333,8 +323,6 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         new_hla_antibodies = dataclasses.asdict(hla_antibodies)
         db.session.add_all(new_parsing_issues)
         recipient_model.parsing_issues = recipient_model.parsing_issues + new_parsing_issues
-        if recipient_model.patient_has_confirmed_warnings == True and len(new_parsing_issues) > 0:
-            recipient_model.patient_has_confirmed_warnings = False
         if new_hla_antibodies != recipient_model.hla_antibodies:
             logger.debug(f'Updating hla_antibodies of {recipient_model}:')
             recipient_model.hla_antibodies = new_hla_antibodies
