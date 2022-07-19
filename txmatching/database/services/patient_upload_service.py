@@ -151,10 +151,6 @@ def _recipient_upload_dto_to_recipient_model(
         txm_event_id=recipient_model.txm_event_id)
     recipient_model.parsing_issues = parsing_issues
     recipient_model.etag = 1
-    if len(parsing_issues) > 0:
-        recipient_model.patient_has_confirmed_warnings = False
-    else:
-        recipient_model.patient_has_confirmed_warnings = True
     return recipient_model
 
 
@@ -239,10 +235,6 @@ def _donor_upload_dto_to_donor_model(
         txm_event_id=donor_model.txm_event_id)
     donor_model.parsing_issues = parsing_issues
     donor_model.etag = 1
-    if len(parsing_issues) > 0:
-        donor_model.patient_has_confirmed_warnings = False
-    else:
-        donor_model.patient_has_confirmed_warnings = True
     return donor_model
 
 

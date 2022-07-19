@@ -31,8 +31,9 @@ MedicalId = {
     'medical_id': fields.String(required=True, example='D1037', description=MEDICAL_ID_DESCRIPTION),
 }
 
-PatientHasConfirmedWarnings = {
-    'patient_has_confirmed_warnings': fields.Boolean(required=False),
+ActiveAndValid = {
+    'active_and_valid': fields.Boolean(required=False,
+                                       description='Patient is active and valid and is included in computation'),
 }
 
 HLAAntibodyToUpdateJson = patient_api.model('HlaAntibodyToUpdate', {

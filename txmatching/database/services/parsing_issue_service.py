@@ -7,8 +7,8 @@ from txmatching.auth.exceptions import InvalidArgumentException, OverridingExcep
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue, ParsingIssueConfirmationDTO
 from txmatching.data_transfer_objects.patients.utils import parsing_issue_model_to_confirmation_dto
 from txmatching.database.db import db
-from txmatching.database.sql_alchemy_schema import DonorModel, ParsingIssueModel, RecipientModel
-from txmatching.patients.patient import parsing_issue_list_contains_unconfirmed_warnings, TxmEvent
+from txmatching.database.sql_alchemy_schema import ParsingIssueModel
+from txmatching.patients.patient import TxmEvent
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import WARNING_PROCESSING_RESULTS
 
 
@@ -26,21 +26,6 @@ def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int, txm_event: TxmE
 
     parsing_issue.confirmed_by = user_id
     parsing_issue.confirmed_at = datetime.now()
-
-    if parsing_issue.recipient_id is not None:
-        parsing_issues_of_patient = get_parsing_issues_for_patients(txm_event_id=txm_event.db_id,
-                                                                    recipient_ids=[parsing_issue.recipient_id])
-        if parsing_issue_list_contains_unconfirmed_warnings(parsing_issues_of_patient):
-            update_patient_has_confirmed_warnings(value=False, recipient_id=parsing_issue.recipient_id)
-        else:
-            update_patient_has_confirmed_warnings(value=True, recipient_id=parsing_issue.recipient_id)
-    else:
-        parsing_issues_of_patient = get_parsing_issues_for_patients(txm_event_id=txm_event.db_id,
-                                                                    donor_ids=[parsing_issue.donor_id])
-        if parsing_issue_list_contains_unconfirmed_warnings(parsing_issues_of_patient):
-            update_patient_has_confirmed_warnings(value=False, donor_id=parsing_issue.donor_id)
-        else:
-            update_patient_has_confirmed_warnings(value=True, donor_id=parsing_issue.donor_id)
 
     db.session.commit()
     return parsing_issue_model_to_confirmation_dto(parsing_issue, txm_event)
@@ -60,11 +45,6 @@ def unconfirm_a_parsing_issue(parsing_issue_id: int, txm_event: TxmEvent) -> Par
 
     parsing_issue.confirmed_by = None
     parsing_issue.confirmed_at = None
-
-    if parsing_issue.recipient_id is not None:
-        update_patient_has_confirmed_warnings(value=False, recipient_id=parsing_issue.recipient_id)
-    else:
-        update_patient_has_confirmed_warnings(value=False, donor_id=parsing_issue.donor_id)
 
     db.session.commit()
     return parsing_issue_model_to_confirmation_dto(parsing_issue, txm_event)
@@ -185,12 +165,3 @@ def delete_parsing_issues_for_txm_event_id(txm_event_id: int):
     ParsingIssueModel.query.filter(
         ParsingIssueModel.txm_event_id == txm_event_id
     ).delete()
-
-
-def update_patient_has_confirmed_warnings(value: bool, donor_id: int = None, recipient_id: int = None):
-    if donor_id is not None:
-        donor = DonorModel.query.get(donor_id)
-        donor.patient_has_confirmed_warnings = value
-    else:
-        recipient = RecipientModel.query.get(recipient_id)
-        recipient.patient_has_confirmed_warnings = value
