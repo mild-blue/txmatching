@@ -5,6 +5,7 @@ import { ParsingIssue } from '@app/model/ParsingIssue';
 
 export interface Donor extends Patient {
   active: boolean;
+  activeAndValidPair?: boolean;
   donorType: DonorType;
   compatibleBloodWithRelatedRecipient?: boolean;
   relatedRecipientDbId?: number;

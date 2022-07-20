@@ -25,6 +25,12 @@
     inactive
   </div>
 
+  <div class="donor-type-label"
+       matTooltip="Patients are not included in matching calculations"
+       *ngIf="!donor.activeAndValidPair">
+    invalid
+  </div>
+
   <app-incompatibility-pill *ngIf="!isBloodCompatible"></app-incompatibility-pill>
 
 </div>

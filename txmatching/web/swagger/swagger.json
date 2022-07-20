@@ -2587,6 +2587,10 @@
                     "type": "number",
                     "description": "Maximum transplant score"
                 },
+                "active_and_valid_pair": {
+                    "type": "boolean",
+                    "description": "Indication of whether the pair is included in the matching run"
+                },
                 "compatible_blood_with_related_recipient": {
                     "type": "boolean",
                     "description": "Indicator whether Donor and related recipients have compatible blood groups"
