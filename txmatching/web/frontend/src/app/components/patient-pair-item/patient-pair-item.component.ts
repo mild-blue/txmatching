@@ -27,5 +27,3 @@ export class PatientPairItemComponent extends ListItemAbstractComponent implemen
                                 patientHasConfirmedWarnings(this.item?.r?.allMessages);
   }
 }
-
-      
