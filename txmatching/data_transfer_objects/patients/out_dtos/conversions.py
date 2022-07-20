@@ -102,9 +102,6 @@ def donor_to_donor_dto_out(donor: Donor,
             compatibility_index_detailed,
             antibodies
         )
-        donor_valid = donor.db_id in txm_event.active_and_valid_donors_dict
-        recipient_valid = related_recipient.db_id in txm_event.active_and_valid_recipients_dict
-        donor_dto.active_and_valid_pair = donor_valid and recipient_valid
     else:
         compatibility_index_detailed = get_detailed_compatibility_index_without_recipient(
             donor_hla_typing=donor.parameters.hla_typing
