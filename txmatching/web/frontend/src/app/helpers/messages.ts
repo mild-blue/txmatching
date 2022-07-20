@@ -22,13 +22,16 @@ export const findMostSevereMessageType = (donor: Donor | undefined, recipient: R
 };
 
 export const patientHasConfirmedWarnings = (data: AllMessages | undefined): boolean => {
-  if (data) {
-    for (const warning of data?.warning) {
-      if (warning.confirmed_by == null  || warning.confirmed_by == undefined) {
-        return false;
-      }
+  if (!data?.warning) {
+    return false;
+  }
+
+  for (const warning of data?.warning) {
+    if (warning.confirmedBy === undefined) {
+      return false;
     }
   }
+
   return true;
 };
 

@@ -38,8 +38,8 @@ export class ParsingIssueConfirmationWarningComponent {
     }
 
     const confirmationService = (confirm) ?
-      this._patientService.confirmWarning(this.defaultTxmEvent.id, this.data.db_id) :
-      this._patientService.unconfirmWarning(this.defaultTxmEvent.id, this.data.db_id);
+      this._patientService.confirmWarning(this.defaultTxmEvent.id, this.data.dbId) :
+      this._patientService.unconfirmWarning(this.defaultTxmEvent.id, this.data.dbId);
 
     this.loading = true;
 

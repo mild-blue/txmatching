@@ -23,8 +23,9 @@ export class PatientPairItemComponent extends ListItemAbstractComponent implemen
   ngOnInit() {
     this.allMessagesCount = countAllMessages(this.item?.d) + countAllMessages(this.item?.r);
     this.mostSevereMessageType = findMostSevereMessageType(this.item?.d, this.item?.r);
-    if (patientHasConfirmedWarnings(this.item?.d?.allMessages) && patientHasConfirmedWarnings(this.item?.r?.allMessages)){
-      this.allWarningsConfirmed = true;
-    }
+    this.allWarningsConfirmed = patientHasConfirmedWarnings(this.item?.d?.allMessages) &&
+                                patientHasConfirmedWarnings(this.item?.r?.allMessages);
   }
 }
+
+      
