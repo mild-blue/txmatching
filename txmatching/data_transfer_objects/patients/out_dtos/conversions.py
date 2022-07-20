@@ -29,14 +29,12 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
             donor_to_donor_dto_out(
                 donor, txm_event.all_recipients, configuration_parameters, scorer, txm_event.db_id
             ) for donor in txm_event.all_donors],
-            key=lambda donor: (
-            donor.db_id not in txm_event.active_and_valid_donors_dict, _patient_order_for_fe(donor))),
+            key=_patient_order_for_fe),
         'recipients': sorted([
             recipient_to_recipient_dto_out(
                 recipient, txm_event.db_id
             ) for recipient in txm_event.all_recipients],
-            key=lambda recipient: (
-            recipient.db_id not in txm_event.active_and_valid_recipients_dict, _patient_order_for_fe(recipient)))
+            key=_patient_order_for_fe)
     }
 
 
