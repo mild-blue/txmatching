@@ -29,7 +29,8 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
             donor_to_donor_dto_out(
                 donor, txm_event.all_recipients, configuration_parameters, scorer, txm_event
             ) for donor in txm_event.all_donors],
-            key=_patient_order_for_fe),
+            key=lambda donor: (
+            not donor.active_and_valid_pair, _patient_order_for_fe(donor))),
         'recipients': sorted([
             recipient_to_recipient_dto_out(
                 recipient, txm_event.db_id
@@ -38,7 +39,7 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
     }
 
 
-def _patient_order_for_fe(patient: Union[DonorDTOOut, Recipient]) -> str:
+def _patient_order_for_fe(patient: Union[DonorDTOOut, RecipientDTOOut]) -> str:
     return f'{patient.parameters.country_code.value}_{patient.medical_id}'
 
 

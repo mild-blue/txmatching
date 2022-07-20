@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional, Dict
 
+from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueConfirmationDTO
 from txmatching.patients.patient import Donor
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
@@ -14,6 +15,10 @@ class DonorDTOOut(Donor):
     detailed_score_with_related_recipient: Optional[List[DetailedScoreForHLAGroup]] = None
     compatible_blood_with_related_recipient: Optional[str] = None
     active_and_valid_pair: Optional[bool] = None
+
+    def __post_init__(self):
+        if self.active_and_valid_pair is None:
+            raise InvalidArgumentException('Active and valid pair attribute should be set.')
 
 
 @dataclass
