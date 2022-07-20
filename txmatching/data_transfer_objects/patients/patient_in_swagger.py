@@ -27,6 +27,8 @@ DonorJson = patient_api.model('Donor', {**DbId, **MedicalId, **Etag, **{
     'related_recipient_db_id': fields.Integer(required=False, description='Database id of the related recipient'),
     'score_with_related_recipient': fields.Float(required=False, description='Score calculated with related recipient'),
     'max_score_with_related_recipient': fields.Float(required=False, description='Maximum transplant score'),
+    'active_and_valid_pair': fields.Boolean(required=False,
+                                            description='Indication of whether the pair is included in the matching run'),
     'compatible_blood_with_related_recipient': fields.Boolean(
         required=False,
         description='Indicator whether Donor and related recipients have compatible blood groups'
@@ -49,7 +51,8 @@ RecipientJson = patient_api.model('Recipient', {**DbId, **MedicalId, **Etag, **{
     'internal_medical_id': fields.String(required=False, description='Internal medical id of the patient'),
     'parameters': fields.Nested(required=True, model=PatientParametersJson),
     'hla_antibodies': fields.Nested(required=True, model=HLAAntibodies),
-    'related_donors_db_ids': fields.List(required=True, cls_or_instance=fields.Integer, description='Database id of the related donor'),
+    'related_donors_db_ids': fields.List(required=True, cls_or_instance=fields.Integer,
+                                         description='Database id of the related donor'),
     'recipient_requirements': fields.Nested(RecipientRequirements),
     'waiting_since': fields.DateTime(required=False),
     'previous_transplants': fields.Integer(required=False),

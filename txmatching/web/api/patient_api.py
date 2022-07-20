@@ -206,7 +206,7 @@ class AlterDonor(Resource):
                     all_recipients,
                     configuration_parameters,
                     scorer,
-                    txm_event_id
+                    txm_event
                 ),
                 parsing_issues=get_parsing_issues_confirmation_dto_for_patients(donor_ids=[updated_donor.db_id],
                                                                                 txm_event_id=txm_event_id)

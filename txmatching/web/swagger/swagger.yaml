@@ -534,6 +534,10 @@ definitions:
             active:
                 description: Whether the user shall be used in pairing calculation
                 type: boolean
+            active_and_valid_pair:
+                description: Indication of whether the pair is included in the matching
+                    run
+                type: boolean
             all_messages:
                 $ref: '#/definitions/AllMessages'
             compatible_blood_with_related_recipient:
