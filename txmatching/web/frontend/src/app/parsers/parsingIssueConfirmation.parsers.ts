@@ -11,6 +11,6 @@ export const parseParsingIssueConfirmation = (data: ParsingIssueConfirmationGene
     message: data.message,
     parsingIssueDetail: data.parsing_issue_detail,
     recipientId: data.recipient_id,
-    txmEventId: data.txm_event_id,
+    txmEventId: data.txm_event_id
   };
 };
