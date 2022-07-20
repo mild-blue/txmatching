@@ -19,10 +19,6 @@ import { HlaAntibodiesGenerated } from './hlaAntibodiesGenerated';
 
 export interface RecipientGenerated { 
     acceptable_blood_groups?: Array<BloodGroupEnumGenerated>;
-    /**
-     * Patient is active and valid and is included in computation
-     */
-    active_and_valid?: boolean;
     all_messages?: AllMessagesGenerated;
     /**
      * Database id of the patient

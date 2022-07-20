@@ -21,10 +21,6 @@ export interface DonorGenerated {
      * Whether the user shall be used in pairing calculation
      */
     active: boolean;
-    /**
-     * Patient is active and valid and is included in computation
-     */
-    active_and_valid?: boolean;
     all_messages?: AllMessagesGenerated;
     /**
      * Indicator whether Donor and related recipients have compatible blood groups

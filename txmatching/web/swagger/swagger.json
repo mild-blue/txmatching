@@ -2561,10 +2561,6 @@
                     "description": "Number of updates of a patient",
                     "example": 1
                 },
-                "active_and_valid": {
-                    "type": "boolean",
-                    "description": "Patient is active and valid and is included in computation"
-                },
                 "active": {
                     "type": "boolean",
                     "description": "Whether the user shall be used in pairing calculation"
@@ -3659,10 +3655,6 @@
                     "type": "integer",
                     "description": "Number of updates of a patient",
                     "example": 1
-                },
-                "active_and_valid": {
-                    "type": "boolean",
-                    "description": "Patient is active and valid and is included in computation"
                 },
                 "acceptable_blood_groups": {
                     "type": "array",
