@@ -18,6 +18,7 @@ export const parseDonor = (data: DonorGenerated): Donor => {
   return {
     ...parsePatient(data, donorListItem),
     active: data.active,
+    activeAndValidPair: data.active_and_valid_pair,
     donorType: parseDonorType(data.donor_type),
     compatibleBloodWithRelatedRecipient: data.compatible_blood_with_related_recipient,
     relatedRecipientDbId: data.related_recipient_db_id,

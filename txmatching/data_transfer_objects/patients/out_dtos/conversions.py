@@ -27,7 +27,7 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
     return {
         'donors': sorted([
             donor_to_donor_dto_out(
-                donor, txm_event.all_recipients, configuration_parameters, scorer, txm_event.db_id
+                donor, txm_event.all_recipients, configuration_parameters, scorer, txm_event
             ) for donor in txm_event.all_donors],
             key=_patient_order_for_fe),
         'recipients': sorted([
@@ -65,7 +65,7 @@ def donor_to_donor_dto_out(donor: Donor,
                            all_recipients: List[Recipient],
                            config_parameters: ConfigParameters,
                            scorer: AdditiveScorer,
-                           txm_event_id: int) -> DonorDTOOut:
+                           txm_event: TxmEvent) -> DonorDTOOut:
     donor_dto = DonorDTOOut(db_id=donor.db_id,
                             medical_id=donor.medical_id,
                             parameters=donor.parameters,
@@ -75,7 +75,7 @@ def donor_to_donor_dto_out(donor: Donor,
                             active=donor.active,
                             internal_medical_id=donor.internal_medical_id,
                             parsing_issues=donor.parsing_issues,
-                            all_messages=get_messages(donor_id=donor.db_id, txm_event_id=txm_event_id)
+                            all_messages=get_messages(donor_id=donor.db_id, txm_event_id=txm_event.db_id)
                             )
     if donor.related_recipient_db_id:
         related_recipient = next(recipient for recipient in all_recipients if
@@ -100,6 +100,9 @@ def donor_to_donor_dto_out(donor: Donor,
             compatibility_index_detailed,
             antibodies
         )
+        donor_valid = donor.db_id in txm_event.active_and_valid_donors_dict
+        recipient_valid = related_recipient.db_id in txm_event.active_and_valid_recipients_dict
+        donor_dto.active_and_valid_pair = donor_valid and recipient_valid
     else:
         compatibility_index_detailed = get_detailed_compatibility_index_without_recipient(
             donor_hla_typing=donor.parameters.hla_typing
@@ -115,6 +118,7 @@ def donor_to_donor_dto_out(donor: Donor,
                 donor_matches=compatibility_index_detailed_group.donor_matches
             ) for compatibility_index_detailed_group in compatibility_index_detailed
         ]
+        donor_dto.active_and_valid_pair = donor.db_id in txm_event.active_and_valid_donors_dict
 
     return donor_dto
 
