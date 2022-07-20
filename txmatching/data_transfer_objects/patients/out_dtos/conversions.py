@@ -76,7 +76,8 @@ def donor_to_donor_dto_out(donor: Donor,
                             active=donor.active,
                             internal_medical_id=donor.internal_medical_id,
                             parsing_issues=donor.parsing_issues,
-                            all_messages=get_messages(donor_id=donor.db_id, txm_event_id=txm_event.db_id)
+                            all_messages=get_messages(donor_id=donor.db_id, txm_event_id=txm_event.db_id),
+                            active_and_valid_pair=donor.db_id in txm_event.active_and_valid_donors_dict
                             )
     if donor.related_recipient_db_id:
         related_recipient = next(recipient for recipient in all_recipients if
@@ -119,7 +120,6 @@ def donor_to_donor_dto_out(donor: Donor,
                 donor_matches=compatibility_index_detailed_group.donor_matches
             ) for compatibility_index_detailed_group in compatibility_index_detailed
         ]
-        donor_dto.active_and_valid_pair = donor.db_id in txm_event.active_and_valid_donors_dict
 
     return donor_dto
 
