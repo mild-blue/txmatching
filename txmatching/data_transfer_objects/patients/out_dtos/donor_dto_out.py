@@ -13,6 +13,7 @@ class DonorDTOOut(Donor):
     max_score_with_related_recipient: Optional[float] = None
     detailed_score_with_related_recipient: Optional[List[DetailedScoreForHLAGroup]] = None
     compatible_blood_with_related_recipient: Optional[str] = None
+    active_and_valid_pair: Optional[bool] = None
 
 
 @dataclass
