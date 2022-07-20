@@ -10,6 +10,7 @@ import { AlertService } from '@app/services/alert/alert.service';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { EventService } from '@app/services/event/event.service';
 import { getErrorMessage } from '@app/helpers/error';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-patient-detail-donor',
@@ -21,6 +22,8 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
   @Input() patients?: PatientList;
   @Input() item?: Donor;
   @Input() defaultTxmEvent?: TxmEvent;
+
+  public patientForm?: FormGroup;
 
   public donorEditable?: DonorEditable;
 
@@ -39,6 +42,11 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
 
   ngOnInit(): void {
     this._initDonorEditable();
+  }
+
+  public canSubmit(): boolean {
+    console.log(!!this.patientForm?.valid);
+    return !!this.patientForm?.dirty;
   }
 
   public handleSave(): void {
@@ -94,8 +102,11 @@ export class PatientDonorDetailComponent extends ListItemDetailAbstractComponent
       return;
     }
 
+    const group: { [key: string]: AbstractControl; } = {};
+
     this.donorEditable = new DonorEditable();
     this.donorEditable.initializeFromPatient(this.item);
+    this.patientForm = new FormGroup({});
     this._logger.log('DonorEditable initialized', [this.donorEditable]);
   }
 

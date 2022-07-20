@@ -16,7 +16,11 @@
     </app-button>
   </div>
 
-  <form (ngSubmit)="handleSave()">
+  <form *ngIf="patientForm" [formGroup]="patientForm">
+
+    <mat-slide-toggle [(ngModel)]="item.active" formControlName="testtesttest222">
+      Active
+    </mat-slide-toggle>
 
     <app-donor-settings [donor]="donorEditable"
                         [showCountryMedicalIdAndDonorType]="false"
@@ -26,9 +30,10 @@
     <div class="buttons">
       <app-button [type]="'submit'"
                   [loading]="loading"
-                  [disabled]="loading"
+                  [disabled]="!canSubmit()"
                   [success]="!loading && success"
-                  [variant]="'success'">Save changes
+                  [variant]="'success'"
+                  (click)="handleSave()">Save changes
       </app-button>
 
       <app-button [loading]="deleteLoading"
