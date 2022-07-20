@@ -4,7 +4,7 @@ import { ParsingIssueConfirmation } from '../model';
 export const parseParsingIssueConfirmation = (data: ParsingIssueConfirmationGenerated): ParsingIssueConfirmation => {
   return {
     confirmedAt: data.confirmed_at,
-    confirmedBy: (data.confirmed_by) ? data.confirmed_by : undefined,
+    confirmedBy: data.confirmed_by ?? undefined,
     dbId: data.db_id,
     donorId: data.donor_id,
     hlaCodeOrGroup: data.hla_code_or_group,
