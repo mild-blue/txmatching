@@ -9,6 +9,7 @@ import { UpdatedRecipient } from '@app/model/Recipient';
 import {
   DonorModelPairInGenerated,
   DonorModelToUpdateGenerated,
+  ParsingIssueConfirmationGenerated,
   PatientsGenerated,
   PatientUploadSuccessResponseGenerated,
   RecipientModelToUpdateGenerated,
@@ -45,7 +46,7 @@ export class PatientService {
   public async confirmWarning(txmEventId: number, warningId: number): Promise<ParsingIssueConfirmation> {
     this._logger.log(`Confirming warning ${warningId}`);
 
-    return firstValueFrom(this._http.put<ParsingIssueConfirmation>(
+    return firstValueFrom(this._http.put<ParsingIssueConfirmationGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/confirm-warning/${warningId}`,
       {}
     ).pipe(
@@ -56,7 +57,7 @@ export class PatientService {
   public async unconfirmWarning(txmEventId: number, warningId: number): Promise<ParsingIssueConfirmation> {
     this._logger.log(`Unonfirming warning ${warningId}`);
 
-    return firstValueFrom(this._http.put<ParsingIssueConfirmation>(
+    return firstValueFrom(this._http.put<ParsingIssueConfirmationGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/unconfirm-warning/${warningId}`,
       {}
     ).pipe(

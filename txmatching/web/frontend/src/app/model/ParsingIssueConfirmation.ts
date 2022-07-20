@@ -1,11 +1,11 @@
 export interface ParsingIssueConfirmation {
-  confirmed_at?: string;
-  confirmed_by?: number;
-  db_id: number;
-  donor_id?: number;
-  hla_code_or_group?: string;
+  confirmedAt?: string;
+  confirmedBy?: number;
+  dbId: number;
+  donorId?: number;
+  hlaCodeOrGroup?: string;
   message: string;
-  parsing_issue_detail: string;
-  recipient_id?: number;
-  txm_event_id?: number;
+  parsingIssueDetail: string;
+  recipientId?: number;
+  txmEventId?: number;
 }
