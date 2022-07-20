@@ -68,11 +68,6 @@ RECIPIENTS = [
                 'mfi': 2350,
                 'name': 'A9',
                 'cutoff': 2000
-            },
-            {
-                'mfi': 100,
-                'name': 'A9',
-                'cutoff': 2000
             }
         ],
         'sex': Sex.F,

@@ -33,6 +33,9 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
     In such case we identify the set of the lowest MFI values and estimate the real MFI value for given hla_code only
     from them.
     """
+    # if there is just one MFI value, simply return it
+    if len(mfis) == 1:
+        return [], mfis[0]
     mfis = np.array(mfis)
     max_mfi = np.max(mfis)
     min_mfi = np.min(mfis)
