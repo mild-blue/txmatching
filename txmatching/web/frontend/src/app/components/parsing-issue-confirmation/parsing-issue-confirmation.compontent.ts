@@ -18,11 +18,11 @@ export class ParsingIssueConfirmationComponent {
 
   sortBy(parsingIssueConfirmation: ParsingIssueConfirmation) {
     if (this.warningType === 'warning' && this.data) {
-      const index: number = this.data.map(parsingIssue => parsingIssue.db_id).indexOf(parsingIssueConfirmation.db_id);
+      const index: number = this.data.map(parsingIssue => parsingIssue.dbId).indexOf(parsingIssueConfirmation.dbId);
       if (index !== -1) {
         this.data[index] = parsingIssueConfirmation;
       }
-      this.data?.sort((warning) => (!warning.confirmed_by) ? -1 : 1);
+      this.data?.sort((warning) => (!warning.confirmedBy) ? -1 : 1);
     }
   }
 }

@@ -12,6 +12,7 @@ export class WarningPillComponent{
   @Input() count: number = 0;
   @Input() tooltip?: string;
   @Input() generalWarning?: boolean = false;
+  @Input() allWarningsConfirmed?: boolean;
 
   constructor() { }
 }

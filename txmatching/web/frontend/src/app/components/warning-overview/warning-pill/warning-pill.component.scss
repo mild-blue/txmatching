@@ -54,3 +54,14 @@
 
   background-color: transparent;
 }
+
+.all-warnings-confirmed {
+  color: $warning-text;
+  border-width: 0.125rem;
+  border-style: solid;
+  border-color: $success;
+
+  mat-icon {
+    color: $success;
+  }
+}

@@ -84,7 +84,8 @@ def convert_parsing_issue_models_to_dataclasses(parsing_issue_models: List[Parsi
     ) for parsing_issue_model in parsing_issue_models]
 
 
-def convert_parsing_issue_models_to_confirmation_dto(parsing_issue_models: List[ParsingIssueModel]) -> List[ParsingIssueConfirmationDTO]:
+def convert_parsing_issue_models_to_confirmation_dto(parsing_issue_models: List[ParsingIssueModel]) -> List[
+    ParsingIssueConfirmationDTO]:
     return [ParsingIssueConfirmationDTO(
         db_id=parsing_issue_model.id,
         hla_code_or_group=parsing_issue_model.hla_code_or_group,
@@ -125,7 +126,8 @@ def get_parsing_issues_for_patients(txm_event_id: int, donor_ids: List[int] = No
 
 
 def get_parsing_issues_confirmation_dto_for_patients(txm_event_id: int, donor_ids: List[int] = None,
-                                    recipient_ids: List[int] = None) -> List[ParsingIssueConfirmationDTO]:
+                                                     recipient_ids: List[int] = None) -> List[
+    ParsingIssueConfirmationDTO]:
     if donor_ids is None:
         donor_ids = []
     if recipient_ids is None:
