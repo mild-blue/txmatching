@@ -4,7 +4,7 @@ import { BloodGroup } from '@app/model';
 import { NgModel } from '@angular/forms';
 import { formatNumberForPatient, formatYearOfBirthForPatient } from '@app/directives/validators/form.directive';
 
-// TODO improve code: change functions to arrow functions, don't use null values, 
+// TODO improve code: change functions to arrow functions, don't use null values,
 // use correct types for variables instead of "any"
 @Component({
   selector: 'app-recipient-settings',
