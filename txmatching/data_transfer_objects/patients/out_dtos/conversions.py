@@ -38,7 +38,7 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
     }
 
 
-def _patient_order_for_fe(patient: Union[Donor, Recipient]) -> str:
+def _patient_order_for_fe(patient: Union[DonorDTOOut, Recipient]) -> str:
     return f'{patient.parameters.country_code.value}_{patient.medical_id}'
 
 
