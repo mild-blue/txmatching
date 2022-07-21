@@ -4,7 +4,7 @@ import re
 from typing import Dict, List, Tuple, Union
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
-    ParsingIssueTemp
+    ParsingIssueBase
 from txmatching.patients.hla_model import (AntibodiesPerGroup, HLAAntibody,
                                            HLAPerGroup, HLAType)
 from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER,
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 SUFFICIENT_NUMBER_OF_ANTIGENS_IN_HIGH_RES = 20
 
 
-def split_hla_types_to_groups(hla_types: List[HLAType]) -> Tuple[List[ParsingIssueTemp], List[HLAPerGroup]]:
+def split_hla_types_to_groups(hla_types: List[HLAType]) -> Tuple[List[ParsingIssueBase], List[HLAPerGroup]]:
     parsing_issues, hla_types_in_groups = _split_hla_types_to_groups(hla_types)
     return (parsing_issues, [HLAPerGroup(hla_group,
                                          sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
@@ -30,7 +30,7 @@ def split_hla_types_to_groups(hla_types: List[HLAType]) -> Tuple[List[ParsingIss
 
 def split_hla_types_to_groups_other(
         hla_types: List[HLAType]
-) -> Tuple[List[ParsingIssueTemp], Dict[HLAGroup, List[HLAType]]]:
+) -> Tuple[List[ParsingIssueBase], Dict[HLAGroup, List[HLAType]]]:
     parsing_issues = []
     hla_types_in_groups = {}
     for hla_group in HLA_GROUPS_OTHER:
@@ -44,7 +44,7 @@ def split_hla_types_to_groups_other(
                 break
         if not match_found:
             parsing_issues.append(
-                ParsingIssueTemp(
+                ParsingIssueBase(
                     hla_code_or_group=hla_type.raw_code,
                     parsing_issue_detail=ParsingIssueDetail.OTHER_PROBLEM,
                     message=f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any OTHER group. '
@@ -56,7 +56,7 @@ def split_hla_types_to_groups_other(
 
 def create_hla_antibodies_per_groups_from_hla_antibodies(
         hla_antibodies: List[HLAAntibody],
-) -> Tuple[List[ParsingIssueTemp], List[AntibodiesPerGroup]]:
+) -> Tuple[List[ParsingIssueBase], List[AntibodiesPerGroup]]:
     antibodies_parsing_issues, hla_antibodies_joined = _join_duplicate_antibodies(hla_antibodies)
     antibodies_per_groups_parsing_issues, hla_antibodies_per_groups = _split_antibodies_to_groups(hla_antibodies_joined)
 
@@ -65,7 +65,7 @@ def create_hla_antibodies_per_groups_from_hla_antibodies(
 
 
 def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> Tuple[
-        List[ParsingIssueTemp], List[AntibodiesPerGroup]]:
+        List[ParsingIssueBase], List[AntibodiesPerGroup]]:
     parsing_issues, hla_antibodies_in_groups = _split_hla_types_to_groups(hla_antibodies)
     return (parsing_issues, [AntibodiesPerGroup(hla_group,
                                                 sorted(hla_codes_in_group, key=lambda hla_code: hla_code.raw_code)
@@ -75,7 +75,7 @@ def _split_antibodies_to_groups(hla_antibodies: List[HLAAntibody]) -> Tuple[
 
 def _join_duplicate_antibodies(
         hla_antibodies: List[HLAAntibody]
-) -> Tuple[List[ParsingIssueTemp], List[HLAAntibody]]:
+) -> Tuple[List[ParsingIssueBase], List[HLAAntibody]]:
     def _group_key(hla_antibody: HLAAntibody) -> str:
         return hla_antibody.raw_code
 
@@ -89,7 +89,7 @@ def _join_duplicate_antibodies(
         cutoffs = {hla_antibody.cutoff for hla_antibody in antibody_group_list}
         if len(cutoffs) != 1:
             parsing_issues.append(
-                ParsingIssueTemp(
+                ParsingIssueBase(
                     hla_code_or_group=hla_code_raw,
                     parsing_issue_detail=ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY,
                     message=ParsingIssueDetail.MULTIPLE_CUTOFFS_PER_ANTIBODY.value
@@ -125,7 +125,7 @@ def _is_hla_type_in_group(hla_type: HLACodeAlias, hla_group: HLAGroup) -> bool:
         raise AssertionError(f'Broad or high res should be provided: {hla_type.code}')
 
 
-def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[ParsingIssueTemp], Dict[HLAGroup,
+def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[ParsingIssueBase], Dict[HLAGroup,
                                                                                                     List[HLACodeAlias]]]:
     parsing_issues = []
     hla_types_in_groups = {}
@@ -140,7 +140,7 @@ def _split_hla_types_to_groups(hla_types: List[HLACodeAlias]) -> Tuple[List[Pars
                 break
         if not match_found:
             parsing_issues.append(
-                ParsingIssueTemp(
+                ParsingIssueBase(
                     hla_code_or_group=hla_type.raw_code,
                     parsing_issue_detail=ParsingIssueDetail.OTHER_PROBLEM,
                     message=f'HLA type or hla antibody was parsed as {hla_type} but do not belong to any group. '

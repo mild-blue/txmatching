@@ -8,11 +8,16 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
 
+
 @dataclass
-class ParsingIssuePublicDTO:
-    hla_code_or_group: Optional[str]
-    parsing_issue_detail: str
+class ParsingIssueBase:
+    hla_code_or_group: str
+    parsing_issue_detail: ParsingIssueDetail
     message: str
+
+
+@dataclass
+class ParsingIssuePublicDTO(ParsingIssueBase):
     txm_event_name: str
     medical_id: str
 
@@ -20,10 +25,7 @@ class ParsingIssuePublicDTO:
 # pylint: disable=too-many-instance-attributes
 # It is reasonable to have many attributes here
 @dataclass
-class ParsingIssue(PersistentlyHashable):
-    hla_code_or_group: str
-    parsing_issue_detail: ParsingIssueDetail
-    message: str
+class ParsingIssue(PersistentlyHashable, ParsingIssueBase):
     txm_event_id: int
     confirmed_by: int
     confirmed_at: datetime
@@ -42,11 +44,6 @@ class ParsingIssue(PersistentlyHashable):
         update_persistent_hash(hash_, self.confirmed_at)
 
 
-@dataclass
-class ParsingIssueTemp:
-    hla_code_or_group: str
-    parsing_issue_detail: ParsingIssueDetail
-    message: str
 
 
 @dataclass

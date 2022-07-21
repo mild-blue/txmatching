@@ -6,7 +6,7 @@ from sqlalchemy import and_
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         OverridingException)
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
-    ParsingIssue, ParsingIssueConfirmationDTO, ParsingIssueTemp)
+    ParsingIssue, ParsingIssueConfirmationDTO, ParsingIssueBase)
 from txmatching.data_transfer_objects.patients.utils import \
     parsing_issue_model_to_confirmation_dto
 from txmatching.database.db import db
@@ -55,7 +55,7 @@ def unconfirm_a_parsing_issue(parsing_issue_id: int, txm_event_id: int) -> Parsi
 
 
 def parsing_issues_to_models(
-        parsing_issues_temp: List[ParsingIssueTemp], donor_id: int = None, recipient_id: int = None, txm_event_id: int = None
+        parsing_issues_temp: List[ParsingIssueBase], donor_id: int = None, recipient_id: int = None, txm_event_id: int = None
 ) -> List[ParsingIssueModel]:
 
     parsing_issue_models = []
