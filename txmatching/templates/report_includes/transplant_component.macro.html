@@ -129,18 +129,18 @@
         <td>Blood type</td>
         <td>
           <div class="code {% if compatible_blood %}matching{% endif %}">
-            {{ donor.parameters.blood_group }}
+            {{ donor.parameters.blood_group.value }}
           </div>
         </td>
         <td colspan="2">
           {% if recipient %}
             <div class="code {% if compatible_blood %}matching{% endif %}">
-              {{ recipient.parameters.blood_group }}
+              {{ recipient.parameters.blood_group.value }}
             </div>
             <div class="small">
               Acceptable:
               {% for code in recipient.acceptable_blood_groups %}
-                <div class="code">{{ code }}</div>
+                <div class="code">{{ code.value }}</div>
               {% endfor %}
             </div>
           {% endif %}
