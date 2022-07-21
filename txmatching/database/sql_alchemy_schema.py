@@ -101,8 +101,7 @@ class RecipientModel(db.Model):
     hla_antibodies_raw = relationship('HLAAntibodyRawModel', backref='recipient', passive_deletes=True,
                                       lazy='selectin')  # type: List[HLAAntibodyRawModel]
     parsing_issues = relationship('ParsingIssueModel', backref='recipient', passive_deletes=True)
-    # TODO: DEFAULT 1
-    etag = Column(BIGINT, unique=False, nullable=False)
+    etag = Column(BIGINT, unique=False, nullable=False, default=1)
     UniqueConstraint('medical_id', 'txm_event_id')
 
     def __repr__(self):
@@ -137,8 +136,7 @@ class DonorModel(db.Model):
                              passive_deletes=True,
                              lazy='joined')
     parsing_issues = relationship('ParsingIssueModel', backref='donor', passive_deletes=True)
-    # TODO: DEFAULT 1
-    etag = Column(BIGINT, unique=False, nullable=False)
+    etag = Column(BIGINT, unique=False, nullable=False, default=1)
     UniqueConstraint('medical_id', 'txm_event_id')
 
     def __repr__(self):
