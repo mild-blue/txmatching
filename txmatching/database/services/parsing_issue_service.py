@@ -6,9 +6,9 @@ from sqlalchemy import and_
 from txmatching.auth.exceptions import (InvalidArgumentException,
                                         OverridingException)
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
-    ParsingIssue, ParsingIssueConfirmationDTO, ParsingIssueBase)
+    ParsingIssue, ParsingIssueBase)
 from txmatching.data_transfer_objects.patients.utils import \
-    parsing_issue_model_to_confirmation_dto
+    parsing_issue_model_to_parsing_issue
 from txmatching.database.db import db
 from txmatching.database.sql_alchemy_schema import ParsingIssueModel
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
@@ -16,7 +16,7 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
 
 
 def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int,
-                            txm_event_id: int) -> ParsingIssueConfirmationDTO:
+                            txm_event_id: int) -> ParsingIssue:
     parsing_issue = ParsingIssueModel.query.get(parsing_issue_id)
 
     if parsing_issue is None or parsing_issue.txm_event_id != txm_event_id:
@@ -32,10 +32,10 @@ def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int,
     parsing_issue.confirmed_at = datetime.now()
 
     db.session.commit()
-    return parsing_issue_model_to_confirmation_dto(parsing_issue, txm_event_id)
+    return parsing_issue_model_to_parsing_issue(parsing_issue, txm_event_id)
 
 
-def unconfirm_a_parsing_issue(parsing_issue_id: int, txm_event_id: int) -> ParsingIssueConfirmationDTO:
+def unconfirm_a_parsing_issue(parsing_issue_id: int, txm_event_id: int) -> ParsingIssue:
     parsing_issue = ParsingIssueModel.query.get(parsing_issue_id)
 
     if parsing_issue is None or parsing_issue.txm_event_id != txm_event_id:
@@ -51,10 +51,10 @@ def unconfirm_a_parsing_issue(parsing_issue_id: int, txm_event_id: int) -> Parsi
     parsing_issue.confirmed_at = None
 
     db.session.commit()
-    return parsing_issue_model_to_confirmation_dto(parsing_issue, txm_event_id)
+    return parsing_issue_model_to_parsing_issue(parsing_issue, txm_event_id)
 
 
-def parsing_issues_to_models(
+def parsing_issues_bases_to_models(
         parsing_issues_temp: List[ParsingIssueBase], donor_id: int = None, recipient_id: int = None, txm_event_id: int = None
 ) -> List[ParsingIssueModel]:
 
@@ -75,20 +75,6 @@ def parsing_issues_to_models(
 
 def convert_parsing_issue_models_to_dataclasses(parsing_issue_models: List[ParsingIssueModel]) -> List[ParsingIssue]:
     return [ParsingIssue(
-        hla_code_or_group=parsing_issue_model.hla_code_or_group,
-        parsing_issue_detail=parsing_issue_model.parsing_issue_detail,
-        message=parsing_issue_model.message,
-        donor_id=parsing_issue_model.donor_id,
-        recipient_id=parsing_issue_model.recipient_id,
-        txm_event_id=parsing_issue_model.txm_event_id,
-        confirmed_by=parsing_issue_model.confirmed_by,
-        confirmed_at=parsing_issue_model.confirmed_at
-    ) for parsing_issue_model in parsing_issue_models]
-
-
-def convert_parsing_issue_models_to_confirmation_dto(parsing_issue_models: List[ParsingIssueModel]) -> List[
-    ParsingIssueConfirmationDTO]:
-    return [ParsingIssueConfirmationDTO(
         db_id=parsing_issue_model.id,
         hla_code_or_group=parsing_issue_model.hla_code_or_group,
         parsing_issue_detail=parsing_issue_model.parsing_issue_detail,
@@ -127,9 +113,9 @@ def get_parsing_issues_for_patients(txm_event_id: int, donor_ids: List[int] = No
     return convert_parsing_issue_models_to_dataclasses(parsing_issues)
 
 
-def get_parsing_issues_confirmation_dto_for_patients(txm_event_id: int, donor_ids: List[int] = None,
-                                                     recipient_ids: List[int] = None) -> List[
-    ParsingIssueConfirmationDTO]:
+def get_parsing_issues_for_patients(txm_event_id: int, donor_ids: List[int] = None,
+                                    recipient_ids: List[int] = None
+                                    ) -> List[ParsingIssue]:
     if donor_ids is None:
         donor_ids = []
     if recipient_ids is None:
@@ -143,7 +129,7 @@ def get_parsing_issues_confirmation_dto_for_patients(txm_event_id: int, donor_id
              ParsingIssueModel.txm_event_id == txm_event_id)
     ).all()
 
-    return convert_parsing_issue_models_to_confirmation_dto(parsing_issues)
+    return convert_parsing_issue_models_to_dataclasses(parsing_issues)
 
 
 def delete_parsing_issues_for_patient(

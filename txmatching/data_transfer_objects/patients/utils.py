@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
-    ParsingIssue, ParsingIssueConfirmationDTO, ParsingIssuePublicDTO)
+    ParsingIssue, ParsingIssuePublicDTO)
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
@@ -27,9 +27,9 @@ def parsing_issue_to_dto(parsing_issue: ParsingIssue, txm_event: TxmEventBase) -
     )
 
 
-def parsing_issue_model_to_confirmation_dto(parsing_issue: ParsingIssueModel,
-                                            txm_event_id: int) -> ParsingIssueConfirmationDTO:
-    return ParsingIssueConfirmationDTO(
+def parsing_issue_model_to_parsing_issue(parsing_issue: ParsingIssueModel,
+                                         txm_event_id: int) -> ParsingIssue:
+    return ParsingIssue(
         db_id=parsing_issue.id,
         hla_code_or_group=parsing_issue.hla_code_or_group,
         parsing_issue_detail=parsing_issue.parsing_issue_detail,

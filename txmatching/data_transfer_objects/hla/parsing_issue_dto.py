@@ -8,7 +8,6 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
 
-
 @dataclass
 class ParsingIssueBase:
     hla_code_or_group: str
@@ -26,6 +25,7 @@ class ParsingIssuePublicDTO(ParsingIssueBase):
 # It is reasonable to have many attributes here
 @dataclass
 class ParsingIssue(PersistentlyHashable, ParsingIssueBase):
+    db_id: int
     txm_event_id: int
     confirmed_by: int
     confirmed_at: datetime
@@ -42,18 +42,3 @@ class ParsingIssue(PersistentlyHashable, ParsingIssueBase):
         update_persistent_hash(hash_, self.recipient_id)
         update_persistent_hash(hash_, self.confirmed_by)
         update_persistent_hash(hash_, self.confirmed_at)
-
-
-
-
-@dataclass
-class ParsingIssueConfirmationDTO:
-    db_id: int
-    hla_code_or_group: Optional[str]
-    parsing_issue_detail: str
-    message: str
-    confirmed_by: Optional[int]
-    confirmed_at: Optional[datetime]
-    txm_event_id: Optional[int] = None
-    donor_id: Optional[int] = None
-    recipient_id: Optional[int] = None

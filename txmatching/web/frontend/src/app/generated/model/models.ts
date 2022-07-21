@@ -39,7 +39,6 @@ export * from './manualRecipientDonorScoreGenerated';
 export * from './matchingGenerated';
 export * from './newTxmEventGenerated';
 export * from './otpLoginGenerated';
-export * from './parsingIssueConfirmationGenerated';
 export * from './parsingIssueGenerated';
 export * from './parsingIssuePublicGenerated';
 export * from './passwordChangeGenerated';

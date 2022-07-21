@@ -927,7 +927,7 @@
                     "200": {
                         "description": "Issue confirmed successfully.",
                         "schema": {
-                            "$ref": "#/definitions/ParsingIssueConfirmation"
+                            "$ref": "#/definitions/ParsingIssue"
                         }
                     }
                 },
@@ -1225,7 +1225,7 @@
                     "200": {
                         "description": "Issue unconfirmed successfully.",
                         "schema": {
-                            "$ref": "#/definitions/ParsingIssueConfirmation"
+                            "$ref": "#/definitions/ParsingIssue"
                         }
                     }
                 },
@@ -1906,19 +1906,19 @@
                 "infos": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingIssueConfirmation"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 },
                 "warnings": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingIssueConfirmation"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 },
                 "errors": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingIssueConfirmation"
+                        "$ref": "#/definitions/ParsingIssue"
                     }
                 }
             },
@@ -3343,8 +3343,13 @@
         },
         "ParsingIssue": {
             "required": [
+                "confirmed_at",
+                "confirmed_by",
+                "db_id",
+                "hla_code_or_group",
                 "message",
-                "parsing_issue_detail"
+                "parsing_issue_detail",
+                "txm_event_id"
             ],
             "properties": {
                 "hla_code_or_group": {
@@ -3356,43 +3361,11 @@
                 "message": {
                     "type": "string"
                 },
-                "donor_id": {
-                    "type": "integer"
-                },
-                "recipient_id": {
-                    "type": "integer"
-                },
-                "txm_event_id": {
-                    "type": "integer"
-                },
-                "confirmed_at": {
-                    "type": "string",
-                    "format": "date"
-                },
-                "confirmed_by": {
-                    "type": "integer"
-                }
-            },
-            "type": "object"
-        },
-        "ParsingIssueConfirmation": {
-            "required": [
-                "db_id",
-                "message",
-                "parsing_issue_detail"
-            ],
-            "properties": {
                 "db_id": {
                     "type": "integer"
                 },
-                "hla_code_or_group": {
-                    "type": "string"
-                },
-                "parsing_issue_detail": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
+                "txm_event_id": {
+                    "type": "integer"
                 },
                 "confirmed_by": {
                     "type": "integer"
@@ -3400,9 +3373,6 @@
                 "confirmed_at": {
                     "type": "string",
                     "format": "date"
-                },
-                "txm_event_id": {
-                    "type": "integer"
                 },
                 "donor_id": {
                     "type": "integer"

@@ -6,7 +6,7 @@ import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
-    ParsingIssue, ParsingIssuePublicDTO, ParsingIssueBase)
+    ParsingIssue, ParsingIssueBase, ParsingIssuePublicDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
     HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
@@ -21,7 +21,7 @@ from txmatching.data_transfer_objects.patients.utils import \
     parsing_issue_to_dto
 from txmatching.database.db import db
 from txmatching.database.services.parsing_issue_service import (
-    get_parsing_issues_for_patients, parsing_issues_to_models)
+    get_parsing_issues_for_patients, parsing_issues_bases_to_models)
 from txmatching.database.services.parsing_utils import (
     check_existing_ids_for_duplicates, parse_date_to_datetime)
 from txmatching.database.services.patient_service import \
@@ -146,7 +146,7 @@ def _recipient_upload_dto_to_recipient_model(
     hla_typing_parsing_issues = _parse_and_update_hla_typing_in_model(recipient_model=recipient_model)
     hla_antibodies_parsing_issues = _parse_and_update_hla_antibodies_in_model(recipient_model)
     parsing_issues = hla_typing_parsing_issues + hla_antibodies_parsing_issues
-    parsing_issues = parsing_issues_to_models(
+    parsing_issues = parsing_issues_bases_to_models(
         parsing_issues_temp=parsing_issues,
         txm_event_id=recipient_model.txm_event_id)
     recipient_model.parsing_issues = parsing_issues
@@ -230,7 +230,7 @@ def _donor_upload_dto_to_donor_model(
     )
 
     parsing_issues = _parse_and_update_hla_typing_in_model(donor_model=donor_model)
-    parsing_issues = parsing_issues_to_models(
+    parsing_issues = parsing_issues_bases_to_models(
         parsing_issues_temp=parsing_issues,
         txm_event_id=donor_model.txm_event_id)
     donor_model.parsing_issues = parsing_issues
