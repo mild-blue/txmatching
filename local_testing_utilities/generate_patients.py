@@ -28,11 +28,13 @@ from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_regexes import \
     HIGH_RES_REGEX_ENDING_WITH_LETTER
 from txmatching.utils.hla_system.hla_table import (
-    HIGH_RES_TO_SPLIT_OR_BROAD, PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS)
+    HIGH_RES_TO_SPLIT_OR_BROAD, PARSED_DATAFRAME_WITH_HIGH_RES_TRANSFORMATIONS,
+    high_res_low_res_to_split_or_broad)
 
 BRIDGING_PROBABILITY = 0.8
 NON_DIRECTED_PROBABILITY = 0.9
 GENERATED_TXM_EVENT_NAME = 'high_res_example_data'
+CROSSMATCH_TXM_EVENT_NAME = 'mixed_resolution_with_crossmatch_types'
 LARGE_DATA_FOLDER = get_absolute_path(f'tests/resources/{GENERATED_TXM_EVENT_NAME}/')
 SMALL_DATA_FOLDER = get_absolute_path('tests/resources/high_res_example_small_data/')
 SMALL_DATA_FOLDER_MULTIPLE_DONORS = get_absolute_path('tests/resources/high_res_example_small_data_multiple_donors/')
@@ -116,10 +118,11 @@ def get_donor_type() -> DonorType:
 def get_codes(hla_group: HLAGroup, sample=None):
     if sample is None:
         sample = SAMPLE
+
     all_high_res = [high_res for high_res, split_or_broad_or_nan in HIGH_RES_TO_SPLIT_OR_BROAD.items() if
                     split_or_broad_or_nan is not None and not pd.isna(split_or_broad_or_nan) and re.match(
-                        HLA_GROUPS_PROPERTIES[hla_group].split_code_regex, split_or_broad_or_nan) and high_res.count(
-                        ':') == 1]
+                        HLA_GROUPS_PROPERTIES[hla_group].split_code_regex, split_or_broad_or_nan)
+                    and high_res.count(':') == 1]
     return [high_res for i, high_res in enumerate(all_high_res) if i in sample]
 
 
@@ -163,20 +166,22 @@ TypizationFor = {
 }
 
 
-def get_random_hla_type(hla_group: HLAGroup, has_letter_at_the_end: bool = False):
+def get_random_hla_type(hla_group: HLAGroup, has_letter_at_the_end: bool = False, high_res: bool = True):
     return random.choice(get_sample_of_codes_with_letter(hla_group)) if has_letter_at_the_end \
-        else random.choice(TypizationFor[hla_group])
+        else [random.choice(TypizationFor[hla_group]) if high_res
+              else high_res_low_res_to_split_or_broad(random.choice(TypizationFor[hla_group]))]
 
 
-def generate_hla_typing(has_letter_at_the_end: bool) -> List[str]:
+def generate_hla_typing(has_letter_at_the_end: bool, high_res: bool = True) -> List[str]:
     typization = []
     hla_with_letter = random.choice(list(TypizationFor.keys())) if has_letter_at_the_end else None
 
     for hla_group in TypizationFor:
-        typization.append(get_random_hla_type(hla_group, has_letter_at_the_end=(hla_with_letter == hla_group)))
+        typization.append(get_random_hla_type(hla_group, has_letter_at_the_end=(hla_with_letter == hla_group),
+                                              high_res=high_res))
         rand = random.uniform(0, 1)
         if rand > 0.3:
-            typization.append(get_random_hla_type(hla_group))
+            typization.append(get_random_hla_type(hla_group, high_res=high_res))
 
     return typization
 
@@ -198,16 +203,17 @@ def generate_antibodies() -> List[HLAAntibodiesUploadDTO]:
     return antibodies
 
 
-def generate_patient(country: Country, i: int, has_hla_with_letter_at_the_end: bool) -> \
+def generate_patient(country: Country, i: int, has_hla_with_letter_at_the_end: bool, high_res: bool = True) -> \
         Tuple[DonorUploadDTO, Optional[RecipientUploadDTO]]:
     blood_group_donor = random_blood_group()
     donor_type = get_donor_type()
     recipient_id = f'{country}_{i}R' if donor_type == DonorType.DONOR else None
+
     donor = DonorUploadDTO(
         donor_type=donor_type,
         blood_group=blood_group_donor,
         related_recipient_medical_id=recipient_id,
-        hla_typing=generate_hla_typing(has_letter_at_the_end=has_hla_with_letter_at_the_end),
+        hla_typing=generate_hla_typing(has_hla_with_letter_at_the_end, high_res),
         medical_id=f'{country}_{i}',
         height=generate_random_height(),
         weight=generate_random_weight(),
@@ -239,10 +245,11 @@ def generate_patient(country: Country, i: int, has_hla_with_letter_at_the_end: b
     return donor, recipient
 
 
-def generate_patients_for_one_country(country: Country, txm_event_name: str, count: int) -> PatientUploadDTOIn:
+def generate_patients_for_one_country(country: Country, txm_event_name: str, count: int, high_res: bool) -> PatientUploadDTOIn:
     count_hla_with_letter_at_the_end = 2
-    pairs = [generate_patient(country, i, False) for i in range(0, count - count_hla_with_letter_at_the_end)] + \
-            [generate_patient(country, i, True) for i in range(count - count_hla_with_letter_at_the_end, count)]
+    pairs = [generate_patient(country, i, False, high_res) for i in range(0, count - count_hla_with_letter_at_the_end)] + \
+            [generate_patient(country, i, True, high_res)
+             for i in range(count - count_hla_with_letter_at_the_end, count)]
     recipients = [recipient for _, recipient in pairs if recipient]
     donors = [donor for donor, _ in pairs]
 
@@ -257,13 +264,16 @@ def generate_patients_for_one_country(country: Country, txm_event_name: str, cou
 
 def generate_patients(txm_event_name: str = GENERATED_TXM_EVENT_NAME,
                       countries: Optional[List[Country]] = None,
-                      count_per_country=10) -> List[PatientUploadDTOIn]:
+                      count_per_country=10,
+                      crossmatch: bool = False) -> List[PatientUploadDTOIn]:
     if countries is None:
         countries = [Country.CZE, Country.IND, Country.CAN]
+
     patient_upload_objects = []
     for country in countries:
+        high_res = [random.choice([True, False]) if crossmatch else True]
         patient_upload_objects.append(
-            generate_patients_for_one_country(country, txm_event_name=txm_event_name, count=count_per_country))
+            generate_patients_for_one_country(country, txm_event_name=txm_event_name, count=count_per_country, high_res=high_res))
     return patient_upload_objects
 
 
@@ -288,7 +298,15 @@ if __name__ == '__main__':
     data_folder_to_store_data = SMALL_DATA_FOLDER
     PATIENT_COUNT = 3
     countries_to_generate = [Country.CZE]
-    for upload_object in generate_patients(GENERATED_TXM_EVENT_NAME, countries_to_generate, PATIENT_COUNT):
-        with open(f'{data_folder_to_store_data}{GENERATED_TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
-                  encoding='utf-8') as f:
-            json.dump(dataclasses.asdict(upload_object), f)
+    CROSSMATCH = True
+
+    if CROSSMATCH:
+        for upload_object in generate_patients(CROSSMATCH_TXM_EVENT_NAME, countries_to_generate, PATIENT_COUNT, True):
+            with open(f'{data_folder_to_store_data}{CROSSMATCH_TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
+                      encoding='utf-8') as f:
+                json.dump(dataclasses.asdict(upload_object), f)
+    else:
+        for upload_object in generate_patients(GENERATED_TXM_EVENT_NAME, countries_to_generate, PATIENT_COUNT):
+            with open(f'{data_folder_to_store_data}{GENERATED_TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
+                      encoding='utf-8') as f:
+                json.dump(dataclasses.asdict(upload_object), f)
