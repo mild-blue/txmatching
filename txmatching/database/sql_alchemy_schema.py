@@ -14,7 +14,7 @@ from txmatching.utils.country_enum import Country
 # pylint: disable=too-few-public-methods,too-many-arguments
 # disable because sqlalchemy needs classes without public methods
 from txmatching.utils.enums import Sex, TxmEventState
-# from txmatching.utils.blood_groups import BloodGroup
+from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
 
@@ -78,8 +78,7 @@ class RecipientModel(db.Model):
     medical_id = Column(TEXT, unique=False, nullable=False)
     internal_medical_id = Column(TEXT, unique=False, nullable=True)
     country = Column(Enum(Country), unique=False, nullable=False)
-    # TODO: TEXT -> Enum(BloodGroup)
-    blood = Column(TEXT, unique=False, nullable=False)
+    blood = Column(Enum(BloodGroup, values_callable=lambda x: [e.value for e in x]), unique=False, nullable=False)
     hla_typing_raw = Column(JSON, unique=False, nullable=False)
     hla_typing = Column(JSON, unique=False, nullable=False)  # HLATyping is model of the JSON
     recipient_requirements = Column(JSON, unique=False, nullable=False,
@@ -117,8 +116,7 @@ class DonorModel(db.Model):
     medical_id = Column(TEXT, unique=False, nullable=False)
     internal_medical_id = Column(TEXT, unique=False, nullable=True)
     country = Column(Enum(Country), unique=False, nullable=False)
-    # TODO: TEXT -> Enum(BloodGroup)
-    blood = Column(TEXT, unique=False, nullable=False)
+    blood = Column(Enum(BloodGroup, values_callable=lambda x: [e.value for e in x]), unique=False, nullable=False)
     hla_typing_raw = Column(JSON, unique=False, nullable=False)
     hla_typing = Column(JSON, unique=False, nullable=False)
     active = Column(BOOLEAN, unique=False, nullable=False)
@@ -149,8 +147,7 @@ class RecipientAcceptableBloodModel(db.Model):
 
     id = Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
     recipient_id = Column(INTEGER, ForeignKey('recipient.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
-    # TODO: Text -> Enum(BloodGroup)
-    blood_type = Column(TEXT, unique=False, nullable=False)
+    blood_type = Column(Enum(BloodGroup, values_callable=lambda x: [e.value for e in x]), unique=False, nullable=False)
     created_at = Column(DATETIME(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DATETIME(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DATETIME(timezone=True), nullable=True)
