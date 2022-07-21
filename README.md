@@ -157,3 +157,18 @@ It might take some time (minute or two) before Authentik is ready.
 
 You can test it by going to http://localhost:9000/application/o/authorize/?client_id=f5c6b6a72ff4f7bbdde383a26bdac192b2200707&response_type=code&redirect_uri=http://localhost:8080/v1/user/authentik-login&scope=null  
 In the future middleware should redirect you there.
+
+
+### Crossmatches
+Crossmatch in Txmatching is a warning that tells that further tests might be needed.
+There are three types of crossmatches: Undecidable, High Res. With Split, High Res. With Broad.
+#### High Res. With Broad
+1. Donor has an antigene of level broad
+2. Recipient has an antigene of level high res (the same broad as in 1.)
+#### High Res. With Split
+1. Donor has an antigene of level split
+2. Recipient has an antigene of level high res (the same split as in 1.)
+#### Undecidable
+1. Donor doesn't have any typization for a group.
+
+To generate patients with crossmatches set parameter CROSSMATCH to True in `__main__` function in generate_patients.py
