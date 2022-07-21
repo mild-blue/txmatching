@@ -3,6 +3,7 @@ import json
 import logging
 import os
 
+from txmatching.utils.country_enum import Country
 from txmatching.utils.excel_parsing.parse_excel_data import (ExcelSource,
                                                              parse_excel_data)
 from txmatching.web import create_app
@@ -10,8 +11,8 @@ from txmatching.web import create_app
 logger = logging.getLogger(__name__)
 
 # set the path here to excel with data
-PATH_TO_DATA_FOR_UPLOAD = '/path/to/excel'
-TXM_EVENT_NAME = 'name_of_txm_event'
+PATH_TO_DATA_FOR_UPLOAD = '/home/honza/Downloads/LDEP KUL - UCL July 22..xlsx'
+TXM_EVENT_NAME = 'TEST-BEL-PRIVATE-2022-02'
 
 
 if __name__ == '__main__':
@@ -19,7 +20,7 @@ if __name__ == '__main__':
     with app.app_context():
         patients = parse_excel_data(os.path.join(PATH_TO_DATA_FOR_UPLOAD),
                                     txm_event_name=TXM_EVENT_NAME,
-                                    country=None,
+                                    country=Country.BEL_2,
                                     excel_source=ExcelSource.BEL_2
                                     )
         # here we are assuming currently for simplicity that the data is from one country only
@@ -29,5 +30,5 @@ if __name__ == '__main__':
             patients_together.donors += patient.donors
             patients_together.recipients += patient.recipients
 
-        with open(f'new_json.json', 'w', encoding='utf-8') as f:
+        with open(f'tmp.json', 'w', encoding='utf-8') as f:
             json.dump(dataclasses.asdict(patients_together), f)
