@@ -83,6 +83,8 @@ class DbTests(unittest.TestCase):
         add_all_namespaces(self.api)
         register_error_handlers(self.api)
 
+        # This needs to be named 'test', because of `allowed_txm_events` in `user_swagger.py`
+        create_or_overwrite_txm_event('test')
         add_users()
 
         self._set_bearer_token()

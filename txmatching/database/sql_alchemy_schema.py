@@ -179,8 +179,7 @@ class AppUserModel(db.Model):
     email = Column(TEXT, unique=True, nullable=False)
     pass_hash = Column(TEXT, unique=False, nullable=False)
     role = Column(Enum(UserRole), unique=False, nullable=False)
-    # default_txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE', ondelete='SET NULL'), unique=False, nullable=True)
-    default_txm_event_id = Column(INTEGER, unique=False, nullable=True)
+    default_txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE', ondelete='SET NULL'), unique=False, nullable=True)
     # Whitelisted IP address if role is SERVICE
     # Seed for TOTP in all other cases
     second_factor_material = Column(TEXT, unique=False, nullable=False)
