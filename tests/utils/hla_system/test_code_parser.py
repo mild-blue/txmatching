@@ -219,6 +219,9 @@ class TestCodeParser(DbTests):
             ).hla_antibodies_per_groups[3].hla_antibody_list))
         # When MFI quite close to each other but one below and one above cutoff
         self._compare_mfi_result(expected_mfi=1500, mfis=[1500, 2900])
+        # no warning in case the values are all quite low:
+        self._compare_mfi_result(expected_mfi=1201, mfis=[1339, 1058, 2058, 1206], has_issue=False)
+        self._compare_mfi_result(expected_mfi=1508, mfis=[3970, 1922, 1422, 1180], has_issue=True)
 
     def test_no_ultra_high_res_with_multiple_splits(self):
         """
