@@ -22,7 +22,8 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
     PatientUploadSuccessJson
-from txmatching.data_transfer_objects.hla.parsing_issue_swagger import ParsingIssueConfirmationJson
+from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
+    ParsingIssueConfirmationJson
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import (
     donor_to_donor_dto_out, recipient_to_recipient_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
@@ -45,7 +46,8 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
 from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.parsing_issue_service import (
-    confirm_a_parsing_issue, get_parsing_issues_confirmation_dto_for_patients, unconfirm_a_parsing_issue)
+    confirm_a_parsing_issue, get_parsing_issues_confirmation_dto_for_patients,
+    unconfirm_a_parsing_issue)
 from txmatching.database.services.patient_service import (
     delete_donor_recipient_pair, get_donor_recipient_pair,
     recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event,
@@ -300,8 +302,7 @@ class ConfirmWarning(Resource):
     @require_role(UserRole.ADMIN)
     def put(self, txm_event_id: int, parsing_issue_id: int):
         user_id = get_current_user_id()
-        txm_event = get_txm_event_complete(txm_event_id)
-        result = confirm_a_parsing_issue(user_id, parsing_issue_id, txm_event)
+        result = confirm_a_parsing_issue(user_id, parsing_issue_id, txm_event_id)
         return response_ok(result)
 
 
@@ -326,6 +327,5 @@ class UnconfirmWarning(Resource):
     @require_valid_txm_event_id()
     @require_role(UserRole.ADMIN)
     def put(self, txm_event_id: int, parsing_issue_id: int):
-        txm_event = get_txm_event_complete(txm_event_id)
-        result = unconfirm_a_parsing_issue(parsing_issue_id, txm_event)
+        result = unconfirm_a_parsing_issue(parsing_issue_id, txm_event_id)
         return response_ok(result)
