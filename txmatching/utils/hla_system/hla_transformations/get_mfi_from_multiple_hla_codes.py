@@ -100,7 +100,7 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
             )
         )
 
-    elif relevant_mean < cutoff and only_one_number_used:
+    elif relevant_mean < cutoff and only_one_number_used and max_mfi > cutoff * MAX_MFI_RATIO_TO_BE_JUST_BELOW_CUTOFF:
         parsing_issues.append(
             ParsingIssue(
                 hla_code_or_group=raw_code,
