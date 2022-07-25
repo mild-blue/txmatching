@@ -8,10 +8,12 @@ from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import
 
 RELATIVE_DIFFERENCE_THRESHOLD_FOR_SUSPICIOUS_MFI = 3 / 4
 
-RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW = 0.5
+RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW = 3 / 4
 RELATIVE_CLOSENESS_TO_CUTOFF_FROM_ABOVE = 1.25
 RELATIVE_CLOSENESS_TO_MINIMUM = 1 / 2
 DIFFERENCE_THRESHOLD_RATIO = 1 / 4
+
+MAX_MFI_RATIO_TO_BE_JUST_BELOW_CUTOFF = 7 / 8
 
 
 def get_mfi_from_multiple_hla_codes(mfis: List[int],
@@ -73,15 +75,16 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
     else:
         relevant_mean = int(np.mean(mfis))
 
-    if RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW * cutoff < relevant_mean < cutoff:
+    if RELATIVE_CLOSENESS_TO_CUTOFF_FROM_BELOW * cutoff < relevant_mean < cutoff and \
+            max_mfi > cutoff * MAX_MFI_RATIO_TO_BE_JUST_BELOW_CUTOFF:
         parsing_issues.append(
             ParsingIssue(
                 hla_code_or_group=raw_code,
                 parsing_issue_detail=ParsingIssueDetail.MFI_PROBLEM,
                 message=f'Dropping {raw_code} antibody: '
                         f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
-                        f'To be consulted with immunologist, because the antibody is dropped even though it has some '
-                        f'high MFI values.'
+                        f'To be consulted with immunologist, the estimated overall MFI is below cutoff, but the '
+                        f'value is close to cutoff.'
             )
         )
 
@@ -92,8 +95,8 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
                 parsing_issue_detail=ParsingIssueDetail.MFI_PROBLEM,
                 message=f'Not dropping {raw_code} antibody: '
                         f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
-                        f'To be consulted with immunologist, because the antibody is NOT dropped even though there are'
-                        f' some MFI values below cutoff.'
+                        f'To be consulted with immunologist, because the antibody is NOT dropped even though '
+                        f'there are some MFI values below cutoff.'
             )
         )
 
@@ -104,9 +107,9 @@ def get_mfi_from_multiple_hla_codes(mfis: List[int],
                 parsing_issue_detail=ParsingIssueDetail.MFI_PROBLEM,
                 message=f'Dropping {raw_code} antibody: '
                         f'Calculated MFI: {int(relevant_mean)}, Cutoff: {cutoff}, MFI values: {mfis}. '
-                        f'To be consulted with immunologist, because the antibody is dropped even though only one MFI '
-                        f'value was identified as relevant for the MFI calculation and therefore the final calculated '
-                        f'mean is less relevant.'
+                        f'To be consulted with immunologist, because the antibody is dropped even though only'
+                        f' one MFI value was identified as relevant for the MFI calculation and therefore '
+                        f'the final calculated mean is less relevant.'
             )
         )
 
