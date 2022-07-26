@@ -12,6 +12,7 @@ from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.country_enum import Country
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass(init=False)
 class DataAndConfigurationForILPSolver:
     non_directed_donors: Iterable[int]
@@ -62,8 +63,8 @@ class DataAndConfigurationForILPSolver:
         self.blood_groups_dict = {i: donor.parameters.blood_group for i, donor in
                                   enumerate(active_and_valid_donors_dict.values())}
 
-        self.active_and_valid_recipients_list = active_and_valid_recipients_dict.values()
-        self.active_and_valid_donors_list = active_and_valid_donors_dict.values()
+        self.active_and_valid_recipients_list = list(active_and_valid_recipients_dict.values())
+        self.active_and_valid_donors_list = list(active_and_valid_donors_dict.values())
 
     def _create_graph(self,
                       config_parameters: ConfigParameters,

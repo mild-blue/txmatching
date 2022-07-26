@@ -62,7 +62,7 @@ class Donor(Patient, PersistentlyHashable):
         update_persistent_hash(hash_, self.donor_type)
         update_persistent_hash(hash_, self.active)
 
-
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class RecipientRequirements(PersistentlyHashable):
     """

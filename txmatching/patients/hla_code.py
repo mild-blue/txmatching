@@ -1,9 +1,9 @@
 import re
-
 from dataclasses import dataclass
 from typing import Optional
 
-from txmatching.utils.enums import GENE_HLA_GROUPS_WITH_OTHER_DETAILED, HLA_GROUPS_PROPERTIES, HLAGroup
+from txmatching.utils.enums import (GENE_HLA_GROUPS_WITH_OTHER_DETAILED,
+                                    HLA_GROUPS_PROPERTIES, HLAGroup)
 
 
 @dataclass
@@ -24,7 +24,7 @@ class HLACode:
         else:
             raise AssertionError('This should never happen. At least one code should be specified.')
 
-    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str], group = None):
+    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str]):
         assert high_res is not None or broad is not None
         self.high_res = high_res
         self.split = split

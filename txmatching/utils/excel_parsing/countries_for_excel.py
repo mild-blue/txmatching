@@ -14,7 +14,8 @@ PV28_COUNTRY_DICT = {
 }
 JULY_2020_COUNTRY_REGEX = re.compile(r'P|D|(W-)[A-Z\d]*')
 
-
+# pylint: disable=too-many-return-statements
+# This is just utility function and is readble like this
 def country_code_from_id(patient_id: str) -> Country:
     match = re.match(PV31_PATIENT_ID_REGEX, patient_id)
     if match:
