@@ -182,7 +182,7 @@ class TestMatchingApi(DbTests):
         )
         usr = persist_user(usr)
 
-        txm_name = 'test'
+        txm_name = 'test_patient_upload_fails_on_wrong_country'
         upload_patients = {
             'country': banned_country,
             'txm_event_name': txm_name,

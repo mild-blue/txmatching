@@ -17,6 +17,7 @@ TXM_EVENT_NAME_3 = 'txm_event_3'
 class TestTxmEventService(DbTests):
 
     def test_set_allowed_txm_event_ids_for_different_users(self):
+        txm_event_test = create_or_overwrite_txm_event('test')
         txm_event_1 = create_or_overwrite_txm_event(TXM_EVENT_NAME_1)
         txm_event_2 = create_or_overwrite_txm_event(TXM_EVENT_NAME_2)
         txm_event_3 = create_or_overwrite_txm_event(TXM_EVENT_NAME_3)
@@ -28,7 +29,7 @@ class TestTxmEventService(DbTests):
         # Admin has all txm events as allowed by default
         self.login_with_credentials(ADMIN_USER)
         event_ids = get_allowed_txm_event_ids_for_current_user()
-        self.assertCountEqual(event_ids, [txm_event_1.db_id, txm_event_2.db_id, txm_event_3.db_id])
+        self.assertCountEqual(event_ids, [txm_event_test.db_id, txm_event_1.db_id, txm_event_2.db_id, txm_event_3.db_id])
 
         # Viewer has no txm events as allowed by default
         self.login_with_credentials(VIEWER_USER)
@@ -48,7 +49,7 @@ class TestTxmEventService(DbTests):
         # Admin allowed txm events are not affected
         self.login_with_credentials(ADMIN_USER)
         event_ids = get_allowed_txm_event_ids_for_current_user()
-        self.assertCountEqual(event_ids, [txm_event_1.db_id, txm_event_2.db_id, txm_event_3.db_id])
+        self.assertCountEqual(event_ids, [txm_event_test.db_id, txm_event_1.db_id, txm_event_2.db_id, txm_event_3.db_id])
 
         # Viewer allowed txm events chaged properly
         self.login_with_credentials(VIEWER_USER)
