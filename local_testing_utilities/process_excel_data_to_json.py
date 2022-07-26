@@ -30,5 +30,5 @@ if __name__ == '__main__':
             patients_together.donors += patient.donors
             patients_together.recipients += patient.recipients
 
-        with open(f'tmp.json', 'w', encoding='utf-8') as f:
+        with open('tmp.json', 'w', encoding='utf-8') as f:
             json.dump(dataclasses.asdict(patients_together), f)

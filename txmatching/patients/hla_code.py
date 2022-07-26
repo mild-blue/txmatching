@@ -11,7 +11,7 @@ class HLACode:
     high_res: Optional[str]
     split: Optional[str]
     broad: Optional[str]
-    group: Optional[HLAGroup]
+    group: Optional[HLAGroup] = None
 
     @property
     def display_code(self) -> str:
@@ -24,12 +24,15 @@ class HLACode:
         else:
             raise AssertionError('This should never happen. At least one code should be specified.')
 
-    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str]):
+    def __init__(self, high_res: Optional[str], split: Optional[str], broad: Optional[str], group: HLAGroup = None):
         assert high_res is not None or broad is not None
         self.high_res = high_res
         self.split = split
         self.broad = broad
-        self.group = self.group_from_hla_code
+        if group:
+            self.group = group
+        else:
+            self.group = self.group_from_hla_code
 
     def __repr__(self):
         return f'HLACode({repr(self.high_res)}, {repr(self.split)}, {repr(self.broad)})'
