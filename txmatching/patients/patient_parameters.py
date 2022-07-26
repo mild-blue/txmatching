@@ -1,15 +1,14 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from txmatching.data_transfer_objects.patients.patient_base_dto import (
+    Centimeters, Kilograms)
 from txmatching.patients.hla_model import HLATyping
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import Sex
 from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
-
-Kilograms = float
-Centimeters = int
 
 
 # It make sense to have a lot of patient parameters

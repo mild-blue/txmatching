@@ -35,8 +35,8 @@ class ExcelSource(str, Enum):
     IKEM = 'IKEM'
     BEL_2 = 'BEL_2'
 
-
-# pylint: disable=too-many-instance-attributes
+# is needed here because kw_args in dataclass is not handled well by pylint
+# pylint: disable=too-many-instance-attributes,unexpected-keyword-arg
 @dataclass
 class ExcelColumnsMap:
     donor_id: str
