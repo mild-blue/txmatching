@@ -53,8 +53,8 @@ def _get_antibodies_with_high_res(antibodies: List[HLAAntibody]) -> List[HLAAnti
     return [antibody for antibody in antibodies if antibody.code.high_res]
 
 
-# Many branches make sense here
-# pylint: disable=too-many-branches
+# TODO improve and remove pylint ignores https://github.com/mild-blue/txmatching/issues/947
+# pylint: disable=too-many-branches,too-many-locals,too-many-nested-blocks,too-many-statements
 def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
                                 use_high_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
@@ -115,9 +115,9 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                         positive_matches.add(
                             AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES))
                 elif len(_get_antibodies_over_cutoff(antibodies_with_high_res)) > 0:
-                        for antibody_over_cutoff in antibodies_over_cutoff:
-                            positive_matches.add(
-                                AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES_WITH_BROAD))
+                    for antibody_over_cutoff in antibodies_over_cutoff:
+                        positive_matches.add(
+                            AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES_WITH_BROAD))
                 else:
                     for antibody_over_cutoff in antibodies_over_cutoff:
                         positive_matches.add(AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.BROAD))
