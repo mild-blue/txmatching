@@ -178,7 +178,7 @@ def get_random_hla_type(hla_group: HLAGroup, has_letter_at_the_end: bool = False
             broad = random.choice([True, False])
             if broad:
                 if code in SPLIT_TO_BROAD:
-                    code = SPLIT_TO_BROAD[code]
+                    code = SPLIT_TO_BROAD.get(code)
 
             return code
 
