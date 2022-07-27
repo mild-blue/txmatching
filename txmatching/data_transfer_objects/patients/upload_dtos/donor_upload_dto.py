@@ -1,14 +1,15 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from txmatching.patients.patient import is_height_valid, is_weight_valid, is_year_of_birth_valid
+from txmatching.data_transfer_objects.patients.patient_base_dto import \
+    PatientBaseDTO
 from txmatching.patients.patient_parameters import Centimeters, Kilograms
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import Sex
 
 
-@dataclass
-class DonorUploadDTO:
+@dataclass(kw_only=True)
+class DonorUploadDTO(PatientBaseDTO):
     # pylint: disable=too-many-instance-attributes
     medical_id: str
     blood_group: BloodGroup
@@ -21,13 +22,3 @@ class DonorUploadDTO:
     year_of_birth: Optional[int] = None
     note: str = ''
     internal_medical_id: Optional[str] = None
-
-    def __post_init__(self):
-        if self.height:
-            is_height_valid("donor", self.height)
-
-        if self.weight:
-            is_weight_valid("donor", self.weight)
-
-        if self.year_of_birth:
-            is_year_of_birth_valid("donor", self.year_of_birth)

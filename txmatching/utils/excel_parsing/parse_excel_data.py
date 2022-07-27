@@ -33,9 +33,10 @@ EXPLANATION_FILE_STILL_SAVED = 'If you believe the file is in correct format or 
 
 class ExcelSource(str, Enum):
     IKEM = 'IKEM'
+    BEL_2 = 'BEL_2'
 
-
-# pylint: disable=too-many-instance-attributes
+# is needed here because kw_args in dataclass is not handled well by pylint
+# pylint: disable=too-many-instance-attributes,unexpected-keyword-arg
 @dataclass
 class ExcelColumnsMap:
     donor_id: str
@@ -60,7 +61,22 @@ EXCEL_COLUMNS_MAPS = {
         'TYPIZATION RECIPIENT',
         'RECIPIENT',
         'luminex  cut-off (2000 MFI) varianta 2',
-    )
+    ),
+    ExcelSource.BEL_2: ExcelColumnsMap(
+        donor_id='Donor ID',
+        donor_blood_group='ABO DONOR',
+        donor_typing='HLA Typing DONOR',
+        recipient_blood_group='ABO RECIPIENT',
+        recipient_acceptable_bloods='Acceptable blood group',
+        recipient_typization='HLA typing RECIPIENT',
+        recipient_id='Recipient ID',
+        recipient_antibodies='Unacceptable Antigens',
+    ),
+}
+
+SKIP_ROWS_MAP = {
+    ExcelSource.IKEM: 1,
+    ExcelSource.BEL_2: 2
 }
 
 logger = logging.getLogger(__name__)
@@ -69,7 +85,7 @@ logger = logging.getLogger(__name__)
 def _parse_blood_group(blood_group_str: Union[str, int]) -> BloodGroup:
     if isinstance(blood_group_str, float) and blood_group_str == 0.0:
         return BloodGroup.ZERO
-    blood_group_str = str(blood_group_str).strip()
+    blood_group_str = str(blood_group_str).replace('+', '').replace('-', '').strip()
     try:
         return BloodGroup(blood_group_str)
     except Exception as error:
@@ -89,10 +105,15 @@ def _parse_acceptable_blood_groups(acceptable_blood_groups: Union[str, float, in
 
 
 def _parse_hla(hla_codes_str: str) -> List[str]:
-    if 'neg' in hla_codes_str.lower():
+    if not isinstance(hla_codes_str, str):
+        return []
+    if 'neg' in str(hla_codes_str).lower():
+        return []
+    if '/' in str(hla_codes_str).lower():
         return []
     # remove codes in brackets, they are only in detail all the split codes for broade in front of the bracket
     hla_codes_str = re.sub(r'\(.*?\)', '', hla_codes_str)
+    hla_codes_str = re.sub(r'\n', '', hla_codes_str)
     hla_codes = re.split('[,. ()]+', hla_codes_str)
     hla_codes = [code.upper() for code in hla_codes if len(code) > 0]
 
@@ -110,13 +131,13 @@ def _parse_hla_antibodies(hla_allele_str: str) -> List[HLAAntibodiesUploadDTO]:
 
 
 def _get_donor_upload_dto_from_row(row: Dict[str, str],
-                                   related_recipient: Optional[RecipientUploadDTO],
+                                   related_recipient_medical_id: Optional[str],
                                    column_map: ExcelColumnsMap) -> DonorUploadDTO:
     donor_id = row[column_map.donor_id]
     blood_group = _parse_blood_group(row[column_map.donor_blood_group])
     hla_typing = _parse_hla(row[column_map.donor_typing])
 
-    if related_recipient:
+    if related_recipient_medical_id:
         donor_type = DonorType.DONOR
     else:
         # TODO this is not true, some are altruists, but this information is not available in the Excel at the moment
@@ -125,7 +146,7 @@ def _get_donor_upload_dto_from_row(row: Dict[str, str],
                           blood_group=blood_group,
                           donor_type=donor_type,
                           hla_typing=hla_typing,
-                          related_recipient_medical_id=related_recipient.medical_id if related_recipient else None,
+                          related_recipient_medical_id=related_recipient_medical_id,
                           )
 
 
@@ -157,7 +178,7 @@ def parse_excel_data(file_io: Union[str, FileStorage],
                      excel_source: ExcelSource = ExcelSource.IKEM) -> List[PatientUploadDTOIn]:
     logger.info('Parsing patient data from file')
     try:
-        data = pd.read_excel(file_io, skiprows=1)
+        data = pd.read_excel(file_io, skiprows=SKIP_ROWS_MAP[excel_source])
     except Exception as error:
         raise InvalidArgumentException(
             f'Error during load of excel file:{error}. {EXPLANATION_FILE_STILL_SAVED}') from error
@@ -169,22 +190,24 @@ def parse_excel_data(file_io: Union[str, FileStorage],
 
     try:
         for _, row in data.iterrows():
-            recipient = _get_recipient_upload_dto_from_row(row, column_map)
-            donor = _get_donor_upload_dto_from_row(row, recipient, column_map)
+            recipient_medical_id = row[column_map.recipient_id] if isinstance(row[column_map.recipient_id], str) else None
+            donor = _get_donor_upload_dto_from_row(row, recipient_medical_id, column_map)
             if country:
                 row_country = country
             else:
                 row_country = country_code_from_id(donor.medical_id)
+
             if row_country in parsed_data:
                 parsed_data[row_country].donors += [donor]
-                if recipient:
-                    parsed_data[row_country].recipients += [recipient]
+                if recipient_medical_id:
+                    if recipient_medical_id not in [r.medical_id for r in parsed_data[row_country].recipients]:
+                        parsed_data[row_country].recipients += [_get_recipient_upload_dto_from_row(row, column_map)]
             else:
                 parsed_data[row_country] = PatientUploadDTOIn(
                     txm_event_name=txm_event_name,
                     country=row_country,
                     donors=[donor],
-                    recipients=[recipient] if recipient else [],
+                    recipients=[_get_recipient_upload_dto_from_row(row, column_map)] if recipient_medical_id else [],
                     add_to_existing_patients=add_to_existing_patients
                 )
     except Exception as error:

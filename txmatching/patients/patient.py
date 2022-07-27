@@ -1,13 +1,11 @@
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
 
-from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibodyRaw
-from txmatching.patients.patient_parameters import (Centimeters, Kilograms,
-                                                    PatientParameters)
+from txmatching.patients.patient_parameters import PatientParameters
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.utils.enums import TxmEventState
@@ -17,7 +15,6 @@ from txmatching.utils.persistent_hash import (HashType, PersistentlyHashable,
                                               update_persistent_hash)
 
 DEFAULT_CUTOFF = 2000
-THIS_YEAR = date.today().year
 
 
 class DonorType(str, Enum):
@@ -63,6 +60,7 @@ class Donor(Patient, PersistentlyHashable):
         update_persistent_hash(hash_, self.active)
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class RecipientRequirements(PersistentlyHashable):
     """
@@ -170,27 +168,6 @@ def calculate_cutoff(hla_antibodies_raw_list: List[HLAAntibodyRaw]) -> int:
                    mfi=0,
                    cutoff=DEFAULT_CUTOFF
                )).cutoff
-
-
-def is_height_valid(patient: str, height: Centimeters):
-    if height < 0:
-        raise InvalidArgumentException(f'Invalid {patient} height {height}cm.')
-
-
-def is_weight_valid(patient: str, weight: Kilograms):
-    if weight < 0:
-        raise InvalidArgumentException(f'Invalid {patient} weight {weight}kg.')
-
-
-def is_year_of_birth_valid(patient: str, year_of_birth: Centimeters):
-    if year_of_birth < 1900 or year_of_birth > THIS_YEAR:
-        raise InvalidArgumentException(f'Invalid {patient} year of birth {year_of_birth}')
-
-
-def is_number_of_previous_transplants_valid(previous_transplants: int):
-    if previous_transplants and previous_transplants < 0:
-        raise InvalidArgumentException(
-            f'Invalid recipient number of previous transplants {previous_transplants}.')
 
 
 def _filter_patients_that_dont_have_parsing_errors_or_unconfirmed_warnings(
