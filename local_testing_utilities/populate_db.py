@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from local_testing_utilities.generate_patients import (
-    CROSSMATCH_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
+    CROSSMATCH_TXM_EVENT_NAME, GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
     SMALL_DATA_FOLDER_WITH_CROSSMATCH, store_generated_patients_from_folder)
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from txmatching.auth.crypto.password_crypto import encode_password
@@ -166,11 +166,10 @@ def populate_db_with_split_data(user_models):
 
 def populate_small_db():
     create_or_overwrite_txm_event(name='test')
-    create_or_overwrite_txm_event(name=CROSSMATCH_TXM_EVENT_NAME)
 
     add_users()
-    store_generated_patients_from_folder(SMALL_DATA_FOLDER)
-    store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_CROSSMATCH)
+    store_generated_patients_from_folder(SMALL_DATA_FOLDER, GENERATED_TXM_EVENT_NAME)
+    store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_CROSSMATCH, CROSSMATCH_TXM_EVENT_NAME)
 
 
 def populate_large_db():
