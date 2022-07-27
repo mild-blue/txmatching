@@ -4,7 +4,7 @@ import hashlib
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-# pylint: disable=undefined-variable)
+# pylint: disable=undefined-variable
 HashType: TypeAlias = 'hashlib._Hash'
 
 

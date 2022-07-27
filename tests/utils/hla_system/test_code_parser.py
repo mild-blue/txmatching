@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 import pandas as pd
 
@@ -166,23 +167,23 @@ class TestCodeParser(DbTests):
 
     def test_mfi_extraction(self):
         # When one value extremely low, calculate average only from such value.
-        self.assertEqual(1, get_mfi_from_multiple_hla_codes([1, 3000, 4000], 2000, 'test')[1])
-        self.assertEqual(1000, get_mfi_from_multiple_hla_codes([1000, 20000, 18000], 2000, 'test')[1])
+        self._compare_mfi_result(expected_mfi=1, mfis=[1, 3000, 4000])
+        self._compare_mfi_result(expected_mfi=1000, mfis=[1000, 20000, 18000])
         self.assertEqual(10000, get_mfi_from_multiple_hla_codes([30001, 10000], 2000, 'test')[1])
 
         # When multiple values low, calculate the average only from those values.
-        self.assertEqual(900, get_mfi_from_multiple_hla_codes([1000, 900, 800, 19000, 20000, 18000], 2000, 'test')[1])
+        self._compare_mfi_result(expected_mfi=900, mfis=[1000, 900, 800, 19000, 20000, 18000], has_issue=False)
 
         # When similarly high MFIs calculate the average
-        self.assertEqual(19000, get_mfi_from_multiple_hla_codes([20000, 18000], 2000, 'test')[1])
-        self.assertEqual(5125, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000], 2000, 'test')[1])
-        self.assertEqual(15000, get_mfi_from_multiple_hla_codes([20000, 10000], 2000, 'test')[1])
+        self._compare_mfi_result(expected_mfi=19000, mfis=[20000, 18000], has_issue=False)
+        self._compare_mfi_result(expected_mfi=5125, mfis=[4000, 5000, 5500, 6000], has_issue=False)
+        self._compare_mfi_result(expected_mfi=10000, mfis=[20000, 10000], has_issue=False)
 
         # When the lowest MFI is significantly lower than the other values, but there are not MFIs close to such lowest
         # value, average of values lower then overall average is calculated. This might not be optimal in some cases,
         # as the one below (one might maybe drop the hla code. But the algorithm is better safe than sorry.)
         # This case is reported in logger and will be investigated on per instance basis.
-        self.assertEqual(2500, get_mfi_from_multiple_hla_codes([4000, 5000, 5500, 6000, 1000], 2000, 'test')[1])
+        self._compare_mfi_result(expected_mfi=2500, mfis=[4000, 5000, 5500, 6000, 1000])
 
         # Checks that we truly group by high res codes. In this case both DQA1*01:01 and DQA1*01:02 are DQA1 in split.
         # DQA1*01:01 is dropped whereas DQA1*01:02 is kept.
@@ -206,7 +207,7 @@ class TestCodeParser(DbTests):
                             ).hla_antibodies_per_groups[3].hla_antibody_list})
 
         self.assertSetEqual({
-            create_antibody(raw_code='DQA1*01:01', mfi=4500, cutoff=2000),
+            create_antibody(raw_code='DQA1*01:01', mfi=3000, cutoff=2000),
             create_antibody(raw_code='DQA1*01:02', mfi=2000, cutoff=2000)
         }, set(
             create_antibodies(
@@ -216,6 +217,11 @@ class TestCodeParser(DbTests):
                     create_antibody('DQA1*01:01', cutoff=2000, mfi=3000)
                 ]
             ).hla_antibodies_per_groups[3].hla_antibody_list))
+        # When MFI quite close to each other but one below and one above cutoff
+        self._compare_mfi_result(expected_mfi=1500, mfis=[1500, 2900])
+        # no warning in case the values are all quite low:
+        self._compare_mfi_result(expected_mfi=1201, mfis=[1339, 1058, 2058, 1206], has_issue=False)
+        self._compare_mfi_result(expected_mfi=1508, mfis=[3970, 1922, 1422, 1180], has_issue=True)
 
     def test_no_ultra_high_res_with_multiple_splits(self):
         """
@@ -263,3 +269,8 @@ class TestCodeParser(DbTests):
                 (processing_result not in OK_PROCESSING_RESULTS and
                  processing_result not in WARNING_PROCESSING_RESULTS)
             )
+
+    def _compare_mfi_result(self, mfis: List[int], expected_mfi: int, cutoff=2000, has_issue: bool = True):
+        res = get_mfi_from_multiple_hla_codes(mfis, cutoff, 'test')
+        self.assertEqual(expected_mfi, res[1])
+        self.assertEqual(has_issue, len(res[0]) > 0)

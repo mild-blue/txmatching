@@ -53,8 +53,8 @@ def _get_antibodies_with_high_res(antibodies: List[HLAAntibody]) -> List[HLAAnti
     return [antibody for antibody in antibodies if antibody.code.high_res]
 
 
-# Many branches make sense here
-# pylint: disable=too-many-branches
+# TODO improve and remove pylint ignores https://github.com/mild-blue/txmatching/issues/947
+# pylint: disable=too-many-branches,too-many-locals,too-many-nested-blocks,too-many-statements
 def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                                 recipient_antibodies: HLAAntibodies,
                                 use_high_resolution: bool) -> List[AntibodyMatchForHLAGroup]:
@@ -66,11 +66,12 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
         antibodies = antibodies_per_group.hla_antibody_list
         positive_matches = set()  # type: Set[AntibodyMatch]
 
-        # check for missing typization group
-        if len(hla_per_group.hla_types) == 0:
+        # check for missing typization group in OTHER
+        if hla_per_group.hla_group == HLAGroup.Other:
+            groups_other = {hla_type.code.group for hla_type in hla_per_group.hla_types}
             for antibody in antibodies:
-                positive_matches.add(
-                        AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
+                if antibody.code.group not in groups_other:
+                    positive_matches.add(AntibodyMatch(antibody, AntibodyMatchTypes.UNDECIDABLE))
 
         for hla_type in hla_per_group.hla_types:
             # check high res crossmatch
@@ -92,6 +93,10 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                     if set(matching_antibodies) == set(antibodies_over_cutoff) == set(antibodies_with_high_res):
                         for antibody_over_cutoff in antibodies_over_cutoff:
                             positive_matches.add(
+                                AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES))
+                    elif len(_get_antibodies_over_cutoff(antibodies_with_high_res)) > 0:
+                        for antibody_over_cutoff in antibodies_over_cutoff:
+                            positive_matches.add(
                                 AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES_WITH_SPLIT))
                     else:
                         for antibody_over_cutoff in antibodies_over_cutoff:
@@ -106,6 +111,10 @@ def get_crossmatched_antibodies(donor_hla_typing: HLATyping,
                 antibodies_over_cutoff = _get_antibodies_over_cutoff(matching_antibodies)
                 antibodies_with_high_res = _get_antibodies_with_high_res(matching_antibodies)
                 if set(matching_antibodies) == set(antibodies_over_cutoff) == set(antibodies_with_high_res):
+                    for antibody_over_cutoff in antibodies_over_cutoff:
+                        positive_matches.add(
+                            AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES))
+                elif len(_get_antibodies_over_cutoff(antibodies_with_high_res)) > 0:
                     for antibody_over_cutoff in antibodies_over_cutoff:
                         positive_matches.add(
                             AntibodyMatch(antibody_over_cutoff, AntibodyMatchTypes.HIGH_RES_WITH_BROAD))

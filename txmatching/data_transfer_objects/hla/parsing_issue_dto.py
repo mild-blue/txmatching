@@ -19,6 +19,8 @@ class ParsingIssuePublicDTO:
     confirmed_at: Optional[datetime]
 
 
+# pylint: disable=too-many-instance-attributes
+# It is reasonable to have many attributes here
 @dataclass
 class ParsingIssue(PersistentlyHashable):
     hla_code_or_group: Optional[str]

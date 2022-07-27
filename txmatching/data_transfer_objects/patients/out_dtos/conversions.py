@@ -27,9 +27,10 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
     return {
         'donors': sorted([
             donor_to_donor_dto_out(
-                donor, txm_event.all_recipients, configuration_parameters, scorer, txm_event.db_id
+                donor, txm_event.all_recipients, configuration_parameters, scorer, txm_event
             ) for donor in txm_event.all_donors],
-            key=_patient_order_for_fe),
+            key=lambda donor: (
+            not donor.active_and_valid_pair, _patient_order_for_fe(donor))),
         'recipients': sorted([
             recipient_to_recipient_dto_out(
                 recipient, txm_event.db_id
@@ -38,7 +39,7 @@ def to_lists_for_fe(txm_event: TxmEvent, configuration_parameters: ConfigParamet
     }
 
 
-def _patient_order_for_fe(patient: Union[DonorDTOOut, Recipient]) -> str:
+def _patient_order_for_fe(patient: Union[DonorDTOOut, RecipientDTOOut]) -> str:
     return f'{patient.parameters.country_code.value}_{patient.medical_id}'
 
 
@@ -65,7 +66,7 @@ def donor_to_donor_dto_out(donor: Donor,
                            all_recipients: List[Recipient],
                            config_parameters: ConfigParameters,
                            scorer: AdditiveScorer,
-                           txm_event_id: int) -> DonorDTOOut:
+                           txm_event: TxmEvent) -> DonorDTOOut:
     donor_dto = DonorDTOOut(db_id=donor.db_id,
                             medical_id=donor.medical_id,
                             parameters=donor.parameters,
@@ -75,7 +76,8 @@ def donor_to_donor_dto_out(donor: Donor,
                             active=donor.active,
                             internal_medical_id=donor.internal_medical_id,
                             parsing_issues=donor.parsing_issues,
-                            all_messages=get_messages(donor_id=donor.db_id, txm_event_id=txm_event_id)
+                            all_messages=get_messages(donor_id=donor.db_id, txm_event_id=txm_event.db_id),
+                            active_and_valid_pair=donor.db_id in txm_event.active_and_valid_donors_dict
                             )
     if donor.related_recipient_db_id:
         related_recipient = next(recipient for recipient in all_recipients if
@@ -105,6 +107,7 @@ def donor_to_donor_dto_out(donor: Donor,
             donor_hla_typing=donor.parameters.hla_typing
         )
 
+        donor_dto.compatible_blood_with_related_recipient = True
         donor_dto.detailed_score_with_related_recipient = [
             DetailedScoreForHLAGroup(
                 recipient_matches=[],

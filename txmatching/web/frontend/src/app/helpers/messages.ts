@@ -1,4 +1,5 @@
-import { Donor, Recipient, TransplantMessages } from '@app/model';
+import { AllMessages, Donor, Recipient, TransplantMessages } from '@app/model';
+
 
 export const countAllMessages = (data: Donor | Recipient | TransplantMessages | undefined): number => {
   if (!data?.allMessages) {
@@ -18,6 +19,20 @@ export const findMostSevereMessageType = (donor: Donor | undefined, recipient: R
   }
 
   return 'info';
+};
+
+export const patientHasConfirmedWarnings = (data: AllMessages | undefined): boolean => {
+  if (!data?.warning) {
+    return false;
+  }
+
+  for (const warning of data?.warning) {
+    if (warning.confirmedBy === undefined) {
+      return false;
+    }
+  }
+
+  return true;
 };
 
 export type WarningType = 'error' | 'warning' | 'info';

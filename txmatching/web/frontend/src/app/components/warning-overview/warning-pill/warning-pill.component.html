@@ -1,4 +1,4 @@
-<div *ngIf="count" class="warning-pill {{warningType}}">
+<div *ngIf="count" class="warning-pill" [ngClass]="(allWarningsConfirmed && warningType === 'warning') ? 'all-warnings-confirmed' : warningType">
   <mat-icon [inline]="true" [matTooltip]="tooltip || warningType">{{warningType}}</mat-icon>
   <p *ngIf="count">{{count}}</p>
 </div>

@@ -21,6 +21,10 @@ export interface DonorGenerated {
      * Whether the user shall be used in pairing calculation
      */
     active: boolean;
+    /**
+     * Indication of whether the pair is included in the matching run
+     */
+    active_and_valid_pair?: boolean;
     all_messages?: AllMessagesGenerated;
     /**
      * Indicator whether Donor and related recipients have compatible blood groups

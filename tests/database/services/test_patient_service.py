@@ -72,6 +72,45 @@ DONOR_UPLOAD_DTOS = [
         weight=56,
         year_of_birth=1989
     ),
+    DonorUploadDTO(
+        medical_id='D4',
+        blood_group=BloodGroup.ZERO,
+        hla_typing=[
+            'A9', 'A21'
+        ],
+        donor_type=DonorType.DONOR.value,
+        related_recipient_medical_id='R1',
+        sex=Sex.F,
+        height=175,
+        weight=77,
+        year_of_birth=1972
+    ),
+    DonorUploadDTO(
+        medical_id='D5',
+        blood_group=BloodGroup.A,
+        hla_typing=[
+            'A9'
+        ],
+        donor_type=DonorType.DONOR.value,
+        related_recipient_medical_id='R1',
+        sex=Sex.M,
+        height=166,
+        weight=52,
+        year_of_birth=1962
+    ),
+    DonorUploadDTO(
+        medical_id='D6',
+        blood_group=BloodGroup.ZERO,
+        hla_typing=[
+            'A9', 'A21'
+        ],
+        donor_type=DonorType.NON_DIRECTED.value,
+        related_recipient_medical_id=None,
+        sex=Sex.F,
+        height=201,
+        weight=62,
+        year_of_birth=1945
+    ),
 ]
 
 RECIPIENT_UPLOAD_DTOS = [
@@ -238,14 +277,26 @@ class TestPatientService(DbTests):
         hash_5 = get_patients_persistent_hash(txm_event_5)
         self.assertNotEqual(hash_1, hash_5)
 
-    def test_remove_donor_recipient_pair(self):
+    def test_delete_donor_recipient_pair(self):
+        """
+        R1
+            ├─ D1
+            ├─ D4
+            ├─ D5
+        R2
+            ├─ D2
+        R3
+            ├─ D3
+        -
+            ├─ D6
+        """
         # Create txm events and few patients
         txm_event_id = create_or_overwrite_txm_event(name=TXM_EVENT_NAME).db_id
         replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
 
-        # 3 donors and 3 recipients in db
+        # 6 donors and 3 recipients in db
         txm_event_before = get_txm_event_complete(txm_event_id)
-        self.assertCountEqual([donor.db_id for donor in txm_event_before.all_donors], [1, 2, 3])
+        self.assertCountEqual([donor.db_id for donor in txm_event_before.all_donors], [1, 2, 3, 4, 5, 6])
         self.assertCountEqual([recipient.db_id for recipient in txm_event_before.all_recipients], [1, 2, 3])
 
         # Removing unknown donor id raises error
@@ -260,8 +311,24 @@ class TestPatientService(DbTests):
         delete_donor_recipient_pair(2, txm_event_id)
         txm_event_after = get_txm_event_complete(txm_event_id)
 
-        # Now there are 2 donors and 2 recipients in db
-        self.assertCountEqual([donor.db_id for donor in txm_event_after.all_donors], [1, 3])
+        # Now there are 5 donors and 2 recipients in db
+        self.assertCountEqual([donor.db_id for donor in txm_event_after.all_donors], [1, 3, 4, 5, 6])
+        self.assertCountEqual([recipient.db_id for recipient in txm_event_after.all_recipients], [1, 3])
+
+        # Remove donor with no recipient
+        delete_donor_recipient_pair(6, txm_event_id)
+        txm_event_after = get_txm_event_complete(txm_event_id)
+
+        # Now there are 4 donors and 2 recipients in db
+        self.assertCountEqual([donor.db_id for donor in txm_event_after.all_donors], [1, 3, 4, 5])
+        self.assertCountEqual([recipient.db_id for recipient in txm_event_after.all_recipients], [1, 3])
+
+        # Remove only donor with a recipient who has `> 1` donors
+        delete_donor_recipient_pair(4, txm_event_id)
+        txm_event_after = get_txm_event_complete(txm_event_id)
+
+        # Now there are 3 donors and 2 recipients in db
+        self.assertCountEqual([donor.db_id for donor in txm_event_after.all_donors], [1, 3, 5])
         self.assertCountEqual([recipient.db_id for recipient in txm_event_after.all_recipients], [1, 3])
 
     def test_recompute_hla_and_antibodies_parsing(self):
@@ -270,14 +337,14 @@ class TestPatientService(DbTests):
         replace_or_add_patients_from_one_country(PATIENT_UPLOAD_DTO)
 
         txm_event = get_txm_event_complete(txm_event_id)
-        self.assertEqual(3, len(txm_event.all_donors))
+        self.assertEqual(6, len(txm_event.all_donors))
         self.assertEqual(3, len(txm_event.all_recipients))
         donor_db_id = txm_event.all_donors[0].db_id
         recipient_db_id = txm_event.all_recipients[0].db_id
 
         # recompute parsing function changes nothing
         result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id)
-        self.assertEqual(6, result.patients_checked_antigens)
+        self.assertEqual(9, result.patients_checked_antigens)
         self.assertEqual(0, result.patients_changed_antigens)
         self.assertEqual(3, result.patients_checked_antibodies)
         self.assertEqual(0, result.patients_changed_antibodies)
@@ -296,7 +363,7 @@ class TestPatientService(DbTests):
 
         # recompute parsing function make changes
         result = recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(txm_event_id)
-        self.assertEqual(6, result.patients_checked_antigens)
+        self.assertEqual(9, result.patients_checked_antigens)
         self.assertEqual(2, result.patients_changed_antigens)
         self.assertEqual(3, result.patients_checked_antibodies)
         self.assertEqual(1, result.patients_changed_antibodies)

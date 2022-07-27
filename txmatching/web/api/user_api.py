@@ -185,6 +185,6 @@ class AuthentikLogin(Resource):
         response.set_cookie('access_token', value=authentik_res['access_token'])
         response.set_cookie('refresh_token', value=authentik_res['refresh_token'])
 
-        # todo redirect to homepage instead of showing access token after testing is finished
+        # TODO redirect to homepage instead of showing access token after testing is finished
         # https://github.com/mild-blue/txmatching/issues/907
         return response

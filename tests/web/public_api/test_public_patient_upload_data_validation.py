@@ -40,8 +40,8 @@ class TestMatchingApi(DbTests):
         self._check_response(res, 200)
         txm_event = get_txm_event_complete(txm_event.db_id)
         self.assertEqual(txm_event.name, txm_event.name)
-        self.assertEqual(3, len(txm_event.active_and_valid_recipients_dict))
-        self.assertEqual(4, len(txm_event.active_and_valid_donors_dict))
+        self.assertEqual(2, len(txm_event.active_and_valid_recipients_dict))
+        self.assertEqual(3, len(txm_event.active_and_valid_donors_dict))
         self.assertEqual(3, res.json['recipients_uploaded'])
         self.assertEqual(4, res.json['donors_uploaded'])
 
@@ -148,7 +148,7 @@ class TestMatchingApi(DbTests):
                                                 recipients_json=SPECIAL_RECIPIENTS_MULTIPLE_SAME_HLA_CODES)
 
         self._check_response(res, 200)
-        self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A', 'Antibodies'],
+        self.assertCountEqual(['Group DRB1', 'Group DRB1', 'Group A', 'Antibodies', 'DQA1*06:01'],
                               [parsing_issue['hla_code_or_group'] for parsing_issue in res.json['parsing_issues']])
         txm_event = get_txm_event_complete(txm_event.db_id)
         recipient = txm_event.all_recipients[0]
@@ -157,7 +157,7 @@ class TestMatchingApi(DbTests):
         expected_antibodies_over_cutoff = {'DQA6', 'DQ8'}
         self.assertSetEqual(expected_antibodies_over_cutoff,
                             _get_hla_antibodies_over_cutoff_split_or_broad_codes(recipient))
-        self._check_expected_issues_in_db(4)
+        self._check_expected_issues_in_db(5)
 
     def test_txm_event_patient_successful_upload_exceptional_hla_types(self):
         res, txm_event = self._txm_event_upload(donors_json=SPECIAL_DONORS_SPECIAL_HLA_CODES,
@@ -182,7 +182,7 @@ class TestMatchingApi(DbTests):
         )
         usr = persist_user(usr)
 
-        txm_name = 'test'
+        txm_name = 'test_patient_upload_fails_on_wrong_country'
         upload_patients = {
             'country': banned_country,
             'txm_event_name': txm_name,
