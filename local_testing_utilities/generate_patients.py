@@ -296,18 +296,18 @@ def generate_patients(txm_event_name: str = GENERATED_TXM_EVENT_NAME,
     return patient_upload_objects
 
 
-def store_generated_patients_from_folder(folder=LARGE_DATA_FOLDER) -> TxmEvent:
+def store_generated_patients_from_folder(folder=LARGE_DATA_FOLDER, txm_event_name=GENERATED_TXM_EVENT_NAME) -> TxmEvent:
     patient_upload_objects = []
     for filename in os.listdir(folder):
         with open(f'{folder}{filename}', encoding='utf-8') as file_to_load:
             patient_upload_dto = from_dict(data_class=PatientUploadDTOIn,
                                            data=json.load(file_to_load), config=Config(cast=[Enum]))
             patient_upload_objects.append(patient_upload_dto)
-    return store_generated_patients(patient_upload_objects)
+    return store_generated_patients(patient_upload_objects, txm_event_name)
 
 
-def store_generated_patients(generated_patients: List[PatientUploadDTOIn]) -> TxmEvent:
-    txm_event = create_or_overwrite_txm_event(GENERATED_TXM_EVENT_NAME)
+def store_generated_patients(generated_patients: List[PatientUploadDTOIn], txm_event_name=GENERATED_TXM_EVENT_NAME) -> TxmEvent:
+    txm_event = create_or_overwrite_txm_event(txm_event_name)
     for patient_upload_dto in generated_patients:
         replace_or_add_patients_from_one_country(patient_upload_dto)
     return txm_event
@@ -318,21 +318,21 @@ if __name__ == '__main__':
     PATIENT_COUNT = 10
     countries_to_generate = [Country.CZE]
 
-    data_folder_to_store_data = SMALL_DATA_FOLDER_WITH_CROSSMATCH if CROSSMATCH else SMALL_DATA_FOLDER
+    DATA_FOLDER_TO_STORE_DATA = SMALL_DATA_FOLDER_WITH_CROSSMATCH if CROSSMATCH else SMALL_DATA_FOLDER
     TXM_EVENT_NAME = CROSSMATCH_TXM_EVENT_NAME if CROSSMATCH else GENERATED_TXM_EVENT_NAME
 
     if CROSSMATCH:
         for upload_object in generate_patients(TXM_EVENT_NAME, [Country.CAN], PATIENT_COUNT, False):
-            with open(f'{data_folder_to_store_data}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
+            with open(f'{DATA_FOLDER_TO_STORE_DATA}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
                       encoding='utf-8') as f:
                 json.dump(dataclasses.asdict(upload_object), f)
 
         for upload_object in generate_patients(TXM_EVENT_NAME, [Country.CZE], PATIENT_COUNT, True):
-            with open(f'{data_folder_to_store_data}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
+            with open(f'{DATA_FOLDER_TO_STORE_DATA}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
                       encoding='utf-8') as f:
                 json.dump(dataclasses.asdict(upload_object), f)
     else:
         for upload_object in generate_patients(TXM_EVENT_NAME, countries_to_generate, PATIENT_COUNT):
-            with open(f'{data_folder_to_store_data}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
+            with open(f'{DATA_FOLDER_TO_STORE_DATA}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
                       encoding='utf-8') as f:
                 json.dump(dataclasses.asdict(upload_object), f)
