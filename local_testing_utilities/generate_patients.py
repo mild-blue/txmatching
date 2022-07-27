@@ -317,20 +317,20 @@ if __name__ == '__main__':
     countries_to_generate = [Country.CZE]
 
     data_folder_to_store_data = SMALL_DATA_FOLDER_WITH_CROSSMATCH if CROSSMATCH else SMALL_DATA_FOLDER
-    txm_event_name = CROSSMATCH_TXM_EVENT_NAME if CROSSMATCH else GENERATED_TXM_EVENT_NAME
+    TXM_EVENT_NAME = CROSSMATCH_TXM_EVENT_NAME if CROSSMATCH else GENERATED_TXM_EVENT_NAME
 
     if CROSSMATCH:
-        for upload_object in generate_patients(txm_event_name, [Country.CAN], PATIENT_COUNT, False):
-            with open(f'{data_folder_to_store_data}{txm_event_name}_{upload_object.country}.json', 'w',
+        for upload_object in generate_patients(TXM_EVENT_NAME, [Country.CAN], PATIENT_COUNT, False):
+            with open(f'{data_folder_to_store_data}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
                       encoding='utf-8') as f:
                 json.dump(dataclasses.asdict(upload_object), f)
 
-        for upload_object in generate_patients(txm_event_name, [Country.CZE], PATIENT_COUNT, True):
-            with open(f'{data_folder_to_store_data}{txm_event_name}_{upload_object.country}.json', 'w',
+        for upload_object in generate_patients(TXM_EVENT_NAME, [Country.CZE], PATIENT_COUNT, True):
+            with open(f'{data_folder_to_store_data}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
                       encoding='utf-8') as f:
                 json.dump(dataclasses.asdict(upload_object), f)
     else:
-        for upload_object in generate_patients(txm_event_name, countries_to_generate, PATIENT_COUNT):
-            with open(f'{data_folder_to_store_data}{txm_event_name}_{upload_object.country}.json', 'w',
+        for upload_object in generate_patients(TXM_EVENT_NAME, countries_to_generate, PATIENT_COUNT):
+            with open(f'{data_folder_to_store_data}{TXM_EVENT_NAME}_{upload_object.country}.json', 'w',
                       encoding='utf-8') as f:
                 json.dump(dataclasses.asdict(upload_object), f)
