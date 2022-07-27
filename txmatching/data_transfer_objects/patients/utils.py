@@ -27,18 +27,17 @@ def parsing_issue_to_dto(parsing_issue: ParsingIssue, txm_event: TxmEventBase) -
     )
 
 
-def parsing_issue_model_to_parsing_issue(parsing_issue: ParsingIssueModel,
-                                         txm_event_id: int) -> ParsingIssue:
+def parsing_issue_model_to_parsing_issue(parsing_issue: ParsingIssueModel) -> ParsingIssue:
     return ParsingIssue(
         db_id=parsing_issue.id,
         hla_code_or_group=parsing_issue.hla_code_or_group,
         parsing_issue_detail=parsing_issue.parsing_issue_detail,
         message=parsing_issue.message,
-        txm_event_id=txm_event_id,
-        confirmed_at=parsing_issue.confirmed_at,
-        confirmed_by=parsing_issue.confirmed_by,
         donor_id=parsing_issue.donor_id,
-        recipient_id=parsing_issue.recipient_id
+        recipient_id=parsing_issue.recipient_id,
+        txm_event_id=parsing_issue.id,
+        confirmed_by=parsing_issue.confirmed_by,
+        confirmed_at=parsing_issue.confirmed_at,
     )
 
 

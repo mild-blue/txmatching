@@ -12,12 +12,10 @@
 
 
 export interface ParsingIssuePublicGenerated { 
-    confirmed_at?: string;
-    confirmed_by?: number;
-    hla_code_or_group?: string;
-    medical_id?: string;
+    hla_code_or_group: string;
+    medical_id: string;
     message: string;
     parsing_issue_detail: string;
-    txm_event_name?: string;
+    txm_event_name: string;
 }
 

@@ -32,7 +32,7 @@ def confirm_a_parsing_issue(user_id: int, parsing_issue_id: int,
     parsing_issue.confirmed_at = datetime.now()
 
     db.session.commit()
-    return parsing_issue_model_to_parsing_issue(parsing_issue, txm_event_id)
+    return parsing_issue_model_to_parsing_issue(parsing_issue)
 
 
 def unconfirm_a_parsing_issue(parsing_issue_id: int, txm_event_id: int) -> ParsingIssue:
@@ -51,7 +51,7 @@ def unconfirm_a_parsing_issue(parsing_issue_id: int, txm_event_id: int) -> Parsi
     parsing_issue.confirmed_at = None
 
     db.session.commit()
-    return parsing_issue_model_to_parsing_issue(parsing_issue, txm_event_id)
+    return parsing_issue_model_to_parsing_issue(parsing_issue)
 
 
 def parsing_issues_bases_to_models(
@@ -60,31 +60,20 @@ def parsing_issues_bases_to_models(
 
     parsing_issue_models = []
 
-    for issue_tmp in parsing_issues_temp:
-        parsing_issue_models.append(ParsingIssueModel(
-            hla_code_or_group=issue_tmp.hla_code_or_group,
-            parsing_issue_detail=issue_tmp.parsing_issue_detail,
-            message=issue_tmp.message,
-            donor_id=donor_id,
-            recipient_id=recipient_id,
-            txm_event_id=txm_event_id
-        ))
+    parsing_issue_models = [ParsingIssueModel(
+        hla_code_or_group=issue_tmp.hla_code_or_group,
+        parsing_issue_detail=issue_tmp.parsing_issue_detail,
+        message=issue_tmp.message,
+        donor_id=donor_id,
+        recipient_id=recipient_id,
+        txm_event_id=txm_event_id
+    ) for issue_tmp in parsing_issues_temp]
 
     return parsing_issue_models
 
 
 def convert_parsing_issue_models_to_dataclasses(parsing_issue_models: List[ParsingIssueModel]) -> List[ParsingIssue]:
-    return [ParsingIssue(
-        db_id=parsing_issue_model.id,
-        hla_code_or_group=parsing_issue_model.hla_code_or_group,
-        parsing_issue_detail=parsing_issue_model.parsing_issue_detail,
-        message=parsing_issue_model.message,
-        donor_id=parsing_issue_model.donor_id,
-        recipient_id=parsing_issue_model.recipient_id,
-        txm_event_id=parsing_issue_model.txm_event_id,
-        confirmed_by=parsing_issue_model.confirmed_by,
-        confirmed_at=parsing_issue_model.confirmed_at
-    ) for parsing_issue_model in parsing_issue_models]
+    return [parsing_issue_model_to_parsing_issue(parsing_issue_model) for parsing_issue_model in parsing_issue_models]
 
 
 def get_parsing_issues_for_txm_event_id(txm_event_id: int) -> List[ParsingIssue]:
@@ -97,25 +86,6 @@ def get_parsing_issues_for_txm_event_id(txm_event_id: int) -> List[ParsingIssue]
 
 def get_parsing_issues_for_patients(txm_event_id: int, donor_ids: List[int] = None,
                                     recipient_ids: List[int] = None) -> List[ParsingIssue]:
-    if donor_ids is None:
-        donor_ids = []
-    if recipient_ids is None:
-        recipient_ids = []
-
-    parsing_issues = ParsingIssueModel.query.filter(
-        and_(ParsingIssueModel.donor_id.in_(donor_ids),
-             ParsingIssueModel.txm_event_id == txm_event_id)
-    ).all() + ParsingIssueModel.query.filter(
-        and_(ParsingIssueModel.recipient_id.in_(recipient_ids),
-             ParsingIssueModel.txm_event_id == txm_event_id)
-    ).all()
-
-    return convert_parsing_issue_models_to_dataclasses(parsing_issues)
-
-
-def get_parsing_issues_for_patients(txm_event_id: int, donor_ids: List[int] = None,
-                                    recipient_ids: List[int] = None
-                                    ) -> List[ParsingIssue]:
     if donor_ids is None:
         donor_ids = []
     if recipient_ids is None:

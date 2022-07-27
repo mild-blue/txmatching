@@ -1111,11 +1111,6 @@ definitions:
         type: object
     ParsingIssuePublic:
         properties:
-            confirmed_at:
-                format: date
-                type: string
-            confirmed_by:
-                type: integer
             hla_code_or_group:
                 type: string
             medical_id:
@@ -1127,8 +1122,11 @@ definitions:
             txm_event_name:
                 type: string
         required:
+        - hla_code_or_group
+        - medical_id
         - message
         - parsing_issue_detail
+        - txm_event_name
         type: object
     PasswordChange:
         properties:

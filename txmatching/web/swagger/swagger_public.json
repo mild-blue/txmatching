@@ -1004,8 +1004,11 @@
         },
         "ParsingIssuePublic": {
             "required": [
+                "hla_code_or_group",
+                "medical_id",
                 "message",
-                "parsing_issue_detail"
+                "parsing_issue_detail",
+                "txm_event_name"
             ],
             "properties": {
                 "hla_code_or_group": {
@@ -1017,18 +1020,11 @@
                 "message": {
                     "type": "string"
                 },
-                "medical_id": {
-                    "type": "string"
-                },
                 "txm_event_name": {
                     "type": "string"
                 },
-                "confirmed_at": {
-                    "type": "string",
-                    "format": "date"
-                },
-                "confirmed_by": {
-                    "type": "integer"
+                "medical_id": {
+                    "type": "string"
                 }
             },
             "type": "object"

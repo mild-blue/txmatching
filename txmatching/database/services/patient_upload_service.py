@@ -6,7 +6,7 @@ import dacite
 
 from txmatching.auth.exceptions import InvalidArgumentException
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
-    ParsingIssue, ParsingIssueBase, ParsingIssuePublicDTO)
+    ParsingIssueBase, ParsingIssuePublicDTO)
 from txmatching.data_transfer_objects.patients.patient_parameters_dto import \
     HLATypingRawDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_recipient_pair_upload_dtos import \
@@ -148,7 +148,8 @@ def _recipient_upload_dto_to_recipient_model(
     parsing_issues = hla_typing_parsing_issues + hla_antibodies_parsing_issues
     parsing_issues = parsing_issues_bases_to_models(
         parsing_issues_temp=parsing_issues,
-        txm_event_id=recipient_model.txm_event_id)
+        txm_event_id=recipient_model.txm_event_id,
+        recipient_id=recipient_model.id)
     recipient_model.parsing_issues = parsing_issues
     recipient_model.etag = 1
     return recipient_model
@@ -232,7 +233,8 @@ def _donor_upload_dto_to_donor_model(
     parsing_issues = _parse_and_update_hla_typing_in_model(donor_model=donor_model)
     parsing_issues = parsing_issues_bases_to_models(
         parsing_issues_temp=parsing_issues,
-        txm_event_id=donor_model.txm_event_id)
+        txm_event_id=donor_model.txm_event_id,
+        donor_id=donor_model.id)
     donor_model.parsing_issues = parsing_issues
     donor_model.etag = 1
     return donor_model
