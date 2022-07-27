@@ -1,7 +1,7 @@
 import dataclasses
 from typing import List
 
-from sqlalchemy.schema import Column, ForeignKey, UniqueConstraint
+from sqlalchemy.schema import Column, ForeignKey, UniqueConstraint, CheckConstraint
 from sqlalchemy.types import (BOOLEAN, INTEGER, BIGINT, FLOAT,
                               TEXT, DATETIME, JSON, BLOB, Enum)
 from sqlalchemy.orm import backref, relationship
