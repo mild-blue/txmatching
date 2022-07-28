@@ -169,6 +169,6 @@ There are three types of crossmatches: Undecidable, High Res. With Split, High R
 1. Donor has an antigene of level split
 2. Recipient has an antigene of level high res (the same split as in 1.)
 #### Undecidable
-1. Recipient has antibody against and antigen from a group that donor is not typized for.
+1. Recipient has an antibody against an antigen from a group that donor has not been typed for.
 
 To generate patients with crossmatches set parameter CROSSMATCH to True in `__main__` function in generate_patients.py
