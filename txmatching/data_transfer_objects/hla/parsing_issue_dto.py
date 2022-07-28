@@ -21,8 +21,6 @@ class ParsingIssuePublicDTO(ParsingIssueBase):
     medical_id: str
 
 
-# pylint: disable=too-many-instance-attributes
-# It is reasonable to have many attributes here
 @dataclass
 class ParsingIssue(PersistentlyHashable, ParsingIssueBase):
     db_id: int

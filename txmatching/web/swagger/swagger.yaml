@@ -1118,6 +1118,23 @@ definitions:
             message:
                 type: string
             parsing_issue_detail:
+                enum:
+                - SUCCESSFULLY_PARSED
+                - HIGH_RES_WITHOUT_SPLIT
+                - HIGH_RES_WITH_LETTER
+                - MULTIPLE_SPLITS_OR_BROADS_FOUND
+                - IRRELEVANT_CODE
+                - UNEXPECTED_SPLIT_RES_CODE
+                - UNKNOWN_TRANSFORMATION_FROM_HIGH_RES
+                - UNPARSABLE_HLA_CODE
+                - MORE_THAN_TWO_HLA_CODES_PER_GROUP
+                - BASIC_HLA_GROUP_IS_EMPTY
+                - INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES
+                - ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES
+                - MULTIPLE_CUTOFFS_PER_ANTIBODY
+                - MFI_PROBLEM
+                - OTHER_PROBLEM
+                example: SUCCESSFULLY_PARSED
                 type: string
             txm_event_name:
                 type: string

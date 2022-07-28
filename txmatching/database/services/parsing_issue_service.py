@@ -58,8 +58,6 @@ def parsing_issues_bases_to_models(
         parsing_issues_temp: List[ParsingIssueBase], donor_id: int = None, recipient_id: int = None, txm_event_id: int = None
 ) -> List[ParsingIssueModel]:
 
-    parsing_issue_models = []
-
     parsing_issue_models = [ParsingIssueModel(
         hla_code_or_group=issue_tmp.hla_code_or_group,
         parsing_issue_detail=issue_tmp.parsing_issue_detail,

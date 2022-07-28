@@ -15,7 +15,26 @@ export interface ParsingIssuePublicGenerated {
     hla_code_or_group: string;
     medical_id: string;
     message: string;
-    parsing_issue_detail: string;
+    parsing_issue_detail: ParsingIssuePublicGeneratedParsingIssueDetailEnum;
     txm_event_name: string;
 }
+export enum ParsingIssuePublicGeneratedParsingIssueDetailEnum {
+    SuccessfullyParsed = 'SUCCESSFULLY_PARSED',
+    HighResWithoutSplit = 'HIGH_RES_WITHOUT_SPLIT',
+    HighResWithLetter = 'HIGH_RES_WITH_LETTER',
+    MultipleSplitsOrBroadsFound = 'MULTIPLE_SPLITS_OR_BROADS_FOUND',
+    IrrelevantCode = 'IRRELEVANT_CODE',
+    UnexpectedSplitResCode = 'UNEXPECTED_SPLIT_RES_CODE',
+    UnknownTransformationFromHighRes = 'UNKNOWN_TRANSFORMATION_FROM_HIGH_RES',
+    UnparsableHlaCode = 'UNPARSABLE_HLA_CODE',
+    MoreThanTwoHlaCodesPerGroup = 'MORE_THAN_TWO_HLA_CODES_PER_GROUP',
+    BasicHlaGroupIsEmpty = 'BASIC_HLA_GROUP_IS_EMPTY',
+    InsufficientNumberOfAntibodiesInHighRes = 'INSUFFICIENT_NUMBER_OF_ANTIBODIES_IN_HIGH_RES',
+    AllAntibodiesArePositiveInHighRes = 'ALL_ANTIBODIES_ARE_POSITIVE_IN_HIGH_RES',
+    MultipleCutoffsPerAntibody = 'MULTIPLE_CUTOFFS_PER_ANTIBODY',
+    MfiProblem = 'MFI_PROBLEM',
+    OtherProblem = 'OTHER_PROBLEM'
+};
+
+
 
