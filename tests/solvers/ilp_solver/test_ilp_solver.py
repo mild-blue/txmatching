@@ -230,7 +230,6 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         solutions = solve_from_configuration(config_parameters, txm_event).calculated_matchings_list
         self.assertEqual(len(solutions), 0)
 
-
     # Binary mode isn't set, manual score is set => return manual score
     def test_manual_score_set_binary_mode_off(self):
         store_generated_patients_from_folder(SMALL_DATA_FOLDER)
@@ -241,10 +240,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             manual_donor_recipient_scores=[
                 ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=2, score=10.0)],
             use_binary_scoring=False
-            ), txm_event)
+        ), txm_event)
 
         self.assertEqual(solution.calculated_matchings_list[0].score, 10.0)
-
 
     # Binary mode is set, manual score is set and is negative => return nothing
     def test_manual_scores_negative_binary_mode_on(self):
@@ -257,10 +255,9 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
             manual_donor_recipient_scores=[
                 ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=2, score=-10.0)],
             use_binary_scoring=True
-            ), txm_event).calculated_matchings_list
+        ), txm_event).calculated_matchings_list
 
         self.assertEqual(len(solution), 0)
-
 
     # Binary mode is set, manual score is set and is positive => return "1.0"
     def test_manual_scores_positive_binary_mode_on(self):
@@ -268,15 +265,13 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
 
         txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
         solution = solve_from_configuration(ConfigParameters(
-                                            solver_constructor_name=Solver.ILPSolver,
-                                            manual_donor_recipient_scores=[
-                                            ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=2, score=10.0)],
-                                            use_binary_scoring=True
-            ), txm_event)
+            solver_constructor_name=Solver.ILPSolver,
+            manual_donor_recipient_scores=[
+                ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=2, score=10.0)],
+            use_binary_scoring=True
+        ), txm_event)
 
         self.assertEqual(solution.calculated_matchings_list[0].score, 1.0)
-
-
 
     def test_manual_scores_make_cycle(self):
         store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_ROUND)

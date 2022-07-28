@@ -37,7 +37,7 @@ class HLAAdditiveScorer(AdditiveScorer, ABC):
         if self._configuration.use_binary_scoring:
             if manual_score >= 0:
                 return POSITIVE_SCORE_BINARY_MODE
-            elif manual_score < 0:
+            else:
                 return NEGATIVE_SCORE_BINARY_MODE
         else:
             return manual_score
