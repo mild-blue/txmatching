@@ -127,106 +127,22 @@ class ConfigParameters:
 
     # pylint: disable=too-many-branches
     def __post_init__(self):
-        if self.minimum_total_score:
-            is_minimum_total_score_valid(self.minimum_total_score)
-
-        if self.blood_group_compatibility_bonus:
-            is_blood_group_compatibility_bonus_valid(self.blood_group_compatibility_bonus)
-
-        if self.max_cycle_length:
-            is_max_cycle_length_valid(self.max_cycle_length)
-
-        if self.max_sequence_length:
-            is_max_sequence_length_valid(self.max_sequence_length)
-
-        if self.max_number_of_distinct_countries_in_round:
-            is_max_number_of_distinct_countries_in_round_valid(self.max_number_of_distinct_countries_in_round)
-
-        if self.max_debt_for_country:
-            is_max_debt_for_country_valid(self.max_debt_for_country)
-
-        if self.max_debt_for_country_for_blood_group_zero:
-            is_max_debt_for_country_for_blood_group_zero_valid(self.max_debt_for_country_for_blood_group_zero)
-
-        if self.max_matchings_to_show_to_viewer:
-            is_max_matchings_to_show_to_viewer_valid(self.max_matchings_to_show_to_viewer)
-
-        if self.max_number_of_matchings:
-            is_max_number_of_matchings_valid(self.max_number_of_matchings)
-
-        if self.max_matchings_in_all_solutions_solver:
-            is_max_matchings_in_all_solutions_solver_valid(self.max_matchings_in_all_solutions_solver)
-
-        if self.max_cycles_in_all_solutions_solver:
-            is_max_cycles_in_all_solutions_solver_valid(self.max_cycles_in_all_solutions_solver)
-
-        if self.max_matchings_in_ilp_solver:
-            is_max_matchings_in_ilp_solver_valid(self.max_matchings_in_ilp_solver)
-
-        if self.max_number_of_dynamic_constrains_ilp_solver:
-            is_max_number_of_dynamic_constrains_ilp_solver_valid(self.max_number_of_dynamic_constrains_ilp_solver)
+        is_parameter_valid("Minimum total score", self.minimum_total_score)
+        is_parameter_valid("Blood group compatibility bonus", self.blood_group_compatibility_bonus)
+        is_parameter_valid("Max cycle length", self.max_cycle_length)
+        is_parameter_valid("Max sequence length", self.max_sequence_length)
+        is_parameter_valid("Max number of distinct countries in round", self.max_number_of_distinct_countries_in_round)
+        is_parameter_valid("Max debt for country", self.max_debt_for_country)
+        is_parameter_valid("Max debt for country for blood group zero", self.max_debt_for_country_for_blood_group_zero)
+        is_parameter_valid("Max matchings to show to viewer", self.max_matchings_to_show_to_viewer)
+        is_parameter_valid("Max number of matchings", self.max_number_of_matchings)
+        is_parameter_valid("Max matchings in all solutions solver", self.max_matchings_in_all_solutions_solver)
+        is_parameter_valid("Max cycles in all solutions solver", self.max_cycles_in_all_solutions_solver)
+        is_parameter_valid("Max matchings in ilp solver", self.max_matchings_in_ilp_solver)
+        is_parameter_valid("Max number of dynamic constrains ilp solver",
+                           self.max_number_of_dynamic_constrains_ilp_solver)
 
 
-def is_minimum_total_score_valid(minimum_total_score):
-    if minimum_total_score < 0.0:
-        raise ValueError("Minimum total score must be non-negative")
-
-
-def is_blood_group_compatibility_bonus_valid(blood_group_compatibility_bonus):
-    if blood_group_compatibility_bonus < 0.0:
-        raise ValueError("Blood group compatibility bonus must be non-negative")
-
-
-def is_max_cycle_length_valid(max_cycle_length):
-    if max_cycle_length < 0:
-        raise ValueError("Max cycle length must be non-negative")
-
-
-def is_max_sequence_length_valid(max_sequence_length):
-    if max_sequence_length < 0:
-        raise ValueError("Max sequence length must be non-negative")
-
-
-def is_max_number_of_distinct_countries_in_round_valid(max_number_of_distinct_countries_in_round):
-    if max_number_of_distinct_countries_in_round < 0:
-        raise ValueError("Max number of distinct countries in round must be non-negative")
-
-
-def is_max_debt_for_country_valid(max_debt_for_country):
-    if max_debt_for_country < 0:
-        raise ValueError("Max debt for country must be non-negative")
-
-
-def is_max_debt_for_country_for_blood_group_zero_valid(max_debt_for_country_for_blood_group_zero):
-    if max_debt_for_country_for_blood_group_zero < 0:
-        raise ValueError("Max debt for country for blood group zero must be non-negative")
-
-
-def is_max_matchings_to_show_to_viewer_valid(max_matchings_to_show_to_viewer):
-    if max_matchings_to_show_to_viewer < 0:
-        raise ValueError("Max matchings to show to viewer must be non-negative")
-
-
-def is_max_number_of_matchings_valid(max_number_of_matchings):
-    if max_number_of_matchings < 0:
-        raise ValueError("Max number of matchings must be non-negative")
-
-
-def is_max_matchings_in_all_solutions_solver_valid(max_matchings_in_all_solutions_solver):
-    if max_matchings_in_all_solutions_solver < 0:
-        raise ValueError("Max matchings in all solutions solver must be non-negative")
-
-
-def is_max_cycles_in_all_solutions_solver_valid(max_cycles_in_all_solutions_solver):
-    if max_cycles_in_all_solutions_solver < 0:
-        raise ValueError("Max cycles in all solutions solver must be non-negative")
-
-
-def is_max_matchings_in_ilp_solver_valid(max_matchings_in_ilp_solver):
-    if max_matchings_in_ilp_solver < 0:
-        raise ValueError("Max matchings in ilp solver must be non-negative")
-
-
-def is_max_number_of_dynamic_constrains_ilp_solver_valid(max_number_of_dynamic_constrains_ilp_solver):
-    if max_number_of_dynamic_constrains_ilp_solver < 0:
-        raise ValueError("Max number of dynamic constrains ilp solver must be non-negative")
+def is_parameter_valid(parameter_name: str, parameter_value: int):
+    if parameter_value < 0:
+        raise ValueError(f"{parameter_name} must be non-negative")

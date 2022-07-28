@@ -14,10 +14,5 @@ class IdentifierDTOIn:
 
     def __post_init__(self):
         if self.id:
-            is_id_valid(self.id)
-
-
-def is_id_valid(id: int):
-    if id < 0:
-        raise ValueError("Invalid id, it must be greater than 0")
-
+            if self.id < 0:
+                raise ValueError(f"Invalid id with value {self.id} it must be greater than 0")
