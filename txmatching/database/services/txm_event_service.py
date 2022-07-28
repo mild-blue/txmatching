@@ -72,7 +72,6 @@ def remove_donors_and_recipients_from_txm_event_for_country(txm_event_db_id: int
     for recipient_id in recipient_ids:
         delete_parsing_issues_for_patient(recipient_id=recipient_id, txm_event_id=txm_event_db_id)
 
-
     DonorModel.query.filter(and_(DonorModel.txm_event_id == txm_event_db_id,
                                  DonorModel.country == country_code)).delete()
     # Very likely is not needed as all recipients should be cascade deleted in the previous step.
@@ -239,3 +238,7 @@ def convert_txm_event_base_to_dto(txm_event_base: TxmEventBase) -> TxmEventDTOOu
         default_config_id=txm_event_base.default_config_id,
         state=txm_event_base.state
     )
+
+
+def does_txm_event_exist(txm_event_id: int) -> bool:
+    return TxmEventModel.query.get(txm_event_id) is not None

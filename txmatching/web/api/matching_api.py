@@ -33,11 +33,11 @@ logger = logging.getLogger(__name__)
 class CalculateFromConfig(Resource):
     @matching_api.require_user_login()
     @matching_api.request_body(ConfigurationJson)
-    @matching_api.response_ok(CalculatedMatchingsJson, 'List of all matchings for given configuration.')  # output
+    @matching_api.response_ok(CalculatedMatchingsJson, 'List of all matchings for given configuration.')
     @matching_api.response_errors()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int) -> str:
-        configuration_parameters = request_body(ConfigParameters)  # input
+        configuration_parameters = request_body(ConfigParameters)
 
         txm_event = get_txm_event_complete(txm_event_id)
         user_id = get_current_user_id()

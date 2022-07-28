@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+from txmatching.database.services.txm_event_service import does_txm_event_exist
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import TxmEventState
 
@@ -17,8 +18,7 @@ class TxmDefaultEventDTOIn:
     # pylint:enable=invalid-name
 
     def __post_init__(self):
-        if self.id < 0:
-            is_id_valid(self.id)
+        is_greater_than_zero("id", self.id)
 
 
 @dataclass
@@ -39,28 +39,23 @@ class TxmEventCopyPatientsDTOIn:
     donor_ids: List[int]
 
     def __post_init__(self):
-        if self.txm_event_id_from < 0:
-            raise ValueError("Invalid txm_event_id_from, it must be greater than 0")
+        validate_txm_event_from(self.txm_event_id_from)
+        validate_txm_event_to(self.txm_event_id_to)
 
-        if self.txm_event_id_to < 0:
-            raise ValueError("Invalid txm_event_id_to, it must be greater than 0")
-
-        if self.donor_ids:
-            for donor_id in self.donor_ids:
-                if donor_id < 0:
-                    raise ValueError("Invalid donor_id, it must be greater than 0")
+        for donor_id in self.donor_ids:
+            is_greater_than_zero("donor_id", donor_id)
 
 
-def is_id_valid(id: int):
-    if id < 0:
-        raise ValueError("Invalid id, it must be greater than 0")
+def validate_txm_event_from(txm_event_id_from: int):
+    if not does_txm_event_exist(txm_event_id_from):
+        raise ValueError(f"Invalid txm_event_id_from with value {txm_event_id_from}. Txm Event with given id does not exist.")
 
 
-def is_txm_event_id_from_valid(txm_event_id_from: int):
-    if txm_event_id_from < 0:
-        raise ValueError("Invalid txm_event_id_from, it must be greater than 0")
+def validate_txm_event_to(txm_event_id_to: int):
+    if not does_txm_event_exist(txm_event_id_to):
+        raise ValueError(f"Invalid txm_event_id_to with value {txm_event_id_to}. Txm Event with given id does not exist.")
 
 
-def is_txm_event_id_to_valid(txm_event_id_to: int):
-    if txm_event_id_to < 0:
-        raise ValueError("Invalid txm_event_id_to, it must be greater than 0")
+def is_greater_than_zero(name: str, value: int):
+    if value < 0:
+        raise ValueError(f"Invalid {name} with value {value}, it must be greater than 0")

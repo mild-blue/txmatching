@@ -21,7 +21,7 @@ class Configuration:
 
 def is_conf_id_valid(config_id: int):
     if config_id < 0:
-        raise ValueError("Invalid id, it must be greater than 0")
+        raise ValueError(f"Invalid configuration id with value {config_id}, it must be greater than 0")
 
 
 def is_txm_event_id_valid(txm_event_id: int):
