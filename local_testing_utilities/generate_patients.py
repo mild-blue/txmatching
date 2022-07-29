@@ -259,12 +259,10 @@ def generate_patient(country: Country, i: int, has_hla_with_letter_at_the_end: b
     return donor, recipient
 
 
-def generate_patients_for_one_country(country: Country, txm_event_name: str, count: int, high_res: bool,
-                                      has_hla_letter_at_the_end: bool = False) -> PatientUploadDTOIn:
+def generate_patients_for_one_country(country: Country, txm_event_name: str, count: int, high_res: bool) -> PatientUploadDTOIn:
     count_hla_with_letter_at_the_end = 2
-    pairs = [generate_patient(country, i, has_hla_letter_at_the_end, high_res) for i in range(0, count - count_hla_with_letter_at_the_end)] + \
-            [generate_patient(country, i, has_hla_letter_at_the_end, high_res)
-             for i in range(count - count_hla_with_letter_at_the_end, count)]
+    pairs = [generate_patient(country, i, False, high_res) for i in range(0, count - count_hla_with_letter_at_the_end)] + \
+            [generate_patient(country, i, True, high_res) for i in range(count - count_hla_with_letter_at_the_end, count)]
     recipients = [recipient for _, recipient in pairs if recipient]
     donors = [donor for donor, _ in pairs]
 
