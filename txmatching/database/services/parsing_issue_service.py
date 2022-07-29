@@ -89,7 +89,7 @@ def convert_parsing_issue_models_to_dataclasses(parsing_issue_models: List[Parsi
 
 
 def convert_parsing_issue_models_to_confirmation_dto(parsing_issue_models: List[ParsingIssueModel]) -> List[
-    ParsingIssueConfirmationDTO]:
+        ParsingIssueConfirmationDTO]:
     return [ParsingIssueConfirmationDTO(
         db_id=parsing_issue_model.id,
         hla_code_or_group=parsing_issue_model.hla_code_or_group,
@@ -131,7 +131,7 @@ def get_parsing_issues_for_patients(txm_event_id: int, donor_ids: List[int] = No
 
 def get_parsing_issues_confirmation_dto_for_patients(txm_event_id: int, donor_ids: List[int] = None,
                                                      recipient_ids: List[int] = None) -> List[
-    ParsingIssueConfirmationDTO]:
+        ParsingIssueConfirmationDTO]:
     if donor_ids is None:
         donor_ids = []
     if recipient_ids is None:
@@ -169,3 +169,13 @@ def delete_parsing_issues_for_txm_event_id(txm_event_id: int):
     ParsingIssueModel.query.filter(
         ParsingIssueModel.txm_event_id == txm_event_id
     ).delete()
+
+
+def is_parameter_non_negative(parameter_name: str, parameter_value: int):
+    if parameter_value < 0:
+        raise ValueError(f"{parameter_name} must be non-negative.")
+
+
+def is_parameter_positive(parameter_name: str, parameter_value: int):
+    if parameter_value <= 0:
+        raise ValueError(f"{parameter_name} must be positive.")

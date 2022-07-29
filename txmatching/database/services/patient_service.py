@@ -403,7 +403,7 @@ def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
     DonorModel.query.filter(DonorModel.id == donor_id).delete()
 
     if (maybe_recipient is not None and
-        len(maybe_recipient.related_donors_db_ids) == 1):
+            len(maybe_recipient.related_donors_db_ids) == 1):
         delete_parsing_issues_for_patient(recipient_id=maybe_recipient.db_id, txm_event_id=txm_event_id)
         RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
 
@@ -412,16 +412,21 @@ def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
 
 def _check_if_recipient_requirements_are_valid(recipient_requirements: RecipientRequirements):
     if (recipient_requirements.min_donor_age and recipient_requirements.max_donor_age and
-        recipient_requirements.min_donor_age > recipient_requirements.max_donor_age):
+            recipient_requirements.min_donor_age > recipient_requirements.max_donor_age):
         raise InvalidArgumentException(f'Maximal required age {recipient_requirements.max_donor_age} is smaller than '
                                        f'minimal required age {recipient_requirements.min_donor_age}.')
 
     if (recipient_requirements.min_donor_height and recipient_requirements.max_donor_height and
-        recipient_requirements.min_donor_height > recipient_requirements.max_donor_height):
+            recipient_requirements.min_donor_height > recipient_requirements.max_donor_height):
         raise InvalidArgumentException(f'Maximal required height {recipient_requirements.max_donor_height} is smaller '
                                        f'than minimal required height {recipient_requirements.min_donor_height}.')
 
     if (recipient_requirements.min_donor_weight and recipient_requirements.max_donor_weight and
-        recipient_requirements.min_donor_weight > recipient_requirements.max_donor_weight):
+            recipient_requirements.min_donor_weight > recipient_requirements.max_donor_weight):
         raise InvalidArgumentException(f'Maximal required weight {recipient_requirements.max_donor_weight} is smaller '
                                        f'than minimal required weight {recipient_requirements.min_donor_weight}.')
+
+
+def does_donor_in_txm_event_exist(txm_event_id: int, donor_id: int) -> bool:
+    donor_model = DonorModel.query.get(donor_id)
+    return donor_model is not None and donor_model.txm_event_id == txm_event_id
