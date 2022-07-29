@@ -74,6 +74,7 @@ def convert_parsing_issue_models_to_dataclasses(parsing_issue_models: List[Parsi
     return [parsing_issue_model_to_parsing_issue(parsing_issue_model) for parsing_issue_model in parsing_issue_models]
 
 
+
 def get_parsing_issues_for_txm_event_id(txm_event_id: int) -> List[ParsingIssue]:
     return convert_parsing_issue_models_to_dataclasses(
         ParsingIssueModel.query.filter(

@@ -15,6 +15,8 @@ class ParsingIssueBase:
     message: str
 
 
+# pylint: disable=too-many-instance-attributes
+# It is reasonable to have many attributes here
 @dataclass
 class ParsingIssuePublicDTO(ParsingIssueBase):
     txm_event_name: str
