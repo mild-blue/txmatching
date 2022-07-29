@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.database.services.parsing_issue_service import is_parameter_positive
 
 
 @dataclass
@@ -12,18 +13,5 @@ class Configuration:
     parameters: ConfigParameters
 
     def __post_init__(self):
-        if self.id:
-            is_conf_id_valid(self.id)
-
-        if self.txm_event_id:
-            is_txm_event_id_valid(self.txm_event_id)
-
-
-def is_conf_id_valid(config_id: int):
-    if config_id < 0:
-        raise ValueError(f"Invalid configuration id with value {config_id}, it must be greater than 0")
-
-
-def is_txm_event_id_valid(txm_event_id: int):
-    if txm_event_id < 0:
-        raise ValueError("Invalid txm_event_id, it must be greater than 0")
+        is_parameter_positive("configuration id", self.id)
+        is_parameter_positive("txm event id", self.txm_event_id)

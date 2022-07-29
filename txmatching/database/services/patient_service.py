@@ -427,3 +427,8 @@ def _check_if_recipient_requirements_are_valid(recipient_requirements: Recipient
             recipient_requirements.min_donor_weight > recipient_requirements.max_donor_weight):
         raise InvalidArgumentException(f'Maximal required weight {recipient_requirements.max_donor_weight} is smaller '
                                        f'than minimal required weight {recipient_requirements.min_donor_weight}.')
+
+
+def does_donor_in_txm_event_exist(txm_event_id: int, donor_id: int) -> bool:
+    donor_model = DonorModel.query.get(donor_id)
+    return donor_model is not None and donor_model.txm_event_id == txm_event_id

@@ -6,6 +6,7 @@ from typing import List
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore,
                                                  PatientDbId)
+from txmatching.database.services.parsing_issue_service import is_parameter_non_negative
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLACrossmatchLevel, Scorer, Solver
 
@@ -127,22 +128,19 @@ class ConfigParameters:
 
     # pylint: disable=too-many-branches
     def __post_init__(self):
-        is_parameter_valid("Minimum total score", self.minimum_total_score)
-        is_parameter_valid("Blood group compatibility bonus", self.blood_group_compatibility_bonus)
-        is_parameter_valid("Max cycle length", self.max_cycle_length)
-        is_parameter_valid("Max sequence length", self.max_sequence_length)
-        is_parameter_valid("Max number of distinct countries in round", self.max_number_of_distinct_countries_in_round)
-        is_parameter_valid("Max debt for country", self.max_debt_for_country)
-        is_parameter_valid("Max debt for country for blood group zero", self.max_debt_for_country_for_blood_group_zero)
-        is_parameter_valid("Max matchings to show to viewer", self.max_matchings_to_show_to_viewer)
-        is_parameter_valid("Max number of matchings", self.max_number_of_matchings)
-        is_parameter_valid("Max matchings in all solutions solver", self.max_matchings_in_all_solutions_solver)
-        is_parameter_valid("Max cycles in all solutions solver", self.max_cycles_in_all_solutions_solver)
-        is_parameter_valid("Max matchings in ilp solver", self.max_matchings_in_ilp_solver)
-        is_parameter_valid("Max number of dynamic constrains ilp solver",
-                           self.max_number_of_dynamic_constrains_ilp_solver)
-
-
-def is_parameter_valid(parameter_name: str, parameter_value: int):
-    if parameter_value < 0:
-        raise ValueError(f"{parameter_name} must be non-negative")
+        is_parameter_non_negative("Minimum total score", self.minimum_total_score)
+        is_parameter_non_negative("Blood group compatibility bonus", self.blood_group_compatibility_bonus)
+        is_parameter_non_negative("Max cycle length", self.max_cycle_length)
+        is_parameter_non_negative("Max sequence length", self.max_sequence_length)
+        is_parameter_non_negative("Max number of distinct countries in round",
+                                  self.max_number_of_distinct_countries_in_round)
+        is_parameter_non_negative("Max debt for country", self.max_debt_for_country)
+        is_parameter_non_negative("Max debt for country for blood group zero",
+                                  self.max_debt_for_country_for_blood_group_zero)
+        is_parameter_non_negative("Max matchings to show to viewer", self.max_matchings_to_show_to_viewer)
+        is_parameter_non_negative("Max number of matchings", self.max_number_of_matchings)
+        is_parameter_non_negative("Max matchings in all solutions solver", self.max_matchings_in_all_solutions_solver)
+        is_parameter_non_negative("Max cycles in all solutions solver", self.max_cycles_in_all_solutions_solver)
+        is_parameter_non_negative("Max matchings in ilp solver", self.max_matchings_in_ilp_solver)
+        is_parameter_non_negative("Max number of dynamic constrains ilp solver",
+                                  self.max_number_of_dynamic_constrains_ilp_solver)
