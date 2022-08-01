@@ -431,4 +431,5 @@ def _check_if_recipient_requirements_are_valid(recipient_requirements: Recipient
 
 def does_donor_in_txm_event_exist(txm_event_id: int, donor_id: int) -> bool:
     donor_model = DonorModel.query.get(donor_id)
-    return donor_model is not None and donor_model.txm_event_id == txm_event_id
+    if donor_model is None:
+        raise ValueError(f"Donor with id {donor_id} does not exist in txm event with id {txm_event_id}")
