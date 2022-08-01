@@ -241,4 +241,5 @@ def convert_txm_event_base_to_dto(txm_event_base: TxmEventBase) -> TxmEventDTOOu
 
 
 def does_txm_event_exist(txm_event_id: int) -> bool:
-    return TxmEventModel.query.get(txm_event_id) is not None
+    if not TxmEventModel.query.get(txm_event_id):
+        raise ValueError(f"Txm event with id {txm_event_id} does not exist")
