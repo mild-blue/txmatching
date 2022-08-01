@@ -6,7 +6,7 @@ from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
                                                             SexEnumJson)
 from txmatching.data_transfer_objects.hla.hla_swagger import (
     EXAMPLE_HLA_TYPING, HLATyping)
-from txmatching.data_transfer_objects.hla.parsing_issue_swagger import ParsingIssueConfirmationJson
+from txmatching.data_transfer_objects.hla.parsing_issue_swagger import ParsingIssueJson
 from txmatching.utils.blood_groups import BloodGroup
 from txmatching.web.web_utils.namespaces import patient_api, public_api
 
@@ -165,14 +165,14 @@ RecipientToUpdate = {**BaseRecipient, **{
 AllMessagesJson = patient_api.model('AllMessages', {
     'infos': fields.List(
         required=False,
-        cls_or_instance=fields.Nested(ParsingIssueConfirmationJson)
+        cls_or_instance=fields.Nested(ParsingIssueJson)
     ),
     'warnings': fields.List(
         required=False,
-        cls_or_instance=fields.Nested(ParsingIssueConfirmationJson)
+        cls_or_instance=fields.Nested(ParsingIssueJson)
     ),
     'errors': fields.List(
         required=False,
-        cls_or_instance=fields.Nested(ParsingIssueConfirmationJson)
+        cls_or_instance=fields.Nested(ParsingIssueJson)
     )
 })
