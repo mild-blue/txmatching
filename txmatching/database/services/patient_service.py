@@ -429,7 +429,7 @@ def _check_if_recipient_requirements_are_valid(recipient_requirements: Recipient
                                        f'than minimal required weight {recipient_requirements.min_donor_weight}.')
 
 
-def does_donor_in_txm_event_exist(txm_event_id: int, donor_id: int) -> bool:
+def does_donor_in_txm_event_exist(txm_event_id: int, donor_id: int):
     donor_model = DonorModel.query.get(donor_id)
     if donor_model is None:
         raise ValueError(f"Donor with id {donor_id} does not exist in txm event with id {txm_event_id}")
