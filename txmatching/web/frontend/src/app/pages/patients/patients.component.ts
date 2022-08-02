@@ -21,6 +21,7 @@ import { DonorType } from '@app/model/enums/DonorType';
 import { ReportService } from '@app/services/report/report.service';
 import { ParsingIssue } from '@app/model/ParsingIssue';
 import { getErrorMessage } from '@app/helpers/error';
+import { ParsingIssuePublic } from '@app/model/ParsingIssuePublic';
 
 @Component({
   selector: 'app-patients',
@@ -96,7 +97,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     }
 
     try {
-      const parsingIssues: ParsingIssue[] = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
+      const parsingIssues: ParsingIssuePublic[] = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
 
       if (parsingIssues.length === 0) {
         this._alertService.success('Patients were successfully added');

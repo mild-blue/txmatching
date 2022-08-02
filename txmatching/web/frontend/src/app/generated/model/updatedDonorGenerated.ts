@@ -11,10 +11,11 @@
  */
 import { DonorGenerated } from './donorGenerated';
 import { ParsingIssueGenerated } from './parsingIssueGenerated';
+import { ParsingIssuePublicGenerated } from './parsingIssuePublicGenerated';
 
 
 export interface UpdatedDonorGenerated { 
     donor: DonorGenerated;
-    parsing_issues: Array<ParsingIssueGenerated>;
+    parsing_issues: Array<ParsingIssuePublicGenerated>;
 }
 

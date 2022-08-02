@@ -25,7 +25,8 @@ class ConfigModel(db.Model):
     # Here and below I am using Integer instead of BigInt because it seems that there is a bug and BigInteger is not
     # transferred to BigSerial with autoincrement True, but to BigInt only.
     id = Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
-    txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
+    txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE',
+                          ondelete='CASCADE'), unique=False, nullable=False)
     parameters = Column(JSON, unique=False, nullable=False)
     created_by = Column(INTEGER, ForeignKey('app_user.id'), unique=False, nullable=False)
     # created at and updated at is not handled by triggers as then am not sure how tests would work, as triggers
@@ -40,7 +41,8 @@ class PairingResultModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
-    original_config_id = Column(INTEGER, ForeignKey('config.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
+    original_config_id = Column(INTEGER, ForeignKey('config.id', onupdate='CASCADE',
+                                ondelete='CASCADE'), unique=False, nullable=False)
     original_config = relationship('ConfigModel', passive_deletes=True, lazy='joined')
     patients_hash = Column(BIGINT, unique=False, nullable=False)
     calculated_matchings = Column(JSON, unique=False, nullable=False)
@@ -74,7 +76,8 @@ class RecipientModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
-    txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
+    txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE',
+                          ondelete='CASCADE'), unique=False, nullable=False)
     medical_id = Column(TEXT, unique=False, nullable=False)
     internal_medical_id = Column(TEXT, unique=False, nullable=True)
     country = Column(Enum(Country), unique=False, nullable=False)
@@ -112,7 +115,8 @@ class DonorModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
-    txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
+    txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE',
+                          ondelete='CASCADE'), unique=False, nullable=False)
     medical_id = Column(TEXT, unique=False, nullable=False)
     internal_medical_id = Column(TEXT, unique=False, nullable=True)
     country = Column(Enum(Country), unique=False, nullable=False)
@@ -129,7 +133,8 @@ class DonorModel(db.Model):
     created_at = Column(DATETIME(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DATETIME(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DATETIME(timezone=True), nullable=True)
-    recipient_id = Column(INTEGER, ForeignKey('recipient.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=True)
+    recipient_id = Column(INTEGER, ForeignKey('recipient.id', onupdate='CASCADE',
+                          ondelete='CASCADE'), unique=False, nullable=True)
     recipient = relationship('RecipientModel', backref=backref('donor', uselist=False),
                              passive_deletes=True,
                              lazy='joined')
@@ -146,7 +151,8 @@ class RecipientAcceptableBloodModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
-    recipient_id = Column(INTEGER, ForeignKey('recipient.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
+    recipient_id = Column(INTEGER, ForeignKey('recipient.id', onupdate='CASCADE',
+                          ondelete='CASCADE'), unique=False, nullable=False)
     blood_type = Column(Enum(BloodGroup, values_callable=lambda x: [e.value for e in x]), unique=False, nullable=False)
     created_at = Column(DATETIME(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DATETIME(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
@@ -158,7 +164,8 @@ class HLAAntibodyRawModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
-    recipient_id = Column(INTEGER, ForeignKey('recipient.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
+    recipient_id = Column(INTEGER, ForeignKey('recipient.id', onupdate='CASCADE',
+                          ondelete='CASCADE'), unique=False, nullable=False)
     raw_code = Column(TEXT, unique=False, nullable=False)
     mfi = Column(INTEGER, unique=False, nullable=False)
     cutoff = Column(INTEGER, unique=False, nullable=False)
@@ -179,7 +186,8 @@ class AppUserModel(db.Model):
     email = Column(TEXT, unique=True, nullable=False)
     pass_hash = Column(TEXT, unique=False, nullable=False)
     role = Column(Enum(UserRole), unique=False, nullable=False)
-    default_txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE', ondelete='SET NULL'), unique=False, nullable=True)
+    default_txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE',
+                                  ondelete='SET NULL'), unique=False, nullable=True)
     # Whitelisted IP address if role is SERVICE
     # Seed for TOTP in all other cases
     second_factor_material = Column(TEXT, unique=False, nullable=False)
@@ -214,8 +222,10 @@ class UploadedDataModel(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
-    txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
-    user_id = Column(INTEGER, ForeignKey('app_user.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
+    txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE',
+                          ondelete='CASCADE'), unique=False, nullable=False)
+    user_id = Column(INTEGER, ForeignKey('app_user.id', onupdate='CASCADE',
+                     ondelete='CASCADE'), unique=False, nullable=False)
     uploaded_data = Column(JSON, unique=False, nullable=False)
     created_at = Column(DATETIME(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DATETIME(timezone=True), unique=False, nullable=False, server_default=func.now(),
@@ -260,8 +270,10 @@ class UploadedFileModel(db.Model):
     id = Column(INTEGER, primary_key=True, autoincrement=True, nullable=False)
     file_name = Column(TEXT, unique=False, nullable=False)
     file = Column(BLOB, unique=False, nullable=False)
-    txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
-    user_id = Column(INTEGER, ForeignKey('app_user.id', onupdate='CASCADE', ondelete='CASCADE'), unique=False, nullable=False)
+    txm_event_id = Column(INTEGER, ForeignKey('txm_event.id', onupdate='CASCADE',
+                          ondelete='CASCADE'), unique=False, nullable=False)
+    user_id = Column(INTEGER, ForeignKey('app_user.id', onupdate='CASCADE',
+                     ondelete='CASCADE'), unique=False, nullable=False)
     created_at = Column(DATETIME(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(
         DATETIME(timezone=True),

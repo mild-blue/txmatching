@@ -1,4 +1,3 @@
-
 from flask_restx import fields
 
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \

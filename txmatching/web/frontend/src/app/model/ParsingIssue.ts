@@ -1,8 +1,11 @@
 export interface ParsingIssue {
-  hlaCodeOrGroup?: string;
-  ParsingIssueDetail: string;
-  message: string;
+  confirmedAt?: string;
+  confirmedBy?: number;
+  dbId: number;
   donorId?: number;
+  hlaCodeOrGroup?: string;
+  message: string;
+  parsingIssueDetail: string;
   recipientId?: number;
-  eventId?: number;
+  txmEventId?: number;
 }

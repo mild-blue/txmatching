@@ -10,11 +10,12 @@
  * Do not edit the class manually.
  */
 import { ParsingIssueGenerated } from './parsingIssueGenerated';
+import { ParsingIssuePublicGenerated } from './parsingIssuePublicGenerated';
 import { RecipientGenerated } from './recipientGenerated';
 
 
 export interface UpdatedRecipientGenerated { 
-    parsing_issues: Array<ParsingIssueGenerated>;
+    parsing_issues: Array<ParsingIssuePublicGenerated>;
     recipient: RecipientGenerated;
 }
 
