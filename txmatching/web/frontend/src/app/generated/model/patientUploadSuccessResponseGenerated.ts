@@ -21,7 +21,6 @@ export interface PatientUploadSuccessResponseGenerated {
      * Errors and warnings that occurred in HLA codes parsing
      */
     parsing_issues: Array<ParsingIssuePublicGenerated>;
-    // parsing_issues: Array<ParsingIssuePublicGenerated>;
     /**
      * Number of recipients successfully loaded into the application.
      */

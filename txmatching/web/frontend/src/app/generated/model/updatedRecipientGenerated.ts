@@ -9,7 +9,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ParsingIssueGenerated } from './parsingIssueGenerated';
 import { ParsingIssuePublicGenerated } from './parsingIssuePublicGenerated';
 import { RecipientGenerated } from './recipientGenerated';
 

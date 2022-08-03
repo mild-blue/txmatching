@@ -4239,7 +4239,7 @@
                 "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingIssue"
+                        "$ref": "#/definitions/ParsingIssuePublic"
                     }
                 }
             },
@@ -4257,7 +4257,7 @@
                 "parsing_issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ParsingIssue"
+                        "$ref": "#/definitions/ParsingIssuePublic"
                     }
                 }
             },

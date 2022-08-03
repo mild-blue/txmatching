@@ -1569,7 +1569,7 @@ definitions:
                 $ref: '#/definitions/Donor'
             parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingIssue'
+                    $ref: '#/definitions/ParsingIssuePublic'
                 type: array
         required:
         - donor
@@ -1579,7 +1579,7 @@ definitions:
         properties:
             parsing_issues:
                 items:
-                    $ref: '#/definitions/ParsingIssue'
+                    $ref: '#/definitions/ParsingIssuePublic'
                 type: array
             recipient:
                 $ref: '#/definitions/Recipient'
