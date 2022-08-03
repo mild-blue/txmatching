@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 # is needed here because kw_args in dataclass is not handled well by pylint
 # pylint: disable=unexpected-keyword-arg
+
+
 def parsing_issue_to_dto(parsing_issue: ParsingIssue, txm_event: TxmEventBase) -> ParsingIssuePublicDTO:
     return ParsingIssuePublicDTO(
         hla_code_or_group=parsing_issue.hla_code_or_group,
@@ -95,3 +97,8 @@ def recipient_to_recipient_upload_dto(recipient: Recipient) -> RecipientUploadDT
         note=recipient.parameters.note,
         previous_transplants=recipient.previous_transplants,
         internal_medical_id=recipient.internal_medical_id)
+
+
+def is_parameter_non_negative(parameter_name: str, parameter_value: int):
+    if parameter_value < 0:
+        raise ValueError(f"{parameter_name} must be non-negative.")

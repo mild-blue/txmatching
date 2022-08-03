@@ -131,3 +131,8 @@ def find_config_for_parameters(
 
     logger.info(f'Provided configuration parameters for event {txm_event_id} is not in db yet')
     return None
+
+
+def raise_error_if_configuration_does_not_exist(configuration_id):
+    if ConfigModel.query.filter_by(id=configuration_id).first() is not None:
+        raise ValueError(f"Configuration with id {configuration_id} does not exist")

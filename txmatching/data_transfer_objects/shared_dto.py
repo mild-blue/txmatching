@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from txmatching.configuration.configuration import does_configuration_exist
+from txmatching.configuration.configuration import raise_error_if_configuration_does_not_exist
 
 
 @dataclass
@@ -14,4 +14,4 @@ class IdentifierDTOIn:
     # pylint:enable=invalid-name
 
     def __post_init__(self):
-        does_configuration_exist(self.id)
+        raise_error_if_configuration_does_not_exist(self.id)

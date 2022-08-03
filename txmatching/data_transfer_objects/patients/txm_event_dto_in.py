@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from txmatching.database.services.patient_service import \
     does_donor_in_txm_event_exist
-from txmatching.database.services.txm_event_service import does_txm_event_exist
+from txmatching.database.services.txm_event_service import raise_error_if_txm_event_does_not_exist
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import TxmEventState
 
@@ -20,7 +20,7 @@ class TxmDefaultEventDTOIn:
     # pylint:enable=invalid-name
 
     def __post_init__(self):
-        does_txm_event_exist(self.id)
+        raise_error_if_txm_event_does_not_exist(self.id)
 
 
 @dataclass
@@ -41,9 +41,9 @@ class TxmEventCopyPatientsDTOIn:
     donor_ids: List[int]
 
     def __post_init__(self):
-        does_txm_event_exist(self.txm_event_id_from)
+        raise_error_if_txm_event_does_not_exist(self.txm_event_id_from)
 
-        does_txm_event_exist(self.txm_event_id_to)
+        raise_error_if_txm_event_does_not_exist(self.txm_event_id_to)
 
         for donor_id in self.donor_ids:
             does_donor_in_txm_event_exist(self.txm_event_id_from, donor_id)

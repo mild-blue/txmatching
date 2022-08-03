@@ -6,7 +6,7 @@ from typing import List
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore,
                                                  PatientDbId)
-from txmatching.database.services.parsing_issue_service import is_parameter_non_negative
+from txmatching.data_transfer_objects.patients.utils import is_parameter_non_negative
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLACrossmatchLevel, Scorer, Solver
 
