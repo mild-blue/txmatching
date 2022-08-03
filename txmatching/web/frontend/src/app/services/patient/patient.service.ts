@@ -23,10 +23,8 @@ import { RecipientEditable } from '@app/model/RecipientEditable';
 import { fromDonorEditableToUpdateGenerated } from '@app/parsers/to-generated/donor.parsers';
 import { fromRecipientEditableToUpdateGenerated } from '@app/parsers/to-generated/recipient.parsers';
 import { fromPatientsEditableToInGenerated } from '@app/parsers/to-generated/patientPair.parsers';
-import { ParsingIssue } from '@app/model/ParsingIssue';
-import { parseParsingIssue} from '@app/parsers/parsingIssue.parsers';
-import {parseParsingIssuePublic} from '@app/parsers/parsingIssuePublic.parsers';
-// import { parseParsingIssue } from '@app/parsers/parsingIssueConfirmation.parsers';
+import { parseParsingIssue } from '@app/parsers/parsingIssue.parsers';
+import { parseParsingIssuePublic } from '@app/parsers/parsingIssuePublic.parsers';
 import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
 import { ParsingIssuePublic } from '@app/model/ParsingIssuePublic';
 

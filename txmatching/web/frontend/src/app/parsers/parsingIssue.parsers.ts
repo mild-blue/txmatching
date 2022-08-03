@@ -1,6 +1,5 @@
-import { ParsingIssueGenerated} from '../generated'; // , ParsingIssuePublicGenerated 
+import { ParsingIssueGenerated } from '../generated'; 
 import { ParsingIssue } from '../model/ParsingIssue';
-// import {}
 
 export const parseParsingIssue = (data: ParsingIssueGenerated): ParsingIssue => {
   return {
