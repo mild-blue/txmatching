@@ -160,14 +160,14 @@ In the future middleware should redirect you there.
 
 
 ### Crossmatches
-Antigens have three levels of resolution: broad, split, and high res. Crossmatch is a warning that happens because of different resolution levels of the same antigen in patients (or no antigen in a group in case of undecidable). It tells that further tests might be needed.
+Antigens have three levels of resolution: broad, split, and high res. Crossmatch is a warning or an error that happens because of different resolution levels of the same antigen in patients (or no antigen in a group in case of undecidable). In case of a warning, there is a need for further tests. In case of an error, donor and recipient are incompatible.
 There are three types of crossmatches: Undecidable, High Res. With Split, High Res. With Broad.
 #### High Res. With Broad
-1. Donor has an antigene of level broad
-2. Recipient has an antigene of level high res (of the same broad as in 1.)
+1. Donor has an antigen of level broad
+2. Recipient has an antigen of level high res (of the same broad as in 1.)
 #### High Res. With Split
-1. Donor has an antigene of level split
-2. Recipient has an antigene of level high res (the same split as in 1.)
+1. Donor has an antigen of level split
+2. Recipient has an antigen of level high res (the same split as in 1.)
 #### Undecidable
 1. Recipient has an antibody against an antigen from a group that donor has not been typed for.
 
