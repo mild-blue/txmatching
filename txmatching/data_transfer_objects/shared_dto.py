@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from txmatching.configuration.configuration import raise_error_if_configuration_does_not_exist
-
+from txmatching.database.sql_alchemy_schema import ConfigModel
 
 @dataclass
 class SuccessDTOOut:
@@ -14,4 +13,6 @@ class IdentifierDTOIn:
     # pylint:enable=invalid-name
 
     def __post_init__(self):
-        raise_error_if_configuration_does_not_exist(self.id)
+        #it is not possible to create a function that checks it in config_service.py because of the circular dependency
+        if ConfigModel.query.filter_by(id=self.id).first() is None:
+            raise ValueError(f"Configuration with id {self.id} does not exist")

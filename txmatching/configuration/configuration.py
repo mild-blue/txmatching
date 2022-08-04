@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.database.services.txm_event_service import raise_error_if_txm_event_does_not_exist
-# from txmatching.database.services.config_service import raise_error_if_configuration_does_not_exist
+from txmatching.database.services.txm_event_service import \
+    raise_error_if_txm_event_does_not_exist
 from txmatching.database.sql_alchemy_schema import ConfigModel
 
 
@@ -15,11 +15,8 @@ class Configuration:
     parameters: ConfigParameters
 
     def __post_init__(self):
-        raise_error_if_configuration_does_not_exist(self.id)
-
         raise_error_if_txm_event_does_not_exist(self.txm_event_id)
 
-# it's not possible to place this function in config_service.py because of circular import
-def raise_error_if_configuration_does_not_exist(configuration_id):
-    if ConfigModel.query.filter_by(id=configuration_id).first() is None:
-        raise ValueError(f"Configuration with id {configuration_id} does not exist")
+        # it is not possible to create a function that checks it in config_service.py because of the circular dependency
+        if ConfigModel.query.filter_by(id=self.id).filter_by(txm_event_id=self.txm_event_id).first() is None:
+            raise ValueError(f"Configuration with id {self.id} does not exist in txm_event with id {self.txm_event_id}")
