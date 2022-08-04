@@ -35,7 +35,7 @@ def update_persistent_hash(hash_: HashType, value: any):
     """
 
     if isinstance(value, type):
-        hash_.update(f'__{value.__name__}__'.encode('ASCII'))
+        hash_.update(f'__{value.__name__}__'.encode('UTF-8'))
     elif isinstance(value, PersistentlyHashable):
         value.update_persistent_hash(hash_)
     else:
@@ -45,7 +45,7 @@ def update_persistent_hash(hash_: HashType, value: any):
         #       (see: https://stackoverflow.com/questions/15479928)
         #       One option for implementing that is to sort the values or keys by their persistent hash
         if isinstance(value, str):
-            hash_.update(value.encode('ASCII'))
+            hash_.update(value.encode('UTF-8'))
         elif isinstance(value, (int, bool, float, datetime)):
             update_persistent_hash(hash_, str(value))
         elif isinstance(value, (list, tuple)):
