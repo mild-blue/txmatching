@@ -1,4 +1,5 @@
 from unittest import TestCase, mock
+from responses import matchers
 
 import responses
 
@@ -10,7 +11,7 @@ class TestSmsService(TestCase):
     @responses.activate
     def test__send_sms(self):
         app_config = mock.MagicMock()
-        app_config.sms_service_url = 'https://some.domain/isg/index.php'
+        app_config.sms_service_url = 'https://some.domain/SendSms'
         app_config.sms_service_sender = 'sender1'
         app_config.sms_service_login = 'test'
         app_config.sms_service_password = 'test123'
@@ -18,20 +19,21 @@ class TestSmsService(TestCase):
         phone = '+420602613357'
         body = 'Test'
 
-        # encoded URL for the previous input
-        expected_url = 'https://some.domain/isg/index.php?' \
-                       'cmd=send&' \
-                       'sender=sender1&' \
-                       'login=test&' \
-                       'password=test123&' \
-                       'phone=%2B420602613357&' \
-                       'message=Test'
+        expected_json = {
+            'login': app_config.sms_service_login,
+            'password': app_config.sms_service_password,
+            'phone': phone,
+            'message': body,
+            'sender': app_config.sms_service_sender
+        }
 
         responses.add(
-            'GET',
-            url=expected_url,
-            match_querystring=True,
-            status=200
+            'POST',
+            url=app_config.sms_service_url,
+            status=200,
+            match=[
+                matchers.json_params_matcher(expected_json)
+            ]
         )
 
         _send_otp_ikem(recipient_phone=phone, message_body=body, app_config=app_config)
@@ -39,7 +41,7 @@ class TestSmsService(TestCase):
     @responses.activate
     def test__send_sms_should_fail(self):
         app_config = mock.MagicMock()
-        app_config.sms_service_url = 'https://some.domain/isg/index.php'
+        app_config.sms_service_url = 'https://some.domain/SendSms'
         app_config.sms_service_sender = 'sender1'
         app_config.sms_service_login = 'test'
         app_config.sms_service_password = 'test123'
@@ -48,9 +50,8 @@ class TestSmsService(TestCase):
         body = 'Test'
 
         responses.add(
-            'GET',
+            'POST',
             url=app_config.sms_service_url,
-            match_querystring=False,
             status=500,
             json='{\"error\":\"some error\"}'
         )
