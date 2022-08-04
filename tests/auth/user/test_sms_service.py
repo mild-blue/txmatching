@@ -1,5 +1,4 @@
 from unittest import TestCase, mock
-from responses import matchers
 
 import responses
 
@@ -32,7 +31,7 @@ class TestSmsService(TestCase):
             url=app_config.sms_service_url,
             status=200,
             match=[
-                matchers.json_params_matcher(expected_json)
+                responses.json_params_matcher(expected_json)
             ]
         )
 
