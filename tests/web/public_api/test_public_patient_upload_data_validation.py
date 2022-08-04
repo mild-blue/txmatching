@@ -117,7 +117,7 @@ class TestMatchingApi(DbTests):
                                         recipients_json=RECIPIENTS_WITH_ERRORS)
         self._check_response(res, 400,
                              error_message='Donor (medical id "D1") has related recipient (medical id "invalid_id"),'
-                                           ' which was not found among recipients.')
+                                           ' which was not found among recipients in txm event 1.')
 
     def test_txm_event_patient_successful_upload_special_hla_typing(self):
         res, txm_event = self._txm_event_upload(donors_json=SPECIAL_DONORS_SPECIAL_HLA_CODES,

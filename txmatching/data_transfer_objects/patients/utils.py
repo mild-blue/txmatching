@@ -12,13 +12,12 @@ from txmatching.data_transfer_objects.patients.upload_dtos.recipient_upload_dto 
 from txmatching.database.sql_alchemy_schema import ParsingIssueModel
 from txmatching.patients.patient import Donor, Recipient, TxmEventBase
 
+
 logger = logging.getLogger(__name__)
 
 
 # is needed here because kw_args in dataclass is not handled well by pylint
 # pylint: disable=unexpected-keyword-arg
-
-
 def parsing_issue_to_dto(parsing_issue: ParsingIssue, txm_event: TxmEventBase) -> ParsingIssuePublicDTO:
     return ParsingIssuePublicDTO(
         hla_code_or_group=parsing_issue.hla_code_or_group,
@@ -64,13 +63,13 @@ def _get_donor_or_recipient_medical_id(parsing_issue: ParsingIssue, txm_event) -
         return None
 
 
-def donor_to_donor_upload_dto(donor: Donor) -> DonorUploadDTO:
+def donor_to_donor_upload_dto(donor: Donor, related_recipient_medical_id: str) -> DonorUploadDTO:
     return DonorUploadDTO(
         medical_id=donor.medical_id,
         blood_group=donor.parameters.blood_group,
         hla_typing=[code.raw_code for code in donor.parameters.hla_typing.hla_types_raw_list],
         donor_type=donor.donor_type,
-        related_recipient_medical_id=donor.related_recipient_db_id,
+        related_recipient_medical_id=related_recipient_medical_id,
         sex=donor.parameters.sex,
         height=donor.parameters.height,
         weight=donor.parameters.weight,

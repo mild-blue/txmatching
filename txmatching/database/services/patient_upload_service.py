@@ -1,5 +1,6 @@
 import dataclasses
 import logging
+
 from typing import Dict, List, Tuple
 
 import dacite
@@ -53,7 +54,7 @@ def add_donor_recipient_pair(donor_recipient_pair_dto: DonorRecipientPairDTO,
 
 
 def add_donor_recipient_pair_uncommitted(donor_recipient_pair_dto: DonorRecipientPairDTO,
-                                         txm_event_db_id: int) -> Tuple[List[DonorModel], List[RecipientModel]]:
+                                         txm_event_db_id: int, is_copy: bool = False) -> Tuple[List[DonorModel], List[RecipientModel]]:
     if donor_recipient_pair_dto.recipient:
         donor_recipient_pair_dto.donor.related_recipient_medical_id = donor_recipient_pair_dto.recipient.medical_id
 
@@ -61,7 +62,8 @@ def add_donor_recipient_pair_uncommitted(donor_recipient_pair_dto: DonorRecipien
         donors=[donor_recipient_pair_dto.donor],
         recipients=[donor_recipient_pair_dto.recipient] if donor_recipient_pair_dto.recipient else [],
         country_code=donor_recipient_pair_dto.country_code,
-        txm_event_db_id=txm_event_db_id
+        txm_event_db_id=txm_event_db_id,
+        is_copy=is_copy
     )
     return donors, recipients
 
@@ -87,7 +89,7 @@ def get_patients_parsing_issues_from_pair_dto(donors: List[DonorModel], recipien
     return [parsing_issue_to_dto(parsing_issue, txm_event) for parsing_issue in parsing_issues]
 
 
-def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn
+def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDTOIn, is_copy: bool = False
                                              ) -> Tuple[List[DonorModel], List[RecipientModel]]:
     txm_event_db_id = get_txm_event_db_id_by_name(patient_upload_dto.txm_event_name)
     if not patient_upload_dto.add_to_existing_patients:
@@ -98,9 +100,11 @@ def replace_or_add_patients_from_one_country(patient_upload_dto: PatientUploadDT
         donors=patient_upload_dto.donors,
         recipients=patient_upload_dto.recipients,
         country_code=patient_upload_dto.country,
-        txm_event_db_id=txm_event_db_id
+        txm_event_db_id=txm_event_db_id,
+        is_copy=is_copy
     )
     db.session.commit()
+
     return donors, recipients
 
 
@@ -183,33 +187,35 @@ def _donor_upload_dto_to_donor_model(
         donor: DonorUploadDTO,
         recipient_models_dict: Dict[str, RecipientModel],
         country_code: Country,
-        txm_event_db_id: int
+        txm_event_db_id: int,
+        is_copy: bool = False,
 ) -> DonorModel:
     maybe_related_recipient = recipient_models_dict.get(donor.related_recipient_medical_id, None)
 
-    if donor.donor_type == DonorType.DONOR and not donor.related_recipient_medical_id:
-        raise InvalidArgumentException(
-            f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" or "{DonorType.NON_DIRECTED}" '
-            f'but was "{donor.donor_type}".'
-        )
-    if (donor.donor_type == DonorType.DONOR and
-            donor.related_recipient_medical_id and
-            maybe_related_recipient is None):
-        raise InvalidArgumentException(
-            f'Donor (medical id "{donor.medical_id}") has related recipient (medical id '
-            f'"{donor.related_recipient_medical_id}"), which was not found among recipients.'
-        )
+    if not is_copy:
+        if donor.donor_type == DonorType.DONOR and not donor.related_recipient_medical_id:
+            raise InvalidArgumentException(
+                f'When recipient is not set, donor type must be "{DonorType.BRIDGING_DONOR}" or "{DonorType.NON_DIRECTED}" '
+                f'but was "{donor.donor_type}".'
+            )
+        if (donor.donor_type == DonorType.DONOR and
+                donor.related_recipient_medical_id and
+                maybe_related_recipient is None):
+            raise InvalidArgumentException(
+                f'Donor (medical id "{donor.medical_id}") has related recipient (medical id '
+                f'"{donor.related_recipient_medical_id}"), which was not found among recipients in txm event {txm_event_db_id}.'
+            )
 
-    if donor.donor_type != DonorType.DONOR and donor.related_recipient_medical_id is not None:
-        raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}" but was '
-                                       f'{donor.donor_type}.')
+        if donor.donor_type != DonorType.DONOR and donor.related_recipient_medical_id is not None:
+            raise InvalidArgumentException(f'When recipient is set, donor type must be "{DonorType.DONOR}" but was '
+                                           f'{donor.donor_type}.')
 
-    maybe_related_recipient_medical_id = maybe_related_recipient.medical_id if maybe_related_recipient else None
+        maybe_related_recipient_medical_id = maybe_related_recipient.medical_id if maybe_related_recipient else None
 
-    assert (donor.related_recipient_medical_id is None or
-            maybe_related_recipient_medical_id == donor.related_recipient_medical_id), \
-        f'Donor requires recipient medical id "{donor.related_recipient_medical_id}", ' \
-        f'but received "{maybe_related_recipient_medical_id}" or related recipient must be None.'
+        assert (donor.related_recipient_medical_id is None or
+                maybe_related_recipient_medical_id == donor.related_recipient_medical_id), \
+            f'Donor requires recipient medical id "{donor.related_recipient_medical_id}", ' \
+            f'but received "{maybe_related_recipient_medical_id}" or related recipient must be None.'
 
     donor_model = DonorModel(
         medical_id=donor.medical_id,
@@ -240,13 +246,24 @@ def _donor_upload_dto_to_donor_model(
     return donor_model
 
 
+# pylint: disable=too-many-locals
 def _add_patients_from_one_country(
         donors: List[DonorUploadDTO],
         recipients: List[RecipientUploadDTO],
         country_code: Country,
-        txm_event_db_id: int
+        txm_event_db_id: int,
+        is_copy: bool = False
 ) -> Tuple[List[DonorModel], List[RecipientModel]]:
     txm_event = get_txm_event_complete(txm_event_db_id)
+    initial_recipients = recipients.copy()
+
+    new_recipient_ids = {recipient.medical_id for recipient in recipients}
+    current_recipient_ids = {recipient.medical_id for recipient in txm_event.all_recipients}
+    recipient_duplicate_ids = new_recipient_ids.intersection(current_recipient_ids)
+
+    if recipient_duplicate_ids:
+        for medical_id in recipient_duplicate_ids:
+            recipients.remove(next(recipient for recipient in recipients if recipient.medical_id == medical_id))
 
     check_existing_ids_for_duplicates(txm_event, donors, recipients)
 
@@ -257,14 +274,22 @@ def _add_patients_from_one_country(
     ]
     db.session.add_all(recipient_models)
 
-    recipient_models_dict = {recipient_model.medical_id: recipient_model for recipient_model in recipient_models}
+    dublicate_recipients = [
+        recipient for recipient in initial_recipients if recipient.medical_id in recipient_duplicate_ids]
+    dublicate_recipient_models = [
+        _recipient_upload_dto_to_recipient_model(recipient, country_code, txm_event_db_id)
+        for recipient in dublicate_recipients
+    ]
+    recipient_models_dict = {recipient_model.medical_id: recipient_model
+                             for recipient_model in (recipient_models + dublicate_recipient_models)}
 
     donor_models = [
         _donor_upload_dto_to_donor_model(
             donor=donor,
             recipient_models_dict=recipient_models_dict,
             country_code=country_code,
-            txm_event_db_id=txm_event_db_id)
+            txm_event_db_id=txm_event_db_id,
+            is_copy=is_copy)
         for donor in donors
     ]
     db.session.add_all(donor_models)
