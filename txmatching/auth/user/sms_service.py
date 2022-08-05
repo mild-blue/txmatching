@@ -23,15 +23,14 @@ def _send_otp_ikem(recipient_phone: str, message_body: str, app_config: Applicat
     require_auth_condition(bool(app_config.sms_service_password), 'SMS service password is not set!')
 
     params = {
-        'cmd': 'send',
-        'sender': app_config.sms_service_sender,
         'login': app_config.sms_service_login,
         'password': app_config.sms_service_password,
         'phone': recipient_phone,
-        'message': message_body
+        'message': message_body,
+        'sender': app_config.sms_service_sender
     }
     try:
-        sms_request = requests.get(app_config.sms_service_url, params=params)
+        sms_request = requests.post(app_config.sms_service_url, json=params)
         if sms_request.status_code != 200:
             raise CouldNotSendOtpUsingSmsServiceException(
                 f'SMS gate responded with status code: {sms_request.status_code} '
