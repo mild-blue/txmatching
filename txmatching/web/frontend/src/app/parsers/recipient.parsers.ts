@@ -6,6 +6,7 @@ import { ListItem } from '@app/components/list-item/list-item.interface';
 import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
 import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
 import { parseParsingIssue } from '@app/parsers/parsingIssue.parsers';
+import { parseParsingIssuePublic } from './parsingIssuePublic.parsers';
 
 export const parseRecipient = (data: RecipientGenerated): Recipient => {
   const recipientListItem: ListItem = {
@@ -63,6 +64,6 @@ export const parseDate = (data: string): Date => {
 export const parseUpdatedRecipient = (data: UpdatedRecipientGenerated): UpdatedRecipient => {
   return {
     recipient: parseRecipient(data.recipient),
-    parsingIssues: data.parsing_issues.map(parseParsingIssue)
+    parsingIssues: data.parsing_issues.map(parseParsingIssuePublic)
   };
 };

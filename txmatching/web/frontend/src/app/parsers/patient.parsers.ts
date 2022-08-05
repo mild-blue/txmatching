@@ -9,7 +9,7 @@ import {
 import { AllMessages, BloodGroup, Patient, PatientParameters, Sex } from '../model';
 import { ListItem } from '../components/list-item/list-item.interface';
 import { parseAntigens } from '@app/parsers/hla.parsers';
-import { parseParsingIssueConfirmation } from './parsingIssueConfirmation.parsers';
+import { parseParsingIssue } from './parsingIssueConfirmation.parsers';
 import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
 
 export const parsePatient = (data: DonorGenerated | RecipientGenerated, listItem: ListItem): Patient => {
@@ -63,17 +63,17 @@ export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined):
   const infos: ParsingIssueConfirmation[] = [];
 
   allMessages?.errors?.forEach((error) => {
-    errors.push(parseParsingIssueConfirmation(error));
+    errors.push(parseParsingIssue(error));
   });
 
   allMessages?.warnings?.forEach((warning) => {
-    warnings.push(parseParsingIssueConfirmation(warning));
+    warnings.push(parseParsingIssue(warning));
   });
 
   warnings.sort((warning) => (!warning.confirmedBy) ? -1 : 1);
 
   allMessages?.infos?.forEach((info) => {
-    infos.push(parseParsingIssueConfirmation(info));
+    infos.push(parseParsingIssue(info));
   });
 
   return {

@@ -2,6 +2,7 @@ import { AllMessages, Patient } from '@app/model/Patient';
 import { Antibodies } from '@app/model/Hla';
 import { BloodGroup } from '@app/model/enums/BloodGroup';
 import { ParsingIssue } from '@app/model/ParsingIssue';
+import { ParsingIssuePublic } from './ParsingIssuePublic';
 
 export interface Recipient extends Patient {
   acceptableBloodGroups: BloodGroup[];
@@ -28,5 +29,5 @@ export interface RecipientRequirements {
 
 export interface UpdatedRecipient {
   recipient: Recipient;
-  parsingIssues: ParsingIssue[];
+  parsingIssues: ParsingIssuePublic[];
 }

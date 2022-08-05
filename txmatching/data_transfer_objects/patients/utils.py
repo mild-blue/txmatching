@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import (
-    ParsingIssue, ParsingIssueConfirmationDTO, ParsingIssuePublicDTO)
+    ParsingIssue, ParsingIssuePublicDTO)
 from txmatching.data_transfer_objects.patients.upload_dtos.donor_upload_dto import \
     DonorUploadDTO
 from txmatching.data_transfer_objects.patients.upload_dtos.hla_antibodies_upload_dto import \
@@ -14,6 +14,7 @@ from txmatching.patients.patient import Donor, Recipient, TxmEventBase
 
 logger = logging.getLogger(__name__)
 
+
 # is needed here because kw_args in dataclass is not handled well by pylint
 # pylint: disable=unexpected-keyword-arg
 def parsing_issue_to_dto(parsing_issue: ParsingIssue, txm_event: TxmEventBase) -> ParsingIssuePublicDTO:
@@ -22,24 +23,21 @@ def parsing_issue_to_dto(parsing_issue: ParsingIssue, txm_event: TxmEventBase) -
         parsing_issue_detail=parsing_issue.parsing_issue_detail,
         message=parsing_issue.message,
         txm_event_name=txm_event.name,
-        medical_id=_get_donor_or_recipient_medical_id(parsing_issue, txm_event),
-        confirmed_at=parsing_issue.confirmed_at,
-        confirmed_by=parsing_issue.confirmed_by
+        medical_id=_get_donor_or_recipient_medical_id(parsing_issue, txm_event)
     )
 
 
-def parsing_issue_model_to_confirmation_dto(parsing_issue: ParsingIssueModel,
-                                            txm_event_id: int) -> ParsingIssueConfirmationDTO:
-    return ParsingIssueConfirmationDTO(
+def parsing_issue_model_to_parsing_issue(parsing_issue: ParsingIssueModel) -> ParsingIssue:
+    return ParsingIssue(
         db_id=parsing_issue.id,
         hla_code_or_group=parsing_issue.hla_code_or_group,
         parsing_issue_detail=parsing_issue.parsing_issue_detail,
         message=parsing_issue.message,
-        txm_event_id=txm_event_id,
-        confirmed_at=parsing_issue.confirmed_at,
-        confirmed_by=parsing_issue.confirmed_by,
         donor_id=parsing_issue.donor_id,
-        recipient_id=parsing_issue.recipient_id
+        recipient_id=parsing_issue.recipient_id,
+        txm_event_id=parsing_issue.id,
+        confirmed_by=parsing_issue.confirmed_by,
+        confirmed_at=parsing_issue.confirmed_at,
     )
 
 

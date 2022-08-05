@@ -1,16 +1,17 @@
 from flask_restx import fields
 
 from txmatching.data_transfer_objects.base_patient_swagger import (
-    DbId, DonorToUpdate, Etag, MedicalId, PatientParametersJson, PatientToUpdate,
-    RecipientRequirements, RecipientToUpdate, AllMessagesJson)
+    AllMessagesJson, DbId, DonorToUpdate, Etag, MedicalId,
+    PatientParametersJson, PatientToUpdate, RecipientRequirements,
+    RecipientToUpdate)
 from txmatching.data_transfer_objects.enums_swagger import (BloodGroupEnumJson,
                                                             CountryCodeJson,
                                                             DonorTypeEnumJson)
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     DonorJsonIn, RecipientJsonIn)
 from txmatching.data_transfer_objects.hla.hla_swagger import HLAAntibodies
-from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
-    ParsingIssueJson
+from txmatching.data_transfer_objects.hla.parsing_issue_swagger import (
+    ParsingIssueJson, ParsingIssuePublicJson)
 from txmatching.data_transfer_objects.matchings.matching_swagger import (
     DESCRIPTION_DETAILED_SCORE, EXAMPLE_DETAILED_SCORE,
     DetailedScoreForGroupJson)
@@ -71,12 +72,12 @@ PatientsJson = patient_api.model('Patients', {
 
 UpdatedDonorJsonOut = patient_api.model('UpdatedDonor', {
     'donor': fields.Nested(required=True, model=DonorJson),
-    'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssueJson)),
+    'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssuePublicJson)),
 })
 
 UpdatedRecipientJsonOut = patient_api.model('UpdatedRecipient', {
     'recipient': fields.Nested(required=True, model=RecipientJson),
-    'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssueJson)),
+    'parsing_issues': fields.List(required=True, cls_or_instance=fields.Nested(ParsingIssuePublicJson)),
 })
 
 PatientToUpdateJson = patient_api.model('PatientModelToUpdate', PatientToUpdate)

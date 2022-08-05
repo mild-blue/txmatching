@@ -1,7 +1,7 @@
-import { ParsingIssueConfirmationGenerated } from '../generated';
+import { ParsingIssueGenerated } from '../generated';
 import { ParsingIssueConfirmation } from '../model';
 
-export const parseParsingIssueConfirmation = (data: ParsingIssueConfirmationGenerated): ParsingIssueConfirmation => {
+export const parseParsingIssue = (data: ParsingIssueGenerated): ParsingIssueConfirmation => {
   return {
     confirmedAt: data.confirmed_at,
     confirmedBy: data.confirmed_by ?? undefined,

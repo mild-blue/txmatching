@@ -2,15 +2,14 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 from txmatching.auth.exceptions import InvalidArgumentException
-from txmatching.data_transfer_objects.hla.parsing_issue_dto import \
-    ParsingIssueConfirmationDTO
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.patients.patient import Donor
 from txmatching.utils.hla_system.detailed_score import DetailedScoreForHLAGroup
 
 
 @dataclass
 class DonorDTOOut(Donor):
-    all_messages: Optional[Dict[str, List[ParsingIssueConfirmationDTO]]] = None
+    all_messages: Optional[Dict[str, List[ParsingIssue]]] = None
     score_with_related_recipient: Optional[float] = None
     max_score_with_related_recipient: Optional[float] = None
     detailed_score_with_related_recipient: Optional[List[DetailedScoreForHLAGroup]] = None
@@ -27,4 +26,4 @@ class DonorDTOOut(Donor):
 @dataclass
 class UpdatedDonorDTOOut:
     donor: DonorDTOOut
-    parsing_issues: List[ParsingIssueConfirmationDTO]
+    parsing_issues: List[ParsingIssue]

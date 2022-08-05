@@ -4,7 +4,9 @@ from enum import Enum
 from typing import List, Optional, Tuple, Union
 
 import dacite
-from txmatching.auth.exceptions import InvalidArgumentException, OverridingException
+
+from txmatching.auth.exceptions import (InvalidArgumentException,
+                                        OverridingException)
 from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.data_transfer_objects.patients.hla_antibodies_dto import \
     HLAAntibodiesDTO
@@ -22,7 +24,7 @@ from txmatching.database.db import db
 from txmatching.database.services.parsing_issue_service import (
     convert_parsing_issue_models_to_dataclasses,
     delete_parsing_issues_for_patient, delete_parsing_issues_for_txm_event_id,
-    get_parsing_issues_for_txm_event_id, parsing_issues_to_models)
+    get_parsing_issues_for_txm_event_id, parsing_issues_bases_to_models)
 from txmatching.database.services.parsing_utils import parse_date_to_datetime
 from txmatching.database.sql_alchemy_schema import (
     DonorModel, HLAAntibodyRawModel, RecipientAcceptableBloodModel,
@@ -173,9 +175,9 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         raise InvalidArgumentException('Trying to update patient from a different txm event.')
 
     updated_parsing_issues, recipient_update_dict = _create_patient_update_dict_base(recipient_update_dto)
-    updated_parsing_issues = parsing_issues_to_models(parsing_issues=updated_parsing_issues,
-                                                      recipient_id=old_recipient_model.id,
-                                                      txm_event_id=old_recipient_model.txm_event_id)
+    updated_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=updated_parsing_issues,
+                                                            recipient_id=old_recipient_model.id,
+                                                            txm_event_id=old_recipient_model.txm_event_id)
 
     if old_recipient_model.etag != recipient_update_dict['etag'] - 1:
         raise OverridingException('The patient can\'t be updated, someone edited this patient in the meantime.')
@@ -227,9 +229,9 @@ def update_recipient(recipient_update_dto: RecipientUpdateDTO, txm_event_db_id: 
         antibody_parsing_issues, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(
             new_hla_antibody_raw_models,
         )
-        updated_parsing_issues = parsing_issues_to_models(parsing_issues=antibody_parsing_issues,
-                                                          recipient_id=old_recipient_model.id,
-                                                          txm_event_id=old_recipient_model.txm_event_id)
+        updated_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=antibody_parsing_issues,
+                                                                recipient_id=old_recipient_model.id,
+                                                                txm_event_id=old_recipient_model.txm_event_id)
         parsing_issues = parsing_issues + updated_parsing_issues
         recipient_update_dict['hla_antibodies'] = dataclasses.asdict(hla_antibodies)
 
@@ -252,9 +254,9 @@ def update_donor(donor_update_dto: DonorUpdateDTO, txm_event_db_id: int) -> Dono
         raise InvalidArgumentException('Trying to update patient from a different txm event.')
 
     parsing_issues, donor_update_dict = _create_patient_update_dict_base(donor_update_dto)
-    parsing_issues = parsing_issues_to_models(parsing_issues=parsing_issues,
-                                              donor_id=old_donor_model.id,
-                                              txm_event_id=old_donor_model.txm_event_id)
+    parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=parsing_issues,
+                                                    donor_id=old_donor_model.id,
+                                                    txm_event_id=old_donor_model.txm_event_id)
 
     if old_donor_model.etag != donor_update_dict['etag'] - 1:
         raise OverridingException('The patient can\'t be saved, someone edited this patient in the meantime.')
@@ -292,13 +294,13 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         hla_typing_raw = dacite.from_dict(data_class=HLATypingRawDTO, data=patient_model.hla_typing_raw)
         patient_parsing_issues, hla_typing = parse_hla_typing_raw_and_return_parsing_issue_list(hla_typing_raw)
         if patient_model in donor_models:
-            new_parsing_issues = parsing_issues_to_models(parsing_issues=patient_parsing_issues,
-                                                          donor_id=patient_model.id,
-                                                          txm_event_id=patient_model.txm_event_id)
+            new_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=patient_parsing_issues,
+                                                                donor_id=patient_model.id,
+                                                                txm_event_id=patient_model.txm_event_id)
         else:
-            new_parsing_issues = parsing_issues_to_models(parsing_issues=patient_parsing_issues,
-                                                          recipient_id=patient_model.id,
-                                                          txm_event_id=patient_model.txm_event_id)
+            new_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=patient_parsing_issues,
+                                                                recipient_id=patient_model.id,
+                                                                txm_event_id=patient_model.txm_event_id)
         db.session.add_all(new_parsing_issues)
         patient_model.parsing_issues = new_parsing_issues
         new_hla_typing = dataclasses.asdict(hla_typing)
@@ -315,9 +317,9 @@ def recompute_hla_and_antibodies_parsing_for_all_patients_in_txm_event(
         hla_antibodies_raw = recipient_model.hla_antibodies_raw
         patient_parsing_issues, hla_antibodies = parse_hla_antibodies_raw_and_return_parsing_issue_list(
             hla_antibodies_raw)
-        new_parsing_issues = parsing_issues_to_models(parsing_issues=patient_parsing_issues,
-                                                      recipient_id=recipient_model.id,
-                                                      txm_event_id=recipient_model.txm_event_id)
+        new_parsing_issues = parsing_issues_bases_to_models(parsing_issues_temp=patient_parsing_issues,
+                                                            recipient_id=recipient_model.id,
+                                                            txm_event_id=recipient_model.txm_event_id)
         new_hla_antibodies = dataclasses.asdict(hla_antibodies)
         db.session.add_all(new_parsing_issues)
         recipient_model.parsing_issues = recipient_model.parsing_issues + new_parsing_issues
@@ -403,7 +405,7 @@ def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
     DonorModel.query.filter(DonorModel.id == donor_id).delete()
 
     if (maybe_recipient is not None and
-        len(maybe_recipient.related_donors_db_ids) == 1):
+            len(maybe_recipient.related_donors_db_ids) == 1):
         delete_parsing_issues_for_patient(recipient_id=maybe_recipient.db_id, txm_event_id=txm_event_id)
         RecipientModel.query.filter(RecipientModel.id == maybe_recipient.db_id).delete()
 
@@ -412,16 +414,16 @@ def delete_donor_recipient_pair(donor_id: int, txm_event_id: int):
 
 def _check_if_recipient_requirements_are_valid(recipient_requirements: RecipientRequirements):
     if (recipient_requirements.min_donor_age and recipient_requirements.max_donor_age and
-        recipient_requirements.min_donor_age > recipient_requirements.max_donor_age):
+            recipient_requirements.min_donor_age > recipient_requirements.max_donor_age):
         raise InvalidArgumentException(f'Maximal required age {recipient_requirements.max_donor_age} is smaller than '
                                        f'minimal required age {recipient_requirements.min_donor_age}.')
 
     if (recipient_requirements.min_donor_height and recipient_requirements.max_donor_height and
-        recipient_requirements.min_donor_height > recipient_requirements.max_donor_height):
+            recipient_requirements.min_donor_height > recipient_requirements.max_donor_height):
         raise InvalidArgumentException(f'Maximal required height {recipient_requirements.max_donor_height} is smaller '
                                        f'than minimal required height {recipient_requirements.min_donor_height}.')
 
     if (recipient_requirements.min_donor_weight and recipient_requirements.max_donor_weight and
-        recipient_requirements.min_donor_weight > recipient_requirements.max_donor_weight):
+            recipient_requirements.min_donor_weight > recipient_requirements.max_donor_weight):
         raise InvalidArgumentException(f'Maximal required weight {recipient_requirements.max_donor_weight} is smaller '
                                        f'than minimal required weight {recipient_requirements.min_donor_weight}.')

@@ -2,6 +2,7 @@ import { AllMessages, Patient } from '@app/model/Patient';
 import { DetailedScorePerGroup } from '@app/model/Hla';
 import { DonorType } from '@app/model/enums/DonorType';
 import { ParsingIssue } from '@app/model/ParsingIssue';
+import { ParsingIssuePublic } from './ParsingIssuePublic';
 
 export interface Donor extends Patient {
   active: boolean;
@@ -17,5 +18,5 @@ export interface Donor extends Patient {
 
 export interface UpdatedDonor {
   donor: Donor;
-  parsingIssues: ParsingIssue[];
+  parsingIssues: ParsingIssuePublic[];
 }

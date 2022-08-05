@@ -4,6 +4,7 @@ import { Alert } from '@app/model/Alert';
 import { filter } from 'rxjs/operators';
 import { AlertType } from '@app/model/enums/AlertType';
 import { ParsingIssue } from '@app/model/ParsingIssue';
+import { ParsingIssuePublic } from '@app/model/ParsingIssuePublic';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +34,7 @@ export class AlertService {
     this.alert(new Alert({ type: AlertType.Warning, message, actionLabel, action, fadeAutomatically }));
   }
 
-  public infoWithParsingIssues(message: string, parsingIssues: ParsingIssue[]): void {
+  public infoWithParsingIssues(message: string, parsingIssues: ParsingIssuePublic[]): void {
     const parsingIssuesStr = parsingIssues.map(
       (parsingIssue) => {
         if (parsingIssue.hlaCodeOrGroup != null) {

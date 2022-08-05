@@ -9,7 +9,7 @@ import { UpdatedRecipient } from '@app/model/Recipient';
 import {
   DonorModelPairInGenerated,
   DonorModelToUpdateGenerated,
-  ParsingIssueConfirmationGenerated,
+  ParsingIssueGenerated,
   PatientsGenerated,
   PatientUploadSuccessResponseGenerated,
   RecipientModelToUpdateGenerated,
@@ -23,10 +23,10 @@ import { RecipientEditable } from '@app/model/RecipientEditable';
 import { fromDonorEditableToUpdateGenerated } from '@app/parsers/to-generated/donor.parsers';
 import { fromRecipientEditableToUpdateGenerated } from '@app/parsers/to-generated/recipient.parsers';
 import { fromPatientsEditableToInGenerated } from '@app/parsers/to-generated/patientPair.parsers';
-import { ParsingIssue } from '@app/model/ParsingIssue';
 import { parseParsingIssue } from '@app/parsers/parsingIssue.parsers';
-import { parseParsingIssueConfirmation } from '@app/parsers/parsingIssueConfirmation.parsers';
+import { parseParsingIssuePublic } from '@app/parsers/parsingIssuePublic.parsers';
 import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
+import { ParsingIssuePublic } from '@app/model/ParsingIssuePublic';
 
 @Injectable({
   providedIn: 'root'
@@ -46,22 +46,22 @@ export class PatientService {
   public async confirmWarning(txmEventId: number, warningId: number): Promise<ParsingIssueConfirmation> {
     this._logger.log(`Confirming warning ${warningId}`);
 
-    return firstValueFrom(this._http.put<ParsingIssueConfirmationGenerated>(
+    return firstValueFrom(this._http.put<ParsingIssueGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/confirm-warning/${warningId}`,
       {}
     ).pipe(
-      map(parseParsingIssueConfirmation)
+      map(parseParsingIssue)
     ));
   }
 
   public async unconfirmWarning(txmEventId: number, warningId: number): Promise<ParsingIssueConfirmation> {
     this._logger.log(`Unonfirming warning ${warningId}`);
 
-    return firstValueFrom(this._http.put<ParsingIssueConfirmationGenerated>(
+    return firstValueFrom(this._http.put<ParsingIssueGenerated>(
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/unconfirm-warning/${warningId}`,
       {}
     ).pipe(
-      map(parseParsingIssueConfirmation)
+      map(parseParsingIssue)
     ));
   }
 
@@ -103,7 +103,7 @@ export class PatientService {
     ));
   }
 
-  public async addNewPair(txmEventId: number, donor: DonorEditable, recipient: RecipientEditable): Promise<ParsingIssue[]> {
+  public async addNewPair(txmEventId: number, donor: DonorEditable, recipient: RecipientEditable): Promise<ParsingIssuePublic[]> {
     this._logger.log('Adding new pair', [donor, recipient]);
 
     const payload: DonorModelPairInGenerated = fromPatientsEditableToInGenerated(
@@ -114,7 +114,7 @@ export class PatientService {
       `${environment.apiUrl}/txm-event/${txmEventId}/patients/pairs`,
       payload
     ).pipe(
-      map(_ => _.parsing_issues.map(parseParsingIssue))
+      map(_ => _.parsing_issues.map(parseParsingIssuePublic))
     ));
   }
 

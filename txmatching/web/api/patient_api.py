@@ -23,7 +23,7 @@ from txmatching.data_transfer_objects.configuration.configuration_swagger import
 from txmatching.data_transfer_objects.external_patient_upload.swagger import \
     PatientUploadSuccessJson
 from txmatching.data_transfer_objects.hla.parsing_issue_swagger import \
-    ParsingIssueConfirmationJson
+    ParsingIssueJson
 from txmatching.data_transfer_objects.patients.out_dtos.conversions import (
     donor_to_donor_dto_out, recipient_to_recipient_dto_out, to_lists_for_fe)
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
@@ -46,7 +46,7 @@ from txmatching.data_transfer_objects.txm_event.txm_event_swagger import \
 from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.parsing_issue_service import (
-    confirm_a_parsing_issue, get_parsing_issues_confirmation_dto_for_patients,
+    confirm_a_parsing_issue, get_parsing_issues_for_patients,
     unconfirm_a_parsing_issue)
 from txmatching.database.services.patient_service import (
     delete_donor_recipient_pair, get_donor_recipient_pair,
@@ -174,8 +174,8 @@ class AlterRecipient(Resource):
         return response_ok(
             UpdatedRecipientDTOOut(
                 recipient=recipient_to_recipient_dto_out(updated_recipient, txm_event_id),
-                parsing_issues=get_parsing_issues_confirmation_dto_for_patients(recipient_ids=[updated_recipient.db_id],
-                                                                                txm_event_id=txm_event_id)
+                parsing_issues=get_parsing_issues_for_patients(recipient_ids=[updated_recipient.db_id],
+                                                               txm_event_id=txm_event_id)
             )
         )
 
@@ -210,8 +210,8 @@ class AlterDonor(Resource):
                     scorer,
                     txm_event
                 ),
-                parsing_issues=get_parsing_issues_confirmation_dto_for_patients(donor_ids=[updated_donor.db_id],
-                                                                                txm_event_id=txm_event_id)
+                parsing_issues=get_parsing_issues_for_patients(donor_ids=[updated_donor.db_id],
+                                                               txm_event_id=txm_event_id)
             )
         )
 
@@ -294,7 +294,7 @@ class ConfirmWarning(Resource):
         security='bearer',
         description='Confirm a warning.'
     )
-    @patient_api.response_ok(ParsingIssueConfirmationJson, description='Issue confirmed successfully.')
+    @patient_api.response_ok(ParsingIssueJson, description='Issue confirmed successfully.')
     @patient_api.response_errors()
     @patient_api.require_user_login()
     @require_user_edit_patients_access()
@@ -320,7 +320,7 @@ class UnconfirmWarning(Resource):
         security='bearer',
         description='Unconfirm a warning.'
     )
-    @patient_api.response_ok(ParsingIssueConfirmationJson, description='Issue unconfirmed successfully.')
+    @patient_api.response_ok(ParsingIssueJson, description='Issue unconfirmed successfully.')
     @patient_api.response_errors()
     @patient_api.require_user_login()
     @require_user_edit_patients_access()

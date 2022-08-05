@@ -1,12 +1,13 @@
 from typing import Dict, List, Union
 
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssueConfirmationDTO
+from txmatching.data_transfer_objects.hla.parsing_issue_dto import ParsingIssue
 from txmatching.data_transfer_objects.patients.out_dtos.donor_dto_out import \
     DonorDTOOut
 from txmatching.data_transfer_objects.patients.out_dtos.recipient_dto_out import \
     RecipientDTOOut
-from txmatching.database.services.parsing_issue_service import get_parsing_issues_confirmation_dto_for_patients
+from txmatching.database.services.parsing_issue_service import \
+    get_parsing_issues_for_patients
 from txmatching.patients.patient import Donor, Recipient, TxmEvent
 from txmatching.scorers.additive_scorer import AdditiveScorer
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
@@ -140,21 +141,21 @@ def get_detailed_score(compatibility_index_detailed: List[DetailedCompatibilityI
 
 
 def get_messages(txm_event_id: int, recipient_id: int = None, donor_id: int = None) -> Dict[
-    str, List[ParsingIssueConfirmationDTO]]:
+        str, List[ParsingIssue]]:
     if donor_id is not None:
         donor_id = [donor_id]
     if recipient_id is not None:
         recipient_id = [recipient_id]
 
-    parsing_issues_confirmation = get_parsing_issues_confirmation_dto_for_patients(txm_event_id, donor_id, recipient_id)
+    parsing_issues = get_parsing_issues_for_patients(txm_event_id, donor_id, recipient_id)
 
     return {
         'infos': [],
         'warnings': [
-            warning for warning in parsing_issues_confirmation
+            warning for warning in parsing_issues
             if warning.parsing_issue_detail in WARNING_PROCESSING_RESULTS
         ],
         'errors': [
-            error for error in parsing_issues_confirmation
+            error for error in parsing_issues
             if error.parsing_issue_detail in ERROR_PROCESSING_RESULTS]
     }
