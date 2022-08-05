@@ -6,7 +6,6 @@ from typing import List
 from txmatching.configuration.subclasses import (ForbiddenCountryCombination,
                                                  ManualDonorRecipientScore,
                                                  PatientDbId)
-from txmatching.data_transfer_objects.patients.utils import is_parameter_non_negative
 from txmatching.utils.country_enum import Country
 from txmatching.utils.enums import HLACrossmatchLevel, Scorer, Solver
 
@@ -21,7 +20,7 @@ class ComparisonMode(Enum):
 
 
 COMPARISON_MODE = 'comparison_mode'
-
+NON_NEGATIVE = 'non_negative'
 
 # pylint: disable=too-many-instance-attributes
 # I think it is reasonable to have many attributes here
@@ -60,14 +59,24 @@ class ConfigParameters:
     scorer_constructor_name: Scorer = Scorer.SplitScorer
     solver_constructor_name: Solver = Solver.ILPSolver
     require_compatible_blood_group: bool = False
-    minimum_total_score: float = 0.0
+    minimum_total_score: float = field(default=0.0,
+                                       compare=False,
+                                       metadata={NON_NEGATIVE: True})
     require_better_match_in_compatibility_index: bool = False
     require_better_match_in_compatibility_index_or_blood_group: bool = False
-    blood_group_compatibility_bonus: float = 0.0
+    blood_group_compatibility_bonus: float = field(default=0.0,
+                                                   compare=False,
+                                                   metadata={NON_NEGATIVE: True})
     use_binary_scoring: bool = False
-    max_cycle_length: int = 4
-    max_sequence_length: int = 4
-    max_number_of_distinct_countries_in_round: int = 3
+    max_cycle_length: int = field(default=4,
+                                  compare=True,
+                                  metadata={NON_NEGATIVE: True})
+    max_sequence_length: int = field(default=4,
+                                     compare=True,
+                                     metadata={NON_NEGATIVE: True})
+    max_number_of_distinct_countries_in_round: int = field(default=3,
+                                                           compare=True,
+                                                           metadata={NON_NEGATIVE: True})
     required_patient_db_ids: List[PatientDbId] = field(default_factory=list,
                                                        metadata={COMPARISON_MODE: ComparisonMode.SET})
     use_high_resolution: bool = True
@@ -82,26 +91,33 @@ class ConfigParameters:
     max_debt_for_country: int = field(default=3,
                                       compare=True)
     max_debt_for_country_for_blood_group_zero: int = field(default=3,
-                                                           compare=True)
+                                                           compare=True,
+                                                           metadata={NON_NEGATIVE: True})
     max_matchings_to_show_to_viewer: int = field(default=0,
                                                  compare=True,
-                                                 metadata={COMPARISON_MODE: ComparisonMode.IGNORE})
+                                                 metadata={COMPARISON_MODE: ComparisonMode.IGNORE,
+                                                           NON_NEGATIVE: True})
     max_number_of_matchings: int = field(default=5,
                                          compare=True,
-                                         metadata={COMPARISON_MODE: ComparisonMode.SMALLER})
+                                         metadata={COMPARISON_MODE: ComparisonMode.SMALLER,
+                                                   NON_NEGATIVE: True})
     max_matchings_in_all_solutions_solver: int = field(default=10000,
                                                        compare=True,
-                                                       metadata={COMPARISON_MODE: ComparisonMode.SMALLER})
+                                                       metadata={COMPARISON_MODE: ComparisonMode.SMALLER,
+                                                                 NON_NEGATIVE: True})
     max_cycles_in_all_solutions_solver: int = field(default=1000000,
                                                     compare=True,
-                                                    metadata={COMPARISON_MODE: ComparisonMode.SMALLER})
+                                                    metadata={COMPARISON_MODE: ComparisonMode.SMALLER,
+                                                              NON_NEGATIVE: True})
     max_matchings_in_ilp_solver: int = field(default=20,
                                              compare=True,
-                                             metadata={COMPARISON_MODE: ComparisonMode.SMALLER})
+                                             metadata={COMPARISON_MODE: ComparisonMode.SMALLER,
+                                                       NON_NEGATIVE: True})
 
     max_number_of_dynamic_constrains_ilp_solver: int = field(default=100,
                                                              compare=True,
-                                                             metadata={COMPARISON_MODE: ComparisonMode.SMALLER})
+                                                             metadata={COMPARISON_MODE: ComparisonMode.SMALLER,
+                                                                       NON_NEGATIVE: True})
 
     def comparable(self, other):
         """
@@ -123,24 +139,19 @@ class ConfigParameters:
                 else:
                     if val1 != val2:
                         return False
-
         return True
 
-    # pylint: disable=too-many-branches
+    def non_negative(self):
+        """
+        Check all the fields that have to be non-negative
+        """
+        for fld in dataclasses.fields(self):
+            if fld.metadata.get(NON_NEGATIVE, None):
+                if getattr(self, fld.name, None) < 0:
+                    raise ValueError(f"{fld.name} has to be postive")
+        return True
+
+
     def __post_init__(self):
-        is_parameter_non_negative("Minimum total score", self.minimum_total_score)
-        is_parameter_non_negative("Blood group compatibility bonus", self.blood_group_compatibility_bonus)
-        is_parameter_non_negative("Max cycle length", self.max_cycle_length)
-        is_parameter_non_negative("Max sequence length", self.max_sequence_length)
-        is_parameter_non_negative("Max number of distinct countries in round",
-                                  self.max_number_of_distinct_countries_in_round)
-        is_parameter_non_negative("Max debt for country", self.max_debt_for_country)
-        is_parameter_non_negative("Max debt for country for blood group zero",
-                                  self.max_debt_for_country_for_blood_group_zero)
-        is_parameter_non_negative("Max matchings to show to viewer", self.max_matchings_to_show_to_viewer)
-        is_parameter_non_negative("Max number of matchings", self.max_number_of_matchings)
-        is_parameter_non_negative("Max matchings in all solutions solver", self.max_matchings_in_all_solutions_solver)
-        is_parameter_non_negative("Max cycles in all solutions solver", self.max_cycles_in_all_solutions_solver)
-        is_parameter_non_negative("Max matchings in ilp solver", self.max_matchings_in_ilp_solver)
-        is_parameter_non_negative("Max number of dynamic constrains ilp solver",
-                                  self.max_number_of_dynamic_constrains_ilp_solver)
+        self.non_negative()
+    
