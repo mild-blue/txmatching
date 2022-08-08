@@ -160,15 +160,7 @@ In the future middleware should redirect you there.
 
 
 ### Crossmatches
-Antigens have three levels of resolution: broad, split, and high res. Crossmatch is a warning or an error that happens because of different resolution levels of the same antigen in patients (or no antigen in a group in case of undecidable). In case of a warning, there is a need for further tests. In case of an error, donor and recipient are incompatible.
-There are three types of crossmatches: Undecidable, High Res. With Split, High Res. With Broad.
-#### High Res. With Broad
-1. Donor has an antigen of level broad
-2. Recipient has an antigen of level high res (of the same broad as in 1.)
-#### High Res. With Split
-1. Donor has an antigen of level split
-2. Recipient has an antigen of level high res (the same split as in 1.)
-#### Undecidable
-1. Recipient has an antibody against an antigen from a group that donor has not been typed for.
+Crossmatch happens because of a match of recipient's antibody with donor's antigen. It can mean that the transplant is forbidden completely or that further tests are needed, so the warning is shown.
+There are six types of crossmatches. You can read about them in [TXM knowledge base](documentation/README.md)
 
 To generate patients with crossmatches set parameter CROSSMATCH to True in `__main__` function in generate_patients.py
