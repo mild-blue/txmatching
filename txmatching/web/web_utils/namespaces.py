@@ -21,6 +21,8 @@ txm_event_api = Namespace(TXM_EVENT_NAMESPACE)
 PUBLIC_NAMESPACE = 'public'
 public_api = Namespace(PUBLIC_NAMESPACE)
 
+OPTIMIZER_NAMESPACE = 'optimizer'
+optimizer_api = Namespace(OPTIMIZER_NAMESPACE)
 
 REPORTS_NAMESPACE = 'reports'
 report_api = Namespace(REPORTS_NAMESPACE)
