@@ -160,7 +160,7 @@ In the future middleware should redirect you there.
 
 
 ### Crossmatches
-Crossmatch happens because of a match of recipient's antibody with donor's antigen. It can mean that the transplant is forbidden completely or that further tests are needed, so the warning is shown.
-There are six types of crossmatches. You can read about them in [TXM knowledge base](documentation/README.md)
+Crossmatch happens because of a match of the recipient's antibody with the donor's antigen. It means that the transplant is forbidden completely or that it is allowed but further tests are needed, so the warning is shown.
+There are six types of crossmatches. You will be able to read about them in the future in [TXM knowledge base](documentation/README.md).
 
-To generate patients with crossmatches set parameter CROSSMATCH to True in `__main__` function in generate_patients.py
+To generate patients with crossmatches warnings set parameter CROSSMATCH to True in `__main__` function in generate_patients.py
