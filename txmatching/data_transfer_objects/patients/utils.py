@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 # is needed here because kw_args in dataclass is not handled well by pylint
 # pylint: disable=unexpected-keyword-arg
+
+
 def parsing_issue_to_dto(parsing_issue: ParsingIssue, txm_event: TxmEventBase) -> ParsingIssuePublicDTO:
     return ParsingIssuePublicDTO(
         hla_code_or_group=parsing_issue.hla_code_or_group,

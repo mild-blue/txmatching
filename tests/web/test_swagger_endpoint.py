@@ -1,10 +1,14 @@
+import dataclasses
+
 from swagger_unittest import swagger_test
 
 from local_testing_utilities.populate_db import (ADMIN_WITH_DEFAULT_TXM_EVENT,
                                                  PATIENT_DATA_OBFUSCATED)
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.utils.get_absolute_path import get_absolute_path
-from txmatching.web import (API_VERSION, PATH_TO_SWAGGER_YAML,
+from txmatching.web import (API_VERSION, CONFIGURATION_NAMESPACE,
+                            MATCHING_NAMESPACE, PATH_TO_SWAGGER_YAML,
                             PATIENT_NAMESPACE, PUBLIC_NAMESPACE,
                             SERVICE_NAMESPACE, TXM_EVENT_NAMESPACE,
                             USER_NAMESPACE)
@@ -30,6 +34,18 @@ class TestSwaggerEndpoints(DbTests):
         self.txm_event_db_id = self.fill_db_with_patients(
             get_absolute_path(PATIENT_DATA_OBFUSCATED)
         )
+
+        # add configuration to db
+        with self.app.test_client() as client:
+            conf_dto = dataclasses.asdict(ConfigParameters())
+
+        res = client.post(
+            f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/{MATCHING_NAMESPACE}/calculate-for-config',
+            json=conf_dto,
+            headers=self.auth_headers
+        )
+        self.assertEqual(200, res.status_code)
+
         special_status_code_for_paths = {
             'get': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/authentik-login': [400]

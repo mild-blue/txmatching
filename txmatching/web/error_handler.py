@@ -223,6 +223,8 @@ def _log_exception(ex: Exception):
 def _log_warning(ex: Exception):
     logger.warning(_format_exception(ex))
 
+def _log_unexpected_error(error_code: int):
+    logger.error(f'Unexpected error code returned {error_code}, returning 500 instead')
 
 def _format_exception(ex: Exception) -> str:
     return f'{type(ex)}: - {str(ex)}'
@@ -231,6 +233,6 @@ def _format_exception(ex: Exception) -> str:
 def _get_code_from_error_else_500(error: Exception):
     error_code = getattr(error, 'code', 500)
     if isinstance(error_code, int):
-        logger.error(f'Unexpected error code returned {error_code}, returning 500 instead')
+        _log_unexpected_error(error_code)
         return error_code
     return 500
