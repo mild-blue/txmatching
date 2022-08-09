@@ -166,6 +166,7 @@ def populate_db_with_split_data(user_models):
 
 def populate_small_db():
     create_or_overwrite_txm_event(name='test')
+    create_or_overwrite_txm_event(name=CROSSMATCH_TXM_EVENT_NAME)
 
     add_users()
     store_generated_patients_from_folder(SMALL_DATA_FOLDER, GENERATED_TXM_EVENT_NAME)
