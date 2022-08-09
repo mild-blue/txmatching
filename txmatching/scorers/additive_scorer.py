@@ -27,10 +27,14 @@ class AdditiveScorer(ScorerBase):
         if manual_score is None:
             return self.score_transplant_calculated(donor, recipient, original_donors)
         else:
-            return manual_score
+            return self.get_score_when_manual_score_set(manual_score)
+
 
     def score_transplant_calculated(self, donor: Donor, recipient: Recipient,
                                     original_donors: Optional[List[Donor]]) -> float:
+        raise NotImplementedError('Has to be overridden')
+
+    def get_score_when_manual_score_set(self, manual_score) -> float:
         raise NotImplementedError('Has to be overridden')
 
     def score(self, matching: Matching, donors_dict: Dict[DonorDbId, Donor],
