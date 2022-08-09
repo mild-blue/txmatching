@@ -110,9 +110,9 @@ recipient has antibody DQ3 (both are missing high res and split).
 over cutoff. E.g.:  donor has antigen A9, and recipient has antibodies A\*23:01, A\*24:02 and A\*23:04 and at least one
 is over the cutoff, and at least one is below the cutoff.
 
-**UNDECIDABLE** - recipient has antibodies (of any specificity) that donor has not been typed for. E.g.: donor has
-antigens in group “Other”: DPB1\*512:01, DQA1\*02:05, and recipient has antibodies: DQB1\*03:10, DPB1\*414:01. Thus,
-DQB1\*03:10 is UNDECIDABLE.
+**UNDECIDABLE** - recipient has antibodies (of any specificity) against antigens that donor has not been typed for.
+E.g.: donor has antigens in group “Other”: DPB1\*512:01, DQA1\*02:05, and recipient has antibodies: DQB1\*03:10,
+DPB1\*414:01. Thus, DQB1\*03:10 is UNDECIDABLE.
 
 **NONE** - antibody is over cutoff, but there is no crossmatch.
 
