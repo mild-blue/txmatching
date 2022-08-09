@@ -1,7 +1,10 @@
+import json
 import logging
+import pandas as pd
 
 from flask_restx import Resource
 from flask import request, Response
+from io import StringIO
 from typing import List
 from werkzeug.datastructures import FileStorage
 
@@ -69,6 +72,16 @@ def check_extensions(files: List[FileStorage]):
             raise ValueError(f'File \'{name}\' not in correct format.')
 
 
+def parse_file_storage_to_csv(file: FileStorage) -> pd.DataFrame:
+    csv_s = StringIO(file.read().decode("utf-8"))
+    return pd.read_csv(StringIO(csv_s))
+
+
+def parse_file_storage_to_json(file: FileStorage) -> dict:
+    string_json = file.read().decode("utf-8")
+    return json.loads(string_json)
+
+
 @optimizer_api.route('', methods=['POST'])
 class Optimize(Resource):
     # todo use swagger for response
@@ -86,9 +99,9 @@ class Optimize(Resource):
         check_extensions([comp_graph_f, config_f, pairs_f])
 
         # parse to objects and validate
-        comp_info_prep = parse_csv_to_comp_info(comp_graph_f)
-        comp_info = parse_csv_to_pairs(pairs_f, comp_info_prep)
-        config = parse_json_to_config(config_f)
+        comp_info_prep = parse_csv_to_comp_info(parse_file_storage_to_csv(comp_graph_f))
+        comp_info = parse_csv_to_pairs(parse_file_storage_to_csv(pairs_f), comp_info_prep)
+        config = parse_json_to_config(parse_file_storage_to_json(config_f))
 
         # todo calculate cycles and chains
 

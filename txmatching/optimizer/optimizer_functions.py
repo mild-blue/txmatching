@@ -1,21 +1,14 @@
-import json
 import numpy as np
 import pandas as pd
-import zipfile
 
 from dacite import from_dict
-from io import StringIO
-from werkzeug.datastructures import FileStorage
 
 from txmatching.optimizer.compatibility_info import CompatibilityInfo
 from txmatching.optimizer.optimizer_config import OptimizerConfig
 from txmatching.optimizer.optimizer_return_object import OptimizerReturn
 
 
-def parse_csv_to_comp_info(csv_file: FileStorage) -> CompatibilityInfo:
-    csv_s = csv_file.read().decode("utf-8")
-    csv_content = pd.read_csv(StringIO(csv_s))
-
+def parse_csv_to_comp_info(csv_content: pd.DataFrame) -> CompatibilityInfo:
     # check data types
     for column in csv_content.columns:
         if csv_content[column].dtype != np.integer:
@@ -42,10 +35,7 @@ def parse_csv_to_comp_info(csv_file: FileStorage) -> CompatibilityInfo:
     )
 
 
-def parse_csv_to_pairs(csv_file: FileStorage, comp_info: CompatibilityInfo) -> CompatibilityInfo:
-    csv_s = csv_file.read().decode("utf-8")
-    csv_content = pd.read_csv(StringIO(csv_s))
-
+def parse_csv_to_pairs(csv_content: pd.DataFrame, comp_info: CompatibilityInfo) -> CompatibilityInfo:
     if len(csv_content.columns) != 2:
         raise ValueError("Invalid \'pairs\' file contents. Length of line not 2.")
 
@@ -65,10 +55,8 @@ def parse_csv_to_pairs(csv_file: FileStorage, comp_info: CompatibilityInfo) -> C
     return comp_info
 
 
-def parse_json_to_config(json_file: FileStorage) -> OptimizerConfig:
-    string_json = json_file.read().decode("utf-8")
-    dict_json = json.loads(string_json)
-    configuration = from_dict(data_class=OptimizerConfig, data=dict_json)
+def parse_json_to_config(json_file: dict) -> OptimizerConfig:
+    configuration = from_dict(data_class=OptimizerConfig, data=json_file)
     return configuration
 
 
