@@ -5,9 +5,12 @@ from flask import request, Response
 from typing import List
 from werkzeug.datastructures import FileStorage
 
+# todo use swagger
+# from txmatching.data_transfer_objects.optimizer.optimizer_in_swagger import OptimizerReturnObjectJson
 from txmatching.optimizer.optimizer_functions import export_return_data, parse_csv_to_comp_info, parse_csv_to_pairs, \
     parse_json_to_config
 from txmatching.web.web_utils.namespaces import optimizer_api
+from txmatching.web.web_utils.route_utils import response_ok
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +71,7 @@ def check_extensions(files: List[FileStorage]):
 
 @optimizer_api.route('', methods=['POST'])
 class Optimize(Resource):
+    # todo use swagger for response
     @optimizer_api.response_ok(description=OPTIMIZER_DESCRIPTION)
     @optimizer_api.response_errors()
     def post(self) -> Response:
@@ -89,5 +93,4 @@ class Optimize(Resource):
         # todo calculate cycles and chains
 
         # todo return files
-        response = export_return_data()
-        return response
+        return response_ok(export_return_data())
