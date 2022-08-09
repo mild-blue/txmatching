@@ -89,7 +89,8 @@ class ConfigParameters:
         metadata={COMPARISON_MODE: ComparisonMode.SET}
     )
     max_debt_for_country: int = field(default=3,
-                                      compare=True)
+                                      compare=True,
+                                      metadata={NON_NEGATIVE: True})
     max_debt_for_country_for_blood_group_zero: int = field(default=3,
                                                            compare=True,
                                                            metadata={NON_NEGATIVE: True})
@@ -113,7 +114,6 @@ class ConfigParameters:
                                              compare=True,
                                              metadata={COMPARISON_MODE: ComparisonMode.SMALLER,
                                                        NON_NEGATIVE: True})
-
     max_number_of_dynamic_constrains_ilp_solver: int = field(default=100,
                                                              compare=True,
                                                              metadata={COMPARISON_MODE: ComparisonMode.SMALLER,
@@ -148,10 +148,8 @@ class ConfigParameters:
         for fld in dataclasses.fields(self):
             if fld.metadata.get(NON_NEGATIVE, None):
                 if getattr(self, fld.name, None) < 0:
-                    raise ValueError(f"{fld.name} has to be postive")
+                    raise ValueError(f"{fld.name} has to be non-negative")
         return True
-
 
     def __post_init__(self):
         self.non_negative()
-    

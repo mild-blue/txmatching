@@ -110,17 +110,29 @@ class TestConfiguration(DbTests):
     def test_configuration_non_negative_parameter(self):
         with self.assertRaises(ValueError):
             ConfigParameters(minimum_total_score=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(blood_group_compatibility_bonus=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_cycle_length=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_sequence_length=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_number_of_distinct_countries_in_round=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_debt_for_country=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_debt_for_country_for_blood_group_zero=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_matchings_to_show_to_viewer=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_number_of_matchings=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_matchings_in_all_solutions_solver=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_cycles_in_all_solutions_solver=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_matchings_in_ilp_solver=-1)
+        with self.assertRaises(ValueError):
             ConfigParameters(max_number_of_dynamic_constrains_ilp_solver=-1)
 
     def test_configuration_equality(self):

@@ -18,5 +18,6 @@ class Configuration:
         raise_error_if_txm_event_does_not_exist(self.txm_event_id)
 
         # it is not possible to create a function that checks it in config_service.py because of the circular dependency
-        if ConfigModel.query.filter_by(id=self.id).filter_by(txm_event_id=self.txm_event_id).first() is None:
+        config_model = ConfigModel.query.get(self.id)
+        if config_model is None or config_model.txm_event_id != self.txm_event_id:
             raise ValueError(f"Configuration with id {self.id} does not exist in txm_event with id {self.txm_event_id}")
