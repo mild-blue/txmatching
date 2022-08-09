@@ -4,8 +4,7 @@ import pandas as pd
 import zipfile
 
 from dacite import from_dict
-from flask import Response, send_file
-from io import BytesIO, StringIO
+from io import StringIO
 from werkzeug.datastructures import FileStorage
 
 from txmatching.optimizer.compatibility_info import CompatibilityInfo
