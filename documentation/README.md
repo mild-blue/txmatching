@@ -91,6 +91,8 @@ any HLAs the donor has been typed for programmatically.
 
 ## Types of crossmatches in TXM
 
+IMPORTANT: When we get antibodies in high res, we assume that we are getting all antibodies the patient was tested for. Meaning, both with MFI below and above cutoff. In the case of split or broad resolution we do not assume that. Meaning, we expect that only the positive MFI values are send.
+
 **HIGH_RES** - both donor antigens and recipient antibodies are in high resolution OR donor has typization in split or
 broad and recipient has antibodies all in high res and all antibodies are positive against donor typization. E.g.: donor
 has antigen DRB1\*08:18, and recipient has antibody DRB1\*08:18 OR donor has antigen DR8, and recipient has antibodies
@@ -111,10 +113,10 @@ over cutoff. E.g.:  donor has antigen A9, and recipient has antibodies A\*23:01,
 is over the cutoff, and at least one is below the cutoff.
 
 **UNDECIDABLE** - recipient has antibodies (of any specificity) against antigens that donor has not been typed for.
-E.g.: donor has antigens in group “Other”: DPB1\*512:01, DQA1\*02:05, and recipient has antibodies: DQB1\*03:10,
+E.g.: donor has antigens in groups DPB and DQA: DPB1\*512:01, DQA1\*02:05, and recipient has antibodies in groups DQB and DPB: DQB1\*03:10,
 DPB1\*414:01. Thus, DQB1\*03:10 is UNDECIDABLE.
 
-**NONE** - antibody is over cutoff, but there is no crossmatch.
+**NONE** - antibody is over cutoff, but there is no crossmatch. E.g.: donor has antigen DQA1\*03:10 and recipient has antibody DQA1\*04:07.
 
 ## What is MFI and cutoff?
 
