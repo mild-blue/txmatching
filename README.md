@@ -157,3 +157,10 @@ It might take some time (minute or two) before Authentik is ready.
 
 You can test it by going to http://localhost:9000/application/o/authorize/?client_id=f5c6b6a72ff4f7bbdde383a26bdac192b2200707&response_type=code&redirect_uri=http://localhost:8080/v1/user/authentik-login&scope=null  
 In the future middleware should redirect you there.
+
+
+### Crossmatches
+Crossmatch happens because of a match of the recipient's antibody with the donor's antigen. It means that the transplant is forbidden completely or that it is allowed but further tests are needed, so the warning is shown.
+There are six types of crossmatches. You will be able to read about them in the future in [TXM knowledge base](documentation/README.md).
+
+To generate patients with crossmatches warnings set parameter CROSSMATCH to True in `__main__` function in generate_patients.py
