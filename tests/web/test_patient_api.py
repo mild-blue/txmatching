@@ -1,4 +1,5 @@
 import os
+import dataclasses
 
 from sqlalchemy import and_
 
@@ -9,6 +10,7 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_antibody,
                                                         create_hla_typing)
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
@@ -21,7 +23,9 @@ from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
-from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE
+from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE, CONFIGURATION_NAMESPACE, MATCHING_NAMESPACE
+# from tests.web.test_configuration_api import TestPatientService
+from txmatching.database.services.config_service import configuration_parameters_from_dict
 
 
 class TestPatientService(DbTests):
@@ -758,3 +762,94 @@ class TestPatientService(DbTests):
             self.assertEqual(406, res.status_code)
 
             self.assertFalse(recipient_db_id in txm_event.active_and_valid_recipients_dict)
+
+    def test_default_config_not_working_when_patients_change(self):
+        # 1. fill db with patients
+        txm_event_db_id = self.fill_db_with_patients()
+
+        # 2. add configuration 
+        donor_id = DonorModel.query.get(txm_event_db_id).id
+        recipient_id = RecipientModel.query.get(txm_event_db_id).id
+
+        configuration = ConfigParameters(manual_donor_recipient_scores =[{
+                'donor_db_id': donor_id,
+                'recipient_db_id': recipient_id,
+                'score': 10
+            }])
+
+        conf_id = self._calculate_for_config(configuration, txm_event_db_id)
+
+        # 3. set default config for the txm event
+        with self.app.test_client() as client:
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{CONFIGURATION_NAMESPACE}/set-default',
+                             headers=self.auth_headers,
+                             json={'id': conf_id})
+            self.assertEqual(200, res.status_code) # ! Error!
+
+        # 4. delete pair from txm event
+        with self.app.test_client() as client:
+            res = client.delete(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                                f'{PATIENT_NAMESPACE}/pairs/{donor_id}',
+                                headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+
+        # 5. check that default config is not working anymore
+        conf_id = self._calculate_for_config(configuration, txm_event_db_id)
+
+
+        # # 3. get default config for the txm event
+        # config = self._get_config('default', txm_event_db_id)
+
+        # # 4. get donor and recipient from the txm event
+        # # donor_id = DonorModel.query.get(txm_event_db_id).id
+        # # recipient_id = RecipientModel.query.get(txm_event_db_id).id
+
+        # # 5. add patients to manual_donor_recipient_scores in the config
+        # # config['manual_donor_recipient_scores'] = [
+        # #     {
+        # #         'donor_db_id': donor_id,
+        # #         'recipient_db_id': recipient_id,
+        # #         'score': 10
+        # #     }
+        # # ]
+
+        # # 6. delete pair from txm event
+        # with self.app.test_client() as client:
+        #     res = client.delete(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+        #                         f'{PATIENT_NAMESPACE}/pairs/{donor_id}',
+        #                         headers=self.auth_headers)
+        #     self.assertEqual(200, res.status_code)
+
+        # # 7. check if default config is working - solve for config
+        # self._calculate_for_config(configuration_parameters_from_dict(config), txm_event_db_id)
+
+    def _get_config(self, config_id, txm_event_db_id):
+        with self.app.test_client() as client:
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{CONFIGURATION_NAMESPACE}/{config_id}',
+                             headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+        return res.json
+
+    def _calculate_for_config(self, configuration, txm_event_db_id):
+        with self.app.test_client() as client:
+            conf_dto = dataclasses.asdict(configuration)
+
+        res = client.post(
+            f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{MATCHING_NAMESPACE}/calculate-for-config',
+            json=conf_dto,
+            headers=self.auth_headers
+        )
+
+        self.assertEqual(200, res.status_code)
+        return res.json
+
+    def _set_default_config(self, config_id, txm_event_db_id):
+        with self.app.test_client() as client:
+            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                             f'{CONFIGURATION_NAMESPACE}/set-default',
+                             json={'id': config_id},
+                             headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
+        return res.json
