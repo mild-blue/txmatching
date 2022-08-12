@@ -91,7 +91,9 @@ any HLAs the donor has been typed for programmatically.
 
 ## Types of crossmatches in TXM
 
-IMPORTANT: When we get antibodies in high res, we assume that we are getting all antibodies the patient was tested for. Meaning, both with MFI below and above cutoff. In the case of split or broad resolution we do not assume that. Meaning, we expect that only the positive MFI values are send.
+IMPORTANT: When we get antibodies in high res, we assume that we are getting all antibodies the patient was tested for. Meaning, both with MFI below and above cutoff. 
+
+In the case of split or broad resolution we do not assume that. We assume that the patient has been tested for all relevant antibodies but only the positive MFI values are required. Although, negative can be send too.
 
 **HIGH_RES** - both donor antigens and recipient antibodies are in high resolution OR donor has typization in split or
 broad and recipient has antibodies all in high res and all antibodies are positive against donor typization. E.g.: donor
