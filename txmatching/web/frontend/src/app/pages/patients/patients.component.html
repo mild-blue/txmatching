@@ -33,7 +33,6 @@
   </app-container>
 
   <app-template-popup [isOpened]="patientPopupOpened"
-                      [matTooltip]="'Add new patient pair'"
                       (wasClosed)="togglePatientPopup()">
     <app-add-new-patient *ngIf="patientPopupOpened" [defaultTxmEvent]="defaultTxmEvent" (addPatientsClicked)="addPatientPair($event)"></app-add-new-patient>
   </app-template-popup>
