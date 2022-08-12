@@ -30,7 +30,10 @@
                         }
                     },
                     "200": {
-                        "description": "\nEndpoint that accepts 3 input files: \n1. pairs (csv) in format:\noriginal_donor_index, original_recipient_index\n2,1\n3,1\n\n2. compatibility_graph (csv) in format:\ndonor_index, recipient_index, hla_compatibility_score, donor_age_difference...\n1,2,17,1\n2,2,18,1\n1,3,8,5\n1,4,19,10\n\n3. configuration (json) in format:\n{\n    limitations: {\n        max_cycle_length: 3\n        max_chain_length: 3\n        custom_algorithm_settings: {\n            max_number_of_iterations: 200\n        }\n    },\n    scoring: {\n        [\n            [{transplant_count, 1}],\n            [{hla_compatibility_score: 3}, {number of donor_age_difference: 20}],\n            [{max_num_effective_two_cycles: 1}]\n        ]\n    }\n}\n\nComputes cycles and chains.\n\nOutputs two files:\n\n1. selected_cycles.csv with columns:\ndonor_id, recipient_id, cycle_or_chain_id, index_in_cycle, weighted_score\n\n2. matching_stats.csv with columns:\nlevel_of_optimization, prio_highly_sensitized_recipients, max_num_of_transplants, number_of_patients\n"
+                        "description": "\nEndpoint that accepts 3 input files: \n1. pairs (csv) in format:\noriginal_donor_index, original_recipient_index\n2,1\n3,1\n\n2. compatibility_graph (csv) in format:\ndonor_index, recipient_index, hla_compatibility_score, donor_age_difference...\n1,2,17,1\n2,2,18,1\n1,3,8,5\n1,4,19,10\n\n3. configuration (json) in format:\n{\n    limitations: {\n        max_cycle_length: 3\n        max_chain_length: 3\n        custom_algorithm_settings: {\n            max_number_of_iterations: 200\n        }\n    },\n    scoring: {\n        [\n            [{transplant_count, 1}],\n            [{hla_compatibility_score: 3}, {number of donor_age_difference: 20}],\n            [{max_num_effective_two_cycles: 1}]\n        ]\n    }\n}\n\nComputes cycles and chains.\n\nOutputs one json file in the following format:\n{\n    “cycles_and_chains”: [\n        [{donor_id: 1, recipient_id: 2, “score”:[3,5,9]},{donor_id: 2, recipient_id: 1, “score”:[4,5,9]}],\n        [{donor_id: 4, recipient_id: 3, “score”:[6,5,9]}]\n    ]\n    “statistics”: {\n        “number_of_found_cycles”: 2\n        “number_of_found_transplants”:3\n        ...\n}\n",
+                        "schema": {
+                            "$ref": "#/definitions/OptimizerReturn"
+                        }
                     }
                 },
                 "operationId": "post_optimize",
@@ -971,6 +974,28 @@
             },
             "type": "object"
         },
+        "DonorToRecipient": {
+            "required": [
+                "donor_id",
+                "recipient_id",
+                "score"
+            ],
+            "properties": {
+                "donor_id": {
+                    "type": "integer"
+                },
+                "recipient_id": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "type": "object"
+        },
         "DonorType": {
             "enum": [
                 "DONOR",
@@ -1026,6 +1051,26 @@
             "properties": {
                 "auth_token": {
                     "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "OptimizerReturn": {
+            "required": [
+                "cycles_and_chains"
+            ],
+            "properties": {
+                "cycles_and_chains": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/DonorToRecipient"
+                        }
+                    }
+                },
+                "statistics": {
+                    "$ref": "#/definitions/Statistics"
                 }
             },
             "type": "object"
@@ -1281,6 +1326,17 @@
             ],
             "type": "string",
             "description": "Sex of the patient."
+        },
+        "Statistics": {
+            "properties": {
+                "number_of_found_cycles": {
+                    "type": "integer"
+                },
+                "number_of_found_transplants": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
         },
         "Success": {
             "required": [

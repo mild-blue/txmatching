@@ -733,6 +733,21 @@ definitions:
                         considered in exchange.
                     type: boolean
             type: object
+    DonorToRecipient:
+        properties:
+            donor_id:
+                type: integer
+            recipient_id:
+                type: integer
+            score:
+                items:
+                    type: integer
+                type: array
+        required:
+        - donor_id
+        - recipient_id
+        - score
+        type: object
     DonorType:
         description: Type of the donor.
         enum:
@@ -1070,6 +1085,19 @@ definitions:
                 type: string
         required:
         - name
+        type: object
+    OptimizerReturn:
+        properties:
+            cycles_and_chains:
+                items:
+                    items:
+                        $ref: '#/definitions/DonorToRecipient'
+                    type: array
+                type: array
+            statistics:
+                $ref: '#/definitions/Statistics'
+        required:
+        - cycles_and_chains
         type: object
     OtpLogin:
         properties:
@@ -1459,6 +1487,13 @@ definitions:
         - AllSolutionsSolver
         - ILPSolver
         type: string
+    Statistics:
+        properties:
+            number_of_found_cycles:
+                type: integer
+            number_of_found_transplants:
+                type: integer
+        type: object
     Success:
         properties:
             success:
@@ -1771,11 +1806,16 @@ paths:
                         \ 1}],\n            [{hla_compatibility_score: 3}, {number\
                         \ of donor_age_difference: 20}],\n            [{max_num_effective_two_cycles:\
                         \ 1}]\n        ]\n    }\n}\n\nComputes cycles and chains.\n\
-                        \nOutputs two files:\n\n1. selected_cycles.csv with columns:\n\
-                        donor_id, recipient_id, cycle_or_chain_id, index_in_cycle,\
-                        \ weighted_score\n\n2. matching_stats.csv with columns:\n\
-                        level_of_optimization, prio_highly_sensitized_recipients,\
-                        \ max_num_of_transplants, number_of_patients\n"
+                        \nOutputs one json file in the following format:\n{\n    \u201C\
+                        cycles_and_chains\u201D: [\n        [{donor_id: 1, recipient_id:\
+                        \ 2, \u201Cscore\u201D:[3,5,9]},{donor_id: 2, recipient_id:\
+                        \ 1, \u201Cscore\u201D:[4,5,9]}],\n        [{donor_id: 4,\
+                        \ recipient_id: 3, \u201Cscore\u201D:[6,5,9]}]\n    ]\n  \
+                        \  \u201Cstatistics\u201D: {\n        \u201Cnumber_of_found_cycles\u201D\
+                        : 2\n        \u201Cnumber_of_found_transplants\u201D:3\n \
+                        \       ...\n}\n"
+                    schema:
+                        $ref: '#/definitions/OptimizerReturn'
                 '400':
                     description: Wrong data format.
                     schema:

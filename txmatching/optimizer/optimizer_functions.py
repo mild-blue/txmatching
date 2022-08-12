@@ -1,7 +1,10 @@
+import json
 import numpy as np
 import pandas as pd
 
 from dacite import from_dict
+from io import StringIO
+from werkzeug.datastructures import FileStorage
 
 from txmatching.optimizer.compatibility_info import CompatibilityInfo
 from txmatching.optimizer.optimizer_config import OptimizerConfig
@@ -70,3 +73,13 @@ def export_return_data() -> OptimizerReturn:
         ]],
         statistics=statistics
     )
+
+
+def parse_file_storage_to_csv(file: FileStorage) -> pd.DataFrame:
+    csv_s = StringIO(file.read().decode("utf-8"))
+    return pd.read_csv(csv_s)
+
+
+def parse_file_storage_to_json(file: FileStorage) -> dict:
+    string_json = file.read().decode("utf-8")
+    return json.loads(string_json)

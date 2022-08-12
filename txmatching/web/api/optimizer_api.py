@@ -1,17 +1,13 @@
-import json
 import logging
-import pandas as pd
 
 from flask_restx import Resource
-from flask import request, Response
-from io import StringIO
+from flask import request
 from typing import List
 from werkzeug.datastructures import FileStorage
 
-# todo use swagger
-# from txmatching.data_transfer_objects.optimizer.optimizer_in_swagger import OptimizerReturnObjectJson
+from txmatching.data_transfer_objects.optimizer.optimizer_in_swagger import OptimizerReturnObjectJson
 from txmatching.optimizer.optimizer_functions import export_return_data, parse_csv_to_comp_info, parse_csv_to_pairs, \
-    parse_json_to_config
+    parse_file_storage_to_csv, parse_file_storage_to_json, parse_json_to_config
 from txmatching.web.web_utils.namespaces import optimizer_api
 from txmatching.web.web_utils.route_utils import response_ok
 
@@ -54,13 +50,17 @@ donor_index, recipient_index, hla_compatibility_score, donor_age_difference...
 
 Computes cycles and chains.
 
-Outputs two files:
-
-1. selected_cycles.csv with columns:
-donor_id, recipient_id, cycle_or_chain_id, index_in_cycle, weighted_score
-
-2. matching_stats.csv with columns:
-level_of_optimization, prio_highly_sensitized_recipients, max_num_of_transplants, number_of_patients
+Outputs one json file in the following format:
+{
+    “cycles_and_chains”: [
+        [{donor_id: 1, recipient_id: 2, “score”:[3,5,9]},{donor_id: 2, recipient_id: 1, “score”:[4,5,9]}],
+        [{donor_id: 4, recipient_id: 3, “score”:[6,5,9]}]
+    ]
+    “statistics”: {
+        “number_of_found_cycles”: 2
+        “number_of_found_transplants”:3
+        ...
+}
 '''
 
 
@@ -72,22 +72,11 @@ def check_extensions(files: List[FileStorage]):
             raise ValueError(f'File \'{name}\' not in correct format.')
 
 
-def parse_file_storage_to_csv(file: FileStorage) -> pd.DataFrame:
-    csv_s = StringIO(file.read().decode("utf-8"))
-    return pd.read_csv(StringIO(csv_s))
-
-
-def parse_file_storage_to_json(file: FileStorage) -> dict:
-    string_json = file.read().decode("utf-8")
-    return json.loads(string_json)
-
-
 @optimizer_api.route('', methods=['POST'])
 class Optimize(Resource):
-    # todo use swagger for response
-    @optimizer_api.response_ok(description=OPTIMIZER_DESCRIPTION)
+    @optimizer_api.response_ok(OptimizerReturnObjectJson, description=OPTIMIZER_DESCRIPTION)
     @optimizer_api.response_errors()
-    def post(self) -> Response:
+    def post(self) -> str:
         for file in FILES:
             if file not in request.files:
                 raise ValueError(f'Missing file \'{file}\'.')
