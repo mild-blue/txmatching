@@ -68,6 +68,7 @@ Endpoint that accepts 1 input json body:
 '''
 
 
+# https://www.dropbox.com/home/KEP-SOFT_developers/optimizer_module?preview=Optimizer+Input+Schema+First+draft.docx&preview=Optimizer+Input+Schema+First+draft.docx
 @optimizer_api.route('', methods=['POST'])
 class Optimize(Resource):
     @optimizer_api.request_body(OptimizerRequestObjectJson)
