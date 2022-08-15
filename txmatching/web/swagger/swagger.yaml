@@ -733,6 +733,21 @@ definitions:
                         considered in exchange.
                     type: boolean
             type: object
+    DonorToRecipient:
+        properties:
+            donor_id:
+                type: integer
+            recipient_id:
+                type: integer
+            score:
+                items:
+                    type: integer
+                type: array
+        required:
+        - donor_id
+        - recipient_id
+        - score
+        type: object
     DonorType:
         description: Type of the donor.
         enum:
@@ -1018,6 +1033,15 @@ definitions:
         required:
         - id
         type: object
+    Limitations:
+        properties:
+            custom_algorithm_settings:
+                type: object
+            max_chain_length:
+                type: integer
+            max_cycle_length:
+                type: integer
+        type: object
     LoginSuccessResponse:
         properties:
             auth_token:
@@ -1071,6 +1095,44 @@ definitions:
         required:
         - name
         type: object
+    OptimizerConfiguration:
+        properties:
+            limitations:
+                $ref: '#/definitions/Limitations'
+            scoring:
+                items:
+                    items:
+                        type: object
+                    type: array
+                type: array
+        type: object
+    OptimizerRequest:
+        properties:
+            compatibility_graph:
+                items:
+                    type: object
+                type: array
+            configuration:
+                $ref: '#/definitions/OptimizerConfiguration'
+            pairs:
+                $ref: '#/definitions/Pair'
+        required:
+        - compatibility_graph
+        - configuration
+        type: object
+    OptimizerReturn:
+        properties:
+            cycles_and_chains:
+                items:
+                    items:
+                        $ref: '#/definitions/DonorToRecipient'
+                    type: array
+                type: array
+            statistics:
+                $ref: '#/definitions/Statistics'
+        required:
+        - cycles_and_chains
+        type: object
     OtpLogin:
         properties:
             otp:
@@ -1078,6 +1140,15 @@ definitions:
                 type: string
         required:
         - otp
+        type: object
+    Pair:
+        properties:
+            donor_id:
+                type: integer
+            recipient_id:
+                type: integer
+        required:
+        - donor_id
         type: object
     ParsingIssue:
         properties:
@@ -1459,6 +1530,13 @@ definitions:
         - AllSolutionsSolver
         - ILPSolver
         type: string
+    Statistics:
+        properties:
+            number_of_found_cycles:
+                type: integer
+            number_of_found_transplants:
+                type: integer
+        type: object
     Success:
         properties:
             success:
@@ -1754,6 +1832,58 @@ info:
     title: API
     version: '1.0'
 paths:
+    /v1/optimizer:
+        post:
+            operationId: post_optimize
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/OptimizerRequest'
+            responses:
+                '200':
+                    description: "\nEndpoint that accepts 1 input json body: \n{\n\
+                        \   \"compatibility_graph\":[\n      {\n         \"donor_index\"\
+                        :1,\n         \"recipient_index\":2,\n         \"hla_compatibility_score\"\
+                        :17,\n         \"donor_age_difference\":1\n      },\n    \
+                        \  {\n         \"donor_index\":5,\n         \"recipient_index\"\
+                        :7,\n         \"hla_compatibility_score\":1,\n         \"\
+                        donor_age_difference\":4\n      }\n   ],\n   \"pairs\":[\n\
+                        \      {\n         \"donor_index\":4,\n         \"recipient_index\"\
+                        :2\n      },\n      {\n         \"donor_index\":2\n      }\n\
+                        \   ],\n   \"configuration\":{\n      \"limitations\":{\n\
+                        \         \"max_cycle_length\":3,\n         \"max_chain_length\"\
+                        :3,\n         \"custom_algorithm_settings\":{\n          \
+                        \  \"max_number_of_iterations\":200\n         }\n      },\n\
+                        \      \"scoring\":[\n         [\n            {\n        \
+                        \       \"transplant_count\":1\n            }\n         ],\n\
+                        \         [\n            {\n               \"hla_compatibility_score\"\
+                        :3\n            },\n            {\n               \"donor_age_difference\"\
+                        :20\n            }\n         ],\n         [\n            {\n\
+                        \               \"num_effective_two_cycles\":1\n         \
+                        \   }\n         ]\n      ]\n   }\n}\n"
+                    schema:
+                        $ref: '#/definitions/OptimizerReturn'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            tags:
+            - optimizer
     /v1/public/patient-upload:
         put:
             description: This endpoint allows the country editor to upload patient
@@ -3050,6 +3180,7 @@ tags:
 -   name: public
 -   name: user
 -   name: service
+-   name: optimizer
 -   name: matching
 -   name: patients
 -   name: configuration
