@@ -43,6 +43,8 @@ class MatchingsDetailed:
     detailed_score_tuples: Dict[Tuple[int, int], List[DetailedCompatibilityIndexForHLAGroup]]
     antibody_matches_tuples: Dict[Tuple[int, int], List[AntibodyMatchForHLAGroup]]
     found_matchings_count: Optional[int]
+    number_of_possible_transplants: Optional[int]
+    number_of_possible_recipients: Optional[int]
     show_not_all_matchings_found: bool
     max_transplant_score: float
 
@@ -63,6 +65,20 @@ def get_matchings_detailed_for_pairing_result_model(
                                                                  txm_event.active_and_valid_donors_dict,
                                                                  txm_event.active_and_valid_recipients_dict)
     logger.debug('Getting score dict with score')
+    score_dict = {
+        (donor_db_id, recipient_db_id): score for donor_db_id, row in
+        zip(txm_event.active_and_valid_donors_dict, score_matrix) for recipient_db_id, score in
+        zip(txm_event.active_and_valid_recipients_dict, row)
+    }
+    number_of_possible_transplants = sum(1 for score_pair in score_dict.values() if score_pair >= 0)
+
+    number_of_possible_recipients = sum(
+        1 for recipient_db_id in txm_event.active_and_valid_recipients_dict.keys()
+        if len([
+            score_dict[(donor_db_id, recipient_db_id)] >= 0
+            for donor_db_id in txm_event.active_and_valid_donors_dict.keys()
+        ]) > 0
+    )
     compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(txm_event.active_and_valid_recipients_dict,
                                                                              txm_event.active_and_valid_donors_dict,
                                                                              compatibility_graph)
@@ -92,6 +108,8 @@ def get_matchings_detailed_for_pairing_result_model(
         detailed_compatibility_index_dict,
         antibody_matches_dict,
         matchings_model.found_matchings_count,
+        number_of_possible_transplants,
+        number_of_possible_recipients,
         matchings_model.show_not_all_matchings_found,
         scorer.max_transplant_score
     )
@@ -166,6 +184,8 @@ def create_calculated_matchings_dto(
         ) for matching in matchings
         ],
         found_matchings_count=latest_matchings_detailed.found_matchings_count,
+        number_of_possible_transplants=latest_matchings_detailed.number_of_possible_transplants,
+        number_of_possible_recipients=latest_matchings_detailed.number_of_possible_recipients,
         show_not_all_matchings_found=latest_matchings_detailed.show_not_all_matchings_found,
         config_id=configuration_db_id
     )
