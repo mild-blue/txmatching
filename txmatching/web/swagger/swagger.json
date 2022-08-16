@@ -4169,6 +4169,10 @@
             "type": "string"
         },
         "Statistics": {
+            "required": [
+                "number_of_found_cycles",
+                "number_of_found_transplants"
+            ],
             "properties": {
                 "number_of_found_cycles": {
                     "type": "integer"

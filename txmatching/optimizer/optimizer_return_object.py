@@ -10,6 +10,12 @@ class DonorToRecipient:
 
 
 @dataclass
+class Statictics:
+    number_of_found_cycles: int
+    number_of_found_transplants: int
+
+
+@dataclass
 class OptimizerReturn:
-    cycles_and_chains: List[List[DonorToRecipient]]
-    statistics: Dict[str, int]
+    cycles_and_chains: List[Optional[List[DonorToRecipient]]]
+    statistics: Statictics

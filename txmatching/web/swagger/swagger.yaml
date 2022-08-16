@@ -1553,6 +1553,9 @@ definitions:
                 type: integer
             number_of_found_transplants:
                 type: integer
+        required:
+        - number_of_found_cycles
+        - number_of_found_transplants
         type: object
     Success:
         properties:

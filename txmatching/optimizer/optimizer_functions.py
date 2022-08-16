@@ -1,4 +1,4 @@
-from txmatching.optimizer.optimizer_return_object import OptimizerReturn
+from txmatching.optimizer.optimizer_return_object import DonorToRecipient, OptimizerReturn
 
 
 def export_return_data() -> OptimizerReturn:
@@ -6,7 +6,7 @@ def export_return_data() -> OptimizerReturn:
     statistics = {"number_of_found_cycles": 1, "number_of_found_transplants": 2}
     return OptimizerReturn(
         cycles_and_chains=[[
-            {"donor_id": pair[0], "recipient_id": pair[1], "score": score} for pair, score in cycle.items()
+            DonorToRecipient(donor_id=pair[0],recipient_id=pair[1], score=score) for pair, score in cycle.items()
         ]],
         statistics=statistics
     )

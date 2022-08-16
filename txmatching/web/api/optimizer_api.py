@@ -18,9 +18,9 @@ class Optimize(Resource):
     @optimizer_api.response_errors()
     def post(self) -> str:
         optimizer_request_object = request_body(OptimizerRequest)
-        print(optimizer_request_object)
 
         # todo calculate cycles and chains
 
         # todo return files
-        return response_ok(export_return_data())
+        optimizer_return = export_return_data()
+        return response_ok(optimizer_return)

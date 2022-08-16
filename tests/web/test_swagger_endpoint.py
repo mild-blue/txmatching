@@ -23,7 +23,7 @@ class TestSwaggerEndpoints(DbTests):
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/authentik-login': [400],
             },
             'post': {
-                f'{API_VERSION[1:]}/optimizer': [400]
+                f'{API_VERSION[1:]}/optimizer': [200]
             },
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/reset-password': [403]
@@ -55,8 +55,7 @@ class TestSwaggerEndpoints(DbTests):
             },
             'post': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/login': [401],
-                f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
-                f'{API_VERSION[1:]}/optimizer': [400]
+                f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403]
             },
             'put': {
                 f'{API_VERSION[1:]}/{USER_NAMESPACE}/otp': [403],
