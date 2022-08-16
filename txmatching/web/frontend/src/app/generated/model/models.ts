@@ -9,6 +9,7 @@ export * from './configurationGenerated';
 export * from './copyPatientsGenerated';
 export * from './countryCodeGenerated';
 export * from './countryGenerated';
+export * from './cycleOrChainGenerated';
 export * from './defaultTxmEventGenerated';
 export * from './detailedScoreForGroupGenerated';
 export * from './donorGenerated';

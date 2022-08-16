@@ -10,12 +10,18 @@ class DonorToRecipient:
 
 
 @dataclass
-class Statictics:
+class CycleOrChain:
+    patients: List[DonorToRecipient]
+    scores: List[int]
+
+
+@dataclass
+class Statistics:
     number_of_found_cycles: int
     number_of_found_transplants: int
 
 
 @dataclass
 class OptimizerReturn:
-    cycles_and_chains: List[Optional[List[DonorToRecipient]]]
-    statistics: Statictics
+    cycles_and_chains: List[CycleOrChain]
+    statistics: Statistics

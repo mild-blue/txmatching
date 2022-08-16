@@ -909,6 +909,26 @@
             ],
             "type": "string"
         },
+        "CycleOrChain": {
+            "required": [
+                "patients"
+            ],
+            "properties": {
+                "patients": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DonorToRecipient"
+                    }
+                },
+                "scores": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "type": "object"
+        },
         "DonorInput": {
             "required": [
                 "blood_group",
@@ -1154,10 +1174,7 @@
                 "cycles_and_chains": {
                     "type": "array",
                     "items": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/DonorToRecipient"
-                        }
+                        "$ref": "#/definitions/CycleOrChain"
                     }
                 },
                 "statistics": {

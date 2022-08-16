@@ -24,10 +24,13 @@ StatisticsJson = optimizer_api.model('Statistics', {
     'number_of_found_transplants': fields.Integer(required=True)
 })
 
+CycleOrChainJson = optimizer_api.model('CycleOrChain', {
+    'patients': fields.List(required=True, cls_or_instance=fields.Nested(DonorToRecipientJson)),
+    'scores': fields.List(reqired=True, cls_or_instance=fields.Integer)
+})
+
 OptimizerReturnObjectJson = optimizer_api.model('OptimizerReturn', {
-    'cycles_and_chains': fields.List(required=True, cls_or_instance=fields.List(required=False,
-                                                                                cls_or_instance=fields.Nested(
-                                                                                    DonorToRecipientJson))),
+    'cycles_and_chains': fields.List(required=True, cls_or_instance=fields.Nested(CycleOrChainJson)),
     'statistics': fields.Nested(StatisticsJson, reqired=True)
 })
 

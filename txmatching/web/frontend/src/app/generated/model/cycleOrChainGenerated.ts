@@ -9,12 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CycleOrChainGenerated } from './cycleOrChainGenerated';
-import { StatisticsGenerated } from './statisticsGenerated';
+import { DonorToRecipientGenerated } from './donorToRecipientGenerated';
 
 
-export interface OptimizerReturnGenerated { 
-    cycles_and_chains: Array<CycleOrChainGenerated>;
-    statistics?: StatisticsGenerated;
+export interface CycleOrChainGenerated { 
+    patients: Array<DonorToRecipientGenerated>;
+    scores?: Array<number>;
 }
 

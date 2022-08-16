@@ -490,6 +490,19 @@ definitions:
         - ZMB
         - ZWE
         type: string
+    CycleOrChain:
+        properties:
+            patients:
+                items:
+                    $ref: '#/definitions/DonorToRecipient'
+                type: array
+            scores:
+                items:
+                    type: integer
+                type: array
+        required:
+        - patients
+        type: object
     DefaultTxmEvent:
         properties:
             id:
@@ -1139,9 +1152,7 @@ definitions:
         properties:
             cycles_and_chains:
                 items:
-                    items:
-                        $ref: '#/definitions/DonorToRecipient'
-                    type: array
+                    $ref: '#/definitions/CycleOrChain'
                 type: array
             statistics:
                 $ref: '#/definitions/Statistics'
