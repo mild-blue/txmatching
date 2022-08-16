@@ -30,7 +30,7 @@
                         }
                     },
                     "200": {
-                        "description": "\nEndpoint that accepts 1 input json body: \n{\n   \"compatibility_graph\":[\n      {\n         \"donor_index\":1,\n         \"recipient_index\":2,\n         \"hla_compatibility_score\":17,\n         \"donor_age_difference\":1\n      },\n      {\n         \"donor_index\":5,\n         \"recipient_index\":7,\n         \"hla_compatibility_score\":1,\n         \"donor_age_difference\":4\n      }\n   ],\n   \"pairs\":[\n      {\n         \"donor_index\":4,\n         \"recipient_index\":2\n      },\n      {\n         \"donor_index\":2\n      }\n   ],\n   \"configuration\":{\n      \"limitations\":{\n         \"max_cycle_length\":3,\n         \"max_chain_length\":3,\n         \"custom_algorithm_settings\":{\n            \"max_number_of_iterations\":200\n         }\n      },\n      \"scoring\":[\n         [\n            {\n               \"transplant_count\":1\n            }\n         ],\n         [\n            {\n               \"hla_compatibility_score\":3\n            },\n            {\n               \"donor_age_difference\":20\n            }\n         ],\n         [\n            {\n               \"num_effective_two_cycles\":1\n            }\n         ]\n      ]\n   }\n}\n",
+                        "description": "Endpoint that calculates matchings from compatibility graph and configuration",
                         "schema": {
                             "$ref": "#/definitions/OptimizerReturn"
                         }
@@ -1057,13 +1057,18 @@
         "Limitations": {
             "properties": {
                 "max_cycle_length": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 3
                 },
                 "max_chain_length": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 4
                 },
                 "custom_algorithm_settings": {
-                    "type": "object"
+                    "type": "object",
+                    "example": {
+                        "max_number_of_iterations": 200
+                    }
                 }
             },
             "type": "object"
@@ -1086,6 +1091,21 @@
                 },
                 "scoring": {
                     "type": "array",
+                    "example": [
+                        [
+                            {
+                                "transplant_count": 1
+                            }
+                        ],
+                        [
+                            {
+                                "hla_compatibility_score": 3
+                            },
+                            {
+                                "donor_age_difference": 20
+                            }
+                        ]
+                    ],
                     "items": {
                         "type": "array",
                         "items": {
@@ -1105,11 +1125,20 @@
                 "compatibility_graph": {
                     "type": "array",
                     "items": {
-                        "type": "object"
+                        "type": "object",
+                        "example": {
+                            "donor_index": 1,
+                            "recipient_index": 2,
+                            "hla_compatibility_score": 17,
+                            "donor_age_difference": 1
+                        }
                     }
                 },
                 "pairs": {
-                    "$ref": "#/definitions/Pair"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Pair"
+                    }
                 },
                 "configuration": {
                     "$ref": "#/definitions/OptimizerConfiguration"
@@ -1155,10 +1184,12 @@
             ],
             "properties": {
                 "donor_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "recipient_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 4
                 }
             },
             "type": "object"

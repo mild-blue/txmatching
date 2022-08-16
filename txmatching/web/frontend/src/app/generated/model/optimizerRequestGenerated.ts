@@ -16,6 +16,6 @@ import { OptimizerConfigurationGenerated } from './optimizerConfigurationGenerat
 export interface OptimizerRequestGenerated { 
     compatibility_graph: Array<object>;
     configuration: OptimizerConfigurationGenerated;
-    pairs?: PairGenerated;
+    pairs?: Array<PairGenerated>;
 }
 

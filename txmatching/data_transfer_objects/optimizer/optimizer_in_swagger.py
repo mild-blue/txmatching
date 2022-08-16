@@ -12,6 +12,7 @@ class DictItem(fields.Raw):
         return dct or {}
 
 
+# OUTPUT
 DonorToRecipientJson = optimizer_api.model('DonorToRecipient', {
     'donor_id': fields.Integer(required=True),
     'recipient_id': fields.Integer(required=True),
@@ -29,26 +30,31 @@ OptimizerReturnObjectJson = optimizer_api.model('OptimizerReturn', {
     'statistics': fields.Nested(StatisticsJson, reqired=True)
 })
 
+# INPUT
 PairJson = optimizer_api.model('Pair', {
-    'donor_id': fields.Integer(required=True),
-    'recipient_id': fields.Integer(reqired=False)
+    'donor_id': fields.Integer(required=True, example=1),
+    'recipient_id': fields.Integer(reqired=False, example=4)
 })
 
 LimitationsJson = optimizer_api.model('Limitations', {
-    'max_cycle_length': fields.Integer(reqired=False),
-    'max_chain_length': fields.Integer(reqired=False),
-    # todo optional
-    'custom_algorithm_settings': DictItem(attribute="calling_args")
+    'max_cycle_length': fields.Integer(reqired=False, example=3),
+    'max_chain_length': fields.Integer(reqired=False, example=4),
+    'custom_algorithm_settings': DictItem(attribute="calling_args", example={"max_number_of_iterations": 200})
 })
 
 OptimizerConfigurationJson = optimizer_api.model('OptimizerConfiguration', {
     'limitations': fields.Nested(LimitationsJson, reqired=False),
     'scoring': fields.List(required=False, cls_or_instance=fields.List(requred=True, cls_or_instance=DictItem(
-        attribute="calling_args"))),
+        attribute="calling_args")), example=[[{"transplant_count": 1}],
+                                             [{"hla_compatibility_score": 3}, {"donor_age_difference": 20}]]),
 })
 
 OptimizerRequestObjectJson = optimizer_api.model('OptimizerRequest', {
-    'compatibility_graph': fields.List(required=True, cls_or_instance=DictItem(attribute="calling_args")),
-    'pairs': fields.Nested(PairJson, reqired=True),
+    'compatibility_graph': fields.List(required=True, cls_or_instance=DictItem(attribute="calling_args",
+                                                                               example={"donor_index": 1,
+                                                                                        "recipient_index": 2,
+                                                                                        "hla_compatibility_score": 17,
+                                                                                        "donor_age_difference": 1})),
+    'pairs': fields.List(reqired=True, cls_or_instance=fields.Nested(PairJson)),
     'configuration': fields.Nested(OptimizerConfigurationJson, required=True)
 })

@@ -1036,10 +1036,14 @@ definitions:
     Limitations:
         properties:
             custom_algorithm_settings:
+                example:
+                    max_number_of_iterations: 200
                 type: object
             max_chain_length:
+                example: 4
                 type: integer
             max_cycle_length:
+                example: 3
                 type: integer
         type: object
     LoginSuccessResponse:
@@ -1100,6 +1104,10 @@ definitions:
             limitations:
                 $ref: '#/definitions/Limitations'
             scoring:
+                example:
+                -   -   transplant_count: 1
+                -   -   hla_compatibility_score: 3
+                    -   donor_age_difference: 20
                 items:
                     items:
                         type: object
@@ -1110,12 +1118,19 @@ definitions:
         properties:
             compatibility_graph:
                 items:
+                    example:
+                        donor_age_difference: 1
+                        donor_index: 1
+                        hla_compatibility_score: 17
+                        recipient_index: 2
                     type: object
                 type: array
             configuration:
                 $ref: '#/definitions/OptimizerConfiguration'
             pairs:
-                $ref: '#/definitions/Pair'
+                items:
+                    $ref: '#/definitions/Pair'
+                type: array
         required:
         - compatibility_graph
         - configuration
@@ -1144,8 +1159,10 @@ definitions:
     Pair:
         properties:
             donor_id:
+                example: 1
                 type: integer
             recipient_id:
+                example: 4
                 type: integer
         required:
         - donor_id
@@ -1843,26 +1860,8 @@ paths:
                     $ref: '#/definitions/OptimizerRequest'
             responses:
                 '200':
-                    description: "\nEndpoint that accepts 1 input json body: \n{\n\
-                        \   \"compatibility_graph\":[\n      {\n         \"donor_index\"\
-                        :1,\n         \"recipient_index\":2,\n         \"hla_compatibility_score\"\
-                        :17,\n         \"donor_age_difference\":1\n      },\n    \
-                        \  {\n         \"donor_index\":5,\n         \"recipient_index\"\
-                        :7,\n         \"hla_compatibility_score\":1,\n         \"\
-                        donor_age_difference\":4\n      }\n   ],\n   \"pairs\":[\n\
-                        \      {\n         \"donor_index\":4,\n         \"recipient_index\"\
-                        :2\n      },\n      {\n         \"donor_index\":2\n      }\n\
-                        \   ],\n   \"configuration\":{\n      \"limitations\":{\n\
-                        \         \"max_cycle_length\":3,\n         \"max_chain_length\"\
-                        :3,\n         \"custom_algorithm_settings\":{\n          \
-                        \  \"max_number_of_iterations\":200\n         }\n      },\n\
-                        \      \"scoring\":[\n         [\n            {\n        \
-                        \       \"transplant_count\":1\n            }\n         ],\n\
-                        \         [\n            {\n               \"hla_compatibility_score\"\
-                        :3\n            },\n            {\n               \"donor_age_difference\"\
-                        :20\n            }\n         ],\n         [\n            {\n\
-                        \               \"num_effective_two_cycles\":1\n         \
-                        \   }\n         ]\n      ]\n   }\n}\n"
+                    description: Endpoint that calculates matchings from compatibility
+                        graph and configuration
                     schema:
                         $ref: '#/definitions/OptimizerReturn'
                 '400':

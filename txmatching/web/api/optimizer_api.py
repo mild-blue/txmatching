@@ -7,65 +7,7 @@ from txmatching.optimizer.optimizer_request_object import OptimizerRequest
 from txmatching.web.web_utils.namespaces import optimizer_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
-# todo swagger ignores my formatting tabs
-# todo toto asi netreba a staci dat do swaggeru examples
-OPTIMIZER_DESCRIPTION = '''
-Endpoint that accepts 1 input json body: 
-{
-   "compatibility_graph":[
-      {
-         "donor_index":1,
-         "recipient_index":2,
-         "hla_compatibility_score":17,
-         "donor_age_difference":1
-      },
-      {
-         "donor_index":5,
-         "recipient_index":7,
-         "hla_compatibility_score":1,
-         "donor_age_difference":4
-      }
-   ],
-   "pairs":[
-      {
-         "donor_index":4,
-         "recipient_index":2
-      },
-      {
-         "donor_index":2
-      }
-   ],
-   "configuration":{
-      "limitations":{
-         "max_cycle_length":3,
-         "max_chain_length":3,
-         "custom_algorithm_settings":{
-            "max_number_of_iterations":200
-         }
-      },
-      "scoring":[
-         [
-            {
-               "transplant_count":1
-            }
-         ],
-         [
-            {
-               "hla_compatibility_score":3
-            },
-            {
-               "donor_age_difference":20
-            }
-         ],
-         [
-            {
-               "num_effective_two_cycles":1
-            }
-         ]
-      ]
-   }
-}
-'''
+OPTIMIZER_DESCRIPTION = "Endpoint that calculates matchings from compatibility graph and configuration"
 
 
 # https://www.dropbox.com/home/KEP-SOFT_developers/optimizer_module?preview=Optimizer+Input+Schema+First+draft.docx&preview=Optimizer+Input+Schema+First+draft.docx
@@ -77,6 +19,7 @@ class Optimize(Resource):
     def post(self) -> str:
         optimizer_request_object = request_body(OptimizerRequest)
         print(optimizer_request_object)
+
         # todo calculate cycles and chains
 
         # todo return files
