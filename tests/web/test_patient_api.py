@@ -1,5 +1,5 @@
-import os
 import dataclasses
+import os
 
 from sqlalchemy import and_
 
@@ -23,9 +23,9 @@ from txmatching.utils.enums import Sex
 from txmatching.utils.get_absolute_path import get_absolute_path
 from txmatching.utils.hla_system.hla_transformations.parsing_issue_detail import \
     ParsingIssueDetail
-from txmatching.web import API_VERSION, PATIENT_NAMESPACE, TXM_EVENT_NAMESPACE, CONFIGURATION_NAMESPACE, MATCHING_NAMESPACE
-# from tests.web.test_configuration_api import TestPatientService
-from txmatching.database.services.config_service import configuration_parameters_from_dict
+from txmatching.web import (API_VERSION, CONFIGURATION_NAMESPACE,
+                            MATCHING_NAMESPACE, PATIENT_NAMESPACE,
+                            TXM_EVENT_NAMESPACE)
 
 
 class TestPatientService(DbTests):
@@ -767,89 +767,44 @@ class TestPatientService(DbTests):
         # 1. fill db with patients
         txm_event_db_id = self.fill_db_with_patients()
 
-        # 2. add configuration 
-        donor_id = DonorModel.query.get(txm_event_db_id).id
-        recipient_id = RecipientModel.query.get(txm_event_db_id).id
+        # 2. add configuration with required_patients = [1]
+        configuration = ConfigParameters(required_patient_db_ids=[1])
 
-        configuration = ConfigParameters(manual_donor_recipient_scores =[{
-                'donor_db_id': donor_id,
-                'recipient_db_id': recipient_id,
-                'score': 10
-            }])
+        with self.app.test_client() as client:
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{MATCHING_NAMESPACE}/calculate-for-config',
+                              json=configuration,
+                              headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
 
-        conf_id = self._calculate_for_config(configuration, txm_event_db_id)
-
-        # 3. set default config for the txm event
+        # 3. set this configuration as default
         with self.app.test_client() as client:
             res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{CONFIGURATION_NAMESPACE}/set-default',
-                             headers=self.auth_headers,
-                             json={'id': conf_id})
-            self.assertEqual(200, res.status_code) # ! Error!
+                             json={"id": 1},
+                             headers=self.auth_headers)
+            self.assertEqual(200, res.status_code)
 
-        # 4. delete pair from txm event
+        # 4. delete patient 1
         with self.app.test_client() as client:
             res = client.delete(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                                f'{PATIENT_NAMESPACE}/pairs/{donor_id}',
+                                f'{PATIENT_NAMESPACE}/pairs/1',
                                 headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 
-        # 5. check that default config is not working anymore
-        conf_id = self._calculate_for_config(configuration, txm_event_db_id)
-
-
-        # # 3. get default config for the txm event
-        # config = self._get_config('default', txm_event_db_id)
-
-        # # 4. get donor and recipient from the txm event
-        # # donor_id = DonorModel.query.get(txm_event_db_id).id
-        # # recipient_id = RecipientModel.query.get(txm_event_db_id).id
-
-        # # 5. add patients to manual_donor_recipient_scores in the config
-        # # config['manual_donor_recipient_scores'] = [
-        # #     {
-        # #         'donor_db_id': donor_id,
-        # #         'recipient_db_id': recipient_id,
-        # #         'score': 10
-        # #     }
-        # # ]
-
-        # # 6. delete pair from txm event
-        # with self.app.test_client() as client:
-        #     res = client.delete(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-        #                         f'{PATIENT_NAMESPACE}/pairs/{donor_id}',
-        #                         headers=self.auth_headers)
-        #     self.assertEqual(200, res.status_code)
-
-        # # 7. check if default config is working - solve for config
-        # self._calculate_for_config(configuration_parameters_from_dict(config), txm_event_db_id)
-
-    def _get_config(self, config_id, txm_event_db_id):
+        # 5. get default configuration
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                             f'{CONFIGURATION_NAMESPACE}/{config_id}',
+                             f'{CONFIGURATION_NAMESPACE}/default',
                              headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-        return res.json
 
-    def _calculate_for_config(self, configuration, txm_event_db_id):
+        default_config = res.get_json()
+
+        # 6. recalculate for configuration
         with self.app.test_client() as client:
-            conf_dto = dataclasses.asdict(configuration)
-
-        res = client.post(
-            f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/{MATCHING_NAMESPACE}/calculate-for-config',
-            json=conf_dto,
-            headers=self.auth_headers
-        )
-
-        self.assertEqual(200, res.status_code)
-        return res.json
-
-    def _set_default_config(self, config_id, txm_event_db_id):
-        with self.app.test_client() as client:
-            res = client.put(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
-                             f'{CONFIGURATION_NAMESPACE}/set-default',
-                             json={'id': config_id},
-                             headers=self.auth_headers)
+            res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
+                              f'{MATCHING_NAMESPACE}/calculate-for-config',
+                              json=default_config,
+                              headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
-        return res.json

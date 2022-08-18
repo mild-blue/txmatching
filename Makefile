@@ -159,3 +159,5 @@ create-demo-event-json:
 		echo $${out}: ;\
 		cat $${out} ; \
 	done; \
+
+rerun: setup-non-empty-db run
