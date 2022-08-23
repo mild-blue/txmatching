@@ -2,7 +2,7 @@ from flask_restx import Resource
 
 from txmatching.data_transfer_objects.optimizer.optimizer_in_swagger import \
     OptimizerReturnObjectJson, OptimizerRequestObjectJson
-from txmatching.optimizer.optimizer_functions import export_return_data
+from txmatching.optimizer.optimizer_functions import calculate_from_optimizer_safe
 from txmatching.optimizer.optimizer_request_object import OptimizerRequest
 from txmatching.web.web_utils.namespaces import optimizer_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
@@ -19,8 +19,6 @@ class Optimize(Resource):
     def post(self) -> str:
         optimizer_request_object = request_body(OptimizerRequest)
 
-        # todo calculate cycles and chains
+        solutions = calculate_from_optimizer_safe(optimizer_request_object)
 
-        # todo return files
-        optimizer_return = export_return_data()
-        return response_ok(optimizer_return)
+        return response_ok(solutions)

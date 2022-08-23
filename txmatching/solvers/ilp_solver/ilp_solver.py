@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Dict, Iterable, Iterator, List, Tuple
+from typing import Dict, Iterable, Iterator, List, Optional, Tuple
 
 from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
@@ -16,9 +16,11 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ILPSolver(SolverBase):
 
-    def solve(self) -> Iterator[MatchingWithScore]:
-        config_for_ilp_solver = DataAndConfigurationForILPSolver(self.donors_dict, self.recipients_dict,
-                                                                 self.config_parameters)
+    def solve(self, config_for_ilp_solver: Optional[DataAndConfigurationForILPSolver] = None) -> Iterator[
+        MatchingWithScore]:
+        if not config_for_ilp_solver:
+            config_for_ilp_solver = DataAndConfigurationForILPSolver(self.donors_dict, self.recipients_dict,
+                                                                     self.config_parameters)
         solutions = solve_ilp(config_for_ilp_solver)
         recipients_db_id_to_order_id = {
             recipient.db_id: order_id for order_id, recipient in enumerate(self.recipients)

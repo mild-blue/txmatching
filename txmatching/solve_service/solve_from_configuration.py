@@ -30,7 +30,7 @@ def _solve_from_configuration_unsafe(config_parameters: ConfigParameters, txm_ev
     all_matchings = solver.solve()
     matching_filter = filter_from_config(config_parameters)
 
-    matchings_filtered_sorted, all_results_found, matching_count = _filter_and_sort_matchings(
+    matchings_filtered_sorted, all_results_found, matching_count = filter_and_sort_matchings(
         all_matchings,
         matching_filter,
         config_parameters)
@@ -45,7 +45,7 @@ def _solve_from_configuration_unsafe(config_parameters: ConfigParameters, txm_ev
                          found_matchings_count=matching_count)
 
 
-def _filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
+def filter_and_sort_matchings(all_matchings: Iterator[MatchingWithScore],
                                matching_filter: FilterBase,
                                config_parameters: ConfigParameters
                                ) -> Tuple[List[MatchingWithScore], bool, Optional[int]]:
