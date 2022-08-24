@@ -520,12 +520,15 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers, json=json_data)
             self.assertEqual(406, res.status_code)
 
-    def test_sorted_antibodies(self):
+    def test_sorted_and_unique_antibodies(self):
         txm_event_db_id = create_or_overwrite_txm_event(name='test').db_id
         antibodies = [('B*08:01', 2350, 1000),
+                      ('B*08:01', 2350, 1000),
                       ('DPA1*02:20', 2350, 1000),
                       ('DPB1*09:01', 2350, 1000),
                       ('DPB1*895:01', 2350, 1000),
+                      ('DQA1*05:07', 2350, 1000),
+                      ('DQA1*05:07', 2350, 1000),
                       ('DQA1*05:07', 2350, 1000)]
 
         with self.app.test_client() as client:
@@ -564,9 +567,13 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers)
         self.assertEqual(200, res.status_code)
 
+        # Because there is a uniqueness between antibodies in high resolution and
+        # the server deals with it, means: it will store ['A*01:01', 'A*01:01', 'B*01:01'] like ['A*01:01', 'B*01:01'].
+        # When we compare the raw codes, we need to care of uniqueness as well.
+        # So list(dict(zip(antibodies, antibodies))) removes duplicates and doesn't sort a list.
+        expected_antibody_raw_codes = [antibody[0] for antibody in list(dict(zip(antibodies, antibodies)))]
         for donor in res.json['donors']:
             antibodies_raw_codes = []
-            expected_antibody_raw_codes = [antibody[0] for antibody in antibodies]
             for detailed_score_for_group in donor['detailed_score_with_related_recipient']:
                 for antibody in detailed_score_for_group['antibody_matches']:
                     antibodies_raw_codes.append(antibody['hla_antibody']['raw_code'])
