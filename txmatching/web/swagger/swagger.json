@@ -52,6 +52,76 @@
                 ]
             }
         },
+        "/v1/optimizer/export/{txm_event_id}/{config_id}": {
+            "parameters": [
+                {
+                    "name": "txm_event_id",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Endpoint that exports data from TXM that can be input into optimization module",
+                        "schema": {
+                            "$ref": "#/definitions/OptimizerRequest"
+                        }
+                    }
+                },
+                "operationId": "get_optimize",
+                "parameters": [
+                    {
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Configuration ID or \"default\".",
+                        "default": "default"
+                    },
+                    {
+                        "description": "Id of txm event chosen",
+                        "type": "integer",
+                        "in": "path",
+                        "required": true,
+                        "name": "matching_id"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "tags": [
+                    "optimizer"
+                ]
+            }
+        },
         "/v1/public/patient-upload": {
             "put": {
                 "responses": {
