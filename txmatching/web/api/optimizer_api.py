@@ -9,8 +9,8 @@ from txmatching.database.services.config_service import \
     get_configuration_from_db_id_or_default
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.optimizer.optimizer_functions import export_return_data, get_optimizer_configuration, \
-    get_pairs_from_txm_event
+from txmatching.optimizer.optimizer_functions import export_return_data, get_compatibility_graph, \
+    get_optimizer_configuration, get_pairs_from_txm_event
 from txmatching.optimizer.optimizer_request_object import OptimizerRequest
 from txmatching.web.web_utils.namespaces import optimizer_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
@@ -55,13 +55,12 @@ class Optimize(Resource):
         txm_event = get_txm_event_complete(txm_event_id)
         txm_event_configuration = get_configuration_from_db_id_or_default(txm_event, config_id)
 
-        # get compatibility graph
-        # todo co dat sem okrem hla? -> spyraj sa madarov
-        compatibility_graph = None
-
         # get pairs
         pairs = get_pairs_from_txm_event(txm_event.active_and_valid_donors_dict)
-        print(pairs)
+
+        # get compatibility graph
+        compatibility_graph = get_compatibility_graph(txm_event.active_and_valid_donors_dict,
+                                                      txm_event.active_and_valid_recipients_dict)
 
         # get configuration
         configuration = get_optimizer_configuration(txm_event_configuration)
