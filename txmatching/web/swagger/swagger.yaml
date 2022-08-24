@@ -109,6 +109,17 @@ definitions:
         - config_id
         - show_not_all_matchings_found
         type: object
+    CompatibilityGraphRow:
+        properties:
+            donor_age_difference:
+                type: integer
+            donor_id:
+                type: integer
+            hla_compatibility_score:
+                type: integer
+            recipient_id:
+                type: integer
+        type: object
     Configuration:
         properties:
             blood_group_compatibility_bonus:
@@ -1131,12 +1142,7 @@ definitions:
         properties:
             compatibility_graph:
                 items:
-                    example:
-                        donor_age_difference: 1
-                        donor_index: 1
-                        hla_compatibility_score: 17
-                        recipient_index: 2
-                    type: object
+                    $ref: '#/definitions/CompatibilityGraphRow'
                 type: array
             configuration:
                 $ref: '#/definitions/OptimizerConfiguration'
@@ -1898,25 +1904,20 @@ paths:
             tags:
             - optimizer
     /v1/optimizer/export/{txm_event_id}/{config_id}:
-        parameters:
-        -   in: path
-            name: txm_event_id
-            required: true
-            type: integer
         get:
             operationId: get_optimize
             parameters:
+            -   description: Id of txm event chosen
+                in: path
+                name: txm_event_id
+                required: true
+                type: integer
             -   default: default
                 description: Configuration ID or "default".
                 in: path
                 name: config_id
                 required: true
                 type: string
-            -   description: Id of txm event chosen
-                in: path
-                name: matching_id
-                required: true
-                type: integer
             responses:
                 '200':
                     description: Endpoint that exports data from TXM that can be input

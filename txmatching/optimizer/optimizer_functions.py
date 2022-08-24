@@ -1,8 +1,9 @@
 from typing import Dict, List, Optional
 
-from txmatching.configuration.configuration import Configuration
+from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.optimizer.optimizer_return_object import CycleOrChain, DonorToRecipient, OptimizerReturn, Statistics
-from txmatching.optimizer.optimizer_request_object import Limitations, OptimizerConfiguration, Pair
+from txmatching.optimizer.optimizer_request_object import CompatibilityGraphRow, Limitations, OptimizerConfiguration, \
+    Pair
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.scorers.split_hla_additive_scorer import SplitScorer
@@ -25,13 +26,13 @@ def get_pairs_from_txm_event(donors: Dict[DonorDbId, Donor]) -> List[Pair]:
     return pairs
 
 
-def get_optimizer_configuration(config: Optional[Configuration]) -> OptimizerConfiguration:
+def get_optimizer_configuration(config: Optional[ConfigParameters]) -> OptimizerConfiguration:
     limitations = Limitations(
-        max_cycle_length=config.parameters.max_cycle_length if config else 4,
-        max_chain_length=config.parameters.max_sequence_length if config else 4,
+        max_cycle_length=config.max_cycle_length if config else 4,
+        max_chain_length=config.max_sequence_length if config else 4,
         custom_algorithm_settings={}
     )
-    # todo: I don't actually know what the number represents?
+    # todo: I don't actually know what the number represents? this is a temporary scoring
     scoring = [[{"hla_compatibility_score": 1}]]
     return OptimizerConfiguration(
         limitations=limitations,
@@ -40,11 +41,7 @@ def get_optimizer_configuration(config: Optional[Configuration]) -> OptimizerCon
 
 
 def get_compatibility_graph(donors: Dict[DonorDbId, Donor], recipients: Dict[RecipientDbId, Recipient]) -> List[
-    Dict[str, int]]:
-    for don in donors.values():
-        print("donor with name has db id", don.medical_id, don.db_id)
-    for don in recipients.values():
-        print("recipient with name has db id", don.medical_id, don.db_id)
+    CompatibilityGraphRow]:
     scorer = SplitScorer()
 
     score_matrix = scorer.get_score_matrix(recipients, donors)
@@ -52,10 +49,10 @@ def get_compatibility_graph(donors: Dict[DonorDbId, Donor], recipients: Dict[Rec
     compatibility_graph = []
     for i, donor_id in enumerate(donors):
         for j, recipient_id in enumerate(recipients):
-            comp_graph_cell = {
-                "donor_id": donor_id,
-                "recipient_id": recipient_id,
-                "hla_compatibility_score": score_matrix[i][j]
-            }
+            comp_graph_cell = CompatibilityGraphRow(
+                donor_id=donor_id,
+                recipient_id=recipient_id,
+                hla_compatibility_score=score_matrix[i][j]
+            )
             compatibility_graph.append(comp_graph_cell)
     return compatibility_graph

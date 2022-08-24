@@ -10,11 +10,12 @@
  * Do not edit the class manually.
  */
 import { PairGenerated } from './pairGenerated';
+import { CompatibilityGraphRowGenerated } from './compatibilityGraphRowGenerated';
 import { OptimizerConfigurationGenerated } from './optimizerConfigurationGenerated';
 
 
 export interface OptimizerRequestGenerated { 
-    compatibility_graph: Array<object>;
+    compatibility_graph: Array<CompatibilityGraphRowGenerated>;
     configuration: OptimizerConfigurationGenerated;
     pairs?: Array<PairGenerated>;
 }
