@@ -1,12 +1,14 @@
 from flask_restx import Resource
 from typing import Optional
 
+# todo require_valid_txm_event_id
+from txmatching.auth.auth_check import require_valid_config_id, require_valid_txm_event_id
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.optimizer.optimizer_in_swagger import \
     OptimizerReturnObjectJson, OptimizerRequestObjectJson
 from txmatching.database.services.config_service import \
-    get_configuration_from_db_id_or_default
+    get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.optimizer.optimizer_functions import export_return_data, get_compatibility_graph, \
@@ -35,11 +37,11 @@ class Optimize(Resource):
         return response_ok(optimizer_return)
 
 
-@optimizer_api.route('/export/<int:txm_event_id>/<int:config_id>', methods=['GET'])
+@optimizer_api.route('/export/<txm_event_id>/<config_id>', methods=['GET'])
 class Optimize(Resource):
     @optimizer_api.doc(
         params={
-            'matching_id': {
+            'txm_event_id': {
                 'description': 'Id of txm event chosen',
                 'type': int,
                 'in': 'path',
@@ -51,9 +53,11 @@ class Optimize(Resource):
     @optimizer_api.response_ok(OptimizerRequestObjectJson, description=EXPORT_DESCRIPTION)
     @optimizer_api.response_errors()
     @optimizer_api.require_user_login()
+    # @require_valid_txm_event_id()
+    @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
         txm_event = get_txm_event_complete(txm_event_id)
-        txm_event_configuration = get_configuration_from_db_id_or_default(txm_event, config_id)
+        txm_event_configuration_parameters = get_configuration_parameters_from_db_id_or_default(txm_event, config_id)
 
         # get pairs
         pairs = get_pairs_from_txm_event(txm_event.active_and_valid_donors_dict)
@@ -63,7 +67,7 @@ class Optimize(Resource):
                                                       txm_event.active_and_valid_recipients_dict)
 
         # get configuration
-        configuration = get_optimizer_configuration(txm_event_configuration)
+        configuration = get_optimizer_configuration(txm_event_configuration_parameters)
 
         return response_ok(OptimizerRequest(
             compatibility_graph=compatibility_graph,

@@ -53,14 +53,6 @@
             }
         },
         "/v1/optimizer/export/{txm_event_id}/{config_id}": {
-            "parameters": [
-                {
-                    "name": "txm_event_id",
-                    "in": "path",
-                    "required": true,
-                    "type": "integer"
-                }
-            ],
             "get": {
                 "responses": {
                     "500": {
@@ -97,19 +89,19 @@
                 "operationId": "get_optimize",
                 "parameters": [
                     {
+                        "name": "txm_event_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Id of txm event chosen"
+                    },
+                    {
                         "name": "config_id",
                         "in": "path",
                         "required": true,
                         "type": "string",
                         "description": "Configuration ID or \"default\".",
                         "default": "default"
-                    },
-                    {
-                        "description": "Id of txm event chosen",
-                        "type": "integer",
-                        "in": "path",
-                        "required": true,
-                        "name": "matching_id"
                     }
                 ],
                 "security": [
@@ -723,6 +715,23 @@
             ],
             "type": "string"
         },
+        "CompatibilityGraphRow": {
+            "properties": {
+                "donor_id": {
+                    "type": "integer"
+                },
+                "recipient_id": {
+                    "type": "integer"
+                },
+                "hla_compatibility_score": {
+                    "type": "integer"
+                },
+                "donor_age_difference": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        },
         "CountryCode": {
             "enum": [
                 "CZE",
@@ -1215,13 +1224,7 @@
                 "compatibility_graph": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "example": {
-                            "donor_index": 1,
-                            "recipient_index": 2,
-                            "hla_compatibility_score": 17,
-                            "donor_age_difference": 1
-                        }
+                        "$ref": "#/definitions/CompatibilityGraphRow"
                     }
                 },
                 "pairs": {
