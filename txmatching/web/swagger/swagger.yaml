@@ -178,6 +178,9 @@ definitions:
                 allOf:
                 -   $ref: '#/definitions/Scorer'
                 example: SplitScorer
+            soft_cutoff:
+                example: 1000
+                type: integer
             solver_constructor_name:
                 allOf:
                 -   $ref: '#/definitions/Solver'
@@ -210,6 +213,7 @@ definitions:
         - require_compatible_blood_group
         - required_patient_db_ids
         - scorer_constructor_name
+        - soft_cutoff
         - solver_constructor_name
         - use_binary_scoring
         - use_high_resolution

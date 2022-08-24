@@ -87,6 +87,10 @@ ConfigurationJson = matching_api.model(
         'max_matchings_in_ilp_solver': fields.Integer(
             required=True,
             example=_default_configuration.max_matchings_in_ilp_solver
+        ),
+        'soft_cutoff': fields.Integer(
+            required=True,
+            example=_default_configuration.soft_cutoff
         )
     }
 )

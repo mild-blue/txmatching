@@ -38,6 +38,7 @@ export interface ConfigurationGenerated {
     require_compatible_blood_group: boolean;
     required_patient_db_ids: Array<number>;
     scorer_constructor_name: ScorerGenerated;
+    soft_cutoff: number;
     solver_constructor_name: SolverGenerated;
     use_binary_scoring: boolean;
     use_high_resolution: boolean;

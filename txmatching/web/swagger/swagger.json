@@ -2191,6 +2191,7 @@
                 "require_compatible_blood_group",
                 "required_patient_db_ids",
                 "scorer_constructor_name",
+                "soft_cutoff",
                 "solver_constructor_name",
                 "use_binary_scoring",
                 "use_high_resolution"
@@ -2305,6 +2306,10 @@
                 "max_matchings_in_ilp_solver": {
                     "type": "integer",
                     "example": 20
+                },
+                "soft_cutoff": {
+                    "type": "integer",
+                    "example": 1000
                 }
             },
             "type": "object"

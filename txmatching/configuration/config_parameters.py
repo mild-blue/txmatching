@@ -118,6 +118,8 @@ class ConfigParameters:
                                                              compare=True,
                                                              metadata={COMPARISON_MODE: ComparisonMode.SMALLER,
                                                                        NON_NEGATIVE: True})
+    soft_cutoff: int = field(default=1000,
+                             compare=True)
 
     def comparable(self, other):
         """
