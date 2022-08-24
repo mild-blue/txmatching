@@ -80,5 +80,3 @@ class TestOptimizerApi(DbTests):
             res = client.get(f'{API_VERSION}/{OPTIMIZER_NAMESPACE}/export/{txm_event_db_id}/default',
                              headers=self.auth_headers)
         self.assertEqual(200, res.status_code)
-        # self.assertEqual(38, len(res.json['donors']))
-        # self.assertEqual(34, len(res.json['recipients']))
