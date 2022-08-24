@@ -17,21 +17,12 @@ class Limitations:
 
 @dataclass
 class OptimizerConfiguration:
+    # scoring: List[List[Scoring]]
     limitations: Optional[Limitations] = None
-    scoring: Optional[List[List[Dict[str, int]]]] = None
-
-
-@dataclass
-class CompatibilityGraphRow:
-    # todo add rows according to new keywords
-    donor_id: int
-    recipient_id: int
-    hla_compatibility_score: Optional[int] = None
-    donor_age_difference: Optional[int] = None
 
 
 @dataclass
 class OptimizerRequest:
-    compatibility_graph: List[CompatibilityGraphRow]
+    compatibility_graph: List[Dict[str, int]]
     pairs: List[Pair]
     configuration: OptimizerConfiguration

@@ -2168,23 +2168,6 @@
             },
             "type": "object"
         },
-        "CompatibilityGraphRow": {
-            "properties": {
-                "donor_id": {
-                    "type": "integer"
-                },
-                "recipient_id": {
-                    "type": "integer"
-                },
-                "hla_compatibility_score": {
-                    "type": "integer"
-                },
-                "donor_age_difference": {
-                    "type": "integer"
-                }
-            },
-            "type": "object"
-        },
         "Configuration": {
             "required": [
                 "blood_group_compatibility_bonus",
@@ -3526,30 +3509,6 @@
             "properties": {
                 "limitations": {
                     "$ref": "#/definitions/Limitations"
-                },
-                "scoring": {
-                    "type": "array",
-                    "example": [
-                        [
-                            {
-                                "transplant_count": 1
-                            }
-                        ],
-                        [
-                            {
-                                "hla_compatibility_score": 3
-                            },
-                            {
-                                "donor_age_difference": 20
-                            }
-                        ]
-                    ],
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "object"
-                        }
-                    }
                 }
             },
             "type": "object"
@@ -3563,7 +3522,13 @@
                 "compatibility_graph": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/CompatibilityGraphRow"
+                        "type": "object",
+                        "example": {
+                            "donor_index": 1,
+                            "recipient_index": 2,
+                            "hla_compatibility_score": 17,
+                            "donor_age_difference": 1
+                        }
                     }
                 },
                 "pairs": {

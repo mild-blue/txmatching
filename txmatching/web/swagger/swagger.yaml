@@ -109,17 +109,6 @@ definitions:
         - config_id
         - show_not_all_matchings_found
         type: object
-    CompatibilityGraphRow:
-        properties:
-            donor_age_difference:
-                type: integer
-            donor_id:
-                type: integer
-            hla_compatibility_score:
-                type: integer
-            recipient_id:
-                type: integer
-        type: object
     Configuration:
         properties:
             blood_group_compatibility_bonus:
@@ -1127,22 +1116,17 @@ definitions:
         properties:
             limitations:
                 $ref: '#/definitions/Limitations'
-            scoring:
-                example:
-                -   -   transplant_count: 1
-                -   -   hla_compatibility_score: 3
-                    -   donor_age_difference: 20
-                items:
-                    items:
-                        type: object
-                    type: array
-                type: array
         type: object
     OptimizerRequest:
         properties:
             compatibility_graph:
                 items:
-                    $ref: '#/definitions/CompatibilityGraphRow'
+                    example:
+                        donor_age_difference: 1
+                        donor_index: 1
+                        hla_compatibility_score: 17
+                        recipient_index: 2
+                    type: object
                 type: array
             configuration:
                 $ref: '#/definitions/OptimizerConfiguration'

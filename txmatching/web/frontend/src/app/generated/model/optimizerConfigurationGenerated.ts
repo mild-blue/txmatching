@@ -14,6 +14,5 @@ import { LimitationsGenerated } from './limitationsGenerated';
 
 export interface OptimizerConfigurationGenerated { 
     limitations?: LimitationsGenerated;
-    scoring?: Array<Array<object>>;
 }
 
