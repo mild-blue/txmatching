@@ -35,7 +35,7 @@ def get_optimizer_configuration(config: Optional[ConfigParameters]) -> Optimizer
     scoring = [[{"hla_compatibility_score": 1}]]
     return OptimizerConfiguration(
         limitations=limitations,
-        # scoring=scoring
+        scoring=scoring
     )
 
 

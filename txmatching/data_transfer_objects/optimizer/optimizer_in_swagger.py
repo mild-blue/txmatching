@@ -47,7 +47,9 @@ LimitationsJson = optimizer_api.model('Limitations', {
 OptimizerConfigurationJson = optimizer_api.model('OptimizerConfiguration', {
     'limitations': fields.Nested(LimitationsJson, reqired=False),
     # this should be nested list, but its not yet supported, this should work too, it doesnt...
-    # 'scoring': fields.List(required=False, cls_or_instance=fields.Nested(ScoringJson), example=[[{"transplant_count": 1}], [{"hla_compatibility_score": 3}, {"donor_age_difference": 20}]])
+     'scoring': fields.List(required=False, cls_or_instance=fields.List(requred=True, cls_or_instance=DictItem(
+        attribute="calling_args")), example=[[{"transplant_count": 1}],
+                                             [{"hla_compatibility_score": 3}, {"donor_age_difference": 20}]])
 })
 
 OptimizerRequestObjectJson = optimizer_api.model('OptimizerRequest', {

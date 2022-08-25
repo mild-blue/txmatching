@@ -1116,6 +1116,16 @@ definitions:
         properties:
             limitations:
                 $ref: '#/definitions/Limitations'
+            scoring:
+                example:
+                -   -   transplant_count: 1
+                -   -   hla_compatibility_score: 3
+                    -   donor_age_difference: 20
+                items:
+                    items:
+                        type: object
+                    type: array
+                type: array
         type: object
     OptimizerRequest:
         properties:

@@ -51,6 +51,7 @@ class Optimize(Resource):
         }
     )
     @optimizer_api.response_ok(OptimizerRequestObjectJson, description=EXPORT_DESCRIPTION)
+    @optimizer_api.response_ok(description=EXPORT_DESCRIPTION)
     @optimizer_api.response_errors()
     @optimizer_api.require_user_login()
     # @require_valid_txm_event_id()

@@ -17,7 +17,7 @@ class Limitations:
 
 @dataclass
 class OptimizerConfiguration:
-    # scoring: List[List[Scoring]]
+    scoring: List[List[Dict[str, int]]]
     limitations: Optional[Limitations] = None
 
 
