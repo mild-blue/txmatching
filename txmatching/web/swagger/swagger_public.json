@@ -1170,6 +1170,30 @@
             "properties": {
                 "limitations": {
                     "$ref": "#/definitions/Limitations"
+                },
+                "scoring": {
+                    "type": "array",
+                    "example": [
+                        [
+                            {
+                                "transplant_count": 1
+                            }
+                        ],
+                        [
+                            {
+                                "hla_compatibility_score": 3
+                            },
+                            {
+                                "donor_age_difference": 20
+                            }
+                        ]
+                    ],
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
                 }
             },
             "type": "object"
