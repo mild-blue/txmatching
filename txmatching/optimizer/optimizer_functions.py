@@ -51,7 +51,7 @@ def get_compatibility_graph(donors: Dict[DonorDbId, Donor], recipients: Dict[Rec
             comp_graph_cell = {
                 "donor_id": donor_id,
                 "recipient_id": recipient_id,
-                "hla_compatibility_score": score_matrix[i][j]
+                "hla_compatibility_score": int(score_matrix[i][j])
             }
             compatibility_graph.append(comp_graph_cell)
     return compatibility_graph
