@@ -3486,8 +3486,8 @@
                     "items": {
                         "type": "object",
                         "example": {
-                            "donor_index": 1,
-                            "recipient_index": 2,
+                            "donor_id": 1,
+                            "recipient_id": 2,
                             "hla_compatibility_score": 17,
                             "donor_age_difference": 1
                         }

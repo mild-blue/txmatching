@@ -133,8 +133,8 @@ def _create_score_matrix(donors_dict: Dict[int, Recipient], recipients_dict: Dic
 
 def _hla_score_for_pair(donor_id: int, recipient_id: int, comp_graph: List[Dict[str, int]]) -> int:
     for row in comp_graph:
-        if ("donor_index" in row and "recipient_index" in row and "hla_compatibility_score" in row and row[
-            "donor_index"] == donor_id and row["recipient_index"] == recipient_id):
+        if ("donor_id" in row and "recipient_id" in row and "hla_compatibility_score" in row and row[
+            "donor_id"] == donor_id and row["recipient_id"] == recipient_id):
             return row["hla_compatibility_score"]
     return -1
 
