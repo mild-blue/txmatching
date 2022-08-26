@@ -490,6 +490,19 @@ definitions:
         - ZMB
         - ZWE
         type: string
+    CycleOrChain:
+        properties:
+            patients:
+                items:
+                    $ref: '#/definitions/DonorToRecipient'
+                type: array
+            scores:
+                items:
+                    type: integer
+                type: array
+        required:
+        - patients
+        type: object
     DefaultTxmEvent:
         properties:
             id:
@@ -733,6 +746,21 @@ definitions:
                         considered in exchange.
                     type: boolean
             type: object
+    DonorToRecipient:
+        properties:
+            donor_id:
+                type: integer
+            recipient_id:
+                type: integer
+            score:
+                items:
+                    type: integer
+                type: array
+        required:
+        - donor_id
+        - recipient_id
+        - score
+        type: object
     DonorType:
         description: Type of the donor.
         enum:
@@ -1018,6 +1046,19 @@ definitions:
         required:
         - id
         type: object
+    Limitations:
+        properties:
+            custom_algorithm_settings:
+                example:
+                    max_number_of_iterations: 200
+                type: object
+            max_chain_length:
+                example: 4
+                type: integer
+            max_cycle_length:
+                example: 3
+                type: integer
+        type: object
     LoginSuccessResponse:
         properties:
             auth_token:
@@ -1071,6 +1112,53 @@ definitions:
         required:
         - name
         type: object
+    OptimizerConfiguration:
+        properties:
+            limitations:
+                $ref: '#/definitions/Limitations'
+            scoring:
+                example:
+                -   -   transplant_count: 1
+                -   -   hla_compatibility_score: 3
+                    -   donor_age_difference: 20
+                items:
+                    items:
+                        type: object
+                    type: array
+                type: array
+        type: object
+    OptimizerRequest:
+        properties:
+            compatibility_graph:
+                items:
+                    example:
+                        donor_age_difference: 1
+                        donor_index: 1
+                        hla_compatibility_score: 17
+                        recipient_index: 2
+                    type: object
+                type: array
+            configuration:
+                $ref: '#/definitions/OptimizerConfiguration'
+            pairs:
+                items:
+                    $ref: '#/definitions/Pair'
+                type: array
+        required:
+        - compatibility_graph
+        - configuration
+        type: object
+    OptimizerReturn:
+        properties:
+            cycles_and_chains:
+                items:
+                    $ref: '#/definitions/CycleOrChain'
+                type: array
+            statistics:
+                $ref: '#/definitions/Statistics'
+        required:
+        - cycles_and_chains
+        type: object
     OtpLogin:
         properties:
             otp:
@@ -1078,6 +1166,17 @@ definitions:
                 type: string
         required:
         - otp
+        type: object
+    Pair:
+        properties:
+            donor_id:
+                example: 1
+                type: integer
+            recipient_id:
+                example: 4
+                type: integer
+        required:
+        - donor_id
         type: object
     ParsingIssue:
         properties:
@@ -1459,6 +1558,16 @@ definitions:
         - AllSolutionsSolver
         - ILPSolver
         type: string
+    Statistics:
+        properties:
+            number_of_found_cycles:
+                type: integer
+            number_of_found_transplants:
+                type: integer
+        required:
+        - number_of_found_cycles
+        - number_of_found_transplants
+        type: object
     Success:
         properties:
             success:
@@ -1754,6 +1863,40 @@ info:
     title: API
     version: '1.0'
 paths:
+    /v1/optimizer:
+        post:
+            operationId: post_optimize
+            parameters:
+            -   in: body
+                name: payload
+                required: true
+                schema:
+                    $ref: '#/definitions/OptimizerRequest'
+            responses:
+                '200':
+                    description: Endpoint that calculates matchings from compatibility
+                        graph and configuration
+                    schema:
+                        $ref: '#/definitions/OptimizerReturn'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            tags:
+            - optimizer
     /v1/public/patient-upload:
         put:
             description: This endpoint allows the country editor to upload patient
@@ -3050,6 +3193,7 @@ tags:
 -   name: public
 -   name: user
 -   name: service
+-   name: optimizer
 -   name: matching
 -   name: patients
 -   name: configuration
