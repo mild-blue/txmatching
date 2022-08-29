@@ -51,7 +51,16 @@
     .header-description {
       font-size: 14px;
       color: $gray-600;
+      position: absolute;
     }
+  }
+
+  &-count-space {
+    display: flex;
+    width: 2%;
+    position: relative;
+    top: -1.2em;
+    margin-left: 102%;
   }
 
   h3 {

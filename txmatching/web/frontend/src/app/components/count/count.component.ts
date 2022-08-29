@@ -6,6 +6,6 @@ import { Component, Input } from "@angular/core";
   styleUrls: ["./count.component.scss"],
 })
 export class CountComponent {
-  @Input() count: number = 0;
+  @Input() count: number | undefined = 0;
   @Input() maxCount?: number;
 }

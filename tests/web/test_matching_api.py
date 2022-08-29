@@ -256,7 +256,7 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(200, res.status_code)
             self.assertEqual(9, res.json['found_matchings_count'])
             self.assertEqual(157, res.json['number_of_possible_transplants'])
-            self.assertEqual(34, res.json['number_of_possible_recipients'])
+            self.assertEqual(12, res.json['number_of_possible_recipients'])
 
             conf_dto2 = dataclasses.asdict(ConfigParameters(solver_constructor_name=Solver.AllSolutionsSolver,
                                                             max_number_of_distinct_countries_in_round=50,
@@ -270,7 +270,7 @@ class TestSaveAndGetConfiguration(DbTests):
             self.assertEqual(947, res.json['found_matchings_count'])
             # should be the same as in the previous run as such configuration does not affect these counts
             self.assertEqual(157, res.json['number_of_possible_transplants'])
-            self.assertEqual(34, res.json['number_of_possible_recipients'])
+            self.assertEqual(12, res.json['number_of_possible_recipients'])
 
     def test_solver_multiple_txm_events(self):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))

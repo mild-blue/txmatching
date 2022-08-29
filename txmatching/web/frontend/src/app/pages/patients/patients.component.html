@@ -12,17 +12,16 @@
 <section class="patients">
   <app-container>
     <div class="patients__header">
-      <div class="patients__title">
+      <div>
         <h1>
           Patients
-          <app-count
-            [count]="donorsCount + recipientCount"
-            matTooltip="Donors: {{ donorsCount }}, Recipients: {{ recipientCount }}"
-            matTooltipPosition="right"
-          >
-          </app-count>
+            <div class="patients-count-space">
+              <app-count [count]="donorsCount + recipientCount"
+                         matTooltip="Donors: {{ donorsCount }}, Recipients: {{ recipientCount }}"
+                         matTooltipPosition="right">
+              </app-count>
+            </div>
         </h1>
-
         <div class="header-description" *ngIf="!loading">
           Showing patients for
           {{ getConfigId === undefined || isCurrentConfigDefault ? "default " : "" }}

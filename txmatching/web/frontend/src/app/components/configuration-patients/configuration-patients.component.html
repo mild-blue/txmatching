@@ -1,7 +1,9 @@
 <div class="configuration__patients configuration__box">
   <h4>
     Required recipients
-    <app-count [count]="selectedPatients.length"></app-count>
+    <div class="count-space">
+      <app-count [count]="selectedPatients.length"></app-count>
+    </div>
   </h4>
   <div class="hint">Only matchings containing these recipients will be shown.</div>
   <form>

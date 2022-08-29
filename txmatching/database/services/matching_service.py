@@ -74,7 +74,7 @@ def get_matchings_detailed_for_pairing_result_model(
 
     number_of_possible_recipients = sum(
         1 for recipient_db_id in txm_event.active_and_valid_recipients_dict.keys()
-        if len([
+        if sum([
             score_dict[(donor_db_id, recipient_db_id)] >= 0
             for donor_db_id in txm_event.active_and_valid_donors_dict.keys()
         ]) > 0

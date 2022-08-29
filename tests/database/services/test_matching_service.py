@@ -44,6 +44,6 @@ class MatchingService(DbTests):
         matchings_detailed = get_matchings_detailed_for_pairing_result_model(pairing_result_model, txm_event)
 
         self.assertEqual(matchings_detailed.found_matchings_count, 9)
-        self.assertEqual(matchings_detailed.number_of_possible_recipients, 34)
+        self.assertEqual(matchings_detailed.number_of_possible_recipients, 12)
         self.assertEqual(matchings_detailed.number_of_possible_transplants, 157)
         self.assertEqual(matchings_detailed.max_transplant_score, 26)

@@ -5,7 +5,7 @@ export interface CalculatedMatchings {
   calculatedMatchings: Matching[];
   configId: number;
   foundMatchingsCount?: number;
-  numberOfPossibleTransplats?: number;
+  numberOfPossibleTransplants?: number;
   numberOfPossibleRecipients?: number;
   showNotAllMatchingsFound: boolean;
 }
