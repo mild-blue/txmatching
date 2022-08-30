@@ -123,7 +123,6 @@ class RequestPerformance:
         )
 
 
-# pylint: disable=too-many-statements
 def create_app() -> Flask:
     setup_logging()
 
