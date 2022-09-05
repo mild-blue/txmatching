@@ -4,6 +4,7 @@ LABEL project="mildblue:txmatching"
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
+# ENV WKHTMLTOPDS_PATH /opt/wkhtmltopdf/bin
 
 RUN apt-get update --fix-missing && \
     apt-get install -y \
@@ -13,10 +14,21 @@ RUN apt-get update --fix-missing && \
      git mercurial subversion \
      # conda-forge dependencies
      libxi6 libxfixes3 libxcursor1 libxdamage1 libxcomposite1 \
-     libxrandr2 libxinerama1 libx11-6 \
+     libxrandr2 libxinerama1 libx11-6 &&\
      # PDF generation stuff
-     wkhtmltopdf && \
-    apt-get clean
+    #  xfonts-75dpi && \
+    apt-get clean 
+
+# install wkhtmltopdf 0.12.6
+# RUN apt-get remove wkhtmltopdf --purge -y && \
+#  RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb  && \
+#     dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb && \
+#     echo "export PATH=/usr/bin/wkhtmltopdf/bin:$PATH" > ~/.bashrc && \
+#     . ~/.bashrc 
+
+# dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb
+    # && \
+    # rm /tmp/wkhtmltopdf.deb
 
 ADD https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh ./miniconda.sh
 # install miniconda
@@ -31,3 +43,17 @@ RUN mv miniconda.sh ~/miniconda.sh && \
     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
     /opt/conda/bin/conda clean -afy && \
     conda update -n base -c defaults conda
+
+
+
+# FROM guoyao/wkhtmltopdf:0.12.6-dev
+# LABEL description="Mild Blue - wkhtmltopdf installed"
+# LABEL project="mildblue:txmatching"
+
+# install wkhtmltopdf 0.12.6
+# RUN apt-get remove wkhtmltopdf --purge -y && \
+#     wget -O /tmp/wkhtmltopdf.deb https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb  && \
+#     apt install /tmp/wkhtmltopdf.deb -y && \
+#     echo "export PATH=/usr/bin/wkhtmltopdf/bin:$PATH" > ~/.bashrc && \
+#     . ~/.bashrc && \
+#     rm /tmp/wkhtmltopdf.deb

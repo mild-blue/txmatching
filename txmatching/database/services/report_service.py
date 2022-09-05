@@ -175,6 +175,7 @@ def generate_pdf_report(
             '--margin-left': '0',
             '--margin-right': '0',
             '--margin-bottom': '0',
+            '--dpi': ' 60'
         }
     )
 
