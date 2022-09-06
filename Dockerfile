@@ -41,4 +41,4 @@ CMD . ~/.bashrc && \
         --bind 0.0.0.0:${PORT} \
         --timeout 1800 \
         --graceful-timeout 1800 \
-         txmatching.web.app:app && \
+         txmatching.web.app:app
