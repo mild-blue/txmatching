@@ -47,7 +47,7 @@
     background: var(--primary-color);
     box-shadow: $box-shadow--wide;
     margin-bottom: $box-shadow--wide-size;
-    overflow: hidden;
+    overflow: visible;
 
     margin-left: $item-gap;
     margin-right: $item-gap;
@@ -66,6 +66,8 @@
       border-radius: $border-radius--wide;
       background: $white;
       padding: $padding-y $padding-x;
+      position: relative;
+      top: 2px;
     }
   }
 }
