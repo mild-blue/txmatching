@@ -14,6 +14,7 @@ class TestMatchingApi(unittest.TestCase):
             old_swagger = json.load(f)
         new_swagger = SwaggerGenApp().api.__schema__
         del new_swagger['host']
+        del new_swagger['responses']
 
     # Can be used if one wants to compare what is the issue.
         # with open(get_absolute_path("tests/resources/test_swagger_new.json"), "w") as f:
@@ -30,6 +31,7 @@ class TestMatchingApi(unittest.TestCase):
             old_swagger = json.load(f)
         new_swagger = PublicSwaggerGenApp().api.__schema__
         del new_swagger['host']
+        del new_swagger['responses']
 
         # Can be used if one wants to compare what is the issue.
         # with open(get_absolute_path("tests/resources/test_swagger_new.json"), "w") as f:

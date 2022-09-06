@@ -99,7 +99,7 @@ class TestReportApi(DbTests):
                              f'{REPORTS_NAMESPACE}/configs/default/matchings/6666/pdf?{MATCHINGS_BELOW_CHOSEN_PARAM}=2',
                              headers=self.auth_headers)
 
-            self.assertEqual(401, res.status_code)
+            self.assertEqual(404, res.status_code)
             self.assertEqual('application/json', res.content_type)
             self.assertEqual(
                 'Matching with id 6666 not found.',
