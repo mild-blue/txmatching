@@ -15,9 +15,10 @@ RUN apt-get update --fix-missing && \
      libxi6 libxfixes3 libxcursor1 libxdamage1 libxcomposite1 \
      libxrandr2 libxinerama1 libx11-6 \
      # PDF generation stuff
-     wkhtmltopdf xfonts-75dpi && \
+     wkhtmltopdf && \
     apt-get clean && \
     apt-get remove wkhtmltopdf --purge -y && \
+    apt-get install xfonts-75dpi && \
     wget -O /tmp/wkhtmltopdf.deb https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb && \
     dpkg -i /tmp/wkhtmltopdf.deb && \
     echo "export PATH=/usr/bin/wkhtmltopdf/bin:$PATH" > ~/.bashrc && \
