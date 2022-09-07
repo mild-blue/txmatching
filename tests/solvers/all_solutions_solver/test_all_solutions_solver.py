@@ -78,7 +78,7 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         txm_event_db_id = self.fill_db_with_patients(get_absolute_path(PATIENT_DATA_OBFUSCATED))
         txm_event = get_txm_event_complete(txm_event_db_id)
         txm_event.active_and_valid_donors_dict = {i: _set_donor_blood_group(donor) for i, donor in
-                                        txm_event.active_and_valid_donors_dict.items()}
+                                                  txm_event.active_and_valid_donors_dict.items()}
         for debt in range(0, 4):
             config_parameters = ConfigParameters(
                 solver_constructor_name=Solver.AllSolutionsSolver,
@@ -177,6 +177,32 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
                 ManualDonorRecipientScore(donor_db_id=2, recipient_db_id=1, score=4.0),
                 ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=2, score=1.0),
                 ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=1, score=1.0),
-                ])
+            ])
         solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
         self.assertEqual(len(solutions), 1)
+
+    def test_handling_correctly_multiple_donors(self):
+        store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_ROUND)
+
+        # 1. add donors with the same recipient
+        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
+        config_parameters = ConfigParameters(
+            solver_constructor_name=Solver.AllSolutionsSolver,
+            manual_donor_recipient_scores=[
+                ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=1, score=19.0),
+                ManualDonorRecipientScore(donor_db_id=2, recipient_db_id=1, score=20.0),
+                ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=1, score=19.0),
+            ])
+
+        # 2. calcualate
+        solutions = solve_from_configuration(config_parameters, txm_event).calculated_matchings_list
+
+        # 3. check if the recipient is not matched with more than one donor
+        for solution in solutions:
+            recipient_ids = [pair.recipient.db_id for pair in solution.matching_pairs]
+
+            seen = set()
+            duplicates = [x for x in recipient_ids if x in seen or seen.add(x)]
+
+            if duplicates:
+                raise Exception(f'Recipient/recipients with id/ids {duplicates} is/are in matching more than once')
