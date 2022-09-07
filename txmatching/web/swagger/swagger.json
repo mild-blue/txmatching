@@ -2,6 +2,56 @@
     "swagger": "2.0",
     "basePath": "/",
     "paths": {
+        "/v1/optimizer": {
+            "post": {
+                "responses": {
+                    "500": {
+                        "description": "Unexpected error, see contents for details.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. You do not have rights to access this endpoint.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong data format.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
+                    "200": {
+                        "description": "Endpoint that calculates matchings from compatibility graph and configuration",
+                        "schema": {
+                            "$ref": "#/definitions/OptimizerReturn"
+                        }
+                    }
+                },
+                "operationId": "post_optimize",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/OptimizerRequest"
+                        }
+                    }
+                ],
+                "tags": [
+                    "optimizer"
+                ]
+            }
+        },
         "/v1/public/patient-upload": {
             "put": {
                 "responses": {
@@ -1885,6 +1935,9 @@
             "name": "service"
         },
         {
+            "name": "optimizer"
+        },
+        {
             "name": "matching"
         },
         {
@@ -2483,6 +2536,26 @@
             ],
             "type": "string"
         },
+        "CycleOrChain": {
+            "required": [
+                "patients"
+            ],
+            "properties": {
+                "patients": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DonorToRecipient"
+                    }
+                },
+                "scores": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "type": "object"
+        },
         "DefaultTxmEvent": {
             "required": [
                 "id"
@@ -2825,6 +2898,28 @@
                     "type": "object"
                 }
             ]
+        },
+        "DonorToRecipient": {
+            "required": [
+                "donor_id",
+                "recipient_id",
+                "score"
+            ],
+            "properties": {
+                "donor_id": {
+                    "type": "integer"
+                },
+                "recipient_id": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "type": "object"
         },
         "DonorType": {
             "enum": [
@@ -3252,6 +3347,25 @@
             },
             "type": "object"
         },
+        "Limitations": {
+            "properties": {
+                "max_cycle_length": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "max_chain_length": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "custom_algorithm_settings": {
+                    "type": "object",
+                    "example": {
+                        "max_number_of_iterations": 200
+                    }
+                }
+            },
+            "type": "object"
+        },
         "LoginSuccessResponse": {
             "required": [
                 "auth_token"
@@ -3329,6 +3443,85 @@
             },
             "type": "object"
         },
+        "OptimizerConfiguration": {
+            "properties": {
+                "limitations": {
+                    "$ref": "#/definitions/Limitations"
+                },
+                "scoring": {
+                    "type": "array",
+                    "example": [
+                        [
+                            {
+                                "transplant_count": 1
+                            }
+                        ],
+                        [
+                            {
+                                "hla_compatibility_score": 3
+                            },
+                            {
+                                "donor_age_difference": 20
+                            }
+                        ]
+                    ],
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "OptimizerRequest": {
+            "required": [
+                "compatibility_graph",
+                "configuration"
+            ],
+            "properties": {
+                "compatibility_graph": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "example": {
+                            "donor_index": 1,
+                            "recipient_index": 2,
+                            "hla_compatibility_score": 17,
+                            "donor_age_difference": 1
+                        }
+                    }
+                },
+                "pairs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Pair"
+                    }
+                },
+                "configuration": {
+                    "$ref": "#/definitions/OptimizerConfiguration"
+                }
+            },
+            "type": "object"
+        },
+        "OptimizerReturn": {
+            "required": [
+                "cycles_and_chains"
+            ],
+            "properties": {
+                "cycles_and_chains": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CycleOrChain"
+                    }
+                },
+                "statistics": {
+                    "$ref": "#/definitions/Statistics"
+                }
+            },
+            "type": "object"
+        },
         "OtpLogin": {
             "required": [
                 "otp"
@@ -3337,6 +3530,22 @@
                 "otp": {
                     "type": "string",
                     "description": "OTP for this login."
+                }
+            },
+            "type": "object"
+        },
+        "Pair": {
+            "required": [
+                "donor_id"
+            ],
+            "properties": {
+                "donor_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "recipient_id": {
+                    "type": "integer",
+                    "example": 4
                 }
             },
             "type": "object"
@@ -3975,6 +4184,21 @@
                 "ILPSolver"
             ],
             "type": "string"
+        },
+        "Statistics": {
+            "required": [
+                "number_of_found_cycles",
+                "number_of_found_transplants"
+            ],
+            "properties": {
+                "number_of_found_cycles": {
+                    "type": "integer"
+                },
+                "number_of_found_transplants": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
         },
         "Success": {
             "required": [

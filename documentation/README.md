@@ -22,12 +22,14 @@ There are several “levels” on which the HLA antigen can be specified. For ex
 
 HLA-A9 consists of 3 closely related specificities, A23, A24, A2403.
 
+*Here is the table of more Broad-Splits associations: http://hla.alleles.org/antigens/broads_splits.html*
+
 First is the broad specificity, which is kind of a supertype. In this example, it is A9.
 
 Next is split specificity. Splits or “subtypes” are the finer specificities that comprise the supertype. In this
 example, it's for instance A23.
 
-Finally we also specify high resolution, which is the most specific, specifying also things like specific HLA protein,
+Finally, we also specify high resolution, which is the most specific, specifying also things like specific HLA protein,
 etc. E.g.: A\*24:19
 
 |Nomenclature | Indicates|
