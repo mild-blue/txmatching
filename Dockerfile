@@ -34,7 +34,6 @@ ENV PORT=8080
 
 # Start the app - one must initialize shell beforehand
 CMD . ~/.bashrc && \
-    conda init bash && \
     conda activate txmatching && \
     gunicorn  \
         --config txmatching/web/gunicorn_configuration.py \
