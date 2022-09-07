@@ -1,5 +1,4 @@
 FROM ghcr.io/mild-blue/txmatching-conda-base:1.0.20
-# FROM test-base
 LABEL description="Mild Blue - TXMatching base image with conda dependencies installed."
 LABEL project="mildblue:txmatching"
 

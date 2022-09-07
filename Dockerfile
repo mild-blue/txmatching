@@ -8,7 +8,6 @@ RUN npm run build-prod
 
 # Build backend
 FROM ghcr.io/mild-blue/txmatching-conda-dependencies:1.0.20 AS backend-build
-# FROM test-image AS backend-build
 LABEL description="Mild Blue - TXMatching"
 LABEL project="mildblue:txmatching"
 
