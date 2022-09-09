@@ -17,7 +17,8 @@ from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.enums import HLACrossmatchLevel, Solver
 from txmatching.utils.get_absolute_path import get_absolute_path
-
+from txmatching.database.sql_alchemy_schema import DonorModel
+from txmatching.database.db import db
 
 class TestSolveFromDbAndItsSupportFunctionality(DbTests):
     def test_no_new_config_is_saved_if_one_already_exists(self):
