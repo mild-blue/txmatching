@@ -3,13 +3,9 @@
 This folder contains two docker images, that are used as a base for the TXMatching.
 
 ## Updating images
-When it is necessary to update the base image, execute `make publish VERSION=<new-version>`
-from dockerbase directory, then update [Github Actions](../.github/workflows/pr.yml) pipeline and
-[TXM Dockerfile](../Dockerfile) with correct (the new) version.
-Example:
-```
-make publish VERSION=1.0.0
-```
+When it is necessary to update the base image update the version in [Dockerfile.conda-dependencies](Dockerfile.conda-dependencies), 
+[Github Actions](../.github/workflows/pr.yml) pipeline, `.env` file and [TXM Dockerfile](../Dockerfile) with correct 
+(the new) version, commit to your branch and run GitHub Action "Build Base Images Pipeline" on selected branch.
 
 ### Dockerfile.conda-base
 The base OS image for the project, it contains necessary system libraries 

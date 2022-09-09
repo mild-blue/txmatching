@@ -1,3 +1,5 @@
+import os
+
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
@@ -5,6 +7,7 @@ from txmatching.database.services.config_service import \
     save_config_parameters_to_db
 from txmatching.database.services.pairing_result_service import \
     solve_from_configuration_and_save
+from txmatching.database.services.report_service import TMP_DIR
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.utils.get_absolute_path import get_absolute_path
@@ -185,3 +188,32 @@ class TestReportApi(DbTests):
         self.assertIsNotNone(res.data)
         self.assertTrue(res.content_length > 0)
         self.assertIsNotNone(res.headers['x-filename'])
+
+    def test_report_size(self):
+        self.txm_event_db_id = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED)
+        )
+        txm_event = get_txm_event_complete(self.txm_event_db_id)
+        configuration_parameters = ConfigParameters()
+        configuration = save_config_parameters_to_db(
+            config_parameters=configuration_parameters,
+            txm_event_id=txm_event.db_id,
+            user_id=1
+        )
+        solve_from_configuration_and_save(
+            configuration=configuration,
+            txm_event=txm_event
+        )
+
+        # include param section
+        with self.app.test_client() as client:
+            res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{self.txm_event_db_id}/'
+                             f'{REPORTS_NAMESPACE}/configs/default/matchings/3/pdf'
+                             f'?{MATCHINGS_BELOW_CHOSEN_PARAM}=2'
+                             f'&{INCLUDE_PATIENTS_SECTION_PARAM}',
+                             headers=self.auth_headers)
+
+            self._assert_pdf_response_ok(res)
+
+        # check if report size is less than 1MB
+        self.assertTrue(res.content_length < 1000000)
