@@ -78,7 +78,7 @@ However, sometimes antibodies can be bad, for instance in situations like organ 
 an organ after it is transplanted, and cause the immune system to destroy it. Most of the time these antibodies are
 directed against HLA.
 
-Antibodies of a patient are found by a special lab test. This tests does not find the antibodies directly but tests which antigens (from a limited set) the patient has the antibodies against. The lab tests can differ from lab to lab, each can use a bit different set of antibodies in the test.
+Antibodies of a patient are found by a special lab test. This test does not find the antibodies directly but tests which antigens (from a limited set) the patient has the antibodies against. The lab test can differ from lab to lab, each can use a bit different set of antibodies in the test.
 
 For each antigen the test reports MFI value and the higher the MFI value is the stronger was the immunological response. The lab then uses some cutoff value to distinguish which antibodies the patient has and which not. This cutoff can differ between labs and in some special cases in can be set differently for patients from the same lab (in the case the patient really needs a kidney and it is worth for the patient to have the transplant even when there is a small immunological response)
 
