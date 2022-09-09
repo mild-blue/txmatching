@@ -1,13 +1,18 @@
-from local_testing_utilities.generate_patients import store_generated_patients_from_folder, SMALL_DATA_FOLDER, \
-    GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER_WITH_ROUND, SMALL_DATA_FOLDER_WITH_NO_SOLUTION
+from local_testing_utilities.generate_patients import (
+    GENERATED_TXM_EVENT_NAME, SMALL_DATA_FOLDER,
+    SMALL_DATA_FOLDER_WITH_NO_SOLUTION, SMALL_DATA_FOLDER_WITH_ROUND,
+    store_generated_patients_from_folder)
 from local_testing_utilities.populate_db import PATIENT_DATA_OBFUSCATED
 from local_testing_utilities.utils import create_or_overwrite_txm_event
 from tests.solvers.ilp_solver.test_ilp_solver import _set_donor_blood_group
 from tests.test_utilities.prepare_app_for_tests import DbTests
+from txmatching.auth.data_types import UserRole
 from txmatching.configuration.config_parameters import (
     ConfigParameters, ManualDonorRecipientScore)
-from txmatching.database.services.txm_event_service import \
-    get_txm_event_complete, get_txm_event_db_id_by_name
+from txmatching.database.db import db
+from txmatching.database.services.txm_event_service import (
+    get_txm_event_complete, get_txm_event_db_id_by_name)
+from txmatching.database.sql_alchemy_schema import DonorModel
 from txmatching.solve_service.solve_from_configuration import \
     solve_from_configuration
 from txmatching.utils.enums import HLACrossmatchLevel, Solver
@@ -182,22 +187,24 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(len(solutions), 1)
 
     def test_handling_correctly_multiple_donors(self):
-        store_generated_patients_from_folder(SMALL_DATA_FOLDER_WITH_ROUND)
+        # 1. create txm event
+        txm_event_db_id = self.fill_db_with_patients(
+            get_absolute_path(PATIENT_DATA_OBFUSCATED))
 
-        # 1. add donors with the same recipient
-        txm_event = get_txm_event_complete(get_txm_event_db_id_by_name(GENERATED_TXM_EVENT_NAME))
-        config_parameters = ConfigParameters(
-            solver_constructor_name=Solver.AllSolutionsSolver,
-            manual_donor_recipient_scores=[
-                ManualDonorRecipientScore(donor_db_id=1, recipient_db_id=1, score=19.0),
-                ManualDonorRecipientScore(donor_db_id=2, recipient_db_id=1, score=20.0),
-                ManualDonorRecipientScore(donor_db_id=3, recipient_db_id=1, score=19.0),
-            ])
+        self.login_with_role(UserRole.ADMIN)
 
-        # 2. calcualate
-        solutions = solve_from_configuration(config_parameters, txm_event).calculated_matchings_list
+        # 2. alter donor table so that there's 2 donors relating to the same recipient
+        donor_id_to_change = 15
+        recipient_id_for_error = 13
+        DonorModel.query.filter(DonorModel.id == donor_id_to_change).update(
+            {'recipient_id': recipient_id_for_error})
+        db.session.commit()
 
-        # 3. check if the recipient is not matched with more than one donor
+        # 3. calcualate
+        solutions = solve_from_configuration(
+            ConfigParameters(), get_txm_event_complete(txm_event_db_id)).calculated_matchings_list
+
+        # 4. check if the recipient is not matched with more than one donor
         for solution in solutions:
             recipient_ids = [pair.recipient.db_id for pair in solution.matching_pairs]
 
