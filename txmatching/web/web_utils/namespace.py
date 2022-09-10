@@ -3,7 +3,6 @@ from txmatching.auth.user.user_auth_check import require_user_login
 
 
 class Namespace(NamespaceWithErrorResponses):
-    
     @staticmethod
     def _combine_decorators(decorators):
         def resulting_decorator(func):

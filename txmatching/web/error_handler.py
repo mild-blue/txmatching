@@ -225,12 +225,12 @@ def _namespace_error_response(code):
     2.      ''' Access denied. '''                    <--- this line will be used for response
 
     :param code: error response's code
-    Responses are saved as Namespace._ERROR_RESPONSES.
+    Responses are saved as Namespace.ERROR_CODE_DESCRIPTION.
     """
     # noinspection PyProtectedMember
     def inner(func):
         splitted_doc = func.__doc__.split('\n')
-        Namespace._ERROR_RESPONSES[code] = splitted_doc[1].strip() if len(splitted_doc) > 1 \
+        Namespace.ERROR_CODE_DESCRIPTION[code] = splitted_doc[1].strip() if len(splitted_doc) > 1 \
             else func.__doc__
         return func
 
@@ -275,27 +275,27 @@ def _default_error_handlers(api: Api):
 
 
 # for filling responses by @_namespace_error_response in handlers
-Namespace._ERROR_RESPONSES = {501: f"This response is not implemented by error-handler. "
-                                   f"Mark needed exception using "
-                                   f"'@_namespace_error_response(code=CODE)' "
-                                   f"in {__file__}.{_user_auth_handlers.__name__}"}
+Namespace.ERROR_CODE_DESCRIPTION = {501: f"This response is not implemented by error-handler. "
+                                         f"Mark needed exception using "
+                                         f"'@_namespace_error_response(code=CODE)' "
+                                         f"in {__file__}.{_user_auth_handlers.__name__}"}
 
 
 def _generate_namespace_error_responses():
     """
     Activates decorator @_namespace_error_responses
-    to fill Namespace._ERROR_RESPONSES by handlers __doc__.
+    to fill Namespace.ERROR_CODE_DESCRIPTION by handlers __doc__.
     Call it during NamespaceWithErrorResponses definition.
     """
-    FakeApi = Api()
-    _user_auth_handlers(FakeApi)
+    fake_api = Api()
+    _user_auth_handlers(fake_api)
 
 
 # noinspection PyProtectedMember
 class NamespaceWithErrorResponses(Namespace):
     """ flask_restx.Namespace with error responses. """
 
-    # creating error responses by code in Namespace._ERROR_RESPONSES
+    # creating error responses by code in Namespace.ERROR_CODE_DESCRIPTION
     _generate_namespace_error_responses()
 
     def _create_fail_response_model(self):
@@ -305,49 +305,49 @@ class NamespaceWithErrorResponses(Namespace):
         })
 
     def response_error_matching_not_found(self):
-        code = 404 if 404 in Namespace._ERROR_RESPONSES.keys() else 501
+        code = 404 if 404 in Namespace.ERROR_CODE_DESCRIPTION else 501
         model = self._create_fail_response_model()
         return self.response(code=code, model=model,
-                             description=Namespace._ERROR_RESPONSES[code])
+                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
 
     def response_error_non_unique_patients_provided(self):
-        code = 409 if 409 in Namespace._ERROR_RESPONSES.keys() else 501
+        code = 409 if 409 in Namespace.ERROR_CODE_DESCRIPTION else 501
         model = self._create_fail_response_model()
         return self.response(code=code, model=model,
-                             description=Namespace._ERROR_RESPONSES[code])
+                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
 
     def response_error_unexpected(self):
-        code = 500 if 500 in Namespace._ERROR_RESPONSES.keys() else 501
+        code = 500 if 500 in Namespace.ERROR_CODE_DESCRIPTION else 501
         model = self._create_fail_response_model()
         return self.response(code=code, model=model,
-                             description=Namespace._ERROR_RESPONSES[code])
+                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
 
     def response_error_services_failing(self):
-        code = 503 if 503 in Namespace._ERROR_RESPONSES.keys() else 501
+        code = 503 if 503 in Namespace.ERROR_CODE_DESCRIPTION else 501
         model = self._create_fail_response_model()
         return self.response(code=code, model=model,
-                             description=Namespace._ERROR_RESPONSES[code])
+                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
 
     def response_error_sms_gate(self):
         return self.response_error_services_failing()
 
     def response_error_wrong_data(self):
-        code = 400 if 400 in Namespace._ERROR_RESPONSES.keys() else 501
+        code = 400 if 400 in Namespace.ERROR_CODE_DESCRIPTION else 501
         model = self._create_fail_response_model()
         return self.response(code=code, model=model,
-                             description=Namespace._ERROR_RESPONSES[code])
+                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
 
     def response_error_unauthorized(self):
-        code = 401 if 401 in Namespace._ERROR_RESPONSES.keys() else 501
+        code = 401 if 401 in Namespace.ERROR_CODE_DESCRIPTION else 501
         model = self._create_fail_response_model()
         return self.response(code=code, model=model,
-                             description=Namespace._ERROR_RESPONSES[code])
+                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
 
     def response_error_forbidden(self):
-        code = 403 if 403 in Namespace._ERROR_RESPONSES.keys() else 501
+        code = 403 if 403 in Namespace.ERROR_CODE_DESCRIPTION else 501
         model = self._create_fail_response_model()
         return self.response(code=code, model=model,
-                             description=Namespace._ERROR_RESPONSES[code])
+                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
 
 
 def _log_exception(ex: Exception):
