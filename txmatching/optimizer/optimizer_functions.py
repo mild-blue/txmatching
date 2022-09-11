@@ -31,7 +31,6 @@ def get_optimizer_configuration(config: Optional[ConfigParameters]) -> Optimizer
         max_chain_length=config.max_sequence_length if config else 4,
         custom_algorithm_settings={}
     )
-    # todo: I don't actually know what the number represents? this is a temporary scoring
     scoring = [[{"hla_compatibility_score": 1}]]
     return OptimizerConfiguration(
         limitations=limitations,
@@ -48,10 +47,11 @@ def get_compatibility_graph(donors: Dict[DonorDbId, Donor], recipients: Dict[Rec
     compatibility_graph = []
     for i, donor_id in enumerate(donors):
         for j, recipient_id in enumerate(recipients):
-            comp_graph_cell = {
-                "donor_id": donor_id,
-                "recipient_id": recipient_id,
-                "hla_compatibility_score": int(score_matrix[i][j])
-            }
-            compatibility_graph.append(comp_graph_cell)
+            if int(score_matrix[i][j]) >= 0:
+                comp_graph_cell = {
+                    "donor_id": donor_id,
+                    "recipient_id": recipient_id,
+                    "hla_compatibility_score": int(score_matrix[i][j])
+                }
+                compatibility_graph.append(comp_graph_cell)
     return compatibility_graph
