@@ -11,7 +11,7 @@
       "extends": [
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates",
-        "plugin:prettier/recommended"
+        "prettier"
       ],
       "rules": {}
     },
@@ -23,9 +23,9 @@
     {
       "files": ["*.html"],
       "excludedFiles": ["*inline-template-*.component.html"],
-      "extends": ["plugin:prettier/recommended"],
+      "extends": ["prettier"],
       "rules": {
-        "prettier/prettier": ["error", { "parser": "angular" }]
+        "prettier/prettier": 0
       }
     }
   ]
