@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from "@angular/core";
+import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { Configuration, CountryCombination } from "@app/model/Configuration";
 import { FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
 import { Observable } from "rxjs";
@@ -12,7 +12,7 @@ import { AbstractFormHandlerComponent } from "@app/components/abstract-form-hand
   templateUrl: "./configuration-countries.component.html",
   styleUrls: ["./configuration-countries.component.scss"],
 })
-export class ConfigurationCountriesComponent extends AbstractFormHandlerComponent {
+export class ConfigurationCountriesComponent extends AbstractFormHandlerComponent implements OnInit {
   private _donorCountries: string[] = [];
   private _recipientCountries: string[] = [];
 

@@ -1,5 +1,6 @@
 import {
   Component,
+  DoCheck,
   EventEmitter,
   Input,
   KeyValueChanges,
@@ -22,7 +23,7 @@ import { CountryCodeGenerated } from "@app/generated";
   templateUrl: "./add-new-patient.component.html",
   styleUrls: ["./add-new-patient.component.scss"],
 })
-export class AddNewPatientComponent {
+export class AddNewPatientComponent implements DoCheck {
   private _donorDiffer: KeyValueDiffer<string, unknown>;
   private _recipientDiffer: KeyValueDiffer<string, unknown>;
 

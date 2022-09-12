@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { PatientService } from "@app/services/patient/patient.service";
 import { LoggerService } from "@app/services/logger/logger.service";
 import { AlertService } from "@app/services/alert/alert.service";
@@ -19,7 +19,6 @@ import { TxmEventStateGenerated } from "@app/generated";
 import { PatientPairToAdd } from "@app/services/patient/patient.service.interface";
 import { DonorType } from "@app/model/enums/DonorType";
 import { ReportService } from "@app/services/report/report.service";
-import { ParsingIssue } from "@app/model/ParsingIssue";
 import { getErrorMessage } from "@app/helpers/error";
 import { ParsingIssuePublic } from "@app/model/ParsingIssuePublic";
 
@@ -28,7 +27,7 @@ import { ParsingIssuePublic } from "@app/model/ParsingIssuePublic";
   templateUrl: "./patients.component.html",
   styleUrls: ["./patients.component.scss"],
 })
-export class PatientsComponent extends AbstractLoggedComponent implements OnInit {
+export class PatientsComponent extends AbstractLoggedComponent implements OnDestroy, OnInit {
   private _deleteDonorSubscription?: Subscription;
 
   public patients?: PatientList;

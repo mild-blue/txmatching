@@ -1,4 +1,4 @@
-import { Component, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from "@angular/core";
+import { Component, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from "@angular/core";
 import { PatientEditable } from "@app/model/PatientEditable";
 import { FormControl } from "@angular/forms";
 import { map, startWith } from "rxjs/operators";
@@ -16,7 +16,7 @@ import { CountryCodeGenerated } from "@app/generated";
   templateUrl: "./country-setting.component.html",
   styleUrls: ["./country-setting.component.scss"],
 })
-export class CountrySettingComponent extends AbstractFormHandlerComponent implements OnInit {
+export class CountrySettingComponent extends AbstractFormHandlerComponent implements DoCheck, OnInit {
   private _patientDiffer?: KeyValueDiffer<string, unknown>;
 
   @Input() patient?: PatientEditable;
