@@ -6,38 +6,37 @@
         <mat-form-field>
           <mat-label>Code</mat-label>
           <mat-chip-list #antibodyChip>
-            <mat-chip *ngIf="antibodyValue"
-                      [removable]="true"
-                      (removed)="handleNewAntibodyRemove(antibody)">
-              {{antibodyValue}}
+            <mat-chip *ngIf="antibodyValue" [removable]="true" (removed)="handleNewAntibodyRemove(antibody)">
+              {{ antibodyValue }}
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
-            <input #antibody
-                   matInput
-                   class="no-focus-when-invalid"
-                   formControlName="antibody"
-                   [errorStateMatcher]="errorMatcher"
-                   [matChipInputFor]="antibodyChip"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                   (matChipInputTokenEnd)="handleNewAntibodyInputEnd($event.value, antibody)"
-                   type="text">
+            <input
+              #antibody
+              matInput
+              class="no-focus-when-invalid"
+              formControlName="antibody"
+              [errorStateMatcher]="errorMatcher"
+              [matChipInputFor]="antibodyChip"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="handleNewAntibodyInputEnd($event.value, antibody)"
+              type="text"
+            />
           </mat-chip-list>
         </mat-form-field>
 
         <mat-form-field class="no-focus-when-invalid">
           <mat-label>MFI</mat-label>
-          <input matInput
-                 class="no-focus-when-invalid"
-                 formControlName="mfi"
-                 [errorStateMatcher]="errorMatcher"
-                 placeholder="Enter MFI value for antibody"
-                 type="number">
+          <input
+            matInput
+            class="no-focus-when-invalid"
+            formControlName="mfi"
+            [errorStateMatcher]="errorMatcher"
+            placeholder="Enter MFI value for antibody"
+            type="number"
+          />
         </mat-form-field>
 
-        <app-button size="sm"
-                    variant="success"
-                    type="submit"
-                    [disabled]="form.invalid">
+        <app-button size="sm" variant="success" type="submit" [disabled]="form.invalid">
           Add
           <mat-icon>add</mat-icon>
         </app-button>

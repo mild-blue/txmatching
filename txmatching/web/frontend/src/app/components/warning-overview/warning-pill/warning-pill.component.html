@@ -1,7 +1,11 @@
-<div *ngIf="count" class="warning-pill" [ngClass]="(allWarningsConfirmed && warningType === 'warning') ? 'all-warnings-confirmed' : warningType">
-  <mat-icon [inline]="true" [matTooltip]="tooltip || warningType">{{warningType}}</mat-icon>
-  <p *ngIf="count">{{count}}</p>
+<div
+  *ngIf="count"
+  class="warning-pill"
+  [ngClass]="allWarningsConfirmed && warningType === 'warning' ? 'all-warnings-confirmed' : warningType"
+>
+  <mat-icon [inline]="true" [matTooltip]="tooltip || warningType">{{ warningType }}</mat-icon>
+  <p *ngIf="count">{{ count }}</p>
 </div>
-<div *ngIf="generalWarning" class="general-warning {{warningType}}">
-  <mat-icon [inline]="true" [matTooltip]="tooltip || warningType">{{warningType}}</mat-icon>
+<div *ngIf="generalWarning" class="general-warning {{ warningType }}">
+  <mat-icon [inline]="true" [matTooltip]="tooltip || warningType">{{ warningType }}</mat-icon>
 </div>

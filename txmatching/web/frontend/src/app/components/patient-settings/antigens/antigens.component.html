@@ -1,18 +1,18 @@
 <app-setting-item *ngIf="patient" label="Antigens">
   <mat-form-field>
     <mat-chip-list #patientAntigensChipList>
-      <mat-chip *ngFor="let antigen of patient.antigens"
-                (removed)="patient.removeAntigen(antigen)"
-                [removable]="true">
-        {{antigen.rawCode}}
+      <mat-chip *ngFor="let antigen of patient.antigens" (removed)="patient.removeAntigen(antigen)" [removable]="true">
+        {{ antigen.rawCode }}
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
-      <input #donorAntigensInput
-             [matChipInputFor]="patientAntigensChipList"
-             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-             (matChipInputTokenEnd)="addAntigen($event.value, donorAntigensInput)"
-             matInput
-             type="text">
+      <input
+        #donorAntigensInput
+        [matChipInputFor]="patientAntigensChipList"
+        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        (matChipInputTokenEnd)="addAntigen($event.value, donorAntigensInput)"
+        matInput
+        type="text"
+      />
     </mat-chip-list>
     <mat-hint>
       Add new antigens by typing codes followed by

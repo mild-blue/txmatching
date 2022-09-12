@@ -3,12 +3,9 @@
     [value]="patient.sex ? patient.sex : 'NULL'"
     (change)="patient.sex = $event.value != 'NULL' ? $event.value : undefined"
   >
-    <mat-button-toggle *ngFor="let sex of allSexes"
-                       [value]="sex">
+    <mat-button-toggle *ngFor="let sex of allSexes" [value]="sex">
       {{ sex }}
     </mat-button-toggle>
-    <mat-button-toggle [value]="'NULL'">
-      Not specified
-    </mat-button-toggle>
+    <mat-button-toggle [value]="'NULL'"> Not specified </mat-button-toggle>
   </mat-button-toggle-group>
 </app-setting-item>

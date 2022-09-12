@@ -1,42 +1,48 @@
 <div *ngIf="item" class="detail-donor">
   <ng-container *ngIf="item.allMessages">
-    <app-parsing-issue-confirmation *ngFor="let data of item.allMessages | keyvalue" [data]="data.value" 
-                                                                                 [warningType]="data.key" 
-                                                                                 [defaultTxmEvent]="defaultTxmEvent"></app-parsing-issue-confirmation>
+    <app-parsing-issue-confirmation
+      *ngFor="let data of item.allMessages | keyvalue"
+      [data]="data.value"
+      [warningType]="data.key"
+      [defaultTxmEvent]="defaultTxmEvent"
+    ></app-parsing-issue-confirmation>
   </ng-container>
 
   <div class="detail__header">
     <patient [patient]="item"></patient>
 
-    <app-button (click)="handleSave()"
-                [loading]="loading"
-                [disabled]="loading"
-                [success]="!loading && success"
-                [variant]="'success'">Save changes
+    <app-button
+      (click)="handleSave()"
+      [loading]="loading"
+      [disabled]="loading"
+      [success]="!loading && success"
+      [variant]="'success'"
+      >Save changes
     </app-button>
   </div>
 
   <form (ngSubmit)="handleSave()">
-
-    <app-donor-settings [donor]="donorEditable"
-                        [showCountryMedicalIdAndDonorType]="false"
-                        [showActiveCheckbox]="true">
+    <app-donor-settings [donor]="donorEditable" [showCountryMedicalIdAndDonorType]="false" [showActiveCheckbox]="true">
     </app-donor-settings>
 
     <div class="buttons">
-      <app-button [type]="'submit'"
-                  [loading]="loading"
-                  [disabled]="loading"
-                  [success]="!loading && success"
-                  [variant]="'success'">Save changes
+      <app-button
+        [type]="'submit'"
+        [loading]="loading"
+        [disabled]="loading"
+        [success]="!loading && success"
+        [variant]="'success'"
+        >Save changes
       </app-button>
 
-      <app-button [loading]="deleteLoading"
-                  [disabled]="deleteLoading"
-                  [success]="!deleteLoading && deleteSuccess"
-                  [variant]="'danger'"
-                  [size]="'sm'"
-                  (click)="handleDeleteDonor()">
+      <app-button
+        [loading]="deleteLoading"
+        [disabled]="deleteLoading"
+        [success]="!deleteLoading && deleteSuccess"
+        [variant]="'danger'"
+        [size]="'sm'"
+        (click)="handleDeleteDonor()"
+      >
         <fa-icon [icon]="deleteIcon"></fa-icon>&nbsp;Delete
       </app-button>
     </div>

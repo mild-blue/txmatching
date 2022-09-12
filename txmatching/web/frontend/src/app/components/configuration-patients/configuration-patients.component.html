@@ -3,35 +3,31 @@
     Required recipients
     <app-count [count]="selectedPatients.length"></app-count>
   </h4>
-  <div class="hint">
-    Only matchings containing these recipients will be shown.
-  </div>
+  <div class="hint">Only matchings containing these recipients will be shown.</div>
   <form>
     <mat-form-field>
       <mat-label>Required recipients</mat-label>
       <mat-chip-list #chipList>
-        <mat-chip (removed)="remove(patient)"
-                  *ngFor="let patient of selectedPatients"
-                  [removable]="true">
+        <mat-chip (removed)="remove(patient)" *ngFor="let patient of selectedPatients" [removable]="true">
           <patient [patient]="patient"></patient>
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
-        <input #patientInput
-               [formControl]="formControl"
-               [matAutocomplete]="auto"
-               [matChipInputFor]="chipList"
-               matInput
-               placeholder="Search by medical ID"
-               type="text">
+        <input
+          #patientInput
+          [formControl]="formControl"
+          [matAutocomplete]="auto"
+          [matChipInputFor]="chipList"
+          matInput
+          placeholder="Search by medical ID"
+          type="text"
+        />
       </mat-chip-list>
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event)" [displayWith]="displayFn">
         <mat-option *ngFor="let patient of filteredPatients | async" [value]="patient">
           <patient [patient]="patient"></patient>
         </mat-option>
       </mat-autocomplete>
-      <mat-hint>
-        Search and select multiple patients from {{allPatients.length}} recipients.
-      </mat-hint>
+      <mat-hint> Search and select multiple patients from {{ allPatients.length }} recipients. </mat-hint>
     </mat-form-field>
   </form>
 </div>
