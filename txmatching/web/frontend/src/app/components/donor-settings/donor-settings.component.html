@@ -8,9 +8,8 @@
 
     <!-- Donor Type -->
     <app-setting-item label="Type">
-      <mat-button-toggle-group [(ngModel)]="donor.type" [ngModelOptions]="{standalone: true}">
-        <mat-button-toggle *ngFor="let type of allDonorTypes"
-                           [value]="type">
+      <mat-button-toggle-group [(ngModel)]="donor.type" [ngModelOptions]="{ standalone: true }">
+        <mat-button-toggle *ngFor="let type of allDonorTypes" [value]="type">
           {{ type | donorTypeLabel | titlecase }}
         </mat-button-toggle>
       </mat-button-toggle-group>
@@ -19,9 +18,7 @@
 
   <!-- Active checkbox -->
   <div *ngIf="showActiveCheckbox" class="active-checkbox">
-    <mat-slide-toggle [(ngModel)]="donor.active">
-      Active
-    </mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="donor.active"> Active </mat-slide-toggle>
   </div>
 
   <!-- Donor Blood Group -->
@@ -34,22 +31,37 @@
   <app-sex [patient]="donor"></app-sex>
 
   <!-- Donor height -->
-  <app-simple-number #height="ngModel" (input)="formatNumber(height)"
-                     label="Height [cm]"
-                     [value]="donor.height" [(ngModel)]="donor.height"
-                     name="height" ngDefaultControl></app-simple-number>
+  <app-simple-number
+    #height="ngModel"
+    (input)="formatNumber(height)"
+    label="Height [cm]"
+    [value]="donor.height"
+    [(ngModel)]="donor.height"
+    name="height"
+    ngDefaultControl
+  ></app-simple-number>
 
   <!-- Donor weight -->
-  <app-simple-number #weight="ngModel" (input)="formatNumber(weight)"
-                     label="Weight [kg]"
-                     [value]="donor.weight" [(ngModel)]="donor.weight"
-                     name="weight" ngDefaultControl></app-simple-number>
+  <app-simple-number
+    #weight="ngModel"
+    (input)="formatNumber(weight)"
+    label="Weight [kg]"
+    [value]="donor.weight"
+    [(ngModel)]="donor.weight"
+    name="weight"
+    ngDefaultControl
+  ></app-simple-number>
 
   <!-- Donor year of birth -->
-  <app-simple-number #yearOfBirth="ngModel" (input)="formatYearOfBirth(yearOfBirth)"
-                     label="Year of birth"
-                     [value]="donor.yearOfBirth" [(ngModel)]="donor.yearOfBirth"
-                     name="yearOfBirth" ngDefaultControl></app-simple-number>
+  <app-simple-number
+    #yearOfBirth="ngModel"
+    (input)="formatYearOfBirth(yearOfBirth)"
+    label="Year of birth"
+    [value]="donor.yearOfBirth"
+    [(ngModel)]="donor.yearOfBirth"
+    name="yearOfBirth"
+    ngDefaultControl
+  ></app-simple-number>
 
   <!-- Donor note -->
   <app-setting-item label="Note">
@@ -57,5 +69,4 @@
       <textarea matInput [(ngModel)]="donor.note"></textarea>
     </mat-form-field>
   </app-setting-item>
-
 </ng-container>

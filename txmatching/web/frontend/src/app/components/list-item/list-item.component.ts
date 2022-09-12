@@ -1,22 +1,30 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { matchingBatchSize } from '@app/model/Matching';
-import { Configuration } from '@app/model/Configuration';
-import { ListItem, ListItemDetailAbstractComponent } from '@app/components/list-item/list-item.interface';
-import { ListItemDetailDirective } from '@app/directives/list-item-detail/list-item-detail.directive';
-import { scrollableDetailClass } from '@app/services/ui-interactions/ui-iteractions';
-import { UiInteractionsService } from '@app/services/ui-interactions/ui-interactions.service';
-import { PatientList } from '@app/model/PatientList';
-import { TxmEvent } from '@app/model/Event';
+import {
+  AfterViewInit,
+  Component,
+  ComponentFactoryResolver,
+  ElementRef,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+} from "@angular/core";
+import { matchingBatchSize } from "@app/model/Matching";
+import { Configuration } from "@app/model/Configuration";
+import { ListItem, ListItemDetailAbstractComponent } from "@app/components/list-item/list-item.interface";
+import { ListItemDetailDirective } from "@app/directives/list-item-detail/list-item-detail.directive";
+import { scrollableDetailClass } from "@app/services/ui-interactions/ui-iteractions";
+import { UiInteractionsService } from "@app/services/ui-interactions/ui-interactions.service";
+import { PatientList } from "@app/model/PatientList";
+import { TxmEvent } from "@app/model/Event";
 
 @Component({
-  selector: 'app-item-list',
-  templateUrl: './list-item.component.html',
-  styleUrls: ['./list-item.component.scss']
+  selector: "app-item-list",
+  templateUrl: "./list-item.component.html",
+  styleUrls: ["./list-item.component.scss"],
 })
 export class ListItemComponent implements OnChanges, AfterViewInit {
-
-  @ViewChild('list') list?: ElementRef;
-  @ViewChild('detail') detail?: ElementRef;
+  @ViewChild("list") list?: ElementRef;
+  @ViewChild("detail") detail?: ElementRef;
 
   @ViewChild(ListItemDetailDirective, { static: true }) listItemDetailHost?: ListItemDetailDirective;
 
@@ -38,9 +46,10 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   public scrollableDetailClass: string = scrollableDetailClass;
   public enableSmoothScroll: boolean = true;
 
-  constructor(private _componentFactoryResolver: ComponentFactoryResolver,
-              private _uiInteractionsService: UiInteractionsService) {
-  }
+  constructor(
+    private _componentFactoryResolver: ComponentFactoryResolver,
+    private _uiInteractionsService: UiInteractionsService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.listItemDetailComponent) {
@@ -67,7 +76,6 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
   }
 
   public setActive(item: ListItem | undefined): void {
-
     // return if clicked on the same item
     if (this.activeItem === item) {
       return;
@@ -135,26 +143,23 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
     const listElement = list.nativeElement;
     const detailElement = detail.nativeElement;
 
-    listElement.addEventListener('scroll', (event: WheelEvent) => {
+    listElement.addEventListener("scroll", (event: WheelEvent) => {
       this._setAlignment(listElement, detailElement);
     });
   }
 
   private _setAlignment(listElement: HTMLElement, detailItem: HTMLElement): void {
-    const activeItem: HTMLElement | null = listElement.querySelector('.active');
+    const activeItem: HTMLElement | null = listElement.querySelector(".active");
     if (!activeItem) {
       return;
     }
 
-    const {
-      borderTopLeftRadius,
-      borderBottomLeftRadius,
-      borderBottomRightRadius,
-      borderTopRightRadius
-    } = getComputedStyle(activeItem);
-    const offsetValue = borderTopLeftRadius || borderBottomLeftRadius || borderBottomRightRadius || borderTopRightRadius;
-    const topOffset = Number(offsetValue.replace(/\D+/g, ''));
-    const bottomOffset = Number(offsetValue.replace(/\D+/g, ''));
+    const { borderTopLeftRadius, borderBottomLeftRadius, borderBottomRightRadius, borderTopRightRadius } =
+      getComputedStyle(activeItem);
+    const offsetValue =
+      borderTopLeftRadius || borderBottomLeftRadius || borderBottomRightRadius || borderTopRightRadius;
+    const topOffset = Number(offsetValue.replace(/\D+/g, ""));
+    const bottomOffset = Number(offsetValue.replace(/\D+/g, ""));
 
     const detailClientRect = detailItem.getBoundingClientRect();
     const activeItemClientRect = activeItem.getBoundingClientRect();
@@ -173,7 +178,8 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
     if (this.useInfiniteScroll) {
       this.displayedItems = [];
       this._addItemsBatchToView();
-    } else if (!this.displayedItems.length) { // first loading
+    } else if (!this.displayedItems.length) {
+      // first loading
       this.enableSmoothScroll = false;
       this.displayedItems = this.items;
     }
@@ -184,7 +190,7 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
       newActiveItem = this.displayedItems[0];
       if (this.saveLastViewedItem && this.items.length) {
         const lastViewedId = this._uiInteractionsService.getLastViewedItemId();
-        const foundItem = this.items.find(item => item.index === lastViewedId);
+        const foundItem = this.items.find((item) => item.index === lastViewedId);
         newActiveItem = foundItem ?? newActiveItem;
       }
     }
@@ -203,7 +209,8 @@ export class ListItemComponent implements OnChanges, AfterViewInit {
     if (this.listItemDetailHost) {
       const detailViewContainerRef = this.listItemDetailHost.viewContainerRef;
       detailViewContainerRef.clear();
-      const detailComponentRef = detailViewContainerRef.createComponent<ListItemDetailAbstractComponent>(detailComponentFactory);
+      const detailComponentRef =
+        detailViewContainerRef.createComponent<ListItemDetailAbstractComponent>(detailComponentFactory);
       detailComponentRef.instance.item = activeItem;
       detailComponentRef.instance.patients = this.patients;
       detailComponentRef.instance.configuration = this.configuration;

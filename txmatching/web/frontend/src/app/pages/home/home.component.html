@@ -1,12 +1,14 @@
-<app-header [user]="user"
-            [downloadMatchingStatus]="downloadMatchingStatus"
-            [downloadPatientsStatus]="downloadPatientsStatus"
-            (downloadMatchingAction)="toggleGenerateReportPopup()"
-            (downloadPatientsAction)="downloadPatientsXlsxReport()"
-            [txmEvents]="txmEvents"
-            [defaultTxmEvent]="defaultTxmEvent"
-            (defaultTxmEventSelected)="setDefaultTxmEvent($event)"
-            [loading]="loading"></app-header>
+<app-header
+  [user]="user"
+  [downloadMatchingStatus]="downloadMatchingStatus"
+  [downloadPatientsStatus]="downloadPatientsStatus"
+  (downloadMatchingAction)="toggleGenerateReportPopup()"
+  (downloadPatientsAction)="downloadPatientsXlsxReport()"
+  [txmEvents]="txmEvents"
+  [defaultTxmEvent]="defaultTxmEvent"
+  (defaultTxmEventSelected)="setDefaultTxmEvent($event)"
+  [loading]="loading"
+></app-header>
 
 <section class="home">
   <app-container>
@@ -14,82 +16,85 @@
       <div>
         <h1>
           Top Matchings
-          <app-count *ngIf="!loading"
-                     [count]="matchings.length"
-                     [maxCount]="foundMatchingsCount"
-                     matTooltip="Number of top matchings{{foundMatchingsCount ? ' / Total number of matchings' : ''}}"
-                     matTooltipPosition="right">
+          <app-count
+            *ngIf="!loading"
+            [count]="matchings.length"
+            [maxCount]="foundMatchingsCount"
+            matTooltip="Number of top matchings{{ foundMatchingsCount ? ' / Total number of matchings' : '' }}"
+            matTooltipPosition="right"
+          >
           </app-count>
         </h1>
         <div class="header-description" *ngIf="!loading">
-          Showing top {{matchings.length}} matchings for
-          {{getConfigId === undefined || isCurrentConfigDefault ? 'default ' : ''}}
-          {{getConfigId !== undefined ? 'configuration with ID ' + getConfigId : 'configuration'}}.
+          Showing top {{ matchings.length }} matchings for
+          {{ getConfigId === undefined || isCurrentConfigDefault ? "default " : "" }}
+          {{ getConfigId !== undefined ? "configuration with ID " + getConfigId : "configuration" }}.
         </div>
       </div>
       <div class="buttons">
-
-        <app-button (click)="setConfigAsDefault()"
-                    *ngIf="showConfiguration"
-                    variant="success" size="sm"
-                    [disabled]="isCurrentConfigDefault || !canSetDefaultConfig"
-                    [matTooltip]="getTitleOfDefaultConfigButton"
+        <app-button
+          (click)="setConfigAsDefault()"
+          *ngIf="showConfiguration"
+          variant="success"
+          size="sm"
+          [disabled]="isCurrentConfigDefault || !canSetDefaultConfig"
+          [matTooltip]="getTitleOfDefaultConfigButton"
         >
           <ng-container *ngIf="isCurrentConfigDefault">
             default configuration
             <mat-icon>done</mat-icon>
           </ng-container>
 
-          <ng-container *ngIf="!isCurrentConfigDefault">
-            set configuration as default
-          </ng-container>
+          <ng-container *ngIf="!isCurrentConfigDefault"> set configuration as default </ng-container>
         </app-button>
 
-        <button (click)="toggleConfiguration()"
-                *ngIf="showConfiguration"
-                class="config">
+        <button (click)="toggleConfiguration()" *ngIf="showConfiguration" class="config">
           Configure
           <fa-icon [icon]="configIcon"></fa-icon>
         </button>
-
       </div>
     </div>
   </app-container>
 
-  <app-template-popup [isOpened]="configOpened"
-                      [title]="'Configuration'"
-                      (wasClosed)="toggleConfiguration()">
-    <app-configuration *ngIf="configuration"
-                       [configuration]="configuration"
-                       [patients]="patients"
-                       (configSubmitted)="calculate($event)"></app-configuration>
+  <app-template-popup [isOpened]="configOpened" [title]="'Configuration'" (wasClosed)="toggleConfiguration()">
+    <app-configuration
+      *ngIf="configuration"
+      [configuration]="configuration"
+      [patients]="patients"
+      (configSubmitted)="calculate($event)"
+    ></app-configuration>
   </app-template-popup>
 
-  <app-template-popup [isOpened]="exportOpened"
-                      [title]="'Generate report'"
-                      (wasClosed)="toggleGenerateReportPopup()"
-                      [style]="templatePopupStyle.HalfSize">
-    <app-generate-report (reportConfigSubmitted)="downloadMatchingPdfReport($event)"
-                         [loading]="downloadMatchingStatus === uploadDownloadStatus.loading"></app-generate-report>
+  <app-template-popup
+    [isOpened]="exportOpened"
+    [title]="'Generate report'"
+    (wasClosed)="toggleGenerateReportPopup()"
+    [style]="templatePopupStyle.HalfSize"
+  >
+    <app-generate-report
+      (reportConfigSubmitted)="downloadMatchingPdfReport($event)"
+      [loading]="downloadMatchingStatus === uploadDownloadStatus.loading"
+    ></app-generate-report>
   </app-template-popup>
 
   <app-content>
     <h3 *ngIf="!loading && matchings.length === 0">
       <ng-container *ngIf="!errorMessage">
-        No matchings were found.<br>Try to change settings and recalculate.
+        No matchings were found.<br />Try to change settings and recalculate.
       </ng-container>
       <ng-container *ngIf="errorMessage">
         <mat-icon class="error-icon">error</mat-icon>
-        {{errorMessage}}
+        {{ errorMessage }}
       </ng-container>
     </h3>
-    <app-item-list *ngIf="!loading && matchings.length"
-                   [items]="matchings"
-                   [configuration]="configuration"
-                   [patients]="patients"
-                   [defaultTxmEvent]="defaultTxmEvent"></app-item-list>
+    <app-item-list
+      *ngIf="!loading && matchings.length"
+      [items]="matchings"
+      [configuration]="configuration"
+      [patients]="patients"
+      [defaultTxmEvent]="defaultTxmEvent"
+    ></app-item-list>
   </app-content>
-
 </section>
 
 <app-alert></app-alert>

@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { IncompatibilityPillComponent } from './incompatibility-pill.component';
+import { IncompatibilityPillComponent } from "./incompatibility-pill.component";
 
-describe('IncompatibilityPillComponent', () => {
+describe("IncompatibilityPillComponent", () => {
   let component: IncompatibilityPillComponent;
   let fixture: ComponentFixture<IncompatibilityPillComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ IncompatibilityPillComponent ]
-    })
-    .compileComponents();
+      declarations: [IncompatibilityPillComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('IncompatibilityPillComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

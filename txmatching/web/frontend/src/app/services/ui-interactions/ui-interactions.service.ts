@@ -1,13 +1,14 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Observable } from "rxjs";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class UiInteractionsService {
-
   // Clicked transplant
-  private _focusedTransplantId: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  private _focusedTransplantId: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(
+    undefined
+  );
   public focusedTransplantId: Observable<number | undefined> = this._focusedTransplantId.asObservable();
 
   // Last viewed pair of patients

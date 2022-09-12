@@ -1,4 +1,4 @@
 export enum UserTokenType {
-  OTP = 'OTP',
-  ACCESS = 'ACCESS'
+  OTP = "OTP",
+  ACCESS = "ACCESS",
 }

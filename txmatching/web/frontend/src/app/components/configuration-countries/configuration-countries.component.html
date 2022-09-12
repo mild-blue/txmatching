@@ -7,14 +7,10 @@
 
     <div class="hint">Patients from selected countries will not be paired as donors and recipients.</div>
 
-    <div class="placeholder" *ngIf="selectedCombinations.length === 0">
-      No countries configuration yet.
-    </div>
+    <div class="placeholder" *ngIf="selectedCombinations.length === 0">No countries configuration yet.</div>
 
     <mat-chip-list *ngIf="selectedCombinations.length > 0">
-      <mat-chip *ngFor="let combination of selectedCombinations"
-                (removed)="removeCombination(combination)">
-
+      <mat-chip *ngFor="let combination of selectedCombinations" (removed)="removeCombination(combination)">
         <country [country]="combination.donor_country"></country>
         <mat-icon class="arrow">chevron_right</mat-icon>
         <country [country]="combination.recipient_country"></country>
@@ -27,29 +23,30 @@
   <div class="add">
     <div class="add__heading">Add new combination</div>
     <div class="add__form">
-      <form #viewForm="ngForm"
-            [formGroup]="form"
-            (ngSubmit)="addCombination()">
-
+      <form #viewForm="ngForm" [formGroup]="form" (ngSubmit)="addCombination()">
         <!-- Donor country -->
         <mat-form-field>
           <mat-label>Donor country</mat-label>
 
           <mat-chip-list #donorChip>
-            <mat-chip *ngIf="form.controls.donorCountry.valid"
-                      [removable]="true"
-                      (removed)="handleRemove('donorCountry', viewDonorCountry)">
+            <mat-chip
+              *ngIf="form.controls.donorCountry.valid"
+              [removable]="true"
+              (removed)="handleRemove('donorCountry', viewDonorCountry)"
+            >
               <country [country]="donorCountry"></country>
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
-            <input formControlName="donorCountry"
-                   [matChipInputFor]="donorChip"
-                   [errorStateMatcher]="errorMatcher"
-                   [matAutocomplete]="donorAuto"
-                   [placeholder]="!donorCountry ? 'Search by country code' : ''"
-                   matInput
-                   #viewDonorCountry
-                   type="text">
+            <input
+              formControlName="donorCountry"
+              [matChipInputFor]="donorChip"
+              [errorStateMatcher]="errorMatcher"
+              [matAutocomplete]="donorAuto"
+              [placeholder]="!donorCountry ? 'Search by country code' : ''"
+              matInput
+              #viewDonorCountry
+              type="text"
+            />
           </mat-chip-list>
 
           <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleSelect(viewDonorCountry)">
@@ -58,9 +55,7 @@
             </mat-option>
           </mat-autocomplete>
 
-          <mat-hint>
-            Search and select 1 country from {{donorCountries.length}} donor countries.
-          </mat-hint>
+          <mat-hint> Search and select 1 country from {{ donorCountries.length }} donor countries. </mat-hint>
         </mat-form-field>
 
         <div class="arrow">
@@ -72,20 +67,24 @@
           <mat-label>Recipient country</mat-label>
 
           <mat-chip-list #recipientChip>
-            <mat-chip *ngIf="recipientCountry && form.controls.recipientCountry.valid"
-                      [removable]="true"
-                      (removed)="handleRemove('recipientCountry', viewRecipientCountry)">
+            <mat-chip
+              *ngIf="recipientCountry && form.controls.recipientCountry.valid"
+              [removable]="true"
+              (removed)="handleRemove('recipientCountry', viewRecipientCountry)"
+            >
               <country [country]="recipientCountry"></country>
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
-            <input formControlName="recipientCountry"
-                   [errorStateMatcher]="errorMatcher"
-                   [matAutocomplete]="recipientAuto"
-                   [matChipInputFor]="recipientChip"
-                   [placeholder]="!recipientCountry ? 'Search by country code' : ''"
-                   matInput
-                   #viewRecipientCountry
-                   type="text">
+            <input
+              formControlName="recipientCountry"
+              [errorStateMatcher]="errorMatcher"
+              [matAutocomplete]="recipientAuto"
+              [matChipInputFor]="recipientChip"
+              [placeholder]="!recipientCountry ? 'Search by country code' : ''"
+              matInput
+              #viewRecipientCountry
+              type="text"
+            />
           </mat-chip-list>
 
           <mat-autocomplete #recipientAuto="matAutocomplete" (optionSelected)="handleSelect(viewRecipientCountry)">
@@ -93,9 +92,7 @@
               <country [country]="country"></country>
             </mat-option>
           </mat-autocomplete>
-          <mat-hint>
-            Search and select 1 country from {{recipientCountries.length}} recipient countries.
-          </mat-hint>
+          <mat-hint> Search and select 1 country from {{ recipientCountries.length }} recipient countries. </mat-hint>
         </mat-form-field>
 
         <app-button size="sm" variant="success" type="submit" [disabled]="form.invalid">

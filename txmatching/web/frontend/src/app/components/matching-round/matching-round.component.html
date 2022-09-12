@@ -1,24 +1,32 @@
 <div *ngIf="round" class="matching-round">
-  <div class="index"
-       [matTooltip]="getRoundTooltip"
-       matTooltipPosition="right">{{ round.index }}</div>
+  <div class="index" [matTooltip]="getRoundTooltip" matTooltipPosition="right">{{ round.index }}</div>
   <div class="content">
-    <div *ngFor="let transplant of round.transplants"
-         [class.compatible]="transplant.compatibleBlood"
-         [class.w-indicator]="configuration && !configuration.use_binary_scoring"
-         (click)="setActiveTransplant(transplant.index)"
-         [matTooltip]="transplant.compatibleBlood ? 'Transplant with COMPATIBLE blood group' : 'Transplant with INCOMPATIBLE blood group'"
-         class="matching-round__transplant">
-
+    <div
+      *ngFor="let transplant of round.transplants"
+      [class.compatible]="transplant.compatibleBlood"
+      [class.w-indicator]="configuration && !configuration.use_binary_scoring"
+      (click)="setActiveTransplant(transplant.index)"
+      [matTooltip]="
+        transplant.compatibleBlood
+          ? 'Transplant with COMPATIBLE blood group'
+          : 'Transplant with INCOMPATIBLE blood group'
+      "
+      class="matching-round__transplant"
+    >
       <div class="content">
-        <app-patient-pair [donor]="transplant.d" [recipient]="transplant.r" [isBloodCompatible]="transplant.compatibleBlood"
-                          [warningText]="transplant.transplantMessages.messageGlobal"></app-patient-pair>
+        <app-patient-pair
+          [donor]="transplant.d"
+          [recipient]="transplant.r"
+          [isBloodCompatible]="transplant.compatibleBlood"
+          [warningText]="transplant.transplantMessages.messageGlobal"
+        ></app-patient-pair>
       </div>
 
-      <app-score-indicator *ngIf="configuration && !configuration.use_binary_scoring"
-                           [score]="transplant.score"
-                           [maxScore]="transplant.maxScore"></app-score-indicator>
-
+      <app-score-indicator
+        *ngIf="configuration && !configuration.use_binary_scoring"
+        [score]="transplant.score"
+        [maxScore]="transplant.maxScore"
+      ></app-score-indicator>
     </div>
   </div>
 </div>

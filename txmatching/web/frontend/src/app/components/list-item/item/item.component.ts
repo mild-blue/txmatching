@@ -1,16 +1,24 @@
-import { Component, ComponentFactoryResolver, ComponentRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { ListItemDirective } from '@app/directives/list-item/list-item.directive';
-import { ListItem, ListItemAbstractComponent } from '@app/components/list-item/list-item.interface';
-import { Configuration } from '@app/model/Configuration';
-import { PatientList } from '@app/model/PatientList';
+import {
+  Component,
+  ComponentFactoryResolver,
+  ComponentRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from "@angular/core";
+import { ListItemDirective } from "@app/directives/list-item/list-item.directive";
+import { ListItem, ListItemAbstractComponent } from "@app/components/list-item/list-item.interface";
+import { Configuration } from "@app/model/Configuration";
+import { PatientList } from "@app/model/PatientList";
 
 @Component({
-  selector: 'app-item',
-  templateUrl: './item.component.html',
-  styleUrls: ['./item.component.scss']
+  selector: "app-item",
+  templateUrl: "./item.component.html",
+  styleUrls: ["./item.component.scss"],
 })
 export class ItemComponent implements OnInit, OnChanges {
-
   private _componentRef?: ComponentRef<ListItemAbstractComponent>;
 
   @ViewChild(ListItemDirective, { static: true }) listItemHost?: ListItemDirective;
@@ -21,8 +29,7 @@ export class ItemComponent implements OnInit, OnChanges {
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
-  constructor(private _componentFactoryResolver: ComponentFactoryResolver) {
-  }
+  constructor(private _componentFactoryResolver: ComponentFactoryResolver) {}
 
   ngOnInit(): void {
     this._loadItemComponent();
@@ -56,5 +63,4 @@ export class ItemComponent implements OnInit, OnChanges {
       this._componentRef.instance.configuration = this.configuration;
     }
   }
-
 }

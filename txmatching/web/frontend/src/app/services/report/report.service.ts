@@ -1,62 +1,65 @@
-import { Injectable } from '@angular/core';
-import { environment } from '@environments/environment';
-import { map } from 'rxjs/operators';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Report } from '@app/services/report/report.interface';
-import { ReportConfig } from '@app/components/generate-report/generate-report.interface';
+import { Injectable } from "@angular/core";
+import { environment } from "@environments/environment";
+import { map } from "rxjs/operators";
+import { HttpClient, HttpResponse } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { Report } from "@app/services/report/report.interface";
+import { ReportConfig } from "@app/components/generate-report/generate-report.interface";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ReportService {
-
-  constructor(private _http: HttpClient) {
-  }
+  constructor(private _http: HttpClient) {}
 
   public downloadMatchingPdfReport(
     txmEventId: number,
-    configId: number | undefined, matchingId: number,
+    configId: number | undefined,
+    matchingId: number,
     reportConfig: ReportConfig
   ): Observable<Report> {
     const httpOptions: Object = {
-      responseType: 'blob',
-      observe: 'response'
+      responseType: "blob",
+      observe: "response",
     };
-    const configIdStr = configId !== undefined ? configId.toString() : 'default';
+    const configIdStr = configId !== undefined ? configId.toString() : "default";
     // &v=${Date.now()} is done according to https://stackoverflow.com/questions/53207420/how-to-download-new-version-of-file-without-using-the-client-cache
-    return this._http.get<HttpResponse<Blob>>(
-      `${environment.apiUrl}/txm-event/${txmEventId}/reports/configs/${configIdStr}/matchings/${matchingId}/pdf` +
-      `?matchingsBelowChosen=${reportConfig.matchingsBelowChosen}` +
-      (reportConfig.includePatientsSection ? '&includePatientsSection=foo' : '') +
-      `&v=${Date.now()}`,
-      httpOptions
-    ).pipe(
-      map((response: HttpResponse<Blob>) => {
-        const data = response.body as Blob;
-        const filename = response.headers.get('x-filename') ?? this._generateFilename();
-        return { data, filename };
-      })
-    );
+    return this._http
+      .get<HttpResponse<Blob>>(
+        `${environment.apiUrl}/txm-event/${txmEventId}/reports/configs/${configIdStr}/matchings/${matchingId}/pdf` +
+          `?matchingsBelowChosen=${reportConfig.matchingsBelowChosen}` +
+          (reportConfig.includePatientsSection ? "&includePatientsSection=foo" : "") +
+          `&v=${Date.now()}`,
+        httpOptions
+      )
+      .pipe(
+        map((response: HttpResponse<Blob>) => {
+          const data = response.body as Blob;
+          const filename = response.headers.get("x-filename") ?? this._generateFilename();
+          return { data, filename };
+        })
+      );
   }
 
   public downloadPatientsXlsxReport(txmEventId: number, configId: number | undefined): Observable<Report> {
     const httpOptions: Object = {
-      responseType: 'blob',
-      observe: 'response'
+      responseType: "blob",
+      observe: "response",
     };
-    const configIdStr = configId !== undefined ? configId.toString() : 'default';
+    const configIdStr = configId !== undefined ? configId.toString() : "default";
     // &v=${Date.now()} is done according to https://stackoverflow.com/questions/53207420/how-to-download-new-version-of-file-without-using-the-client-cache
-    return this._http.get<HttpResponse<Blob>>(
-      `${environment.apiUrl}/txm-event/${txmEventId}/reports/configs/${configIdStr}/patients/xlsx?v=${Date.now()}`,
-      httpOptions
-    ).pipe(
-      map((response: HttpResponse<Blob>) => {
-        const data = response.body as Blob;
-        const filename = response.headers.get('x-filename') ?? this._generateFilename();
-        return { data, filename };
-      })
-    );
+    return this._http
+      .get<HttpResponse<Blob>>(
+        `${environment.apiUrl}/txm-event/${txmEventId}/reports/configs/${configIdStr}/patients/xlsx?v=${Date.now()}`,
+        httpOptions
+      )
+      .pipe(
+        map((response: HttpResponse<Blob>) => {
+          const data = response.body as Blob;
+          const filename = response.headers.get("x-filename") ?? this._generateFilename();
+          return { data, filename };
+        })
+      );
   }
 
   private _generateFilename(): string {

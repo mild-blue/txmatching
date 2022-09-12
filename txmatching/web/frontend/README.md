@@ -2,7 +2,19 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli).
 
+## GitHub pipeline failed in my PR
+
+### Run prettier check
+
+- you forgot to run `npm run prettier-format`
+- plese run the command and commit changes
+
+### Build check
+
+- your project contains serious errors and can't be build
+
 ## Prerequisites
+
 ### Node.js and npm
 
 npm is distributed with Node.js, which means that when you download Node.js, you automatically get npm installed on your computer.
@@ -10,10 +22,13 @@ npm is distributed with Node.js, which means that when you download Node.js, you
 [Download Node.js and npm](https://nodejs.org/en/)
 
 Verify installation by running in Terminal or Command line:
+
 ```
 node -v
 ```
+
 and then:
+
 ```
 npm -v
 ```
@@ -21,6 +36,7 @@ npm -v
 ### Angular
 
 In Terminal or Command line run:
+
 ```
 npm install -g @angular/cli
 ```
@@ -28,7 +44,8 @@ npm install -g @angular/cli
 It will globally install Angular on your machine.
 
 ### OpenAPI Generator
-We use *openapi-generator* to automatically generate TS files from swagger. Please run:
+
+We use _openapi-generator_ to automatically generate TS files from swagger. Please run:
 
 ```
 npm install -g @openapitools/openapi-generator-cli
@@ -39,9 +56,11 @@ npm install -g @openapitools/openapi-generator-cli
 Note: Navigate to `txmatching/web/frontend` before running the commands bellow.
 
 ## Before starting dev server
+
 After downloading a new version of frontend app, you need to run `npm install` in case there is a need to install additional modules.
 
 If you want to connect to different BE, create environment.local.ts and run `ng serve --configuration=dev`.
+
 ## Development server
 
 Run `ng serve` for a dev server. You can alternatively run `npm run start` or use `make run-fe` in the root folder of the project.

@@ -1,6 +1,6 @@
-import { Donor } from './Donor';
-import { PatientEditable } from './PatientEditable';
-import { DonorType } from '@app/model/enums/DonorType';
+import { Donor } from "./Donor";
+import { PatientEditable } from "./PatientEditable";
+import { DonorType } from "@app/model/enums/DonorType";
 
 export class DonorEditable extends PatientEditable {
   type: DonorType = DonorType.DONOR;

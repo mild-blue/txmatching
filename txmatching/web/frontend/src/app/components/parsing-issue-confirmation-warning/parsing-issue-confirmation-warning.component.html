@@ -1,22 +1,38 @@
-<div class="warning-card" [ngClass]="data.confirmedBy === undefined ? 'warning-card-unconfirmed' : 'warning-card-confirmed'" *ngIf="data">
+<div
+  class="warning-card"
+  [ngClass]="data.confirmedBy === undefined ? 'warning-card-unconfirmed' : 'warning-card-confirmed'"
+  *ngIf="data"
+>
   <div class="warning-card-unconfirmed-content" *ngIf="data.confirmedBy === undefined">
     <div class="warning-card-unconfirmed-heading">
-      <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
+      <mat-icon [inline]="true" [matTooltip]="warningType">{{ warningType }}</mat-icon>
       <h2>Unconfirmed warning</h2>
     </div>
     <div class="warning-card-unconfirmed-body">
-      <p>{{data.hlaCodeOrGroup}}: {{data.message}}</p>
+      <p>{{ data.hlaCodeOrGroup }}: {{ data.message }}</p>
     </div>
   </div>
   <div class="warning-card-confirmed-body" *ngIf="data.confirmedBy !== undefined">
-    <mat-icon [inline]="true" [matTooltip]="warningType">{{warningType}}</mat-icon>
-    <p>{{data.hlaCodeOrGroup}}: {{data.message}}</p>
+    <mat-icon [inline]="true" [matTooltip]="warningType">{{ warningType }}</mat-icon>
+    <p>{{ data.hlaCodeOrGroup }}: {{ data.message }}</p>
   </div>
   <div class="button-wrapper">
-    <app-button variant="confirm" [disabled]="loading" [success]="!loading && success" *ngIf="data.confirmedBy === undefined" (click)="confirmAction(true)">
+    <app-button
+      variant="confirm"
+      [disabled]="loading"
+      [success]="!loading && success"
+      *ngIf="data.confirmedBy === undefined"
+      (click)="confirmAction(true)"
+    >
       <mat-icon>done</mat-icon>
     </app-button>
-    <app-button variant="unconfirm" [disabled]="loading" [success]="!loading && success" *ngIf="data.confirmedBy !== undefined" (click)="confirmAction(false)">
+    <app-button
+      variant="unconfirm"
+      [disabled]="loading"
+      [success]="!loading && success"
+      *ngIf="data.confirmedBy !== undefined"
+      (click)="confirmAction(false)"
+    >
       <mat-icon>undo</mat-icon>
     </app-button>
   </div>

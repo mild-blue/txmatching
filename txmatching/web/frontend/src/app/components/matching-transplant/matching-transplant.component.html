@@ -1,8 +1,5 @@
 <div class="transplant">
-  <div class="transplant-header"
-       *ngIf="donor"
-       [class.compatible]="isBloodCompatible">
-
+  <div class="transplant-header" *ngIf="donor" [class.compatible]="isBloodCompatible">
     <app-patient-pair
       [donor]="donor"
       [recipient]="recipient"
@@ -12,101 +9,122 @@
       [style]="isBloodCompatible ? patientPairStyles.Compatible : patientPairStyles.Incompatible"
     ></app-patient-pair>
 
-    <app-score-indicator [score]="score"
-                         [maxScore]="maxScore"
-                         [showScore]="true"></app-score-indicator>
+    <app-score-indicator [score]="score" [maxScore]="maxScore" [showScore]="true"></app-score-indicator>
   </div>
 
   <div class="transplant-content">
     <table *ngIf="donor && detailedScorePerGroup">
       <tbody>
-      <tr>
-        <td></td>
-        <td>
-          Donor
-          <div class="center-holder">
-            <patient [patient]="donor"></patient>
-          </div>
-          <div class="patient-info">
-            <span matTooltip="Sex" *ngIf="donor.parameters.sex">{{donor.parameters.sex}}</span>
-            <span matTooltip="Year of Birth" *ngIf="donor.parameters.yearOfBirth">{{donor.parameters.yearOfBirth}}</span>
-            <span matTooltip="Height/Weight" *ngIf="getPatientHeightAndWeight(donor)">{{getPatientHeightAndWeight(donor)}}</span>
-          </div>
-          <div class="patient-note" matTooltip='Note' *ngIf="donor.parameters.note.trim() != ''">
-            {{donor.parameters.note.trim()}}
-          </div>
-        </td>
-        <td colspan="2">
-          <ng-container *ngIf="recipient">
-            Recipient
+        <tr>
+          <td></td>
+          <td>
+            Donor
             <div class="center-holder">
-              <patient [patient]="recipient"></patient>
+              <patient [patient]="donor"></patient>
             </div>
             <div class="patient-info">
-              <span matTooltip="Sex" *ngIf="recipient.parameters.sex">{{recipient.parameters.sex}}</span>
-              <span matTooltip="Year of Birth" *ngIf="recipient.parameters.yearOfBirth">{{recipient.parameters.yearOfBirth}}</span>
-              <span matTooltip="Height/Weight" *ngIf="getPatientHeightAndWeight(recipient)">{{getPatientHeightAndWeight(recipient)}}</span>
+              <span matTooltip="Sex" *ngIf="donor.parameters.sex">{{ donor.parameters.sex }}</span>
+              <span matTooltip="Year of Birth" *ngIf="donor.parameters.yearOfBirth">{{
+                donor.parameters.yearOfBirth
+              }}</span>
+              <span matTooltip="Height/Weight" *ngIf="getPatientHeightAndWeight(donor)">{{
+                getPatientHeightAndWeight(donor)
+              }}</span>
+            </div>
+            <div class="patient-note" matTooltip="Note" *ngIf="donor.parameters.note.trim() !== ''">
+              {{ donor.parameters.note.trim() }}
+            </div>
+          </td>
+          <td colspan="2">
+            <ng-container *ngIf="recipient">
+              Recipient
+              <div class="center-holder">
+                <patient [patient]="recipient"></patient>
+              </div>
+              <div class="patient-info">
+                <span matTooltip="Sex" *ngIf="recipient.parameters.sex">{{ recipient.parameters.sex }}</span>
+                <span matTooltip="Year of Birth" *ngIf="recipient.parameters.yearOfBirth">{{
+                  recipient.parameters.yearOfBirth
+                }}</span>
+                <span matTooltip="Height/Weight" *ngIf="getPatientHeightAndWeight(recipient)">{{
+                  getPatientHeightAndWeight(recipient)
+                }}</span>
 
-              <span matTooltip="Waiting Since" *ngIf="recipient.waitingSince">{{recipient.waitingSince | date:'mediumDate'}}</span>
-              <span matTooltip="Previous Transplants" *ngIf="recipient.previousTransplants !== undefined">{{recipient.previousTransplants}}</span>
-              <span [matTooltip]="getRecipientRequirementsInfoTooltip(recipient.recipientRequirements)"
-                    *ngIf="showRecipientRequirementsInfo(recipient.recipientRequirements)"
-              >{{getRecipientRequirementsInfo(recipient.recipientRequirements)}}</span>
-            </div>
-            <div class="patient-note" matTooltip='Note' *ngIf="recipient.parameters.note.trim() != ''">
-              {{recipient.parameters.note.trim()}}
-            </div>
-          </ng-container>
-        </td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Blood type</td>
-        <td>
-          <app-code [class.matching]="isBloodCompatible">{{ donor.parameters.bloodGroup }}</app-code>
-        </td>
-        <td colspan="2">
-          <ng-container *ngIf="recipient">
-            <app-code [class.matching]="isBloodCompatible">{{ recipient.parameters.bloodGroup }}</app-code>
-            <div class="small">
-              Acceptable:
-              <app-code *ngFor="let bloodGroup of recipient.acceptableBloodGroups">{{ bloodGroup }}</app-code>
-            </div>
-          </ng-container>
-        </td>
-        <td></td>
-      </tr>
-      <tr class="anti-header">
-        <td></td>
-        <td>Antigens</td>
-        <td>Antigens</td>
-        <td>Antibodies</td>
-        <td></td>
-      </tr>
-      <tr *ngFor="let compatibilityIndex of detailedScorePerGroup">
-        <td>{{ compatibilityIndex.hlaGroup }}</td>
-        <td>
-          <app-code *ngFor="let match of compatibilityIndex.donorMatches"
-                    [class]="getAntigenMatchClass(match.matchType)"
-                    [matTooltip]="match | antigenTitle"
-                    matTooltipPosition="above">{{ match.hlaType.code.displayCode }}</app-code>
-        </td>
-        <td>
-          <app-code *ngFor="let match of compatibilityIndex.recipientMatches"
-                    [class]="getAntigenMatchClass(match.matchType)"
-                    [matTooltip]="match | antigenTitle"
-                    matTooltipPosition="above">{{ match.hlaType.code.displayCode }}</app-code>
-        </td>
-        <td>
-          <app-code *ngFor="let match of compatibilityIndex.antibodyMatches"
-                    [class]="getAntibodyMatchClass(match.matchType)"
-                    [matTooltip]="match | antibodyTitle"
-                    matTooltipPosition="above">{{ match.hlaAntibody.code.displayCode }}</app-code>
-        </td>
-        <td>
-          {{ recipient ? compatibilityIndex.groupCompatibilityIndex : "-"}}
-        </td>
-      </tr>
+                <span matTooltip="Waiting Since" *ngIf="recipient.waitingSince">{{
+                  recipient.waitingSince | date: "mediumDate"
+                }}</span>
+                <span matTooltip="Previous Transplants" *ngIf="recipient.previousTransplants !== undefined">{{
+                  recipient.previousTransplants
+                }}</span>
+                <span
+                  [matTooltip]="getRecipientRequirementsInfoTooltip(recipient.recipientRequirements)"
+                  *ngIf="showRecipientRequirementsInfo(recipient.recipientRequirements)"
+                  >{{ getRecipientRequirementsInfo(recipient.recipientRequirements) }}</span
+                >
+              </div>
+              <div class="patient-note" matTooltip="Note" *ngIf="recipient.parameters.note.trim() !== ''">
+                {{ recipient.parameters.note.trim() }}
+              </div>
+            </ng-container>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Blood type</td>
+          <td>
+            <app-code [class.matching]="isBloodCompatible">{{ donor.parameters.bloodGroup }}</app-code>
+          </td>
+          <td colspan="2">
+            <ng-container *ngIf="recipient">
+              <app-code [class.matching]="isBloodCompatible">{{ recipient.parameters.bloodGroup }}</app-code>
+              <div class="small">
+                Acceptable:
+                <app-code *ngFor="let bloodGroup of recipient.acceptableBloodGroups">{{ bloodGroup }}</app-code>
+              </div>
+            </ng-container>
+          </td>
+          <td></td>
+        </tr>
+        <tr class="anti-header">
+          <td></td>
+          <td>Antigens</td>
+          <td>Antigens</td>
+          <td>Antibodies</td>
+          <td></td>
+        </tr>
+        <tr *ngFor="let compatibilityIndex of detailedScorePerGroup">
+          <td>{{ compatibilityIndex.hlaGroup }}</td>
+          <td>
+            <app-code
+              *ngFor="let match of compatibilityIndex.donorMatches"
+              [class]="getAntigenMatchClass(match.matchType)"
+              [matTooltip]="match | antigenTitle"
+              matTooltipPosition="above"
+              >{{ match.hlaType.code.displayCode }}</app-code
+            >
+          </td>
+          <td>
+            <app-code
+              *ngFor="let match of compatibilityIndex.recipientMatches"
+              [class]="getAntigenMatchClass(match.matchType)"
+              [matTooltip]="match | antigenTitle"
+              matTooltipPosition="above"
+              >{{ match.hlaType.code.displayCode }}</app-code
+            >
+          </td>
+          <td>
+            <app-code
+              *ngFor="let match of compatibilityIndex.antibodyMatches"
+              [class]="getAntibodyMatchClass(match.matchType)"
+              [matTooltip]="match | antibodyTitle"
+              matTooltipPosition="above"
+              >{{ match.hlaAntibody.code.displayCode }}</app-code
+            >
+          </td>
+          <td>
+            {{ recipient ? compatibilityIndex.groupCompatibilityIndex : "-" }}
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>

@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'app-incompatibility-pill',
-  templateUrl: './incompatibility-pill.component.html',
-  styleUrls: ['./incompatibility-pill.component.scss']
+  selector: "app-incompatibility-pill",
+  templateUrl: "./incompatibility-pill.component.html",
+  styleUrls: ["./incompatibility-pill.component.scss"],
 })
-export class IncompatibilityPillComponent{
-  constructor() { }
+export class IncompatibilityPillComponent {
+  constructor() {}
 }

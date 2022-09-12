@@ -1,19 +1,19 @@
-import { DonorGenerated, DonorTypeGenerated, UpdatedDonorGenerated } from '../generated';
-import { Donor, DonorType, UpdatedDonor } from '../model';
-import { parsePatient, parseAllMessages } from './patient.parsers';
-import { parseDetailedScorePerGroup } from './hla.parsers';
-import { ListItem } from '@app/components/list-item/list-item.interface';
-import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
-import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
-import { parseParsingIssue } from '@app/parsers/parsingIssue.parsers';
-import { parseParsingIssuePublic } from './parsingIssuePublic.parsers';
+import { DonorGenerated, DonorTypeGenerated, UpdatedDonorGenerated } from "../generated";
+import { Donor, DonorType, UpdatedDonor } from "../model";
+import { parsePatient, parseAllMessages } from "./patient.parsers";
+import { parseDetailedScorePerGroup } from "./hla.parsers";
+import { ListItem } from "@app/components/list-item/list-item.interface";
+import { PatientDonorItemComponent } from "@app/components/patient-donor-item/patient-donor-item.component";
+import { PatientDonorDetailWrapperComponent } from "@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component";
+import { parseParsingIssue } from "@app/parsers/parsingIssue.parsers";
+import { parseParsingIssuePublic } from "./parsingIssuePublic.parsers";
 
 export const parseDonor = (data: DonorGenerated): Donor => {
   const donorListItem: ListItem = {
     index: 0,
     isActive: false,
     itemComponent: PatientDonorItemComponent,
-    detailComponent: PatientDonorDetailWrapperComponent
+    detailComponent: PatientDonorDetailWrapperComponent,
   };
 
   return {
@@ -25,8 +25,9 @@ export const parseDonor = (data: DonorGenerated): Donor => {
     relatedRecipientDbId: data.related_recipient_db_id,
     scoreWithRelatedRecipient: data.score_with_related_recipient,
     maxScoreWithRelatedRecipient: data.max_score_with_related_recipient,
-    detailedScoreWithRelatedRecipient: data.detailed_score_with_related_recipient?.map(parseDetailedScorePerGroup) ?? [],
-    allMessages: parseAllMessages(data.all_messages)
+    detailedScoreWithRelatedRecipient:
+      data.detailed_score_with_related_recipient?.map(parseDetailedScorePerGroup) ?? [],
+    allMessages: parseAllMessages(data.all_messages),
   };
 };
 
@@ -37,6 +38,6 @@ export const parseDonorType = (data: DonorTypeGenerated): DonorType => {
 export const parseUpdatedDonor = (data: UpdatedDonorGenerated): UpdatedDonor => {
   return {
     donor: parseDonor(data.donor),
-    parsingIssues: data.parsing_issues.map(parseParsingIssuePublic)
+    parsingIssues: data.parsing_issues.map(parseParsingIssuePublic),
   };
 };

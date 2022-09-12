@@ -1,22 +1,20 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { TemplatePopupStyle } from '@app/components/template-popup/template-popup.interface';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from "@angular/core";
+import { TemplatePopupStyle } from "@app/components/template-popup/template-popup.interface";
 
 @Component({
-  selector: 'app-template-popup',
-  templateUrl: './template-popup.component.html',
-  styleUrls: ['./template-popup.component.scss']
+  selector: "app-template-popup",
+  templateUrl: "./template-popup.component.html",
+  styleUrls: ["./template-popup.component.scss"],
 })
 export class TemplatePopupComponent implements OnChanges {
-
-  @Input() title: string = '';
+  @Input() title: string = "";
   @Input() isOpened: boolean = false;
   @Input() style: TemplatePopupStyle = TemplatePopupStyle.FullSize;
   @Output() wasClosed: EventEmitter<void> = new EventEmitter<void>();
 
-  @ViewChild('popup') popupElement?: ElementRef;
+  @ViewChild("popup") popupElement?: ElementRef;
 
-  constructor() {
-  }
+  constructor() {}
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes && changes.isOpened) {
@@ -30,7 +28,7 @@ export class TemplatePopupComponent implements OnChanges {
 
       // Toggle body class when opened or closed
       if (!changes.isOpened.firstChange && wasOpened !== isOpened) {
-        document.querySelector('body')?.classList.toggle('popup-opened');
+        document.querySelector("body")?.classList.toggle("popup-opened");
       }
     }
   }
@@ -38,5 +36,4 @@ export class TemplatePopupComponent implements OnChanges {
   public close(): void {
     this.wasClosed.emit();
   }
-
 }

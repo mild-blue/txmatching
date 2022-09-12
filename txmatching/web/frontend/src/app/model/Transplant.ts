@@ -1,6 +1,6 @@
-import { PatientPair } from '@app/model/PatientPair';
-import { DetailedScorePerGroup } from '@app/model/Hla';
-import { AllTransplantMessages } from '@app/model/Patient';
+import { PatientPair } from "@app/model/PatientPair";
+import { DetailedScorePerGroup } from "@app/model/Hla";
+import { AllTransplantMessages } from "@app/model/Patient";
 
 export interface Transplant extends PatientPair {
   score: number;

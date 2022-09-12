@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { TabSwitchComponent } from './tab-switch.component';
+import { TabSwitchComponent } from "./tab-switch.component";
 
-describe('TabSwitchComponent', () => {
+describe("TabSwitchComponent", () => {
   let component: TabSwitchComponent;
   let fixture: ComponentFixture<TabSwitchComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TabSwitchComponent]
-    })
-    .compileComponents();
+      declarations: [TabSwitchComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('TabSwitchComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

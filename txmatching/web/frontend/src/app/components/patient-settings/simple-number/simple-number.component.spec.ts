@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { SimpleNumberComponent } from './simple-number.component';
+import { SimpleNumberComponent } from "./simple-number.component";
 
-describe('SimpleNumberComponent', () => {
+describe("SimpleNumberComponent", () => {
   let component: SimpleNumberComponent;
   let fixture: ComponentFixture<SimpleNumberComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SimpleNumberComponent]
-    })
-    .compileComponents();
+      declarations: [SimpleNumberComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('SimpleNumberComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { RecipientSettingsComponent } from './recipient-settings.component';
+import { RecipientSettingsComponent } from "./recipient-settings.component";
 
-describe('RecipientSettingsComponent', () => {
+describe("RecipientSettingsComponent", () => {
   let component: RecipientSettingsComponent;
   let fixture: ComponentFixture<RecipientSettingsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [RecipientSettingsComponent]
-    })
-    .compileComponents();
+      declarations: [RecipientSettingsComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('RecipientSettingsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

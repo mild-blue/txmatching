@@ -12,12 +12,16 @@
 
   <!-- Recipient Acceptable blood groups -->
   <app-setting-item label="Acceptable blood group">
-    <mat-button-toggle-group [(ngModel)]="recipient.acceptableBloodGroups"
-                             [multiple]="true"
-                             [ngModelOptions]="{standalone: true}">
-      <mat-button-toggle *ngFor="let bg of allBloodGroups"
-                         [checked]="recipient.acceptableBloodGroups.includes(bg)"
-                         [value]="bg">
+    <mat-button-toggle-group
+      [(ngModel)]="recipient.acceptableBloodGroups"
+      [multiple]="true"
+      [ngModelOptions]="{ standalone: true }"
+    >
+      <mat-button-toggle
+        *ngFor="let bg of allBloodGroups"
+        [checked]="recipient.acceptableBloodGroups.includes(bg)"
+        [value]="bg"
+      >
         {{ bg }}
       </mat-button-toggle>
     </mat-button-toggle-group>
@@ -30,22 +34,23 @@
   <app-setting-item label="Antibodies">
     <mat-form-field class="multiline-hint">
       <mat-chip-list>
-        <mat-chip *ngFor="let a of recipient.antibodies"
-                  (removed)="recipient.removeAntibody(a)">
+        <mat-chip *ngFor="let a of recipient.antibodies" (removed)="recipient.removeAntibody(a)">
           <div class="antibody-chip">
-            {{a.rawCode}}
-            <div class="mfi">MFI: <strong>{{a.mfi}}</strong></div>
+            {{ a.rawCode }}
+            <div class="mfi">
+              MFI: <strong>{{ a.mfi }}</strong>
+            </div>
           </div>
           <mat-icon class="cancel" matChipRemove>cancel</mat-icon>
         </mat-chip>
-        <input disabled matInput>
+        <input disabled matInput />
       </mat-chip-list>
       <mat-hint>
-        Use the form below for adding recipient's antibodies. Please specify the antibodies in broad,
-        split or high resolution. If the antibodies are specified in high resolution, please provide
-        also negative samples where MFI < Antibodies cutoff. This information is required in matchings
-        computation algorithm. If the antibodies are specified in broad or split resolution,
-        negative samples are not required and will be ignored in the computation algorithm if provided.
+        Use the form below for adding recipient's antibodies. Please specify the antibodies in broad, split or high
+        resolution. If the antibodies are specified in high resolution, please provide also negative samples where MFI <
+        Antibodies cutoff. This information is required in matchings computation algorithm. If the antibodies are
+        specified in broad or split resolution, negative samples are not required and will be ignored in the computation
+        algorithm if provided.
       </mat-hint>
     </mat-form-field>
   </app-setting-item>
@@ -53,31 +58,51 @@
   <app-recipient-antibodies [recipient]="recipient"></app-recipient-antibodies>
 
   <!-- Recipient antibodies cutoff -->
-  <app-simple-number #antibodiesCutoff="ngModel" (input)="formatNumber(antibodiesCutoff)"
-                     label="Antibodies cutoff"
-                     [value]="recipient.antibodiesCutoff" [(ngModel)]="recipient.antibodiesCutoff"
-                     name="antibodiesCutoff" ngDefaultControl></app-simple-number>
+  <app-simple-number
+    #antibodiesCutoff="ngModel"
+    (input)="formatNumber(antibodiesCutoff)"
+    label="Antibodies cutoff"
+    [value]="recipient.antibodiesCutoff"
+    [(ngModel)]="recipient.antibodiesCutoff"
+    name="antibodiesCutoff"
+    ngDefaultControl
+  ></app-simple-number>
 
   <!-- Recipient Sex -->
   <app-sex [patient]="recipient"></app-sex>
 
   <!-- Recipient height -->
-  <app-simple-number #height="ngModel" (input)="formatNumber(height)"
-                     label="Height [cm]"
-                     [value]="recipient.height" [(ngModel)]="recipient.height"
-                     name="height" ngDefaultControl></app-simple-number>
+  <app-simple-number
+    #height="ngModel"
+    (input)="formatNumber(height)"
+    label="Height [cm]"
+    [value]="recipient.height"
+    [(ngModel)]="recipient.height"
+    name="height"
+    ngDefaultControl
+  ></app-simple-number>
 
   <!-- Recipient weight -->
-  <app-simple-number #weight="ngModel" (input)="formatNumber(weight)"
-                     label="Weight [kg]"
-                     [value]="recipient.weight" [(ngModel)]="recipient.weight"
-                     name="weight" ngDefaultControl></app-simple-number>
+  <app-simple-number
+    #weight="ngModel"
+    (input)="formatNumber(weight)"
+    label="Weight [kg]"
+    [value]="recipient.weight"
+    [(ngModel)]="recipient.weight"
+    name="weight"
+    ngDefaultControl
+  ></app-simple-number>
 
   <!-- Recipient year of birth -->
-  <app-simple-number #yearOfBirth="ngModel" (input)="formatYearOfBirth(yearOfBirth)"
-                     label="Year of birth"
-                     [value]="recipient.yearOfBirth" [(ngModel)]="recipient.yearOfBirth"
-                     name="yearOfBirth" ngDefaultControl></app-simple-number>
+  <app-simple-number
+    #yearOfBirth="ngModel"
+    (input)="formatYearOfBirth(yearOfBirth)"
+    label="Year of birth"
+    [value]="recipient.yearOfBirth"
+    [(ngModel)]="recipient.yearOfBirth"
+    name="yearOfBirth"
+    ngDefaultControl
+  ></app-simple-number>
 
   <!-- Recipient note -->
   <app-setting-item label="Note">
@@ -89,17 +114,27 @@
   <!-- Recipient waiting since date -->
   <app-setting-item label="Waiting since">
     <mat-form-field>
-      <input matInput [matDatepicker]="picker" [(ngModel)]="recipient.waitingSince" [ngModelOptions]="{standalone: true}">
+      <input
+        matInput
+        [matDatepicker]="picker"
+        [(ngModel)]="recipient.waitingSince"
+        [ngModelOptions]="{ standalone: true }"
+      />
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
   </app-setting-item>
 
   <!-- Recipient previous transplants -->
-  <app-simple-number #previousTransplants="ngModel" (input)="formatNumber(previousTransplants)"
-                     label="Previous transplants count"
-                     [value]="recipient.previousTransplants" [(ngModel)]="recipient.previousTransplants"
-                     name="previousTransplants" ngDefaultControl></app-simple-number>
+  <app-simple-number
+    #previousTransplants="ngModel"
+    (input)="formatNumber(previousTransplants)"
+    label="Previous transplants count"
+    [value]="recipient.previousTransplants"
+    [(ngModel)]="recipient.previousTransplants"
+    name="previousTransplants"
+    ngDefaultControl
+  ></app-simple-number>
 
   <!-- Matching conditions -->
   <ng-container *ngIf="showMatchingConditions">
@@ -111,52 +146,114 @@
       <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.requireBetterMatchInCompatibilityIndex">
         Require new donor having better CI match than original donor
       </mat-slide-toggle>
-      <mat-slide-toggle [(ngModel)]="recipient.recipientRequirements.requireBetterMatchInCompatibilityIndexOrBloodGroup">
+      <mat-slide-toggle
+        [(ngModel)]="recipient.recipientRequirements.requireBetterMatchInCompatibilityIndexOrBloodGroup"
+      >
         Require new donor having better CI match than original donor or blood group match
       </mat-slide-toggle>
-      <mat-slide-toggle #maxAge [checked]="!!recipient.recipientRequirements.maxDonorAge" [(ngModel)]="recipient.recipientRequirements.maxDonorAge">
+      <mat-slide-toggle
+        #maxAge
+        [checked]="!!recipient.recipientRequirements.maxDonorAge"
+        [(ngModel)]="recipient.recipientRequirements.maxDonorAge"
+      >
         Set maximal donor age
       </mat-slide-toggle>
-      <app-simple-number *ngIf="maxAge.checked" #maxDonorAge="ngModel" (input)="formatNumber(maxDonorAge)"
-                         label="Maximal donor age"
-                         [value]="recipient.recipientRequirements.maxDonorAge" [(ngModel)]="recipient.recipientRequirements.maxDonorAge"
-                         name="maxDonorAge" ngDefaultControl></app-simple-number>
-      <mat-slide-toggle #minAge [checked]="!!recipient.recipientRequirements.minDonorAge" [(ngModel)]="recipient.recipientRequirements.minDonorAge">
+      <app-simple-number
+        *ngIf="maxAge.checked"
+        #maxDonorAge="ngModel"
+        (input)="formatNumber(maxDonorAge)"
+        label="Maximal donor age"
+        [value]="recipient.recipientRequirements.maxDonorAge"
+        [(ngModel)]="recipient.recipientRequirements.maxDonorAge"
+        name="maxDonorAge"
+        ngDefaultControl
+      ></app-simple-number>
+      <mat-slide-toggle
+        #minAge
+        [checked]="!!recipient.recipientRequirements.minDonorAge"
+        [(ngModel)]="recipient.recipientRequirements.minDonorAge"
+      >
         Set minimal donor age
       </mat-slide-toggle>
-      <app-simple-number *ngIf="minAge.checked" #minDonorAge="ngModel" (input)="formatNumber(minDonorAge)"
-                         label="Minimal donor age"
-                         [value]="recipient.recipientRequirements.minDonorAge" [(ngModel)]="recipient.recipientRequirements.minDonorAge"
-                         name="minDonorAge" ngDefaultControl></app-simple-number>
-      <mat-slide-toggle #maxHeight [checked]="!!recipient.recipientRequirements.maxDonorHeight" [(ngModel)]="recipient.recipientRequirements.maxDonorHeight">
+      <app-simple-number
+        *ngIf="minAge.checked"
+        #minDonorAge="ngModel"
+        (input)="formatNumber(minDonorAge)"
+        label="Minimal donor age"
+        [value]="recipient.recipientRequirements.minDonorAge"
+        [(ngModel)]="recipient.recipientRequirements.minDonorAge"
+        name="minDonorAge"
+        ngDefaultControl
+      ></app-simple-number>
+      <mat-slide-toggle
+        #maxHeight
+        [checked]="!!recipient.recipientRequirements.maxDonorHeight"
+        [(ngModel)]="recipient.recipientRequirements.maxDonorHeight"
+      >
         Set maximal donor height
       </mat-slide-toggle>
-      <app-simple-number *ngIf="maxHeight.checked" #maxDonorHeight="ngModel" (input)="formatNumber(maxDonorHeight)"
-                         label="Maximal donor height"
-                         [value]="recipient.recipientRequirements.maxDonorHeight" [(ngModel)]="recipient.recipientRequirements.maxDonorHeight"
-                         name="maxDonorHeight" ngDefaultControl></app-simple-number>
+      <app-simple-number
+        *ngIf="maxHeight.checked"
+        #maxDonorHeight="ngModel"
+        (input)="formatNumber(maxDonorHeight)"
+        label="Maximal donor height"
+        [value]="recipient.recipientRequirements.maxDonorHeight"
+        [(ngModel)]="recipient.recipientRequirements.maxDonorHeight"
+        name="maxDonorHeight"
+        ngDefaultControl
+      ></app-simple-number>
 
-      <mat-slide-toggle #minHeight [checked]="!!recipient.recipientRequirements.minDonorHeight" [(ngModel)]="recipient.recipientRequirements.minDonorHeight">
+      <mat-slide-toggle
+        #minHeight
+        [checked]="!!recipient.recipientRequirements.minDonorHeight"
+        [(ngModel)]="recipient.recipientRequirements.minDonorHeight"
+      >
         Set minimal donor height
       </mat-slide-toggle>
-      <app-simple-number *ngIf="minHeight.checked" #minDonorHeight="ngModel" (input)="formatNumber(minDonorHeight)"
-                         label="Minimal donor height"
-                         [value]="recipient.recipientRequirements.minDonorHeight" [(ngModel)]="recipient.recipientRequirements.minDonorHeight"
-                         name="minDonorHeight" ngDefaultControl></app-simple-number>
-      <mat-slide-toggle #maxWeigh [checked]="!!recipient.recipientRequirements.maxDonorWeight" [(ngModel)]="recipient.recipientRequirements.maxDonorWeight">
+      <app-simple-number
+        *ngIf="minHeight.checked"
+        #minDonorHeight="ngModel"
+        (input)="formatNumber(minDonorHeight)"
+        label="Minimal donor height"
+        [value]="recipient.recipientRequirements.minDonorHeight"
+        [(ngModel)]="recipient.recipientRequirements.minDonorHeight"
+        name="minDonorHeight"
+        ngDefaultControl
+      ></app-simple-number>
+      <mat-slide-toggle
+        #maxWeigh
+        [checked]="!!recipient.recipientRequirements.maxDonorWeight"
+        [(ngModel)]="recipient.recipientRequirements.maxDonorWeight"
+      >
         Set maximal donor weight
       </mat-slide-toggle>
-      <app-simple-number *ngIf="maxWeigh.checked" #maxDonorWeight="ngModel" (input)="formatNumber(maxDonorWeight)"
-                         label="Maximal donor weight"
-                         [value]="recipient.recipientRequirements.maxDonorWeight" [(ngModel)]="recipient.recipientRequirements.maxDonorWeight"
-                         name="maxDonorWeight" ngDefaultControl></app-simple-number>
-      <mat-slide-toggle #minWeigh [checked]="!!recipient.recipientRequirements.minDonorWeight" [(ngModel)]="recipient.recipientRequirements.minDonorWeight">
+      <app-simple-number
+        *ngIf="maxWeigh.checked"
+        #maxDonorWeight="ngModel"
+        (input)="formatNumber(maxDonorWeight)"
+        label="Maximal donor weight"
+        [value]="recipient.recipientRequirements.maxDonorWeight"
+        [(ngModel)]="recipient.recipientRequirements.maxDonorWeight"
+        name="maxDonorWeight"
+        ngDefaultControl
+      ></app-simple-number>
+      <mat-slide-toggle
+        #minWeigh
+        [checked]="!!recipient.recipientRequirements.minDonorWeight"
+        [(ngModel)]="recipient.recipientRequirements.minDonorWeight"
+      >
         Set minimal donor weight
       </mat-slide-toggle>
-      <app-simple-number *ngIf="minWeigh.checked" #minDonorWeight="ngModel" (input)="formatNumber(minDonorWeight)"
-                         label="Minimal donor weight"
-                         [value]="recipient.recipientRequirements.minDonorWeight" [(ngModel)]="recipient.recipientRequirements.minDonorWeight"
-                         name="minDonorWeight" ngDefaultControl></app-simple-number>
+      <app-simple-number
+        *ngIf="minWeigh.checked"
+        #minDonorWeight="ngModel"
+        (input)="formatNumber(minDonorWeight)"
+        label="Minimal donor weight"
+        [value]="recipient.recipientRequirements.minDonorWeight"
+        [(ngModel)]="recipient.recipientRequirements.minDonorWeight"
+        name="minDonorWeight"
+        ngDefaultControl
+      ></app-simple-number>
     </div>
   </ng-container>
 </ng-container>

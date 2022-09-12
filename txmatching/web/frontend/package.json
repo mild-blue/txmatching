@@ -7,8 +7,11 @@
     "build": "ng build",
     "build-prod": "ng build --configuration production",
     "test": "ng test",
-    "lint": "eslint -c .eslintrc.json --ext .ts src",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "prettier-check": "prettier --check './**/*.{js,jsx,ts,tsx,css,md,json}'",
+    "prettier-format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
+    "lint-fix": "eslint -c .eslintrc.json --fix --max-warnings=0 src/app",
+    "lint-check": "eslint -c .eslintrc.json --max-warnings=0 src/app"
   },
   "private": true,
   "dependencies": {
@@ -53,9 +56,11 @@
     "@typescript-eslint/parser": "^5.13.0",
     "codelyzer": "^6.0.2",
     "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-deprecation": "^1.2.1",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-prettier": "4.2.1",
     "jasmine-core": "~4.0.1",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.3.16",
@@ -63,6 +68,7 @@
     "karma-coverage-istanbul-reporter": "~3.0.3",
     "karma-jasmine": "~4.0.1",
     "karma-jasmine-html-reporter": "^1.7.0",
+    "prettier": "2.7.1",
     "protractor": "~7.0.0",
     "ts-node": "~10.6.0",
     "typescript": "4.5.5"

@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { WarningOverviewComponent } from './warning-overview.component';
+import { WarningOverviewComponent } from "./warning-overview.component";
 
-describe('WarningOverviewComponent', () => {
+describe("WarningOverviewComponent", () => {
   let component: WarningOverviewComponent;
   let fixture: ComponentFixture<WarningOverviewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ WarningOverviewComponent ]
-    })
-    .compileComponents();
+      declarations: [WarningOverviewComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('WarningOverviewComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

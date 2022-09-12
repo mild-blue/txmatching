@@ -1,35 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import { PatientService } from '@app/services/patient/patient.service';
-import { LoggerService } from '@app/services/logger/logger.service';
-import { AlertService } from '@app/services/alert/alert.service';
-import { AuthService } from '@app/services/auth/auth.service';
-import { UploadDownloadStatus } from '@app/components/header/header.interface';
-import { ConfigurationService } from '@app/services/configuration/configuration.service';
-import { PatientList } from '@app/model/PatientList';
-import { PatientPair } from '@app/model/PatientPair';
-import { Donor } from '@app/model/Donor';
-import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
-import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
-import { PatientDonorItemComponent } from '@app/components/patient-donor-item/patient-donor-item.component';
-import { PatientDonorDetailWrapperComponent } from '@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component';
-import { EventService } from '@app/services/event/event.service';
-import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
-import { Subscription } from 'rxjs';
-import { TxmEventStateGenerated } from '@app/generated';
-import { PatientPairToAdd } from '@app/services/patient/patient.service.interface';
-import { DonorType } from '@app/model/enums/DonorType';
-import { ReportService } from '@app/services/report/report.service';
-import { ParsingIssue } from '@app/model/ParsingIssue';
-import { getErrorMessage } from '@app/helpers/error';
-import { ParsingIssuePublic } from '@app/model/ParsingIssuePublic';
+import { Component, OnInit } from "@angular/core";
+import { PatientService } from "@app/services/patient/patient.service";
+import { LoggerService } from "@app/services/logger/logger.service";
+import { AlertService } from "@app/services/alert/alert.service";
+import { AuthService } from "@app/services/auth/auth.service";
+import { UploadDownloadStatus } from "@app/components/header/header.interface";
+import { ConfigurationService } from "@app/services/configuration/configuration.service";
+import { PatientList } from "@app/model/PatientList";
+import { PatientPair } from "@app/model/PatientPair";
+import { Donor } from "@app/model/Donor";
+import { PatientPairItemComponent } from "@app/components/patient-pair-item/patient-pair-item.component";
+import { PatientPairDetailComponent } from "@app/components/patient-pair-detail/patient-pair-detail.component";
+import { PatientDonorItemComponent } from "@app/components/patient-donor-item/patient-donor-item.component";
+import { PatientDonorDetailWrapperComponent } from "@app/components/patient-donor-detail-wrapper/patient-donor-detail-wrapper.component";
+import { EventService } from "@app/services/event/event.service";
+import { AbstractLoggedComponent } from "@app/pages/abstract-logged/abstract-logged.component";
+import { Subscription } from "rxjs";
+import { TxmEventStateGenerated } from "@app/generated";
+import { PatientPairToAdd } from "@app/services/patient/patient.service.interface";
+import { DonorType } from "@app/model/enums/DonorType";
+import { ReportService } from "@app/services/report/report.service";
+import { ParsingIssue } from "@app/model/ParsingIssue";
+import { getErrorMessage } from "@app/helpers/error";
+import { ParsingIssuePublic } from "@app/model/ParsingIssuePublic";
 
 @Component({
-  selector: 'app-patients',
-  templateUrl: './patients.component.html',
-  styleUrls: ['./patients.component.scss']
+  selector: "app-patients",
+  templateUrl: "./patients.component.html",
+  styleUrls: ["./patients.component.scss"],
 })
 export class PatientsComponent extends AbstractLoggedComponent implements OnInit {
-
   private _deleteDonorSubscription?: Subscription;
 
   public patients?: PatientList;
@@ -43,13 +42,15 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
   public recipientCount: number = 0;
   public patientPopupOpened: boolean = false;
 
-  constructor(_reportService: ReportService,
-              _authService: AuthService,
-              _alertService: AlertService,
-              _configService: ConfigurationService,
-              _eventService: EventService,
-              _patientService: PatientService,
-              _logger: LoggerService) {
+  constructor(
+    _reportService: ReportService,
+    _authService: AuthService,
+    _alertService: AlertService,
+    _configService: ConfigurationService,
+    _eventService: EventService,
+    _patientService: PatientService,
+    _logger: LoggerService
+  ) {
     super(_reportService, _authService, _alertService, _configService, _eventService, _patientService, _logger);
   }
 
@@ -59,11 +60,11 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
     this.loading = true;
 
     this._deleteDonorSubscription = this._patientService.onDeleteDonor().subscribe((donorDbId) => {
-      this._alertService.success('Patients were deleted');
+      this._alertService.success("Patients were deleted");
       this._initPatientsWithStats();
     });
 
-    this._initAll().finally(() => this.loading = false);
+    this._initAll().finally(() => (this.loading = false));
   }
 
   ngOnDestroy(): void {
@@ -92,22 +93,26 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
   public async addPatientPair(pair: PatientPairToAdd): Promise<void> {
     if (!this.defaultTxmEvent) {
-      this._logger.error('uploadPatients failed because defaultTxmEvent not set');
+      this._logger.error("uploadPatients failed because defaultTxmEvent not set");
       return;
     }
 
     try {
-      const parsingIssues: ParsingIssuePublic[] = await this._patientService.addNewPair(this.defaultTxmEvent.id, pair.donor, pair.recipient);
+      const parsingIssues: ParsingIssuePublic[] = await this._patientService.addNewPair(
+        this.defaultTxmEvent.id,
+        pair.donor,
+        pair.recipient
+      );
 
       if (parsingIssues.length === 0) {
-        this._alertService.success('Patients were successfully added');
+        this._alertService.success("Patients were successfully added");
       } else {
         this._alertService.infoWithParsingIssues(
-          'Patients were added but some parsing issues or warnings occurred. ' +
-          'You can modify the patient to fix the issues or contact us if the issues are not clear on info@mild.blue or +420 723 927 536.',
+          "Patients were added but some parsing issues or warnings occurred. " +
+            "You can modify the patient to fix the issues or contact us if the issues are not clear on info@mild.blue or +420 723 927 536.",
           parsingIssues
         );
-        this._logger.log('Parsing issues', parsingIssues);
+        this._logger.log("Parsing issues", parsingIssues);
       }
 
       this.togglePatientPopup();
@@ -115,9 +120,11 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
       // Make added pair active
       const addedDonorMedicalId = pair.donor.medicalId;
-      this.activeItem = this.items.find(item => {
-        if (('donorType' in item && item.medicalId === addedDonorMedicalId) ||
-          ('d' in item && item.d?.medicalId === addedDonorMedicalId)) {
+      this.activeItem = this.items.find((item) => {
+        if (
+          ("donorType" in item && item.medicalId === addedDonorMedicalId) ||
+          ("d" in item && item.d?.medicalId === addedDonorMedicalId)
+        ) {
           return item;
         }
         return undefined;
@@ -134,17 +141,16 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
   private _initItems(): void {
     if (!this.patients) {
-      this._logger.error('Items init failed because patients not set');
+      this._logger.error("Items init failed because patients not set");
       return;
     }
 
     const items: (Donor | PatientPair)[] = [];
     for (const donor of this.patients.donors) {
-
       // try to find recipient
       let recipient;
       if (donor.donorType === DonorType.DONOR) {
-        recipient = this.patients.recipients.find(r => r.dbId === donor.relatedRecipientDbId);
+        recipient = this.patients.recipients.find((r) => r.dbId === donor.relatedRecipientDbId);
       }
 
       if (recipient) {
@@ -154,7 +160,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
           d: donor,
           r: recipient,
           itemComponent: PatientPairItemComponent,
-          detailComponent: PatientPairDetailComponent
+          detailComponent: PatientPairDetailComponent,
         });
       } else {
         // donor without recipient
@@ -162,7 +168,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
           ...donor,
           index: items.length + 1,
           itemComponent: PatientDonorItemComponent,
-          detailComponent: PatientDonorDetailWrapperComponent
+          detailComponent: PatientDonorDetailWrapperComponent,
         });
       }
     }
@@ -172,7 +178,7 @@ export class PatientsComponent extends AbstractLoggedComponent implements OnInit
 
   private _initPatientStatsAndItems(): void {
     if (!this.patients) {
-      this._logger.error('_initPatientStatsAndItems failed because patients not set');
+      this._logger.error("_initPatientStatsAndItems failed because patients not set");
       return;
     }
     this.donorsCount = this.patients.donors.length;

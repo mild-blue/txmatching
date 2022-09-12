@@ -3,32 +3,30 @@
     <mat-label>Country</mat-label>
 
     <mat-chip-list #countryChip [formControl]="countryControl">
-      <mat-chip *ngIf="countryControl.valid"
-                [removable]="true"
-                (removed)="handleCountryRemove(countryInput)">
+      <mat-chip *ngIf="countryControl.valid" [removable]="true" (removed)="handleCountryRemove(countryInput)">
         <country [country]="selectedCountryValue"></country>
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
-        <input [formControl]="countryControl"
-               [matChipInputFor]="countryChip"
-               [matAutocomplete]="donorAuto"
-               [placeholder]="!selectedCountryValue ? 'Search by country code' : ''"
-               #countryInput type="text">
-      </mat-chip-list>
+      <input
+        [formControl]="countryControl"
+        [matChipInputFor]="countryChip"
+        [matAutocomplete]="donorAuto"
+        [placeholder]="!selectedCountryValue ? 'Search by country code' : ''"
+        #countryInput
+        type="text"
+      />
+    </mat-chip-list>
 
-      <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleCountrySelect(countryInput)">
-        <mat-option *ngFor="let c of filteredCountries | async" [value]="c">
-          <country [country]="c"></country>
-        </mat-option>
-      </mat-autocomplete>
+    <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleCountrySelect(countryInput)">
+      <mat-option *ngFor="let c of filteredCountries | async" [value]="c">
+        <country [country]="c"></country>
+      </mat-option>
+    </mat-autocomplete>
 
-      <mat-error>
-        <app-form-control-errors [control]="countryControl"></app-form-control-errors>
-      </mat-error>
+    <mat-error>
+      <app-form-control-errors [control]="countryControl"></app-form-control-errors>
+    </mat-error>
 
-      <mat-hint>
-        Search and select 1 country from {{allCountries.length}} available countries.
-      </mat-hint>
-
-    </mat-form-field>
+    <mat-hint> Search and select 1 country from {{ allCountries.length }} available countries. </mat-hint>
+  </mat-form-field>
 </app-setting-item>

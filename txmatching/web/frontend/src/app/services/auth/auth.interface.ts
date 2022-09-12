@@ -5,5 +5,5 @@ export interface AuthResponse {
 
 export enum ResponseStatusCode {
   OK = 200,
-  UNAUTHORIZED = 401
+  UNAUTHORIZED = 401,
 }
