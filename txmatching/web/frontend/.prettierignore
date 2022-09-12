@@ -1,0 +1,5 @@
+# Ignore artifacts:
+build/
+src/app/generated
+package-lock.json
+.angular/**/*
