@@ -55,12 +55,14 @@ export class ItemComponent implements OnInit, OnChanges {
 
     if (this.listItemHost) {
       const viewContainerRef = this.listItemHost.viewContainerRef;
-      viewContainerRef.clear();
-      this._componentRef = viewContainerRef.createComponent<ListItemAbstractComponent>(componentFactory);
-      this._componentRef.instance.item = item;
-      this._componentRef.instance.isActive = this.isActive;
-      this._componentRef.instance.patients = this.patients;
-      this._componentRef.instance.configuration = this.configuration;
+      if (viewContainerRef) {
+        viewContainerRef.clear();
+        this._componentRef = viewContainerRef.createComponent<ListItemAbstractComponent>(componentFactory);
+        this._componentRef.instance.item = item;
+        this._componentRef.instance.isActive = this.isActive;
+        this._componentRef.instance.patients = this.patients;
+        this._componentRef.instance.configuration = this.configuration;
+      }
     }
   }
 }

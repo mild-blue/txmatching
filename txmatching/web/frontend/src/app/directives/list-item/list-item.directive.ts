@@ -4,5 +4,5 @@ import { Directive, ViewContainerRef } from "@angular/core";
   selector: "[listItem]",
 })
 export class ListItemDirective {
-  constructor(public viewContainerRef: ViewContainerRef) {}
+  constructor(public viewContainerRef?: ViewContainerRef) {}
 }
