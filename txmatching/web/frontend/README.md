@@ -2,6 +2,17 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli).
 
+## GitHub pipeline failed in my PR
+
+### Run prettier check
+
+- you forgot to run `npm run prettier-format`
+- plese run the command and commit changes
+
+### Build check
+
+- your project contains serious errors and can't be build
+
 ## Prerequisites
 
 ### Node.js and npm
