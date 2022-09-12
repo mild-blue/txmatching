@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { MatchingTransplantComponent } from './matching-transplant.component';
+import { MatchingTransplantComponent } from "./matching-transplant.component";
 
-describe('MatchingTransplantComponent', () => {
+describe("MatchingTransplantComponent", () => {
   let component: MatchingTransplantComponent;
   let fixture: ComponentFixture<MatchingTransplantComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [MatchingTransplantComponent]
-    })
-    .compileComponents();
+      declarations: [MatchingTransplantComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('MatchingTransplantComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

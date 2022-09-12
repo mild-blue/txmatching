@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { GenerateReportComponent } from './generate-report.component';
+import { GenerateReportComponent } from "./generate-report.component";
 
-describe('GenerateReportComponent', () => {
+describe("GenerateReportComponent", () => {
   let component: GenerateReportComponent;
   let fixture: ComponentFixture<GenerateReportComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [GenerateReportComponent]
-    })
-    .compileComponents();
+      declarations: [GenerateReportComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('GenerateReportComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

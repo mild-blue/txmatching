@@ -1,8 +1,8 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed } from "@angular/core/testing";
 
-import { UiInteractionsService } from './ui-interactions.service';
+import { UiInteractionsService } from "./ui-interactions.service";
 
-describe('UiInteractionsService', () => {
+describe("UiInteractionsService", () => {
   let service: UiInteractionsService;
 
   beforeEach(() => {
@@ -10,7 +10,7 @@ describe('UiInteractionsService', () => {
     service = TestBed.inject(UiInteractionsService);
   });
 
-  it('should be created', () => {
+  it("should be created", () => {
     expect(service).toBeTruthy();
   });
 });

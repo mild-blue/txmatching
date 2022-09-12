@@ -1,22 +1,26 @@
-import { BloodGroupEnumGenerated, PatientModelToUpdateGenerated, SexEnumGenerated } from '../../generated';
-import { BloodGroup, Sex } from '@app/model';
-import { PatientEditable } from '@app/model/PatientEditable';
+import { BloodGroupEnumGenerated, PatientModelToUpdateGenerated, SexEnumGenerated } from "../../generated";
+import { BloodGroup, Sex } from "@app/model";
+import { PatientEditable } from "@app/model/PatientEditable";
 
 /* Used for editing patient */
-export const fromPatientEditableToUpdateGenerated = (patient: PatientEditable, patientId: number, patientUpdateId: number): PatientModelToUpdateGenerated => {
+export const fromPatientEditableToUpdateGenerated = (
+  patient: PatientEditable,
+  patientId: number,
+  patientUpdateId: number
+): PatientModelToUpdateGenerated => {
   return {
     db_id: patientId,
     etag: patientUpdateId,
     blood_group: fromBloodGroup(patient.bloodGroup),
     hla_typing: {
-      hla_types_list: patient.antigens.map(antigenEditable => ({ raw_code: antigenEditable.rawCode }))
+      hla_types_list: patient.antigens.map((antigenEditable) => ({ raw_code: antigenEditable.rawCode })),
     },
     sex: patient.sex ? fromSex(patient.sex) : undefined,
     // TODO: convert values to numbers in SimpleNumberComponent, not here
     height: patient.height ? +patient.height : undefined,
     weight: patient.weight ? +patient.weight : undefined,
     year_of_birth: patient.yearOfBirth ? +patient.yearOfBirth : undefined,
-    note: patient.note
+    note: patient.note,
   };
 };
 

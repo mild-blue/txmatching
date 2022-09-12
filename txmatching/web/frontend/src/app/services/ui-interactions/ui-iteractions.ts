@@ -1,1 +1,1 @@
-export const scrollableDetailClass = 'detail-inner';
+export const scrollableDetailClass = "detail-inner";

@@ -1,30 +1,28 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from "@angular/core";
 
 @Component({
-  selector: 'app-dropdown',
-  templateUrl: './dropdown.component.html',
-  styleUrls: ['./dropdown.component.scss']
+  selector: "app-dropdown",
+  templateUrl: "./dropdown.component.html",
+  styleUrls: ["./dropdown.component.scss"],
 })
 export class DropdownComponent {
-
   @Output() clickedOutside: EventEmitter<string> = new EventEmitter<string>();
 
   @Input() open: boolean = false;
-  @Input() id: string = '';
+  @Input() id: string = "";
   @Input() trigger?: HTMLButtonElement;
   @Input() float: string = "left";
 
   private _wasClickInside = false;
 
-  constructor(private _elementRef: ElementRef) {
-  }
+  constructor(private _elementRef: ElementRef) {}
 
-  @HostListener('click')
+  @HostListener("click")
   clickInside() {
     this._wasClickInside = true;
   }
 
-  @HostListener('document:click', ['$event'])
+  @HostListener("document:click", ["$event"])
   clickOut(event: MouseEvent) {
     if (!this.trigger || !this.id) {
       return;

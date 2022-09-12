@@ -1,31 +1,30 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AuthService } from '@app/services/auth/auth.service';
-import { faCog } from '@fortawesome/free-solid-svg-icons';
-import { ConfigurationService } from '@app/services/configuration/configuration.service';
-import { Configuration } from '@app/model/Configuration';
-import { MatchingService } from '@app/services/matching/matching.service';
-import { AlertService } from '@app/services/alert/alert.service';
-import { Matching } from '@app/model/Matching';
-import { PatientService } from '@app/services/patient/patient.service';
-import { LoggerService } from '@app/services/logger/logger.service';
-import { ReportService } from '@app/services/report/report.service';
-import { UploadDownloadStatus } from '@app/components/header/header.interface';
-import { Report } from '@app/services/report/report.interface';
-import { finalize, first } from 'rxjs/operators';
-import { EventService } from '@app/services/event/event.service';
-import { AbstractLoggedComponent } from '@app/pages/abstract-logged/abstract-logged.component';
-import { TxmEventStateGenerated } from '@app/generated';
-import { TemplatePopupStyle } from '@app/components/template-popup/template-popup.interface';
-import { ReportConfig } from '@app/components/generate-report/generate-report.interface';
-import { getErrorMessage } from '@app/helpers/error';
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { AuthService } from "@app/services/auth/auth.service";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
+import { ConfigurationService } from "@app/services/configuration/configuration.service";
+import { Configuration } from "@app/model/Configuration";
+import { MatchingService } from "@app/services/matching/matching.service";
+import { AlertService } from "@app/services/alert/alert.service";
+import { Matching } from "@app/model/Matching";
+import { PatientService } from "@app/services/patient/patient.service";
+import { LoggerService } from "@app/services/logger/logger.service";
+import { ReportService } from "@app/services/report/report.service";
+import { UploadDownloadStatus } from "@app/components/header/header.interface";
+import { Report } from "@app/services/report/report.interface";
+import { finalize, first } from "rxjs/operators";
+import { EventService } from "@app/services/event/event.service";
+import { AbstractLoggedComponent } from "@app/pages/abstract-logged/abstract-logged.component";
+import { TxmEventStateGenerated } from "@app/generated";
+import { TemplatePopupStyle } from "@app/components/template-popup/template-popup.interface";
+import { ReportConfig } from "@app/components/generate-report/generate-report.interface";
+import { getErrorMessage } from "@app/helpers/error";
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  selector: "app-home",
+  templateUrl: "./home.component.html",
+  styleUrls: ["./home.component.scss"],
 })
 export class HomeComponent extends AbstractLoggedComponent implements OnInit, OnDestroy {
-
   private _downloadMatchingInProgress: boolean = false;
 
   public matchings: Matching[] = [];
@@ -46,14 +45,16 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   public templatePopupStyle = TemplatePopupStyle;
   public uploadDownloadStatus = UploadDownloadStatus;
 
-  constructor(private _matchingService: MatchingService,
-              _reportService: ReportService,
-              _authService: AuthService,
-              _alertService: AlertService,
-              _configService: ConfigurationService,
-              _eventService: EventService,
-              _patientService: PatientService,
-              _logger: LoggerService) {
+  constructor(
+    private _matchingService: MatchingService,
+    _reportService: ReportService,
+    _authService: AuthService,
+    _alertService: AlertService,
+    _configService: ConfigurationService,
+    _eventService: EventService,
+    _patientService: PatientService,
+    _logger: LoggerService
+  ) {
     super(_reportService, _authService, _alertService, _configService, _eventService, _patientService, _logger);
   }
 
@@ -61,11 +62,10 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     super.ngOnInit();
 
     this.loading = true;
-    this._initAll().finally(() => this.loading = false);
+    this._initAll().finally(() => (this.loading = false));
   }
 
-  ngOnDestroy(): void {
-  }
+  ngOnDestroy(): void {}
 
   private async _initAll(): Promise<void> {
     await this._initTxmEvents();
@@ -80,7 +80,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
   }
 
   public getActiveMatching(): Matching | undefined {
-    return this.matchings.find(m => m.isActive);
+    return this.matchings.find((m) => m.isActive);
   }
 
   get downloadMatchingStatus(): UploadDownloadStatus {
@@ -113,24 +113,24 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
   get getTitleOfDefaultConfigButton(): string {
     if (!this.canSetDefaultConfig) {
-      return 'The current configuration cannot be set as default';
+      return "The current configuration cannot be set as default";
     }
 
     return this.isCurrentConfigDefault
       ? `The current configuration is set as default for all users (configuration id: ${this._eventService.getConfigId()})`
       : `Set the current configuration as default for all users ` +
-      `(current configuration id: ${this._eventService.getConfigId()}, ` +
-      `default configuration id: ${this.defaultTxmEvent?.defaultConfigId})`;
+          `(current configuration id: ${this._eventService.getConfigId()}, ` +
+          `default configuration id: ${this.defaultTxmEvent?.defaultConfigId})`;
   }
 
   public async setConfigAsDefault(): Promise<void> {
     if (!this.defaultTxmEvent) {
-      this._logger.error('saveConfigAsDefault failed because defaultTxmEvent not set');
+      this._logger.error("saveConfigAsDefault failed because defaultTxmEvent not set");
       return;
     }
     const configId = this._eventService.getConfigId();
     if (!configId) {
-      this._logger.error('saveConfigAsDefault failed because configId not set');
+      this._logger.error("saveConfigAsDefault failed because configId not set");
       return;
     }
 
@@ -140,7 +140,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       if (success) {
         this._alertService.success(`Default configuration for event ${this.defaultTxmEvent.name} was updated`);
       } else {
-        this._alertService.error('Error occured when updating default configuration');
+        this._alertService.error("Error occured when updating default configuration");
       }
     } catch (e) {
       this._alertService.error(`Error setting default configuration: "${getErrorMessage(e)}"`);
@@ -150,7 +150,7 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
 
   public async downloadMatchingPdfReport(reportConfig: ReportConfig): Promise<void> {
     if (!this.defaultTxmEvent) {
-      this._logger.error('Download report failed because defaultTxmEvent not set');
+      this._logger.error("Download report failed because defaultTxmEvent not set");
       return;
     }
 
@@ -159,40 +159,42 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       return;
     }
 
-    this._logger.log('Downloading with active matching', [activeMatching]);
-    this._logger.log('Report config', [reportConfig]);
+    this._logger.log("Downloading with active matching", [activeMatching]);
+    this._logger.log("Report config", [reportConfig]);
 
     this._downloadMatchingInProgress = true;
-    this._reportService.downloadMatchingPdfReport(
-      this.defaultTxmEvent.id,
-      this._eventService.getConfigId(),
-      activeMatching.orderId,
-      reportConfig
-    )
-    .pipe(
-      first(),
-      finalize(() => this._downloadMatchingInProgress = false)
-    )
-    .subscribe(
-      (report: Report) => {
-        const blob = new Blob([report.data], { type: 'application/pdf' });
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = report.filename;
-        link.dispatchEvent(new MouseEvent('click'));
-      },
-      (error: Error) => {
-        this._alertService.error(`<strong>Error downloading PDF:</strong> ${error.message}`);
-      });
+    this._reportService
+      .downloadMatchingPdfReport(
+        this.defaultTxmEvent.id,
+        this._eventService.getConfigId(),
+        activeMatching.orderId,
+        reportConfig
+      )
+      .pipe(
+        first(),
+        finalize(() => (this._downloadMatchingInProgress = false))
+      )
+      .subscribe(
+        (report: Report) => {
+          const blob = new Blob([report.data], { type: "application/pdf" });
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = report.filename;
+          link.dispatchEvent(new MouseEvent("click"));
+        },
+        (error: Error) => {
+          this._alertService.error(`<strong>Error downloading PDF:</strong> ${error.message}`);
+        }
+      );
   }
 
   public async calculate(configuration: Configuration): Promise<void> {
     if (!this.patients) {
-      this._logger.error('Calculate failed because patients not set');
+      this._logger.error("Calculate failed because patients not set");
       return;
     }
     if (!this.defaultTxmEvent) {
-      this._logger.error('Calculate failed because defaultTxmEvent not set');
+      this._logger.error("Calculate failed because defaultTxmEvent not set");
       return;
     }
 
@@ -204,18 +206,20 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     this.foundMatchingsCount = 0;
     this.errorMessage = undefined;
 
-    this._logger.log('Calculating with config', [configuration]);
+    this._logger.log("Calculating with config", [configuration]);
 
     this.configuration = configuration;
 
     try {
       const calculatedMatchings = await this._matchingService.calculate(
-        this.defaultTxmEvent.id, configuration, this.patients
+        this.defaultTxmEvent.id,
+        configuration,
+        this.patients
       );
       this.matchings = calculatedMatchings.calculatedMatchings;
       this._eventService.setConfigId(calculatedMatchings.configId);
       this.foundMatchingsCount = calculatedMatchings.foundMatchingsCount;
-      this._logger.log('Calculated matchings', [calculatedMatchings]);
+      this._logger.log("Calculated matchings", [calculatedMatchings]);
       if (calculatedMatchings.showNotAllMatchingsFound) {
         this._alertService.info(`
         There exist more than ${this.foundMatchingsCount} matchings. Shown matchings present the top matchings found so
@@ -226,14 +230,14 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
       this.errorMessage = getErrorMessage(e);
       this._logger.error(`Error calculating matchings: "${getErrorMessage(e)}"`);
     } finally {
-      this._logger.log('End of calculation');
+      this._logger.log("End of calculation");
       this.loading = false;
     }
   }
 
   private async _initPatientsConfigurationMatchings(): Promise<void> {
     if (!this.defaultTxmEvent) {
-      this._logger.error('Init matchings failed because defaultTxmEvent not set');
+      this._logger.error("Init matchings failed because defaultTxmEvent not set");
       return;
     }
 
@@ -244,12 +248,12 @@ export class HomeComponent extends AbstractLoggedComponent implements OnInit, On
     await this._initConfiguration();
     await this._initMatchings();
 
-    this._logger.log('End of matchings initialization');
+    this._logger.log("End of matchings initialization");
   }
 
   private async _initMatchings(): Promise<void> {
     if (!this.configuration) {
-      this._logger.error('Init matchings failed because configuration not set');
+      this._logger.error("Init matchings failed because configuration not set");
       return;
     }
 

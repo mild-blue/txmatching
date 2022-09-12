@@ -4,13 +4,13 @@ import {
   DonorGenerated,
   PatientParametersGenerated,
   RecipientGenerated,
-  SexEnumGenerated
-} from '../generated';
-import { AllMessages, BloodGroup, Patient, PatientParameters, Sex } from '../model';
-import { ListItem } from '../components/list-item/list-item.interface';
-import { parseAntigens } from '@app/parsers/hla.parsers';
-import { parseParsingIssue } from './parsingIssueConfirmation.parsers';
-import { ParsingIssueConfirmation } from '@app/model/ParsingIssueConfirmation';
+  SexEnumGenerated,
+} from "../generated";
+import { AllMessages, BloodGroup, Patient, PatientParameters, Sex } from "../model";
+import { ListItem } from "../components/list-item/list-item.interface";
+import { parseAntigens } from "@app/parsers/hla.parsers";
+import { parseParsingIssue } from "./parsingIssueConfirmation.parsers";
+import { ParsingIssueConfirmation } from "@app/model/ParsingIssueConfirmation";
 
 export const parsePatient = (data: DonorGenerated | RecipientGenerated, listItem: ListItem): Patient => {
   return {
@@ -18,10 +18,9 @@ export const parsePatient = (data: DonorGenerated | RecipientGenerated, listItem
     dbId: data.db_id,
     medicalId: data.medical_id,
     parameters: parsePatientParameters(data.parameters),
-    updateId: data.etag
+    updateId: data.etag,
   };
 };
-
 
 export const parsePatientParameters = (data: PatientParametersGenerated): PatientParameters => {
   return {
@@ -32,15 +31,13 @@ export const parsePatientParameters = (data: PatientParametersGenerated): Patien
     height: data.height,
     weight: data.weight,
     yearOfBirth: data.year_of_birth,
-    note: data.note
+    note: data.note,
   };
 };
-
 
 export const parsePatientSexType = (data: SexEnumGenerated | undefined): Sex | undefined => {
   return data !== undefined ? Sex[data] : undefined;
 };
-
 
 export const parseBloodGroup = (data: BloodGroupEnumGenerated): BloodGroup => {
   switch (data) {
@@ -70,7 +67,7 @@ export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined):
     warnings.push(parseParsingIssue(warning));
   });
 
-  warnings.sort((warning) => (!warning.confirmedBy) ? -1 : 1);
+  warnings.sort((warning) => (!warning.confirmedBy ? -1 : 1));
 
   allMessages?.infos?.forEach((info) => {
     infos.push(parseParsingIssue(info));
@@ -79,6 +76,6 @@ export const parseAllMessages = (allMessages: AllMessagesGenerated | undefined):
   return {
     error: errors,
     warning: warnings,
-    info: infos
+    info: infos,
   };
 };

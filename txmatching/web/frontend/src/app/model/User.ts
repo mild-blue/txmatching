@@ -1,5 +1,5 @@
-import { UserRole } from '@app/model/enums/UserRole';
-import { UserTokenType } from '@app/model/enums/UserTokenType';
+import { UserRole } from "@app/model/enums/UserRole";
+import { UserTokenType } from "@app/model/enums/UserTokenType";
 
 export interface User {
   email: string;
@@ -14,4 +14,3 @@ export interface DecodedToken {
   exp: number;
   type: UserTokenType;
 }
-

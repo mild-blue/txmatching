@@ -1,29 +1,28 @@
-import { Component, Input, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
-import { ENTER, SPACE } from '@angular/cdk/keycodes';
-import { ControlErrorStateMatcher } from '@app/directives/validators/form.directive';
-import { Antibody } from '@app/model/Hla';
-import { RecipientEditable } from '@app/model/RecipientEditable';
+import { Component, Input, ViewChild } from "@angular/core";
+import { FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
+import { ENTER, SPACE } from "@angular/cdk/keycodes";
+import { ControlErrorStateMatcher } from "@app/directives/validators/form.directive";
+import { Antibody } from "@app/model/Hla";
+import { RecipientEditable } from "@app/model/RecipientEditable";
 
 @Component({
-  selector: 'app-recipient-antibodies',
-  templateUrl: './antibodies.component.html',
-  styleUrls: ['./antibodies.component.scss']
+  selector: "app-recipient-antibodies",
+  templateUrl: "./antibodies.component.html",
+  styleUrls: ["./antibodies.component.scss"],
 })
 export class RecipientAntibodiesComponent {
-
   @Input() recipient?: RecipientEditable;
-  @ViewChild('viewForm') viewForm?: NgForm;
+  @ViewChild("viewForm") viewForm?: NgForm;
 
   public form: FormGroup = new FormGroup({
-    antibody: new FormControl('', Validators.required),
-    mfi: new FormControl('', Validators.required)
+    antibody: new FormControl("", Validators.required),
+    mfi: new FormControl("", Validators.required),
   });
 
   public separatorKeysCodes: number[] = [ENTER, SPACE];
   public errorMatcher = new ControlErrorStateMatcher();
 
-  public antibodyValue: string = '';
+  public antibodyValue: string = "";
 
   public addAntibody(control: HTMLInputElement): void {
     if (!this.recipient || this.form.invalid) {
@@ -36,17 +35,17 @@ export class RecipientAntibodiesComponent {
 
     this.recipient.antibodies.push({
       rawCode: formattedCode,
-      mfi
+      mfi,
     });
 
     // reset form
     this.form.reset();
-    this.viewForm?.resetForm('');
-    this.antibodyValue = '';
+    this.viewForm?.resetForm("");
+    this.antibodyValue = "";
 
     // clear and enable input
     if (control) {
-      control.value = '';
+      control.value = "";
       control.disabled = false;
     }
   }
@@ -56,8 +55,8 @@ export class RecipientAntibodiesComponent {
     if (!formControl || !control) {
       return;
     }
-    this.antibodyValue = '';
-    formControl.setValue('');
+    this.antibodyValue = "";
+    formControl.setValue("");
     control.disabled = false;
   }
 
@@ -66,7 +65,7 @@ export class RecipientAntibodiesComponent {
       return;
     }
     this.antibodyValue = value.trim().toUpperCase();
-    control.value = '';
+    control.value = "";
     control.disabled = true;
   }
 }

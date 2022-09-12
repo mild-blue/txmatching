@@ -1,16 +1,16 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { Configuration, CountryCombination } from '@app/model/Configuration';
-import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
-import { countryFullTextSearch, countryNameValidator } from '@app/directives/validators/form.directive';
-import { PatientList } from '@app/model/PatientList';
-import { AbstractFormHandlerComponent } from '@app/components/abstract-form-handler/abstract-form-handler.component';
+import { Component, ElementRef, Input, ViewChild } from "@angular/core";
+import { Configuration, CountryCombination } from "@app/model/Configuration";
+import { FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
+import { Observable } from "rxjs";
+import { map, startWith } from "rxjs/operators";
+import { countryFullTextSearch, countryNameValidator } from "@app/directives/validators/form.directive";
+import { PatientList } from "@app/model/PatientList";
+import { AbstractFormHandlerComponent } from "@app/components/abstract-form-handler/abstract-form-handler.component";
 
 @Component({
-  selector: 'app-configuration-countries',
-  templateUrl: './configuration-countries.component.html',
-  styleUrls: ['./configuration-countries.component.scss']
+  selector: "app-configuration-countries",
+  templateUrl: "./configuration-countries.component.html",
+  styleUrls: ["./configuration-countries.component.scss"],
 })
 export class ConfigurationCountriesComponent extends AbstractFormHandlerComponent {
   private _donorCountries: string[] = [];
@@ -19,13 +19,13 @@ export class ConfigurationCountriesComponent extends AbstractFormHandlerComponen
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
-  @ViewChild('viewForm') viewForm?: NgForm;
-  @ViewChild('viewDonorCountry') viewDonorCountry?: ElementRef<HTMLInputElement>;
-  @ViewChild('viewRecipientCountry') viewRecipientCountry?: ElementRef<HTMLInputElement>;
+  @ViewChild("viewForm") viewForm?: NgForm;
+  @ViewChild("viewDonorCountry") viewDonorCountry?: ElementRef<HTMLInputElement>;
+  @ViewChild("viewRecipientCountry") viewRecipientCountry?: ElementRef<HTMLInputElement>;
 
   public form: FormGroup = new FormGroup({
-    donorCountry: new FormControl('', Validators.required),
-    recipientCountry: new FormControl('', Validators.required)
+    donorCountry: new FormControl("", Validators.required),
+    recipientCountry: new FormControl("", Validators.required),
   });
 
   public filteredDonorCountries: Observable<string[]>;
@@ -36,11 +36,17 @@ export class ConfigurationCountriesComponent extends AbstractFormHandlerComponen
 
     this.filteredDonorCountries = this.form.controls.donorCountry?.valueChanges.pipe(
       startWith(undefined),
-      map((country: string | null) => country ? countryFullTextSearch(this.donorCountries, country) : this.donorCountries.slice()));
+      map((country: string | null) =>
+        country ? countryFullTextSearch(this.donorCountries, country) : this.donorCountries.slice()
+      )
+    );
 
     this.filteredRecipientCountries = this.form.controls.recipientCountry?.valueChanges.pipe(
       startWith(undefined),
-      map((country: string | null) => country ? countryFullTextSearch(this.recipientCountries, country) : this.recipientCountries.slice()));
+      map((country: string | null) =>
+        country ? countryFullTextSearch(this.recipientCountries, country) : this.recipientCountries.slice()
+      )
+    );
   }
 
   ngOnInit() {
@@ -54,7 +60,7 @@ export class ConfigurationCountriesComponent extends AbstractFormHandlerComponen
     }
 
     if (!this._donorCountries.length) {
-      const countries = this.patients.donors.map(p => p.parameters.countryCode);
+      const countries = this.patients.donors.map((p) => p.parameters.countryCode);
       this._donorCountries = [...new Set(countries)]; // only unique
     }
 
@@ -67,7 +73,7 @@ export class ConfigurationCountriesComponent extends AbstractFormHandlerComponen
     }
 
     if (!this._recipientCountries.length) {
-      const countries = this.patients.recipients.map(p => p.parameters.countryCode);
+      const countries = this.patients.recipients.map((p) => p.parameters.countryCode);
       this._recipientCountries = [...new Set(countries)]; // only unique
     }
 
@@ -79,11 +85,11 @@ export class ConfigurationCountriesComponent extends AbstractFormHandlerComponen
   }
 
   get donorCountry(): string {
-    return this.form.controls.donorCountry.value ?? '';
+    return this.form.controls.donorCountry.value ?? "";
   }
 
   get recipientCountry(): string {
-    return this.form.controls.recipientCountry.value ?? '';
+    return this.form.controls.recipientCountry.value ?? "";
   }
 
   public addCombination(): void {
@@ -95,12 +101,12 @@ export class ConfigurationCountriesComponent extends AbstractFormHandlerComponen
 
     this.configuration?.forbidden_country_combinations.push({
       donor_country: donorCountry,
-      recipient_country: recipientCountry
+      recipient_country: recipientCountry,
     });
 
     // reset form
     this.form.reset();
-    this.viewForm?.resetForm('');
+    this.viewForm?.resetForm("");
 
     // enable inputs
     if (this.viewDonorCountry) {

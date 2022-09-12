@@ -1,4 +1,4 @@
 export enum Sex {
-  M = 'M',
-  F = 'F'
+  M = "M",
+  F = "F",
 }

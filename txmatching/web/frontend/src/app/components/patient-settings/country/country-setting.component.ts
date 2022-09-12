@@ -1,19 +1,22 @@
-import { Component, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
-import { PatientEditable } from '@app/model/PatientEditable';
-import { FormControl } from '@angular/forms';
-import { map, startWith } from 'rxjs/operators';
-import { countryFullTextSearch, countryNameValidator, separatorKeysCodes } from '@app/directives/validators/form.directive';
-import { Observable } from 'rxjs';
-import { AbstractFormHandlerComponent } from '@app/components/abstract-form-handler/abstract-form-handler.component';
-import { CountryCodeGenerated } from '@app/generated';
+import { Component, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from "@angular/core";
+import { PatientEditable } from "@app/model/PatientEditable";
+import { FormControl } from "@angular/forms";
+import { map, startWith } from "rxjs/operators";
+import {
+  countryFullTextSearch,
+  countryNameValidator,
+  separatorKeysCodes,
+} from "@app/directives/validators/form.directive";
+import { Observable } from "rxjs";
+import { AbstractFormHandlerComponent } from "@app/components/abstract-form-handler/abstract-form-handler.component";
+import { CountryCodeGenerated } from "@app/generated";
 
 @Component({
-  selector: 'app-country-setting',
-  templateUrl: './country-setting.component.html',
-  styleUrls: ['./country-setting.component.scss']
+  selector: "app-country-setting",
+  templateUrl: "./country-setting.component.html",
+  styleUrls: ["./country-setting.component.scss"],
 })
 export class CountrySettingComponent extends AbstractFormHandlerComponent implements OnInit {
-
   private _patientDiffer?: KeyValueDiffer<string, unknown>;
 
   @Input() patient?: PatientEditable;
@@ -21,7 +24,7 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
   public allCountries: string[] = Object.values(CountryCodeGenerated);
   public filteredCountries: Observable<string[]>;
   public separatorKeysCodes: number[] = separatorKeysCodes;
-  public countryControl: FormControl = new FormControl('');
+  public countryControl: FormControl = new FormControl("");
 
   constructor(private _differs: KeyValueDiffers) {
     super();
@@ -29,7 +32,10 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
     // Country fulltext search
     this.filteredCountries = this.countryControl.valueChanges.pipe(
       startWith(undefined),
-      map((country: string | null) => country ? countryFullTextSearch(this.allCountries, country) : this.allCountries.slice()));
+      map((country: string | null) =>
+        country ? countryFullTextSearch(this.allCountries, country) : this.allCountries.slice()
+      )
+    );
   }
 
   ngOnInit(): void {
@@ -46,16 +52,16 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
   }
 
   ngDoCheck(): void {
-    const patientChanges = this._patientDiffer?.diff((this.patient as unknown) as Map<string, unknown>);
+    const patientChanges = this._patientDiffer?.diff(this.patient as unknown as Map<string, unknown>);
     patientChanges?.forEachChangedItem((record) => {
-      if (record.key === 'country') {
+      if (record.key === "country") {
         this.countryControl.setValue(record.currentValue);
       }
     });
   }
 
   get selectedCountryValue(): string {
-    return this.countryControl.value ?? '';
+    return this.countryControl.value ?? "";
   }
 
   public handleCountrySelect(control: HTMLInputElement): void {
@@ -69,7 +75,7 @@ export class CountrySettingComponent extends AbstractFormHandlerComponent implem
   }
 
   handleCountryRemove(control: HTMLInputElement) {
-    this.countryControl.setValue('');
+    this.countryControl.setValue("");
     this.patient?.setCountry(undefined);
     control.disabled = false;
   }

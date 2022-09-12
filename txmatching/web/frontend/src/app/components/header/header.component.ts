@@ -1,20 +1,19 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { User } from '@app/model/User';
-import { faCaretDown, faQuestionCircle, faUserAlt } from '@fortawesome/free-solid-svg-icons';
-import { AuthService } from '@app/services/auth/auth.service';
-import { UploadDownloadStatus } from '@app/components/header/header.interface';
-import { TxmEvent, TxmEvents } from '@app/model/Event';
-import { MatSelectionListChange } from '@angular/material/list';
-import { TxmEventStateGenerated } from '@app/generated';
+import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { User } from "@app/model/User";
+import { faCaretDown, faQuestionCircle, faUserAlt } from "@fortawesome/free-solid-svg-icons";
+import { AuthService } from "@app/services/auth/auth.service";
+import { UploadDownloadStatus } from "@app/components/header/header.interface";
+import { TxmEvent, TxmEvents } from "@app/model/Event";
+import { MatSelectionListChange } from "@angular/material/list";
+import { TxmEventStateGenerated } from "@app/generated";
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  selector: "app-header",
+  templateUrl: "./header.component.html",
+  styleUrls: ["./header.component.scss"],
 })
 export class HeaderComponent {
-
-  private _openedDropdownId: string = '';
+  private _openedDropdownId: string = "";
 
   @Input() user?: User;
 
@@ -37,19 +36,18 @@ export class HeaderComponent {
   public uploadDownloadStatus: typeof UploadDownloadStatus = UploadDownloadStatus;
   public txmEventState: typeof TxmEventStateGenerated = TxmEventStateGenerated;
 
-  constructor(private _authService: AuthService) {
-  }
+  constructor(private _authService: AuthService) {}
 
   get txmEventDropdownId(): string {
-    return 'txm-event-dropdown';
+    return "txm-event-dropdown";
   }
 
   get userDropdownId(): string {
-    return 'user-dropdown';
+    return "user-dropdown";
   }
 
   get infoDropdownId(): string {
-    return 'info-dropdown';
+    return "info-dropdown";
   }
 
   get openedDropdownId(): string {
@@ -57,17 +55,17 @@ export class HeaderComponent {
   }
 
   public openDropdown(id: string): void {
-    this._openedDropdownId = this._openedDropdownId === id ? '' : id;
+    this._openedDropdownId = this._openedDropdownId === id ? "" : id;
   }
 
   public closeDropdown(dropdownId: string): void {
     if (this._openedDropdownId === dropdownId) {
-      this._openedDropdownId = '';
+      this._openedDropdownId = "";
     }
   }
 
   private _closeAllDropdowns(): void {
-    this._openedDropdownId = '';
+    this._openedDropdownId = "";
   }
 
   public logOut(): void {

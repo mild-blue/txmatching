@@ -1,14 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Donor, Recipient } from '@app/model';
-import { countAllMessages, patientHasConfirmedWarnings } from '@app/helpers/messages';
+import { Component, Input, OnInit } from "@angular/core";
+import { Donor, Recipient } from "@app/model";
+import { countAllMessages, patientHasConfirmedWarnings } from "@app/helpers/messages";
 
 @Component({
-  selector: 'app-warning-overview',
-  templateUrl: './warning-overview.component.html',
-  styleUrls: ['./warning-overview.component.scss']
+  selector: "app-warning-overview",
+  templateUrl: "./warning-overview.component.html",
+  styleUrls: ["./warning-overview.component.scss"],
 })
-export class WarningOverviewComponent implements OnInit{
-
+export class WarningOverviewComponent implements OnInit {
   @Input() data: string[] = [];
   @Input() donor?: Donor;
   @Input() recipient?: Recipient;

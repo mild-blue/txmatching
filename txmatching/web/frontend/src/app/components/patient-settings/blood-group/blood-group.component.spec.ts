@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { BloodGroupComponent } from './blood-group.component';
+import { BloodGroupComponent } from "./blood-group.component";
 
-describe('BloodGroupComponent', () => {
+describe("BloodGroupComponent", () => {
   let component: BloodGroupComponent;
   let fixture: ComponentFixture<BloodGroupComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [BloodGroupComponent]
-    })
-    .compileComponents();
+      declarations: [BloodGroupComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('BloodGroupComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

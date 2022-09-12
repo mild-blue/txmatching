@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { CountrySettingComponent } from './country-setting.component';
+import { CountrySettingComponent } from "./country-setting.component";
 
-describe('CountryComponent', () => {
+describe("CountryComponent", () => {
   let component: CountrySettingComponent;
   let fixture: ComponentFixture<CountrySettingComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [CountrySettingComponent]
-    })
-    .compileComponents();
+      declarations: [CountrySettingComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('CountryComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

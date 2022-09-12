@@ -1,8 +1,8 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed } from "@angular/core/testing";
 
-import { OtpGuard } from './otp.guard';
+import { OtpGuard } from "./otp.guard";
 
-describe('OtpGuard', () => {
+describe("OtpGuard", () => {
   let guard: OtpGuard;
 
   beforeEach(() => {
@@ -10,7 +10,7 @@ describe('OtpGuard', () => {
     guard = TestBed.inject(OtpGuard);
   });
 
-  it('should be created', () => {
+  it("should be created", () => {
     expect(guard).toBeTruthy();
   });
 });

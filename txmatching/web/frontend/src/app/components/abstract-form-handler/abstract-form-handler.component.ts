@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { ControlErrorStateMatcher } from '@app/directives/validators/form.directive';
+import { Component } from "@angular/core";
+import { FormGroup } from "@angular/forms";
+import { ControlErrorStateMatcher } from "@app/directives/validators/form.directive";
 
-@Component({ template: '' })
+@Component({ template: "" })
 export class AbstractFormHandlerComponent {
-
   public form?: FormGroup;
   public errorMatcher = new ControlErrorStateMatcher();
 
@@ -12,7 +11,7 @@ export class AbstractFormHandlerComponent {
     if (!control) {
       return;
     }
-    control.value = '';
+    control.value = "";
     control.disabled = true;
   }
 
@@ -21,7 +20,7 @@ export class AbstractFormHandlerComponent {
     if (!formControl || !control) {
       return;
     }
-    formControl.setValue('');
+    formControl.setValue("");
     control.disabled = false;
   }
 }

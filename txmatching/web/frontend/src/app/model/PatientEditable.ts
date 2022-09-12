@@ -1,20 +1,19 @@
-import { BloodGroup } from '@app/model/enums/BloodGroup';
-import { Sex } from '@app/model/enums/Sex';
-import { Patient } from '@app/model/Patient';
-import { AntigenEditable } from '@app/model/HlaEditable';
-import { CountryCodeGenerated } from '@app/generated';
+import { BloodGroup } from "@app/model/enums/BloodGroup";
+import { Sex } from "@app/model/enums/Sex";
+import { Patient } from "@app/model/Patient";
+import { AntigenEditable } from "@app/model/HlaEditable";
+import { CountryCodeGenerated } from "@app/generated";
 
 export class PatientEditable {
   country?: CountryCodeGenerated = CountryCodeGenerated.Cze;
-  medicalId: string = '';
+  medicalId: string = "";
   antigens: AntigenEditable[] = [];
   bloodGroup: BloodGroup = BloodGroup.A;
   sex?: Sex;
   height?: number;
   weight?: number;
   yearOfBirth?: number;
-  note: string = '';
-
+  note: string = "";
 
   initializeFromPatient(patient: Patient) {
     this.country = patient.parameters.countryCode;

@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { TemplatePopupComponent } from './template-popup.component';
+import { TemplatePopupComponent } from "./template-popup.component";
 
-describe('TemplatePopupComponent', () => {
+describe("TemplatePopupComponent", () => {
   let component: TemplatePopupComponent;
   let fixture: ComponentFixture<TemplatePopupComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TemplatePopupComponent]
-    })
-    .compileComponents();
+      declarations: [TemplatePopupComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('TemplatePopupComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

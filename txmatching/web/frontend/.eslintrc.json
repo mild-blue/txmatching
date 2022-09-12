@@ -1,37 +1,20 @@
 {
   "root": true,
-  "ignorePatterns": [
-    "projects/**/*"
-  ],
+  "ignorePatterns": ["projects/**/*"],
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "parserOptions": {
-        "project": [
-          "tsconfig.json",
-          "e2e/tsconfig.json"
-        ],
+        "project": ["tsconfig.json", "e2e/tsconfig.json"],
         "createDefaultProgram": true
       },
-      "extends": [
-        "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates"
-      ],
-      "plugins": [
-        "deprecation",
-        "prefer-arrow",
-        "no-null"
-      ],
+      "extends": ["plugin:@angular-eslint/recommended", "plugin:@angular-eslint/template/process-inline-templates"],
+      "plugins": ["deprecation", "prefer-arrow", "no-null"],
       "rules": {
         "@angular-eslint/component-class-suffix": [
           "warn",
           {
-            "suffixes": [
-              "Component",
-              "Page"
-            ]
+            "suffixes": ["Component", "Page"]
           }
         ],
         "@angular-eslint/directive-selector": [
@@ -46,10 +29,7 @@
           "error",
           {
             "type": "element",
-            "prefix": [
-              "app",
-              "patient"
-            ],
+            "prefix": ["app", "patient"],
             "style": "kebab-case"
           }
         ],
@@ -61,10 +41,7 @@
           }
         ],
         "@typescript-eslint/await-thenable": "error",
-        "@typescript-eslint/consistent-type-definitions": [
-          "error",
-          "interface"
-        ],
+        "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
         "@typescript-eslint/explicit-member-accessibility": [
           "off",
           {
@@ -140,10 +117,7 @@
           }
         ],
         "@typescript-eslint/restrict-plus-operands": "error",
-        "@typescript-eslint/semi": [
-          "error",
-          "always"
-        ],
+        "@typescript-eslint/semi": ["error", "always"],
         "@typescript-eslint/type-annotation-spacing": [
           "error",
           {
@@ -164,33 +138,21 @@
           }
         ],
         "@typescript-eslint/unified-signatures": "error",
-        "arrow-parens": [
-          "off",
-          "as-needed"
-        ],
+        "arrow-parens": ["off", "as-needed"],
         "comma-dangle": "error",
         "complexity": "off",
         "constructor-super": "error",
         "curly": "error",
         "dot-notation": "error",
-        "grouped-accessor-pairs": [
-          "error",
-          "getBeforeSet"
-        ],
+        "grouped-accessor-pairs": ["error", "getBeforeSet"],
         "eol-last": "error",
-        "eqeqeq": [
-          "error",
-          "smart"
-        ],
+        "eqeqeq": ["error", "smart"],
         "guard-for-in": "error",
         "id-match": "error",
         "import/no-deprecated": "off",
         "import/order": "off",
         "jsdoc/no-types": "off",
-        "max-classes-per-file": [
-          "error",
-          1
-        ],
+        "max-classes-per-file": ["error", 1],
         "max-len": [
           "error",
           {
@@ -204,16 +166,7 @@
         "no-console": [
           "error",
           {
-            "allow": [
-              "log",
-              "warn",
-              "error",
-              "time",
-              "timeEnd",
-              "assert",
-              "groupCollapsed",
-              "groupEnd"
-            ]
+            "allow": ["log", "warn", "error", "time", "timeEnd", "assert", "groupCollapsed", "groupEnd"]
           }
         ],
         "no-debugger": "error",
@@ -229,37 +182,14 @@
         "no-magic-numbers": [
           "error",
           {
-            "ignore": [
-              -1,
-              0,
-              1,
-              2,
-              3,
-              10,
-              12,
-              100,
-              1000,
-              400,
-              401,
-              403,
-              404,
-              409,
-              500
-            ]
+            "ignore": [-1, 0, 1, 2, 3, 10, 12, 100, 1000, 400, 401, 403, 404, 409, 500]
           }
         ],
         "no-multiple-empty-lines": "off",
         "no-new-wrappers": "error",
         "no-null/no-null": 2,
-        "no-restricted-imports": [
-          "error",
-          "rxjs/Rx",
-          "firebase"
-        ],
-        "no-restricted-syntax": [
-          "error",
-          "ForInStatement"
-        ],
+        "no-restricted-imports": ["error", "rxjs/Rx", "firebase"],
+        "no-restricted-syntax": ["error", "ForInStatement"],
         "no-return-await": "error",
         "no-throw-literal": "error",
         "no-trailing-spaces": "error",
@@ -270,18 +200,12 @@
         "no-unused-labels": "error",
         "no-var": "error",
         "object-shorthand": "error",
-        "one-var": [
-          "error",
-          "never"
-        ],
+        "one-var": ["error", "never"],
         "prefer-arrow/prefer-arrow-functions": "error",
         "prefer-const": "error",
         "prefer-object-spread": "error",
         "prefer-template": "error",
-        "quote-props": [
-          "error",
-          "as-needed"
-        ],
+        "quote-props": ["error", "as-needed"],
         "radix": "error",
         "semi": "off",
         "space-before-function-paren": [
@@ -299,76 +223,47 @@
           "error",
           {
             "selector": "typeLike",
-            "format": [
-              "PascalCase"
-            ]
+            "format": ["PascalCase"]
           },
           {
             "selector": "memberLike",
-            "modifiers": [
-              "private"
-            ],
-            "format": [
-              "camelCase"
-            ],
+            "modifiers": ["private"],
+            "format": ["camelCase"],
             "leadingUnderscore": "require"
           },
           {
             "selector": "memberLike",
-            "modifiers": [
-              "private",
-              "static"
-            ],
-            "format": [
-              "camelCase"
-            ],
+            "modifiers": ["private", "static"],
+            "format": ["camelCase"],
             "leadingUnderscore": "require"
           },
           {
             "selector": "memberLike",
-            "modifiers": [
-              "protected"
-            ],
-            "format": [
-              "camelCase"
-            ],
+            "modifiers": ["protected"],
+            "format": ["camelCase"],
             "leadingUnderscore": "allow"
           },
           {
             "selector": "memberLike",
-            "modifiers": [
-              "public"
-            ],
-            "format": [
-              "camelCase",
-              "PascalCase",
-              "snake_case"
-            ],
+            "modifiers": ["public"],
+            "format": ["camelCase", "PascalCase", "snake_case"],
             "leadingUnderscore": "forbid"
           },
           {
             "selector": "variableLike",
-            "format": [
-              "camelCase"
-            ],
+            "format": ["camelCase"],
             "leadingUnderscore": "allow"
           },
           {
             "selector": "interface",
-            "format": [
-              "PascalCase"
-            ]
+            "format": ["PascalCase"]
           }
         ]
       }
     },
     {
-      "files": [
-        "*.html"
-      ],
-      "extends": [
-        "plugin:@angular-eslint/template/recommended"
-      ],
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
       "rules": {}
     }
   ]

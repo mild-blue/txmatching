@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { AbstractFormHandlerComponent } from './abstract-form-handler.component';
+import { AbstractFormHandlerComponent } from "./abstract-form-handler.component";
 
-describe('AbstractFormHandlerComponent', () => {
+describe("AbstractFormHandlerComponent", () => {
   let component: AbstractFormHandlerComponent;
   let fixture: ComponentFixture<AbstractFormHandlerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [AbstractFormHandlerComponent]
-    })
-    .compileComponents();
+      declarations: [AbstractFormHandlerComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('AbstractFormHandlerComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });
