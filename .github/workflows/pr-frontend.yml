@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  run-tests:
+  run_fe_tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # disable run if the PR is draft (as our CLI creates PR as draft once the issue is in progress)
