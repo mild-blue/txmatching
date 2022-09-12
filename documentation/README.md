@@ -99,7 +99,7 @@ There are three reasons why we ask for all tested antibodies of a patient and no
 - In case the user wants to alter MFI, the antibodies that were negative can become positive
 - When estimating crossmatch, sometimes it is crucial to have the full picture. (See below HIGH_RES and HIGH_RES_WITH_SPLIT crossmatch types where type A is required.)
 
-#### Processing logic of type B
+### Processing logic of type B
 In this case, we do not get all the antibodies the test was done for we get the antibodies in split or mixed resolution. In this case, the results are limited:
 - processing of antibodies such as DP*[01:01;02:02] is not allowed,
 - MFI modification can be done but lead to omitting some antibodies
