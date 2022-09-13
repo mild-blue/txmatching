@@ -22,12 +22,12 @@ There are several “levels” on which the HLA antigen can be specified. For ex
 
 HLA-A9 consists of 3 closely related specificities, A23, A24, A2403.
 
-*Here is the table of more Broad-Splits associations: http://hla.alleles.org/antigens/broads_splits.html*
-
 First is the broad specificity, which is kind of a supertype. In this example, it is A9.
 
 Next is split specificity. Splits or “subtypes” are the finer specificities that comprise the supertype. In this
 example, it's for instance A23.
+
+*Here is the table of Broad-Splits associations used in this app: http://hla.alleles.org/antigens/broads_splits.html*
 
 Finally, we also specify high resolution, which is the most specific, specifying also things like specific HLA protein,
 etc. E.g.: A\*24:19
@@ -83,11 +83,16 @@ Antibodies of a patient are found by a special lab test. This test does not find
 For each antigen, the test reports an MFI value, and the higher the MFI value is the stronger was the immunological response. The lab then uses some cutoff value to distinguish which antibodies of the patient are strong enough and which are not. This cutoff can differ between labs and in some special cases it can be set differently for patients from the same lab (in the case the patient really needs a kidney and it is worth for the patient to have the transplant even when there is a small immunological response)
 
 Further we will be using terms:
-- Positive antibody of a patient: antibody of the patient was in a lab test above cutoff.
+- Positive antibody of a patient: antibody of the patient was in a lab test over cutoff.
 - Negative antibody of a patient: antibody of the patient was in a lab test below the cutoff.
 - All tested antibodies of a patient: all antibodies the patient was tested for.
 
-The parsing is done in two modes. In case we receive all tested antibodies of a patient in high resolution we use the processing logic of type A. This is the better, more precise case. In other situations we use type B.
+The parsing is done in two modes. Type A and type B that are described below. (The name is purely our, it has no connection with any term used in immunology). Decision which parsing mode is selected is simple, if requirements for type A are fulfilled, type A processing runs, otherwise we fallback to type B.
+
+Type A requires that all antibodies are in high resolution and having all tested antibodies of a patient. We assume that if the criteria below are fullfiled this holds.
+- All antibodies we receive are in high resolution.
+- There is at least 20 antibodies provided.
+- There is at least 1 antibody below cutoff.
 
 ### Processing logic of type A
 In this case, we assume we have received all tested antibodies in high resolution with MFI values and the required cutoff (The cutoff is configurable. In some cases the user can decide to change it for some patients, for more details see section Configuring Cutoff).
@@ -193,4 +198,4 @@ antibodies against both alpha and beta allels or just from one of them.
 TODO Add algorithm description
 
 ## Configuring cutoff
-Original cutoff can be sometimes configured. The usual reason is that there is a patient that really needs a kidney and is highly immunized. In this case, it might be worth for the patient to get a kidney from a donor against whom the patient has antibodies. However, only antibodies with MFI only slightly above the original cutoff. This is possible in the app via increase of the cutoff of the patient. Whether to increase the cutoff and how much is always up to the user to decide.
+Original cutoff can be sometimes configured. The usual reason is that there is a patient that really needs a kidney and is highly immunized. In this case, it might be worth for the patient to get a kidney from a donor against whom the patient has antibodies. However, only antibodies with MFI only slightly over the original cutoff. This is possible in the app via increase of the cutoff of the patient. Whether to increase the cutoff and how much is always up to the user to decide.
