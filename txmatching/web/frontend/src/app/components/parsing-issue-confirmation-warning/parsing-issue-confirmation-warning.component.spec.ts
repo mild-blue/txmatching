@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ParsingIssueConfirmationWarningComponent } from "./parsing-issue-confirmation-warning.compontent";
+import { ParsingIssueConfirmationWarningComponent } from "./parsing-issue-confirmation-warning.component";
 
 describe("ParsingIssueConfirmationWarningComponent", () => {
   let component: ParsingIssueConfirmationWarningComponent;

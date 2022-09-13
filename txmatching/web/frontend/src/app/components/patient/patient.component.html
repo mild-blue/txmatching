@@ -1,4 +1,4 @@
 <div *ngIf="patient && patient.parameters" class="patient">
-  <flag [countryCode]="patient.parameters.countryCode"></flag>
+  <app-flag [countryCode]="patient.parameters.countryCode"></app-flag>
   {{ patient.medicalId }}
 </div>
