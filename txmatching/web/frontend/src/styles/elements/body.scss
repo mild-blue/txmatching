@@ -13,12 +13,13 @@ body {
   min-height: 100vh;
   height: 100%;
 
-  &, * {
+  &,
+  * {
     box-sizing: border-box;
   }
 
   &::after {
-    content: '';
+    content: "";
     background: $black;
     width: 100vw;
     position: absolute;
