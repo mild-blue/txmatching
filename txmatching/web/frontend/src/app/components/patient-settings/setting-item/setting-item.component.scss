@@ -13,7 +13,7 @@
 
     &.required {
       &::after {
-        content: '*';
+        content: "*";
         margin-left: 5px;
         color: $danger;
         position: relative;
@@ -29,7 +29,8 @@
     justify-content: flex-end;
 
     ::ng-deep {
-      mat-form-field, form {
+      mat-form-field,
+      form {
         width: 100%;
       }
 

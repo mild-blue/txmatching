@@ -12,8 +12,9 @@
   filter: drop-shadow(0 $box-shadow-size $box-shadow-color);
   margin: $item-gap;
 
-  &::after, &::before {
-    content: '';
+  &::after,
+  &::before {
+    content: "";
     position: absolute;
   }
 
@@ -62,7 +63,8 @@
       }
     }
 
-    &::after, &::before {
+    &::after,
+    &::before {
       content: "";
       position: absolute;
       background-color: transparent;

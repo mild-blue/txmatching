@@ -33,7 +33,7 @@
 
     li + li {
       &::before {
-        content: '|';
+        content: "|";
         margin: 0 5px;
         color: $body-color--secondary;
       }
@@ -44,7 +44,8 @@
     margin-right: 5px;
   }
 
-  strong, app-code {
+  strong,
+  app-code {
     margin-left: 5px;
   }
 }

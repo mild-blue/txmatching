@@ -19,7 +19,8 @@
     flex-direction: column;
   }
 
-  .list, .detail {
+  .list,
+  .detail {
     position: absolute;
     height: 100%;
 
@@ -43,9 +44,10 @@
       }
     }
 
-    &::before, &::after {
+    &::before,
+    &::after {
       position: absolute;
-      content: '';
+      content: "";
       height: $item-gap;
       width: 100%;
       left: 0;

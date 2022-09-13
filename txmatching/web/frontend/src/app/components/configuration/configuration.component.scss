@@ -2,7 +2,6 @@
 @import "../../../styles/variables";
 
 .configuration {
-
   &__boxes {
     display: flex;
     width: 100%;
@@ -28,7 +27,8 @@
     }
   }
 
-  &__box, ::ng-deep &__box {
+  &__box,
+  ::ng-deep &__box {
     border-radius: $border-radius--wide;
     background: $white;
     box-shadow: $box-shadow--wide;
@@ -40,7 +40,8 @@
     margin-right: $item-gap;
   }
 
-  .inputs, .algorithm {
+  .inputs,
+  .algorithm {
     display: flex;
     flex-wrap: wrap;
 
@@ -84,7 +85,8 @@
     display: flex;
     flex-wrap: wrap;
 
-    .toggles, .inputs {
+    .toggles,
+    .inputs {
       flex-basis: calc(50% - 2 * #{$item-gap});
       width: calc(50% - 2 * #{$item-gap});
     }

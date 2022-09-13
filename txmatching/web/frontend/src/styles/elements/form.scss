@@ -1,7 +1,8 @@
 @import "../variables";
 
 form {
-  input:not(.mat-input-element), textarea:not(.mat-input-element) {
+  input:not(.mat-input-element),
+  textarea:not(.mat-input-element) {
     border: 1px solid $border-color;
     border-radius: $input-border-radius;
     padding: 10px 15px;
@@ -35,7 +36,8 @@ form {
   }
 }
 
-button, input[type="submit"] {
+button,
+input[type="submit"] {
   border: none;
   box-shadow: none;
   background: none;
