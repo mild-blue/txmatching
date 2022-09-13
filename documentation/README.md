@@ -134,7 +134,7 @@ Below we describe all the different crossmatch levels. For each level, we descri
 #### HIGH RES
 1. donor antigen is in high resolution and the recipient has an antibody against the exact antigen.
 2. donor antigen is in high resolution and the recipient is type A parsed and was not tested for donor's antigen. But all tested antibodies that match the donor's antigen in split resolution are positive (and there is at least one such antibody).
-3. donor antigen is in split/broad resolution and the recipient is type A parsed and all tested antibodies that match donor's antigen in split/broad resolution are positive (and there is at least one such antibody).
+4. donor antigen is in split/broad resolution and the recipient is type A parsed and all tested antibodies that match donor's antigen in split/broad resolution are positive (and there is at least one such antibody).
 
 
 Example for case 1: donor has antigen DRB1\*08:18, and the recipient has antibody DRB1\*08:18.
@@ -150,11 +150,20 @@ Example for case 1: donor has antigen DQ8 and the recipient has antibody DRB1\*0
 
 #### HIGH_RES_WITH_SPLIT
 1. Donor antigen is in split resolution and the recipient is type A parsed. Some antibodies that match donors' antigens in split resolution are positive and some are negative.
-2. Donor antigen is in high resolution and the recipient is type A parsed and was not tested for donors antigen. Some antibodies that match donors' antigens in split resolution are positive and some are negative.
+2. This criterion is more complex. Here we list the requirements in a list:
+   1. Donor antigen is in high resolution.
+   2. The recipient is type A parsed.
+   3. Donors antigen is not in the set of all tested antibodies.
+   4. Some antibodies that match donors' antigens in split resolution are positive and some are negative.
 
 Example for case 1: donor has antigen DR8, and the recipient has antibodies DRB1\*08:01 and DRB1\*08:18 and only one is over
 the cutoff.
-
+Example for case 3:
+- Donor has antigen DRB1\*08:01
+- Cutoff is 2000
+- and we received the following antibodies for the recipient:
+  - DRB1\*08:02 with MFI 2500
+  - DRB1\*08:03 with MFI 1800
 #### BROAD
 1. Donor antigen is in broad resolution and the recipient has a matching antibody in split/broad/high resolution
 2. Donor antigen is in high/split/broad resolution and the recipient has a matching antibody in broad resolution
