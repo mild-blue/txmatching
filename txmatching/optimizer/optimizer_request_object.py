@@ -5,20 +5,20 @@ from typing import Dict, List, Optional
 @dataclass
 class Pair:
     donor_id: int
-    recipient_id: Optional[int]
+    recipient_id: Optional[int] = None
 
 
 @dataclass
 class Limitations:
-    max_cycle_length: Optional[int]
-    max_chain_length: Optional[int]
-    custom_algorithm_settings: Optional[Dict[str, int]]
+    max_cycle_length: Optional[int] = None
+    max_chain_length: Optional[int] = None
+    custom_algorithm_settings: Optional[Dict[str, int]] = None
 
 
 @dataclass
 class OptimizerConfiguration:
-    limitations: Optional[Limitations]
-    scoring: Optional[List[List[Dict[str, int]]]]
+    scoring: List[List[Dict[str, int]]]
+    limitations: Optional[Limitations] = None
 
 
 @dataclass

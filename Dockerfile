@@ -7,7 +7,7 @@ RUN npm i
 RUN npm run build-prod
 
 # Build backend
-FROM ghcr.io/mild-blue/txmatching-conda-dependencies:1.0.20 AS backend-build
+FROM ghcr.io/mild-blue/txmatching-conda-dependencies:1.0.21 AS backend-build
 LABEL description="Mild Blue - TXMatching"
 LABEL project="mildblue:txmatching"
 
