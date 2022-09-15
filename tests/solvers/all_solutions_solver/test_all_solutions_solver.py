@@ -188,34 +188,28 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         solutions = list(solve_from_configuration(config_parameters, txm_event).calculated_matchings_list)
         self.assertEqual(len(solutions), 1)
 
-    def test_handling_correctly_multiple_donors(self):
-        """
-       D1 __ R1
-       D2 _|
-       D3__R2
-       D4__R3
-        """
+    def test_handling_correctly_multiple_donors_with_the_same_recipient(self):
+        '''
+            D1a -> R1
+            D1b -> R1
+            D2 -> R2
+        '''
+
         # find possible solutions from score matrix
-        score_matrix_test = np.array([[-2.0, 10.0, -1.0],
-                                      [-2.0, -1.0, 10.0],
-                                      [10.0, -2.0, -1.0],
-                                      [10.0, -1.0, -2.0]])
-                             
+        score_matrix_test = np.array([[-2.0, 10.0],
+                                      [-2.0, -1.0],
+                                      [10.0, -2.0]])
 
-        donors = _get_donors_for_score_matrix(score_matrix_test)
         solutions = list(find_possible_path_combinations_from_score_matrix(score_matrix_test,
-                                                                      donors,
-                                                                      ConfigParameters(
-                                                                          solver_constructor_name=Solver.AllSolutionsSolver,
-                                                                          max_sequence_length=100,
-                                                                          max_cycle_length=100)))
+                                                                           _get_donors_for_score_matrix(
+                                                                               score_matrix_test),
+                                                                           ConfigParameters(
+                                                                               solver_constructor_name=Solver.AllSolutionsSolver,
+                                                                               max_sequence_length=100,
+                                                                               max_cycle_length=100)))
 
-        # check if the recipient is not matched with more than one donor
-        for solution in solutions:
-            recipient_ids=[pair.recipient_idx for pair in solution]
-
-            seen = set()
-            duplicates = [x for x in recipient_ids if x in seen or seen.add(x)]
-
-            if duplicates:
-                raise Exception(f'Recipient/recipients with id/ids {duplicates} is/are in matching more than once')
+        self.assertEqual(len(solutions[0]), 2)
+        self.assertEqual(solutions[0][0].donor_idx, 0)
+        self.assertEqual(solutions[0][0].recipient_idx, 1)
+        self.assertEqual(solutions[0][1].donor_idx, 2)
+        self.assertEqual(solutions[0][1].recipient_idx, 0)

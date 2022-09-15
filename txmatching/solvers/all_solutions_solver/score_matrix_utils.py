@@ -9,10 +9,10 @@ from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor
 from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
-from txmatching.solvers.donor_recipient_pair_idx_only import \
-    DonorRecipientPairIdxOnly
 from txmatching.solvers.all_solutions_solver.scoring_utils import \
     get_score_for_idx_pairs
+from txmatching.solvers.donor_recipient_pair_idx_only import \
+    DonorRecipientPairIdxOnly
 
 Path = Tuple[int]
 logger = logging.getLogger(__name__)
@@ -34,16 +34,13 @@ def get_compatible_donor_idxs_per_donor_idx(score_matrix: np.ndarray,
                                             donor_idx_to_recipient_idx: Dict[int, int]) -> Dict[int, List[int]]:
     n_donors, _ = score_matrix.shape
 
-    recipient_idx_to_donor_idx = {recipient_idx: donor_idx for donor_idx, recipient_idx
-                                  in donor_idx_to_recipient_idx.items()}
-
     donor_idx_to_recipient_idxs = {
         donor_idx: _find_acceptable_recipient_indices(score_matrix, donor_idx)
         for donor_idx in range(n_donors)}
 
     compatible_donor_idxs_per_donor_idx = {
-        donor_idx: [recipient_idx_to_donor_idx[recipient_index] for recipient_index in recipient_idxs]
-        for donor_idx, recipient_idxs in donor_idx_to_recipient_idxs.items()}
+        donor_idx: [d_idx for d_idx, r_idx in donor_idx_to_recipient_idx.items() for recipient_idx in recipient_idxs 
+        if r_idx == recipient_idx] for donor_idx, recipient_idxs in donor_idx_to_recipient_idxs.items()}    
 
     return compatible_donor_idxs_per_donor_idx
 
