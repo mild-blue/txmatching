@@ -7,9 +7,9 @@
   <div
     *ngIf="showScore"
     class="score"
-    matTooltip="Score: {{ score !== null ? score : '-' }}/{{ maxScore ? maxScore : '-' }}"
+    matTooltip="Score: {{ score ?? '-' }}/{{ maxScore ?? '-' }}"
   >
     <span>score</span>
-    {{ score !== null ? score : "-" }}
+    {{ score ?? "-" }}
   </div>
 </div>
