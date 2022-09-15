@@ -4,11 +4,7 @@
   [class.empty]="!showScore"
   class="indicator"
 >
-  <div
-    *ngIf="showScore"
-    class="score"
-    matTooltip="Score: {{ score ?? '-' }}/{{ maxScore ?? '-' }}"
-  >
+  <div *ngIf="showScore" class="score" matTooltip="Score: {{ score ?? '-' }}/{{ maxScore ?? '-' }}">
     <span>score</span>
     {{ score ?? "-" }}
   </div>
