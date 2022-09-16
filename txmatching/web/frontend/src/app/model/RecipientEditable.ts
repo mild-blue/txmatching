@@ -1,7 +1,7 @@
-import { PatientEditable } from '@app/model/PatientEditable';
-import { Recipient, RecipientRequirements } from '@app/model/Recipient';
-import { BloodGroup } from '@app/model/enums/BloodGroup';
-import { AntibodyEditable } from '@app/model/HlaEditable';
+import { PatientEditable } from "@app/model/PatientEditable";
+import { Recipient, RecipientRequirements } from "@app/model/Recipient";
+import { BloodGroup } from "@app/model/enums/BloodGroup";
+import { AntibodyEditable } from "@app/model/HlaEditable";
 
 export class RecipientEditable extends PatientEditable {
   acceptableBloodGroups: BloodGroup[] = [];
@@ -18,7 +18,7 @@ export class RecipientEditable extends PatientEditable {
     maxDonorWeight: 0,
     minDonorAge: 0,
     minDonorHeight: 0,
-    minDonorWeight: 0
+    minDonorWeight: 0,
   };
 
   initializeFromPatient(recipient: Recipient) {

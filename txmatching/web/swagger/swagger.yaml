@@ -1896,6 +1896,48 @@ paths:
                         $ref: '#/definitions/FailResponse'
             tags:
             - optimizer
+    /v1/optimizer/export/{txm_event_id}/{config_id}:
+        get:
+            operationId: get_optimize
+            parameters:
+            -   description: Id of txm event chosen
+                in: path
+                name: txm_event_id
+                required: true
+                type: integer
+            -   default: default
+                description: Configuration ID or "default".
+                in: path
+                name: config_id
+                required: true
+                type: string
+            responses:
+                '200':
+                    description: Endpoint that exports data from TXM that can be input
+                        into optimization module
+                    schema:
+                        $ref: '#/definitions/OptimizerRequest'
+                '400':
+                    description: Wrong data format.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '401':
+                    description: Authentication failed.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '403':
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+                '500':
+                    description: Unexpected error, see contents for details.
+                    schema:
+                        $ref: '#/definitions/FailResponse'
+            security:
+            -   bearer: []
+            tags:
+            - optimizer
     /v1/public/patient-upload:
         put:
             description: This endpoint allows the country editor to upload patient

@@ -8,34 +8,35 @@
         <button #txmEventDropdownTrigger (click)="openDropdown(txmEventDropdownId)">
           <div class="caption">TXM Event</div>
           <div class="name">
-            {{defaultTxmEvent.name}}
-            <div *ngIf="defaultTxmEvent.state == txmEventState.Closed"
-                 class="label-closed"
-                 matTooltip="This TXM event is closed and patients and default configuration cannot be modified">
+            {{ defaultTxmEvent.name }}
+            <div
+              *ngIf="defaultTxmEvent.state == txmEventState.Closed"
+              class="label-closed"
+              matTooltip="This TXM event is closed and patients and default configuration cannot be modified"
+            >
               closed
             </div>
             <fa-icon [icon]="caretDownIcon"></fa-icon>
           </div>
         </button>
-        <app-dropdown (clickedOutside)="closeDropdown($event)"
-                      [id]="txmEventDropdownId"
-                      [open]="txmEventDropdownId === openedDropdownId"
-                      [trigger]="txmEventDropdownTrigger"
-                      [float]="'right'">
-
+        <app-dropdown
+          (clickedOutside)="closeDropdown($event)"
+          [id]="txmEventDropdownId"
+          [open]="txmEventDropdownId === openedDropdownId"
+          [trigger]="txmEventDropdownTrigger"
+          [float]="'right'"
+        >
           <p><strong>TXM Event</strong></p>
-          <mat-selection-list [multiple]="false"
-                              (selectionChange)="changeDefaultTxmEvent($event)">
-            <mat-list-option *ngFor="let txmEvent of txmEvents.events"
-                             [value]="txmEvent.id"
-                             [selected]="defaultTxmEvent.id == txmEvent.id">
-              {{txmEvent.name}}
-              <strong *ngIf="txmEvent.state == txmEventState.Closed">
-                (closed)
-              </strong>
+          <mat-selection-list [multiple]="false" (selectionChange)="changeDefaultTxmEvent($event)">
+            <mat-list-option
+              *ngFor="let txmEvent of txmEvents.events"
+              [value]="txmEvent.id"
+              [selected]="defaultTxmEvent.id == txmEvent.id"
+            >
+              {{ txmEvent.name }}
+              <strong *ngIf="txmEvent.state == txmEventState.Closed"> (closed) </strong>
             </mat-list-option>
           </mat-selection-list>
-
         </app-dropdown>
       </ng-template>
 
@@ -58,9 +59,11 @@
     </ul>
   </div>
 
-  <div class="download"
-       [class.hidden]="downloadMatchingStatus === uploadDownloadStatus.hidden"
-       [class.disabled]="downloadMatchingStatus === uploadDownloadStatus.disabled">
+  <div
+    class="download"
+    [class.hidden]="downloadMatchingStatus === uploadDownloadStatus.hidden"
+    [class.disabled]="downloadMatchingStatus === uploadDownloadStatus.disabled"
+  >
     <button (click)="handleDownloadMatchingClick()">
       Generate report
       <mat-icon *ngIf="downloadMatchingStatus !== uploadDownloadStatus.loading" [inline]="true">get_app</mat-icon>
@@ -68,9 +71,11 @@
     </button>
   </div>
 
-  <div class="download"
-       [class.hidden]="downloadPatientsStatus === uploadDownloadStatus.hidden"
-       [class.disabled]="downloadPatientsStatus === uploadDownloadStatus.disabled">
+  <div
+    class="download"
+    [class.hidden]="downloadPatientsStatus === uploadDownloadStatus.hidden"
+    [class.disabled]="downloadPatientsStatus === uploadDownloadStatus.disabled"
+  >
     <button (click)="handleDownloadPatientsClick()">
       Export patients
       <mat-icon *ngIf="downloadPatientsStatus !== uploadDownloadStatus.loading" [inline]="true">get_app</mat-icon>
@@ -83,11 +88,13 @@
       <button #userDropdownTrigger (click)="openDropdown(userDropdownId)">
         <fa-icon [icon]="userIcon"></fa-icon>
       </button>
-      <app-dropdown (clickedOutside)="closeDropdown($event)"
-                    [id]="userDropdownId"
-                    [open]="userDropdownId === openedDropdownId"
-                    [trigger]="userDropdownTrigger">
-        <p>{{user.email}}</p>
+      <app-dropdown
+        (clickedOutside)="closeDropdown($event)"
+        [id]="userDropdownId"
+        [open]="userDropdownId === openedDropdownId"
+        [trigger]="userDropdownTrigger"
+      >
+        <p>{{ user.email }}</p>
         <app-button (click)="logOut()" size="sm">Log out</app-button>
       </app-dropdown>
     </div>
@@ -95,11 +102,13 @@
       <button #infoDropdownTrigger (click)="openDropdown(infoDropdownId)">
         <fa-icon [icon]="infoIcon"></fa-icon>
       </button>
-      <app-dropdown (clickedOutside)="closeDropdown($event)"
-                    [id]="infoDropdownId"
-                    [open]="infoDropdownId === openedDropdownId"
-                    [trigger]="infoDropdownTrigger">
-        <p>Not working? Questions?<br>Call +420 723 927 536.</p>
+      <app-dropdown
+        (clickedOutside)="closeDropdown($event)"
+        [id]="infoDropdownId"
+        [open]="infoDropdownId === openedDropdownId"
+        [trigger]="infoDropdownTrigger"
+      >
+        <p>Not working? Questions?<br />Call +420 723 927 536.</p>
         <div class="pdf-link">
           <a href="assets/user_guide.pdf" target="_blank">User manual</a>
         </div>

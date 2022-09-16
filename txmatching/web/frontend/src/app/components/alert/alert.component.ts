@@ -1,33 +1,29 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Alert, fadeDurationMs } from '@app/model/Alert';
-import { Subscription } from 'rxjs';
-import { NavigationStart, Router } from '@angular/router';
-import { AlertService } from '@app/services/alert/alert.service';
-import { AlertType } from '@app/model/enums/AlertType';
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Alert, fadeDurationMs } from "@app/model/Alert";
+import { Subscription } from "rxjs";
+import { NavigationStart, Router } from "@angular/router";
+import { AlertService } from "@app/services/alert/alert.service";
+import { AlertType } from "@app/model/enums/AlertType";
 import Timeout = NodeJS.Timeout;
 
 @Component({
-  selector: 'app-alert',
-  templateUrl: './alert.component.html',
-  styleUrls: ['./alert.component.scss']
+  selector: "app-alert",
+  templateUrl: "./alert.component.html",
+  styleUrls: ["./alert.component.scss"],
 })
 export class AlertComponent implements OnInit, OnDestroy {
-
   private _alertSubscription?: Subscription;
   private _routeSubscription?: Subscription;
   private _timeouts: Map<string, Timeout> = new Map<string, Timeout>(); // timeout for each alert id
 
-  @Input() id: string = 'default-alert';
+  @Input() id: string = "default-alert";
   @Input() fade: boolean = true;
   public alerts: Alert[] = [];
 
-  constructor(private _router: Router,
-              private _alertService: AlertService) {
-  }
+  constructor(private _router: Router, private _alertService: AlertService) {}
 
   ngOnInit(): void {
-    this._alertSubscription = this._alertService.onAlert(this.id)
-    .subscribe(alert => this._showAlert(alert));
+    this._alertSubscription = this._alertService.onAlert(this.id).subscribe((alert) => this._showAlert(alert));
   }
 
   ngOnDestroy(): void {
@@ -46,21 +42,21 @@ export class AlertComponent implements OnInit, OnDestroy {
     }
 
     // remove alert
-    this.alerts = this.alerts.filter(x => x !== alert);
+    this.alerts = this.alerts.filter((x) => x !== alert);
   }
 
   public getClass(alert: Alert): string {
     if (!alert) {
-      return '';
+      return "";
     }
 
-    const classes = ['alert', 'alert-dismissable'];
+    const classes = ["alert", "alert-dismissable"];
 
     const alertTypeClass = {
-      [AlertType.Success]: 'alert alert-success',
-      [AlertType.Error]: 'alert alert-danger',
-      [AlertType.Info]: 'alert alert-info',
-      [AlertType.Warning]: 'alert alert-warning'
+      [AlertType.Success]: "alert alert-success",
+      [AlertType.Error]: "alert alert-danger",
+      [AlertType.Info]: "alert alert-info",
+      [AlertType.Warning]: "alert alert-warning",
     };
 
     if (alert.type !== undefined) {
@@ -68,10 +64,10 @@ export class AlertComponent implements OnInit, OnDestroy {
     }
 
     if (alert.fade) {
-      classes.push('fade');
+      classes.push("fade");
     }
 
-    return classes.join(' ');
+    return classes.join(" ");
   }
 
   public onMouseEnter(alert: Alert): void {

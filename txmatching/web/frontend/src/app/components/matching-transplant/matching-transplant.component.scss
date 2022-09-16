@@ -37,14 +37,15 @@
     margin-left: 10px;
   }
 
-  .patient-info, .patient-note {
+  .patient-info,
+  .patient-note {
     margin-top: 2px;
     font-size: 12px;
     font-weight: $font-weight;
 
     span + span {
       &::before {
-        content: '●';
+        content: "●";
         margin: 0 5px;
       }
     }
@@ -63,7 +64,6 @@
   }
 
   tr {
-
     &:not(:last-child) {
       border-bottom: 1px solid $border-color;
     }

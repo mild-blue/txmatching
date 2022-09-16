@@ -1,4 +1,4 @@
 export enum TemplatePopupStyle {
-  FullSize = 'full-size',
-  HalfSize = 'half-size'
+  FullSize = "full-size",
+  HalfSize = "half-size",
 }

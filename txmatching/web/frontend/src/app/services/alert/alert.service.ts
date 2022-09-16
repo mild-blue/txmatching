@@ -1,21 +1,20 @@
-import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { Alert } from '@app/model/Alert';
-import { filter } from 'rxjs/operators';
-import { AlertType } from '@app/model/enums/AlertType';
-import { ParsingIssue } from '@app/model/ParsingIssue';
-import { ParsingIssuePublic } from '@app/model/ParsingIssuePublic';
+import { Injectable } from "@angular/core";
+import { Observable, Subject } from "rxjs";
+import { Alert } from "@app/model/Alert";
+import { filter } from "rxjs/operators";
+import { AlertType } from "@app/model/enums/AlertType";
+import { ParsingIssue } from "@app/model/ParsingIssue";
+import { ParsingIssuePublic } from "@app/model/ParsingIssuePublic";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AlertService {
-
   private _subject: Subject<Alert> = new Subject<Alert>();
-  private _defaultId: string = 'default-alert';
+  private _defaultId: string = "default-alert";
 
   public onAlert(id = this._defaultId): Observable<Alert> {
-    return this._subject.asObservable().pipe(filter(x => x && x.id === id));
+    return this._subject.asObservable().pipe(filter((x) => x && x.id === id));
   }
 
   public success(message: string, actionLabel?: string, action?: Function, fadeAutomatically?: boolean): void {
@@ -35,15 +34,15 @@ export class AlertService {
   }
 
   public infoWithParsingIssues(message: string, parsingIssues: ParsingIssuePublic[]): void {
-    const parsingIssuesStr = parsingIssues.map(
-      (parsingIssue) => {
+    const parsingIssuesStr = parsingIssues
+      .map((parsingIssue) => {
         if (parsingIssue.hlaCodeOrGroup != null) {
           return `<strong>${parsingIssue.hlaCodeOrGroup}</strong>: ${parsingIssue.message}`;
         } else {
           return `${parsingIssue.message}`;
         }
-      }
-    ).join('<br>');
+      })
+      .join("<br>");
     this.info(`${message}<br><br>${parsingIssuesStr}`);
   }
 

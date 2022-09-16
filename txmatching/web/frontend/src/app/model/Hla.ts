@@ -1,5 +1,5 @@
-import { AntigenMatchType } from '@app/model/enums/AntigenMatchType';
-import { AntibodyMatchType } from '@app/model/enums/AntibodyMatchType';
+import { AntigenMatchType } from "@app/model/enums/AntigenMatchType";
+import { AntibodyMatchType } from "@app/model/enums/AntibodyMatchType";
 
 export interface HlaRaw {
   rawCode: string;
@@ -17,11 +17,9 @@ export interface Hla extends HlaRaw {
   code: HlaCode;
 }
 
-export interface Antigen extends Hla {
-}
+export interface Antigen extends Hla {}
 
-export interface AntigenRaw extends HlaRaw {
-}
+export interface AntigenRaw extends HlaRaw {}
 
 export interface Antibody extends Hla {
   mfi: number;
@@ -51,8 +49,7 @@ export interface DetailedScorePerGroup {
   groupCompatibilityIndex: number;
 }
 
-export interface HlaMatch {
-}
+export interface HlaMatch {}
 
 export interface AntigenMatch extends HlaMatch {
   hlaType: Antigen;

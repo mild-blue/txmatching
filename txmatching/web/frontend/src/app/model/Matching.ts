@@ -1,5 +1,5 @@
-import { ListItem } from '@app/components/list-item/list-item.interface';
-import { Round } from '@app/model/Round';
+import { ListItem } from "@app/components/list-item/list-item.interface";
+import { Round } from "@app/model/Round";
 
 export interface CalculatedMatchings {
   calculatedMatchings: Matching[];

@@ -1,11 +1,13 @@
-<app-header [user]="user"
-            [downloadMatchingStatus]="downloadMatchingStatus"
-            [downloadPatientsStatus]="downloadPatientsStatus"
-            (downloadPatientsAction)="downloadPatientsXlsxReport()"
-            [txmEvents]="txmEvents"
-            [defaultTxmEvent]="defaultTxmEvent"
-            (defaultTxmEventSelected)="setDefaultTxmEvent($event)"
-            [loading]="loading"></app-header>
+<app-header
+  [user]="user"
+  [downloadMatchingStatus]="downloadMatchingStatus"
+  [downloadPatientsStatus]="downloadPatientsStatus"
+  (downloadPatientsAction)="downloadPatientsXlsxReport()"
+  [txmEvents]="txmEvents"
+  [defaultTxmEvent]="defaultTxmEvent"
+  (defaultTxmEventSelected)="setDefaultTxmEvent($event)"
+  [loading]="loading"
+></app-header>
 
 <section class="patients">
   <app-container>
@@ -13,16 +15,18 @@
       <div class="patients__title">
         <h1>
           Patients
-          <app-count [count]="donorsCount + recipientCount"
-                     matTooltip="Donors: {{donorsCount}}, Recipients: {{recipientCount}}"
-                     matTooltipPosition="right">
+          <app-count
+            [count]="donorsCount + recipientCount"
+            matTooltip="Donors: {{ donorsCount }}, Recipients: {{ recipientCount }}"
+            matTooltipPosition="right"
+          >
           </app-count>
         </h1>
 
         <div class="header-description" *ngIf="!loading">
           Showing patients for
-          {{getConfigId === undefined || isCurrentConfigDefault ? 'default ' : ''}}
-          {{getConfigId !== undefined ? 'configuration with ID ' + getConfigId : 'configuration'}}.
+          {{ getConfigId === undefined || isCurrentConfigDefault ? "default " : "" }}
+          {{ getConfigId !== undefined ? "configuration with ID " + getConfigId : "configuration" }}.
         </div>
       </div>
       <app-button (click)="togglePatientPopup()" variant="success" size="sm" *ngIf="canModifyPatients">
@@ -32,22 +36,26 @@
     </div>
   </app-container>
 
-  <app-template-popup [isOpened]="patientPopupOpened"
-                      [matTooltip]="'Add new patient pair'"
-                      (wasClosed)="togglePatientPopup()">
-    <app-add-new-patient *ngIf="patientPopupOpened" [defaultTxmEvent]="defaultTxmEvent" (addPatientsClicked)="addPatientPair($event)"></app-add-new-patient>
+  <app-template-popup [isOpened]="patientPopupOpened" (wasClosed)="togglePatientPopup()">
+    <app-add-new-patient
+      *ngIf="patientPopupOpened"
+      [defaultTxmEvent]="defaultTxmEvent"
+      (addPatientsClicked)="addPatientPair($event)"
+    ></app-add-new-patient>
   </app-template-popup>
 
   <app-content>
     <h3 *ngIf="!loading && !items.length">No patients were found.</h3>
-    <app-item-list *ngIf="!loading && items.length"
-                   [items]="items"
-                   [active]="activeItem"
-                   [configuration]="configuration"
-                   [patients]="patients"
-                   [saveLastViewedItem]="true"
-                   [useInfiniteScroll]="false"
-                   [defaultTxmEvent]="defaultTxmEvent"></app-item-list>
+    <app-item-list
+      *ngIf="!loading && items.length"
+      [items]="items"
+      [active]="activeItem"
+      [configuration]="configuration"
+      [patients]="patients"
+      [saveLastViewedItem]="true"
+      [useInfiniteScroll]="false"
+      [defaultTxmEvent]="defaultTxmEvent"
+    ></app-item-list>
   </app-content>
 </section>
 

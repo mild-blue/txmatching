@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ParsingIssueConfirmationComponent } from './parsing-issue-confirmation.compontent';
+import { ParsingIssueConfirmationComponent } from "./parsing-issue-confirmation.compontent";
 
-describe('ParsingIssueConfirmationComponent', () => {
+describe("ParsingIssueConfirmationComponent", () => {
   let component: ParsingIssueConfirmationComponent;
   let fixture: ComponentFixture<ParsingIssueConfirmationComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ParsingIssueConfirmationComponent ]
-    })
-    .compileComponents();
+      declarations: [ParsingIssueConfirmationComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('ParsingIssueConfirmationComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

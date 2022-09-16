@@ -1,5 +1,5 @@
-import { ParsingIssueGenerated } from '../generated'; 
-import { ParsingIssue } from '../model/ParsingIssue';
+import { ParsingIssueGenerated } from "../generated";
+import { ParsingIssue } from "../model/ParsingIssue";
 
 export const parseParsingIssue = (data: ParsingIssueGenerated): ParsingIssue => {
   return {
@@ -11,6 +11,6 @@ export const parseParsingIssue = (data: ParsingIssueGenerated): ParsingIssue => 
     message: data.message,
     parsingIssueDetail: data.parsing_issue_detail,
     recipientId: data.recipient_id,
-    txmEventId: data.txm_event_id
+    txmEventId: data.txm_event_id,
   };
 };

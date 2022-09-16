@@ -1,4 +1,4 @@
-<div class="popup {{style}}" [class.open]="isOpened" cdk-scrollable #popup>
+<div class="popup {{ style }}" [class.open]="isOpened" cdk-scrollable #popup>
   <div class="popup__header">
     <h1>{{ title }}</h1>
     <button (click)="close()">
@@ -9,5 +9,4 @@
   <div class="popup__content">
     <ng-content></ng-content>
   </div>
-
 </div>

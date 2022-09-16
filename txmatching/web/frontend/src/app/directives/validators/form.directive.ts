@@ -1,9 +1,17 @@
-import { AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn, NgModel, FormGroup } from '@angular/forms';
-import { Patient } from '@app/model/Patient';
-import { ErrorStateMatcher } from '@angular/material/core';
-import { Hla } from '@app/model/Hla';
-import { ENTER, SPACE } from '@angular/cdk/keycodes';
-import { PatientEditable } from '@app/model/PatientEditable';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroupDirective,
+  NgForm,
+  ValidatorFn,
+  NgModel,
+  FormGroup,
+} from "@angular/forms";
+import { Patient } from "@app/model/Patient";
+import { ErrorStateMatcher } from "@angular/material/core";
+import { Hla } from "@app/model/Hla";
+import { ENTER, SPACE } from "@angular/cdk/keycodes";
+import { PatientEditable } from "@app/model/PatientEditable";
 
 export const separatorKeysCodes: number[] = [ENTER, SPACE];
 
@@ -45,29 +53,28 @@ export function patientFullTextSearch(patients: Patient[], searchPhrase: string)
   const filterValue = searchPhrase.toLowerCase();
   const searchPattern = new RegExp(`(?=.*${filterValue})`);
 
-  return patients.filter(patient => patient.medicalId.toLocaleLowerCase().match(searchPattern));
+  return patients.filter((patient) => patient.medicalId.toLocaleLowerCase().match(searchPattern));
 }
 
 export function hlaFullTextSearch(antibodies: Hla[], searchPhrase: string): Hla[] {
   const filterValue = searchPhrase.toLowerCase();
   const searchPattern = new RegExp(`(?=.*${filterValue})`);
 
-  return antibodies.filter(a => a.code?.displayCode.toLocaleLowerCase().match(searchPattern));
+  return antibodies.filter((a) => a.code?.displayCode.toLocaleLowerCase().match(searchPattern));
 }
 
 export function countryFullTextSearch(countries: string[], searchPhrase: string): string[] {
   const filterValue = searchPhrase.toLowerCase();
   const searchPattern = new RegExp(`(?=.*${filterValue})`);
 
-  return countries.filter(c => c.toLocaleLowerCase().match(searchPattern));
+  return countries.filter((c) => c.toLocaleLowerCase().match(searchPattern));
 }
 
 export function formatYearOfBirthForPatient(inputValue: NgModel, patient: PatientEditable): void {
   formatNumberForPatient(inputValue, patient);
 }
 
-export function formatNumberForPatient(
-  inputValue: NgModel, patient: PatientEditable): number | undefined {
+export function formatNumberForPatient(inputValue: NgModel, patient: PatientEditable): number | undefined {
   let newValue: number | undefined;
   if (!inputValue.value) {
     newValue = undefined;
@@ -76,13 +83,13 @@ export function formatNumberForPatient(
   }
 
   switch (inputValue.name) {
-    case 'height':
+    case "height":
       patient.height = newValue;
       break;
-    case 'weight':
+    case "weight":
       patient.weight = newValue;
       break;
-    case 'yearOfBirth':
+    case "yearOfBirth":
       patient.yearOfBirth = newValue;
       break;
   }

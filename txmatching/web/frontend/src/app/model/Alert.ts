@@ -1,5 +1,5 @@
-import * as uuid from 'uuid';
-import { AlertType } from '@app/model/enums/AlertType';
+import * as uuid from "uuid";
+import { AlertType } from "@app/model/enums/AlertType";
 
 export class Alert {
   uuid: string;

@@ -1,25 +1,23 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { DecodedToken, User } from '@app/model/User';
-import { environment } from '@environments/environment';
-import { first, map } from 'rxjs/operators';
-import { AuthResponse } from '@app/services/auth/auth.interface';
-import jwt_decode from 'jwt-decode';
-import { Router } from '@angular/router';
-import { UserTokenType } from '@app/model/enums/UserTokenType';
-import { ResetPasswordGenerated, SuccessGenerated } from '@app/generated';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Observable } from "rxjs";
+import { HttpClient } from "@angular/common/http";
+import { DecodedToken, User } from "@app/model/User";
+import { environment } from "@environments/environment";
+import { first, map } from "rxjs/operators";
+import { AuthResponse } from "@app/services/auth/auth.interface";
+import jwt_decode from "jwt-decode";
+import { Router } from "@angular/router";
+import { UserTokenType } from "@app/model/enums/UserTokenType";
+import { ResetPasswordGenerated, SuccessGenerated } from "@app/generated";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AuthService {
-
   private _currentUserSubject: BehaviorSubject<User | undefined> = new BehaviorSubject<User | undefined>(undefined);
   public currentUser: Observable<User | undefined> = this._currentUserSubject.asObservable();
 
-  constructor(private _http: HttpClient,
-              private _router: Router) {
+  constructor(private _http: HttpClient, private _router: Router) {
     this._setCurrentUser();
   }
 
@@ -36,21 +34,18 @@ export class AuthService {
     }
 
     // check if token is valid
-    return token.type === UserTokenType.ACCESS && token.exp > (Date.now() / 1000);
+    return token.type === UserTokenType.ACCESS && token.exp > Date.now() / 1000;
   }
 
   public login(email: string, password: string): Observable<User> {
-    return this._http.post(
-      `${environment.apiUrl}/user/login`,
-      { email, password }
-    ).pipe(
+    return this._http.post(`${environment.apiUrl}/user/login`, { email, password }).pipe(
       map((r: Object) => {
         const response = r as AuthResponse;
         const token = response.auth_token;
         const decoded = jwt_decode(token) as DecodedToken;
         const user: User = { email, token, decoded };
 
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify(user));
         this._currentUserSubject.next(user);
 
         return user;
@@ -59,20 +54,17 @@ export class AuthService {
   }
 
   public verify(otp: string): Observable<User> {
-    return this._http.post(
-      `${environment.apiUrl}/user/otp`,
-      { otp }
-    ).pipe(
+    return this._http.post(`${environment.apiUrl}/user/otp`, { otp }).pipe(
       map((r: Object) => {
         const response = r as AuthResponse;
         const token = response.auth_token;
         if (!token) {
-          throw new Error('No access token was present in response');
+          throw new Error("No access token was present in response");
         }
 
         const updatedUser = this._updateUserToken(token);
         if (!updatedUser) {
-          throw new Error('No user was found');
+          throw new Error("No user was found");
         }
 
         return updatedUser;
@@ -81,27 +73,25 @@ export class AuthService {
   }
 
   public logout(): void {
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
     this._currentUserSubject.next(undefined);
-    this._router.navigate(['/login']);
+    this._router.navigate(["/login"]);
   }
 
   public resetPassword(token: string, password: string): Observable<boolean> {
     const payload: ResetPasswordGenerated = {
-      token, password
+      token,
+      password,
     };
 
-    return this._http.put<SuccessGenerated>(
-      `${environment.apiUrl}/user/reset-password`,
-      payload
-    ).pipe(
+    return this._http.put<SuccessGenerated>(`${environment.apiUrl}/user/reset-password`, payload).pipe(
       first(),
-      map(_ => _.success)
+      map((_) => _.success)
     );
   }
 
   private _setCurrentUser(): void {
-    const lsUser = localStorage.getItem('user');
+    const lsUser = localStorage.getItem("user");
     if (lsUser) {
       this._currentUserSubject.next(JSON.parse(lsUser));
       this.currentUser = this._currentUserSubject.asObservable();
@@ -117,7 +107,7 @@ export class AuthService {
     user.token = token;
     user.decoded = jwt_decode(token) as DecodedToken;
 
-    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem("user", JSON.stringify(user));
     this._currentUserSubject.next(user);
 
     return user;

@@ -1,27 +1,25 @@
 <div class="login">
-
   <div class="login-content">
     <app-logo></app-logo>
 
     <div class="login-form">
       <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
-        <label [class.error]="(submitted || f.email.value) && f.email.invalid"
-               [class.success]="f.email.valid">
+        <label [class.error]="(submitted || f.email.value) && f.email.invalid" [class.success]="f.email.valid">
           <span>E-mail</span>
-          <input formControlName="email" type="email">
+          <input formControlName="email" type="email" />
         </label>
 
-        <label [class.error]="(submitted || f.password.value) && f.password.invalid"
-               [class.success]="f.password.valid">
+        <label [class.error]="(submitted || f.password.value) && f.password.invalid" [class.success]="f.password.valid">
           <span>Password</span>
-          <input formControlName="password" type="password">
+          <input formControlName="password" type="password" />
         </label>
 
         <app-button type="submit" [loading]="loading">Submit</app-button>
       </form>
     </div>
   </div>
-  <div class="info-text" *ngIf="showInfoText">Contact us for access using
+  <div class="info-text" *ngIf="showInfoText">
+    Contact us for access using
     <a href="mailto:txmatching@mild.blue?subject=TXMatching Access Request">txmatching@mild.blue</a>
   </div>
 </div>

@@ -1,10 +1,15 @@
-<div [style.background-position.%]="percentage(score, maxScore)"
-     [class.bad-matching]="score === -1"
-     [class.empty]="!showScore"
-     class="indicator">
-  <div *ngIf="showScore" class="score"
-       matTooltip="Score: {{score != null ? score : '-'}}/{{maxScore ? maxScore : '-'}}">
+<div
+  [style.background-position.%]="percentage(score, maxScore)"
+  [class.bad-matching]="score === -1"
+  [class.empty]="!showScore"
+  class="indicator"
+>
+  <div
+    *ngIf="showScore"
+    class="score"
+    matTooltip="Score: {{ score != null ? score : '-' }}/{{ maxScore ? maxScore : '-' }}"
+  >
     <span>score</span>
-    {{score != null ? score : "-"}}
+    {{ score != null ? score : "-" }}
   </div>
 </div>

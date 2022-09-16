@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ParsingIssueConfirmationWarningComponent } from './parsing-issue-confirmation-warning.compontent';
+import { ParsingIssueConfirmationWarningComponent } from "./parsing-issue-confirmation-warning.compontent";
 
-describe('ParsingIssueConfirmationWarningComponent', () => {
+describe("ParsingIssueConfirmationWarningComponent", () => {
   let component: ParsingIssueConfirmationWarningComponent;
   let fixture: ComponentFixture<ParsingIssueConfirmationWarningComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ParsingIssueConfirmationWarningComponent ]
-    })
-    .compileComponents();
+      declarations: [ParsingIssueConfirmationWarningComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('ParsingIssueConfirmationWarningComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

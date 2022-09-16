@@ -1,83 +1,87 @@
-<div *ngIf="configuration && configForm"
-     class="configuration">
-
+<div *ngIf="configuration && configForm" class="configuration">
   <form [formGroup]="configForm">
-
     <div class="config-form">
-
       <div class="configuration__box toggles">
-
-        <mat-slide-toggle *ngIf="configuration.require_compatible_blood_group !== undefined"
-                          formControlName="require_compatible_blood_group"
-                          [checked]="configuration.require_compatible_blood_group">
+        <mat-slide-toggle
+          *ngIf="configuration.require_compatible_blood_group !== undefined"
+          formControlName="require_compatible_blood_group"
+          [checked]="configuration.require_compatible_blood_group"
+        >
           Require compatible blood group
         </mat-slide-toggle>
 
-        <mat-slide-toggle *ngIf="configuration.require_better_match_in_compatibility_index !== undefined"
-                          formControlName="require_better_match_in_compatibility_index"
-                          [checked]="configuration.require_better_match_in_compatibility_index">
+        <mat-slide-toggle
+          *ngIf="configuration.require_better_match_in_compatibility_index !== undefined"
+          formControlName="require_better_match_in_compatibility_index"
+          [checked]="configuration.require_better_match_in_compatibility_index"
+        >
           Require new donor having better CI match than original donor
         </mat-slide-toggle>
 
-        <mat-slide-toggle *ngIf="configuration.require_better_match_in_compatibility_index_or_blood_group !== undefined"
-                          formControlName="require_better_match_in_compatibility_index_or_blood_group"
-                          [checked]="configuration.require_better_match_in_compatibility_index_or_blood_group">
+        <mat-slide-toggle
+          *ngIf="configuration.require_better_match_in_compatibility_index_or_blood_group !== undefined"
+          formControlName="require_better_match_in_compatibility_index_or_blood_group"
+          [checked]="configuration.require_better_match_in_compatibility_index_or_blood_group"
+        >
           Require new donor having better CI match than original donor or blood group match
         </mat-slide-toggle>
       </div>
 
       <div class="configuration__box inputs">
-
         <mat-form-field *ngIf="configuration.max_matchings_to_show_to_viewer !== undefined">
           <mat-label>Maximum matchings to show to viewer</mat-label>
-          <input value="{{ configuration.max_matchings_to_show_to_viewer }}"
-                 formControlName="max_matchings_to_show_to_viewer"
-                 matInput type="number">
+          <input
+            value="{{ configuration.max_matchings_to_show_to_viewer }}"
+            formControlName="max_matchings_to_show_to_viewer"
+            matInput
+            type="number"
+          />
         </mat-form-field>
 
         <mat-form-field *ngIf="configuration.max_number_of_distinct_countries_in_round !== undefined">
           <mat-label>Max countries in round</mat-label>
-          <input value="{{ configuration.max_number_of_distinct_countries_in_round }}"
-                 formControlName="max_number_of_distinct_countries_in_round"
-                 matInput type="number">
+          <input
+            value="{{ configuration.max_number_of_distinct_countries_in_round }}"
+            formControlName="max_number_of_distinct_countries_in_round"
+            matInput
+            type="number"
+          />
         </mat-form-field>
 
         <mat-form-field *ngIf="configuration.max_debt_for_country !== undefined">
           <mat-label>Max country debt</mat-label>
-          <input value="{{ configuration.max_debt_for_country }}"
-                 formControlName="max_debt_for_country"
-                 matInput type="number">
+          <input
+            value="{{ configuration.max_debt_for_country }}"
+            formControlName="max_debt_for_country"
+            matInput
+            type="number"
+          />
         </mat-form-field>
 
         <mat-form-field *ngIf="configuration.max_debt_for_country_for_blood_group_zero !== undefined">
           <mat-label>Max country debt for blood group zero</mat-label>
-          <input value="{{ configuration.max_debt_for_country_for_blood_group_zero }}"
-                 formControlName="max_debt_for_country_for_blood_group_zero"
-                 matInput type="number">
+          <input
+            value="{{ configuration.max_debt_for_country_for_blood_group_zero }}"
+            formControlName="max_debt_for_country_for_blood_group_zero"
+            matInput
+            type="number"
+          />
         </mat-form-field>
-
       </div>
     </div>
 
     <ng-container *ngIf="patients !== undefined">
-      <app-configuration-countries [configuration]="configuration"
-                                   [patients]="patients"></app-configuration-countries>
+      <app-configuration-countries [configuration]="configuration" [patients]="patients"></app-configuration-countries>
 
-      <app-configuration-scores [configuration]="configuration"
-                                [patients]="patients"></app-configuration-scores>
+      <app-configuration-scores [configuration]="configuration" [patients]="patients"></app-configuration-scores>
 
-      <app-configuration-patients [configuration]="configuration"
-                                  [patients]="patients"></app-configuration-patients>
+      <app-configuration-patients [configuration]="configuration" [patients]="patients"></app-configuration-patients>
     </ng-container>
 
-    <h4 class="section-title">
-      Advanced Settings
-    </h4>
+    <h4 class="section-title">Advanced Settings</h4>
 
     <div class="config-form">
-
       <div class="configuration__box algorithm">
-
         <!--<div class="algorithm__header">
           <h4>Matching algorithm</h4>
           <div class="hint">Select solver and scorer for matching computation.</div>
@@ -87,11 +91,11 @@
           <mat-label>Scorer</mat-label>
           <mat-select formControlName="scorer_constructor_name">
             <mat-option *ngFor="let scorer of allScorers" [value]="scorer">
-              {{scorer}}
+              {{ scorer }}
             </mat-option>
           </mat-select>
           <mat-hint>
-            {{scorerNameToHint(configForm.value['scorer_constructor_name'])}}
+            {{ scorerNameToHint(configForm.value["scorer_constructor_name"]) }}
           </mat-hint>
         </mat-form-field>
 
@@ -99,110 +103,126 @@
           <mat-label>Allowed crossmatch types</mat-label>
           <mat-select formControlName="hla_crossmatch_level">
             <mat-option *ngFor="let hlaCrossmatchLevel of allHlaCrossmatchLevels" [value]="hlaCrossmatchLevel">
-              {{hlaCrossmatchLevel}}
+              {{ hlaCrossmatchLevel }}
             </mat-option>
           </mat-select>
           <mat-hint>
-            Virtual crossmatch level that is allowed to be present in the computed matchings. The resulting matchings and
-            transplants that contain allowed virtual crossmatch are indicated by red warning icon.
-            <br>
-            Virtual crossmatch on a certain level is reported if match is found for at least one
-            donor HLA type and recipient antibody. The matching antibodies for HLA type are found using a three step algorithm:
+            Virtual crossmatch level that is allowed to be present in the computed matchings. The resulting matchings
+            and transplants that contain allowed virtual crossmatch are indicated by red warning icon.
+            <br />
+            Virtual crossmatch on a certain level is reported if match is found for at least one donor HLA type and
+            recipient antibody. The matching antibodies for HLA type are found using a three step algorithm:
             <ol>
               <li>
-                If high resolution of the HLA type is known: Matching antibody is searched in recipient antibodies. In the case such antibody is found:
+                If high resolution of the HLA type is known: Matching antibody is searched in recipient antibodies. In
+                the case such antibody is found:
                 <ul>
-                  <li>
-                    HIGH_RES virtual crossmatch is reported if MFI >= cutoff
-                  </li>
-                  <li>
-                    the algorithm continues to next HLA_TYPE if MFI < cutoff
-                  </li>
+                  <li>HIGH_RES virtual crossmatch is reported if MFI >= cutoff</li>
+                  <li>the algorithm continues to next HLA_TYPE if MFI < cutoff</li>
                 </ul>
                 in the case matching antibody is not found or HLA type is not in high resolution proceed to 2.
               </li>
               <li>
-                If the split resolution of the HLA type is known: Matching HLA type is searched in recipient antibodies (transformed to split resolution). In case
-                some antibody with MFI > cutoff is found, virtual crossmatch on level SPLIT
-                is reported, otherwise we proceed to 3.
+                If the split resolution of the HLA type is known: Matching HLA type is searched in recipient antibodies
+                (transformed to split resolution). In case some antibody with MFI > cutoff is found, virtual crossmatch
+                on level SPLIT is reported, otherwise we proceed to 3.
               </li>
               <li>
-                Matching HLA type is searched in recipient antibodies (transformed to broad resolution). In case
-                some antibody with MFI > cutoff is found, virtual crossmatch on level BROAD
-                is reported.
+                Matching HLA type is searched in recipient antibodies (transformed to broad resolution). In case some
+                antibody with MFI > cutoff is found, virtual crossmatch on level BROAD is reported.
+              </li>
             </ol>
           </mat-hint>
         </mat-form-field>
       </div>
 
       <div class="configuration__box toggles">
-
-        <mat-slide-toggle *ngIf="configuration.use_binary_scoring !== undefined"
-                          formControlName="use_binary_scoring"
-                          [checked]="configuration.use_binary_scoring">
+        <mat-slide-toggle
+          *ngIf="configuration.use_binary_scoring !== undefined"
+          formControlName="use_binary_scoring"
+          [checked]="configuration.use_binary_scoring"
+        >
           Use binary scoring
         </mat-slide-toggle>
 
-        <mat-slide-toggle *ngIf="configuration.use_high_resolution !== undefined"
-                          formControlName="use_high_resolution"
-                          [checked]="configuration.use_high_resolution">
+        <mat-slide-toggle
+          *ngIf="configuration.use_high_resolution !== undefined"
+          formControlName="use_high_resolution"
+          [checked]="configuration.use_high_resolution"
+        >
           Use high resolution
         </mat-slide-toggle>
       </div>
 
       <div class="configuration__box inputs">
-
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Solver</mat-label>
           <mat-select formControlName="solver_constructor_name">
             <mat-option *ngFor="let solver of allSolvers" [value]="solver">
-              {{solver}}
+              {{ solver }}
             </mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field *ngIf="configuration.max_number_of_matchings !== undefined">
           <mat-label>Maximum number of matchings</mat-label>
-          <input value="{{ configuration.max_number_of_matchings }}"
-                 formControlName="max_number_of_matchings"
-                 matInput type="number">
+          <input
+            value="{{ configuration.max_number_of_matchings }}"
+            formControlName="max_number_of_matchings"
+            matInput
+            type="number"
+          />
         </mat-form-field>
 
         <mat-form-field *ngIf="configuration.max_cycle_length !== undefined">
           <mat-label>Max cycle length</mat-label>
-          <input value="{{ configuration.max_cycle_length }}"
-                 formControlName="max_cycle_length"
-                 matInput type="number">
+          <input
+            value="{{ configuration.max_cycle_length }}"
+            formControlName="max_cycle_length"
+            matInput
+            type="number"
+          />
         </mat-form-field>
 
         <mat-form-field *ngIf="configuration.max_sequence_length !== undefined">
           <mat-label>Max sequence length</mat-label>
-          <input value="{{ configuration.max_sequence_length }}"
-                 formControlName="max_sequence_length"
-                 matInput type="number">
+          <input
+            value="{{ configuration.max_sequence_length }}"
+            formControlName="max_sequence_length"
+            matInput
+            type="number"
+          />
         </mat-form-field>
 
         <mat-form-field *ngIf="configuration.minimum_total_score !== undefined">
           <mat-label>Minimum transplant score</mat-label>
-          <input value="{{ configuration.minimum_total_score }}"
-                 formControlName="minimum_total_score"
-                 matInput type="number">
+          <input
+            value="{{ configuration.minimum_total_score }}"
+            formControlName="minimum_total_score"
+            matInput
+            type="number"
+          />
         </mat-form-field>
 
         <mat-form-field *ngIf="configuration.blood_group_compatibility_bonus !== undefined">
           <mat-label>Compatible blood group bonus</mat-label>
-          <input value="{{ configuration.blood_group_compatibility_bonus }}"
-                 formControlName="blood_group_compatibility_bonus"
-                 matInput type="number">
+          <input
+            value="{{ configuration.blood_group_compatibility_bonus }}"
+            formControlName="blood_group_compatibility_bonus"
+            matInput
+            type="number"
+          />
         </mat-form-field>
 
         <mat-form-field *ngIf="configuration.max_number_of_dynamic_constrains_ilp_solver !== undefined">
           <mat-label>Max number of dynamic constraints in ILP solver</mat-label>
-          <input value="{{ configuration.max_number_of_dynamic_constrains_ilp_solver }}"
-                 formControlName="max_number_of_dynamic_constrains_ilp_solver"
-                 matInput type="number">
+          <input
+            value="{{ configuration.max_number_of_dynamic_constrains_ilp_solver }}"
+            formControlName="max_number_of_dynamic_constrains_ilp_solver"
+            matInput
+            type="number"
+          />
         </mat-form-field>
-
       </div>
     </div>
   </form>

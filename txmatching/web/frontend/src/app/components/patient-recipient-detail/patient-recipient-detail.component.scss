@@ -3,12 +3,14 @@
 .detail-recipient {
   padding: $padding-y calc(#{$padding-x} * 2);
 
-  h4, ::ng-deep h4 {
+  h4,
+  ::ng-deep h4 {
     color: $body-color;
     margin: 0;
   }
 
-  form, mat-form-field {
+  form,
+  mat-form-field {
     width: 100%;
     margin: $padding-y 0;
   }

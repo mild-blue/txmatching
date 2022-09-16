@@ -1,29 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { VersionService } from '@app/services/version/version.service';
-import { Version } from '@app/model/Version';
-import { EnvironmentType } from '@app/model/enums/EnvironmentType';
+import { Component, OnInit } from "@angular/core";
+import { VersionService } from "@app/services/version/version.service";
+import { Version } from "@app/model/Version";
+import { EnvironmentType } from "@app/model/enums/EnvironmentType";
 
 @Component({
-  selector: 'app-logo',
-  templateUrl: './logo.component.html',
-  styleUrls: ['./logo.component.scss']
+  selector: "app-logo",
+  templateUrl: "./logo.component.html",
+  styleUrls: ["./logo.component.scss"],
 })
 export class LogoComponent implements OnInit {
-
   private _version?: Version;
 
-  constructor(
-    private _versionService: VersionService
-  ) {
+  constructor(private _versionService: VersionService) {
     this._version = _versionService.getVersion();
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   public getVersionString(): string {
     if (!this._version) {
-      return '';
+      return "";
     }
 
     const e = this._version.environment;
@@ -40,8 +36,5 @@ export class LogoComponent implements OnInit {
       default:
         return `${v} (${e})`;
     }
-
   }
-
-
 }

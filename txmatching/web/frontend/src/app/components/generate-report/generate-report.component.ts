@@ -1,14 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ReportConfig } from '@app/components/generate-report/generate-report.interface';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { ReportConfig } from "@app/components/generate-report/generate-report.interface";
 
 @Component({
-  selector: 'app-generate-report',
-  templateUrl: './generate-report.component.html',
-  styleUrls: ['./generate-report.component.scss']
+  selector: "app-generate-report",
+  templateUrl: "./generate-report.component.html",
+  styleUrls: ["./generate-report.component.scss"],
 })
 export class GenerateReportComponent implements OnInit {
-
   @Input() loading: boolean = false;
   @Output() reportConfigSubmitted: EventEmitter<ReportConfig> = new EventEmitter<ReportConfig>();
 
@@ -17,12 +16,11 @@ export class GenerateReportComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder) {
     this.reportConfigForm = this._formBuilder.group({
       matchingsBelowChosen: [0, [Validators.required, Validators.min(0)]],
-      includePatientsSection: [false, Validators.required]
+      includePatientsSection: [false, Validators.required],
     });
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   public onSubmit() {
     if (!this.isValid) {
@@ -33,7 +31,7 @@ export class GenerateReportComponent implements OnInit {
 
     this.reportConfigSubmitted.emit({
       matchingsBelowChosen: matchingsBelowChosen.value,
-      includePatientsSection: includePatientsSection.value
+      includePatientsSection: includePatientsSection.value,
     });
   }
 

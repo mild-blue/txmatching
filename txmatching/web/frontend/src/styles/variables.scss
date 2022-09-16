@@ -9,14 +9,14 @@ $border-radius: 6px;
 $border-radius--wide: 40px;
 
 // BOX SHADOW
-$box-shadow-color: rgba($black, .1);
+$box-shadow-color: rgba($black, 0.1);
 $box-shadow-size: 3.2px 7.2px;
 $box-shadow--wide-size: 40px;
 $box-shadow: 0 3.2px 7.2px 0 $box-shadow-color;
 $box-shadow--wide: 0 0 $box-shadow--wide-size 0 $box-shadow-color;
 
 // FONT
-$font-family: 'Open Sans', sans-serif;
+$font-family: "Open Sans", sans-serif;
 $font-size: 16px;
 $font-weight: 300;
 $font-weight-bold: 600;

@@ -1,4 +1,4 @@
-import { CountryCodeGenerated, ScorerGenerated, SolverGenerated, HlaCrossmatchLevelGenerated } from '@app/generated';
+import { CountryCodeGenerated, ScorerGenerated, SolverGenerated, HlaCrossmatchLevelGenerated } from "@app/generated";
 
 export interface Configuration {
   use_high_resolution: boolean;

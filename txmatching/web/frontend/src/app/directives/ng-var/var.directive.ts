@@ -1,14 +1,11 @@
-import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
-import { VarDirectiveContext } from '@app/directives/ng-var/var.interface';
+import { Directive, Input, TemplateRef, ViewContainerRef } from "@angular/core";
+import { VarDirectiveContext } from "@app/directives/ng-var/var.interface";
 
 @Directive({
-  selector: '[ngVar]'
+  selector: "[ngVar]",
 })
 export class VarDirective {
-
-  constructor(private _vcRef: ViewContainerRef,
-              private _templateRef: TemplateRef<unknown>) {
-  }
+  constructor(private _vcRef: ViewContainerRef, private _templateRef: TemplateRef<unknown>) {}
 
   @Input()
   set ngVar(variable: unknown) {

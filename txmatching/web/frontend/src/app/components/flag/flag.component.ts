@@ -1,21 +1,19 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input } from "@angular/core";
 
 @Component({
-  selector: 'flag',
-  templateUrl: './flag.component.html',
-  styleUrls: ['./flag.component.scss']
+  selector: "flag",
+  templateUrl: "./flag.component.html",
+  styleUrls: ["./flag.component.scss"],
 })
 export class FlagComponent {
-
   @Input() countryCode?: string;
   public countryParts: string[] = [];
 
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit() {
     if (this.countryCode) {
-      this.countryParts = this.countryCode.split('_');
+      this.countryParts = this.countryCode.split("_");
     }
   }
 

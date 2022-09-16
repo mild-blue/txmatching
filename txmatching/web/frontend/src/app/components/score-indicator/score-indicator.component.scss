@@ -1,7 +1,14 @@
 @import "../../../styles/variables";
 
 .indicator {
-  background: linear-gradient(90deg, rgba(255, 164, 0, 1) 0%, rgba(255, 225, 76, 1) 15%, rgba(207, 231, 51, 1) 30%, rgba(152, 217, 97, 1) 75%, rgba(112, 196, 123, 1) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 164, 0, 1) 0%,
+    rgba(255, 225, 76, 1) 15%,
+    rgba(207, 231, 51, 1) 30%,
+    rgba(152, 217, 97, 1) 75%,
+    rgba(112, 196, 123, 1) 100%
+  );
   background-size: 100vw;
   position: absolute;
   right: 0;

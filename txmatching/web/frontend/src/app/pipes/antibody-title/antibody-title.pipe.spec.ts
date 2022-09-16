@@ -1,7 +1,7 @@
-import { AntibodyTitlePipe } from './antibody-title.pipe';
+import { AntibodyTitlePipe } from "./antibody-title.pipe";
 
-describe('AntibodyTitlePipe', () => {
-  it('create an instance', () => {
+describe("AntibodyTitlePipe", () => {
+  it("create an instance", () => {
     const pipe = new AntibodyTitlePipe();
     expect(pipe).toBeTruthy();
   });

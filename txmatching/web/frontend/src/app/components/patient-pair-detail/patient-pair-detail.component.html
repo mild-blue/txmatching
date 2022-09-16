@@ -1,31 +1,36 @@
 <div class="pair-detail">
-
   <div class="pair-detail__nav">
-    <app-tab-switch [tabs]="tabNames"
-                    [activeTab]="activeTab ? activeTab : ''"
-                    (tabClicked)="setActiveTab($event)"></app-tab-switch>
+    <app-tab-switch
+      [tabs]="tabNames"
+      [activeTab]="activeTab ? activeTab : ''"
+      (tabClicked)="setActiveTab($event)"
+    ></app-tab-switch>
   </div>
 
   <div *ngIf="item && item.d && item.r" [ngSwitch]="activeTab">
-    <div *ngSwitchCase="tabs.Overview"
-         class="pair-detail__pair">
-      <app-warning-overview [donor]="item.d"
-                            [recipient]="item.r"></app-warning-overview>
-      <app-matching-transplant [donor]="item.d"
-                               [recipient]="item.r"
-                               [isBloodCompatible]="item.d.compatibleBloodWithRelatedRecipient"
-                               [score]="item.d.scoreWithRelatedRecipient"
-                               [maxScore]="item.d.maxScoreWithRelatedRecipient"
-                               [detailedScorePerGroup]="item.d.detailedScoreWithRelatedRecipient"
-                               [configuration]="configuration"></app-matching-transplant>
+    <div *ngSwitchCase="tabs.Overview" class="pair-detail__pair">
+      <app-warning-overview [donor]="item.d" [recipient]="item.r"></app-warning-overview>
+      <app-matching-transplant
+        [donor]="item.d"
+        [recipient]="item.r"
+        [isBloodCompatible]="item.d.compatibleBloodWithRelatedRecipient"
+        [score]="item.d.scoreWithRelatedRecipient"
+        [maxScore]="item.d.maxScoreWithRelatedRecipient"
+        [detailedScorePerGroup]="item.d.detailedScoreWithRelatedRecipient"
+        [configuration]="configuration"
+      ></app-matching-transplant>
     </div>
-    <app-patient-detail-donor *ngSwitchCase="tabs.DonorSettings"
-                              [item]="item.d"
-                              [patients]="patients"
-                              [defaultTxmEvent]="defaultTxmEvent"></app-patient-detail-donor>
-    <app-patient-detail-recipient *ngSwitchCase="tabs.RecipientSettings"
-                                  [item]="item.r"
-                                  [patients]="patients"
-                                  [defaultTxmEvent]="defaultTxmEvent"></app-patient-detail-recipient>
+    <app-patient-detail-donor
+      *ngSwitchCase="tabs.DonorSettings"
+      [item]="item.d"
+      [patients]="patients"
+      [defaultTxmEvent]="defaultTxmEvent"
+    ></app-patient-detail-donor>
+    <app-patient-detail-recipient
+      *ngSwitchCase="tabs.RecipientSettings"
+      [item]="item.r"
+      [patients]="patients"
+      [defaultTxmEvent]="defaultTxmEvent"
+    ></app-patient-detail-recipient>
   </div>
 </div>

@@ -1,34 +1,34 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { Patient } from '@app/model/Patient';
-import { Configuration } from '@app/model/Configuration';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { patientFullTextSearch } from '@app/directives/validators/form.directive';
-import { PatientList } from '@app/model/PatientList';
+import { Component, ElementRef, Input, ViewChild } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { Patient } from "@app/model/Patient";
+import { Configuration } from "@app/model/Configuration";
+import { Observable } from "rxjs";
+import { map, startWith } from "rxjs/operators";
+import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
+import { patientFullTextSearch } from "@app/directives/validators/form.directive";
+import { PatientList } from "@app/model/PatientList";
 
 @Component({
-  selector: 'app-configuration-patients',
-  templateUrl: './configuration-patients.component.html',
-  styleUrls: ['./configuration-patients.component.scss']
+  selector: "app-configuration-patients",
+  templateUrl: "./configuration-patients.component.html",
+  styleUrls: ["./configuration-patients.component.scss"],
 })
 export class ConfigurationPatientsComponent {
   @Input() patients?: PatientList;
   @Input() configuration?: Configuration;
 
-  @ViewChild('patientInput') patientInput?: ElementRef<HTMLInputElement>;
+  @ViewChild("patientInput") patientInput?: ElementRef<HTMLInputElement>;
 
-  public formControl = new FormControl('');
+  public formControl = new FormControl("");
   public filteredPatients: Observable<Patient[]>;
 
   constructor() {
     this.filteredPatients = this.formControl.valueChanges.pipe(
-      startWith(''),
+      startWith(""),
       map((value: string | Patient) => {
-        return typeof value === 'string' ? value : value.medicalId;
+        return typeof value === "string" ? value : value.medicalId;
       }),
-      map(name => name ? patientFullTextSearch(this.availablePatients, name) : this.availablePatients.slice())
+      map((name) => (name ? patientFullTextSearch(this.availablePatients, name) : this.availablePatients.slice()))
     );
   }
 
@@ -37,7 +37,7 @@ export class ConfigurationPatientsComponent {
   }
 
   get availablePatients(): Patient[] {
-    return this.allPatients.filter(p => !this.selectedPatients.includes(p));
+    return this.allPatients.filter((p) => !this.selectedPatients.includes(p));
   }
 
   get selectedPatients(): Patient[] {
@@ -45,11 +45,11 @@ export class ConfigurationPatientsComponent {
       return [];
     }
     const requiredPatientsIds = this.configuration.required_patient_db_ids;
-    return this.allPatients.filter(p => requiredPatientsIds.includes(p.dbId));
+    return this.allPatients.filter((p) => requiredPatientsIds.includes(p.dbId));
   }
 
   public displayFn(user: Patient): string {
-    return user?.medicalId ?? '';
+    return user?.medicalId ?? "";
   }
 
   public add(event: MatAutocompleteSelectedEvent): void {
@@ -57,9 +57,9 @@ export class ConfigurationPatientsComponent {
     this.configuration?.required_patient_db_ids.push(patient.dbId);
 
     // Reset input
-    this.formControl.setValue('');
+    this.formControl.setValue("");
     if (this.patientInput) {
-      this.patientInput.nativeElement.value = '';
+      this.patientInput.nativeElement.value = "";
     }
   }
 

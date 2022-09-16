@@ -1,19 +1,19 @@
-import { RecipientGenerated, RecipientRequirementsGenerated, UpdatedRecipientGenerated } from '../generated';
-import { Recipient, RecipientRequirements, UpdatedRecipient } from '../model';
-import { parseBloodGroup, parsePatient, parseAllMessages } from './patient.parsers';
-import { parseAntibodies } from './hla.parsers';
-import { ListItem } from '@app/components/list-item/list-item.interface';
-import { PatientPairItemComponent } from '@app/components/patient-pair-item/patient-pair-item.component';
-import { PatientPairDetailComponent } from '@app/components/patient-pair-detail/patient-pair-detail.component';
-import { parseParsingIssue } from '@app/parsers/parsingIssue.parsers';
-import { parseParsingIssuePublic } from './parsingIssuePublic.parsers';
+import { RecipientGenerated, RecipientRequirementsGenerated, UpdatedRecipientGenerated } from "../generated";
+import { Recipient, RecipientRequirements, UpdatedRecipient } from "../model";
+import { parseBloodGroup, parsePatient, parseAllMessages } from "./patient.parsers";
+import { parseAntibodies } from "./hla.parsers";
+import { ListItem } from "@app/components/list-item/list-item.interface";
+import { PatientPairItemComponent } from "@app/components/patient-pair-item/patient-pair-item.component";
+import { PatientPairDetailComponent } from "@app/components/patient-pair-detail/patient-pair-detail.component";
+import { parseParsingIssue } from "@app/parsers/parsingIssue.parsers";
+import { parseParsingIssuePublic } from "./parsingIssuePublic.parsers";
 
 export const parseRecipient = (data: RecipientGenerated): Recipient => {
   const recipientListItem: ListItem = {
     index: 0,
     isActive: false,
     itemComponent: PatientPairItemComponent,
-    detailComponent: PatientPairDetailComponent
+    detailComponent: PatientPairDetailComponent,
   };
 
   return {
@@ -27,7 +27,7 @@ export const parseRecipient = (data: RecipientGenerated): Recipient => {
     previousTransplants: data.previous_transplants !== null ? data.previous_transplants : undefined,
     recipientRequirements: data.recipient_requirements && parseRecipientRequirements(data.recipient_requirements),
     relatedDonorDbIds: data.related_donors_db_ids,
-    allMessages: parseAllMessages(data.all_messages)
+    allMessages: parseAllMessages(data.all_messages),
   };
 };
 
@@ -41,7 +41,7 @@ export const parseRecipientRequirements = (data: RecipientRequirementsGenerated)
     max_donor_weight,
     min_donor_age,
     min_donor_height,
-    min_donor_weight
+    min_donor_weight,
   } = data;
 
   return {
@@ -53,7 +53,7 @@ export const parseRecipientRequirements = (data: RecipientRequirementsGenerated)
     maxDonorWeight: max_donor_weight ?? 0,
     minDonorAge: min_donor_age ?? 0,
     minDonorHeight: min_donor_height ?? 0,
-    minDonorWeight: min_donor_weight ?? 0
+    minDonorWeight: min_donor_weight ?? 0,
   };
 };
 
@@ -64,6 +64,6 @@ export const parseDate = (data: string): Date => {
 export const parseUpdatedRecipient = (data: UpdatedRecipientGenerated): UpdatedRecipient => {
   return {
     recipient: parseRecipient(data.recipient),
-    parsingIssues: data.parsing_issues.map(parseParsingIssuePublic)
+    parsingIssues: data.parsing_issues.map(parseParsingIssuePublic),
   };
 };

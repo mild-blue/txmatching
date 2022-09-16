@@ -1,7 +1,6 @@
 @import "../../../styles/variables";
 
 .matching-round {
-
   border-bottom: 1px solid $border-color;
   display: flex;
   padding: 5px 0;
@@ -54,9 +53,7 @@
 }
 
 :host {
-
   &:last-child {
-
     .matching-round {
       border-bottom: none;
     }

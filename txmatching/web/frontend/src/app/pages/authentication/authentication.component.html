@@ -1,7 +1,5 @@
 <div class="authentication">
-
   <div class="content">
-
     <button routerLink="/login">
       <mat-icon>keyboard_backspace</mat-icon>
       <span>Back to login</span>
@@ -13,11 +11,11 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <mat-form-field>
           <mat-label>Verification code</mat-label>
-          <input matInput type="text"
-                 placeholder="Enter a code from SMS"
-                 formControlName="input">
+          <input matInput type="text" placeholder="Enter a code from SMS" formControlName="input" />
         </mat-form-field>
-        <ng-container *ngTemplateOutlet="!success ? defaultButton : verifiedButton;context:{loading: loading}"></ng-container>
+        <ng-container
+          *ngTemplateOutlet="!success ? defaultButton : verifiedButton; context: { loading: loading }"
+        ></ng-container>
       </form>
     </div>
   </div>
@@ -26,17 +24,10 @@
 <app-alert></app-alert>
 
 <ng-template #defaultButton let-loading="loading">
-  <app-button type="submit"
-              [loading]="loading">
-    Verify
-  </app-button>
+  <app-button type="submit" [loading]="loading"> Verify </app-button>
 </ng-template>
 
 <ng-template #verifiedButton>
-  <app-button type="submit"
-              [variant]="'success'"
-              [success]="true">
-    Verified
-  </app-button>
+  <app-button type="submit" [variant]="'success'" [success]="true"> Verified </app-button>
   <p class="loading">Redirecting to homepage</p>
 </ng-template>

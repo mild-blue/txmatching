@@ -1,5 +1,4 @@
-<div *ngIf="donor" class="patient-pair patient-pair-{{style}}">
-
+<div *ngIf="donor" class="patient-pair patient-pair-{{ style }}">
   <div *ngIf="warningText" class="warning-pill-list">
     <app-warning-pill [generalWarning]="true" [tooltip]="warningText" warningType="error"></app-warning-pill>
   </div>
@@ -15,22 +14,21 @@
   <ng-template #template_donor>
     <patient [patient]="donor"></patient>
     <div class="donor-type-label">
-      {{ donor.donorType | donorTypeLabel}}
+      {{ donor.donorType | donorTypeLabel }}
     </div>
   </ng-template>
 
-  <div class="donor-type-label"
-       matTooltip="Patients are not included in matching calculations"
-       *ngIf="!donor.active">
+  <div class="donor-type-label" matTooltip="Patients are not included in matching calculations" *ngIf="!donor.active">
     inactive
   </div>
 
-  <div class="donor-type-label"
-       matTooltip="Patients are not included in matching calculations"
-       *ngIf="!donor.activeAndValidPair">
+  <div
+    class="donor-type-label"
+    matTooltip="Patients are not included in matching calculations"
+    *ngIf="!donor.activeAndValidPair"
+  >
     invalid
   </div>
 
   <app-incompatibility-pill *ngIf="!isBloodCompatible"></app-incompatibility-pill>
-
 </div>

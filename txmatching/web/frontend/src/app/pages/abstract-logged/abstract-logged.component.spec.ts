@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { AbstractLoggedComponent } from './abstract-logged.component';
+import { AbstractLoggedComponent } from "./abstract-logged.component";
 
-describe('AbstractLoggedComponent', () => {
+describe("AbstractLoggedComponent", () => {
   let component: AbstractLoggedComponent;
   let fixture: ComponentFixture<AbstractLoggedComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AbstractLoggedComponent ]
-    })
-    .compileComponents();
+      declarations: [AbstractLoggedComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('AbstractLoggedComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

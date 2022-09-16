@@ -1,7 +1,7 @@
-import { VarDirective } from './var.directive';
-import { TestBed } from '@angular/core/testing';
+import { VarDirective } from "./var.directive";
+import { TestBed } from "@angular/core/testing";
 
-describe('NgVarDirective', () => {
+describe("NgVarDirective", () => {
   let directive: VarDirective;
 
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('NgVarDirective', () => {
     directive = TestBed.inject(VarDirective);
   });
 
-  it('should create an instance', () => {
+  it("should create an instance", () => {
     expect(directive).toBeTruthy();
   });
 });

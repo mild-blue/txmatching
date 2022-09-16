@@ -1,4 +1,4 @@
-import { TxmEventStateGenerated } from '@app/generated';
+import { TxmEventStateGenerated } from "@app/generated";
 
 export interface TxmEvent {
   id: number;

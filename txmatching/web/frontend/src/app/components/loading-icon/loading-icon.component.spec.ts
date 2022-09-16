@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { LoadingIconComponent } from './loading-icon.component';
+import { LoadingIconComponent } from "./loading-icon.component";
 
-describe('LoadingIconComponent', () => {
+describe("LoadingIconComponent", () => {
   let component: LoadingIconComponent;
   let fixture: ComponentFixture<LoadingIconComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoadingIconComponent ]
-    })
-    .compileComponents();
+      declarations: [LoadingIconComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('LoadingIconComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

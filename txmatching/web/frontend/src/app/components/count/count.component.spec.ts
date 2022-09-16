@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { CountComponent } from './count.component';
+import { CountComponent } from "./count.component";
 
-describe('CountComponent', () => {
+describe("CountComponent", () => {
   let component: CountComponent;
   let fixture: ComponentFixture<CountComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [CountComponent]
-    })
-    .compileComponents();
+      declarations: [CountComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('CountComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });
