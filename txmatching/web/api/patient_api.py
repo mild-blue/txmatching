@@ -10,7 +10,8 @@ from flask_restx import Resource
 from txmatching.auth.auth_check import (require_role, require_valid_config_id,
                                         require_valid_txm_event_id)
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.exceptions import InvalidArgumentException
+from txmatching.auth.exceptions import InvalidArgumentException, InvalidOtpException, \
+    AuthenticationException, InvalidAuthCallException
 from txmatching.auth.operation_guards.country_guard import (
     get_user_default_country, guard_user_country_access_to_donor,
     guard_user_country_access_to_recipient, guard_user_has_access_to_country)
@@ -83,7 +84,10 @@ class AllPatients(Resource):
     )
     @patient_api.require_user_login()
     @patient_api.response_ok(PatientsJson, description='List of donors and list of recipients.')
-    @patient_api.response_errors()
+    @patient_api.response_errors(exceptions=[KeyError,
+                                             InvalidOtpException,
+                                             AuthenticationException,
+                                             InvalidAuthCallException])
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
@@ -101,7 +105,10 @@ class DonorRecipientPairs(Resource):
     @patient_api.require_user_login()
     @patient_api.request_body(DonorModelPairInJson)
     @patient_api.response_ok(PatientUploadSuccessJson, 'Added new donor (possibly with recipient)')
-    @patient_api.response_errors()
+    @patient_api.response_errors(exceptions=[KeyError,
+                                             InvalidOtpException,
+                                             AuthenticationException,
+                                             InvalidAuthCallException])
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):
@@ -139,7 +146,10 @@ class DonorRecipientPair(Resource):
     @patient_api.response_ok(
         description='Returns status code representing result of donor recipient pair object deletion.'
     )
-    @patient_api.response_errors()
+    @patient_api.response_errors(exceptions=[KeyError,
+                                             InvalidOtpException,
+                                             AuthenticationException,
+                                             InvalidAuthCallException])
     @patient_api.require_user_login()
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
@@ -162,7 +172,10 @@ class AlterRecipient(Resource):
     @patient_api.require_user_login()
     @patient_api.request_body(RecipientToUpdateJson)
     @patient_api.response_ok(UpdatedRecipientJsonOut, description='Updated recipient.')
-    @patient_api.response_errors()
+    @patient_api.response_errors(exceptions=[KeyError,
+                                             InvalidOtpException,
+                                             AuthenticationException,
+                                             InvalidAuthCallException])
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
@@ -186,7 +199,10 @@ class AlterDonor(Resource):
     @patient_api.require_user_login()
     @patient_api.request_body(DonorToUpdateJson)
     @patient_api.response_ok(UpdatedDonorJsonOut, description='Updated donor.')
-    @patient_api.response_errors()
+    @patient_api.response_errors(exceptions=[KeyError,
+                                             InvalidOtpException,
+                                             AuthenticationException,
+                                             InvalidAuthCallException])
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     @require_valid_config_id()
@@ -230,7 +246,10 @@ class AddPatientsFile(Resource):
                      }
                      )
     @patient_api.response_ok(PatientUploadSuccessJson, description='Success.')
-    @patient_api.response_errors()
+    @patient_api.response_errors(exceptions=[KeyError,
+                                             InvalidOtpException,
+                                             AuthenticationException,
+                                             InvalidAuthCallException])
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
@@ -272,7 +291,10 @@ class RecomputeParsing(Resource):
     )
     @patient_api.response_ok(PatientsRecomputeParsingSuccessJson,
                              description='Returns the recomputation statistics.')
-    @patient_api.response_errors()
+    @patient_api.response_errors(exceptions=[KeyError,
+                                             InvalidOtpException,
+                                             AuthenticationException,
+                                             InvalidAuthCallException])
     @require_role(UserRole.ADMIN)
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int):
@@ -295,7 +317,10 @@ class ConfirmWarning(Resource):
         description='Confirm a warning.'
     )
     @patient_api.response_ok(ParsingIssueJson, description='Issue confirmed successfully.')
-    @patient_api.response_errors()
+    @patient_api.response_errors(exceptions=[KeyError,
+                                             InvalidOtpException,
+                                             AuthenticationException,
+                                             InvalidAuthCallException])
     @patient_api.require_user_login()
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()
@@ -321,7 +346,10 @@ class UnconfirmWarning(Resource):
         description='Unconfirm a warning.'
     )
     @patient_api.response_ok(ParsingIssueJson, description='Issue unconfirmed successfully.')
-    @patient_api.response_errors()
+    @patient_api.response_errors(exceptions=[KeyError,
+                                             InvalidOtpException,
+                                             AuthenticationException,
+                                             InvalidAuthCallException])
     @patient_api.require_user_login()
     @require_user_edit_patients_access()
     @require_valid_txm_event_id()

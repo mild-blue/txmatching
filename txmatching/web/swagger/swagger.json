@@ -205,14 +205,14 @@
             },
             "post": {
                 "responses": {
-                    "409": {
-                        "description": "Non-unique patients provided.",
+                    "500": {
+                        "description": "Internal error.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
-                    "500": {
-                        "description": "Internal error.",
+                    "409": {
+                        "description": "Non-unique patients provided.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -367,14 +367,14 @@
             },
             "put": {
                 "responses": {
-                    "409": {
-                        "description": "Non-unique patients provided.",
+                    "500": {
+                        "description": "Internal error.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
-                    "500": {
-                        "description": "Internal error.",
+                    "409": {
+                        "description": "Non-unique patients provided.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1317,6 +1317,12 @@
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
+                    "404": {
+                        "description": "Matching not found.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
                     "403": {
                         "description": "Access denied.",
                         "schema": {
@@ -1331,12 +1337,6 @@
                     },
                     "400": {
                         "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Matching not found.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1404,6 +1404,12 @@
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
+                    "404": {
+                        "description": "Matching not found.",
+                        "schema": {
+                            "$ref": "#/definitions/FailResponse"
+                        }
+                    },
                     "403": {
                         "description": "Access denied.",
                         "schema": {
@@ -1418,12 +1424,6 @@
                     },
                     "400": {
                         "description": "Wrong data format.",
-                        "schema": {
-                            "$ref": "#/definitions/FailResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Matching not found.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }

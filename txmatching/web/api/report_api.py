@@ -8,6 +8,8 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
+from txmatching.auth.exceptions import InvalidOtpException, AuthenticationException, \
+    NotFoundException, InvalidAuthCallException
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
@@ -59,8 +61,11 @@ class MatchingReport(Resource):
                                  'If set, the resulting report will contain section with patients details.')
     @report_api.require_user_login()
     @report_api.response_ok(description='Generates PDF report.')
-    @report_api.response_error_matching_not_found()
-    @report_api.response_errors()
+    @report_api.response_errors(exceptions=[KeyError,
+                                            InvalidOtpException,
+                                            AuthenticationException,
+                                            NotFoundException,
+                                            InvalidAuthCallException])
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int], matching_id: int) -> str:
@@ -115,8 +120,11 @@ class PatientsXLSReport(Resource):
     )
     @report_api.require_user_login()
     @report_api.response_ok(description='Generates XLSX report.')
-    @report_api.response_error_matching_not_found()
-    @report_api.response_errors()
+    @report_api.response_errors(exceptions=[KeyError,
+                                            InvalidOtpException,
+                                            AuthenticationException,
+                                            NotFoundException,
+                                            InvalidAuthCallException])
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:

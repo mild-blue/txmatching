@@ -14,6 +14,8 @@ from txmatching.auth.data_types import UserRole
 from txmatching.auth.login_flow import (credentials_login, otp_login,
                                         refresh_token, resend_otp)
 from txmatching.auth.user.topt_auth_check import allow_otp_request
+from txmatching.auth.exceptions import InvalidOtpException, AuthenticationException, \
+    CouldNotSendOtpUsingSmsServiceException, InvalidAuthCallException
 from txmatching.configuration.app_configuration.application_configuration import \
     get_application_configuration
 from txmatching.data_transfer_objects.shared_dto import SuccessDTOOut
@@ -45,7 +47,10 @@ class LoginApi(Resource):
                                       'in the "Authorization" header with the prefix "Bearer". Example: '
                                       '"Authorization: Bearer some_token", where some_token is the token received '
                                       'in the response.')
-    @user_api.response_errors()
+    @user_api.response_errors(exceptions=[KeyError,
+                                          InvalidOtpException,
+                                          AuthenticationException,
+                                          InvalidAuthCallException])
     def post(self):
         post_data = request.get_json()
         auth_response = credentials_login(email=post_data['email'], password=post_data['password'])
@@ -58,8 +63,11 @@ class OtpLoginApi(Resource):
     @user_api.doc(security='bearer')
     @user_api.request_body(OtpInJson)
     @user_api.response_ok(LoginSuccessJson, 'OTP validation was successful. JWT generated.')
-    @user_api.response_errors()
-    @user_api.response_error_sms_gate()
+    @user_api.response_errors(exceptions=[KeyError,
+                                          InvalidOtpException,
+                                          AuthenticationException,
+                                          CouldNotSendOtpUsingSmsServiceException,
+                                          InvalidAuthCallException])
     @allow_otp_request()
     def post(self):
         post_data = request.get_json()
@@ -68,8 +76,11 @@ class OtpLoginApi(Resource):
 
     @user_api.doc(security='bearer')
     @user_api.response_ok(SuccessJsonOut, description='Whether the new OTP was generated and sent.')
-    @user_api.response_errors()
-    @user_api.response_error_sms_gate()
+    @user_api.response_errors(exceptions=[KeyError,
+                                          InvalidOtpException,
+                                          AuthenticationException,
+                                          CouldNotSendOtpUsingSmsServiceException,
+                                          InvalidAuthCallException])
     @allow_otp_request()
     def put(self):
         resend_otp()
@@ -81,7 +92,10 @@ class RefreshTokenApi(Resource):
 
     @user_api.require_user_login()
     @user_api.response_ok(LoginSuccessJson, description='Token successfully refreshed.')
-    @user_api.response_errors()
+    @user_api.response_errors(exceptions=[KeyError,
+                                          InvalidOtpException,
+                                          AuthenticationException,
+                                          InvalidAuthCallException])
     def get(self):
         return response_ok(_respond_token(refresh_token()))
 
@@ -92,7 +106,10 @@ class PasswordChangeApi(Resource):
     @user_api.require_user_login()
     @user_api.request_body(PasswordChangeInJson)
     @user_api.response_ok(SuccessJsonOut, description='Whether the password was changed successfully.')
-    @user_api.response_errors()
+    @user_api.response_errors(exceptions=[KeyError,
+                                          InvalidOtpException,
+                                          AuthenticationException,
+                                          InvalidAuthCallException])
     def put(self):
         data = request.get_json()
         change_password(current_password=data['current_password'], new_password=data['new_password'])
@@ -104,7 +121,10 @@ class RequestReset(Resource):
 
     @user_api.require_user_login()
     @user_api.response_ok(ResetRequestJson, description='Returns reset token.')
-    @user_api.response_errors()
+    @user_api.response_errors(exceptions=[KeyError,
+                                          InvalidOtpException,
+                                          AuthenticationException,
+                                          InvalidAuthCallException])
     @require_role(UserRole.ADMIN)
     def get(self, email: str):
         reset_token = get_reset_token(get_user_id_for_email(email))
@@ -120,7 +140,10 @@ class ResetPassword(Resource):
 
     @user_api.request_body(reset_password_input)
     @user_api.response_ok(SuccessJsonOut, description='Whether the password reset was successful.')
-    @user_api.response_errors()
+    @user_api.response_errors(exceptions=[KeyError,
+                                          InvalidOtpException,
+                                          AuthenticationException,
+                                          InvalidAuthCallException])
     def put(self):
         body = request.get_json()
 
@@ -138,7 +161,10 @@ class RegistrationApi(Resource):
     @user_api.require_user_login()
     @user_api.request_body(RegistrationJson)
     @user_api.response_ok(RegistrationOutJson, description='Detailed info about the registered user.')
-    @user_api.response_errors()
+    @user_api.response_errors(exceptions=[KeyError,
+                                          InvalidOtpException,
+                                          AuthenticationException,
+                                          InvalidAuthCallException])
     @require_role(UserRole.ADMIN)
     def post(self):
         registration_dto = request_body(UserRegistrationDtoIn)
@@ -162,7 +188,10 @@ def _respond_token(token: str) -> dict:
 
 @user_api.route('/authentik-login', methods=['GET'])
 class AuthentikLogin(Resource):
-    @user_api.response_errors()
+    @user_api.response_errors(exceptions=[KeyError,
+                                          InvalidOtpException,
+                                          AuthenticationException,
+                                          InvalidAuthCallException])
     def get(self):
         code = request.args.get('code')
         application_config = get_application_configuration()

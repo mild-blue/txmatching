@@ -2,6 +2,7 @@
 # because they are registered using annotation
 import logging
 
+from typing import Dict, Tuple
 from dacite import DaciteError
 from flask_restx import Api, Namespace, fields
 from werkzeug.exceptions import Forbidden, HTTPException
@@ -14,7 +15,7 @@ from txmatching.auth.exceptions import (
     InvalidJWTException, InvalidOtpException, InvalidTokenException, OverridingException,
     NotFoundException, SolverAlreadyRunningException,
     TooComplicatedDataForAllSolutionsSolver, UnauthorizedException,
-    UserUpdateException, WrongTokenUsedException)
+    UserUpdateException, WrongTokenUsedException, NonUniquePatient)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 
@@ -48,7 +49,7 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Authentication failed.', 'message': 'Invalid JWT.'}, 401
 
     @api.errorhandler(NotFoundException)
-    @_namespace_error_response(code=404)
+    @_namespace_error_response(code=404, description='Matching not found.')
     def handle_not_found_exception(error: NotFoundException):
         """
         Matching not found.
@@ -64,7 +65,7 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Authentication failed.', 'message': 'Credentials mismatch.'}, 401
 
     @api.errorhandler(InvalidOtpException)
-    @_namespace_error_response(code=401)
+    @_namespace_error_response(code=401, description='Authentication failed.')
     def handle_invalid_otp_exception(error: InvalidOtpException):
         """
         Authentication failed.
@@ -74,7 +75,7 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Authentication failed.', 'message': 'Invalid OTP.'}, 401
 
     @api.errorhandler(CouldNotSendOtpUsingSmsServiceException)
-    @_namespace_error_response(code=503)
+    @_namespace_error_response(code=503, description='Service(s) is unavailable.')
     def handle_could_not_send_otp(error: CouldNotSendOtpUsingSmsServiceException):
         """
         Service(s) is unavailable.
@@ -99,7 +100,7 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Invalid data submitted.', 'message': str(error)}, 400
 
     @api.errorhandler(InvalidAuthCallException)
-    @_namespace_error_response(code=500)
+    @_namespace_error_response(code=500, description='Internal error.')
     def handle_invalid_auth_call_exception(error: InvalidAuthCallException):
         """
         Internal error.
@@ -133,7 +134,7 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Authentication failed.', 'message': str(error)}, 403
 
     @api.errorhandler(AuthenticationException)
-    @_namespace_error_response(code=403)
+    @_namespace_error_response(code=403, description='Access denied.')
     def handle_general_authentication_exception(error: AuthenticationException):
         """
         Access denied.
@@ -174,7 +175,7 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Invalid request data.', 'message': str(error)}, 400
 
     @api.errorhandler(KeyError)
-    @_namespace_error_response(code=400)
+    @_namespace_error_response(code=400, description='Wrong data format.')
     def handle_key_error(error: KeyError):
         """
         Wrong data format.
@@ -202,36 +203,26 @@ def _user_auth_handlers(api: Api):
         return {'error': 'The patient can\'t be updated, someone edited this patient in the meantime. ' +
                 'You have to reload the patient first. The changes will be lost.', 'message': str(error)}, 406
 
-    @_namespace_error_response(code=409)
-    def handle_non_unique_patient():
+    @api.errorhandler(NonUniquePatient)
+    @_namespace_error_response(code=409, description='Non-unique patients provided.')
+    def handle_non_unique_patient(error: NonUniquePatient):
         """
         Non-unique patients provided.
         # Created for namespace error response.
         """
+        _log_warning(error)
+        return {'error': 'Non-unique patients', 'message': str(error)}, 409
 
 
-def _namespace_error_response(code):
+_HANDLERS_CODE_DESCRIPTION = {}  # information about handler function: (description, code)
+
+
+def _namespace_error_response(code: int, description: str):
     """
-    Decorator marks, that handle-function's __doc__ will be used as error response.
-    Use it for handle-functions in _user_auth_handlers().
-    If possible, only the second line of the docstring will be used for the response.
-
-    Examples:
-    1.      '''
-            Authentication failed.                    <--- only this line will be used for response
-            General authentication exception.
-            '''
-
-    2.      ''' Access denied. '''                    <--- this line will be used for response
-
-    :param code: error response's code
-    Responses are saved as Namespace.ERROR_CODE_DESCRIPTION.
+    Decorator marks, that handle-function will be used as error response.
     """
-    # noinspection PyProtectedMember
     def inner(func):
-        splitted_doc = func.__doc__.split('\n')
-        Namespace.ERROR_CODE_DESCRIPTION[code] = splitted_doc[1].strip() if len(splitted_doc) > 1 \
-            else func.__doc__
+        _HANDLERS_CODE_DESCRIPTION[func] = (description, code)
         return func
 
     return inner
@@ -274,80 +265,29 @@ def _default_error_handlers(api: Api):
         }, _get_code_from_error_else_500(error)
 
 
-# for filling responses by @_namespace_error_response in handlers
-Namespace.ERROR_CODE_DESCRIPTION = {501: f"This response is not implemented by error-handler. "
-                                         f"Mark needed exception using "
-                                         f"'@_namespace_error_response(code=CODE)' "
-                                         f"in {__file__}.{_user_auth_handlers.__name__}"}
-
-
-def _generate_namespace_error_responses():
+def generate_namespace_error_info() -> Dict[type, Tuple[str, int]]:
     """
-    Activates decorator @_namespace_error_responses
-    to fill Namespace.ERROR_CODE_DESCRIPTION by handlers __doc__.
-    Call it during NamespaceWithErrorResponses definition.
+    Activates decorator @_namespace_error_responses for generating error information dict
+    by exception as a key.
+    For error-handler without response exception NotImplementedError with code 501 is provided
+    by default.
+    :return: dict of information about exceptions as a key.
     """
     fake_api = Api()
     _user_auth_handlers(fake_api)
 
+    responses = {NotImplementedError: (f"This response is not implemented by error-handler. "
+                                       f"Mark needed exception using "
+                                       f"'@_namespace_error_response(code=CODE, description=DESCRIPTION)' "
+                                       f"in {__file__}.{_user_auth_handlers.__name__}", 501)}
+    for exception, handle_function in fake_api.error_handlers.items():
+        if handle_function in _HANDLERS_CODE_DESCRIPTION:
+            assert exception is not NotImplementedError, f"NotImplementedError is used as " \
+                                                         f"default error for uncreated namespace error responses in {__name__}.\n" \
+                                                         f"Handling NotImplementedError with api.errorhandler can lead to collisions."
+            responses[exception] = _HANDLERS_CODE_DESCRIPTION[handle_function]
 
-# noinspection PyProtectedMember
-class NamespaceWithErrorResponses(Namespace):
-    """ flask_restx.Namespace with error responses. """
-
-    # creating error responses by code in Namespace.ERROR_CODE_DESCRIPTION
-    _generate_namespace_error_responses()
-
-    def _create_fail_response_model(self):
-        return self.model('FailResponse', {
-            'error': fields.String(required=True),
-            'message': fields.String(required=False),
-        })
-
-    def response_error_matching_not_found(self):
-        code = 404 if 404 in Namespace.ERROR_CODE_DESCRIPTION else 501
-        model = self._create_fail_response_model()
-        return self.response(code=code, model=model,
-                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
-
-    def response_error_non_unique_patients_provided(self):
-        code = 409 if 409 in Namespace.ERROR_CODE_DESCRIPTION else 501
-        model = self._create_fail_response_model()
-        return self.response(code=code, model=model,
-                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
-
-    def response_error_unexpected(self):
-        code = 500 if 500 in Namespace.ERROR_CODE_DESCRIPTION else 501
-        model = self._create_fail_response_model()
-        return self.response(code=code, model=model,
-                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
-
-    def response_error_services_failing(self):
-        code = 503 if 503 in Namespace.ERROR_CODE_DESCRIPTION else 501
-        model = self._create_fail_response_model()
-        return self.response(code=code, model=model,
-                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
-
-    def response_error_sms_gate(self):
-        return self.response_error_services_failing()
-
-    def response_error_wrong_data(self):
-        code = 400 if 400 in Namespace.ERROR_CODE_DESCRIPTION else 501
-        model = self._create_fail_response_model()
-        return self.response(code=code, model=model,
-                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
-
-    def response_error_unauthorized(self):
-        code = 401 if 401 in Namespace.ERROR_CODE_DESCRIPTION else 501
-        model = self._create_fail_response_model()
-        return self.response(code=code, model=model,
-                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
-
-    def response_error_forbidden(self):
-        code = 403 if 403 in Namespace.ERROR_CODE_DESCRIPTION else 501
-        model = self._create_fail_response_model()
-        return self.response(code=code, model=model,
-                             description=Namespace.ERROR_CODE_DESCRIPTION[code])
+    return responses
 
 
 def _log_exception(ex: Exception):

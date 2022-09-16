@@ -10,6 +10,8 @@ from txmatching.auth.operation_guards.country_guard import \
 from txmatching.auth.operation_guards.txm_event_guard import \
     guard_open_txm_event
 from txmatching.auth.service.service_auth_check import allow_service_role
+from txmatching.auth.exceptions import InvalidOtpException, AuthenticationException, \
+    InvalidAuthCallException
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     PatientUploadSuccessJson, UploadPatientsJson)
 from txmatching.data_transfer_objects.patients.patient_upload_dto_out import \
@@ -41,7 +43,10 @@ class TxmEventUploadPatients(Resource):
                     ' login endpoint.'
     )
     @public_api.response_ok(PatientUploadSuccessJson)
-    @public_api.response_errors()
+    @public_api.response_errors(exceptions=[KeyError,
+                                            InvalidOtpException,
+                                            AuthenticationException,
+                                            InvalidAuthCallException])
     @allow_service_role()
     def put(self):
         patient_upload_dto = request_body(PatientUploadDTOIn)

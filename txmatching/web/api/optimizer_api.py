@@ -1,5 +1,7 @@
 from flask_restx import Resource
 
+from txmatching.auth.exceptions import InvalidOtpException, InvalidAuthCallException, \
+    AuthenticationException
 from txmatching.data_transfer_objects.optimizer.optimizer_in_swagger import \
     OptimizerReturnObjectJson, OptimizerRequestObjectJson
 from txmatching.optimizer.optimizer_functions import export_return_data
@@ -15,7 +17,10 @@ OPTIMIZER_DESCRIPTION = "Endpoint that calculates matchings from compatibility g
 class Optimize(Resource):
     @optimizer_api.request_body(OptimizerRequestObjectJson)
     @optimizer_api.response_ok(OptimizerReturnObjectJson, description=OPTIMIZER_DESCRIPTION)
-    @optimizer_api.response_errors()
+    @optimizer_api.response_errors(exceptions=[KeyError,
+                                               InvalidOtpException,
+                                               AuthenticationException,
+                                               InvalidAuthCallException])
     def post(self) -> str:
         optimizer_request_object = request_body(OptimizerRequest)
 
