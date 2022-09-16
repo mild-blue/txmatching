@@ -6,13 +6,13 @@
             "post": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -118,13 +118,13 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -180,7 +180,7 @@
                         }
                     },
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -202,7 +202,7 @@
             "get": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -224,13 +224,13 @@
             "get": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -268,7 +268,7 @@
             "post": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -280,7 +280,7 @@
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -330,13 +330,13 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -386,13 +386,13 @@
             "get": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -430,7 +430,7 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -442,7 +442,7 @@
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -492,13 +492,13 @@
             "delete": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -552,13 +552,13 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -616,13 +616,13 @@
             "get": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -679,13 +679,13 @@
             "post": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -743,13 +743,13 @@
             "post": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -806,13 +806,13 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -871,13 +871,13 @@
             "get": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -942,13 +942,13 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1013,13 +1013,13 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1076,13 +1076,13 @@
             "post": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1139,13 +1139,13 @@
             "delete": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1199,13 +1199,13 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1262,13 +1262,13 @@
             "post": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1311,13 +1311,13 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1374,7 +1374,7 @@
             "get": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1386,7 +1386,7 @@
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1461,7 +1461,7 @@
             "get": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1473,7 +1473,7 @@
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1519,13 +1519,13 @@
             "get": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1553,13 +1553,13 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1608,13 +1608,13 @@
             "post": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1665,13 +1665,13 @@
                         }
                     },
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1724,13 +1724,13 @@
                         }
                     },
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1769,13 +1769,13 @@
             "get": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1814,13 +1814,13 @@
             "post": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1869,13 +1869,13 @@
             "put": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1927,13 +1927,13 @@
             "get": {
                 "responses": {
                     "500": {
-                        "description": "Internal error.",
+                        "description": "Unexpected error, see contents for details.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
                     },
                     "403": {
-                        "description": "Access denied.",
+                        "description": "Access denied. You do not have rights to access this endpoint.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }

@@ -1,6 +1,7 @@
 import flask_restx
-from txmatching.web.error_handler import generate_namespace_error_info
+
 from txmatching.auth.user.user_auth_check import require_user_login
+from txmatching.web.error_handler import generate_namespace_error_info
 
 
 class Namespace(flask_restx.Namespace):
@@ -93,18 +94,19 @@ class Namespace(flask_restx.Namespace):
         :return: combined decorators for error responses.
         """
         fail_model = self._create_fail_response_model()
-        exceptions = self.__class__._sorting_exceptions_by_code(exceptions)
+        exceptions = Namespace._sorting_exceptions_by_code(exceptions)
 
         response_decorators = []
         for exception, ex_idx in zip(exceptions, range(len(exceptions))):
-            if exception not in self.__class__.__ERROR_INFO:
+            if exception not in Namespace.__ERROR_INFO:
                 exception = NotImplementedError
 
-            combined_description = self.__class__._create_combined_description_for_duplicates(exceptions, ex_idx)
+            combined_description = Namespace._create_combined_description_for_duplicates(exceptions,
+                                                                                         ex_idx)
             description = combined_description if combined_description else \
-                self.__class__.__ERROR_INFO[exception][0]
+                Namespace.__ERROR_INFO[exception][0]
 
-            response_decorators.append(self.response(code=self.__class__.__ERROR_INFO[exception][1],
+            response_decorators.append(self.response(code=Namespace.__ERROR_INFO[exception][1],
                                                      description=description,
                                                      model=fail_model))
 
@@ -148,4 +150,4 @@ class Namespace(flask_restx.Namespace):
 
             return cls.__ERROR_INFO[NotImplementedError][1]
 
-        return sorted(exceptions, key=lambda k: key_func(k))
+        return sorted(exceptions, key=key_func)

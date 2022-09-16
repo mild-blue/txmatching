@@ -1,10 +1,10 @@
 # pylint: disable=unused-variable
 # because they are registered using annotation
 import logging
-
 from typing import Dict, Tuple
+
 from dacite import DaciteError
-from flask_restx import Api, Namespace, fields
+from flask_restx import Api
 from werkzeug.exceptions import Forbidden, HTTPException
 
 from txmatching.auth.exceptions import (
@@ -12,10 +12,10 @@ from txmatching.auth.exceptions import (
     CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
     GuardException, InvalidArgumentException, InvalidAuthCallException,
     InvalidEmailException, InvalidIpAddressAccessException,
-    InvalidJWTException, InvalidOtpException, InvalidTokenException, OverridingException,
-    NotFoundException, SolverAlreadyRunningException,
-    TooComplicatedDataForAllSolutionsSolver, UnauthorizedException,
-    UserUpdateException, WrongTokenUsedException, NonUniquePatient)
+    InvalidJWTException, InvalidOtpException, InvalidTokenException,
+    NonUniquePatient, NotFoundException, OverridingException,
+    SolverAlreadyRunningException, TooComplicatedDataForAllSolutionsSolver,
+    UnauthorizedException, UserUpdateException, WrongTokenUsedException)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 
@@ -100,7 +100,7 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Invalid data submitted.', 'message': str(error)}, 400
 
     @api.errorhandler(InvalidAuthCallException)
-    @_namespace_error_response(code=500, description='Internal error.')
+    @_namespace_error_response(code=500, description='Unexpected error, see contents for details.')
     def handle_invalid_auth_call_exception(error: InvalidAuthCallException):
         """
         Internal error.
@@ -134,7 +134,8 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Authentication failed.', 'message': str(error)}, 403
 
     @api.errorhandler(AuthenticationException)
-    @_namespace_error_response(code=403, description='Access denied.')
+    @_namespace_error_response(code=403, description='Access denied. '
+                                                     'You do not have rights to access this endpoint.')
     def handle_general_authentication_exception(error: AuthenticationException):
         """
         Access denied.
@@ -276,15 +277,15 @@ def generate_namespace_error_info() -> Dict[type, Tuple[str, int]]:
     fake_api = Api()
     _user_auth_handlers(fake_api)
 
-    responses = {NotImplementedError: (f"This response is not implemented by error-handler. "
-                                       f"Mark needed exception using "
+    responses = {NotImplementedError: (f'This response is not implemented by error-handler. '
+                                       f'Mark needed exception using '
                                        f"'@_namespace_error_response(code=CODE, description=DESCRIPTION)' "
-                                       f"in {__file__}.{_user_auth_handlers.__name__}", 501)}
+                                       f'in {__file__}.{_user_auth_handlers.__name__}', 501)}
     for exception, handle_function in fake_api.error_handlers.items():
         if handle_function in _HANDLERS_CODE_DESCRIPTION:
-            assert exception is not NotImplementedError, f"NotImplementedError is used as " \
-                                                         f"default error for uncreated namespace error responses in {__name__}.\n" \
-                                                         f"Handling NotImplementedError with api.errorhandler can lead to collisions."
+            assert exception is not NotImplementedError, f'NotImplementedError is used as ' \
+                                                         f'default error for uncreated namespace error responses in {__name__}.\n' \
+                                                         f'Handling NotImplementedError with api.errorhandler can lead to collisions.'
             responses[exception] = _HANDLERS_CODE_DESCRIPTION[handle_function]
 
     return responses

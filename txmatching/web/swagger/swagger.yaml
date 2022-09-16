@@ -1887,11 +1887,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             tags:
@@ -1967,11 +1968,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -1987,7 +1989,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ServiceStatus'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '503':
@@ -2005,7 +2007,7 @@ paths:
                     schema:
                         $ref: '#/definitions/Version'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             tags:
@@ -2028,11 +2030,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2063,7 +2066,8 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '409':
@@ -2071,7 +2075,7 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2103,11 +2107,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2132,11 +2137,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2166,7 +2172,8 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '409':
@@ -2174,7 +2181,7 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2204,11 +2211,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2244,11 +2252,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2285,11 +2294,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2328,11 +2338,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2367,11 +2378,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2408,11 +2420,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2455,11 +2468,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2500,11 +2514,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2540,11 +2555,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2579,11 +2595,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2619,11 +2636,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2658,11 +2676,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2693,11 +2712,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             tags:
@@ -2731,11 +2751,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2786,7 +2807,8 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '404':
@@ -2794,7 +2816,7 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2828,7 +2850,8 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '404':
@@ -2836,7 +2859,7 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2856,11 +2879,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             tags:
@@ -2888,11 +2912,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -2929,11 +2954,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             tags:
@@ -2961,11 +2987,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '503':
@@ -2992,11 +3019,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '503':
@@ -3024,11 +3052,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -3058,11 +3087,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
@@ -3092,11 +3122,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             tags:
@@ -3123,11 +3154,12 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '403':
-                    description: Access denied.
+                    description: Access denied. You do not have rights to access this
+                        endpoint.
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '500':
-                    description: Internal error.
+                    description: Unexpected error, see contents for details.
                     schema:
                         $ref: '#/definitions/FailResponse'
             security:
