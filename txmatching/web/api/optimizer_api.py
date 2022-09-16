@@ -2,6 +2,10 @@ from flask_restx import Resource
 
 from txmatching.auth.exceptions import InvalidOtpException, InvalidAuthCallException, \
     AuthenticationException
+# todo require_valid_txm_event_id
+from txmatching.auth.auth_check import require_valid_config_id, require_valid_txm_event_id
+from txmatching.data_transfer_objects.configuration.configuration_swagger import \
+    ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.optimizer.optimizer_in_swagger import \
     OptimizerReturnObjectJson, OptimizerRequestObjectJson
 from txmatching.optimizer.optimizer_functions import export_return_data
