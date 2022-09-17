@@ -1,3 +1,5 @@
+from typing import Dict, List, Tuple
+
 import flask_restx
 
 from txmatching.auth.user.user_auth_check import require_user_login
@@ -6,7 +8,7 @@ from txmatching.web.error_handler import generate_namespace_error_info
 
 class Namespace(flask_restx.Namespace):
 
-    __ERROR_INFO = generate_namespace_error_info()
+    __ERROR_INFO: Dict[type, Tuple[str, int]] = generate_namespace_error_info()
 
     @staticmethod
     def _combine_decorators(decorators):
@@ -87,7 +89,7 @@ class Namespace(flask_restx.Namespace):
         # TODO: marshall instead https://github.com/mild-blue/txmatching/issues/562
         # return self.marshal_with(model, code=code, description=description, mask=False, skip_none=True)
 
-    def response_errors(self, exceptions: list):
+    def response_errors(self, exceptions: List[type]):
         """
         Creating response decorators for given exceptions.
         :param exceptions: list of exceptions for creating responses from error_handler.py
@@ -113,7 +115,7 @@ class Namespace(flask_restx.Namespace):
         return self._combine_decorators(response_decorators)
 
     @classmethod
-    def _create_combined_description_for_duplicates(cls, exceptions: list, exception_idx: int) -> str:
+    def _create_combined_description_for_duplicates(cls, exceptions: List[type], exception_idx: int) -> str:
         """
         Creates combined descriptions for error responses with the same code.
         Info about exception is taken from cls.__ERROR_INFO
@@ -138,7 +140,7 @@ class Namespace(flask_restx.Namespace):
         return ''
 
     @classmethod
-    def _sorting_exceptions_by_code(cls, exceptions: list):
+    def _sorting_exceptions_by_code(cls, exceptions: List[type]):
         """
         Sorting list of exceptions by code.
         Info about exceptions is taken from cls.__ERROR_INFO.
