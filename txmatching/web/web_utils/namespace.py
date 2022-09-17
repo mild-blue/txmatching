@@ -96,7 +96,7 @@ class Namespace(flask_restx.Namespace):
         :return: combined decorators for error responses.
         """
         fail_model = self._create_fail_response_model()
-        exceptions = Namespace._sorting_exceptions_by_code(exceptions)
+        exceptions = Namespace._sort_exceptions_by_code(exceptions)
 
         response_decorators = []
         for exception, ex_idx in zip(exceptions, range(len(exceptions))):
@@ -140,7 +140,7 @@ class Namespace(flask_restx.Namespace):
         return ''
 
     @classmethod
-    def _sorting_exceptions_by_code(cls, exceptions: List[type]):
+    def _sort_exceptions_by_code(cls, exceptions: List[type]):
         """
         Sorting list of exceptions by code.
         Info about exceptions is taken from cls.__ERROR_INFO.
