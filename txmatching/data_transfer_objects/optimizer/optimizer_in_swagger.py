@@ -35,7 +35,8 @@ OptimizerReturnObjectJson = optimizer_api.model('OptimizerReturn', {
 
 PairJson = optimizer_api.model('Pair', {
     'donor_id': fields.Integer(required=True, example=1),
-    'recipient_id': fields.Integer(reqired=False, example=4)
+    'recipient_id': fields.Integer(reqired=False, example=4),
+    'category': fields.String(required=False, example="Spain")
 })
 
 LimitationsJson = optimizer_api.model('Limitations', {

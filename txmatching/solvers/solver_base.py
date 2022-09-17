@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, Iterator, List
+from typing import Dict, Iterator, List, Tuple
 
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, Recipient
@@ -11,6 +11,8 @@ from txmatching.solvers.donor_recipient_pair_idx_only import \
 from txmatching.solvers.all_solutions_solver.scoring_utils import \
     get_score_for_idx_pairs
 from txmatching.solvers.donor_recipient_pair import DonorRecipientPair
+from txmatching.solvers.ilp_solver.txm_configuration_for_ilp import \
+    DataAndConfigurationForILPSolver
 from txmatching.solvers.matching.matching_with_score import MatchingWithScore
 
 
@@ -33,6 +35,9 @@ class SolverBase:
         )
 
     def solve(self) -> Iterator[MatchingWithScore]:
+        raise NotImplementedError('Has to be overridden')
+
+    def solve_kepsoft(self, config_for_ilp_solver: DataAndConfigurationForILPSolver) -> List[List[Tuple[int, int]]]:
         raise NotImplementedError('Has to be overridden')
 
     def get_matching_from_path_combinations(

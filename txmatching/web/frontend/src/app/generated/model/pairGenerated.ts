@@ -12,6 +12,7 @@
 
 
 export interface PairGenerated { 
+    category?: string;
     donor_id: number;
     recipient_id?: number;
 }

@@ -1169,6 +1169,9 @@ definitions:
         type: object
     Pair:
         properties:
+            category:
+                example: Spain
+                type: string
             donor_id:
                 example: 1
                 type: integer

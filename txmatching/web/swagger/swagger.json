@@ -3608,6 +3608,10 @@
                 "recipient_id": {
                     "type": "integer",
                     "example": 4
+                },
+                "category": {
+                    "type": "string",
+                    "example": "Spain"
                 }
             },
             "type": "object"

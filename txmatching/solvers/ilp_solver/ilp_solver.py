@@ -1,7 +1,9 @@
 import logging
 from dataclasses import dataclass
-from typing import Dict, Iterable, Iterator, List, Tuple
+from optparse import Option
+from typing import Dict, Iterable, Iterator, List, Optional, Tuple
 
+from txmatching.optimizer.optimizer_request_object import Pair
 from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
 from txmatching.solvers.ilp_solver.solve_ilp import solve_ilp
@@ -15,18 +17,17 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ILPSolver(SolverBase):
-
     def solve(self) -> Iterator[MatchingWithScore]:
         config_for_ilp_solver = DataAndConfigurationForILPSolver(self.donors_dict, self.recipients_dict,
                                                                  self.config_parameters)
         solutions = solve_ilp(config_for_ilp_solver)
+
         recipients_db_id_to_order_id = {
             recipient.db_id: order_id for order_id, recipient in enumerate(self.recipients)
         }
 
         for solution in solutions:
             possible_path_combination = self._get_path_combinations(solution.edges, recipients_db_id_to_order_id)
-
             yield self.get_matching_from_path_combinations(possible_path_combination)
 
     def _get_path_combinations(self,
@@ -40,3 +41,7 @@ class ILPSolver(SolverBase):
             )
             for donor_idx, idx_of_donor_for_recipient in donor_idx_tuples
         ]
+
+    def solve_kepsoft(self, config_for_ilp_solver: DataAndConfigurationForILPSolver) -> List[List[Tuple[int, int]]]:
+        solutions = solve_ilp(config_for_ilp_solver)
+        return [[d_to_r for d_to_r in solution.edges] for solution in solutions]
