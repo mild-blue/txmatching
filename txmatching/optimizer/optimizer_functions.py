@@ -96,7 +96,6 @@ def _get_cycles_and_chains(best_matching: List[Tuple[int, int]]) -> Tuple[List[T
     cycles = []
     chains = []
 
-    # to avoid chain problems, first check vertices with in degree 0
     in_degrees = [0] * (biggest_index + 1)
     for d_to_r in best_matching:
         in_degrees[d_to_r[1]] += 1
