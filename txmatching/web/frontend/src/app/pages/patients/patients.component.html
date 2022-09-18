@@ -15,12 +15,14 @@
       <div>
         <h1>
           Patients
-            <div class="patients-count-space">
-              <app-count [count]="donorsCount + recipientCount"
-                         matTooltip="Donors: {{ donorsCount }}, Recipients: {{ recipientCount }}"
-                         matTooltipPosition="right">
-              </app-count>
-            </div>
+          <div class="patients-count-space">
+            <app-count
+              [count]="donorsCount + recipientCount"
+              matTooltip="Donors: {{ donorsCount }}, Recipients: {{ recipientCount }}"
+              matTooltipPosition="right"
+            >
+            </app-count>
+          </div>
         </h1>
         <div class="header-description" *ngIf="!loading">
           Showing patients for

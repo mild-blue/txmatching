@@ -16,24 +16,30 @@
       <div>
         <h1>
           Top Matchings
-            <div class="home-count-space">
-              <app-count *ngIf="!loading"
-                         [count]="matchings.length"
-                         [maxCount]="foundMatchingsCount"
-                         matTooltip="Number of top matchings{{foundMatchingsCount ? ' / Total number of matchings' : ''}}"
-                         matTooltipPosition="right">
-              </app-count>
-              <app-count *ngIf="!loading"
-                         [count]="numberOfPossibleTransplants"
-                         matTooltip="Number of possible transplants: {{numberOfPossibleTransplants}}"
-                         matTooltipPosition="right">
-              </app-count>
-              <app-count *ngIf="!loading"
-                         [count]="numberOfPossibleRecipients"
-                         matTooltip="Number of possible recipients: {{numberOfPossibleRecipients}}"
-                         matTooltipPosition="right">
-              </app-count>
-            </div>
+          <div class="home-count-space">
+            <app-count
+              *ngIf="!loading"
+              [count]="matchings.length"
+              [maxCount]="foundMatchingsCount"
+              matTooltip="Number of top matchings{{ foundMatchingsCount ? ' / Total number of matchings' : '' }}"
+              matTooltipPosition="right"
+            >
+            </app-count>
+            <app-count
+              *ngIf="!loading"
+              [count]="numberOfPossibleTransplants"
+              matTooltip="Number of possible transplants: {{ numberOfPossibleTransplants }}"
+              matTooltipPosition="right"
+            >
+            </app-count>
+            <app-count
+              *ngIf="!loading"
+              [count]="numberOfPossibleRecipients"
+              matTooltip="Number of possible recipients: {{ numberOfPossibleRecipients }}"
+              matTooltipPosition="right"
+            >
+            </app-count>
+          </div>
         </h1>
         <div class="header-description" *ngIf="!loading">
           Showing top {{ matchings.length }} matchings for

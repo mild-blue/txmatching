@@ -4,7 +4,6 @@
   position: relative;
 }
 
-
 .count {
   background: $success;
   border-radius: $border-radius;
@@ -20,8 +19,8 @@
   padding: 1px 6px 1px 5px;
   align-items: center;
 
-    &.zero {
-      background: $gray-400;
-      color: $gray-600;
-    }
+  &.zero {
+    background: $gray-400;
+    color: $gray-600;
   }
+}
