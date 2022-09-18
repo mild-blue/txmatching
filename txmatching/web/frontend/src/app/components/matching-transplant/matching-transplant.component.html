@@ -20,7 +20,7 @@
           <td>
             Donor
             <div class="center-holder">
-              <patient [patient]="donor"></patient>
+              <app-patient [patient]="donor"></app-patient>
             </div>
             <div class="patient-info">
               <span matTooltip="Sex" *ngIf="donor.parameters.sex">{{ donor.parameters.sex }}</span>
@@ -39,7 +39,7 @@
             <ng-container *ngIf="recipient">
               Recipient
               <div class="center-holder">
-                <patient [patient]="recipient"></patient>
+                <app-patient [patient]="recipient"></app-patient>
               </div>
               <div class="patient-info">
                 <span matTooltip="Sex" *ngIf="recipient.parameters.sex">{{ recipient.parameters.sex }}</span>

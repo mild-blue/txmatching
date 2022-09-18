@@ -6,13 +6,13 @@
   <ng-container *ngIf="recipient; then template_pair; else template_donor"></ng-container>
 
   <ng-template #template_pair>
-    <patient [patient]="donor"></patient>
+    <app-patient [patient]="donor"></app-patient>
     <mat-icon>chevron_right</mat-icon>
-    <patient [patient]="recipient"></patient>
+    <app-patient [patient]="recipient"></app-patient>
   </ng-template>
 
   <ng-template #template_donor>
-    <patient [patient]="donor"></patient>
+    <app-patient [patient]="donor"></app-patient>
     <div class="donor-type-label">
       {{ donor.donorType | donorTypeLabel }}
     </div>

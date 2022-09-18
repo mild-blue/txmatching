@@ -32,10 +32,10 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "app",
             "style": "camelCase"
           }
         ],
+        "@angular-eslint/no-empty-lifecycle-method": "off",
         "@typescript-eslint/member-ordering": 0,
         "@typescript-eslint/naming-convention": 0,
         "prettier/prettier": 0

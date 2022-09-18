@@ -1,11 +1,11 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 
 @Component({
-  selector: "flag",
+  selector: "app-flag",
   templateUrl: "./flag.component.html",
   styleUrls: ["./flag.component.scss"],
 })
-export class FlagComponent {
+export class FlagComponent implements OnInit {
   @Input() countryCode?: string;
   public countryParts: string[] = [];
 

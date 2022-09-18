@@ -4,7 +4,7 @@
 
     <mat-chip-list #countryChip [formControl]="countryControl">
       <mat-chip *ngIf="countryControl.valid" [removable]="true" (removed)="handleCountryRemove(countryInput)">
-        <country [country]="selectedCountryValue"></country>
+        <app-country [country]="selectedCountryValue"></app-country>
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
       <input
@@ -19,7 +19,7 @@
 
     <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleCountrySelect(countryInput)">
       <mat-option *ngFor="let c of filteredCountries | async" [value]="c">
-        <country [country]="c"></country>
+        <app-country [country]="c"></app-country>
       </mat-option>
     </mat-autocomplete>
 

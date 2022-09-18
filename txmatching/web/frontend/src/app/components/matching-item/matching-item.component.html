@@ -12,7 +12,7 @@
       Transplants: <strong>{{ getTransplantsCount(item) }}</strong>
     </li>
     <li *ngFor="let country of item.countries">
-      <flag [countryCode]="country.countryCode"></flag>
+      <app-flag [countryCode]="country.countryCode"></app-flag>
       :
       <app-code matTooltip="Number of donors / Number of recipients"
         >{{ country.donorCount }}/{{ country.recipientCount }}</app-code
