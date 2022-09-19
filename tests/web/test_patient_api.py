@@ -11,6 +11,7 @@ from tests.test_utilities.hla_preparation_utils import (create_antibodies,
                                                         create_hla_typing)
 from tests.test_utilities.prepare_app_for_tests import DbTests
 from txmatching.configuration.config_parameters import ConfigParameters
+from txmatching.database.db import db
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
 from txmatching.database.sql_alchemy_schema import (ConfigModel, DonorModel,
@@ -767,8 +768,8 @@ class TestPatientService(DbTests):
         # 1. fill db with patients
         txm_event_db_id = self.fill_db_with_patients()
 
-        # 2. add configuration with required_patients = [1]
-        configuration = ConfigParameters(required_patient_db_ids=[1])
+        # 2. add configuration with required patients
+        configuration = ConfigParameters(required_patient_db_ids=[1, 2])
 
         with self.app.test_client() as client:
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
@@ -785,14 +786,31 @@ class TestPatientService(DbTests):
                              headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 
-        # 4. delete patient 1
+        # 4. delete patient with db_id 1
         with self.app.test_client() as client:
             res = client.delete(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                                 f'{PATIENT_NAMESPACE}/pairs/1',
                                 headers=self.auth_headers)
             self.assertEqual(200, res.status_code)
 
-        # 5. get default configuration
+        # 5. make recipient with db_id 2 invalid
+        RecipientModel.query.filter(RecipientModel.id == 2).update(
+            {"hla_typing_raw": {"hla_types_list": [{"raw_code": "B7"}, {"raw_code": "DR11"}]}}
+        )
+        RecipientModel.query.filter(RecipientModel.id == 2).update(
+            {"hla_typing": {"hla_per_groups": [{"hla_group": "B",
+                                                "hla_types": [{
+                                                    "raw_code": "B7",
+                                                    "code": {"high_res": 'null', "split": "B7", "broad": "B7", "group": "B"}}]},
+                                               {"hla_group": "DRB1",
+                                                "hla_types": [{
+                                                    "raw_code": "DR11",
+                                                    "code": {"high_res": 'null', "split": "DR11", "broad": "DR5", "group": "DRB1"}}]},
+                                               {"hla_group": "Other", "hla_types": []}]}}
+        )
+        db.session.commit()
+
+        # 6. get default configuration
         with self.app.test_client() as client:
             res = client.get(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                              f'{CONFIGURATION_NAMESPACE}/default',
@@ -801,7 +819,7 @@ class TestPatientService(DbTests):
 
         default_config = res.get_json()
 
-        # 6. recalculate for configuration
+        # 7. recalculate for configuration
         with self.app.test_client() as client:
             res = client.post(f'{API_VERSION}/{TXM_EVENT_NAMESPACE}/{txm_event_db_id}/'
                               f'{MATCHING_NAMESPACE}/calculate-for-config',
