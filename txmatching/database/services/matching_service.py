@@ -70,14 +70,13 @@ def get_matchings_detailed_for_pairing_result_model(
         zip(txm_event.active_and_valid_donors_dict, score_matrix) for recipient_db_id, score in
         zip(txm_event.active_and_valid_recipients_dict, row)
     }
-    number_of_possible_transplants = sum(1 for score_pair in score_dict.values() if score_pair >= 0)
+    number_of_possible_transplants = len([score_pair for score_pair in score_dict.values() if score_pair >= 0])
 
-    number_of_possible_recipients = sum(
-        1 for recipient_db_id in txm_event.active_and_valid_recipients_dict.keys()
-        if sum([
-            score_dict[(donor_db_id, recipient_db_id)] >= 0
-            for donor_db_id in txm_event.active_and_valid_donors_dict.keys()
-        ]) > 0
+    number_of_possible_recipients = len([
+        recipient_db_id for recipient_db_id in txm_event.active_and_valid_recipients_dict.keys()
+        if count_if(
+            lambda x: score_dict[(x, recipient_db_id)] >= 0, txm_event.active_and_valid_donors_dict.keys()
+        ) > 0]
     )
     compatibility_graph_of_db_ids = scorer.get_compatibility_graph_of_db_ids(txm_event.active_and_valid_recipients_dict,
                                                                              txm_event.active_and_valid_donors_dict,
@@ -249,3 +248,9 @@ def get_transplant_messages(
             'warnings': detailed_messages,
             'errors': []
         }) if detailed_messages else None
+
+def count_if(condition, seq):
+    """
+    Returns the amount of items in seq that return true from condition
+    """
+    return sum(1 for item in seq if condition(item))
