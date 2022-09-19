@@ -74,11 +74,12 @@ class TestOptimizerApi(DbTests):
                               headers=self.auth_headers, json=json_data)
 
         self.assertEqual(200, res.status_code)
-        self.assertEqual(1, res.json['statistics']['number_of_found_cycles'])
+        self.assertEqual(1, res.json['statistics']['number_of_found_cycles_and_chains'])
         self.assertEqual(2, res.json['statistics']['number_of_found_transplants'])
 
         total_score = sum([dic["hla_compatibility_score"] for dic in json_data["compatibility_graph"]])
         self.assertEqual(total_score, res.json['cycles_and_chains'][0]['scores'][0])
+        self.assertGreaterEqual(total_score, 0)
 
     def test_optimizer_api_gives_same_solution_as_ilp_solver_itself_small_data_folder(self):
         store_generated_patients_from_folder(SMALL_DATA_FOLDER)
@@ -101,6 +102,10 @@ class TestOptimizerApi(DbTests):
 
         total_score = sum([dic["scores"][0] for dic in res.json["cycles_and_chains"]])
         self.assertEqual(solutions[0].score, total_score)
+        self.assertGreaterEqual(total_score, 0)
+
+        self.assertGreaterEqual(res.json['statistics']['number_of_found_cycles_and_chains'], 1)
+        self.assertGreaterEqual(res.json['statistics']['number_of_found_transplants'], 1)
 
     def test_optimizer_api_gives_same_solution_as_ilp_solver_itself_multiple_donors(self):
         store_generated_patients_from_folder(SMALL_DATA_FOLDER_MULTIPLE_DONORS)

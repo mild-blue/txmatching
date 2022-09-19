@@ -12,7 +12,7 @@
 
 
 export interface StatisticsGenerated { 
-    number_of_found_cycles: number;
+    number_of_found_cycles_and_chains: number;
     number_of_found_transplants: number;
 }
 

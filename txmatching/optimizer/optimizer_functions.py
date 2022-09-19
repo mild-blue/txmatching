@@ -131,7 +131,7 @@ def _get_cycles_and_chains(best_matching: List[Tuple[int, int]]) -> Tuple[List[T
 def _get_statistics(best_matching: List[Tuple[int, int]], cycles: List[Tuple[int, int]],
                     chains: List[Tuple[int, int]]) -> Statistics:
     return Statistics(
-        number_of_found_cycles=len(cycles) + len(chains),
+        number_of_found_cycles_and_chains=len(cycles) + len(chains),
         number_of_found_transplants=len(best_matching)
     )
 

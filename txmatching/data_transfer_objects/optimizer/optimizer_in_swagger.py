@@ -19,7 +19,7 @@ DonorToRecipientJson = optimizer_api.model('DonorToRecipient', {
 })
 
 StatisticsJson = optimizer_api.model('Statistics', {
-    'number_of_found_cycles': fields.Integer(required=True),
+    'number_of_found_cycles_and_chains': fields.Integer(required=True),
     'number_of_found_transplants': fields.Integer(required=True)
 })
 
