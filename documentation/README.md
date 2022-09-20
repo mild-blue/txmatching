@@ -12,9 +12,9 @@ Antigens on cell surfaces can act as flags that the immune system looks at to de
 HLA is composed of many genes of different classes. We differentiate between Class I (A, B, C), Class II (DR, DQ, DP),
 and Class III.
 
-*Groups everyone is tested for are A, B, DR. They are the oldest known, so all labs are able to detect them. Each
+*Groups everyone is tested for are A, B and DR. They are the oldest known, so all labs are able to detect them. Each
 person has 2 antigens within each of these groups. One is inherited from the mother, the other one from the father. It is important
-to know that HLA is inherited as a "set" of the three HLA groups, A, B, DR. This set is known as a "haplotype".*
+to know that HLA is inherited as a "set" of the three HLA groups, A, B and DR. This set is known as a "haplotype".*
 
 ## Broad, split, high resolution (Nomenclature)
 
@@ -29,7 +29,7 @@ example, it's for instance A23.
 
 *Here is the table of Broad-Splits associations used in this app: http://hla.alleles.org/antigens/broads_splits.html*
 
-Finally, we also specify high resolution, which is the most specific, specifying also things like specific HLA protein,
+Last resolution type is high resolution. It defines specific HLA protein,
 etc. E.g.: A\*24:19
 
 |Nomenclature | Indicates|
@@ -78,21 +78,21 @@ However, sometimes antibodies can be bad, for instance in situations like organ 
 an organ after it is transplanted, and cause the immune system to destroy it. Most of the time these antibodies are
 directed against HLA.
 
-Antibodies of a patient are found by a special lab test. This test does not find the antibodies directly but tests which antigens (from a limited set) the patient has the antibodies against. The lab test can differ from lab to lab, each can use a bit different set of antigens in the test.
+The patient's antibodies are found by a special lab test. This test does not find the antibodies directly but tests which antigens (from a limited set) the patient has the antibodies against. The lab test can differ from lab to lab, each can use a bit different set of antigens in the test.
 
-For each antigen, the test reports an MFI value, and the higher the MFI value is the stronger was the immunological response. The lab then uses some cutoff value to distinguish which antibodies of the patient are strong enough and which are not. This cutoff can differ between labs and in some special cases it can be set differently for patients from the same lab (in the case the patient really needs a kidney and it is worth for the patient to have the transplant even when there is a small immunological response)
+For each antigen, the test reports an MFI value, higher MFI values indicate the stronger immunological response. The lab then uses some cutoff value to distinguish which antibodies of the patient are strong enough and which are not. This cutoff can differ between labs and in some special cases it can be set differently for patients from the same lab (in the case the patient really needs a kidney and the transplant is worth it even with a small immunological response).
 
 Further we will be using terms:
 - Positive antibody of a patient: antibody of the patient was in a lab test higher or equal to cutoff (we use also "over cutoff").
 - Negative antibody of a patient: antibody of the patient was in a lab test strictly lower than the cutoff (we use also "below").
 - All tested antibodies of a patient: all antibodies the patient was tested for.
 
-The parsing is done in two modes. Type A and type B that are described below. (The name is purely our, it has no connection with any term used in immunology). Decision which parsing mode is selected is simple, if requirements for type A are fulfilled, type A processing runs, otherwise we fallback to type B.
+The parsing is done in two modes, type A and type B. Both of them are described below. (The name is purely our, it has no connection with any term used in immunology). The decision which parsing mode is selected is simple, if requirements for type A are fulfilled, type A processing runs, otherwise we fall back to type B.
 
-Type A requires that all antibodies are in high resolution and having all tested antibodies of a patient. We assume that if the criteria below are fullfiled this holds.
+Type A requires that all antibodies are in high resolution and having all tested antibodies of a patient. We assume that if the criteria below are fulfilled this holds.
 - All antibodies we receive are in high resolution.
-- There is at least 20 antibodies provided.
-- There is at least 1 antibody below cutoff.
+- There are at least 20 antibodies provided.
+- There is at least 1 antibody below the cutoff.
 
 ### Processing logic of type A
 In this case, we assume we have received all tested antibodies in high resolution with MFI values and the required cutoff (The cutoff is configurable. In some cases the user can decide to change it for some patients, for more details see section Configuring Cutoff).
@@ -100,14 +100,14 @@ In this case, we assume we have received all tested antibodies in high resolutio
 This case can handle also an antibody in the form of DP*[01:01;02:02]. It uses an algorithm that parses the specific antibodies against alpha and beta chains. In case there is some unclear case it raises a warning and requires an immunologist to check the correctness of the algorithm result.
 
 There are three reasons why we ask for all tested antibodies of a patient and not only the positive ones:
-- for the algorithm that is parsing antibodies of type DP*[01:01;02:02] it is needed (see the detailed description of the algorithm below)
-- In case the user wants to alter MFI, the antibodies that were negative can become positive
+- It is required for the algorithm that is parsing antibodies of type DP*[01:01;02:02], see the detailed description of the algorithm below.
+- In case the user wants to alter MFI, the antibodies that were negative can become positive.
 - When estimating crossmatch, sometimes it is crucial to have the full picture. (See below HIGH_RES and HIGH_RES_WITH_SPLIT crossmatch types where type A is required.)
 
 ### Processing logic of type B
-In this case, we do not get all the antibodies the test was done for we get the antibodies in split or mixed resolution. In this case, the results are limited:
-- processing of antibodies such as DP*[01:01;02:02] is not allowed,
-- MFI modification can be done but lead to omitting some antibodies
+In this case, we do not get all the antibodies the test was done for, we get the antibodies in split or mixed resolution. In this case, the results are limited:
+- Processing of antibodies such as DP*[01:01;02:02] is not allowed.
+- MFI modification can be done but lead to omitting some antibodies.
 - Some crossmatches might not be found. (See below HIGH_RES and HIGH_RES_WITH_SPLIT crossmatch types where type A is required.). This is more important in the case the antibodies are in high resolution. Because in split it can be usually quite safely assumed that all split antibodies were tested.
 
 ## Crossmatch
@@ -202,9 +202,9 @@ the person being tested will react via pre-existing antibodies against human cel
 ## Square bracket antibody parsing algorithm
 
 When we receive antibodies in format DP*[01:01;02:02] we are using a special algorithm to deduce whether there are
-antibodies against both alpha and beta allels or just from one of them.
+antibodies against both alpha and beta alleles or just from one of them.
 
 TODO Add algorithm description
 
 ## Configuring cutoff
-Original cutoff can be sometimes configured. The usual reason is that there is a patient that really needs a kidney and is highly immunized. In this case, it might be worth for the patient to get a kidney from a donor against whom the patient has antibodies. However, only antibodies with MFI only slightly over the original cutoff. This is possible in the app via increase of the cutoff of the patient. Whether to increase the cutoff and how much is always up to the user to decide.
+The original cutoff can be sometimes configured. The usual reason is that there is a patient that really needs a kidney and is highly immunized. In this case, it might be worth it for the patient to get a kidney from a donor against whom the patient has antibodies. However, only antibodies with MFI only slightly over the original cutoff. This is possible in the app via an increase in the cutoff of the patient. Whether to increase the cutoff and how much is always up to the user to decide.
