@@ -100,8 +100,9 @@ class Namespace(flask_restx.Namespace):
 
         response_decorators = []
         for ex_idx, exception in enumerate(exceptions):
-            if exception not in Namespace.__ERROR_INFO:
-                exception = NotImplementedError
+            # TODO: delete assert if _sort enabled (https://github.com/mild-blue/txmatching/pull/982#discussion_r974438100
+            assert exception in Namespace.__ERROR_INFO, f'There is no definitive response for ' \
+                                                        f'{exception.__name__} in error-handler.'
 
             combined_description = Namespace._create_combined_description_for_duplicates(exceptions,
                                                                                          ex_idx)
@@ -123,10 +124,11 @@ class Namespace(flask_restx.Namespace):
         :param exception_idx: exception's idx. Searching duplicates starting from it.
         :return: combined description for all duplicates. If no duplicates, returns ''.
         """
-        # searching duplicates for exception in exceptions[exception_idx:]
+        # searching duplicates for exception in exceptions
+        exceptions = list(exceptions)
         exception = exceptions[exception_idx]
         duplicates = [error for error, info in cls.__ERROR_INFO.items() if
-                      error in exceptions[exception_idx:] and
+                      error in exceptions and
                       cls.__ERROR_INFO[exception].code == info.code]
         # creating combined_description
         if len(duplicates) > 1:
@@ -146,9 +148,8 @@ class Namespace(flask_restx.Namespace):
         :return: sorted list.
         """
         def key_func(exception):
-            if exception in cls.__ERROR_INFO:
-                return cls.__ERROR_INFO[exception].code
-
-            return cls.__ERROR_INFO[NotImplementedError].code
+            assert exception in cls.__ERROR_INFO, f'There is no definitive response ' \
+                                                  f'for {exception.__name__} in error-handler.'
+            return cls.__ERROR_INFO[exception].code
 
         return sorted(exceptions, key=key_func)

@@ -272,23 +272,15 @@ def generate_namespace_error_info() -> Dict[type, Tuple[str, int]]:
     """
     Activates decorator @_namespace_error_responses for generating error information dict
     by exception as a key.
-    For error-handler without response exception NotImplementedError with code 501 is provided
-    by default.
     :return: dict of information about exceptions as a key.
     """
     fake_api = Api()
     _user_auth_handlers(fake_api)
 
-    responses = {NotImplementedError: (f'This response is not implemented by error-handler. '
-                                       f'Mark needed exception using '
-                                       f"'@_namespace_error_response(code=CODE, description=DESCRIPTION)' "
-                                       f'in {__file__}.{_user_auth_handlers.__name__}', 501)}
+    responses = {}
     ErrorInfo = namedtuple('ErrorInfo', ['description', 'code'])
     for exception, handle_function in fake_api.error_handlers.items():
         if handle_function in _HANDLERS_CODE_DESCRIPTION:
-            assert exception is not NotImplementedError, f'NotImplementedError is used as ' \
-                                                         f'default error for uncreated namespace error responses in {__name__}.\n' \
-                                                         f'Handling NotImplementedError with api.errorhandler can lead to collisions.'
             responses[exception] = ErrorInfo._make(_HANDLERS_CODE_DESCRIPTION[handle_function])
 
     return responses
