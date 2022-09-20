@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Set, Tuple
 
 import flask_restx
 
@@ -89,7 +89,7 @@ class Namespace(flask_restx.Namespace):
         # TODO: marshall instead https://github.com/mild-blue/txmatching/issues/562
         # return self.marshal_with(model, code=code, description=description, mask=False, skip_none=True)
 
-    def response_errors(self, exceptions: List[type]):
+    def response_errors(self, exceptions: Set[type]):
         """
         Creating response decorators for given exceptions.
         :param exceptions: list of exceptions for creating responses from error_handler.py
@@ -99,23 +99,23 @@ class Namespace(flask_restx.Namespace):
         exceptions = Namespace._sort_exceptions_by_code(exceptions)
 
         response_decorators = []
-        for exception, ex_idx in zip(exceptions, range(len(exceptions))):
+        for ex_idx, exception in enumerate(exceptions):
             if exception not in Namespace.__ERROR_INFO:
                 exception = NotImplementedError
 
             combined_description = Namespace._create_combined_description_for_duplicates(exceptions,
                                                                                          ex_idx)
             description = combined_description if combined_description else \
-                Namespace.__ERROR_INFO[exception][0]
+                Namespace.__ERROR_INFO[exception].description
 
-            response_decorators.append(self.response(code=Namespace.__ERROR_INFO[exception][1],
+            response_decorators.append(self.response(code=Namespace.__ERROR_INFO[exception].code,
                                                      description=description,
                                                      model=fail_model))
 
         return self._combine_decorators(response_decorators)
 
     @classmethod
-    def _create_combined_description_for_duplicates(cls, exceptions: List[type], exception_idx: int) -> str:
+    def _create_combined_description_for_duplicates(cls, exceptions: Set[type], exception_idx: int) -> str:
         """
         Creates combined descriptions for error responses with the same code.
         Info about exception is taken from cls.__ERROR_INFO
@@ -127,20 +127,19 @@ class Namespace(flask_restx.Namespace):
         exception = exceptions[exception_idx]
         duplicates = [error for error, info in cls.__ERROR_INFO.items() if
                       error in exceptions[exception_idx:] and
-                      cls.__ERROR_INFO[exception][1] == info[1]]
+                      cls.__ERROR_INFO[exception].code == info.code]
         # creating combined_description
         if len(duplicates) > 1:
-            combined_description = ''
-            for error in duplicates:
-                combined_description += (cls.__ERROR_INFO[error][0] + '/')
-            combined_description = combined_description[:-1]
+            # creating combined_description
+            descriptions = [cls.__ERROR_INFO[error].description for error in duplicates]
+            combined_description = '/'.join(descriptions)
 
             return combined_description
 
         return ''
 
     @classmethod
-    def _sort_exceptions_by_code(cls, exceptions: List[type]):
+    def _sort_exceptions_by_code(cls, exceptions: Set[type]):
         """
         Sorting list of exceptions by code.
         Info about exceptions is taken from cls.__ERROR_INFO.
@@ -148,8 +147,8 @@ class Namespace(flask_restx.Namespace):
         """
         def key_func(exception):
             if exception in cls.__ERROR_INFO:
-                return cls.__ERROR_INFO[exception][1]
+                return cls.__ERROR_INFO[exception].code
 
-            return cls.__ERROR_INFO[NotImplementedError][1]
+            return cls.__ERROR_INFO[NotImplementedError].code
 
         return sorted(exceptions, key=key_func)

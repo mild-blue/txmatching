@@ -32,10 +32,10 @@ OPTIMIZER_DESCRIPTION = 'Endpoint that calculates matchings from compatibility g
 class Optimize(Resource):
     @optimizer_api.request_body(OptimizerRequestObjectJson)
     @optimizer_api.response_ok(OptimizerReturnObjectJson, description=OPTIMIZER_DESCRIPTION)
-    @optimizer_api.response_errors(exceptions=[KeyError,
+    @optimizer_api.response_errors(exceptions={KeyError,
                                                InvalidOtpException,
                                                AuthenticationException,
-                                               InvalidAuthCallException])
+                                               InvalidAuthCallException})
     def post(self) -> str:
         optimizer_request_object = request_body(OptimizerRequest)
 
@@ -61,10 +61,10 @@ class Optimize(Resource):
     )
     @optimizer_api.response_ok(OptimizerRequestObjectJson, description=EXPORT_DESCRIPTION)
     @optimizer_api.response_ok(description=EXPORT_DESCRIPTION)
-    @optimizer_api.response_errors(exceptions=[KeyError,
+    @optimizer_api.response_errors(exceptions={KeyError,
                                                InvalidOtpException,
                                                AuthenticationException,
-                                               InvalidAuthCallException])
+                                               InvalidAuthCallException})
     @optimizer_api.require_user_login()
     # @require_valid_txm_event_id()
     @require_valid_config_id()

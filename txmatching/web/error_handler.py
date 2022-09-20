@@ -1,6 +1,7 @@
 # pylint: disable=unused-variable
 # because they are registered using annotation
 import logging
+from collections import namedtuple
 from typing import Dict, Tuple
 
 from dacite import DaciteError
@@ -75,7 +76,8 @@ def _user_auth_handlers(api: Api):
         return {'error': 'Authentication failed.', 'message': 'Invalid OTP.'}, 401
 
     @api.errorhandler(CouldNotSendOtpUsingSmsServiceException)
-    @_namespace_error_response(code=503, description='Service(s) is unavailable.')
+    @_namespace_error_response(code=503, description='It was not possible to reach the SMS gate, '
+                                                     'thus the one time password could not be send.')
     def handle_could_not_send_otp(error: CouldNotSendOtpUsingSmsServiceException):
         """
         Service(s) is unavailable.
@@ -281,12 +283,13 @@ def generate_namespace_error_info() -> Dict[type, Tuple[str, int]]:
                                        f'Mark needed exception using '
                                        f"'@_namespace_error_response(code=CODE, description=DESCRIPTION)' "
                                        f'in {__file__}.{_user_auth_handlers.__name__}', 501)}
+    ErrorInfo = namedtuple('ErrorInfo', ['description', 'code'])
     for exception, handle_function in fake_api.error_handlers.items():
         if handle_function in _HANDLERS_CODE_DESCRIPTION:
             assert exception is not NotImplementedError, f'NotImplementedError is used as ' \
                                                          f'default error for uncreated namespace error responses in {__name__}.\n' \
                                                          f'Handling NotImplementedError with api.errorhandler can lead to collisions.'
-            responses[exception] = _HANDLERS_CODE_DESCRIPTION[handle_function]
+            responses[exception] = ErrorInfo._make(_HANDLERS_CODE_DESCRIPTION[handle_function])
 
     return responses
 

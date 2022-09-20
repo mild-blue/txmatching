@@ -174,7 +174,7 @@
             "get": {
                 "responses": {
                     "503": {
-                        "description": "Service(s) is unavailable.",
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -364,7 +364,7 @@
             "post": {
                 "responses": {
                     "503": {
-                        "description": "Service(s) is unavailable.",
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -423,7 +423,7 @@
             "put": {
                 "responses": {
                     "503": {
-                        "description": "Service(s) is unavailable.",
+                        "description": "It was not possible to reach the SMS gate, thus the one time password could not be send.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }

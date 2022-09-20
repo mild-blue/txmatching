@@ -6,15 +6,14 @@ from flask import jsonify
 from flask_restx import Resource, fields
 from sqlalchemy.exc import OperationalError
 
-from txmatching.configuration.app_configuration.application_configuration import (ApplicationColourScheme,
-                                                                                  ApplicationEnvironment,
-                                                                                  get_application_configuration)
+from txmatching.auth.exceptions import (
+    CouldNotSendOtpUsingSmsServiceException, InvalidAuthCallException)
+from txmatching.configuration.app_configuration.application_configuration import (
+    ApplicationColourScheme, ApplicationEnvironment,
+    get_application_configuration)
 from txmatching.database.db import db
 from txmatching.web.web_utils.namespaces import service_api
 from txmatching.web.web_utils.route_utils import response_ok
-
-from txmatching.auth.exceptions import InvalidAuthCallException, \
-    CouldNotSendOtpUsingSmsServiceException
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +26,8 @@ class Status(Resource):
     })
 
     @service_api.response_ok(status, description='Returns ok if the service is healthy.')
-    @service_api.response_errors(exceptions=[InvalidAuthCallException,
-                                             CouldNotSendOtpUsingSmsServiceException])
+    @service_api.response_errors(exceptions={InvalidAuthCallException,
+                                             CouldNotSendOtpUsingSmsServiceException})
     def get(self):
         try:
             db.session.execute('SELECT 1')
@@ -51,7 +50,7 @@ class Version(Resource):
     })
 
     @service_api.response_ok(version_model, description='Returns version of the code')
-    @service_api.response_errors(exceptions=[InvalidAuthCallException])
+    @service_api.response_errors(exceptions={InvalidAuthCallException})
     def get(self):
         conf = get_application_configuration()
         logger.debug(f'Application version: {conf.code_version} in environment {conf.environment}.')
