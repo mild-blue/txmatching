@@ -127,7 +127,7 @@ any HLAs the donor has been typed for programmatically.
 
 In the case of a lab crossmatch there either is a crossmatch or there is not. But in the case of virtual crossmatch, it is always only an approximation of reality and estimation of a likelihood of a crossmatch. Therefore, in cooperation with immunologists, we have concluded that it makes sense to have several levels of virtual crossmatch.
 
-In the case of split or broad resolution, we do not assume that. We assume that as there are less split antigens that the patient has been tested for all relevant ones. And therefore for the algorithm, it is enough to know only the positive ones. Although, negative can be sent too and are ignored.
+Some crossmatch levels or ways to find a crossmatch are meaningful only in the case of processing logic of type A, because with type B we have less information. 
 
 Below we describe all the different crossmatch levels. For each level, we describe a crossmatch for one specific antigen of the donor.
 
@@ -153,8 +153,8 @@ Example for case 1: donor has antigen DQ8 and the recipient has antibody DRB1\*0
 2. This criterion is more complex. Here we list the requirements in a list:
    1. Donor antigen is in high resolution.
    2. The recipient is type A parsed.
-   3. Donors antigen is not in the set of all tested antibodies.
-   4. Some antibodies that match donors' antigens in split resolution are positive and some are negative.
+   3. Donor's antigen is not in the set of all tested antibodies.
+   4. Some antibodies that match donor's antigens in split resolution are positive and some are negative.
 
 Example for case 1: donor has antigen DR8, and the recipient has antibodies DRB1\*08:01 and DRB1\*08:18 and only one is over
 the cutoff.
