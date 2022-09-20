@@ -5,7 +5,7 @@
 ## What is HLA?
 
 HLA is a set of proteins on the surface of every person’s cells. HLA stands for Human Leukocyte Antigen. Leukocyte means
-white cell and antigen is something the immune system reacts to.
+white blood cell and antigen is something the immune system reacts to.
 
 Antigens on cell surfaces can act as flags that the immune system looks at to determine if something is an invader.
 
