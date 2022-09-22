@@ -12,7 +12,7 @@ from txmatching.utils.enums import AntibodyMatchTypes, HLACrossmatchLevel
 from txmatching.utils.hla_system.hla_crossmatch import (
     AntibodyMatch, is_positive_hla_crossmatch,
     _do_crossmatch_in_type_a,
-    _do_crossmatch_in_type_b)
+    _do_crossmatch_in_type_b, MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A, _is_recipient_type_a)
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +46,34 @@ class TestCrossmatch(unittest.TestCase):
     def _assert_raw_code_equal(self, raw_code: str, expected_hla_code: HLACode):
         actual_hla_code = create_hla_type(raw_code).code
         self.assertEqual(expected_hla_code, actual_hla_code)
+
+    def test_is_recipient_type_a(self):
+        # MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A = 20
+        # load 10 + 10 unique high resolution antibodies from the resource file
+        with open("../../resources/high_res_example_data/high_res_example_data_CZE.json") as f:
+            import json
+            data = json.load(f)
+
+            hla_typing = data["donors"][0]["hla_typing"]
+            hla_typing.extend(data["donors"][1]["hla_typing"])
+
+            antibodies = [create_antibody(hla, 2100, 2000) for hla in hla_typing]
+            # set first antibody to negative to fulfill the criteria
+            antibodies[0] = create_antibody(antibodies[0].raw_code, 1900, 2000)
+
+        # all criteria are fulfilled
+        self.assertTrue(_is_recipient_type_a(create_antibodies(antibodies)))
+
+        # not all antibodies are in high resolution
+        antibodies[0] = create_antibody("A9", 2100, 2000)
+        self.assertFalse(_is_recipient_type_a(create_antibodies(antibodies)))
+
+        # there is less than `MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A`
+        self.assertFalse(_is_recipient_type_a(create_antibodies(antibodies[:-1])))
+
+        # there is no antibody below the cutoff
+        antibodies[0] = create_antibody(antibodies[0].raw_code, 2100, 2000)
+        self.assertFalse(_is_recipient_type_a(create_antibodies(antibodies[:-1])))
 
     def test_crossmatch_split(self):
         """
