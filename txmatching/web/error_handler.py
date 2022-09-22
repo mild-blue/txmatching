@@ -1,11 +1,10 @@
 # pylint: disable=unused-variable
 # because they are registered using annotation
 import logging
-from collections import namedtuple
-from typing import Dict, Tuple
 
 from dacite import DaciteError
 from flask_restx import Api
+from sqlalchemy.exc import OperationalError
 from werkzeug.exceptions import Forbidden, HTTPException
 
 from txmatching.auth.exceptions import (
@@ -216,8 +215,15 @@ def _user_auth_handlers(api: Api):
         _log_warning(error)
         return {'error': 'Non-unique patients', 'message': str(error)}, 409
 
-
-_HANDLERS_CODE_DESCRIPTION = {}  # information about handler function: (description, code)
+    @api.errorhandler(OperationalError)
+    @_namespace_error_response(code=503, description='Database service is unavailable.')
+    def handle_operational_error(error: OperationalError):
+        """
+        Database service is unavailable.
+        # Created for namespace error response.
+        """
+        _log_warning(error)
+        return {'error': 'Operational error', 'message': str(error)}, 503
 
 
 def _namespace_error_response(code: int, description: str):
@@ -225,7 +231,8 @@ def _namespace_error_response(code: int, description: str):
     Decorator marks, that handle-function will be used as error response.
     """
     def inner(func):
-        _HANDLERS_CODE_DESCRIPTION[func] = (description, code)
+        setattr(func, 'description', description)
+        setattr(func, 'code', code)
         return func
 
     return inner
@@ -266,24 +273,6 @@ def _default_error_handlers(api: Api):
             'error': error.name,
             'message': strip_on_prod(error.description)
         }, _get_code_from_error_else_500(error)
-
-
-def generate_namespace_error_info() -> Dict[type, Tuple[str, int]]:
-    """
-    Activates decorator @_namespace_error_responses for generating error information dict
-    by exception as a key.
-    :return: dict of information about exceptions as a key.
-    """
-    fake_api = Api()
-    _user_auth_handlers(fake_api)
-
-    responses = {}
-    ErrorInfo = namedtuple('ErrorInfo', ['description', 'code'])
-    for exception, handle_function in fake_api.error_handlers.items():
-        if handle_function in _HANDLERS_CODE_DESCRIPTION:
-            responses[exception] = ErrorInfo._make(_HANDLERS_CODE_DESCRIPTION[handle_function])
-
-    return responses
 
 
 def _log_exception(ex: Exception):

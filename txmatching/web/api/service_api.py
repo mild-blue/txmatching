@@ -6,8 +6,7 @@ from flask import jsonify
 from flask_restx import Resource, fields
 from sqlalchemy.exc import OperationalError
 
-from txmatching.auth.exceptions import (
-    CouldNotSendOtpUsingSmsServiceException, InvalidAuthCallException)
+from txmatching.auth.exceptions import InvalidAuthCallException
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationColourScheme, ApplicationEnvironment,
     get_application_configuration)
@@ -27,7 +26,7 @@ class Status(Resource):
 
     @service_api.response_ok(status, description='Returns ok if the service is healthy.')
     @service_api.response_errors(exceptions={InvalidAuthCallException,
-                                             CouldNotSendOtpUsingSmsServiceException})
+                                             OperationalError})
     def get(self):
         try:
             db.session.execute('SELECT 1')

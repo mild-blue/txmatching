@@ -1993,8 +1993,7 @@ paths:
                     schema:
                         $ref: '#/definitions/FailResponse'
                 '503':
-                    description: It was not possible to reach the SMS gate, thus the
-                        one time password could not be send.
+                    description: Database service is unavailable.
                     schema:
                         $ref: '#/definitions/FailResponse'
             tags:

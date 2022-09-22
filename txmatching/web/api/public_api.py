@@ -5,9 +5,6 @@ import logging
 from flask import request
 from flask_restx import Resource
 
-from txmatching.auth.exceptions import (AuthenticationException,
-                                        InvalidAuthCallException,
-                                        InvalidOtpException)
 from txmatching.auth.operation_guards.country_guard import \
     guard_user_has_access_to_country
 from txmatching.auth.operation_guards.txm_event_guard import \
@@ -44,10 +41,7 @@ class TxmEventUploadPatients(Resource):
                     ' login endpoint.'
     )
     @public_api.response_ok(PatientUploadSuccessJson)
-    @public_api.response_errors(exceptions={KeyError,
-                                            InvalidOtpException,
-                                            AuthenticationException,
-                                            InvalidAuthCallException})
+    @public_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @allow_service_role()
     def put(self):
         patient_upload_dto = request_body(PatientUploadDTOIn)

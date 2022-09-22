@@ -7,9 +7,6 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.exceptions import (AuthenticationException,
-                                        InvalidAuthCallException,
-                                        InvalidOtpException)
 from txmatching.auth.request_context import get_user_role
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
@@ -37,10 +34,7 @@ class CalculateFromConfig(Resource):
     @matching_api.require_user_login()
     @matching_api.request_body(ConfigurationJson)
     @matching_api.response_ok(CalculatedMatchingsJson, 'List of all matchings for given configuration.')
-    @matching_api.response_errors(exceptions={KeyError,
-                                              InvalidOtpException,
-                                              AuthenticationException,
-                                              InvalidAuthCallException})
+    @matching_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int) -> str:
         configuration_parameters = request_body(ConfigParameters)

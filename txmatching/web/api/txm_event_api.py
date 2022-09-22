@@ -6,9 +6,7 @@ from flask_restx import Resource
 
 from txmatching.auth.auth_check import require_role, require_valid_txm_event_id
 from txmatching.auth.data_types import UserRole
-from txmatching.auth.exceptions import (AuthenticationException,
-                                        InvalidAuthCallException,
-                                        InvalidOtpException, NonUniquePatient)
+from txmatching.auth.exceptions import NonUniquePatient
 from txmatching.data_transfer_objects.external_patient_upload.swagger import (
     CopyPatientsJsonOut, UploadPatientsJson)
 from txmatching.data_transfer_objects.patients.txm_event_dto_in import (
@@ -44,11 +42,7 @@ class TxmEventApi(Resource):
     )
     @txm_event_api.response_ok(model=TxmEventJsonOut, code=201,
                                description='Returns the newly created TXM event object.')
-    @txm_event_api.response_errors(exceptions={KeyError,
-                                               InvalidOtpException,
-                                               AuthenticationException,
-                                               NonUniquePatient,
-                                               InvalidAuthCallException})
+    @txm_event_api.response_errors(exceptions={NonUniquePatient}, add_default_namespace_errors=True)
     @require_role(UserRole.ADMIN)
     def post(self):
         tmx_event = request_body(TxmEventDTOIn)
@@ -62,10 +56,7 @@ class TxmEventApi(Resource):
     )
     @txm_event_api.require_user_login()
     @txm_event_api.response_ok(TxmEventsJson, description='List of allowed txmEvents.')
-    @txm_event_api.response_errors(exceptions={KeyError,
-                                               InvalidOtpException,
-                                               AuthenticationException,
-                                               InvalidAuthCallException})
+    @txm_event_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     def get(self) -> str:
         txm_events = [
             get_txm_event_base(e) for e in
@@ -85,11 +76,7 @@ class TxmDefaultEventApi(Resource):
     @txm_event_api.require_user_login()
     @txm_event_api.request_body(TxmDefaultEventJsonIn, 'Set default txm event for the logged user.')
     @txm_event_api.response_ok(TxmEventJsonOut, description='Returns the default event.')
-    @txm_event_api.response_errors(exceptions={KeyError,
-                                               InvalidOtpException,
-                                               AuthenticationException,
-                                               NonUniquePatient,
-                                               InvalidAuthCallException})
+    @txm_event_api.response_errors(exceptions={NonUniquePatient}, add_default_namespace_errors=True)
     def put(self):
         default_event_in = request_body(TxmDefaultEventDTOIn)
         update_default_txm_event_id_for_current_user(default_event_in.id)
@@ -100,10 +87,7 @@ class TxmDefaultEventApi(Resource):
     @txm_event_api.doc(description='Get default event')
     @txm_event_api.require_user_login()
     @txm_event_api.response_ok(TxmEventJsonOut, description='Default event.')
-    @txm_event_api.response_errors(exceptions={KeyError,
-                                               InvalidOtpException,
-                                               AuthenticationException,
-                                               InvalidAuthCallException})
+    @txm_event_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     def get(self) -> str:
         txm_event = get_txm_event_base(get_txm_event_id_for_current_user())
         return response_ok(convert_txm_event_base_to_dto(txm_event))
@@ -116,10 +100,7 @@ class TxmEventUpdateApi(Resource):
     @txm_event_api.require_user_login()
     @txm_event_api.request_body(TxmEventUpdateJsonIn, 'TXM event parameters that should be updated.')
     @txm_event_api.response_ok(TxmEventJsonOut, description='Returns the updated TXM event.')
-    @txm_event_api.response_errors(exceptions={KeyError,
-                                               InvalidOtpException,
-                                               AuthenticationException,
-                                               InvalidAuthCallException})
+    @txm_event_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @require_role(UserRole.ADMIN)
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):
@@ -151,10 +132,7 @@ class TxmEventDeleteApi(Resource):
         description='Endpoint that lets an ADMIN delete existing TXM event.'
     )
     @txm_event_api.response_ok(description='Returns status code representing result of TXM event object deletion.')
-    @txm_event_api.response_errors(exceptions={KeyError,
-                                               InvalidOtpException,
-                                               AuthenticationException,
-                                               InvalidAuthCallException})
+    @txm_event_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @require_role(UserRole.ADMIN)
     def delete(self, txm_event_id: int):
         delete_txm_event(txm_event_id)
@@ -167,10 +145,7 @@ class TxmExportEventApi(Resource):
     @require_role(UserRole.ADMIN)
     @txm_event_api.response_ok(UploadPatientsJson, description='Exported patients DTO, Ready to be uploaded to'
                                                                'some other event')
-    @txm_event_api.response_errors(exceptions={KeyError,
-                                               InvalidOtpException,
-                                               AuthenticationException,
-                                               InvalidAuthCallException})
+    @txm_event_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @txm_event_api.request_body(
         TxmEventExportJsonIn,
         description='Export patients from provided country and TXM event. Make the file ready to be'
@@ -193,10 +168,7 @@ class TxmCopyPatientsBetweenEventsApi(Resource):
     @txm_event_api.response_ok(
         CopyPatientsJsonOut,
         description='Patients were successfully copied. List of new patients ids: ')
-    @txm_event_api.response_errors(exceptions={KeyError,
-                                               InvalidOtpException,
-                                               AuthenticationException,
-                                               InvalidAuthCallException})
+    @txm_event_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @txm_event_api.request_body(
         TxmEventCopyPatientsJsonIn,
         description='Copy list of patients from one event to the other'

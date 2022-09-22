@@ -5,9 +5,6 @@ from flask_restx import Resource
 # todo require_valid_txm_event_id
 from txmatching.auth.auth_check import (require_valid_config_id,
                                         require_valid_txm_event_id)
-from txmatching.auth.exceptions import (AuthenticationException,
-                                        InvalidAuthCallException,
-                                        InvalidOtpException)
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
 from txmatching.data_transfer_objects.optimizer.optimizer_in_swagger import (
@@ -32,10 +29,7 @@ OPTIMIZER_DESCRIPTION = 'Endpoint that calculates matchings from compatibility g
 class Optimize(Resource):
     @optimizer_api.request_body(OptimizerRequestObjectJson)
     @optimizer_api.response_ok(OptimizerReturnObjectJson, description=OPTIMIZER_DESCRIPTION)
-    @optimizer_api.response_errors(exceptions={KeyError,
-                                               InvalidOtpException,
-                                               AuthenticationException,
-                                               InvalidAuthCallException})
+    @optimizer_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     def post(self) -> str:
         optimizer_request_object = request_body(OptimizerRequest)
 
@@ -61,10 +55,7 @@ class Optimize(Resource):
     )
     @optimizer_api.response_ok(OptimizerRequestObjectJson, description=EXPORT_DESCRIPTION)
     @optimizer_api.response_ok(description=EXPORT_DESCRIPTION)
-    @optimizer_api.response_errors(exceptions={KeyError,
-                                               InvalidOtpException,
-                                               AuthenticationException,
-                                               InvalidAuthCallException})
+    @optimizer_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @optimizer_api.require_user_login()
     # @require_valid_txm_event_id()
     @require_valid_config_id()
