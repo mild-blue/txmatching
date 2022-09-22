@@ -327,18 +327,6 @@ class TestCrossmatch(unittest.TestCase):
                                                   AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)],
                                    is_type_a=True)
 
-        # TODO: Je toto potřeba? `create_antibodies` stejně volá nějaké parsování,
-        #  takže `hla_antibody_list` bude naplněn stejně
-        #  při (mfi < cutoff, mfi > cutoff) jako při (mfi > cutoff, mfi < cutoff)
-        # TODO: Pokud není, !zjednodušit! komentáře u jednotlivých testů
-        # # first matching antibody with mfi < cutoff, second with mfi > cutoff  # HIGH_RES_WITH_SPLIT_1
-        # self._assert_matches_equal('A23',
-        #                            [create_antibody('A*23:01', 1900, 2000),
-        #                             create_antibody('A*23:04', 2100, 2000)], True,
-        #                            [AntibodyMatch(create_antibody('A*23:04', 2100, 2000),
-        #                                           AntibodyMatchTypes.HIGH_RES_WITH_SPLIT)],
-        #                            is_type_a=True)
-
         # first matching antibody with mfi > cutoff, second with mfi < cutoff  # HIGH_RES_WITH_SPLIT_2
         self._assert_matches_equal('A*24:02',
                                    [create_antibody('A*24:37', 2100, 2000),
@@ -355,15 +343,6 @@ class TestCrossmatch(unittest.TestCase):
                                     create_antibody('A9', 2100, 2000)], True,
                                    [AntibodyMatch(create_antibody('A9', 2000, 2000), AntibodyMatchTypes.BROAD)],
                                    is_type_a=False)
-
-        # TODO: Tohle už je taky podle mě zbytečné, protože to, že se správně počítá průměr mfi jsme zjistili už nahoře
-        #  a to, že funguje BROAD_1 jsme zjistili test nad tímto
-        # # first matching antibody with mfi1 > cutoff, second with mfi2 > mfi1  # BROAD_1
-        # self._assert_matches_equal('A9',
-        #                            [create_antibody('A9', 2100, 2000),
-        #                             create_antibody('A9', 2200, 2000)], True,
-        #                            [AntibodyMatch(create_antibody('A9', 2150, 2000), AntibodyMatchTypes.BROAD)],
-        #                            is_type_a=False)
 
         # first matching antibody with mfi < cutoff, second with mfi > cutoff  # BROAD_2
         self._assert_matches_equal('A*23:01',
