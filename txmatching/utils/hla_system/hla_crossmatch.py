@@ -7,6 +7,9 @@ from txmatching.utils.enums import (AntibodyMatchTypes, HLACrossmatchLevel,
                                     HLAGroup)
 
 
+MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A = 20
+
+
 @dataclass(eq=True, frozen=True)
 class AntibodyMatch:
     hla_antibody: HLAAntibody
@@ -226,7 +229,7 @@ def _is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
             if hla_antibody.mfi < hla_antibody.cutoff:
                 is_at_least_one_antibody_below_cutoff = True
 
-    if total_antibodies < 5:
+    if total_antibodies < MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A:
         return False
 
     if is_at_least_one_antibody_below_cutoff:
