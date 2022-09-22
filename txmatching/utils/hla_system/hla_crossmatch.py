@@ -53,10 +53,6 @@ def _get_antibodies_over_cutoff(antibodies: List[HLAAntibody]) -> List[HLAAntibo
     return [antibody for antibody in antibodies if antibody.mfi >= antibody.cutoff]
 
 
-def _get_antibodies_with_high_res(antibodies: List[HLAAntibody]) -> List[HLAAntibody]:
-    return [antibody for antibody in antibodies if antibody.code.high_res]
-
-
 def _add_undecidable_typization(antibodies: List[HLAAntibody], hla_per_group: HLAPerGroup,
                                 positive_matches: List[AntibodyMatch]):
     if hla_per_group.hla_group == HLAGroup.Other:
@@ -232,7 +228,7 @@ def _is_recipient_type_a(recipient_antibodies: HLAAntibodies) -> bool:
     if total_antibodies < MINIMUM_REQUIRED_ANTIBODIES_FOR_TYPE_A:
         return False
 
-    if is_at_least_one_antibody_below_cutoff:
+    if not is_at_least_one_antibody_below_cutoff:
         return False
 
     return True
