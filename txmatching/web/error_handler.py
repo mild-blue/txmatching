@@ -51,9 +51,7 @@ def _user_auth_handlers(api: Api):
     @api.errorhandler(NotFoundException)
     @_namespace_error_response(code=404, description='Matching not found.')
     def handle_not_found_exception(error: NotFoundException):
-        """
-        Not Found
-        """
+        """Not Found"""
         _log_warning(error)
         return {'error': 'Not Found', 'message': str(error)}, 404
 
@@ -66,9 +64,7 @@ def _user_auth_handlers(api: Api):
     @api.errorhandler(InvalidOtpException)
     @_namespace_error_response(code=401, description='Authentication failed.')
     def handle_invalid_otp_exception(error: InvalidOtpException):
-        """
-        Invalid Otp Exception
-        """
+        """Invalid Otp Exception"""
         _log_warning(error)
         return {'error': 'Authentication failed.', 'message': 'Invalid OTP.'}, 401
 
@@ -76,9 +72,7 @@ def _user_auth_handlers(api: Api):
     @_namespace_error_response(code=503, description='It was not possible to reach the SMS gate, '
                                                      'thus the one time password could not be send.')
     def handle_could_not_send_otp(error: CouldNotSendOtpUsingSmsServiceException):
-        """
-        Could not send Otp
-        """
+        """Could not send Otp"""
         _log_exception(error)
         return {
             'error': 'SMS service unavailable.',
@@ -100,9 +94,7 @@ def _user_auth_handlers(api: Api):
     @api.errorhandler(InvalidAuthCallException)
     @_namespace_error_response(code=500, description='Unexpected error, see contents for details.')
     def handle_invalid_auth_call_exception(error: InvalidAuthCallException):
-        """
-        Invalid auth call exception
-        """
+        """Invalid auth call exception"""
         _log_warning(error)
         return {'error': 'Internal error, please contact support.', 'message': str(error)}, 500
 
@@ -134,9 +126,7 @@ def _user_auth_handlers(api: Api):
     @_namespace_error_response(code=403, description='Access denied. '
                                                      'You do not have rights to access this endpoint.')
     def handle_general_authentication_exception(error: AuthenticationException):
-        """
-        General authentication exception
-        """
+        """General authentication exception"""
         _log_warning(error)
         return {'error': 'Access denied', 'message': str(error)}, 403
 
@@ -174,9 +164,7 @@ def _user_auth_handlers(api: Api):
     @api.errorhandler(KeyError)
     @_namespace_error_response(code=400, description='Wrong data format.')
     def handle_key_error(error: KeyError):
-        """
-        Key Error
-        """
+        """Key Error"""
         _log_warning(error)
         return {'error': 'Invalid request data.', 'message': str(error)}, 400
 
