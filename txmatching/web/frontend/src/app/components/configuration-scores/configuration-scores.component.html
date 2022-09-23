@@ -12,9 +12,9 @@
     <mat-chip-list *ngIf="selectedScores.length > 0">
       <mat-chip *ngFor="let score of selectedScores" (removed)="removeScore(score)">
         <div class="item">
-          <patient [patient]="getDonorByDbId(score.donor_db_id)"></patient>
+          <app-patient [patient]="getDonorByDbId(score.donor_db_id)"></app-patient>
           <mat-icon class="arrow">chevron_right</mat-icon>
-          <patient [patient]="getRecipientByDbId(score.recipient_db_id)"></patient>
+          <app-patient [patient]="getRecipientByDbId(score.recipient_db_id)"></app-patient>
 
           <div class="score">
             score: <strong>{{ score.score }}</strong>
@@ -39,7 +39,7 @@
               [removable]="true"
               (removed)="handleRemove('donor', viewDonor)"
             >
-              <patient [patient]="donor"></patient>
+              <app-patient [patient]="donor"></app-patient>
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
             <input
@@ -59,7 +59,7 @@
             [displayWith]="displayFn"
           >
             <mat-option *ngFor="let patient of filteredDonors | async" [value]="patient">
-              <patient [patient]="patient"></patient>
+              <app-patient [patient]="patient"></app-patient>
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -78,7 +78,7 @@
               [removable]="true"
               (removed)="handleRemove('recipient', viewRecipient)"
             >
-              <patient [patient]="recipient"></patient>
+              <app-patient [patient]="recipient"></app-patient>
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
             <input
@@ -99,7 +99,7 @@
             [displayWith]="displayFn"
           >
             <mat-option *ngFor="let patient of filteredRecipients | async" [value]="patient">
-              <patient [patient]="patient"></patient>
+              <app-patient [patient]="patient"></app-patient>
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>

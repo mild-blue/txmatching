@@ -9,7 +9,7 @@
       <mat-label>Required recipients</mat-label>
       <mat-chip-list #chipList>
         <mat-chip (removed)="remove(patient)" *ngFor="let patient of selectedPatients" [removable]="true">
-          <patient [patient]="patient"></patient>
+          <app-patient [patient]="patient"></app-patient>
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input
@@ -24,7 +24,7 @@
       </mat-chip-list>
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="add($event)" [displayWith]="displayFn">
         <mat-option *ngFor="let patient of filteredPatients | async" [value]="patient">
-          <patient [patient]="patient"></patient>
+          <app-patient [patient]="patient"></app-patient>
         </mat-option>
       </mat-autocomplete>
       <mat-hint> Search and select multiple patients from {{ allPatients.length }} recipients. </mat-hint>

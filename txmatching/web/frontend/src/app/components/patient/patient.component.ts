@@ -2,7 +2,7 @@ import { Component, Input } from "@angular/core";
 import { Patient } from "@app/model/Patient";
 
 @Component({
-  selector: "patient",
+  selector: "app-patient",
   templateUrl: "./patient.component.html",
   styleUrls: ["./patient.component.scss"],
 })

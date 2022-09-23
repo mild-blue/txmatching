@@ -39,6 +39,10 @@ jobs:
         working-directory: txmatching/web/frontend
         run: npm run prettier-check
 
+      - name: Run lint check
+        working-directory: txmatching/web/frontend
+        run: npm run lint-check
+
       - name: Build check
         working-directory: txmatching/web/frontend
         run: npm run build

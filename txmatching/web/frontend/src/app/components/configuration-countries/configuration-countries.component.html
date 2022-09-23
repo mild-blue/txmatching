@@ -11,9 +11,9 @@
 
     <mat-chip-list *ngIf="selectedCombinations.length > 0">
       <mat-chip *ngFor="let combination of selectedCombinations" (removed)="removeCombination(combination)">
-        <country [country]="combination.donor_country"></country>
+        <app-country [country]="combination.donor_country"></app-country>
         <mat-icon class="arrow">chevron_right</mat-icon>
-        <country [country]="combination.recipient_country"></country>
+        <app-country [country]="combination.recipient_country"></app-country>
 
         <mat-icon class="cancel" matChipRemove>cancel</mat-icon>
       </mat-chip>
@@ -34,7 +34,7 @@
               [removable]="true"
               (removed)="handleRemove('donorCountry', viewDonorCountry)"
             >
-              <country [country]="donorCountry"></country>
+              <app-country [country]="donorCountry"></app-country>
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
             <input
@@ -51,7 +51,7 @@
 
           <mat-autocomplete #donorAuto="matAutocomplete" (optionSelected)="handleSelect(viewDonorCountry)">
             <mat-option *ngFor="let country of filteredDonorCountries | async" [value]="country">
-              <country [country]="country"></country>
+              <app-country [country]="country"></app-country>
             </mat-option>
           </mat-autocomplete>
 
@@ -72,7 +72,7 @@
               [removable]="true"
               (removed)="handleRemove('recipientCountry', viewRecipientCountry)"
             >
-              <country [country]="recipientCountry"></country>
+              <app-country [country]="recipientCountry"></app-country>
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
             <input
@@ -89,7 +89,7 @@
 
           <mat-autocomplete #recipientAuto="matAutocomplete" (optionSelected)="handleSelect(viewRecipientCountry)">
             <mat-option *ngFor="let country of filteredRecipientCountries | async" [value]="country">
-              <country [country]="country"></country>
+              <app-country [country]="country"></app-country>
             </mat-option>
           </mat-autocomplete>
           <mat-hint> Search and select 1 country from {{ recipientCountries.length }} recipient countries. </mat-hint>
