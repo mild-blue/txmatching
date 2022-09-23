@@ -52,8 +52,7 @@ def _user_auth_handlers(api: Api):
     @_namespace_error_response(code=404, description='Matching not found.')
     def handle_not_found_exception(error: NotFoundException):
         """
-        Matching not found.
-        / Not Found
+        Not Found
         """
         _log_warning(error)
         return {'error': 'Not Found', 'message': str(error)}, 404
@@ -68,7 +67,6 @@ def _user_auth_handlers(api: Api):
     @_namespace_error_response(code=401, description='Authentication failed.')
     def handle_invalid_otp_exception(error: InvalidOtpException):
         """
-        Authentication failed.
         Invalid Otp Exception
         """
         _log_warning(error)
@@ -79,7 +77,6 @@ def _user_auth_handlers(api: Api):
                                                      'thus the one time password could not be send.')
     def handle_could_not_send_otp(error: CouldNotSendOtpUsingSmsServiceException):
         """
-        Service(s) is unavailable.
         Could not send Otp
         """
         _log_exception(error)
@@ -104,7 +101,6 @@ def _user_auth_handlers(api: Api):
     @_namespace_error_response(code=500, description='Unexpected error, see contents for details.')
     def handle_invalid_auth_call_exception(error: InvalidAuthCallException):
         """
-        Internal error.
         Invalid auth call exception
         """
         _log_warning(error)
@@ -139,7 +135,6 @@ def _user_auth_handlers(api: Api):
                                                      'You do not have rights to access this endpoint.')
     def handle_general_authentication_exception(error: AuthenticationException):
         """
-        Access denied.
         General authentication exception
         """
         _log_warning(error)
@@ -180,7 +175,6 @@ def _user_auth_handlers(api: Api):
     @_namespace_error_response(code=400, description='Wrong data format.')
     def handle_key_error(error: KeyError):
         """
-        Wrong data format.
         Key Error
         """
         _log_warning(error)

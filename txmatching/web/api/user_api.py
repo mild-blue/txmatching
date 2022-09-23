@@ -60,7 +60,7 @@ class OtpLoginApi(Resource):
     @user_api.request_body(OtpInJson)
     @user_api.response_ok(LoginSuccessJson, 'OTP validation was successful. JWT generated.')
     @user_api.response_errors(exceptions={CouldNotSendOtpUsingSmsServiceException},
-                              add_default_namespace_errors= True)
+                              add_default_namespace_errors=True)
     @allow_otp_request()
     def post(self):
         post_data = request.get_json()
