@@ -174,7 +174,7 @@
             "get": {
                 "responses": {
                     "503": {
-                        "description": "Some services are failing.",
+                        "description": "Database service is unavailable.",
                         "schema": {
                             "$ref": "#/definitions/FailResponse"
                         }
@@ -1749,89 +1749,6 @@
                 }
             },
             "type": "object"
-        }
-    },
-    "responses": {
-        "AuthenticationException": {
-            "description": "general_authentication_exception"
-        },
-        "CannotFindShortEnoughRoundsOrPathsInILPSolver": {
-            "description": "too complicated data for solver _exception"
-        },
-        "CouldNotSendOtpUsingSmsServiceException": {
-            "description": "could_not_send_otp"
-        },
-        "CredentialsMismatchException": {
-            "description": "credentials_mismatch_exception"
-        },
-        "DaciteError": {
-            "description": "dacite_exception"
-        },
-        "Exception": {
-            "description": "default_exception_error"
-        },
-        "Forbidden": {
-            "description": "access_denied"
-        },
-        "GuardException": {
-            "description": "guard_exception"
-        },
-        "HTTPException": {
-            "description": "http_exception"
-        },
-        "InvalidArgumentException": {
-            "description": "invalid_argument_exception"
-        },
-        "InvalidAuthCallException": {
-            "description": "invalid_auth_call_exception"
-        },
-        "InvalidEmailException": {
-            "description": "invalid_email_exception"
-        },
-        "InvalidIpAddressAccessException": {
-            "description": "invalid_ip_exception"
-        },
-        "InvalidJWTException": {
-            "description": "invalid_jwt_exception"
-        },
-        "InvalidOtpException": {
-            "description": "invalid_otp_exception"
-        },
-        "InvalidTokenException": {
-            "description": "invalid_token_exception"
-        },
-        "KeyError": {
-            "description": "key_error"
-        },
-        "MaskError": {
-            "description": "When any error occurs on mask"
-        },
-        "NotFoundException": {
-            "description": "not_found_exception"
-        },
-        "OverridingException": {
-            "description": "not_acceptable_exception"
-        },
-        "ParseError": {
-            "description": "When a mask can't be parsed"
-        },
-        "SolverAlreadyRunningException": {
-            "description": "Solver already running"
-        },
-        "TooComplicatedDataForAllSolutionsSolver": {
-            "description": "too complicated data for solver _exception"
-        },
-        "UnauthorizedException": {
-            "description": "unauthorized_exception"
-        },
-        "UserUpdateException": {
-            "description": "user_update_exception"
-        },
-        "ValueError": {
-            "description": "value_error"
-        },
-        "WrongTokenUsedException": {
-            "description": "wrong_used_token_exception"
         }
     }
 }

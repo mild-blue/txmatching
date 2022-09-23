@@ -34,7 +34,7 @@ class CalculateFromConfig(Resource):
     @matching_api.require_user_login()
     @matching_api.request_body(ConfigurationJson)
     @matching_api.response_ok(CalculatedMatchingsJson, 'List of all matchings for given configuration.')
-    @matching_api.response_errors()
+    @matching_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @require_valid_txm_event_id()
     def post(self, txm_event_id: int) -> str:
         configuration_parameters = request_body(ConfigParameters)

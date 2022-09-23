@@ -146,6 +146,13 @@ class OverridingException(BaseTxmException):
     """
 
 
+class NonUniquePatient(BaseTxmException):
+    """
+    Non-unique patients provided.
+    # created for swagger documentation.
+    """
+
+
 def require_auth_condition(condition: bool, message: Optional[str] = None):
     """
     Raises InvalidAuthCallException with message if condition is false.

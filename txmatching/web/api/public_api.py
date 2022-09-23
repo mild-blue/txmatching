@@ -41,7 +41,7 @@ class TxmEventUploadPatients(Resource):
                     ' login endpoint.'
     )
     @public_api.response_ok(PatientUploadSuccessJson)
-    @public_api.response_errors()
+    @public_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @allow_service_role()
     def put(self):
         patient_upload_dto = request_body(PatientUploadDTOIn)

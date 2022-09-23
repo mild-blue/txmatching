@@ -36,7 +36,7 @@ class ConfigurationApi(Resource):
     @configuration_api.require_user_login()
     @configuration_api.response_ok(model=ConfigurationJson,
                                    description='Returns the latest matching configuration for the current user.')
-    @configuration_api.response_errors()
+    @configuration_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @require_valid_txm_event_id()
     @require_valid_config_id()
     def get(self, txm_event_id: int, config_id: Optional[int]) -> str:
@@ -52,7 +52,7 @@ class DefaultConfigurationApi(Resource):
     @configuration_api.require_user_login()
     @configuration_api.request_body(IdentifierJsonIn)
     @configuration_api.response_ok(SuccessJsonOut, description='Whether the update was successful')
-    @configuration_api.response_errors()
+    @configuration_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @require_user_edit_config_access()
     @require_valid_txm_event_id()
     def put(self, txm_event_id: int):

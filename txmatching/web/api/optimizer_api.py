@@ -1,24 +1,27 @@
-from flask_restx import Resource
 from typing import Optional
 
+from flask_restx import Resource
+
 # todo require_valid_txm_event_id
-from txmatching.auth.auth_check import require_valid_config_id, require_valid_txm_event_id
+from txmatching.auth.auth_check import (require_valid_config_id,
+                                        require_valid_txm_event_id)
 from txmatching.data_transfer_objects.configuration.configuration_swagger import \
     ConfigIdPathParamDefinition
-from txmatching.data_transfer_objects.optimizer.optimizer_in_swagger import \
-    OptimizerReturnObjectJson, OptimizerRequestObjectJson
+from txmatching.data_transfer_objects.optimizer.optimizer_in_swagger import (
+    OptimizerRequestObjectJson, OptimizerReturnObjectJson)
 from txmatching.database.services.config_service import \
     get_configuration_parameters_from_db_id_or_default
 from txmatching.database.services.txm_event_service import \
     get_txm_event_complete
-from txmatching.optimizer.optimizer_functions import export_return_data, get_compatibility_graph, \
-    get_optimizer_configuration, get_pairs_from_txm_event
+from txmatching.optimizer.optimizer_functions import (
+    export_return_data, get_compatibility_graph, get_optimizer_configuration,
+    get_pairs_from_txm_event)
 from txmatching.optimizer.optimizer_request_object import OptimizerRequest
 from txmatching.web.web_utils.namespaces import optimizer_api
 from txmatching.web.web_utils.route_utils import request_body, response_ok
 
-EXPORT_DESCRIPTION = "Endpoint that exports data from TXM that can be input into optimization module"
-OPTIMIZER_DESCRIPTION = "Endpoint that calculates matchings from compatibility graph and configuration"
+EXPORT_DESCRIPTION = 'Endpoint that exports data from TXM that can be input into optimization module'
+OPTIMIZER_DESCRIPTION = 'Endpoint that calculates matchings from compatibility graph and configuration'
 
 
 # https://www.dropbox.com/home/KEP-SOFT_developers/optimizer_module?preview=Optimizer+Input+Schema+First+draft.docx&preview=Optimizer+Input+Schema+First+draft.docx
@@ -26,7 +29,7 @@ OPTIMIZER_DESCRIPTION = "Endpoint that calculates matchings from compatibility g
 class Optimize(Resource):
     @optimizer_api.request_body(OptimizerRequestObjectJson)
     @optimizer_api.response_ok(OptimizerReturnObjectJson, description=OPTIMIZER_DESCRIPTION)
-    @optimizer_api.response_errors()
+    @optimizer_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     def post(self) -> str:
         optimizer_request_object = request_body(OptimizerRequest)
 
@@ -52,7 +55,7 @@ class Optimize(Resource):
     )
     @optimizer_api.response_ok(OptimizerRequestObjectJson, description=EXPORT_DESCRIPTION)
     @optimizer_api.response_ok(description=EXPORT_DESCRIPTION)
-    @optimizer_api.response_errors()
+    @optimizer_api.response_errors(exceptions=set(), add_default_namespace_errors=True)
     @optimizer_api.require_user_login()
     # @require_valid_txm_event_id()
     @require_valid_config_id()

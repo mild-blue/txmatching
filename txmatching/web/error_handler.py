@@ -4,6 +4,7 @@ import logging
 
 from dacite import DaciteError
 from flask_restx import Api
+from sqlalchemy.exc import OperationalError
 from werkzeug.exceptions import Forbidden, HTTPException
 
 from txmatching.auth.exceptions import (
@@ -11,10 +12,10 @@ from txmatching.auth.exceptions import (
     CouldNotSendOtpUsingSmsServiceException, CredentialsMismatchException,
     GuardException, InvalidArgumentException, InvalidAuthCallException,
     InvalidEmailException, InvalidIpAddressAccessException,
-    InvalidJWTException, InvalidOtpException, InvalidTokenException, OverridingException,
-    NotFoundException, SolverAlreadyRunningException,
-    TooComplicatedDataForAllSolutionsSolver, UnauthorizedException,
-    UserUpdateException, WrongTokenUsedException)
+    InvalidJWTException, InvalidOtpException, InvalidTokenException,
+    NonUniquePatient, NotFoundException, OverridingException,
+    SolverAlreadyRunningException, TooComplicatedDataForAllSolutionsSolver,
+    UnauthorizedException, UserUpdateException, WrongTokenUsedException)
 from txmatching.configuration.app_configuration.application_configuration import (
     ApplicationEnvironment, get_application_configuration)
 
@@ -36,38 +37,42 @@ def register_error_handlers(api: Api):
 def _user_auth_handlers(api: Api):
     @api.errorhandler(SolverAlreadyRunningException)
     def handle_solver_already_running_exception(error: SolverAlreadyRunningException):
-        """Solver already running"""
+        """Solver is already running"""
         _log_warning(error)
         return {'error': 'Solver already running.',
                 'message': 'The solver is running right now, try again in few minutes.'}, 423
 
     @api.errorhandler(InvalidJWTException)
     def handle_invalid_jwt_exception(error: InvalidJWTException):
-        """invalid_jwt_exception"""
+        """Invalid JWT exception"""
         _log_warning(error)
         return {'error': 'Authentication failed.', 'message': 'Invalid JWT.'}, 401
 
     @api.errorhandler(NotFoundException)
-    def handle_not_found_exeption(error: NotFoundException):
-        """not_found_exception"""
+    @_namespace_error_response(code=404, description='Matching not found.')
+    def handle_not_found_exception(error: NotFoundException):
+        """Not Found"""
         _log_warning(error)
-        return {'error': 'Not Found', 'message': str(error)}, 401
+        return {'error': 'Not Found', 'message': str(error)}, 404
 
     @api.errorhandler(CredentialsMismatchException)
     def handle_credentials_mismatch_exception(error: CredentialsMismatchException):
-        """credentials_mismatch_exception"""
+        """Credentials Mismatch Exception"""
         _log_warning(error)
         return {'error': 'Authentication failed.', 'message': 'Credentials mismatch.'}, 401
 
     @api.errorhandler(InvalidOtpException)
+    @_namespace_error_response(code=401, description='Authentication failed.')
     def handle_invalid_otp_exception(error: InvalidOtpException):
-        """invalid_otp_exception"""
+        """Invalid Otp Exception"""
         _log_warning(error)
         return {'error': 'Authentication failed.', 'message': 'Invalid OTP.'}, 401
 
     @api.errorhandler(CouldNotSendOtpUsingSmsServiceException)
+    @_namespace_error_response(code=503, description='It was not possible to reach the SMS gate, '
+                                                     'thus the one time password could not be send.')
     def handle_could_not_send_otp(error: CouldNotSendOtpUsingSmsServiceException):
-        """could_not_send_otp"""
+        """Could not send Otp"""
         _log_exception(error)
         return {
             'error': 'SMS service unavailable.',
@@ -76,107 +81,143 @@ def _user_auth_handlers(api: Api):
 
     @api.errorhandler(InvalidIpAddressAccessException)
     def handle_invalid_ip_exception(error: InvalidIpAddressAccessException):
-        """invalid_ip_exception"""
+        """Invalid IP"""
         _log_warning(error)
         return {'error': 'Authentication failed.', 'message': f'Used IP {error.ip_address} is not whitelisted.'}, 401
 
     @api.errorhandler(UserUpdateException)
     def handle_user_update_exception(error: UserUpdateException):
-        """user_update_exception"""
+        """User update exception"""
         _log_warning(error)
         return {'error': 'Invalid data submitted.', 'message': str(error)}, 400
 
     @api.errorhandler(InvalidAuthCallException)
+    @_namespace_error_response(code=500, description='Unexpected error, see contents for details.')
     def handle_invalid_auth_call_exception(error: InvalidAuthCallException):
-        """invalid_auth_call_exception"""
+        """Invalid auth call exception"""
         _log_warning(error)
         return {'error': 'Internal error, please contact support.', 'message': str(error)}, 500
 
     @api.errorhandler(GuardException)
     def handle_guard_exception(error: GuardException):
-        """guard_exception"""
+        """Guard exception"""
         _log_warning(error)
         return {'error': 'Access denied.', 'message': str(error)}, 403
 
     @api.errorhandler(WrongTokenUsedException)
     def handle_wrong_used_token_exception(error: WrongTokenUsedException):
-        """wrong_used_token_exception"""
+        """Wrong used token exception"""
         _log_warning(error)
         return {'error': 'Authentication denied. Wrong token used.', 'message': str(error)}, 403
 
     @api.errorhandler(InvalidTokenException)
     def handle_invalid_token_exception(error: InvalidTokenException):
-        """invalid_token_exception"""
+        """Invalid token exception"""
         _log_warning(error)
         return {'error': 'Authentication failed.', 'message': str(error)}, 403
 
     @api.errorhandler(InvalidEmailException)
     def handle_invalid_email_exception(error: InvalidEmailException):
-        """invalid_email_exception"""
+        """Invalid email exception"""
         _log_warning(error)
         return {'error': 'Authentication failed.', 'message': str(error)}, 403
 
     @api.errorhandler(AuthenticationException)
+    @_namespace_error_response(code=403, description='Access denied. '
+                                                     'You do not have rights to access this endpoint.')
     def handle_general_authentication_exception(error: AuthenticationException):
-        """general_authentication_exception"""
+        """General authentication exception"""
         _log_warning(error)
         return {'error': 'Access denied', 'message': str(error)}, 403
 
     @api.errorhandler(InvalidArgumentException)
     def handle_invalid_argument_exception(error: InvalidArgumentException):
-        """invalid_argument_exception"""
+        """Invalid argument exception"""
         _log_warning(error)
         return {'error': error.message, 'message': str(error)}, 400
 
     @api.errorhandler(UnauthorizedException)
     def handle_unauthorized_exception(error: UnauthorizedException):
-        """unauthorized_exception"""
+        """Unauthorized"""
         _log_warning(error)
         return {'error': error.message, 'message': str(error)}, 403
 
     @api.errorhandler(TooComplicatedDataForAllSolutionsSolver)
     def handle_too_complicated_data_for_solver_exception(error: TooComplicatedDataForAllSolutionsSolver):
-        """too complicated data for solver _exception"""
+        """Too complicated data for solver"""
         _log_warning(error)
         return {'error': 'The solution for this combination of patients and configuration '
                          'is too complicated for AllSolutionsSolver, please use ILPSolver.', 'message': str(error)}, 400
 
     @api.errorhandler(CannotFindShortEnoughRoundsOrPathsInILPSolver)
     def handle_too_complicated_data_for_ilp_solver_exception(error: CannotFindShortEnoughRoundsOrPathsInILPSolver):
-        """too complicated data for solver _exception"""
+        """Too complicated data for solver"""
         _log_warning(error)
         return {'error': error.message, 'message': str(error)}, 400
 
     @api.errorhandler(DaciteError)
     def handle_dacite_exception(error: DaciteError):
-        """dacite_exception"""
+        """Dacite Exception"""
         _log_warning(error)
         return {'error': 'Invalid request data.', 'message': str(error)}, 400
 
     @api.errorhandler(KeyError)
+    @_namespace_error_response(code=400, description='Wrong data format.')
     def handle_key_error(error: KeyError):
-        """key_error"""
+        """Key Error"""
         _log_warning(error)
         return {'error': 'Invalid request data.', 'message': str(error)}, 400
 
     @api.errorhandler(ValueError)
     def handle_value_error(error: ValueError):
-        """value_error"""
+        """Value Error"""
         _log_warning(error)
         return {'error': 'Invalid request data.', 'message': str(error)}, 400
 
     @api.errorhandler(Forbidden)
     def handle_access_denied(error: Forbidden):
-        """access_denied"""
+        """Access denied"""
         _log_warning(error)
         return {'error': 'Access denied', 'message': str(error.description)}, error.code
 
     @api.errorhandler(OverridingException)
     def handle_not_acceptable_exception(error: OverridingException):
-        """not_acceptable_exception"""
+        """Not acceptable exception"""
         _log_warning(error)
         return {'error': 'The patient can\'t be updated, someone edited this patient in the meantime. ' +
                 'You have to reload the patient first. The changes will be lost.', 'message': str(error)}, 406
+
+    @api.errorhandler(NonUniquePatient)
+    @_namespace_error_response(code=409, description='Non-unique patients provided.')
+    def handle_non_unique_patient(error: NonUniquePatient):
+        """
+        Non-unique patients provided.
+        # Created for namespace error response.
+        """
+        _log_warning(error)
+        return {'error': 'Non-unique patients', 'message': str(error)}, 409
+
+    @api.errorhandler(OperationalError)
+    @_namespace_error_response(code=503, description='Database service is unavailable.')
+    def handle_operational_error(error: OperationalError):
+        """
+        Database service is unavailable.
+        # Created for namespace error response.
+        """
+        _log_warning(error)
+        return {'error': 'Operational error', 'message': str(error)}, 503
+
+
+def _namespace_error_response(code: int, description: str):
+    """
+    Decorator marks, that handle-function will be used as error response.
+    """
+    def inner(func):
+        setattr(func, 'description', description)
+        setattr(func, 'code', code)
+        return func
+
+    return inner
 
 
 def _default_error_handlers(api: Api):
@@ -223,8 +264,10 @@ def _log_exception(ex: Exception):
 def _log_warning(ex: Exception):
     logger.warning(_format_exception(ex))
 
+
 def _log_unexpected_error(error_code: int):
     logger.error(f'Unexpected error code returned {error_code}, returning 500 instead')
+
 
 def _format_exception(ex: Exception) -> str:
     return f'{type(ex)}: - {str(ex)}'
