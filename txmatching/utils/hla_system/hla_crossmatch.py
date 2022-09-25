@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Set
+from typing import List
 
 from txmatching.patients.hla_code import HLACode
 from txmatching.patients.hla_model import HLAAntibodies, HLAAntibody, HLAType, HLATyping, HLAPerGroup
@@ -118,7 +118,7 @@ def _do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                 if len(positive_tested_antibodies) > 0:
                     if len(tested_antibodies_that_match) == len(positive_tested_antibodies):
                         for match in tested_antibodies_that_match:
-                            # HIGH_RES_3
+                            # HIGH_RES_2
                             positive_matches.append(AntibodyMatch(match, AntibodyMatchTypes.HIGH_RES))
                         continue
 
@@ -133,7 +133,8 @@ def _do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                 positive_tested_antibodies = _get_antibodies_over_cutoff(tested_antibodies_that_match)
 
                 if len(positive_tested_antibodies) > 0:
-                    if len(tested_antibodies_that_match) == len(positive_tested_antibodies):
+                    if (hla_type.code.high_res is None
+                            and (len(tested_antibodies_that_match) == len(positive_tested_antibodies))):
                         for match in tested_antibodies_that_match:
                             # HIGH_RES_3
                             positive_matches.append(AntibodyMatch(match, AntibodyMatchTypes.HIGH_RES))
@@ -150,16 +151,18 @@ def _do_crossmatch_in_type_a(donor_hla_typing: HLATyping,
                 positive_tested_antibodies = _get_antibodies_over_cutoff(tested_antibodies_that_match)
 
                 if len(positive_tested_antibodies) > 0:
-                    if len(tested_antibodies_that_match) == len(positive_tested_antibodies):
+                    if (hla_type.code.high_res is None
+                            and (len(tested_antibodies_that_match) == len(positive_tested_antibodies))):
                         for match in tested_antibodies_that_match:
                             # HIGH_RES_3
                             positive_matches.append(AntibodyMatch(match, AntibodyMatchTypes.HIGH_RES))
                         continue
 
-                    for match in positive_tested_antibodies:
-                        # HIGH_RES_WITH_BROAD_1
-                        positive_matches.append(AntibodyMatch(match, AntibodyMatchTypes.HIGH_RES_WITH_BROAD))
-                    continue
+                    if hla_type.code.high_res is None and hla_type.code.split is None:
+                        for match in positive_tested_antibodies:
+                            # HIGH_RES_WITH_BROAD_1
+                            positive_matches.append(AntibodyMatch(match, AntibodyMatchTypes.HIGH_RES_WITH_BROAD))
+                        continue
 
         _add_none_typization(antibodies, positive_matches)
         antibody_matches_for_groups.append(AntibodyMatchForHLAGroup(hla_per_group.hla_group, positive_matches))
@@ -199,11 +202,15 @@ def _do_crossmatch_in_type_b(donor_hla_typing: HLATyping,
                     continue
 
             if hla_type.code.broad is not None:
-                tested_antibodies_that_match = [antibody for antibody in antibodies
-                                                if hla_type.code.broad == antibody.code.broad]
+                if hla_type.code.high_res is None and hla_type.code.split is None:  # BROAD_1
+                    tested_antibodies_that_match = [antibody for antibody in antibodies
+                                                    if hla_type.code.broad == antibody.code.broad]
+                else:  # BROAD_2
+                    tested_antibodies_that_match = [antibody for antibody in antibodies
+                                                    if hla_type.code.broad == antibody.code.broad
+                                                    if antibody.code.high_res is None and antibody.code.split is None]
                 if len(tested_antibodies_that_match) > 0:
                     for match in _get_antibodies_over_cutoff(tested_antibodies_that_match):
-                        # BROAD_1, BROAD_2
                         positive_matches.append(AntibodyMatch(match, AntibodyMatchTypes.BROAD))
                     continue
 

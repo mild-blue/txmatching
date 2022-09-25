@@ -189,18 +189,14 @@ class TestCrossmatch(unittest.TestCase):
                               use_high_resolution: bool,
                               expected_antibody_matches: List[AntibodyMatch],
                               is_type_a: bool):
-        if is_type_a:
-            crossmatched_antibodies = _do_crossmatch_in_type_a(
-                create_hla_typing(hla_types_list=[hla_type]),
-                create_antibodies(hla_antibodies_list=hla_antibodies),
-                use_high_resolution
-            )
-        else:
-            crossmatched_antibodies = _do_crossmatch_in_type_b(
-                create_hla_typing(hla_types_list=[hla_type]),
-                create_antibodies(hla_antibodies_list=hla_antibodies),
-                use_high_resolution
-            )
+
+        # False -> 0 | True -> 1
+        crossmatch_type_functions = [_do_crossmatch_in_type_b, _do_crossmatch_in_type_a]
+        crossmatched_antibodies = crossmatch_type_functions[is_type_a](
+            create_hla_typing(hla_types_list=[hla_type]),
+            create_antibodies(hla_antibodies_list=hla_antibodies),
+            use_high_resolution
+        )
 
         actual_antibody_matches = [antibody_match for match_group in crossmatched_antibodies
                                    for antibody_match in match_group.antibody_matches]
@@ -222,14 +218,14 @@ class TestCrossmatch(unittest.TestCase):
                                    [AntibodyMatch(create_antibody('A*23:01', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=False)
+
         # positive split crossmatch  # HIGH_RES_2
         self._assert_matches_equal('A*23:01', [create_antibody('A*23:04', 2100, 2000)], True,
                                    [AntibodyMatch(create_antibody('A*23:04', 2100, 2000),
                                                   AntibodyMatchTypes.HIGH_RES)],
                                    is_type_a=True)
+
         # negative split crossmatch
-        # TODO: Tohle mi podle té logicky odpovídá pro type B typizací BROAD, podle BROAD_2.
-        #  A pro type B mi to odpovídá HIGH_RES, podle HIGH_RES_2.
         self._assert_matches_equal('A*23:01', [create_antibody('A*24:02', 2100, 2000)], True,
                                    [AntibodyMatch(create_antibody('A*24:02', 2100, 2000),
                                                   AntibodyMatchTypes.NONE)],
@@ -254,20 +250,25 @@ class TestCrossmatch(unittest.TestCase):
                                     AntibodyMatch(create_antibody('A*23:04', 2100, 2000),
                                                   AntibodyMatchTypes.NONE)],
                                    is_type_a=False)
+
         # negative high res crossmatch
         self._assert_matches_equal('A*23:01',
                                    [create_antibody('A*23:01', 1900, 2000),
                                     create_antibody('A*23:04', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000), AntibodyMatchTypes.NONE)], is_type_a=False)
+                                   [AntibodyMatch(create_antibody('A*23:04', 2100, 2000), AntibodyMatchTypes.NONE)],
+                                   is_type_a=False)
         # positive split crossmatch
         self._assert_matches_equal('A*23:01',
                                    [create_antibody('A23', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A23', 2100, 2000), AntibodyMatchTypes.SPLIT)])
+                                   [AntibodyMatch(create_antibody('A23', 2100, 2000), AntibodyMatchTypes.SPLIT)],
+                                   is_type_a=False)
+
         # negative high res crossmatch
         self._assert_matches_equal('A*23:01',
                                    [create_antibody('A*23:01', 1900, 2000),
                                     create_antibody('A23', 2100, 2000)], True,
-                                   [AntibodyMatch(create_antibody('A23', 2100, 2000), AntibodyMatchTypes.NONE)])
+                                   [AntibodyMatch(create_antibody('A23', 2100, 2000), AntibodyMatchTypes.NONE)],
+                                   is_type_a=False)
 
     def test_antibodies_with_multiple_mfis(self):
         self._assert_raw_code_equal('A*23:01', HLACode('A*23:01', 'A23', 'A9'))
