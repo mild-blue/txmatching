@@ -2,13 +2,12 @@ import logging
 from itertools import groupby
 from typing import Dict, List, Set, Tuple
 
-import numpy as np
 from graph_tool import Graph, topology
 
 from txmatching.auth.exceptions import TooComplicatedDataForAllSolutionsSolver
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor
-from txmatching.scorers.scorer_constants import ORIGINAL_DONOR_RECIPIENT_SCORE
+from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
 from txmatching.solvers.all_solutions_solver.scoring_utils import \
@@ -18,27 +17,16 @@ Path = Tuple[int]
 logger = logging.getLogger(__name__)
 
 
-def get_donor_idx_to_recipient_idx(score_matrix: np.ndarray) -> Dict[int, int]:
-    donor_idx_to_recipient_idx = {}
-    n_donor, _ = score_matrix.shape
-    for donor_idx in range(n_donor):
-        recipient_indices = np.where(score_matrix[donor_idx, :] == ORIGINAL_DONOR_RECIPIENT_SCORE)[0]
-        assert len(recipient_indices) in {0, 1}
-        if len(recipient_indices) == 1:
-            donor_idx_to_recipient_idx[donor_idx] = recipient_indices[0]
-
-    return donor_idx_to_recipient_idx
-
-
-def get_compatible_donor_idxs_per_donor_idx(score_matrix: np.ndarray,
+# TODO: this is blocked by https://github.com/mild-blue/txmatching/pull/979
+def get_compatible_donor_idxs_per_donor_idx(compatibility_graph: CompatibilityGraph,
                                             donor_idx_to_recipient_idx: Dict[int, int]) -> Dict[int, List[int]]:
-    n_donors, _ = score_matrix.shape
+    n_donors, _ = len(donor_idx_to_recipient_idx)
 
     recipient_idx_to_donor_idx = {recipient_idx: donor_idx for donor_idx, recipient_idx
                                   in donor_idx_to_recipient_idx.items()}
 
     donor_idx_to_recipient_idxs = {
-        donor_idx: _find_acceptable_recipient_indices(score_matrix, donor_idx)
+        donor_idx: _find_acceptable_recipient_idxs(compatibility_graph, donor_idx)
         for donor_idx in range(n_donors)}
 
     compatible_donor_idxs_per_donor_idx = {
@@ -71,12 +59,12 @@ def find_all_cycles(n_donors: int,
     return all_circuits
 
 
-def find_all_sequences(score_matrix: np.ndarray,
-                       compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
+def find_all_sequences(compatible_donor_idxs_per_donor_idx: Dict[int, List[int]],
                        max_length: int,
                        donors: List[Donor],
-                       max_countries: int) -> List[Path]:
-    bridge_indices = _get_bridge_indices(score_matrix)
+                       max_countries: int,
+                       donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
+    bridge_indices = _get_bridge_indices(donor_idx_to_recipient_idx)
 
     paths = []
 
@@ -95,7 +83,7 @@ def country_count_in_path(path: Path, donors: List[Donor]) -> int:
 
 
 def keep_only_highest_scoring_paths(paths: List[Path],
-                                    score_matrix: np.ndarray,
+                                    compatibility_graph: CompatibilityGraph,
                                     donor_idx_to_recipient_idx: Dict[int, int]) -> List[Path]:
     def group_key(path: Path) -> List[int]:
         return sorted(list(set(path)))
@@ -104,17 +92,17 @@ def keep_only_highest_scoring_paths(paths: List[Path],
 
     paths_filtered = [
         max(path_group,
-            key=lambda path: _get_path_score(score_matrix, path, donor_idx_to_recipient_idx))
+            key=lambda path: _get_path_score(compatibility_graph, path, donor_idx_to_recipient_idx))
         for path_group in paths_grouped]
 
     return paths_filtered
 
 
-def _get_path_score(score_matrix: np.array,
+def _get_path_score(compatibility_graph: CompatibilityGraph,
                     path: Path,
                     donor_idx_to_recipient_idx: Dict[int, int]) -> int:
     pairs = _get_pairs_from_paths([path], donor_idx_to_recipient_idx)
-    return get_score_for_idx_pairs(score_matrix, pairs)
+    return get_score_for_idx_pairs(compatibility_graph, pairs)
 
 
 def get_pairs_from_clique(clique,
@@ -164,8 +152,8 @@ def construct_path_intersection_graph(all_paths: List[Path]) -> Tuple[Graph, Dic
 # pylint: enable=too-many-locals
 
 
-def _find_acceptable_recipient_indices(score_matrix: np.ndarray, donor_index: int) -> List[int]:
-    return list(np.where((score_matrix[donor_index] >= 0))[0])
+def _find_acceptable_recipient_idxs(compatibility_graph: CompatibilityGraph, donor_index: int) -> List[int]:
+    return list({pair[1] for pair in compatibility_graph.keys() if pair[0] == donor_index})
 
 
 def _get_donor_to_compatible_donor_graph(n_donors: int,
@@ -183,8 +171,8 @@ def _get_donor_to_compatible_donor_graph(n_donors: int,
     return donor_to_compatible_donor_graph
 
 
-def _get_bridge_indices(score_matrix: np.ndarray) -> List[int]:
-    bridge_indices = np.where(np.sum(score_matrix == ORIGINAL_DONOR_RECIPIENT_SCORE, axis=1) == 0)[0]
+def _get_bridge_indices(donor_idx_to_recipient_idx: Dict[int, int]) -> List[int]:
+    bridge_indices = {pair[0] for pair in donor_idx_to_recipient_idx if pair[1] == -1}
     return list(bridge_indices)
 
 

@@ -258,16 +258,15 @@ def get_compatibility_graph(donors: Dict[DonorDbId, Donor], recipients: Dict[Rec
     Dict[str, int]]:
     scorer = SplitScorer()
 
-    score_matrix = scorer.get_score_matrix(recipients, donors)
+    compatibility_graph_from_scorer = scorer.get_compatibility_graph(recipients, donors)
 
     compatibility_graph = []
     for i, donor_id in enumerate(donors):
         for j, recipient_id in enumerate(recipients):
-            if int(score_matrix[i][j]) >= 0:
-                comp_graph_cell = {
-                    "donor_id": donor_id,
-                    "recipient_id": recipient_id,
-                    "hla_compatibility_score": int(score_matrix[i][j])
-                }
-                compatibility_graph.append(comp_graph_cell)
+            comp_graph_cell = {
+                "donor_id": donor_id,
+                "recipient_id": recipient_id,
+                "hla_compatibility_score": int(compatibility_graph_from_scorer[(i, j)])
+            }
+            compatibility_graph.append(comp_graph_cell)
     return compatibility_graph

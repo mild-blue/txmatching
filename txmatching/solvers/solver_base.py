@@ -5,7 +5,7 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
 from txmatching.scorers.additive_scorer import AdditiveScorer
-from txmatching.scorers.score_matrix import ScoreMatrix
+from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
 from txmatching.solvers.all_solutions_solver.scoring_utils import \
@@ -24,12 +24,17 @@ class SolverBase:
     scorer: AdditiveScorer
     donors: List[Donor] = field(init=False)
     recipients: List[Recipient] = field(init=False)
-    score_matrix: ScoreMatrix = field(init=False)
+    compatibility_graph: CompatibilityGraph = field(init=False)
+    donor_idx_to_recipient_idx: Dict[int, int] = field(init=False)
 
     def __post_init__(self):
         self.donors = list(self.donors_dict.values())
         self.recipients = list(self.recipients_dict.values())
-        self.score_matrix = self.scorer.get_score_matrix(
+        self.compatibility_graph = self.scorer.get_compatibility_graph(
+            self.recipients_dict,
+            self.donors_dict
+        )
+        self.donor_idx_to_recipient_idx = self.scorer.get_donor_idx_to_recipient_idx(
             self.recipients_dict,
             self.donors_dict
         )
@@ -46,5 +51,5 @@ class SolverBase:
         found_pairs = frozenset(DonorRecipientPair(self.donors[found_pair_idxs_only.donor_idx],
                                                    self.recipients[found_pair_idxs_only.recipient_idx])
                                 for found_pair_idxs_only in found_pairs_idxs_only)
-        score = get_score_for_idx_pairs(self.score_matrix, found_pairs_idxs_only)
+        score = get_score_for_idx_pairs(self.compatibility_graph, found_pairs_idxs_only)
         return MatchingWithScore(found_pairs, score)
