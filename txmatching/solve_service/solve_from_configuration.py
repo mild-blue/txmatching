@@ -38,7 +38,7 @@ def _solve_from_configuration_unsafe(config_parameters: ConfigParameters, txm_ev
     logger.info(f'{len(matchings_filtered_sorted)} matchings were found.')
 
     return PairingResult(configuration=config_parameters,
-                         score_matrix=solver.score_matrix,
+                         compatibility_graph=solver.compatibility_graph,
                          calculated_matchings_list=matchings_filtered_sorted,
                          txm_event_db_id=txm_event.db_id,
                          all_results_found=all_results_found,

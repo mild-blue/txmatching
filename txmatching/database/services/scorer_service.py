@@ -6,21 +6,21 @@ from dacite import from_dict
 
 from txmatching.data_transfer_objects.matchings.matchings_model import \
     MatchingsModel
-from txmatching.scorers.additive_scorer import ScoreMatrix
+from txmatching.scorers.compatibility_graph import CompatibilityGraph
 
 
 @dataclass
-class ScoreMatrixDto:
-    score_matrix_dto: List[List[float]]
+class CompatibilityGraphDto:
+    compatibility_graph_dto: List[List[float]]
 
 
-def score_matrix_to_dict(score_matrix: ScoreMatrix) -> Dict[str, List[List[float]]]:
-    return dataclasses.asdict(ScoreMatrixDto(score_matrix.tolist()))
+def compatibility_graph_to_dict(compatibility_graph: CompatibilityGraph) -> Dict[str, CompatibilityGraph]:
+    return dataclasses.asdict(CompatibilityGraphDto(compatibility_graph))
 
 
-def score_matrix_from_dict(score_matrix_dict: Dict[str, List[List[float]]]) -> List[List[float]]:
-    score_matrix_dto = from_dict(data_class=ScoreMatrixDto, data=score_matrix_dict)
-    return score_matrix_dto.score_matrix_dto
+def compatibility_graph_from_dict(compatibility_graph_dict: Dict[str, CompatibilityGraph]) -> CompatibilityGraph:
+    compatibility_graph_dto = from_dict(data_class=CompatibilityGraphDto, data=compatibility_graph_dict)
+    return compatibility_graph_dto.compatibility_graph_dto
 
 
 def matchings_model_from_dict(calculated_matchings_dict: Dict[str, any]) -> MatchingsModel:

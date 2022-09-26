@@ -47,7 +47,7 @@ class PairingResultModel(db.Model):
     original_config = relationship('ConfigModel', passive_deletes=True, lazy='joined')
     patients_hash = Column(BIGINT, unique=False, nullable=False)
     calculated_matchings = Column(JSON, unique=False, nullable=False)
-    score_matrix = Column(JSON, unique=False, nullable=False)
+    compatibility_graph = Column(JSON, unique=False, nullable=False)
     valid = Column(BOOLEAN, unique=False, nullable=False)
     created_at = Column(DATETIME(timezone=True), unique=False, nullable=False, server_default=func.now())
     updated_at = Column(DATETIME(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())

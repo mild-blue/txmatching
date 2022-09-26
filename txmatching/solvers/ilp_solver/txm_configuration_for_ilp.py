@@ -7,7 +7,6 @@ import numpy as np
 from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.patient import Donor, DonorType, Recipient
 from txmatching.patients.patient_types import DonorDbId, RecipientDbId
-from txmatching.scorers.score_matrix import ScoreMatrix
 from txmatching.scorers.scorer_from_config import scorer_from_configuration
 from txmatching.utils.country_enum import Country
 
@@ -97,7 +96,7 @@ class DataAndConfigurationForILPSolver:
     @staticmethod
     def _get_donor_score_matrix(config_parameters: ConfigParameters,
                                 active_and_valid_donors_dict: Dict[DonorDbId, Donor],
-                                active_and_valid_recipients_dict: Dict[RecipientDbId, Recipient]) -> ScoreMatrix:
+                                active_and_valid_recipients_dict: Dict[RecipientDbId, Recipient]) -> np.array:
         scorer = scorer_from_configuration(config_parameters)
         score_matrix = []
         for donor in active_and_valid_donors_dict.values():

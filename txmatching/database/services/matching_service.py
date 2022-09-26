@@ -12,7 +12,7 @@ from txmatching.data_transfer_objects.patients.out_dtos.conversions import \
 from txmatching.database.services.config_service import \
     configuration_from_config_model
 from txmatching.database.services.scorer_service import (
-    matchings_model_from_dict, score_matrix_from_dict)
+    compatibility_graph_from_dict, matchings_model_from_dict)
 from txmatching.database.sql_alchemy_schema import PairingResultModel
 from txmatching.patients.patient import (Donor, Recipient,
                                          RecipientRequirements, TxmEvent)
@@ -55,7 +55,7 @@ def get_matchings_detailed_for_pairing_result_model(
     configuration_parameters = configuration_from_config_model(pairing_result_model.original_config).parameters
     scorer = scorer_from_configuration(configuration_parameters)
 
-    score_matrix = score_matrix_from_dict(pairing_result_model.score_matrix)
+    compatibility_graph = compatibility_graph_from_dict(pairing_result_model.compatibility_graph)
     matchings_model = matchings_model_from_dict(pairing_result_model.calculated_matchings)
 
     logger.debug('Getting matchings with score')
@@ -65,7 +65,7 @@ def get_matchings_detailed_for_pairing_result_model(
     logger.debug('Getting score dict with score')
     score_dict = {
         (donor_db_id, recipient_db_id): score for donor_db_id, row in
-        zip(txm_event.active_and_valid_donors_dict, score_matrix) for recipient_db_id, score in
+        zip(txm_event.active_and_valid_donors_dict, compatibility_graph) for recipient_db_id, score in
         zip(txm_event.active_and_valid_recipients_dict, row)
     }
     logger.debug('Getting compatible_blood dict with score')
