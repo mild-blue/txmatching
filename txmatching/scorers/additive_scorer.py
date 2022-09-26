@@ -78,6 +78,15 @@ class AdditiveScorer(ScorerBase):
 
         return compatibility_graph
 
+    def get_score_dict(self, recipients_dict: Dict[RecipientDbId, Recipient], donors_dict: Dict[DonorDbId, Donor],
+                       compatibility_graph: CompatibilityGraph) -> CompatibilityGraph:
+        score_dict = {}
+        for donor_enum, donor_id in enumerate(donors_dict.keys()):
+            for recipient_enum, recipient_id in enumerate(recipients_dict.keys()):
+                if (donor_enum, recipient_enum) in compatibility_graph:
+                    score_dict[(donor_id, recipient_id)] = compatibility_graph[(donor_enum, recipient_enum)]
+        return score_dict
+
     def score_transplant_including_original_tuple(self, donor: Donor, recipient: Recipient,
                                                   original_donors: List[Donor]) -> float:
         if donor.db_id in recipient.related_donors_db_ids:

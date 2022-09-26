@@ -63,17 +63,14 @@ def get_matchings_detailed_for_pairing_result_model(
                                                                  txm_event.active_and_valid_donors_dict,
                                                                  txm_event.active_and_valid_recipients_dict)
     logger.debug('Getting score dict with score')
-    score_dict = {
-        (donor_db_id, recipient_db_id): score for donor_db_id, row in
-        zip(txm_event.active_and_valid_donors_dict, compatibility_graph) for recipient_db_id, score in
-        zip(txm_event.active_and_valid_recipients_dict, row)
-    }
+    score_dict = scorer.get_score_dict(txm_event.active_and_valid_recipients_dict,
+                                       txm_event.active_and_valid_donors_dict, compatibility_graph)
     logger.debug('Getting compatible_blood dict with score')
     compatible_blood_dict = {(donor_db_id, recipient_db_id): blood_groups_compatible(donor.parameters.blood_group,
                                                                                      recipient.parameters.blood_group)
                              for donor_db_id, donor in txm_event.active_and_valid_donors_dict.items()
                              for recipient_db_id, recipient in txm_event.active_and_valid_recipients_dict.items() if
-                             score_dict[(donor_db_id, recipient_db_id)] >= 0
+                             (donor_db_id, recipient_db_id) in score_dict
                              }
     logger.debug('Getting has crossmatch')
     logger.debug('Getting ci dict dict with score')
@@ -83,7 +80,7 @@ def get_matchings_detailed_for_pairing_result_model(
                                                                          ci_configuration=scorer.ci_configuration)
         for donor_db_id, donor in txm_event.active_and_valid_donors_dict.items()
         for recipient_db_id, recipient in txm_event.active_and_valid_recipients_dict.items() if
-        score_dict[(donor_db_id, recipient_db_id)] >= 0
+        (donor_db_id, recipient_db_id) in score_dict
     }
     logger.debug('Getting antibody matches dict dict with score')
     antibody_matches_dict = {
@@ -93,9 +90,8 @@ def get_matchings_detailed_for_pairing_result_model(
                                                                     )
         for donor_db_id, donor in txm_event.active_and_valid_donors_dict.items()
         for recipient_db_id, recipient in txm_event.active_and_valid_recipients_dict.items() if
-        score_dict[(donor_db_id, recipient_db_id)] >= 0
+        (donor_db_id, recipient_db_id) in score_dict
     }
-
     return MatchingsDetailed(
         matchings_with_score,
         score_dict,

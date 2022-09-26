@@ -254,15 +254,15 @@ def get_optimizer_configuration(config: ConfigParameters) -> OptimizerConfigurat
     )
 
 
-def get_compatibility_graph(donors: Dict[DonorDbId, Donor], recipients: Dict[RecipientDbId, Recipient]) -> List[
+def get_compatibility_graph(donors_dict: Dict[DonorDbId, Donor], recipients_dict: Dict[RecipientDbId, Recipient]) -> List[
     Dict[str, int]]:
     scorer = SplitScorer()
 
-    compatibility_graph_from_scorer = scorer.get_compatibility_graph(recipients, donors)
+    compatibility_graph_from_scorer = scorer.get_compatibility_graph(recipients_dict, donors_dict)
 
     compatibility_graph = []
-    for i, donor_id in enumerate(donors):
-        for j, recipient_id in enumerate(recipients):
+    for i, donor_id in enumerate(donors_dict):
+        for j, recipient_id in enumerate(recipients_dict):
             comp_graph_cell = {
                 "donor_id": donor_id,
                 "recipient_id": recipient_id,
