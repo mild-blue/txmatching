@@ -263,10 +263,11 @@ def get_compatibility_graph(donors_dict: Dict[DonorDbId, Donor], recipients_dict
     compatibility_graph = []
     for i, donor_id in enumerate(donors_dict):
         for j, recipient_id in enumerate(recipients_dict):
-            comp_graph_cell = {
-                "donor_id": donor_id,
-                "recipient_id": recipient_id,
-                "hla_compatibility_score": int(compatibility_graph_from_scorer[(i, j)])
-            }
-            compatibility_graph.append(comp_graph_cell)
+            if (i, j) in compatibility_graph_from_scorer:
+                comp_graph_cell = {
+                    "donor_id": donor_id,
+                    "recipient_id": recipient_id,
+                    "hla_compatibility_score": int(compatibility_graph_from_scorer[(i, j)])
+                }
+                compatibility_graph.append(comp_graph_cell)
     return compatibility_graph

@@ -70,7 +70,7 @@ def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
                               donor_idx_to_recipient_idx: Dict[int, int],
                               donors: List[Donor],
                               config_parameters: ConfigParameters = ConfigParameters()) -> List[Path]:
-    n_donors, _ = len(donor_idx_to_recipient_idx)
+    n_donors = len(donor_idx_to_recipient_idx)
     assert len(donors) == n_donors
 
     compatible_donor_idxs_per_donor_idx = get_compatible_donor_idxs_per_donor_idx(compatibility_graph,
@@ -81,8 +81,7 @@ def get_highest_scoring_paths(compatibility_graph: CompatibilityGraph,
                              donors,
                              config_parameters)
 
-    sequences = find_all_sequences(compatibility_graph,
-                                   compatible_donor_idxs_per_donor_idx,
+    sequences = find_all_sequences(compatible_donor_idxs_per_donor_idx,
                                    config_parameters.max_sequence_length,
                                    donors,
                                    config_parameters.max_number_of_distinct_countries_in_round,

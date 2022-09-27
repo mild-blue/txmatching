@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # TODO: this is blocked by https://github.com/mild-blue/txmatching/pull/979
 def get_compatible_donor_idxs_per_donor_idx(compatibility_graph: CompatibilityGraph,
                                             donor_idx_to_recipient_idx: Dict[int, int]) -> Dict[int, List[int]]:
-    n_donors, _ = len(donor_idx_to_recipient_idx)
+    n_donors = len(donor_idx_to_recipient_idx)
 
     recipient_idx_to_donor_idx = {recipient_idx: donor_idx for donor_idx, recipient_idx
                                   in donor_idx_to_recipient_idx.items()}
