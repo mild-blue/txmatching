@@ -39,8 +39,8 @@ def get_compatible_donor_idxs_per_donor_idx(score_matrix: np.ndarray,
         for donor_idx in range(n_donors)}
 
     compatible_donor_idxs_per_donor_idx = {
-        donor_idx: [d_idx for d_idx, r_idx in donor_idx_to_recipient_idx.items() for recipient_idx in recipient_idxs 
-        if r_idx == recipient_idx] for donor_idx, recipient_idxs in donor_idx_to_recipient_idxs.items()}    
+        donor_idx: [d_idx for d_idx, r_idx in donor_idx_to_recipient_idx.items() for recipient_idx in recipient_idxs
+                    if r_idx == recipient_idx] for donor_idx, recipient_idxs in donor_idx_to_recipient_idxs.items()}
 
     return compatible_donor_idxs_per_donor_idx
 

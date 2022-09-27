@@ -213,3 +213,34 @@ class TestSolveFromDbAndItsSupportFunctionality(DbTests):
         self.assertEqual(solutions[0][0].recipient_idx, 1)
         self.assertEqual(solutions[0][1].donor_idx, 2)
         self.assertEqual(solutions[0][1].recipient_idx, 0)
+
+    def test_handling_correctly_multiple_donors_with_the_same_recipient_2(self):
+        """
+       D1 __ R1
+       D2 _/
+       D3__R2
+       D4__R3
+        """
+        # find possible solutions from score matrix
+        score_matrix_test = np.array([[-2.0, 10.0, -1.0],
+                                      [-2.0, -1.0, 10.0],
+                                      [10.0, -2.0, -1.0],
+                                      [10.0, -1.0, -2.0]])
+
+
+        donors = _get_donors_for_score_matrix(score_matrix_test)
+        solutions = list(find_possible_path_combinations_from_score_matrix(score_matrix_test,
+                                                                      donors,
+                                                                      ConfigParameters(
+                                                                          solver_constructor_name=Solver.AllSolutionsSolver,
+                                                                          max_sequence_length=100,
+                                                                          max_cycle_length=100)))
+
+        for solution in solutions:
+            recipient_ids=[pair.recipient_idx for pair in solution]
+
+            seen = set()
+            duplicates = [x for x in recipient_ids if x in seen or seen.add(x)]
+
+            if duplicates:
+                raise Exception(f'Recipient/recipients with id/ids {duplicates} is/are present in a matching more than once')

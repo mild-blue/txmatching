@@ -5,7 +5,7 @@ import numpy as np
 from graph_tool import topology
 
 from txmatching.configuration.config_parameters import ConfigParameters
-from txmatching.patients.patient import Donor
+from txmatching.patients.patient import Donor, Recipient
 from txmatching.solvers.donor_recipient_pair_idx_only import \
     DonorRecipientPairIdxOnly
 from txmatching.solvers.all_solutions_solver.score_matrix_utils import (
@@ -38,7 +38,7 @@ def find_possible_path_combinations_from_score_matrix(score_matrix: np.ndarray,
         return
 
     donor_idx_to_recipient_idx = get_donor_idx_to_recipient_idx(score_matrix)
-    highest_scoring_paths = get_highest_scoring_paths(score_matrix,
+    highest_scoring_paths = get_highest_scoring_paths(score_matrix,              # get_compatible_donor_idxs_per_donor_idx() is used in this function
                                                       donor_idx_to_recipient_idx,
                                                       donors,
                                                       config_parameters)
@@ -95,8 +95,17 @@ def get_highest_scoring_paths(score_matrix: np.ndarray,
                                    donors,
                                    config_parameters.max_number_of_distinct_countries_in_round)
 
+    cycles_with_recipients = [[[donor_idx, donor_idx_to_recipient_idx[donor_idx]] for donor_idx in cycle] for cycle in cycles]
+
+    valid_cycles = []
+    for cycle in cycles_with_recipients:
+        recipient_ids = [pair[1] for pair in cycle]
+        unique_recipients = set(recipient_ids)
+        if len(unique_recipients) == len(recipient_ids):
+            valid_cycles.append(cycle)
+
     highest_scoring_paths = keep_only_highest_scoring_paths(
-        cycles,
+        valid_cycles,
         score_matrix=score_matrix,
         donor_idx_to_recipient_idx=donor_idx_to_recipient_idx
     ) + keep_only_highest_scoring_paths(
