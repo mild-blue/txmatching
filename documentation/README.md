@@ -5,16 +5,16 @@
 ## What is HLA?
 
 HLA is a set of proteins on the surface of every person’s cells. HLA stands for Human Leukocyte Antigen. Leukocyte means
-white cell, and antigen is something the immune system reacts to.
+white blood cell and antigen is something the immune system reacts to.
 
 Antigens on cell surfaces can act as flags that the immune system looks at to determine if something is an invader.
 
 HLA is composed of many genes of different classes. We differentiate between Class I (A, B, C), Class II (DR, DQ, DP),
 and Class III.
 
-*The groups everyone is tested for are A, B, DR. They are the oldest known, so all labs are able to detect them. Each
-person has 2 antigens within each of these groups. One inherited from mother, the other one from father. It is important
-to know that HLA is inherited as a "set" of the three HLA groups, A, B, DR. This set is known as a "haplotype".*
+*Groups everyone is tested for are A, B and DR. They are the oldest known, so all labs are able to detect them. Each
+person has 2 antigens within each of these groups. One is inherited from the mother, the other one from the father. It is important
+to know that HLA is inherited as a "set" of the three HLA groups, A, B and DR. This set is known as a "haplotype".*
 
 ## Broad, split, high resolution (Nomenclature)
 
@@ -22,14 +22,14 @@ There are several “levels” on which the HLA antigen can be specified. For ex
 
 HLA-A9 consists of 3 closely related specificities, A23, A24, A2403.
 
-*Here is the table of more Broad-Splits associations: http://hla.alleles.org/antigens/broads_splits.html*
-
 First is the broad specificity, which is kind of a supertype. In this example, it is A9.
 
 Next is split specificity. Splits or “subtypes” are the finer specificities that comprise the supertype. In this
 example, it's for instance A23.
 
-Finally, we also specify high resolution, which is the most specific, specifying also things like specific HLA protein,
+*Here is the table of Broad-Splits associations used in this app: http://hla.alleles.org/antigens/broads_splits.html*
+
+Last resolution type is high resolution. It defines specific HLA protein,
 etc. E.g.: A\*24:19
 
 |Nomenclature | Indicates|
@@ -44,7 +44,7 @@ etc. E.g.: A\*24:19
 |HLA-A\*30:14L | an allele encoding a protein with significantly reduced or 'Low' cell surface expression|
 |HLA-A\*24:02:01:02L | an allele encoding a protein with significantly reduced or 'Low' cell surface expression, where the mutation is found outside the coding region|
 |HLA-B\*44:02:01:02S | an allele encoding a protein which is expressed as a 'Secreted' molecule only|
-|HLA-A\*32:11Q | an allele which has a mutation that has previously been shown to have a significant effect on cell surface expression, but where this has not been confirmed and its expression remains 'Questionable'|
+|HLA-A\*32:11Q | an allele that has a mutation that has previously been shown to have a significant effect on cell surface expression, but where this has not been confirmed and its expression remains 'Questionable'|
 
 ## HLA Typing Process
 
@@ -69,7 +69,7 @@ Basically, antibodies bind to antigens. Normally, antibodies are very important 
 
 *Antibodies are among the defenses that the body uses to repel foreign invaders.*
 
-*Vaccines cause the immune system to make antibodies which protect us from infectious diseases, and antibodies prevent
+*Vaccines cause the immune system to make antibodies that protect us from infectious diseases, and antibodies prevent
 us from getting most diseases a second time.*
 
 *Allergies are caused by antibodies that are attacking a fairly harmless thing like plant pollen.*
@@ -77,6 +77,38 @@ us from getting most diseases a second time.*
 However, sometimes antibodies can be bad, for instance in situations like organ transplantation, because they can attack
 an organ after it is transplanted, and cause the immune system to destroy it. Most of the time these antibodies are
 directed against HLA.
+
+The patient's antibodies are found by a special lab test. This test does not find the antibodies directly but tests which antigens (from a limited set) the patient has the antibodies against. The lab test can differ from lab to lab, each can use a bit different set of antigens in the test.
+
+For each antigen, the test reports an MFI value, higher MFI values indicate the stronger immunological response. The lab then uses some cutoff value to distinguish which antibodies of the patient are strong enough and which are not. This cutoff can differ between labs and in some special cases it can be set differently for patients from the same lab (in the case the patient really needs a kidney and the transplant is worth it even with a small immunological response).
+
+Further we will be using terms:
+- Positive antibody of a patient: antibody of the patient was in a lab test higher or equal to cutoff (we use also "over cutoff").
+- Negative antibody of a patient: antibody of the patient was in a lab test strictly lower than the cutoff (we use also "below").
+- All tested antibodies of a patient: all antibodies the patient was tested for.
+
+The parsing is done in two modes, type A and type B. Both of them are described below. (The name is purely our, it has no connection with any term used in immunology). The decision which parsing mode is selected is simple, if requirements for type A are fulfilled, type A processing runs, otherwise we fall back to type B.
+
+Type A requires that all antibodies are in high resolution and having all tested antibodies of a patient. We assume that if the criteria below are fulfilled this holds.
+- All antibodies we receive are in high resolution.
+- There are at least 20 antibodies provided.
+- There is at least 1 antibody below the cutoff.
+
+### Processing logic of type A
+In this case, we assume we have received all tested antibodies in high resolution with MFI values and the required cutoff (The cutoff is configurable. In some cases the user can decide to change it for some patients, for more details see section Configuring Cutoff).
+
+This case can handle also an antibody in the form of DP*[01:01;02:02]. It uses an algorithm that parses the specific antibodies against alpha and beta chains. In case there is some unclear case it raises a warning and requires an immunologist to check the correctness of the algorithm result.
+
+There are three reasons why we ask for all tested antibodies of a patient and not only the positive ones:
+- It is required for the algorithm that is parsing antibodies of type DP*[01:01;02:02], see the detailed description of the algorithm below.
+- In case the user wants to alter MFI, the antibodies that were negative can become positive.
+- When estimating crossmatch, sometimes it is crucial to have the full picture. (See below HIGH_RES and HIGH_RES_WITH_SPLIT crossmatch types where type A is required.)
+
+### Processing logic of type B
+In this case, we do not get all the antibodies the test was done for, we get the antibodies in split or mixed resolution. In this case, the results are limited:
+- Processing of antibodies such as DP*[01:01;02:02] is not allowed.
+- MFI modification can be done but lead to omitting some antibodies.
+- Some crossmatches might not be found. (See below HIGH_RES and HIGH_RES_WITH_SPLIT crossmatch types where type A is required.). This is more important in the case the antibodies are in high resolution. Because in split it can be usually quite safely assumed that all split antibodies were tested.
 
 ## Crossmatch
 
@@ -91,36 +123,63 @@ antibodies are) with the donor's cells. If the patient has antibodies, the cross
 When you perform the test virtually, you do it like we do in TXM and check whether the recipient has antibodies against
 any HLAs the donor has been typed for programmatically.
 
-## Types of crossmatches in TXM
+### Virtual crossmatch in TXM
 
-IMPORTANT: When we get antibodies in high res, we assume that we are getting all antibodies the patient was tested for. Meaning, both with MFI below and above cutoff. 
+In the case of a lab crossmatch there either is a crossmatch or there is not. But in the case of virtual crossmatch, it is always only an approximation of reality and estimation of a likelihood of a crossmatch. Therefore, in cooperation with immunologists, we have concluded that it makes sense to have several levels of virtual crossmatch.
 
-In the case of split or broad resolution we do not assume that. We assume that the patient has been tested for all relevant antibodies but only the positive MFI values are required. Although, negative can be send too.
+Some crossmatch levels or ways to find a crossmatch are meaningful only in the case of processing logic of type A, because with type B we have less information. 
 
-**HIGH_RES** - both donor antigens and recipient antibodies are in high resolution OR donor has typization in split or
-broad and recipient has antibodies all in high res and all antibodies are positive against donor typization. E.g.: donor
-has antigen DRB1\*08:18, and recipient has antibody DRB1\*08:18 OR donor has antigen DR8, and recipient has antibodies
-DRB1\*08:01 and DRB1\*08:18 and both are positive (over cutoff).
+Below we describe all the different crossmatch levels. For each level, we describe a crossmatch for one specific antigen of the donor.
 
-**SPLIT** - both donor antigens and recipient antibodies are in split resolution. E.g.: donor has antigen DQ8 and
-recipient has antibody DQ8 (both are missing high res).
+#### HIGH RES
+1. donor antigen is in high resolution and the recipient has an antibody against the exact antigen.
+2. donor antigen is in high resolution and the recipient is type A parsed and was not tested for donor's antigen. But all tested antibodies that match the donor's antigen in split resolution are positive (and there is at least one such antibody).
+4. donor antigen is in split/broad resolution and the recipient is type A parsed and all tested antibodies that match donor's antigen in split/broad resolution are positive (and there is at least one such antibody).
 
-**HIGH_RES_WITH_SPLIT** - donor antigens are in split, recipient antibodies are in high res, but not all antibodies are
-over cutoff. E.g.: donor has antigen DR8, and recipient has antibodies DRB1\*08:01 and DRB1\*08:18 and only one is over
+
+Example for case 1: donor has antigen DRB1\*08:18, and the recipient has antibody DRB1\*08:18.
+
+Example for case 3: donor has antigen DR8, and the recipient has antibodies DRB1\*08:01, DRB1\*08:02, ... DRB1\*08:18 and all are positive.
+
+#### SPLIT
+1. Donor antigen is in split resolution and the recipient has a matching antibody in split or high resolution (after conversion)
+2. Donor antigen is in high resolution and the recipient has a matching antibody in split resolution
+
+Example for case 1: donor has antigen DQ8 and the recipient has antibody DRB1\*08:01 or donor has antigen DQ8 and the recipient has antibody DQ8
+
+
+#### HIGH_RES_WITH_SPLIT
+1. Donor antigen is in split resolution and the recipient is type A parsed. Some antibodies that match donors' antigens in split resolution are positive and some are negative.
+2. This criterion is more complex. Here we list the requirements in a list:
+   1. Donor antigen is in high resolution.
+   2. The recipient is type A parsed.
+   3. Donor's antigen is not in the set of all tested antibodies.
+   4. Some antibodies that match donor's antigens in split resolution are positive and some are negative.
+
+Example for case 1: donor has antigen DR8, and the recipient has antibodies DRB1\*08:01 and DRB1\*08:18 and only one is over
 the cutoff.
+Example for case 3:
+- Donor has antigen DRB1\*08:01
+- Cutoff is 2000
+- and we received the following antibodies for the recipient:
+  - DRB1\*08:02 with MFI 2500
+  - DRB1\*08:03 with MFI 1800
+#### BROAD
+1. Donor antigen is in broad resolution and the recipient has a matching antibody in split/broad/high resolution
+2. Donor antigen is in high/split/broad resolution and the recipient has a matching antibody in broad resolution
 
-**BROAD** - both donor antigens and recipient antibodies are in broad resolution. E.g.: donor has antigen DQ3 and
-recipient has antibody DQ3 (both are missing high res and split).
+Example for both cases: donor has antigen DQ3 and the recipient has antibody DQ3.
 
-**HIGH_RES_WITH_BROAD** - donor antigens are in broad, recipient antibodies are in high res, but not all antibodies are
-over cutoff. E.g.:  donor has antigen A9, and recipient has antibodies A\*23:01, A\*24:02 and A\*23:04 and at least one
+#### HIGH_RES_WITH_BROAD
+Donor antigen is in broad resolution and the recipient is type A parsed. Some antibodies that match donors' antigen in broad resolution are positive and some are negative.
+
+Example: Donor has antigen A9 and the recipient has antibodies A\*23:01, A\*24:02 and A\*23:04 and at least one
 is over the cutoff, and at least one is below the cutoff.
 
-**UNDECIDABLE** - recipient has antibodies (of any specificity) against antigens that donor has not been typed for.
-E.g.: donor has antigens in groups DPB and DQA: DPB1\*512:01, DQA1\*02:05, and recipient has antibodies in groups DQB and DPB: DQB1\*03:10,
-DPB1\*414:01. Thus, DQB1\*03:10 is UNDECIDABLE.
+#### UNDECIDABLE
+The recipient has antibodies (of any specificity) against antigens that the donor has not been typed for.
 
-**NONE** - antibody is over cutoff, but there is no crossmatch. E.g.: donor has antigen DQA1\*03:10 and recipient has antibody DQA1\*04:07.
+Example: the donor has not been typed for DP and DQ antigens, but the recipient has an antibody DQB1*03:10.
 
 ## What is MFI and cutoff?
 
@@ -138,4 +197,14 @@ transplantation. In this test recipient cells are exposed to random cells of don
 acute rejection.
 
 The PRA score is expressed as a percentage between 0% and 100%. It represents the proportion of the population to which
-the person being tested will react via pre-existing antibodies against human cell surface antigens. 
+the person being tested will react via pre-existing antibodies against human cell surface antigens.
+
+## Square bracket antibody parsing algorithm
+
+When we receive antibodies in format DP*[01:01;02:02] we are using a special algorithm to deduce whether there are
+antibodies against both alpha and beta alleles or just from one of them.
+
+TODO Add algorithm description
+
+## Configuring cutoff
+The original cutoff can be sometimes configured. The usual reason is that there is a patient that really needs a kidney and is highly immunized. In this case, it might be worth it for the patient to get a kidney from a donor against whom the patient has antibodies. However, only antibodies with MFI only slightly over the original cutoff. This is possible in the app via an increase in the cutoff of the patient. Whether to increase the cutoff and how much is always up to the user to decide.
