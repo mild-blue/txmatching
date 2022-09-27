@@ -15,7 +15,8 @@ class TabularScorer(AdditiveScorer):
                                     recipient: Recipient, original_donors: Donor) -> Union[float, str]:
         raise NotImplementedError('Will not be implemented for the moment as this class is just for testing')
 
-    def __init__(self, compatibility_graph: CompatibilityGraph, donors: List[Donor] = None, recipients: List[Recipient] = None):
+    def __init__(self, compatibility_graph: CompatibilityGraph, donors: List[Donor] = None,
+                 recipients: List[Recipient] = None):
         super().__init__()
         self._compatibility_graph = compatibility_graph
         self._donors = donors

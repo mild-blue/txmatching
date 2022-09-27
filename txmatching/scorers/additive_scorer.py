@@ -54,7 +54,8 @@ class AdditiveScorer(ScorerBase):
                                        donors_dict: Dict[DonorDbId, Donor]) -> Dict[int, int]:
         donor_idx_to_recipient_idx = {donor_enum: recipient_enum for recipient_enum, recipient in
                                       enumerate(recipients_dict.values()) for donor_enum, donor in
-                                      enumerate(donors_dict.values()) if donor.related_recipient_db_id == recipient.db_id}
+                                      enumerate(donors_dict.values()) if
+                                      donor.related_recipient_db_id == recipient.db_id}
         for donor_enum, _ in enumerate(donors_dict.values()):
             if donor_enum not in donor_idx_to_recipient_idx:
                 donor_idx_to_recipient_idx[donor_enum] = -1
@@ -71,8 +72,9 @@ class AdditiveScorer(ScorerBase):
             for recipient_enum, recipient in enumerate(recipients_dict.values()):
                 score = self.score_transplant_including_original_tuple(donor=donor, recipient=recipient,
                                                                        original_donors=[donors_dict[donor_db_id] for
-                                                                       donor_db_id in recipient.related_donors_db_ids
-                                                                       if donor_db_id in donors_dict])
+                                                                                        donor_db_id in
+                                                                                        recipient.related_donors_db_ids
+                                                                                        if donor_db_id in donors_dict])
                 if score >= 0:
                     compatibility_graph[(donor_enum, recipient_enum)] = score
 

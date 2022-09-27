@@ -146,8 +146,8 @@ class TestUpdateDonorRecipient(DbTests):
         for donor_enum, donor, expected_score_row in zip(donor_enums, txm_event.active_and_valid_donors_dict.values(),
                                                          expected_scores):
             for recipient_enum, recipient, expected_score in zip(
-                recipient_enums, txm_event.active_and_valid_recipients_dict.values(), expected_score_row):
-                if expected_score >= 0: 
+                    recipient_enums, txm_event.active_and_valid_recipients_dict.values(), expected_score_row):
+                if expected_score >= 0:
                     calculated_score = calculated_scores[(donor_enum, recipient_enum)]
                     self.assertEqual(expected_score, calculated_score,
                                      f'Not true for expected {expected_score} vs real {calculated_score} '

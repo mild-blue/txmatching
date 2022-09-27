@@ -9,7 +9,6 @@ from txmatching.configuration.config_parameters import ConfigParameters
 from txmatching.patients.hla_model import HLATyping
 from txmatching.patients.patient import Donor
 from txmatching.patients.patient_parameters import PatientParameters
-from txmatching.scorers import compatibility_graph
 from txmatching.scorers.compatibility_graph import CompatibilityGraph
 from txmatching.solvers.all_solutions_solver.compatibility_graph_solver import \
     find_possible_path_combinations_from_compatibility_graph
@@ -92,7 +91,7 @@ def _get_donors_for_score_matrix(score_matrix: np.array) -> List[Donor]:
     return donors
 
 
-def _get_compatibility_graph_from_score_matrix(score_matrix: List[List[int]]) -> CompatibilityGraph:
+def _get_compatibility_graph_from_score_matrix(score_matrix: np.array) -> CompatibilityGraph:
     compatibility_graph = {}
     for row_enum, row in enumerate(score_matrix):
         for score_enum, score in enumerate(row):
@@ -101,7 +100,7 @@ def _get_compatibility_graph_from_score_matrix(score_matrix: List[List[int]]) ->
     return compatibility_graph
 
 
-def _get_donor_idx_to_recipient_idx_from_score_matrix(score_matrix: List[List[int]]) -> Dict[int, int]:
+def _get_donor_idx_to_recipient_idx_from_score_matrix(score_matrix: np.array) -> Dict[int, int]:
     donor_idx_to_recipient_idx = {}
     for donor_enum, row in enumerate(score_matrix):
         for recipient_enum, score in enumerate(row):
@@ -110,6 +109,6 @@ def _get_donor_idx_to_recipient_idx_from_score_matrix(score_matrix: List[List[in
 
     for donor_enum, row in enumerate(score_matrix):
         if donor_enum not in donor_idx_to_recipient_idx:
-                donor_idx_to_recipient_idx[donor_enum] = -1
+            donor_idx_to_recipient_idx[donor_enum] = -1
 
     return donor_idx_to_recipient_idx

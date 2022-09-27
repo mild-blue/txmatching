@@ -172,7 +172,7 @@ def _get_donor_to_compatible_donor_graph(n_donors: int,
 
 
 def _get_bridge_indices(donor_idx_to_recipient_idx: Dict[int, int]) -> List[int]:
-    bridge_indices = {donor_id for donor_id, recipient_id in donor_idx_to_recipient_idx.items() if  recipient_id == -1}
+    bridge_indices = {donor_id for donor_id, recipient_id in donor_idx_to_recipient_idx.items() if recipient_id == -1}
     return list(bridge_indices)
 
 

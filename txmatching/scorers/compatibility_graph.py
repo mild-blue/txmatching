@@ -1,3 +1,3 @@
 from typing import Dict, Tuple
 
-CompatibilityGraph = Dict[Tuple[int, int], int]
+CompatibilityGraph = Dict[Tuple[int, int], float]
